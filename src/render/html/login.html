@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="../css/login.css">
+    <title>Jellyfin</title>
+</head>
+<body>
+    <main>
+        <section class="server__cont">
+            <input type="url" class="input__text server__url">
+            <input type="button" class="input__btn save__server" value="Save">
+        </section>
+        <section class="user__cont"></section>
+    </main>
+    <script src="../js/login.js"></script>
+    <script>if (typeof module === 'object') {
+        window.module = module;
+        module = undefined;
+    };
+    </script>
+    <script type="module" src="https://cdn.jsdelivr.net/gh/jquery/jquery@3.6.0/dist/jquery.min.js"></script>
+    
+    <script>if (window.module) module = window.module;</script>
+</body>
+</html>
