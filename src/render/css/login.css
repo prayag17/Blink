@@ -1,6 +1,118 @@
 /** @format */
 
+* {
+	box-sizing: border-box;
+}
+
+main {
+	position: fixed;
+	inset: 0;
+	contain: strict;
+	width: 100vw;
+	height: 100vh;
+	z-index: 1;
+	background: var(--main-bg);
+}
+
+#background {
+	position: fixed;
+	inset: 0;
+	width: 100vw;
+	height: 100vh;
+	z-index: 0;
+	opacity: 0.5;
+}
+
+.server__cont,
+.user__cont,
+.manual__input {
+	position: fixed;
+	top: 50%;
+	left: 50%;
+	transform: translate(-50%, -50%);
+	width: 60vw;
+}
+
+.server__cont {
+	display: flex;
+	flex-flow: column;
+	grid-gap: 1em;
+}
+
+.divider {
+	width: 100%;
+	height: 2px;
+	background: white;
+	border-radius: 10px;
+}
+
+input[type="text"],
+input[type="url"],
+input[type="password"] {
+	background: transparent;
+	border: none;
+	border-bottom: 3px solid white;
+	color: white;
+}
+
+.input__label {
+	position: absolute;
+	top: 50%;
+	left: 0;
+	transform: translateY(-50%);
+	font-size: 1.2em;
+	transition: font-size var(--transition-time-default),
+		transform var(--transition-time-default);
+}
+
+input:focus + .input__label {
+	transform: translateY(calc(-100% - 0.85em));
+	font-size: 0.75em;
+}
+
+.form__cont {
+	display: flex;
+	flex-flow: column;
+	grid-gap: 5px;
+}
+
 .hide {
 	display: none !important;
 	visibility: hidden !important;
+}
+
+@-webkit-keyframes fadeIn {
+	0% {
+		opacity: 0;
+	}
+	100% {
+		opactiy: 1;
+	}
+}
+
+@keyframes fadeIn {
+	0% {
+		opacity: 0;
+	}
+	100% {
+		opactiy: 1;
+	}
+}
+
+.error {
+	position: fixed;
+	top: 50%;
+	left: 50%;
+	transform: translate(-50%, -50%);
+	width: 40vw;
+	height: 30vh;
+	min-height: 15em;
+	min-width: 25em;
+}
+
+.error.active {
+	-webkit-animation: fadeIn 0.275s;
+	animation: fadeIn 5s;
+	display: block;
+	visibility: visible;
 }

@@ -37,12 +37,11 @@ class LoginPage {
                         this.getUserlist();
                     }
                     else {
-                        console.log(response.body);
+                        event.sender.send('not-jf-server');
                     }
                 }).catch((er) => {
-                    console.log(er);
                     let error;
-                    
+                    event.sender.send('not-jf-server');
                     if (typeof er == 'string') {
                         error = e;
                     } else {
