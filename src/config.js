@@ -10,6 +10,11 @@ const schema = {
         type: 'boolean',
         default: false
     },
+
+    openHome: {
+        type: 'boolean',
+        default: false
+    }
 };
 
 const config = new Store({ schema });
