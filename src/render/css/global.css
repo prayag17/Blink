@@ -6,6 +6,7 @@
 	--main-bg: #0d0326;
 	--warning-yellow: #e5df30;
 	--error-red: #b33a3a;
+	--error-red-darker-1: #8b2e2e;
 	--rounding: 10px;
 	--transition-time-default: 0.25s;
 	--transition-time-slow-1: 0.35s;
@@ -15,6 +16,7 @@ body,
 html {
 	font-family: "Montserrat", sans-serif;
 	color: white;
+	background: var(--main-bg);
 }
 
 input,

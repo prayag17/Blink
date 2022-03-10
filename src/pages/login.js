@@ -1,8 +1,11 @@
-const { app, BrowserWindow, ipcMain } = require('electron');
+const { app, BrowserWindow, ipcMain, nativeImage } = require('electron');
 const got = require('got');
 const emitter = require('../common/emitter');
 const config = require('../config');
 const { Jellyfin } = require('@thornbill/jellyfin-sdk');
+
+var icon = nativeImage.createFromPath('../assets/icon.png');
+console.log(icon.getAspectRatio);
 
 class LoginPage {
     constructor() {
@@ -10,6 +13,7 @@ class LoginPage {
         this.setConfig();
         this.authUser();
         this.logoutUser();
+        this.getUserlist();
     }
     createWindow() {
         this.window = new BrowserWindow({
@@ -22,11 +26,12 @@ class LoginPage {
             webPreferences: {
                 nodeIntegration: true
             },
-            icon: '../assets/logo.png'
+            icon: icon
         });
         this.window.loadFile("./src/render/html/login.html");
-        this.window.webContents.openDevTools();
+        // this.window.webContents.openDevTools();
         this.window.setMenu(null);
+        this.window.maximize();
     }
     setConfig() {
         if (config.get('serverGo') == false) {
@@ -34,6 +39,7 @@ class LoginPage {
                 serverUrl = serverUrl.replace(/\/+$/, '');
                 got.post(`${serverUrl}/System/Ping`).then(async (response) => {
                     if (response.body == '"Jellyfin Server"') {
+                        event.sender.send('is-jf-server');
                         config.set('serverUrl', serverUrl);
                         config.set('serverGo', true);
                         this.getUserlist();
@@ -72,6 +78,7 @@ class LoginPage {
             ipcMain.on('waiting-for-userlist', async (event) => {
                 let users = await this.api.userApi.getPublicUsers();
                 event.sender.send('userlist', users.data);
+                console.log('sending');
             });
         });
     }

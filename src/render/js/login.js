@@ -4,12 +4,13 @@ const config = require("../../config");
 const serverForm = document.querySelector('.server__cont');
 const serverUrl = document.querySelector('.server__url');
 const saveBtn = document.querySelector('.save__server');
+const user__cont = document.querySelector('.users');
 
 let html;
 
-if (config.get('serverGo') == true) {
+const createUserList = () => {
     ipcRenderer.send("waiting-for-userlist");
-    serverForm.classList.add("hide");
+    document.querySelector('.loader').classList.remove('hide');
     ipcRenderer.on('userlist', (event, userlist) => {
         userlist.forEach(user => {
             if (user.PrimaryImageTag) {
@@ -20,17 +21,33 @@ if (config.get('serverGo') == true) {
             }
             document.querySelector('.user__cont').insertAdjacentHTML('beforeend', html);
         });
-        emitter.emit('user_card_created');
+        document.querySelector('.loader').classList.add('hide');
+        document.querySelector('.users').classList.remove('hide');
+        document.querySelector('.users').scrollIntoView({ behavior: "smooth" });
+        setInterval(() => {
+            document.querySelector('.server').classList.add('hide');
+        }, 1000);
+        // $('main').scrollTo('.users', '2s');
     });
+};
+
+if (config.get('serverGo') == true) {
+    createUserList();
 } else if (config.get('serverGo') == false) {
     saveBtn.onclick = () => {
         ipcRenderer.send('setServer', serverUrl.value);
+        document.querySelector('.loader').classList.remove('hide');
         ipcRenderer.on('not-jf-server', () => {
-            console.log('not a jf server');
+            document.querySelector('.loader').classList.add('hide');
             createServerErr();
+        });
+        ipcRenderer.on('is-jf-server', () => {
+            createUserList();
         });
     };
 }
+
+
 
 const createServerErr = () => {
     document.querySelector('.error').classList.remove('hide');
@@ -51,7 +68,7 @@ const closePopup = () => {
             document.querySelector('.popup__exit').classList.remove('fadeOut');
             document.querySelector('.error').classList.add('hide');
             document.querySelector('.popup__exit').classList.add('hide');
-        }, 300);
+        }, 305);
     });
     
     document.querySelector('.popup__exit__btn').addEventListener('click', () => {

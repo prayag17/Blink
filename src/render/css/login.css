@@ -11,7 +11,10 @@ main {
 	width: 100vw;
 	height: 100vh;
 	z-index: 1;
-	background: var(--main-bg);
+	display: flex;
+	justify-content: flex-start;
+	align-items: center;
+	overflow: hidden;
 }
 
 #background {
@@ -19,20 +22,30 @@ main {
 	inset: 0;
 	width: 100vw;
 	height: 100vh;
-	z-index: 0;
+	z-index: -1;
 	-webkit-animation: fadeInBg var(--transition-time-slow-1);
 	animation: fadeInBg var(--transition-time-slow-1);
 	-webkit-animation-fill-mode: forwards;
 	animation-fill-mode: forwards;
 }
 
+.page {
+	position: static;
+	width: 100vw;
+	height: 100vh;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	flex-grow: 1;
+	flex-shrink: 0;
+	flex-basis: 100vw;
+	overflow: hidden;
+}
+
 .server__cont,
 .user__cont,
 .manual__input {
-	position: fixed;
-	top: 50%;
-	left: 50%;
-	transform: translate(-50%, -50%);
+	position: static;
 	width: 60vw;
 	max-width: 30em;
 }
@@ -158,6 +171,11 @@ input:focus + .input__label,
 	border: none;
 	background: var(--error-red);
 	color: white;
+	transition: background var(--transition-time-default);
+}
+
+.popup__exit__btn:hover {
+	background: var(--error-red-darker-1);
 }
 
 .error.active,
@@ -169,6 +187,7 @@ input:focus + .input__label,
 }
 
 .popup__exit {
+	position: fixed;
 	width: 100vw;
 	height: 100vh;
 	background: rgba(0, 0, 0, 0.3);
@@ -177,10 +196,40 @@ input:focus + .input__label,
 	backdrop-filter: blur(10px);
 }
 
-.popup__exit.fadeOut {
+.popup__exit.fadeOut,
+.popup.error.fadeOut {
 	-webkit-animation: fadeOut var(--transition-time-slow-1) forwards;
 	animation: fadeOut var(--transition-time-slow-1) forwards;
 }
+
+.loader {
+	position: fixed;
+	overflow: visible;
+	width: 100vw;
+	height: 100vh;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+}
+
+.loader::before {
+	content: "";
+	position: fixed;
+	background: rgba(0, 0, 0, 0.5);
+	top: 0;
+	left: 0;
+	width: 100vw;
+	height: 100vh;
+	z-index: 0;
+	transition: var(--transition-time-slow-1);
+	-webkit-backdrop-filter: blur(5px);
+	backdrop-filter: blur(5px);
+}
+
+.loader svg {
+	z-index: 1;
+}
+
 /*Animations*/
 @-webkit-keyframes fadeInBg {
 	0% {
