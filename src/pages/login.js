@@ -21,10 +21,12 @@ class LoginPage {
             show: false,
             webPreferences: {
                 nodeIntegration: true
-            }
+            },
+            icon: '../assets/logo.png'
         });
         this.window.loadFile("./src/render/html/login.html");
         this.window.webContents.openDevTools();
+        this.window.setMenu(null);
     }
     setConfig() {
         if (config.get('serverGo') == false) {

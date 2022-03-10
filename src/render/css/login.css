@@ -20,7 +20,10 @@ main {
 	width: 100vw;
 	height: 100vh;
 	z-index: 0;
-	opacity: 0.5;
+	-webkit-animation: fadeInBg var(--transition-time-slow-1);
+	animation: fadeInBg var(--transition-time-slow-1);
+	-webkit-animation-fill-mode: forwards;
+	animation-fill-mode: forwards;
 }
 
 .server__cont,
@@ -31,12 +34,13 @@ main {
 	left: 50%;
 	transform: translate(-50%, -50%);
 	width: 60vw;
+	max-width: 30em;
 }
 
 .server__cont {
 	display: flex;
 	flex-flow: column;
-	grid-gap: 1em;
+	grid-gap: 3em;
 }
 
 .divider {
@@ -55,30 +59,145 @@ input[type="password"] {
 	color: white;
 }
 
+.input__btn {
+	overflow: hidden;
+	background: #ffffff4b;
+	border: 2px solid white;
+	color: white;
+	border-radius: 100px;
+	width: 100%;
+	transition: background var(--transition-time-default);
+}
+
+.input__btn:hover {
+	background: #ffffff6b;
+}
+
 .input__label {
 	position: absolute;
 	top: 50%;
 	left: 0;
 	transform: translateY(-50%);
-	font-size: 1.2em;
+	font-size: min(1em, 25px);
 	transition: font-size var(--transition-time-default),
 		transform var(--transition-time-default);
 }
 
-input:focus + .input__label {
+input:focus + .input__label,
+.input__label.inputLabelActive {
 	transform: translateY(calc(-100% - 0.85em));
-	font-size: 0.75em;
+	font-size: min(0.75em, 15px);
 }
 
 .form__cont {
 	display: flex;
 	flex-flow: column;
-	grid-gap: 5px;
+	grid-gap: 1em;
 }
 
 .hide {
 	display: none !important;
 	visibility: hidden !important;
+}
+
+.info {
+	font-family: "IBM Plex Mono", monospace;
+	opacity: 0.65;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	grid-gap: 10px;
+	font-size: calc(60vw / 20);
+}
+
+.info svg {
+	color: var(--warning-yellow);
+	height: 100%;
+	width: min(1.5em, 30px);
+}
+
+.info div {
+	font-size: min(0.65em, 15px);
+	text-align: left;
+	width: -webkit-fit-content;
+	width: -moz-fit-content;
+	width: fit-content;
+}
+
+.error {
+	position: fixed;
+	top: 50%;
+	left: 50%;
+	transform: translate(-50%, -50%);
+	width: 40vw;
+	height: 30vh;
+	min-height: 15em;
+	min-width: 25em;
+}
+
+.icon {
+	height: 40%;
+	display: flex;
+	align-items: flex-start;
+	justify-content: flex-start;
+}
+
+.icon svg {
+	width: auto;
+	height: 100%;
+	color: var(--error-red);
+}
+
+.popup .text {
+	font-family: "IBM Plex Mono";
+	font-weight: 300;
+}
+
+.popup__exit__btn {
+	border-radius: 100px;
+	border: none;
+	background: var(--error-red);
+	color: white;
+}
+
+.error.active,
+.popup__exit.active {
+	-webkit-animation: fadeIn var(--transition-time-slow-1);
+	animation: fadeIn var(--transition-time-slow-1);
+	display: block;
+	visibility: visible;
+}
+
+.popup__exit {
+	width: 100vw;
+	height: 100vh;
+	background: rgba(0, 0, 0, 0.3);
+	opacity: 1;
+	-webkit-backdrop-filter: blur(10px);
+	backdrop-filter: blur(10px);
+}
+
+.popup__exit.fadeOut {
+	-webkit-animation: fadeOut var(--transition-time-slow-1) forwards;
+	animation: fadeOut var(--transition-time-slow-1) forwards;
+}
+/*Animations*/
+@-webkit-keyframes fadeInBg {
+	0% {
+		opacity: 0;
+	}
+	100% {
+		opacity: 0.6;
+	}
+}
+
+@keyframes fadeInBg {
+	0% {
+		opacity: 0;
+	}
+	100% {
+		opacity: 0.6;
+	}
 }
 
 @-webkit-keyframes fadeIn {
@@ -99,20 +218,32 @@ input:focus + .input__label {
 	}
 }
 
-.error {
-	position: fixed;
-	top: 50%;
-	left: 50%;
-	transform: translate(-50%, -50%);
-	width: 40vw;
-	height: 30vh;
-	min-height: 15em;
-	min-width: 25em;
+@-webkit-keyframes fadeOut {
+	0% {
+		display: block;
+		opacity: 1;
+	}
+	99% {
+		display: block;
+		opacity: 0;
+	}
+	100% {
+		display: none;
+		opacity: 0;
+	}
 }
 
-.error.active {
-	-webkit-animation: fadeIn 0.275s;
-	animation: fadeIn 5s;
-	display: block;
-	visibility: visible;
+@keyframes fadeOut {
+	0% {
+		display: block;
+		opacity: 1;
+	}
+	99% {
+		display: block;
+		opacity: 0;
+	}
+	100% {
+		display: none;
+		opacity: 0;
+	}
 }
