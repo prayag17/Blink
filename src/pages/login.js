@@ -29,7 +29,7 @@ class LoginPage {
             icon: icon
         });
         this.window.loadFile("./src/render/html/login.html");
-        // this.window.webContents.openDevTools();
+        this.window.webContents.openDevTools();
         this.window.setMenu(null);
         this.window.maximize();
     }
@@ -56,10 +56,7 @@ class LoginPage {
                         error = "The given server url is not a Jellyfin server url";
                     }
                 });
-                // this.apiclient = new ApiClient();
             });
-        } else if (config.get('serverGo') == true) {
-            this.getUserlist();
         }
     }
     getUserlist() {
