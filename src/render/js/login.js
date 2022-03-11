@@ -29,6 +29,12 @@ const createUserList = () => {
         }, 1000);
         // $('main').scrollTo('.users', '2s');
     });
+    ipcRenderer.on('no-public-users', () => {
+        document.querySelector('.loader').classList.add('hide');
+        createManualLogin();
+        document.querySelector('.manual__login').classList.remove('hide');
+        document.querySelector('.manual__login').scrollIntoView({ behavior: "smooth" });
+    });    
 };
 
 if (config.get('serverGo') == true) {
@@ -47,6 +53,11 @@ if (config.get('serverGo') == true) {
     };
 }
 
+
+const createManualLogin = () => {
+    html = `<div class="one"><input type="text" value="" class="user__name"><input type="password" value="" class="user__password"><input class="remember__user" type="checkbox" value="true"><input type="button" value="Login" class="user__login" onclick="sendAuthInfo()"></div>`;
+    document.querySelector('.manual__input').insertAdjacentHTML('beforeend', html);
+};
 
 
 const createServerErr = () => {

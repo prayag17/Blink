@@ -74,7 +74,12 @@ class LoginPage {
         this.window.once('ready-to-show', () => {
             ipcMain.on('waiting-for-userlist', async (event) => {
                 let users = await this.api.userApi.getPublicUsers();
-                event.sender.send('userlist', users.data);
+                if (users.data.length == 0) {
+                    event.sender.send('no-public-users');
+                } else {
+                    console.log(users.data);
+                    event.sender.send('userlist', users.data);
+                }
                 console.log('sending');
             });
         });
