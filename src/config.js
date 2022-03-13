@@ -14,7 +14,18 @@ const schema = {
     openHome: {
         type: 'boolean',
         default: false
-    }
+    },
+
+    // user: {
+    //     name: {
+    //         type: 'string',
+    //         default: ""
+    //     },
+    //     pass: {
+    //         type: 'string',
+    //         default: ""
+    //     }
+    // }
 };
 
 const config = new Store({ schema });

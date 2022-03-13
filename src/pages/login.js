@@ -1,4 +1,5 @@
 const { app, BrowserWindow, ipcMain, nativeImage } = require('electron');
+const fs = require("fs");
 const got = require('got');
 const emitter = require('../common/emitter');
 const config = require('../config');
@@ -11,9 +12,11 @@ class LoginPage {
     constructor() {
         this.createWindow();
         this.setConfig();
+        this.onstartUp();
         this.authUser();
         this.logoutUser();
         this.getUserlist();
+        this.clearData();
     }
     createWindow() {
         this.window = new BrowserWindow({
@@ -24,7 +27,8 @@ class LoginPage {
             maximizable: true,
             show: false,
             webPreferences: {
-                nodeIntegration: true
+                nodeIntegration: true,
+                contextIsolation: false
             },
             icon: icon
         });
@@ -32,6 +36,33 @@ class LoginPage {
         this.window.webContents.openDevTools();
         this.window.setMenu(null);
         this.window.maximize();
+        this.window.hide();
+    }
+    onstartUp() {
+        ipcMain.on('check-server-status', (event) => {
+            got.post(`${config.get('serverUrl')}/System/Ping`).then(async (response) => {
+                if (response.body == '"Jellyfin Server"') {
+                    event.sender.send('server-online');
+                    this.serverOnline = true;
+                }
+                else {
+                    event.sender.send('server-offline');
+                    console.log('offline');
+                    this.serverOnline = true;
+                }
+            }).catch((er) => {
+                let error;
+                event.sender.send('server-offline');
+                if (typeof er == 'string') {
+                    error = e;
+                } else {
+                    error = "Can't connect to Jellyfin server";
+                }
+            });
+        });
+        ipcMain.on('reload-page', () => {
+            this.window.reload();
+        });
     }
     setConfig() {
         if (config.get('serverGo') == false) {
@@ -87,11 +118,13 @@ class LoginPage {
     async authUser() {
         let auth;
         if (config.get('openHome') == true) {
-            try {
-                auth = await this.api.authenticateUserByName(config.get('user.name'), config.get('user.pass'));
-                emitter.emit('logged-in');
-            } catch(err) {
-                console.log(err);
+            if (this.serverOnline == true) {
+                try {
+                    auth = await this.api.authenticateUserByName(config.get('user.name'), config.get('user.pass'));
+                    emitter.emit('logged-in');
+                } catch (err) {
+                    console.log(err);
+                }
             }
         } else {
             this.window.once('ready-to-show', () => {
@@ -135,6 +168,14 @@ class LoginPage {
             console.log('he');
             await this.api.logout();
             emitter.emit('closeHome');
+        });
+    }
+    clearData() {
+        ipcMain.on('clear-user-data', async () => {
+            console.log(app.getPath('userData'));
+            config.clear();
+            this.window.reload();
+            console.log('cleared data!');
         });
     }
     showLogin() {

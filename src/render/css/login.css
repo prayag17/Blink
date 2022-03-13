@@ -1,6 +1,8 @@
 /** @format */
 
-* {
+*,
+*::before,
+*::after {
 	box-sizing: border-box;
 }
 
@@ -56,11 +58,28 @@ main {
 	grid-gap: 3em;
 }
 
-.divider {
+button.clicky {
+	position: relative;
+	overflow: visible;
+}
+
+button.clicky::after {
+	content: "";
+	box-shadow: 0 0 15px 40px white;
+	position: absolute;
 	width: 100%;
-	height: 2px;
-	background: white;
-	border-radius: 10px;
+	height: 100%;
+	top: 0;
+	left: 0;
+	border-radius: 100px;
+	opacity: 0;
+	transition: all var(--transition-time-slow-1);
+}
+
+button.clicky:active::after {
+	box-shadow: 0 0 0 0 white;
+	opacity: 0.5;
+	transition: 0s;
 }
 
 input[type="text"],

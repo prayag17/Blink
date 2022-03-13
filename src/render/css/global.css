@@ -14,6 +14,8 @@
 
 body,
 html {
+	margin: 0 !important;
+	padding: 0 !important;
 	font-family: "Montserrat", sans-serif;
 	color: white;
 	background: var(--main-bg);
@@ -29,4 +31,32 @@ button {
 .input {
 	position: relative;
 	font-size: calc(60vw / 20);
+}
+
+.ripple__cont {
+	width: 100%;
+	height: 100%;
+	overflow: hidden;
+}
+
+@-webkit-keyframes btn_click {
+	0% {
+		transform: scale(1);
+		opacity: 0;
+	}
+	100% {
+		transform: scale(5);
+		opacity: 1;
+	}
+}
+
+@keyframes btn_click {
+	0% {
+		transform: scale(1);
+		opacity: 0;
+	}
+	100% {
+		transform: scale(1.5);
+		opacity: 1;
+	}
 }

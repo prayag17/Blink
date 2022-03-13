@@ -7,6 +7,7 @@ const saveBtn = document.querySelector('.save__server');
 const user__cont = document.querySelector('.users');
 
 let html;
+let ripple;
 
 const createUserList = () => {
     ipcRenderer.send("waiting-for-userlist");
@@ -14,10 +15,10 @@ const createUserList = () => {
     ipcRenderer.on('userlist', (event, userlist) => {
         userlist.forEach(user => {
             if (user.PrimaryImageTag) {
-                html = `<div class="user__card" data-user="${user.Name}" onclick="createManualLoginFilled(this.dataset.user)"><h1>${user.Name}</h1><img src="${config.get('serverUrl')}/Users/${user.Id}/Images/Primary"></div>`;
+                html = `<div class="user__card" data-user="${user.Name}" onclick="createEnterPassword(this.dataset.user)"><h1>${user.Name}</h1><img src="${config.get('serverUrl')}/Users/${user.Id}/Images/Primary"></div>`;
             }
             else if (!user.PrimaryImageTag) {
-                html = `<div class="user__card" data-user="${user.Name}" onclick="createManualLoginFilled(this.dataset.user)"><h1>${user.Name}</h1><img src="../svg/avatar.svg"></div>`;
+                html = `<div class="user__card" data-user="${user.Name}" onclick="createEnterPassword(this.dataset.user)"><h1>${user.Name}</h1><img src="../svg/avatar.svg"></div>`;
             }
             document.querySelector('.user__cont').insertAdjacentHTML('beforeend', html);
         });
@@ -35,37 +36,6 @@ const createUserList = () => {
         document.querySelector('.manual__login').classList.remove('hide');
         document.querySelector('.manual__login').scrollIntoView({ behavior: "smooth" });
     });    
-};
-
-if (config.get('serverGo') == true) {
-    createUserList();
-} else if (config.get('serverGo') == false) {
-    saveBtn.onclick = () => {
-        ipcRenderer.send('setServer', serverUrl.value);
-        document.querySelector('.loader').classList.remove('hide');
-        ipcRenderer.on('not-jf-server', () => {
-            document.querySelector('.loader').classList.add('hide');
-            createServerErr();
-        });
-        ipcRenderer.on('is-jf-server', () => {
-            createUserList();
-        });
-    };
-}
-
-
-const createManualLogin = () => {
-    html = `<div class="one"><input type="text" value="" class="user__name"><input type="password" value="" class="user__password"><input class="remember__user" type="checkbox" value="true"><input type="button" value="Login" class="user__login" onclick="sendAuthInfo()"></div>`;
-    document.querySelector('.manual__input').insertAdjacentHTML('beforeend', html);
-};
-
-
-const createServerErr = () => {
-    document.querySelector('.error').classList.remove('hide');
-    document.querySelector('.error').classList.add('active');
-    document.querySelector('.popup__exit').classList.remove('hide');
-    document.querySelector('.popup__exit').classList.add('active');
-    closePopup();
 };
 
 const closePopup = () => {
@@ -96,6 +66,58 @@ const closePopup = () => {
     });
 };
 
+const createServerErr = () => {
+    document.querySelector('.error').classList.remove('hide');
+    document.querySelector('.error').classList.add('active');
+    document.querySelector('.popup__exit').classList.remove('hide');
+    document.querySelector('.popup__exit').classList.add('active');
+    closePopup();
+};
+
+const sendClearDataRequest = () => {
+    ipcRenderer.send('clear-user-data');
+    console.log('cleardata');
+};
+
+
+if (config.get('serverGo') == true) {
+    document.querySelector('.loader').classList.remove('hide');
+    ipcRenderer.send('check-server-status');
+    ipcRenderer.on('server-online', () => {
+        document.querySelector('.loader').classList.add('hide');
+        createUserList();
+    });
+    ipcRenderer.on('server-offline', () => {
+        html = `<button class="popup__cleardata__button" onclick="sendClearDataRequest()">
+                    <span class="btn__label">Clear Data</span>
+                </button>`;
+        document.querySelector('.loader').classList.add('hide');
+        document.querySelector('.popup__exit__btn').addEventListener('click', () => {
+            ipcRenderer.send('reload-page');
+        });
+        document.querySelector('.error').insertAdjacentHTML('beforeend', html);
+        createServerErr();
+    });
+} else if (config.get('serverGo') == false) {    
+    saveBtn.onclick = () => {
+        ipcRenderer.send('setServer', serverUrl.value);
+        document.querySelector('.loader').classList.remove('hide');
+        ipcRenderer.on('not-jf-server', () => {
+            document.querySelector('.loader').classList.add('hide');
+            createServerErr();
+        });
+        ipcRenderer.on('is-jf-server', () => {
+            createUserList();
+        });
+    };
+}
+
+
+const createManualLogin = () => {
+    html = `<div class="one"><input type="text" value="" class="user__name"><input type="password" value="" class="user__password"><input class="remember__user" type="checkbox" value="true"><input type="button" value="Login" class="user__login" onclick="sendAuthInfo()"></div>`;
+    document.querySelector('.manual__input').insertAdjacentHTML('beforeend', html);
+};
+
 const setLabelPos = () => {
     if (serverUrl.value.length < 1) {
         console.log('empty');
@@ -105,7 +127,7 @@ const setLabelPos = () => {
     }
 };
 
-const createManualLoginFilled = (userName) => {
+const createEnterPassword = (userName) => {
     html = `<div class="one"><input type="text" value="${userName}" class="user__name"><input type="password" value="" class="user__password"><input class="remember__user" type="checkbox" value="true"><input type="button" value="Login" class="user__login" onclick="sendAuthInfo()"></div>`;
     document.querySelector('.user__cont').classList.add('hide');
     document.querySelector('.manual__input').insertAdjacentHTML('beforeend', html);

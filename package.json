@@ -45,6 +45,7 @@
     }
   },
   "dependencies": {
+    "@rive-app/webgl": "^1.0.23",
     "@thornbill/jellyfin-sdk": "^0.4.1",
     "electron-squirrel-startup": "^1.0.0",
     "electron-store": "^8.0.1",
