@@ -16,10 +16,20 @@ const createUserList = () => {
         console.log(userlist);
         userlist.forEach(user => {
             if (user.PrimaryImageTag) {
-                html = `<div class="user__card" data-user="${user.Name}" data-userid="${user.Id}" onclick="createEnterPassword(this.dataset.user, true, this.dataset.userid)"><h1>${user.Name}</h1><img class="user__img" src="${config.get('serverUrl')}/Users/${user.Id}/Images/Primary"></div>`;
+                html = `<div class="user__card" data-user="${user.Name}" data-userid="${user.Id}" onclick="createEnterPassword(this.dataset.user, true, this.dataset.userid)">
+                            <div class="content">
+                                <img class="user__img" src="${config.get('serverUrl')}/Users/${user.Id}/Images/Primary">
+                                <h1>${user.Name}</h1>
+                            </div>
+                        </div>`;
             }
             else if (!user.PrimaryImageTag) {
-                html = `<div class="user__card" data-user="${user.Name}" onclick="createEnterPassword(this.dataset.user, false)"><h1>${user.Name}</h1><img class="user__svg" src="../svg/avatar.svg"></div>`;
+                html = `<div class="user__card" data-user="${user.Name}" onclick="createEnterPassword(this.dataset.user, false)">
+                            <div class="content">
+                                <img class="user__svg" src="../svg/avatar.svg">
+                                <h1>${user.Name}</h1>
+                            </div>        
+                        </div>`;
             }
             document.querySelector('.user__cont').insertAdjacentHTML('beforeend', html);
         });

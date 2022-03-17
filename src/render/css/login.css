@@ -6,6 +6,19 @@
 	box-sizing: border-box;
 }
 
+::-webkit-scrollbar {
+	height: 10px;
+}
+
+::-webkit-scrollbar-thumb {
+	background: rgb(255 255 255 / 0.5);
+	border-radius: 10px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+	background: rgb(255 255 255/1);
+}
+
 main {
 	position: fixed;
 	inset: 0;
@@ -266,16 +279,20 @@ section.user__cont {
 	display: flex;
 	justify-content: space-between;
 	overflow: auto hidden;
-	height: 50vh;
 }
+
 .user__card {
 	width: 50%;
+	overflow: hidden;
 	flex-shrink: 0;
+}
+
+.user__card .content {
 	display: flex;
+	flex-shrink: 0;
 	justify-content: center;
 	align-items: center;
-	overflow: hidden;
-	flex-flow: column-reverse;
+	flex-flow: column;
 }
 
 .user__svg,
