@@ -1,5 +1,4 @@
 const { app, BrowserWindow, ipcMain, nativeImage } = require('electron');
-const fs = require("fs");
 const got = require('got');
 const emitter = require('../common/emitter');
 const config = require('../config');
@@ -62,30 +61,28 @@ class LoginPage {
         });
     }
     setConfig() {
-        if (config.get('serverGo') == false) {
-            ipcMain.on('setServer', (event, serverUrl) => {
-                serverUrl = serverUrl.replace(/\/+$/, '');
-                got.post(`${serverUrl}/System/Ping`).then(async (response) => {
-                    if (response.body == '"Jellyfin Server"') {
-                        event.sender.send('is-jf-server');
-                        config.set('serverUrl', serverUrl);
-                        config.set('serverGo', true);
-                        this.getUserlist();
-                    }
-                    else {
-                        event.sender.send('not-jf-server');
-                    }
-                }).catch((er) => {
-                    let error;
+        ipcMain.on('setServer', (event, serverUrl) => {
+            serverUrl = serverUrl.replace(/\/+$/, '');
+            got.post(`${serverUrl}/System/Ping`).then(async (response) => {
+                if (response.body == '"Jellyfin Server"') {
+                    event.sender.send('is-jf-server');
+                    config.set('serverUrl', serverUrl);
+                    config.set('serverGo', true);
+                    this.window.reload();
+                }
+                else {
                     event.sender.send('not-jf-server');
-                    if (typeof er == 'string') {
-                        error = e;
-                    } else {
-                        error = "The given server url is not a Jellyfin server url";
-                    }
-                });
+                }
+            }).catch((er) => {
+                let error;
+                event.sender.send('not-jf-server');
+                if (typeof er == 'string') {
+                    error = e;
+                } else {
+                    error = "The given server url is not a Jellyfin server url";
+                }
             });
-        }
+        });
     }
     getUserlist() {
         this.apiclient = new Jellyfin({
@@ -135,28 +132,11 @@ class LoginPage {
                     } catch (err) {
                         console.log("err");
                         event.sender.send('user-auth-failed');
-
+                        
                     }
                 });
             });
         }
-        emitter.on('reauth', () => {
-            this.window.once('ready-to-show', () => {
-                ipcMain.on('user-auth-details', async (e, user) => {
-                    try {
-                        auth = await this.api.authenticateUserByName(user[0], user[1]);
-                        if (user[2] == true) {
-                            config.set('user.name', user[0]);
-                            config.set('user.pass', user[1]);
-                            config.set('openHome', true);
-                        }
-                        emitter.emit('logged-in');
-                    } catch (err) {
-                        console.log(err);
-                    }
-                });
-            });
-        });
     }
     logoutUser() {
         emitter.on('logout-user', async () => {

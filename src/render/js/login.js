@@ -8,12 +8,12 @@ const saveBtn = document.querySelector('.save__server');
 const user__cont = document.querySelector('.users');
 
 let html;
-let ripple;
 
 const createUserList = () => {
     ipcRenderer.send("waiting-for-userlist");
     document.querySelector('.loader').classList.remove('hide');
     ipcRenderer.on('userlist', (event, userlist) => {
+        console.log(userlist);
         userlist.forEach(user => {
             if (user.PrimaryImageTag) {
                 html = `<div class="user__card" data-user="${user.Name}" data-userid="${user.Id}" onclick="createEnterPassword(this.dataset.user, true, this.dataset.userid)"><h1>${user.Name}</h1><img class="user__img" src="${config.get('serverUrl')}/Users/${user.Id}/Images/Primary"></div>`;
@@ -23,9 +23,9 @@ const createUserList = () => {
             }
             document.querySelector('.user__cont').insertAdjacentHTML('beforeend', html);
         });
-        document.querySelector('.loader').classList.add('hide');
         document.querySelector('.users').classList.remove('hide');
         document.querySelector('.users').scrollIntoView({ behavior: "smooth" });
+        document.querySelector('.loader').classList.add('hide');
         setInterval(() => {
             document.querySelector('.server').classList.add('hide');
         }, 1000);
@@ -106,9 +106,6 @@ if (config.get('serverGo') == true) {
         ipcRenderer.on('not-jf-server', () => {
             document.querySelector('.loader').classList.add('hide');
             createServerErr();
-        });
-        ipcRenderer.on('is-jf-server', () => {
-            createUserList();
         });
     };
 }
