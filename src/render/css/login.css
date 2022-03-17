@@ -42,6 +42,12 @@ main {
 	flex-shrink: 0;
 	flex-basis: 100vw;
 	overflow: hidden;
+	flex-flow: column;
+	gap: 10px;
+}
+
+.page > button {
+	width: 60vw;
 }
 
 .server__cont,
@@ -91,7 +97,7 @@ input[type="password"] {
 	color: white;
 }
 
-.input__btn {
+button {
 	overflow: hidden;
 	background: #ffffff4b;
 	border: 2px solid white;
@@ -101,7 +107,7 @@ input[type="password"] {
 	transition: background var(--transition-time-default);
 }
 
-.input__btn:hover {
+button:hover {
 	background: #ffffff6b;
 }
 
@@ -156,7 +162,7 @@ input:focus + .input__label,
 	width: fit-content;
 }
 
-.error {
+.popup {
 	position: fixed;
 	top: 50%;
 	left: 50%;
@@ -177,7 +183,14 @@ input:focus + .input__label,
 .icon svg {
 	width: auto;
 	height: 100%;
+}
+
+.error .icon svg {
 	color: var(--error-red);
+}
+
+.waring .icon svg {
+	color: var(--warning-yellow);
 }
 
 .popup .text {
@@ -247,6 +260,108 @@ input:focus + .input__label,
 
 .loader svg {
 	z-index: 1;
+}
+
+section.user__cont {
+	display: flex;
+	justify-content: space-between;
+	overflow: auto hidden;
+	height: 50vh;
+}
+.user__card {
+	width: 50%;
+	flex-shrink: 0;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	overflow: hidden;
+	flex-flow: column-reverse;
+}
+
+.user__svg,
+.user__img {
+	width: 10em;
+	-o-object-fit: cover;
+	object-fit: cover;
+	height: 10em;
+	border-radius: var(--rounding);
+	background: white;
+	mix-blend-mode: multiply;
+	box-shadow: 0 0 20px #00000057;
+}
+
+.user__svg {
+	padding: 1em;
+}
+
+.user {
+	display: flex;
+	flex-flow: column;
+	grid-gap: 2em;
+	justify-content: center;
+	align-items: center;
+}
+
+.user__info {
+	width: 100%;
+	display: flex;
+	flex-flow: column;
+	justify-content: center;
+	align-items: center;
+	grid-gap: 10px;
+}
+
+.user__info .name {
+	text-shadow: 0 0 8px #00000057;
+	text-align: center;
+	width: 100%;
+	font-weight: 300;
+	padding: 0;
+	margin: 0;
+	font-size: min(2em, calc(100vw / 25));
+}
+
+.user__info .user__img {
+	border-radius: 100%;
+}
+
+.input.checkbox {
+	display: flex;
+	flex-flow: row;
+	justify-content: flex-start;
+	grid-gap: 10px;
+	align-items: center;
+}
+
+.checkbox label {
+	font-size: min(0.6em, calc(100vw / 25));
+}
+
+.tick {
+	display: block;
+	width: 0.6em;
+	border-radius: var(--rounding-1);
+	border: 1px solid white;
+}
+
+.tick path {
+	stroke: white;
+	stroke-dasharray: 100%;
+	stroke-dashoffset: 100%;
+	transition: stroke-dashoffset var(--transition-time-fast-1);
+}
+
+input[type="checkbox"]:checked + .tick > path {
+	stroke-dashoffset: 0%;
+}
+
+.remember__user {
+	position: absolute;
+	height: 100%;
+	width: 100%;
+	inset: 0;
+	padding: 0;
+	margin: 0;
 }
 
 /*Animations*/

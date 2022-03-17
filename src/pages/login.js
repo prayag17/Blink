@@ -6,7 +6,6 @@ const config = require('../config');
 const { Jellyfin } = require('@thornbill/jellyfin-sdk');
 
 var icon = nativeImage.createFromPath('../assets/icon.png');
-console.log(icon.getAspectRatio);
 
 class LoginPage {
     constructor() {
@@ -25,18 +24,17 @@ class LoginPage {
             center: true,
             resizable: true,
             maximizable: true,
-            show: false,
             webPreferences: {
                 nodeIntegration: true,
                 contextIsolation: false
             },
+            show: false,
             icon: icon
         });
         this.window.loadFile("./src/render/html/login.html");
         this.window.webContents.openDevTools();
         this.window.setMenu(null);
         this.window.maximize();
-        this.window.hide();
     }
     onstartUp() {
         ipcMain.on('check-server-status', (event) => {
@@ -47,7 +45,6 @@ class LoginPage {
                 }
                 else {
                     event.sender.send('server-offline');
-                    console.log('offline');
                     this.serverOnline = true;
                 }
             }).catch((er) => {
@@ -108,10 +105,8 @@ class LoginPage {
                 if (users.data.length == 0) {
                     event.sender.send('no-public-users');
                 } else {
-                    console.log(users.data);
                     event.sender.send('userlist', users.data);
                 }
-                console.log('sending');
             });
         });
     }
@@ -128,10 +123,9 @@ class LoginPage {
             }
         } else {
             this.window.once('ready-to-show', () => {
-                ipcMain.on('user-auth-details', async (e, user) => {
+                ipcMain.on('user-auth-details', async (event, user) => {
                     try {
                         auth = await this.api.authenticateUserByName(user[0], user[1]);
-                        console.log("Auth =>", auth.data);
                         if (user[2] == true) {
                             config.set('user.name', user[0]);
                             config.set('user.pass', user[1]);
@@ -139,7 +133,9 @@ class LoginPage {
                         }
                         emitter.emit('logged-in');
                     } catch (err) {
-                        console.log(err);
+                        console.log("err");
+                        event.sender.send('user-auth-failed');
+
                     }
                 });
             });
@@ -149,7 +145,6 @@ class LoginPage {
                 ipcMain.on('user-auth-details', async (e, user) => {
                     try {
                         auth = await this.api.authenticateUserByName(user[0], user[1]);
-                        console.log("Auth =>", auth.data);
                         if (user[2] == true) {
                             config.set('user.name', user[0]);
                             config.set('user.pass', user[1]);
@@ -165,17 +160,14 @@ class LoginPage {
     }
     logoutUser() {
         emitter.on('logout-user', async () => {
-            console.log('he');
             await this.api.logout();
             emitter.emit('closeHome');
         });
     }
     clearData() {
         ipcMain.on('clear-user-data', async () => {
-            console.log(app.getPath('userData'));
             config.clear();
             this.window.reload();
-            console.log('cleared data!');
         });
     }
     showLogin() {

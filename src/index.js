@@ -16,8 +16,8 @@ async function createWindow() {
     }
   });
   splash.loadFile('./src/render/html/splash.html');
-  var loginPage = new LoginPage();
   var homePage = new HomePage();
+  var loginPage = new LoginPage();
   loginPage.window.on('ready-to-show', () => {
     splash.destroy();
     if (!config.get('serverUrl')) {
@@ -31,9 +31,9 @@ async function createWindow() {
     });
     emitter.on('closeHome', () => {
       homePage.hideHome();
-      config.set('openHome',false);
-      emitter.emit('reauth');
-      loginPage.showLogin();
+      config.set('openHome', false);
+      app.relaunch();
+      app.exit(0);
     });
   });
 }
@@ -44,6 +44,6 @@ app.whenReady().then(() => {
 
 app.on('window-all-closed', () => {
   if (process.platform !== 'darwin') {
-    app.quit();
+    app.exit();
   }
 });

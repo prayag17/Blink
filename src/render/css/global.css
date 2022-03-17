@@ -8,8 +8,10 @@
 	--error-red: #b33a3a;
 	--error-red-darker-1: #8b2e2e;
 	--rounding: 10px;
-	--transition-time-default: 0.25s;
-	--transition-time-slow-1: 0.35s;
+	--rounding-1: 5px;
+	--transition-time-fast-1: 100ms;
+	--transition-time-default: 250ms;
+	--transition-time-slow-1: 350ms;
 }
 
 body,
@@ -31,6 +33,7 @@ button {
 .input {
 	position: relative;
 	font-size: calc(60vw / 20);
+	width: 100%;
 }
 
 .ripple__cont {
