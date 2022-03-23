@@ -1,20 +1,16 @@
-const { app, BrowserWindow, ipcMain, nativeImage } = require('electron');
+const { app, BrowserWindow, ipcMain } = require('electron');
 const got = require('got');
 const emitter = require('../common/emitter');
 const config = require('../config');
-const { Jellyfin } = require('@thornbill/jellyfin-sdk');
-
-var icon = nativeImage.createFromPath('../assets/icon.png');
-
+const api = require('../common/apiclient');
 class LoginPage {
     constructor() {
         this.createWindow();
         this.setConfig();
         this.onstartUp();
         this.authUser();
-        this.logoutUser();
-        this.getUserlist();
         this.clearData();
+        this.apiclient = api;
     }
     createWindow() {
         this.window = new BrowserWindow({
@@ -28,12 +24,15 @@ class LoginPage {
                 contextIsolation: false
             },
             show: false,
-            icon: icon
+            icon: "../assets/icon.ico"
         });
         this.window.loadFile("./src/render/html/login.html");
-        this.window.webContents.openDevTools();
         this.window.setMenu(null);
         this.window.maximize();
+        this.window.webContents.openDevTools();
+        this.window.on('closed', () => {
+            emitter.emit('close-app');
+        });
     }
     onstartUp() {
         ipcMain.on('check-server-status', (event) => {
@@ -41,6 +40,7 @@ class LoginPage {
                 if (response.body == '"Jellyfin Server"') {
                     event.sender.send('server-online');
                     this.serverOnline = true;
+                    this.getUserlist();
                 }
                 else {
                     event.sender.send('server-offline');
@@ -50,14 +50,16 @@ class LoginPage {
                 let error;
                 event.sender.send('server-offline');
                 if (typeof er == 'string') {
-                    error = e;
+                    error = er;
                 } else {
                     error = "Can't connect to Jellyfin server";
                 }
+                console.log(error);
             });
         });
         ipcMain.on('reload-page', () => {
-            this.window.reload();
+            app.relaunch();
+            app.quit();
         });
     }
     setConfig() {
@@ -68,9 +70,8 @@ class LoginPage {
                     event.sender.send('is-jf-server');
                     config.set('serverUrl', serverUrl);
                     config.set('serverGo', true);
-                    this.window.reload();
-                }
-                else {
+                    this.getUserlist();
+                } else {
                     event.sender.send('not-jf-server');
                 }
             }).catch((er) => {
@@ -85,25 +86,19 @@ class LoginPage {
         });
     }
     getUserlist() {
-        this.apiclient = new Jellyfin({
-            clientInfo: {
-                name: 'Mordern Jellyfin client in Electron',
-                version: "0.0.1"
-            },
-            deviceInfo: {
-                name: "JellyPlayer",
-                id: "JellyPlayerClient"
+        this.window.once('ready-to-show', async () => {
+            if (this.getUsers != false) {
+                ipcMain.on('waiting-for-userlist', async (event) => {
+                    this.users = await this.apiclient.userApi.getPublicUsers();
+                    if (await this.users.length == 0) {
+                        event.sender.send('no-public-users');
+                    } else {
+                        event.sender.send('userlist', this.users.data);
+                    }
+                });
             }
-        });
-        this.api = this.apiclient.createApi(config.get('serverUrl'));
-        this.window.once('ready-to-show', () => {
-            ipcMain.on('waiting-for-userlist', async (event) => {
-                let users = await this.api.userApi.getPublicUsers();
-                if (users.data.length == 0) {
-                    event.sender.send('no-public-users');
-                } else {
-                    event.sender.send('userlist', users.data);
-                }
+            ipcMain.on('userlist-recieved', () => {
+                this.getUsers = false;
             });
         });
     }
@@ -112,7 +107,7 @@ class LoginPage {
         if (config.get('openHome') == true) {
             if (this.serverOnline == true) {
                 try {
-                    auth = await this.api.authenticateUserByName(config.get('user.name'), config.get('user.pass'));
+                    auth = await this.apiclient.authenticateUserByName(config.get('user.name'), config.get('user.pass'));
                     emitter.emit('logged-in');
                 } catch (err) {
                     console.log(err);
@@ -122,7 +117,7 @@ class LoginPage {
             this.window.once('ready-to-show', () => {
                 ipcMain.on('user-auth-details', async (event, user) => {
                     try {
-                        auth = await this.api.authenticateUserByName(user[0], user[1]);
+                        auth = await this.apiclient.authenticateUserByName(user[0], user[1]);
                         if (user[2] == true) {
                             config.set('user.name', user[0]);
                             config.set('user.pass', user[1]);
@@ -130,7 +125,7 @@ class LoginPage {
                         }
                         emitter.emit('logged-in');
                     } catch (err) {
-                        console.log("err");
+                        console.log(err);
                         event.sender.send('user-auth-failed');
                         
                     }
@@ -138,16 +133,11 @@ class LoginPage {
             });
         }
     }
-    logoutUser() {
-        emitter.on('logout-user', async () => {
-            await this.api.logout();
-            emitter.emit('closeHome');
-        });
-    }
     clearData() {
         ipcMain.on('clear-user-data', async () => {
             config.clear();
-            this.window.reload();
+            app.relaunch();
+            app.quit();
         });
     }
     showLogin() {

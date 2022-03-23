@@ -4,7 +4,7 @@ const emitter = require('../common/emitter');
 const config = require('../config');
 const { Jellyfin } = require('@thornbill/jellyfin-sdk');
 
-class HomePage {
+class MainPage {
     constructor() {
         this.createWindow();
         this.logoutRequest();
@@ -21,23 +21,25 @@ class HomePage {
                 nodeIntegration: true
             }
         });
-        this.window.loadFile("./src/render/html/home.html");
+        this.window.loadFile("./src/render/html/main.html");
         this.window.webContents.openDevTools();
+        this.window.setMenu(null);
+        this.window.maximize();
+        this.window.on('closed', () => {
+            emitter.emit('close-app');
+        });
     }
     logoutRequest() {
         ipcMain.on('logout-user', () => {
             emitter.emit('logout-user');
         });
     }
-    showHome() {
+    showMain() {
         this.window.show();
     }
-    hideHome() {
+    hideMain() {
         this.window.hide();
-    }
-    closeHome() {
-        this.window.close();
     }
 }
 
-module.exports = HomePage;
+module.exports = MainPage;
