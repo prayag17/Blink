@@ -1,7 +1,7 @@
 import sys,os,requests
 from localStoragePy import localStoragePy
 from PySide6.QtWidgets import QApplication, QMainWindow
-from PySide6.QtCore import QUrl, Slot, QObject
+from PySide6.QtCore import QUrl, Slot, QObject, QCoreApplication, QProcess
 from PySide6.QtGui import QIcon, QPixmap
 from PySide6.QtWebEngineWidgets import QWebEngineView
 from PySide6.QtWebEngineCore import QWebEngineSettings
@@ -19,6 +19,11 @@ except ImportError:
 
 storage = localStoragePy('prayag.jellyplayer.app', 'sqlite')
 print(f"Server Url:{storage.getItem('server')}")
+
+def restart():
+    QApplication.quit()
+    status = QProcess.startDetached(sys.executable, sys.argv)
+
 class Backend(QObject):
     @Slot(str, result=bool)
     def saveServer(self, data):
@@ -35,6 +40,7 @@ class Backend(QObject):
     def getValuesFromDatabaseBool(self, object):
         print(f"Object: {object}")
         item = storage.getItem(object)
+        print(item)
         if item == "True":
             return True
         elif item == "False":
@@ -47,6 +53,17 @@ class Backend(QObject):
         print(item)
         return item
     
+    @Slot(str, str)
+    def setAuthInfo(self, userName, Pw):
+        print(f"User: {userName}, Password: {Pw}")
+        storage.setItem("UserName", userName)
+        storage.setItem("UserPw", Pw)
+        
+    @Slot()
+    def clearStorage(self):
+        storage.clear()
+        restart()
+
 class LoginWin(QMainWindow):
     def __init__(self):
         super().__init__()

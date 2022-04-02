@@ -34,6 +34,9 @@ window.onload = () => {
             });
             return value;
         };
+        window.setAuthInfo = async (userName, Pw) => {
+            await window.backend.setAuthInfo(userName, Pw);
+        };
         getServerStat = async () => {
             await window.backend.getValuesFromDatabaseBool("serverGo", (data) => {
                 if (data == true) {
@@ -62,7 +65,6 @@ window.onload = () => {
         
         emitter.on("get-server", async () => {
             window.getServer();
-            console.log('dsk')
         });
     });
 };
@@ -72,18 +74,11 @@ const base_token = `MediaBrowser Client="JellyPlayer", Device="${window.navigato
 const vanilla_token = `${base_token}, Token=""`; 
 
 const createUserList = async (server) => {
-    console.log(`from userlist ${server}`)
-    const ax = axios.create({
-        headers: {
-            Authorization: vanilla_token
-        }
-    });
-    window.userApi = new window.UserApi(undefined, server, ax);
     document.querySelector('.loader').classList.remove('hide');
     let users = await window.userApi.getPublicUsers();
     let userlist = users.data;
     console.log(userlist);
-    if (userlist.length != 0) {
+    if (userlist != []) {
         userlist.forEach(user => {
             if (user.PrimaryImageTag) {
                 html = `<div class="user__card" data-user="${user.Name}" data-userid="${user.Id}" onclick="createEnterPassword(this.dataset.user, true, this.dataset.userid)">
@@ -104,6 +99,7 @@ const createUserList = async (server) => {
             document.querySelector('.user__cont').insertAdjacentHTML('beforeend', html);
         });
         document.querySelector('.users').classList.remove('hide');
+        document.querySelector(".purple").classList.add("active");
         document.querySelector('.users').scrollIntoView({ behavior: "smooth" });
         document.querySelector('.loader').classList.add('hide');
         setTimeout(() => {
@@ -194,7 +190,7 @@ const createDialog = (title, msg, btn, type) => {
 };
 
 const sendClearDataRequest = () => {
-    ipcRenderer.send('clear-user-data');
+    window.backend.clearStorage();
 };
 
 const createManualLogin = () => {
@@ -224,6 +220,8 @@ const createManualLogin = () => {
     </div>`;
     document.querySelector('.manual__input').insertAdjacentHTML('beforeend', html);
     document.querySelector('.manual__login').classList.remove('hide');
+    document.querySelector(".purple").classList.add("active");
+    document.querySelector(".blue").classList.add("active");
     document.querySelector('.manual__login').scrollIntoView({ behavior: "smooth" });
 };
 
@@ -264,14 +262,31 @@ const createEnterPassword = (userName, userImg, userId) => {
         document.querySelector('.manual__input').querySelector('.user__info').insertAdjacentHTML('afterbegin', html);
     }
     document.querySelector('.manual__login').classList.remove('hide');
+    document.querySelector(".blue").classList.add("active");
     document.querySelector('.manual__login').scrollIntoView({ behavior: "smooth" });
 };
 
 const sendAuthInfo = (userName, password, checkbox) => {
-    if (checkbox.checked == true) {
-        ipcRenderer.send('user-auth-details', [userName, password, true]);
-    } else {
-        ipcRenderer.send('user-auth-details', [userName, password, false]);
+    var authUser;
+    const auth = async () => {
+        try {
+            authUser = await window.userApi.authenticateUserByName({
+                authenticateUserByName: {
+                    Username: userName,
+                    Pw: password
+                }
+            });
+            return authUser.data;
+        } catch (error) {
+            console.log(`[Err]Can't login, Reason: ${error}`);
+            createAlert("error", "Invalid Username or Password entered try again", ".manual__login");
+            return "err";
+        }
+    };
+    if (auth() != "err") {
+        if (checkbox.checked == true) {
+            window.setAuthInfo(userName, password);
+        }
     }
 };
 
@@ -279,8 +294,9 @@ const changeServer = () => {
     createDialog('Are you sure?', "You want to remove this server", "yes__no", "warning");
 };
 
-const goBack = (from, to, loginForm, button) => {
+const goBack = (from, to, loginForm) => {
     to.scrollIntoView({ behavior: "smooth" });
+    document.querySelector(".blue").classList.remove("active");
     setTimeout(() => {
         from.classList.add('hide');
         from.querySelector(`.${loginForm}`).remove();
@@ -291,12 +307,17 @@ const goBack = (from, to, loginForm, button) => {
 emitter.on("serverGo-true", () => {
     emitter.emit('get-server');
     emitter.on("server-url", (server) => {
+        window.ax = axios.create({
+            headers: {
+                Authorization: vanilla_token
+            }
+        });
+        window.userApi = new window.UserApi(undefined, server, window.ax);
         document.querySelector('.loader').classList.remove('hide');
         document.querySelector('.loader').classList.add('hide');
         createUserList(server);
     });
 });
-
 emitter.on("serverGo-false", () => {
     console.log("hello2");
     saveBtn.addEventListener('click', () => {
@@ -308,6 +329,17 @@ emitter.on("serverGo-false", () => {
         createAlert('error', "Can't detrmine if the give server address is a valid Jellyfin server", ".server");
     });
     emitter.on('is-jf-server', () => {
-        createUserList(serverUrl.value);
+        emitter.emit('get-server');
+        emitter.on("server-url", (server) => {
+            window.ax = axios.create({
+                headers: {
+                    Authorization: vanilla_token
+                }
+            });
+            window.userApi = new window.UserApi(undefined, server, window.ax);
+            document.querySelector('.loader').classList.remove('hide');
+            document.querySelector('.loader').classList.add('hide');
+            createUserList(server);
+        });
     });
 });
