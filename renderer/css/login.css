@@ -27,21 +27,8 @@ main {
 	height: 100vh;
 	z-index: 1;
 	display: flex;
-	/* justify-content: flex-start; */
 	align-items: center;
 	overflow: hidden;
-}
-
-#background {
-	position: fixed;
-	inset: 0;
-	width: 100vw;
-	height: 100vh;
-	z-index: -1;
-	-webkit-animation: fadeInBg var(--transition-time-slow-1);
-	animation: fadeInBg var(--transition-time-slow-1);
-	-webkit-animation-fill-mode: forwards;
-	animation-fill-mode: forwards;
 }
 
 .page {
@@ -76,6 +63,11 @@ main {
 	width: -moz-fit-content;
 	width: fit-content;
 	max-width: 30em;
+}
+
+.logo object {
+	width: 100%;
+	height: 100%;
 }
 
 .manual__input {
@@ -359,7 +351,6 @@ section.user__cont {
 	display: flex;
 	justify-content: space-between;
 	overflow: auto hidden;
-	gap: 1em;
 }
 
 .user__card {
@@ -368,6 +359,7 @@ section.user__cont {
 	width: fit-content;
 	overflow: hidden;
 	flex-shrink: 0;
+	padding: 1em;
 }
 
 .user__card .content {
@@ -376,6 +368,10 @@ section.user__cont {
 	justify-content: center;
 	align-items: center;
 	flex-flow: column;
+}
+
+.user__card h1 {
+	margin: 0.5em 0;
 }
 
 .user__svg,
@@ -421,7 +417,7 @@ section.user__cont {
 	font-weight: 500;
 	padding: 0;
 	margin: 0;
-	font-size: calc(100vw / 15);
+	font-size: min(calc(100vw / 15), 10em);
 	position: relative;
 	margin-bottom: 0.5em;
 	align-self: center;
@@ -444,11 +440,11 @@ section.user__cont {
 }
 
 .user__info .title__name {
-	font-size: calc(100vw / 20);
 	margin-bottom: 0;
 }
 
-.user__info .user__img {
+.user__info .user__img,
+.user__info .user__svg {
 	border-radius: 100%;
 }
 

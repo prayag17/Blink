@@ -1,0 +1,14 @@
+<!DOCTYPE RCC><RCC version="1.0">
+<qresource>
+    <file>renderer/html/main.html</file>
+    <file>renderer/css/login.css</file>
+    <file>renderer/css/global.css</file>
+    <file>renderer/js/login.js</file>
+    <file>renderer/svg/avatar.svg</file>
+    <file>renderer/svg/loader.svg</file>
+    <file>assets/logo.svg</file>
+    <file>assets/logo.png</file>
+    <file>assets/icon.svg</file>
+    <file>assets/icon.png</file>
+</qresource>
+</RCC>

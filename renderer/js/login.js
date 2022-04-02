@@ -1,24 +1,94 @@
-const { ipcRenderer } = require("electron");
-const emitter = require('../../common/emitter');
-const config = require("../../config");
 const serverForm = document.querySelector('.server__cont');
 const serverUrl = document.querySelector('.server__url');
 const saveBtn = document.querySelector('.save__server');
 const user__cont = document.querySelector('.users');
-
+const emitter = new EventEmitter();
 let html;
+var server;
 
-const createUserList = () => {
-    ipcRenderer.send("waiting-for-userlist");
+function generateUUID() { // Public Domain/MIT
+    var d = new Date().getTime();//Timestamp
+    var d2 = ((typeof performance !== 'undefined') && performance.now && (performance.now()*1000)) || 0;//Time in microseconds since page-load or 0 if unsupported
+    return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
+        var r = Math.random() * 16;//random number between 0 and 16
+        if(d > 0){//Use timestamp until depleted
+            r = (d + r)%16 | 0;
+            d = Math.floor(d/16);
+        } else {//Use microseconds since page-load if supported
+            r = (d2 + r)%16 | 0;
+            d2 = Math.floor(d2/16);
+        }
+        return (c === 'x' ? r : (r & 0x3 | 0x8)).toString(16);
+    });
+}
+
+window.onload = () => {
+    new QWebChannel(qt.webChannelTransport, async (channel) => {
+        window.backend = await channel.objects.backend;
+        window.getServer = async () => {
+            let value = await window.backend.getValuesFromDatabaseStr("server", (data) => {
+                window.server = data;
+                console.log(`Server:${data}`);
+                emitter.emit('server-url', data);
+                return data;
+            });
+            return value;
+        };
+        getServerStat = async () => {
+            await window.backend.getValuesFromDatabaseBool("serverGo", (data) => {
+                if (data == true) {
+                    emitter.emit("serverGo-true");
+                } else if (data == false) {
+                    emitter.emit('serverGo-false');
+                }
+                console.log(`Server Status = ${data}`);
+                return Boolean(data);
+            });
+        };
+        getServerStat();
+        
+        emitter.on("send-jf-server-info", (server) => {
+            window.backend.saveServer(server, (dat) => {
+                console.log(`Is Jf Server = ${dat}`);
+                if (dat == true) {
+                    emitter.emit('is-jf-server');
+                    getServerStat();
+                    window.getServer();
+                } else if (dat == false) {
+                    emitter.emit('not-jf-server');
+                }
+            });
+        });
+        
+        emitter.on("get-server", async () => {
+            window.getServer();
+            console.log('dsk')
+        });
+    });
+};
+
+const base_token = `MediaBrowser Client="JellyPlayer", Device="${window.navigator.userAgent}", DeviceId="${generateUUID()}", Version="1.0.0"`;
+
+const vanilla_token = `${base_token}, Token=""`; 
+
+const createUserList = async (server) => {
+    console.log(`from userlist ${server}`)
+    const ax = axios.create({
+        headers: {
+            Authorization: vanilla_token
+        }
+    });
+    window.userApi = new window.UserApi(undefined, server, ax);
     document.querySelector('.loader').classList.remove('hide');
-    ipcRenderer.on('userlist', (event, userlist) => {
-        console.log(userlist);
-        event.sender.send('userlist-recieved');
+    let users = await window.userApi.getPublicUsers();
+    let userlist = users.data;
+    console.log(userlist);
+    if (userlist.length != 0) {
         userlist.forEach(user => {
             if (user.PrimaryImageTag) {
                 html = `<div class="user__card" data-user="${user.Name}" data-userid="${user.Id}" onclick="createEnterPassword(this.dataset.user, true, this.dataset.userid)">
                 <div class="content">
-                <img class="user__img" src="${config.get('serverUrl')}/Users/${user.Id}/Images/Primary">
+                <img class="user__img" src="${server}/Users/${user.Id}/Images/Primary">
                 <h1>${user.Name}</h1>
                 </div>
                 </div>`;
@@ -39,15 +109,13 @@ const createUserList = () => {
         setTimeout(() => {
             document.querySelector('.server').classList.add('hide');
         }, 1000);
-        // $('main').scrollTo('.users', '2s');
-    });
-    ipcRenderer.on('no-public-users', () => {
+    }else if (this.userlist.length == 0) {
         document.querySelector('.loader').classList.add('hide');
         createManualLogin();
         setTimeout(() => {
             document.querySelector('.server').classList.add('hide');
         }, 1000);
-    });    
+    }
 };
 
 const closeDialog = () => {
@@ -79,7 +147,7 @@ const createAlert = (type, msg, page) => {
         setTimeout(() => {
             document.querySelector('.alert').remove();
         }, 1000);
-    }, 3000);
+    }, 3005);
 };
 
 const createDialog = (title, msg, btn, type) => {
@@ -189,7 +257,7 @@ const createEnterPassword = (userName, userImg, userId) => {
     </div>`;
     document.querySelector('.manual__input').insertAdjacentHTML('beforeend', html);
     if (userImg == true) {
-        html = `<img class="user__img" src="${config.get('serverUrl')}/Users/${userId}/Images/Primary"></img>`;
+        html = `<img class="user__img" src="${window.server}/Users/${userId}/Images/Primary"></img>`;
         document.querySelector('.manual__input').querySelector('.user__info').insertAdjacentHTML('afterbegin', html);
     } else if (userImg == false) {
         html = `<img class="user__svg" src="../svg/avatar.svg">`;
@@ -220,32 +288,26 @@ const goBack = (from, to, loginForm, button) => {
         from.insertAdjacentHTML('beforeend', html);
     }, 1000);
 };
-
-if (config.get('serverGo') == true) {
-    document.querySelector('.loader').classList.remove('hide');
-    ipcRenderer.send('check-server-status');
-    ipcRenderer.on('server-online', () => {
+emitter.on("serverGo-true", () => {
+    emitter.emit('get-server');
+    emitter.on("server-url", (server) => {
+        document.querySelector('.loader').classList.remove('hide');
         document.querySelector('.loader').classList.add('hide');
-        createUserList();
+        createUserList(server);
     });
-    ipcRenderer.on('server-offline', () => {
-        createDialog('Error', "Cant connect to the jellyfin server", "remove__server", "error");
-    });
-} else if (config.get('serverGo') == false) {
+});
+
+emitter.on("serverGo-false", () => {
+    console.log("hello2");
     saveBtn.addEventListener('click', () => {
-        ipcRenderer.send('setServer', serverUrl.value);
+        emitter.emit("send-jf-server-info", serverUrl.value);
         document.querySelector('.loader').classList.remove('hide');
     }, true);
-    ipcRenderer.on('not-jf-server', () => {
+    emitter.on('not-jf-server', () => {
         document.querySelector('.loader').classList.add('hide');
         createAlert('error', "Can't detrmine if the give server address is a valid Jellyfin server", ".server");
     });
-    ipcRenderer.on('is-jf-server', () => {
-        createUserList();
+    emitter.on('is-jf-server', () => {
+        createUserList(serverUrl.value);
     });
-}
-
-ipcRenderer.on('user-auth-failed', () => {
-    console.log(1);
-    createAlert('error', "Unable to login. Please check your password", ".manual__login");
 });
