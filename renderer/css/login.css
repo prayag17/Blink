@@ -31,6 +31,36 @@ main {
 	overflow: hidden;
 }
 
+#background {
+	background: transparent;
+	position: fixed;
+	z-index: 0;
+	width: 100vw;
+	height: 100vh;
+}
+
+#background > * {
+	width: inherit;
+	height: inherit;
+	position: absolute;
+	opacity: 0;
+	transition: opacity var(--transition-time-slow-2);
+}
+
+#background .purple {
+	background: linear-gradient(140deg, var(--jf-purple-light), transparent);
+}
+
+#background .blue {
+	background: linear-gradient(140deg, transparent, var(--jf-blue-light));
+	z-index: -2;
+}
+
+#background .purple.active,
+#background .blue.active {
+	opacity: 1;
+}
+
 .page {
 	position: static;
 	width: 100vw;
@@ -464,7 +494,7 @@ section.user__cont {
 	display: block;
 	width: 0.6em;
 	border-radius: var(--rounding-1);
-	border: 1px solid white;
+	border: 1.5px solid white;
 }
 
 .tick path {

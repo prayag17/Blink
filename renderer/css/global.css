@@ -2,6 +2,10 @@
 
 :root {
 	--main-bg: #0a1827;
+	--jf-purple-light: #aa5cc3;
+	--jf-purple-dark: #3e2247;
+	--jf-blue-light: #00a4dc;
+	--jf-blue-dark: #003c50;
 	--warning-yellow: #f18e06;
 	--warning-bg: rgba(220, 128, 1, 0.16);
 	--error-red: #a94442;
@@ -15,6 +19,7 @@
 	--transition-time-fast-1: 150ms;
 	--transition-time-default: 250ms;
 	--transition-time-slow-1: 350ms;
+	--transition-time-slow-2: 550ms;
 }
 
 body,
