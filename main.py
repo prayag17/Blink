@@ -25,6 +25,15 @@ def restart():
     status = QProcess.startDetached(sys.executable, sys.argv)
 
 class Backend(QObject):
+    @Slot(result=bool)
+    def onStartup(self):
+        if storage.getItem("serverGo") == "True":
+            ping = requests.get(f"{storage.getItem('server')}/System/Ping")
+            if ping.content == b'"Jellyfin Server"':
+                return True
+            else:
+                return False
+    
     @Slot(str, result=bool)
     def saveServer(self, data):
         ping = requests.get(f"{data}/System/Ping")
@@ -54,7 +63,7 @@ class Backend(QObject):
         return item
     
     @Slot(str, str)
-    def setAuthInfo(self, userName, Pw):
+    def setAuthInfoDatabase(self, userName, Pw):
         print(f"User: {userName}, Password: {Pw}")
         storage.setItem("UserName", userName)
         storage.setItem("UserPw", Pw)
@@ -63,6 +72,11 @@ class Backend(QObject):
     def clearStorage(self):
         storage.clear()
         restart()
+        
+    @Slot()
+    def restart(self):
+        QApplication.quit()
+        status = QProcess.startDetached(sys.executable, sys.argv)
 
 class LoginWin(QMainWindow):
     def __init__(self):
@@ -94,6 +108,7 @@ class LoginWin(QMainWindow):
         
     def handleLoaded(self, ok):
         if ok:
+            print("s")
             self.view.page().setDevToolsPage(self.inspector.page())
             self.inspector.show()
 

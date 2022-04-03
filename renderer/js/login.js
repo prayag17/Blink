@@ -2,7 +2,6 @@ const serverForm = document.querySelector('.server__cont');
 const serverUrl = document.querySelector('.server__url');
 const saveBtn = document.querySelector('.save__server');
 const user__cont = document.querySelector('.users');
-const emitter = new EventEmitter();
 let html;
 var server;
 
@@ -34,8 +33,8 @@ window.onload = () => {
             });
             return value;
         };
-        window.setAuthInfo = async (userName, Pw) => {
-            await window.backend.setAuthInfo(userName, Pw);
+        window.setAuthInfoDatabase = async (userName, Pw) => {
+            await window.backend.setAuthInfoDatabase(userName, Pw);
         };
         getServerStat = async () => {
             await window.backend.getValuesFromDatabaseBool("serverGo", (data) => {
@@ -55,12 +54,19 @@ window.onload = () => {
                 console.log(`Is Jf Server = ${dat}`);
                 if (dat == true) {
                     emitter.emit('is-jf-server');
-                    getServerStat();
-                    window.getServer();
                 } else if (dat == false) {
                     emitter.emit('not-jf-server');
                 }
             });
+        });
+        
+        emitter.on("get-server-saved", async () => {
+            window.serverOnline = await window.backend.onStartup();
+            if (window.serverOnline == true) {
+                window.getServer();
+            } else {
+                emitter.emit("server-url", "offline");
+            }
         });
         
         emitter.on("get-server", async () => {
@@ -78,7 +84,7 @@ const createUserList = async (server) => {
     let users = await window.userApi.getPublicUsers();
     let userlist = users.data;
     console.log(userlist);
-    if (userlist != []) {
+    if (userlist.length != 0) {
         userlist.forEach(user => {
             if (user.PrimaryImageTag) {
                 html = `<div class="user__card" data-user="${user.Name}" data-userid="${user.Id}" onclick="createEnterPassword(this.dataset.user, true, this.dataset.userid)">
@@ -105,9 +111,9 @@ const createUserList = async (server) => {
         setTimeout(() => {
             document.querySelector('.server').classList.add('hide');
         }, 1000);
-    }else if (this.userlist.length == 0) {
+    }else if (userlist.length == 0) {
         document.querySelector('.loader').classList.add('hide');
-        createManualLogin();
+        createManualLogin(false);
         setTimeout(() => {
             document.querySelector('.server').classList.add('hide');
         }, 1000);
@@ -146,7 +152,7 @@ const createAlert = (type, msg, page) => {
     }, 3005);
 };
 
-const createDialog = (title, msg, btn, type) => {
+const createDialog = (title, msg, btn, type, page) => {
     html = `<div class="dialog ${type}">
     <div class="icon">
     <i class="bi bi-exclamation-octagon"></i>
@@ -159,7 +165,7 @@ const createDialog = (title, msg, btn, type) => {
     </div>
     </div>
     <div class="dialog__close"></div>`;  
-    document.querySelector('main').insertAdjacentHTML('beforeend', html);
+    document.querySelector(page).insertAdjacentHTML('beforeend', html);
     if (btn == "yes__no") {
         html = `<div class="buttons">
         <button class="clicky yes" onclick="sendClearDataRequest()">
@@ -175,7 +181,7 @@ const createDialog = (title, msg, btn, type) => {
         <button class="clicky rem__serv" onclick="sendClearDataRequest()">
         <label>Remove Server</label>
         </button>
-        <button class="clicky reload" onclick="ipcRenderer.send('reload-page')">
+        <button class="clicky reload" onclick="window.backend.restart()">
         <label>Restart JellyPlayer</label>
         </button>
         </div>`;
@@ -193,7 +199,7 @@ const sendClearDataRequest = () => {
     window.backend.clearStorage();
 };
 
-const createManualLogin = () => {
+const createManualLogin = (from_users) => {
     html = `<h3 class="title__name">Login</h3>
     <div class="manual__form user">
     <div class="input">
@@ -214,10 +220,13 @@ const createManualLogin = () => {
     <button class="clicky user__login" onclick="sendAuthInfo(document.querySelector('.user__name').value, document.querySelector('.user__password').value, document.querySelector('.remember__user'))">
     <label>Login</label>
     </button>
-    <button class="change__server clicky" onclick="changeServer()">
+    <button class="change__server clicky" onclick="changeServer('.manual__login')">
     <span>Change Server</span>
     </button>
     </div>`;
+    if (from_users == false) {
+        document.querySelector('.back').classList.add("hide");
+    }
     document.querySelector('.manual__input').insertAdjacentHTML('beforeend', html);
     document.querySelector('.manual__login').classList.remove('hide');
     document.querySelector(".purple").classList.add("active");
@@ -276,7 +285,7 @@ const sendAuthInfo = (userName, password, checkbox) => {
                     Pw: password
                 }
             });
-            return authUser.data;
+            emitter.emit("logged-in", [authUser.data.AccessToken]);
         } catch (error) {
             console.log(`[Err]Can't login, Reason: ${error}`);
             createAlert("error", "Invalid Username or Password entered try again", ".manual__login");
@@ -285,13 +294,13 @@ const sendAuthInfo = (userName, password, checkbox) => {
     };
     if (auth() != "err") {
         if (checkbox.checked == true) {
-            window.setAuthInfo(userName, password);
+            window.setAuthInfoDatabase(userName, password);
         }
     }
 };
 
-const changeServer = () => {
-    createDialog('Are you sure?', "You want to remove this server", "yes__no", "warning");
+const changeServer = (page) => {
+    createDialog('Are you sure?', "You want to remove this server", "yes__no", "warning", page);
 };
 
 const goBack = (from, to, loginForm) => {
@@ -305,17 +314,21 @@ const goBack = (from, to, loginForm) => {
     }, 1000);
 };
 emitter.on("serverGo-true", () => {
-    emitter.emit('get-server');
+    emitter.emit('get-server-saved');
     emitter.on("server-url", (server) => {
-        window.ax = axios.create({
-            headers: {
-                Authorization: vanilla_token
-            }
-        });
-        window.userApi = new window.UserApi(undefined, server, window.ax);
-        document.querySelector('.loader').classList.remove('hide');
-        document.querySelector('.loader').classList.add('hide');
-        createUserList(server);
+        if (server != "offline") {
+            window.ax = axios.create({
+                headers: {
+                    Authorization: vanilla_token
+                }
+            });
+            window.userApi = new window.UserApi(undefined, server, window.ax);
+            document.querySelector('.loader').classList.remove('hide');
+            document.querySelector('.loader').classList.add('hide');
+            createUserList(server);
+        } else {
+            createDialog("Error", "Can't connect to Jellyfin server", "remove__server", "error");
+        }
     });
 });
 emitter.on("serverGo-false", () => {

@@ -4,6 +4,7 @@
     <file>renderer/css/login.css</file>
     <file>renderer/css/global.css</file>
     <file>renderer/js/login.js</file>
+    <file>renderer/js/main.js</file>
     <file>renderer/svg/avatar.svg</file>
     <file>renderer/svg/loader.svg</file>
     <file>assets/logo.svg</file>
