@@ -285,7 +285,7 @@ const sendAuthInfo = (userName, password, checkbox) => {
                     Pw: password
                 }
             });
-            emitter.emit("logged-in", [authUser.data.AccessToken]);
+            emitter.emit("logged-in", [window.server, userName, password ,authUser.data.AccessToken, `${base_token}, Token=${authUser.data.AccessToken}`]);
         } catch (error) {
             console.log(`[Err]Can't login, Reason: ${error}`);
             createAlert("error", "Invalid Username or Password entered try again", ".manual__login");
