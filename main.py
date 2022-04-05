@@ -6,7 +6,7 @@ from PySide6.QtGui import QIcon, QPixmap
 from PySide6.QtWebEngineWidgets import QWebEngineView
 from PySide6.QtWebEngineCore import QWebEngineSettings
 from PySide6.QtWebChannel import QWebChannel
-import main_imp
+import renderer
 app = QApplication(["--enable-smooth-scrolling"])
 os.environ['QTWEBENGINE_REMOTE_DEBUGGING'] = "9000"
 

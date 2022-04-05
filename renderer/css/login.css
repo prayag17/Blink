@@ -13,19 +13,6 @@
 	background: rgb(255 255 255/1);
 }
 
-main,
-.main__page {
-	position: fixed;
-	inset: 0;
-	contain: strict;
-	width: 100vw;
-	height: 100vh;
-	z-index: 1;
-	display: flex;
-	align-items: center;
-	overflow: hidden;
-}
-
 #background {
 	background: transparent;
 	position: fixed;

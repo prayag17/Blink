@@ -3,6 +3,7 @@
     <file>renderer/html/main.html</file>
     <file>renderer/css/login.css</file>
     <file>renderer/css/global.css</file>
+    <file>renderer/css/main.css</file>
     <file>renderer/js/login.js</file>
     <file>renderer/js/main.js</file>
     <file>renderer/svg/avatar.svg</file>

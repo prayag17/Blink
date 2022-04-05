@@ -1,0 +1,18 @@
+/** @format */
+
+.moveFadeOut {
+	-webkit-animation: moveFadeOut var(--transition-time-slow-2) forwards;
+	animation: moveFadeOut var(--transition-time-slow-2) forwards;
+}
+.moveFadeIn {
+	-webkit-animation: moveFadeIn var(--transition-time-slow-2) forwards;
+	animation: moveFadeIn var(--transition-time-slow-2) forwards;
+}
+.main {
+	opacity: 0;
+	right: -300px;
+}
+.main.active {
+	opacity: 1;
+	right: 0;
+}

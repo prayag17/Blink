@@ -56,6 +56,22 @@ button {
 	overflow: hidden;
 }
 
+main,
+.main__page {
+	position: fixed;
+	inset: 0;
+	contain: strict;
+	width: 100vw;
+	height: 100vh;
+	z-index: 1;
+	overflow: hidden;
+}
+
+.main__page {
+	display: flex;
+	align-items: center;
+}
+
 @-webkit-keyframes btn_click {
 	0% {
 		transform: scale(1);
@@ -252,5 +268,49 @@ button {
 	}
 	100% {
 		transform: scaleX(1);
+	}
+}
+
+@-webkit-keyframes moveFadeOut {
+	0% {
+		inset: 0;
+		opacity: 1;
+	}
+	100% {
+		inset: 0 0 0 -100px;
+		opacity: 0;
+	}
+}
+
+@keyframes moveFadeOut {
+	0% {
+		inset: 0;
+		opacity: 1;
+	}
+	100% {
+		inset: 0 0 0 -100px;
+		opacity: 0;
+	}
+}
+
+@-webkit-keyframes moveFadeIn {
+	0% {
+		inset: 0 0 0 100px;
+		opacity: 0;
+	}
+	100% {
+		inset: 0;
+		opacity: 1;
+	}
+}
+
+@keyframes moveFadeIn {
+	0% {
+		inset: 0 0 0 100px;
+		opacity: 0;
+	}
+	100% {
+		inset: 0;
+		opacity: 1;
 	}
 }
