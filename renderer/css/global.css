@@ -95,43 +95,25 @@ main,
 }
 
 /*Animations*/
-@-webkit-keyframes fadeInBg {
-	0% {
-		opacity: 0;
-	}
-	100% {
-		opacity: 0.6;
-	}
-}
-
-@keyframes fadeInBg {
-	0% {
-		opacity: 0;
-	}
-	100% {
-		opacity: 0.6;
-	}
-}
-
 @-webkit-keyframes fadeIn {
 	0% {
 		opacity: 0;
-		top: calc(50% + 150px);
+		margin-bottom: -150px;
 	}
 	100% {
 		opactiy: 1;
-		top: 50%;
+		margin-bottom: 0;
 	}
 }
 
 @keyframes fadeIn {
 	0% {
 		opacity: 0;
-		top: calc(50% + 150px);
+		margin-bottom: -150px;
 	}
 	100% {
 		opactiy: 1;
-		top: 50%;
+		margin-bottom: 0;
 	}
 }
 
@@ -139,12 +121,12 @@ main,
 	0% {
 		display: block;
 		opacity: 1;
-		top: 50%;
+		inset: 0 0 0 0;
 	}
 	99% {
 		display: block;
 		opacity: 0;
-		top: calc(50% + 150px);
+		inset: 150px 0 0 0;
 	}
 	100% {
 		display: none;
@@ -156,12 +138,12 @@ main,
 	0% {
 		display: block;
 		opacity: 1;
-		top: 50%;
+		inset: 0 0 0 0;
 	}
 	99% {
 		display: block;
 		opacity: 0;
-		top: calc(50% + 150px);
+		inset: 150px 0 0 0;
 	}
 	100% {
 		display: none;

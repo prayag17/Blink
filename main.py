@@ -11,7 +11,7 @@ app = QApplication(["--enable-smooth-scrolling"])
 os.environ['QTWEBENGINE_REMOTE_DEBUGGING'] = "9000"
 
 try:
-    from ctypes import windll  # Only exists on Windows.
+    from ctypes import windll
     myappid = 'prayag17.jellyplayer.0.1.0'
     windll.shell32.SetCurrentProcessExplicitAppUserModelID(myappid)
 except ImportError:
@@ -19,6 +19,7 @@ except ImportError:
 
 storage = localStoragePy('prayag.jellyplayer.app', 'sqlite')
 print(f"Server Url:{storage.getItem('server')}")
+
 
 def restart():
     QApplication.quit()

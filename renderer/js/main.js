@@ -39,6 +39,4 @@ emitter.on("logged-in", async (user) => {
         console.log(item);
         mainPage.innerHTML += item.Name;
     });
-    // mainPage.scrollIntoView({ behavior: "smooth" });
-    // loginPage.classList.add("hide");
 });

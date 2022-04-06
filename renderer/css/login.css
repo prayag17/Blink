@@ -239,15 +239,26 @@ input:focus + .input__label,
 	--color: var(--error-red);
 }
 
+.dialog__cont {
+	position: absolute;
+	left: 0;
+	top: 0;
+	display: flex;
+	flex-wrap: nowrap;
+	align-content: center;
+	justify-content: center;
+	align-items: center;
+	width: 100vw;
+	height: 100vh;
+	z-index: 5;
+}
+
 .dialog {
-	position: fixed;
 	background: var(--main-bg);
-	z-index: 1;
+	z-index: 5;
 	height: -webkit-fit-content;
 	height: -moz-fit-content;
 	height: fit-content;
-	inset: 50% 0 0 50%;
-	transform: translate(-50%, -50%);
 	box-sizing: content-box;
 	padding: 20px;
 	color: black;
@@ -291,7 +302,7 @@ input:focus + .input__label,
 }
 
 .dialog__close {
-	position: fixed;
+	position: absolute;
 	width: 100vw;
 	height: 100vh;
 	background: rgba(5, 5, 5, 0.5);
@@ -307,7 +318,7 @@ input:focus + .input__label,
 	visibility: visible;
 }
 
-.dialog.fadeOut {
+.dialog__cont.fadeOut {
 	-webkit-animation: fadeOut var(--transition-time-fast-2) forwards;
 	animation: fadeOut var(--transition-time-fast-2) forwards;
 }

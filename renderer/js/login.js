@@ -73,6 +73,7 @@ window.onload = () => {
             window.getServer();
         });
     });
+    document.querySelector(".loader").classList.add("hide");
 };
 
 const base_token = `MediaBrowser Client="JellyPlayer", Device="${window.navigator.userAgent}", DeviceId="${generateUUID()}", Version="1.0.0"`;
@@ -121,15 +122,14 @@ const createUserList = async (server) => {
 };
 
 const closeDialog = () => {
-    document.querySelector('.dialog').classList.remove('active');
+    document.querySelector('.dialog__cont').classList.remove('active');
     document.querySelector('.dialog__close').classList.remove('active');
-    document.querySelector('.dialog').classList.add('fadeOut');
+    document.querySelector('.dialog__cont').classList.add('fadeOut');
     document.querySelector('.dialog__close').classList.add('fadeOut');
     setTimeout(() => {
-        document.querySelector('.dialog').classList.remove('fadeOut');
+        document.querySelector('.dialog__cont').classList.remove('fadeOut');
         document.querySelector('.dialog__close').classList.remove('fadeOut');
-        document.querySelector('.dialog').remove();
-        document.querySelector('.dialog__close').remove();
+        document.querySelector('.dialog__cont').remove();
     }, 305);
 };
 
@@ -153,7 +153,8 @@ const createAlert = (type, msg, page) => {
 };
 
 const createDialog = (title, msg, btn, type, page) => {
-    html = `<div class="dialog ${type}">
+    html = `<div class="dialog__cont">
+    <div class="dialog ${type}">
     <div class="icon">
     <i class="bi bi-exclamation-octagon"></i>
     </div>
@@ -164,7 +165,8 @@ const createDialog = (title, msg, btn, type, page) => {
     ${msg}
     </div>
     </div>
-    <div class="dialog__close"></div>`;  
+    <div class="dialog__close"></div>
+    </div>`;  
     document.querySelector(page).insertAdjacentHTML('beforeend', html);
     if (btn == "yes__no") {
         html = `<div class="buttons">
@@ -304,6 +306,7 @@ const changeServer = (page) => {
 };
 
 const goBack = (from, to, loginForm) => {
+    to.classList.remove("hide");
     to.scrollIntoView({ behavior: "smooth" });
     document.querySelector(".blue").classList.remove("active");
     setTimeout(() => {
