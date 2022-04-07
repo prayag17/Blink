@@ -343,6 +343,7 @@ emitter.on("serverGo-true", () => {
     });
 });
 emitter.on("user-saved", (user) => {
+    document.querySelector(".loader").classList.remove("hide");
     window.ax = axios.create({
         headers: {
             Authorization: vanilla_token
@@ -358,7 +359,7 @@ emitter.on("user-saved", (user) => {
                     Pw: user[1]
                 }
             });
-            emitter.emit("logged-in", [window.server, user[0], user[1], authUser.data.AccessToken, `${base_token}, Token=${authUser.data.AccessToken}`]);
+            emitter.emit("logged-in", [window.server, user[0], user[1], authUser.data.AccessToken, `${base_token}, Token=${authUser.data.AccessToken}`, authUser.data.User.Id, authUser.data.User.Name]);
         } catch (error) {
             console.log(`[Err]Can't login, Reason: ${error}`);
             createAlert("error", "Invalid Username or Password entered try again", ".manual__login");
