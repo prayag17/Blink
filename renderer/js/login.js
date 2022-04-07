@@ -25,29 +25,37 @@ window.onload = () => {
     new QWebChannel(qt.webChannelTransport, async (channel) => {
         window.backend = await channel.objects.backend;
         window.getServer = async () => {
-            let value = await window.backend.getValuesFromDatabaseStr("server", (data) => {
+            await window.backend.getValuesFromDatabaseStr("server", (data) => {
                 window.server = data;
                 console.log(`Server:${data}`);
                 emitter.emit('server-url', data);
                 return data;
             });
-            return value;
         };
         window.setAuthInfoDatabase = async (userName, Pw) => {
             await window.backend.setAuthInfoDatabase(userName, Pw);
         };
-        getServerStat = async () => {
-            await window.backend.getValuesFromDatabaseBool("serverGo", (data) => {
-                if (data == true) {
-                    emitter.emit("serverGo-true");
-                } else if (data == false) {
-                    emitter.emit('serverGo-false');
-                }
-                console.log(`Server Status = ${data}`);
-                return Boolean(data);
+        window.getAuthinfo = async () => {
+            await window.backend.getAuthinfo(async (data) => {
+                console.log(data);
+                window.getServer();
+                emitter.on('server-url', (server) => {
+                    emitter.emit("user-saved", [data[0], data[1], server]);
+                });
             });
         };
-        getServerStat();
+        // getServerStat = async () => {
+        //     await window.backend.getValuesFromDatabaseBool("serverGo", (data) => {
+        //         if (data == true) {
+        //             emitter.emit("serverGo-true");
+        //         } else if (data == false) {
+        //             emitter.emit('serverGo-false');
+        //         }
+        //         console.log(`Server Status = ${data}`);
+        //         return Boolean(data);
+        //     });
+        // };
+        // getServerStat();
         
         emitter.on("send-jf-server-info", (server) => {
             window.backend.saveServer(server, (dat) => {
@@ -60,14 +68,14 @@ window.onload = () => {
             });
         });
         
-        emitter.on("get-server-saved", async () => {
-            window.serverOnline = await window.backend.onStartup();
-            if (window.serverOnline == true) {
-                window.getServer();
-            } else {
-                emitter.emit("server-url", "offline");
-            }
-        });
+        window.serverOnline = await window.backend.onStartup();
+        if (window.serverOnline == "serverGoTrue") {
+            window.getServer();
+        } else if (window.serverOnline == "serverGoFalse") {
+            emitter.emit("server-url", "offline");
+        } else if(window.serverOnline == "openHomeTrue") {
+            window.getAuthinfo();
+        }
         
         emitter.on("get-server", async () => {
             window.getServer();
@@ -334,8 +342,31 @@ emitter.on("serverGo-true", () => {
         }
     });
 });
+emitter.on("user-saved", (user) => {
+    window.ax = axios.create({
+        headers: {
+            Authorization: vanilla_token
+        }
+    });
+    window.userApi = new window.UserApi(undefined, user[2], window.ax);
+    var authUser;
+    const auth = async () => {
+        try {
+            authUser = await window.userApi.authenticateUserByName({
+                authenticateUserByName: {
+                    Username: user[0],
+                    Pw: user[1]
+                }
+            });
+            emitter.emit("logged-in", [window.server, user[0], user[1], authUser.data.AccessToken, `${base_token}, Token=${authUser.data.AccessToken}`]);
+        } catch (error) {
+            console.log(`[Err]Can't login, Reason: ${error}`);
+            createAlert("error", "Invalid Username or Password entered try again", ".manual__login");
+        }
+    };
+    auth();
+});
 emitter.on("serverGo-false", () => {
-    console.log("hello2");
     saveBtn.addEventListener('click', () => {
         emitter.emit("send-jf-server-info", serverUrl.value);
         document.querySelector('.loader').classList.remove('hide');

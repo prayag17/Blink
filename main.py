@@ -1,7 +1,7 @@
 import sys,os,requests
 from localStoragePy import localStoragePy
 from PySide6.QtWidgets import QApplication, QMainWindow
-from PySide6.QtCore import QUrl, Slot, QObject, QCoreApplication, QProcess
+from PySide6.QtCore import QUrl, Slot, QObject, QProcess
 from PySide6.QtGui import QIcon, QPixmap
 from PySide6.QtWebEngineWidgets import QWebEngineView
 from PySide6.QtWebEngineCore import QWebEngineSettings
@@ -19,6 +19,7 @@ except ImportError:
 
 storage = localStoragePy('prayag.jellyplayer.app', 'sqlite')
 print(f"Server Url:{storage.getItem('server')}")
+print([storage.getItem("UserName"), storage.getItem("UserPw"), storage.getItem("openHome")])
 
 
 def restart():
@@ -26,14 +27,21 @@ def restart():
     status = QProcess.startDetached(sys.executable, sys.argv)
 
 class Backend(QObject):
-    @Slot(result=bool)
+    @Slot(result=str)
     def onStartup(self):
         if storage.getItem("serverGo") == "True":
             ping = requests.get(f"{storage.getItem('server')}/System/Ping")
             if ping.content == b'"Jellyfin Server"':
-                return True
+                if storage.getItem("openHome") == "True":
+                    return "openHomeTrue"
+                else:
+                    return "serverGoTrue"
             else:
-                return False
+                return "serverGoFalse"
+
+    @Slot(result=list)
+    def getAuthinfo(self):
+        return [storage.getItem("UserName"), storage.getItem("UserPw")]
     
     @Slot(str, result=bool)
     def saveServer(self, data):
@@ -68,6 +76,7 @@ class Backend(QObject):
         print(f"User: {userName}, Password: {Pw}")
         storage.setItem("UserName", userName)
         storage.setItem("UserPw", Pw)
+        storage.setItem("openHome", True)
         
     @Slot()
     def clearStorage(self):
@@ -109,7 +118,6 @@ class LoginWin(QMainWindow):
         
     def handleLoaded(self, ok):
         if ok:
-            print("s")
             self.view.page().setDevToolsPage(self.inspector.page())
             self.inspector.show()
 
