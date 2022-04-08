@@ -18,35 +18,34 @@
 }
 
 .menu.side__menu {
-	width: 35vw;
+	width: 40vw;
 	background: rgb(0 0 0 / 0.3);
 	height: 100vh;
-	max-width: 16em;
+	max-width: 20em;
 	overflow: auto;
 	display: flex;
 	flex-wrap: nowrap;
 	flex-direction: column;
 	align-items: center;
 	justify-content: flex-start;
-	padding: 1em;
 }
 
 .user__menu {
 	width: 100%;
 	display: flex;
-	flex-direction: column;
+	flex-direction: row;
 	flex-wrap: nowrap;
 	align-items: center;
 	justify-content: center;
-	font-weight: 600;
-	font-size: 1.6rem;
+	font-weight: 200;
+	font-size: 1.9rem;
 	gap: 0.5em;
-	padding-bottom: 1em;
-	border-bottom: 5px solid var(--main-bg);
+	background: #102c499c;
+	padding: 2em 1em;
 }
 
 .user__menu .image {
-	height: 30vh;
+	width: 15vh;
 	border-radius: 100%;
 	overflow: hidden;
 	aspect-ratio: 1/1;
@@ -60,4 +59,67 @@ img {
 .user__menu .image > img {
 	width: 100%;
 	aspect-ratio: 1/1;
+}
+
+.submenu {
+	width: 100%;
+	padding: 0 1em;
+}
+
+.menu__button {
+	font-size: 1.3rem;
+	padding: 0.5em;
+	position: relative;
+}
+
+.main__animated__page {
+	width: 100%;
+	height: 100vh;
+	position: relative;
+}
+
+.latestMediaSlider {
+	width: 100%;
+	height: 80vh;
+	position: relative;
+}
+
+.slide {
+	width: 100%;
+	height: 100%;
+	position: absolute;
+	top: 0;
+}
+
+.slide.active {
+	display: block;
+}
+
+.slide__background {
+	width: 75%;
+	height: 100%;
+	position: absolute;
+	z-index: -1;
+	right: 0;
+	-webkit-mask-image: linear-gradient(to right, transparent, black),
+		linear-gradient(to top, transparent, black);
+	-webkit-mask-composite: destination-in;
+	background-size: cover !important;
+}
+
+canvas.placeholder {
+	opacity: 1;
+	transition: opacity var(--transition-time-default);
+	position: absolute;
+	top: 0;
+	right: 0;
+	z-index: 2;
+}
+
+.slide img {
+	position: absolute;
+	top: 0;
+	right: 0;
+	width: 100%;
+	height: 100%;
 }
