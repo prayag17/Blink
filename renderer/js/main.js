@@ -4,6 +4,7 @@ const bg = document.querySelector("#background");
 let blurhashval;
 let blurhasdpix;
 let backdrop;
+let itemInfo;
 const pageTransition = (from, to, background) => {
     document.querySelector(from).classList.add("moveFadeOut");
     document.querySelector(to).classList.add("moveFadeIn");
@@ -18,6 +19,10 @@ const pageTransition = (from, to, background) => {
         bg.querySelector(".blue").classList.remove("active");
     }
 };
+
+const ticksToMin = (ticks) => {
+    return Math.round(ticks/600000000)
+}
 
 const sliderAnim = (slider) => {
     let slide;
@@ -91,15 +96,36 @@ emitter.on("logged-in", async (user) => {
         html = `<div class="menu__button">${item.Name}</div>`;
         document.querySelector(".submenu").querySelector("div").insertAdjacentHTML("beforeend", html);
     });
-    latestMedia.data.forEach(item => {
+    latestMedia.data.forEach(async (item) => {
         html = `<div class="slide">
-        <div class="slide__background">
-        <canvas class="placeholder" width="1080" height="720"></canvas>
-        <img src="https://jellyfin.prayagnet.tk/Items/${item.Id}/Images/Backdrop?imgTag=${item.BackdropImageTags[0]}">
-        </div>
-        <div class="title">${item.Name}</div>
-        </div>`;
+                    <div class="slide__background">
+                        <canvas class="placeholder" width="1080" height="720"></canvas>
+                        <img src="https://jellyfin.prayagnet.tk/Items/${item.Id}/Images/Backdrop?imgTag=${item.BackdropImageTags[0]}">
+                    </div>
+                    <div class="info__cont">
+                        <div class="title"></div>
+                        <div class="overview">
+                            <div>${item.ProductionYear}</div>
+                            <div><i class="bi bi-star-fill"></i>${item.CommunityRating}</div>
+                            <div>${ticksToMin(item.RunTimeTicks)}min</div>
+                        </div>
+                        <div class="buttons">
+                            <button class="filled clicky">
+                                <span>Play</span>
+                            </button>
+                            <button class="outlined clicky">
+                                <span>More Info</span>
+                            </button>
+                        </div>
+                    </div>
+                </div>`;
         document.querySelector(".latestMediaSlider").insertAdjacentHTML("beforeend", html);
+        if (item.ImageTags.Logo) {
+            html = `<div style="background: url('https://jellyfin.prayagnet.tk/Items/${item.Id}/Images/Logo?imgTag=${item.ImageTags.Logo[0]}');">`
+            document.querySelector(".info__cont .title").insertAdjacentHTML("beforeend", html)
+        } else {
+            document.querySelector(".info__cont .title").innerHTML = item.Name
+        }
         if (latestMedia.data.indexOf(item) == 0) {
             document.querySelector(".slide").classList.add("active");
         }
@@ -111,7 +137,6 @@ emitter.on("logged-in", async (user) => {
         blurhasdpix.data.set(blurhashval);
         document.querySelector(".placeholder").getContext("2d").putImageData(blurhasdpix, 0, 0);
         $(".slide__background img").on("load", function () {
-            console.log("h1`dji")
             document.querySelector(".placeholder").setAttribute("style", "opacity: 0;");
         }).attr('src', `https://jellyfin.prayagnet.tk/Items/${item.Id}/Images/Backdrop?imgTag=${item.BackdropImageTags[0]}`);
     });

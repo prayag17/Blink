@@ -2,7 +2,7 @@
 
 :root {
 	--main-bg: #0a1827;
-	--accent-solid: #c34643;
+	--accent-solid: #e82a5f;
 	--jf-purple-light: #aa5cc3;
 	--jf-purple-dark: #3e2247;
 	--jf-blue-light: #00a4dc;
@@ -14,6 +14,7 @@
 	--error-red-bg: #240e0ea0;
 	--yes-green: #18be12;
 	--yes-green-darker-1: #15a010;
+	--main-brd-clr: rgb(255 255 255/ 0.1);
 	--rounding: 10px;
 	--rounding-1: 5px;
 	--transition-time-fast-2: 100ms;
