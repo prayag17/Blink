@@ -3,6 +3,7 @@
 :root {
 	--main-bg: #0a1827;
 	--accent-solid: #e82a5f;
+	--accent-translucent-1: rgb(232 42 95 / 40%);
 	--jf-purple-light: #aa5cc3;
 	--jf-purple-dark: #3e2247;
 	--jf-blue-light: #00a4dc;

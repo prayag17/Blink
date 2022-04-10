@@ -70,16 +70,19 @@ window.onload = () => {
         
         window.serverOnline = await window.backend.onStartup();
         if (window.serverOnline == "serverGoTrue") {
-            window.getServer();
+            emitter.emit("serverGo-true");
         } else if (window.serverOnline == "serverGoFalse") {
-            emitter.emit("server-url", "offline");
+            emitter.emit("serverGo-false");
         } else if(window.serverOnline == "openHomeTrue") {
             window.getAuthinfo();
+        } else if (window.serverOnline == "serverOffline") {
+            emitter.emit("server-url", "offline");
         }
         
-        emitter.on("get-server", async () => {
-            window.getServer();
-        });
+    });
+    emitter.on("get-server", async () => {
+        console.log('sw')
+        window.getServer();
     });
     document.querySelector(".loader").classList.add("hide");
 };
@@ -286,6 +289,7 @@ const createEnterPassword = (userName, userImg, userId) => {
 };
 
 const sendAuthInfo = (userName, password, checkbox) => {
+    document.querySelector(".loader").classList.remove("hide");
     var authUser;
     const auth = async () => {
         try {
@@ -295,8 +299,10 @@ const sendAuthInfo = (userName, password, checkbox) => {
                     Pw: password
                 }
             });
-            emitter.emit("logged-in", [window.server, userName, password ,authUser.data.AccessToken, `${base_token}, Token=${authUser.data.AccessToken}`]);
+            console.log(authUser)
+            emitter.emit("logged-in", [window.server, userName, password ,authUser.data.AccessToken, `${base_token}, Token=${authUser.data.AccessToken}`, authUser.data.User.Id, authUser.data.User.Name, authUser.data]);
         } catch (error) {
+            document.querySelector(".loader").classList.add("hide");
             console.log(`[Err]Can't login, Reason: ${error}`);
             createAlert("error", "Invalid Username or Password entered try again", ".manual__login");
             return "err";
@@ -325,7 +331,7 @@ const goBack = (from, to, loginForm) => {
     }, 1000);
 };
 emitter.on("serverGo-true", () => {
-    emitter.emit('get-server-saved');
+    emitter.emit("get-server");
     emitter.on("server-url", (server) => {
         if (server != "offline") {
             window.ax = axios.create({
@@ -359,7 +365,7 @@ emitter.on("user-saved", (user) => {
                     Pw: user[1]
                 }
             });
-            emitter.emit("logged-in", [window.server, user[0], user[1], authUser.data.AccessToken, `${base_token}, Token=${authUser.data.AccessToken}`, authUser.data.User.Id, authUser.data.User.Name]);
+            emitter.emit("logged-in", [window.server, user[0], user[1], authUser.data.AccessToken, `${base_token}, Token=${authUser.data.AccessToken}`, authUser.data.User.Id, authUser.data.User.Name, authUser.data]);
         } catch (error) {
             console.log(`[Err]Can't login, Reason: ${error}`);
             createAlert("error", "Invalid Username or Password entered try again", ".manual__login");

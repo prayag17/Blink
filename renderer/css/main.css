@@ -78,7 +78,8 @@ img {
 	position: relative;
 	background: linear-gradient(
 		45deg,
-		rgba(10, 26, 51, 1) 0%,
+		rgba(10, 24, 39, 1) 0%,
+		rgba(10, 26, 51, 1) 32%,
 		rgba(8, 144, 149, 1) 100%
 	);
 	display: flex;
@@ -106,10 +107,28 @@ img {
 	position: absolute;
 	top: 0;
 	left: 0;
+	z-index: 0;
+	opacity: 0;
+	transition: opacity var(--transition-time-slow-2);
+}
+
+.slide .info__cont {
+	left: 0em;
+	transition: left var(--transition-time-slow-2);
+}
+
+.slide.active .info__cont {
+	left: 2em;
+}
+
+.slide.active ~ .slide > .info__cont {
+	left: 4em;
 }
 
 .slide.active {
 	display: block;
+	z-index: 10;
+	opacity: 1;
 }
 
 .slide__background {
@@ -121,6 +140,11 @@ img {
 	-webkit-mask-image: linear-gradient(to right, transparent, black 50%);
 	-webkit-mask-composite: destination-in;
 	background-size: cover !important;
+	opacity: 0;
+	transition: opacity var(--transition-time-default);
+}
+
+.slide.active .slide__background {
 	opacity: 0.5;
 }
 
@@ -156,6 +180,14 @@ canvas.placeholder {
 	left: 2em;
 }
 
+.title {
+	width: 100%;
+	height: 40%;
+	font-size: 2.3em;
+	font-weight: 500;
+	overflow: hidden;
+}
+
 .title div {
 	width: 100%;
 	height: 100%;
@@ -165,9 +197,10 @@ canvas.placeholder {
 	background-repeat: no-repeat !important;
 }
 
-.title {
-	width: 100%;
-	height: 40%;
+.title div span {
+	display: inline-block;
+	vertical-align: middle;
+	line-height: normal;
 }
 
 .overview {
@@ -209,6 +242,19 @@ button.outlined {
 
 .info__cont button span {
 	font-size: 1.5em;
+}
+
+.icon__image {
+	width: 100%;
+	height: 100%;
+	font-size: 10em;
+	display: flex;
+	flex-direction: row;
+	flex-wrap: nowrap;
+	justify-content: center;
+	align-items: center;
+	color: var(--accent-solid);
+	background: var(--accent-translucent-1);
 }
 
 @media (max-width: 900px) {

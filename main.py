@@ -37,7 +37,9 @@ class Backend(QObject):
                 else:
                     return "serverGoTrue"
             else:
-                return "serverGoFalse"
+                return "serverOffline"
+        else:
+            return "serverGoFalse"
 
     @Slot(result=list)
     def getAuthinfo(self):
