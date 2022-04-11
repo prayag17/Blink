@@ -28,6 +28,7 @@
 	align-items: center;
 	justify-content: flex-start;
 	border-right: 1px solid var(--main-brd-clr);
+	position: relative;
 }
 
 .user__menu {
@@ -42,6 +43,7 @@
 	gap: 0.5em;
 	padding: 2em 1em;
 	border-bottom: 1px solid var(--main-brd-clr);
+	position: relative;
 }
 
 .user__menu .image {
@@ -204,6 +206,16 @@ canvas.placeholder {
 	line-height: normal;
 }
 
+.logo div {
+	position: absolute;
+	height: 100%;
+}
+
+.title.logo {
+	height: 40%;
+	position: relative;
+}
+
 .overview {
 	width: 100%;
 	display: flex;
@@ -284,4 +296,26 @@ button.outlined {
 .track:hover {
 	height: 10px;
 	background: rgb(255 255 255 / 0.5);
+}
+
+.skeleton__loader {
+	height: 100%;
+	width: 100%;
+	position: absolute;
+	background: var(--main-bg);
+}
+
+.skeleton__loader::after {
+	content: "";
+	height: 100%;
+	width: 5em;
+	background: linear-gradient(
+		to right,
+		transparent,
+		rgb(255 255 255 / 0.2),
+		transparent
+	);
+	position: absolute;
+	-webkit-animation: skeletonLoader 1.5s infinite;
+	animation: skeletonLoader 1.5s infinite;
 }

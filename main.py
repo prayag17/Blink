@@ -30,13 +30,14 @@ class Backend(QObject):
     @Slot(result=str)
     def onStartup(self):
         if storage.getItem("serverGo") == "True":
-            ping = requests.get(f"{storage.getItem('server')}/System/Ping")
-            if ping.content == b'"Jellyfin Server"':
-                if storage.getItem("openHome") == "True":
-                    return "openHomeTrue"
-                else:
-                    return "serverGoTrue"
-            else:
+            try:
+                ping = requests.get(f"{storage.getItem('server')}/System/Ping")
+                if ping.content == b'"Jellyfin Server"':
+                    if storage.getItem("openHome") == "True":
+                        return "openHomeTrue"
+                    else:
+                        return "serverGoTrue"
+            except:
                 return "serverOffline"
         else:
             return "serverGoFalse"

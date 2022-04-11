@@ -39,7 +39,7 @@ const sliderAnim = (slider) => {
     sliderAnim.timer = setInterval(() => {
         sliderAnim.index = Array.prototype.indexOf.call(slides, document.querySelector(".slide.active"));
         if (sliderAnim.index + 1 >= slides.length) {
-            sliderAnim.index = 0;
+            sliderAnim.index = -1;
         }
         showSlide(sliderAnim.index);
         sliderAnim.index += 1;
@@ -51,7 +51,7 @@ const sliderAnim = (slider) => {
             sliderAnim.timer = setInterval(() => {
                 sliderAnim.index = Array.prototype.indexOf.call(slides, document.querySelector(".slide.active"));
                 if (sliderAnim.index + 1 >= slides.length) {
-                    sliderAnim.index = 0;
+                    sliderAnim.index = -1;
                 }
                 showSlide(sliderAnim.index);
                 sliderAnim.index += 1;
@@ -61,9 +61,30 @@ const sliderAnim = (slider) => {
 };
 
 emitter.on("logged-in", async (user) => {
-    console.log(user);
-    window.ab = user;
-    const UserConf = new Configuration({
+    html = `<div class="main__page main">
+    <section class="menu side__menu">
+    <div class="user__menu">
+    <div class="skeleton__loader"></div>
+    <div class="image"></div>
+    <div class="text">Hello, ${user[6]}</div>
+    </div>
+    <div class="submenu">
+    <div class="skeleton__loader"></div>
+    <div class="sub">
+    </div>
+    </div>
+    </section>
+    <section class="main__animated__page">
+    <div class="skeleton__loader"></div>
+    <div class="latestMediaSlider">
+    <div class="track__cont"></div>
+    </div>
+    </section>
+    </div>`;
+    mainPageCont.insertAdjacentHTML("beforeend", html);
+    pageTransition(".login", ".main", false);
+    document.querySelector(".loader").classList.add("hide");
+        const UserConf = new Configuration({
         apiKey: user[4],
         basePath: user[0],
         username: user[1],
@@ -84,26 +105,6 @@ emitter.on("logged-in", async (user) => {
     window.latestMedia = await userLibApi.getLatestMedia({
         userId: user[5]
     });
-    html = `<div class="main__page main">
-    <section class="menu side__menu">
-    <div class="user__menu">
-    <div class="image">
-    </div>
-    <div class="text">Hello, ${user[6]}</div>
-    </div>
-    <div class="submenu">
-    <div>
-    </div>
-    </div>
-    </section>
-    <section class="main__animated__page">
-    <div class="latestMediaSlider">
-    <div class="track__cont"></div>
-    </div>
-    </section>
-    </div>`;
-    mainPageCont.insertAdjacentHTML("beforeend", html);
-    document.querySelector(".loader").classList.add("hide");
     if (!user[7].User.PrimaryImageTag) {
         html = `<img src="../svg/avatar.svg">`;
         document.querySelector(".user__menu .image").insertAdjacentHTML("afterbegin", html);
@@ -112,10 +113,13 @@ emitter.on("logged-in", async (user) => {
         document.querySelector(".user__menu .image").insertAdjacentHTML("afterbegin", html);
     }
     const mainPage = document.querySelector(".main");
-    pageTransition(".login", ".main", false);
     libs.forEach(item => {
+        console.log("lib "+item.Name)
         html = `<div class="menu__button">${item.Name}</div>`;
-        document.querySelector(".submenu").querySelector("div").insertAdjacentHTML("beforeend", html);
+        document.querySelector(".submenu .sub").insertAdjacentHTML("beforeend", html);
+    });
+    document.querySelectorAll(".menu .skeleton__loader").forEach(sk => {
+        sk.classList.add("hide");
     });
     latestMedia.data.forEach(async (item) => {
         document.querySelector(".latestMediaSlider .track__cont").insertAdjacentHTML("beforeend", `<div class="track" data-index=${latestMedia.data.indexOf(item)}></div>`);
@@ -149,7 +153,8 @@ emitter.on("logged-in", async (user) => {
             };
             if (item.ImageTags.Logo) {
                 html = `<div style="background: url('${window.server}/Items/${item.Id}/Images/Logo?imgTag=${item.ImageTags.Logo[0]}');">`;
-                document.querySelector(".info__cont .title").insertAdjacentHTML("beforeend", html);
+                document.querySelector(`[data-index='${latestMedia.data.indexOf(item)}'] .info__cont .title`).insertAdjacentHTML("beforeend", html);
+                document.querySelector(`[data-index='${latestMedia.data.indexOf(item)}'] .info__cont .title`).classList.add("logo");
             } else {
                 document.querySelector(".info__cont .title").insertAdjacentHTML("beforeend", item.Name);
             }
@@ -196,7 +201,9 @@ emitter.on("logged-in", async (user) => {
             }
             // } else if (!item) { }
         }
-        window.itm = item;
+        document.querySelectorAll(".main__animated__page .skeleton__loader").forEach(sk => {
+            sk.classList.add("hide");
+        });
         
         if (latestMedia.data.indexOf(item) == 0) {
             document.querySelector(".slide").classList.add("active");

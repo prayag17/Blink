@@ -44,18 +44,6 @@ window.onload = () => {
                 });
             });
         };
-        // getServerStat = async () => {
-        //     await window.backend.getValuesFromDatabaseBool("serverGo", (data) => {
-        //         if (data == true) {
-        //             emitter.emit("serverGo-true");
-        //         } else if (data == false) {
-        //             emitter.emit('serverGo-false');
-        //         }
-        //         console.log(`Server Status = ${data}`);
-        //         return Boolean(data);
-        //     });
-        // };
-        // getServerStat();
         
         emitter.on("send-jf-server-info", (server) => {
             window.backend.saveServer(server, (dat) => {
@@ -69,6 +57,7 @@ window.onload = () => {
         });
         
         window.serverOnline = await window.backend.onStartup();
+        console.log(window.serverOnline);
         if (window.serverOnline == "serverGoTrue") {
             emitter.emit("serverGo-true");
         } else if (window.serverOnline == "serverGoFalse") {
@@ -76,6 +65,7 @@ window.onload = () => {
         } else if(window.serverOnline == "openHomeTrue") {
             window.getAuthinfo();
         } else if (window.serverOnline == "serverOffline") {
+            console.log("s24oi")
             emitter.emit("server-url", "offline");
         }
         
@@ -333,20 +323,22 @@ const goBack = (from, to, loginForm) => {
 emitter.on("serverGo-true", () => {
     emitter.emit("get-server");
     emitter.on("server-url", (server) => {
-        if (server != "offline") {
-            window.ax = axios.create({
-                headers: {
-                    Authorization: vanilla_token
-                }
-            });
-            window.userApi = new window.UserApi(undefined, server, window.ax);
-            document.querySelector('.loader').classList.remove('hide');
-            document.querySelector('.loader').classList.add('hide');
-            createUserList(server);
-        } else {
-            createDialog("Error", "Can't connect to Jellyfin server", "remove__server", "error");
-        }
+        window.ax = axios.create({
+            headers: {
+                Authorization: vanilla_token
+            }
+        });
+        window.userApi = new window.UserApi(undefined, server, window.ax);
+        document.querySelector('.loader').classList.remove('hide');
+        document.querySelector('.loader').classList.add('hide');
+        createUserList(server);
     });
+});
+emitter.on("server-url", (server) => {
+    console.log(server)
+    if (server == "offline") {
+        createDialog("Error", "Can't connect to Jellyfin server", "remove__server", "error", ".server");
+    }
 });
 emitter.on("user-saved", (user) => {
     document.querySelector(".loader").classList.remove("hide");

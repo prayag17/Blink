@@ -299,3 +299,21 @@ main,
 		opacity: 1;
 	}
 }
+
+@-webkit-keyframes skeletonLoader {
+	0% {
+		left: -5em;
+	}
+	100% {
+		left: calc(100% + 5em);
+	}
+}
+
+@keyframes skeletonLoader {
+	0% {
+		left: -5em;
+	}
+	100% {
+		left: calc(100% + 5em);
+	}
+}
