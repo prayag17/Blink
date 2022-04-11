@@ -87,18 +87,16 @@ img {
 	flex-wrap: nowrap;
 	justify-content: flex-start;
 	align-items: center;
+	z-index: 1;
 }
 
 .latestMediaSlider {
-	width: 90%;
-	height: 55vh;
+	width: 100%;
 	position: relative;
-	z-index: 1;
-	background: var(--main-bg);
 	border-radius: var(--rounding);
 	overflow: hidden;
-	margin-top: 3em;
-	box-shadow: 0 5px 30px -20px rgb(0 0 0 / 90%);
+	aspect-ratio: 16/9;
+	z-index: 10;
 }
 
 .slide {
@@ -109,12 +107,12 @@ img {
 	left: 0;
 	z-index: 0;
 	opacity: 0;
-	transition: opacity var(--transition-time-slow-2);
+	transition: opacity var(--transition-time-default);
 }
 
 .slide .info__cont {
-	left: 0em;
-	transition: left var(--transition-time-slow-2);
+	left: -5em;
+	transition: left var(--transition-time-default);
 }
 
 .slide.active .info__cont {
@@ -122,7 +120,7 @@ img {
 }
 
 .slide.active ~ .slide > .info__cont {
-	left: 4em;
+	left: 9em;
 }
 
 .slide.active {
@@ -137,15 +135,16 @@ img {
 	position: absolute;
 	z-index: -1;
 	right: 0;
-	-webkit-mask-image: linear-gradient(to right, transparent, black 50%);
 	-webkit-mask-composite: destination-in;
 	background-size: cover !important;
 	opacity: 0;
 	transition: opacity var(--transition-time-default);
+	-webkit-mask-image: linear-gradient(to right, transparent, black 65%),
+		linear-gradient(to top, transparent, black 65%);
 }
 
 .slide.active .slide__background {
-	opacity: 0.5;
+	opacity: 1;
 }
 
 canvas.placeholder {
@@ -182,15 +181,18 @@ canvas.placeholder {
 
 .title {
 	width: 100%;
-	height: 40%;
-	font-size: 2.3em;
+	font-size: 2.9em;
 	font-weight: 500;
 	overflow: hidden;
+	max-height: 40%;
+	text-overflow: ellipsis;
 }
 
 .title div {
 	width: 100%;
-	height: 100%;
+	height: -webkit-fit-content;
+	height: -moz-fit-content;
+	height: fit-content;
 	position: static;
 	background-size: contain !important;
 	background-position: left !important;
@@ -247,19 +249,40 @@ button.outlined {
 .icon__image {
 	width: 100%;
 	height: 100%;
-	font-size: 10em;
+	font-size: 30vw;
 	display: flex;
 	flex-direction: row;
 	flex-wrap: nowrap;
 	justify-content: center;
 	align-items: center;
-	color: var(--accent-solid);
-	background: var(--accent-translucent-1);
+	color: black;
 }
 
-@media (max-width: 900px) {
-	.latestMediaSlider {
-		height: auto;
-		aspect-ratio: 16/9;
-	}
+.track__cont {
+	position: absolute;
+	bottom: 1em;
+	left: 2em;
+	right: 2em;
+	height: 1em;
+	display: flex;
+	gap: 0.5em;
+	align-items: center;
+}
+
+.track {
+	height: 5px;
+	width: 100%;
+	background: var(--main-brd-clr);
+	border-radius: var(--rounding-1);
+	transition: background var(--transition-time-default),
+		height var(--transition-time-default);
+	z-index: 30;
+}
+.track.active {
+	background: white;
+}
+
+.track:hover {
+	height: 10px;
+	background: rgb(255 255 255 / 0.5);
 }

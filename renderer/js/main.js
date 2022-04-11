@@ -24,25 +24,40 @@ const ticksToMin = (ticks) => {
     return Math.round(ticks / 600000000);
 };
 
+const showSlide = (index) => {
+    index = Number(index);
+    let slide = document.querySelectorAll(".slide")[index + 1];
+    let track = document.querySelectorAll(".track")[index + 1];
+    document.querySelector(".slide.active").classList.remove("active");
+    document.querySelector(".track.active").classList.remove("active");
+    slide.classList.add("active");
+    track.classList.add("active");
+};
+
 const sliderAnim = (slider) => {
-    let slide;
     var slides = document.querySelectorAll(slider);
-    setInterval(() => {  
-        this.index = Array.prototype.indexOf.call(slides, document.querySelector(".slide.active"));
-        if(this.index+1 >= slides.length) {
-            this.index = 0;
+    sliderAnim.timer = setInterval(() => {
+        sliderAnim.index = Array.prototype.indexOf.call(slides, document.querySelector(".slide.active"));
+        if (sliderAnim.index + 1 >= slides.length) {
+            sliderAnim.index = 0;
         }
-        slide = document.querySelectorAll(".slide")[this.index+1];
-        document.querySelector(".slide.active").classList.remove("active");
-        slide.classList.add("active");
-        // setTimeout(() => {
-        //     document.querySelector(".slide.active").classList.remove("moveFadeOut");
-        //     document.querySelector(".slide.active").classList.add("hide");
-        //     document.querySelector(".slide.active").classList.remove("active");
-        //     slide.classList.remove("moveFadeIn");
-        //     slide.classList.add("active");
-        // }, 1000);
+        showSlide(sliderAnim.index);
+        sliderAnim.index += 1;
     }, 5000);
+    document.querySelectorAll(".track").forEach(track => {
+        track.addEventListener("click", () => {
+            showSlide(track.dataset.index - 1);
+            clearInterval(sliderAnim.timer);
+            sliderAnim.timer = setInterval(() => {
+                sliderAnim.index = Array.prototype.indexOf.call(slides, document.querySelector(".slide.active"));
+                if (sliderAnim.index + 1 >= slides.length) {
+                    sliderAnim.index = 0;
+                }
+                showSlide(sliderAnim.index);
+                sliderAnim.index += 1;
+            }, 5000);
+        });
+    });
 };
 
 emitter.on("logged-in", async (user) => {
@@ -83,6 +98,7 @@ emitter.on("logged-in", async (user) => {
     </section>
     <section class="main__animated__page">
     <div class="latestMediaSlider">
+    <div class="track__cont"></div>
     </div>
     </section>
     </div>`;
@@ -102,8 +118,9 @@ emitter.on("logged-in", async (user) => {
         document.querySelector(".submenu").querySelector("div").insertAdjacentHTML("beforeend", html);
     });
     latestMedia.data.forEach(async (item) => {
+        document.querySelector(".latestMediaSlider .track__cont").insertAdjacentHTML("beforeend", `<div class="track" data-index=${latestMedia.data.indexOf(item)}></div>`);
         if (item.ImageBlurHashes.length != undefined) {
-            html = `<div class="slide">
+            html = `<div class="slide" data-index="${latestMedia.data.indexOf(item)}">
             <div class="slide__background">
             <canvas class="placeholder" width="1080" height="720" style="width: 100%; heigth: 100%"></canvas>
             <img src="https:/${window.server}/Items/${item.Id}/Images/Backdrop?imgTag=${item.BackdropImageTags[0]}">
@@ -181,11 +198,14 @@ emitter.on("logged-in", async (user) => {
         
         if (latestMedia.data.indexOf(item) == 0) {
             document.querySelector(".slide").classList.add("active");
+            document.querySelector(`.track[data-index="${Array.prototype.indexOf.call(document.querySelectorAll(".slide"), document.querySelector(".slide.active"))}"]`).classList.add("active");
         }
     });
     console.log(latestMedia.data);
     if (latestMedia.data.length > 1) {
         sliderAnim(".slide");
+    } else {
+        document.querySelector(".track__cont").classList.add("hide");
     }
     document.querySelector(".loader").classList.remove("hide");
 });
