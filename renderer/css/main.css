@@ -93,7 +93,6 @@ img {
 .latestMediaSlider {
 	width: 100%;
 	position: relative;
-	border-radius: var(--rounding);
 	overflow: hidden;
 	aspect-ratio: 16/9;
 	z-index: 10;

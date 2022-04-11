@@ -119,11 +119,12 @@ emitter.on("logged-in", async (user) => {
     });
     latestMedia.data.forEach(async (item) => {
         document.querySelector(".latestMediaSlider .track__cont").insertAdjacentHTML("beforeend", `<div class="track" data-index=${latestMedia.data.indexOf(item)}></div>`);
-        if (item.ImageBlurHashes.length != undefined) {
-            html = `<div class="slide" data-index="${latestMedia.data.indexOf(item)}">
-            <div class="slide__background">
-            <canvas class="placeholder" width="1080" height="720" style="width: 100%; heigth: 100%"></canvas>
-            <img src="https:/${window.server}/Items/${item.Id}/Images/Backdrop?imgTag=${item.BackdropImageTags[0]}">
+        if (item.ImageBlurHashes.Backdrop) {
+            console.log(`${window.server}/Items/${item.Id}/Images/Backdrop?imgTag=${item.BackdropImageTags[0]}`)
+            html = `<div class="slide" data-index=${latestMedia.data.indexOf(item)}>
+            <div class="slide__background"> 
+            <canvas class="placeholder" width="1080" height="720" style="width: 100%; height: 100%"></canvas>
+            <img src="${window.server}/Items/${item.Id}/Images/Backdrop?imgTag=${item.BackdropImageTags[0]}">
             </div>
             <div class="info__cont">
             <div class="title"></div>
@@ -131,7 +132,7 @@ emitter.on("logged-in", async (user) => {
             <div>${item.ProductionYear}</div>
             <div><i class="bi bi-star-fill"></i>${item.CommunityRating}</div>
             <div>${ticksToMin(item.RunTimeTicks)}min</div>
-            </div>
+            </div>     
             <div class="buttons">
             <button class="filled clicky">
             <span>Play</span>
@@ -143,8 +144,11 @@ emitter.on("logged-in", async (user) => {
             </div>
             </div>`;
             document.querySelector(".latestMediaSlider").insertAdjacentHTML("beforeend", html);
+            document.querySelector(`[data-index='${latestMedia.data.indexOf(item)}'] .slide__background img`).onload = () => {
+                document.querySelector(`[data-index='${latestMedia.data.indexOf(item)}'] .placeholder`).setAttribute('style', 'opacity: 0;');
+            };
             if (item.ImageTags.Logo) {
-                html = `<div style="background: url('https://${window.server}/Items/${item.Id}/Images/Logo?imgTag=${item.ImageTags.Logo[0]}');">`;
+                html = `<div style="background: url('${window.server}/Items/${item.Id}/Images/Logo?imgTag=${item.ImageTags.Logo[0]}');">`;
                 document.querySelector(".info__cont .title").insertAdjacentHTML("beforeend", html);
             } else {
                 document.querySelector(".info__cont .title").insertAdjacentHTML("beforeend", item.Name);
@@ -152,12 +156,9 @@ emitter.on("logged-in", async (user) => {
             backdrop = item.BackdropImageTags[0];
             blurhashval = decode(item.ImageBlurHashes.Backdrop[backdrop], 1080, 720);
             console.log(blurhashval);
-            blurhasdpix = document.querySelector(".placeholder").getContext("2d").createImageData(1080, 720);
+            blurhasdpix = document.querySelector(`[data-index="${latestMedia.data.indexOf(item)}"] .placeholder`).getContext("2d").createImageData(1080, 720);
             blurhasdpix.data.set(blurhashval);
-            document.querySelector(".placeholder").getContext("2d").putImageData(blurhasdpix, 0, 0);
-            $(".slide__background img").on("load", function () {
-                document.querySelector(".placeholder").setAttribute("style", "opacity: 0;");
-            }).attr('src', `https://${window.server}/Items/${item.Id}/Images/Backdrop?imgTag=${item.BackdropImageTags[0]}`);
+            document.querySelector(`[data-index="${latestMedia.data.indexOf(item)}"] .placeholder`).getContext("2d").putImageData(blurhasdpix, 0, 0);
         } else {
             if (item.Type == "AudioBook") {
                 html = `<div class="slide" data-index="${latestMedia.data.indexOf(item)}">
@@ -186,7 +187,8 @@ emitter.on("logged-in", async (user) => {
                 </div>`;
                 document.querySelector(".latestMediaSlider").insertAdjacentHTML("beforeend", html);
                 if (item.ImageTags.Logo) {
-                    html = `<div style="background: url('https://${window.server}/Items/${item.Id}/Images/Logo?imgTag=${item.ImageTags.Logo[0]}');">`;
+                    html = `<div style="background: url('${window.server}/Items/${item.Id}/Images/Logo?imgTag=${item.ImageTags.Logo[0]}');">`;
+                    console.log(html)
                     document.querySelector(`[data-index="${latestMedia.data.indexOf(item)}"] .title`).insertAdjacentHTML("beforeend", html);
                 } else {
                     document.querySelector(`[data-index="${latestMedia.data.indexOf(item)}"] .title`).insertAdjacentHTML("beforeend", `<div>${item.Name}</div>`);
