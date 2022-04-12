@@ -8,6 +8,12 @@
     <file>renderer/js/main.js</file>
     <file>renderer/svg/avatar.svg</file>
     <file>renderer/svg/loader.svg</file>
+    <file>renderer/svg/books.svg</file>
+    <file>renderer/svg/boxsets.svg</file>
+    <file>renderer/svg/movies.svg</file>
+    <file>renderer/svg/music.svg</file>
+    <file>renderer/svg/playlists.svg</file>
+    <file>renderer/svg/tvshows.svg</file>
     <file>assets/logo.svg</file>
     <file>assets/logo_small.svg</file>
     <file>assets/logo.png</file>

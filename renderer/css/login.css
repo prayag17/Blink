@@ -358,6 +358,7 @@ input:focus + .input__label,
 	display: flex;
 	justify-content: center;
 	align-items: center;
+	z-index: 20;
 }
 
 .loader::before {

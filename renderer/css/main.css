@@ -1,5 +1,13 @@
 /** @format */
 
+.library__page::-webkit-scrollbar {
+	width: 5px;
+}
+
+.library__page::-webkit-scrollbar-thumb {
+	border-radius: 0;
+}
+
 .moveFadeOut {
 	-webkit-animation: moveFadeOut var(--transition-time-slow-2) forwards;
 	animation: moveFadeOut var(--transition-time-slow-2) forwards;
@@ -56,6 +64,8 @@
 img {
 	-o-object-fit: cover;
 	object-fit: cover;
+	-o-object-position: center;
+	object-position: center;
 }
 
 .user__menu .image > img {
@@ -66,6 +76,9 @@ img {
 .submenu {
 	width: 100%;
 	padding: 0 1em;
+	position: relative;
+	overflow-x: hidden;
+	height: 100%;
 }
 
 .menu__button {
@@ -90,6 +103,14 @@ img {
 	justify-content: flex-start;
 	align-items: center;
 	z-index: 1;
+	flex-grow: 0;
+	flex-shrink: 1;
+}
+
+.main__animated__page > * {
+	height: 100vh;
+	width: 100%;
+	overflow-y: scroll;
 }
 
 .latestMediaSlider {
@@ -155,6 +176,8 @@ canvas.placeholder {
 	top: 0;
 	right: 0;
 	z-index: 2;
+	width: 100%;
+	height: 100%;
 }
 
 .slide img {
@@ -303,6 +326,8 @@ button.outlined {
 	width: 100%;
 	position: absolute;
 	background: var(--main-bg);
+	z-index: 100;
+	overflow: hidden;
 }
 
 .skeleton__loader::after {
@@ -318,4 +343,75 @@ button.outlined {
 	position: absolute;
 	-webkit-animation: skeletonLoader 1.5s infinite;
 	animation: skeletonLoader 1.5s infinite;
+}
+
+.primary__image {
+	width: 100%;
+}
+
+.primay__image img {
+	width: 0;
+}
+
+.slider {
+	display: flex;
+	width: 100%;
+	position: relative;
+	overflow: scroll hidden;
+	justify-content: flex-start;
+	align-items: flex-start;
+	gap: 1em;
+}
+
+.card {
+	width: 40%;
+	height: -webkit-fit-content;
+	height: -moz-fit-content;
+	height: fit-content;
+	aspect-ratio: 1.6;
+	flex-shrink: 0;
+	border-radius: var(--rounding);
+	display: flex;
+	flex-direction: column;
+	flex-wrap: nowrap;
+	align-items: center;
+	justify-content: flex-start;
+	padding: 1em;
+	gap: 0.5em;
+}
+
+.image__cont {
+	position: relative;
+	height: 100%;
+	width: 100%;
+	flex: 0 0 100%;
+	border-radius: var(--rounding);
+	overflow: hidden;
+}
+
+.image__cont > * {
+	position: absolute;
+	inset: 0;
+}
+
+.image__cont object {
+	width: 100%;
+	height: 100%;
+}
+
+.primary__image img {
+	width: 100%;
+	height: 100%;
+}
+
+.image__cont .icon__image {
+	padding: 0.1em;
+	border-radius: inherit;
+	border: 2px solid var(--main-brd-clr);
+}
+
+.card__text {
+	font-size: 1.35em;
+	font-weight: 400;
+	color: white;
 }
