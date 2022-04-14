@@ -15,10 +15,9 @@ jobs:
         python-version: 3.9
 
     - run: pip install -r requirements.txt pyinstaller
-    - run: pyinstaller main_win.spec
+    - run: pyinstaller -y --distpath dist/win main_win.spec
     - uses: actions/upload-artifact@v3
       with:
         name: JellyPlayer_Win
         path: |
               dist/*
-              main.spec
