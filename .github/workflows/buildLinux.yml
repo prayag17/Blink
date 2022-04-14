@@ -1,3 +1,5 @@
+name: Build_Linux
+
 on:
   push:
     branches: [ main ]

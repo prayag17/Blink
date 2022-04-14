@@ -1,3 +1,6 @@
+
+name: Build_Win
+
 on:
   push:
     branches: [ main ]
