@@ -6,7 +6,7 @@ on:
     
 jobs:
   build:
-    runs-on: ${{ matrix.os }}
+    runs-on: 'macos-latest'
     strategy:
       fail-fast: false
       matrix:
