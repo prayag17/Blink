@@ -1,0 +1,5 @@
+localStoragePy==0.2.3
+requests==2.27.1
+pyinstaller==4.10
+--index-url=https://download.qt.io/official_releases/QtForPython/split-wheels/
+pyside6
