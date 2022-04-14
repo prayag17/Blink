@@ -15,8 +15,10 @@ jobs:
         python-version: 3.9
 
     - run: pip install -r requirements.txt pyinstaller
-    - run: pyinstaller main.py
+    - run: pyinstaller --windowed --name JellyPlayer --icon assets/icon.icns --osx-bundle-identifier "prayag17.jellyplayer.0.1.0" main.py
     - uses: actions/upload-artifact@v3
       with:
         name: JellyPlayer
-        path: main.spec
+        path: |
+              dist/*
+              main.spec
