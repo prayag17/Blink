@@ -1,6 +1,6 @@
 # JellyPlayer
 
-### Modern Jellyfin Client
+## Modern Jellyfin Client
 
 ## Installation
 
