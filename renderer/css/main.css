@@ -105,12 +105,14 @@ img {
 	z-index: 1;
 	flex-grow: 0;
 	flex-shrink: 1;
+	overflow-x: hidden;
 }
 
 .main__animated__page > * {
 	height: 100vh;
 	width: 100%;
 	overflow-y: scroll;
+	overflow-x: hidden;
 }
 
 .latestMediaSlider {
@@ -353,18 +355,8 @@ button.outlined {
 	width: 0;
 }
 
-.slider {
-	display: flex;
-	width: 100%;
-	position: relative;
-	overflow: scroll hidden;
-	justify-content: flex-start;
-	align-items: flex-start;
-	gap: 1em;
-}
-
 .card {
-	width: 40%;
+	width: 16.4vw !important;
 	height: -webkit-fit-content;
 	height: -moz-fit-content;
 	height: fit-content;
@@ -376,17 +368,17 @@ button.outlined {
 	flex-wrap: nowrap;
 	align-items: center;
 	justify-content: flex-start;
-	padding: 1em;
+	padding: 0;
 	gap: 0.5em;
 }
 
 .image__cont {
 	position: relative;
-	height: 100%;
 	width: 100%;
 	flex: 0 0 100%;
 	border-radius: var(--rounding);
 	overflow: hidden;
+	box-shadow: 0px 0px 15px rgb(0 0 0 /0.3);
 }
 
 .image__cont > * {
@@ -405,13 +397,101 @@ button.outlined {
 }
 
 .image__cont .icon__image {
-	padding: 0.1em;
+	padding: 0.07em;
 	border-radius: inherit;
 	border: 2px solid var(--main-brd-clr);
 }
 
 .card__text {
-	font-size: 1.35em;
-	font-weight: 400;
+	font-size: 1.2em;
+	font-weight: 300;
 	color: white;
+	text-align: center !important;
+}
+
+.content .grid {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 1em;
+	justify-content: flex-start;
+}
+
+.content {
+	padding: 0 2em;
+}
+
+.content h2 {
+	font-size: 2em;
+	font-weight: 300;
+	display: flex;
+	align-items: center;
+	gap: 0.5em;
+}
+
+.content h2::before {
+	content: "";
+	width: 1em;
+	height: 2px;
+	display: block;
+	background: white;
+}
+
+.card .icon__image span {
+	font-size: 0.2em;
+	color: var(--accent-solid);
+}
+
+.primary .image__cont {
+	flex: 1 0 16.5vw !important;
+	height: 16.5vw !important;
+}
+
+.card.primary {
+	width: 10.5vw !important;
+	flex-shrink: 1;
+	flex-grow: 0;
+	flex-basis: 10.5vw !important;
+	height: 16.5vw !important;
+	gap: 0;
+	border-radius: var(--rounding);
+	background: var(--main-bg);
+	overflow: hidden;
+}
+
+.primary .card__text {
+	font-size: 1em;
+	white-space: nowrap;
+	text-overflow: ellipsis;
+	width: 100%;
+	overflow: hidden;
+	padding: 0 0.2em;
+}
+
+.card__text__cont {
+	width: 100%;
+	text-align: center;
+	height: 2.4em;
+}
+
+.primary .card__text__cont {
+	opacity: 0;
+	transition: opacity var(--transition-time-default),
+		transform var(--transition-time-default);
+	background: rgb(0 0 0 / 0.5);
+	transform: translateY(0);
+}
+
+.card__text.secondary {
+	font-size: 0.9em;
+	opacity: 0.7;
+	font-weight: 300;
+}
+
+.card.primary:hover {
+	z-index: 100;
+}
+
+.card.primary:hover .card__text__cont {
+	opacity: 1;
+	transform: translateY(-2.3em);
 }

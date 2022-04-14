@@ -181,7 +181,7 @@ input:focus + .input__label,
 	font-size: calc(60vw / 20);
 }
 
-.info i {
+.info span {
 	color: var(--warning-yellow);
 	font-size: min(1.5em, 30px);
 	height: -webkit-fit-content;

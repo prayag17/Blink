@@ -59,37 +59,95 @@ const sliderAnim = (slider) => {
     });
 };
 
-const createVerticalSlider = (type, data) => {
-    document.querySelector(".library__page").insertAdjacentHTML("beforeend", `<div class="vertical__slider ${type.toLowerCase()}"><div class="slider"></div></div>`);
-    document.querySelector(`.vertical__slider.${type.toLowerCase()}`).insertAdjacentHTML("afterbegin", `<h2>${type}</h2>`);
-    data.forEach(item => {
+const createCardGrid = (type, data, usrId, api) => {
+    let itmInfo;
+    document.querySelector(".library__page").insertAdjacentHTML("beforeend", `<div class="content ${type.toLowerCase()}"><div class="grid"></div></div>`);
+    document.querySelector(`.content.${type.toLowerCase()}`).insertAdjacentHTML("afterbegin", `<h2>${type}</h2>`);
+    data.forEach(async item => {
+        console.log(item)
         html = `<div class="card" data-index="${data.indexOf(item)}">
-                    <div class="image__cont">
-                        <canvas class="placeholder"></canvas>
-                        <div class="icon__image">
-                            <object data="qrc:/renderer/svg/${item.CollectionType}.svg"></object>
-                        </div>
-                        <div class="primary__image hide">
-                            <img>
-                        </div>
-                    </div>
-                    <div class="card__text__cont">
-                        <div class="card__text primary">${item.Name}</div>
-                    </div>
-                </div>`;
-        document.querySelector(`.vertical__slider.${type.toLowerCase()} .slider`).insertAdjacentHTML("beforeend", html);
-        if (item.ImageTags.Primary) {
-            window.itm = item;
-            backdrop = item.ImageTags.Primary;
-            blurhashval = decode(item.ImageBlurHashes.Primary[backdrop], 1080, 720);
-            blurhasdpix = document.querySelector(`.card[data-index="${data.indexOf(item)}"] .placeholder`).getContext("2d").createImageData(1080, 720);
-            blurhasdpix.data.set(blurhashval);
-            document.querySelector(`.card[data-index="${data.indexOf(item)}"] .placeholder`).getContext("2d").putImageData(blurhasdpix, 0, 0);
-            document.querySelector(`.card[data-index="${data.indexOf(item)}"] .primary__image img`).setAttribute("src", `${window.server}/Items/${item.Id}/Images/Primary?imgTag=${item.ImageTags.Primary[0]}`);
-            document.querySelector(`.card[data-index="${data.indexOf(item)}"] .primary__image img`).setAttribute("onload", `document.querySelector('.card[data-index="${data.indexOf(item)}"] .placeholder').setAttribute('style', 'opacity:0;')`);
-            document.querySelector(`.card[data-index="${data.indexOf(item)}"] .primary__image`).classList.remove("hide");
+        <div class="image__cont">
+        <canvas class="placeholder"></canvas>
+        <div class="icon__image">
+        <span class="mdi">
+        </div>
+        <div class="primary__image hide">
+        <img>
+        </div>
+        </div>
+        <div class="card__text__cont">
+        <div class="card__text primary">${item.Name}</div>
+        </div>
+        </div>`;
+        document.querySelector(`.content.${type.toLowerCase()} .grid`).insertAdjacentHTML("beforeend", html);
+        if (item.CollectionType) {
+            if (item.ImageTags.Primary) {
+                window.itm = item;
+                backdrop = item.ImageTags.Primary;
+                blurhashval = decode(item.ImageBlurHashes.Primary[backdrop], 1080, 720);
+                blurhasdpix = document.querySelector(`.${type.toLowerCase()} .card[data-index="${data.indexOf(item)}"] .placeholder`).getContext("2d").createImageData(1080, 720);
+                blurhasdpix.data.set(blurhashval);
+                document.querySelector(`.${type.toLowerCase()} .card[data-index="${data.indexOf(item)}"] .placeholder`).getContext("2d").putImageData(blurhasdpix, 0, 0);
+                document.querySelector(`.${type.toLowerCase()} .card[data-index="${data.indexOf(item)}"] .primary__image img`).setAttribute("src", `${window.server}/Items/${item.Id}/Images/Primary?imgTag=${item.ImageTags.Primary[0]}`);
+                // document.querySelector(`.${type.toLowerCase()} .card[data-index="${data.indexOf(item)}"] .primary__image img`).style.aspectRatio = item;
+                document.querySelector(`.${type.toLowerCase()} .card[data-index="${data.indexOf(item)}"] .primary__image img`).setAttribute("onload", `document.querySelector('.${type.toLowerCase()} .card[data-index="${data.indexOf(item)}"] .placeholder').setAttribute('style', 'opacity:0;')`);
+                document.querySelector(`.${type.toLowerCase()} .card[data-index="${data.indexOf(item)}"] .primary__image`).classList.remove("hide");
+            }
+            switch (item.CollectionType) {
+                case "books":
+                document.querySelector(`.${type.toLowerCase()} .card[data-index="${data.indexOf(item)}"] .mdi`).classList.add("mdi-book-multiple-outline");
+                break;
+                case "boxsets":
+                document.querySelector(`.${type.toLowerCase()} .card[data-index="${data.indexOf(item)}"] .mdi`).classList.add("mdi-folder-outline");
+                break;
+                case "movies":
+                document.querySelector(`.${type.toLowerCase()} .card[data-index="${data.indexOf(item)}"] .mdi`).classList.add("mdi-play-box-multiple-outline");
+                break;
+                case "music":
+                document.querySelector(`.${type.toLowerCase()} .card[data-index="${data.indexOf(item)}"] .mdi`).classList.add("mdi-music-box-multiple-outline");
+                break;
+                case "playlists":
+                document.querySelector(`.${type.toLowerCase()} .card[data-index="${data.indexOf(item)}"] .mdi`).classList.add("mdi-playlist-music");
+                break;
+                case "tvshows":
+                document.querySelector(`.${type.toLowerCase()} .card[data-index="${data.indexOf(item)}"] .mdi`).classList.add("mdi-youtube-tv");
+                break;
+            }
+        } else if (item.Type) {
+            if (item.ImageTags.Primary) {
+                backdrop = item.ImageTags.Primary;
+                blurhashval = decode(item.ImageBlurHashes.Primary[backdrop], 720, 1080);
+                blurhasdpix = document.querySelector(`.${type.toLowerCase()} .card[data-index="${data.indexOf(item)}"] .placeholder`).getContext("2d").createImageData(720, 1080);
+                blurhasdpix.data.set(blurhashval);
+                document.querySelector(`.${type.toLowerCase()} .card[data-index="${data.indexOf(item)}"] .placeholder`).getContext("2d").putImageData(blurhasdpix, 0, 0);
+                document.querySelector(`.${type.toLowerCase()} .card[data-index="${data.indexOf(item)}"] .primary__image img`).setAttribute("src", `${window.server}/Items/${item.Id}/Images/Primary?imgTag=${item.ImageTags.Primary[0]}`);
+                // document.querySelector(`.${type.toLowerCase()} .card[data-index="${data.indexOf(item)}"] .primary__image img`).style.aspectRatio = item;
+                document.querySelector(`.${type.toLowerCase()} .card[data-index="${data.indexOf(item)}"] .primary__image img`).setAttribute("onload", `document.querySelector('.${type.toLowerCase()} .card[data-index="${data.indexOf(item)}"] .placeholder').setAttribute('style', 'opacity:0;')`);
+                document.querySelector(`.${type.toLowerCase()} .card[data-index="${data.indexOf(item)}"] .primary__image`).classList.remove("hide");
+            }
+            document.querySelector(`.${type.toLowerCase()} .card[data-index="${data.indexOf(item)}"] .card__text__cont`).insertAdjacentHTML("beforeend", `<div class="card__text secondary">${item.ProductionYear}</div>`);
+            document.querySelector(`.${type.toLowerCase()} .card[data-index="${data.indexOf(item)}"]`).classList.add("primary");
+            switch (item.Type) {
+                case "books":
+                document.querySelector(`.${type.toLowerCase()} .card[data-index="${data.indexOf(item)}"] .mdi`).classList.add("mdi-book-multiple-outline");
+                break;
+                case "boxsets":
+                document.querySelector(`.${type.toLowerCase()} .card[data-index="${data.indexOf(item)}"] .mdi`).classList.add("mdi-folder-outline");
+                break;
+                case "Movie":
+                document.querySelector(`.${type.toLowerCase()} .card[data-index="${data.indexOf(item)}"] .mdi`).classList.add("mdi-play-box-multiple-outline");
+                break;
+                case "music":
+                document.querySelector(`.${type.toLowerCase()} .card[data-index="${data.indexOf(item)}"] .mdi`).classList.add("mdi-music-box-multiple-outline");
+                break;
+                case "playlists":
+                document.querySelector(`.${type.toLowerCase()} .card[data-index="${data.indexOf(item)}"] .mdi`).classList.add("mdi-playlist-music");
+                break;
+                case "tvshows":
+                document.querySelector(`.${type.toLowerCase()} .card[data-index="${data.indexOf(item)}"] .mdi`).classList.add("mdi-youtube-tv");
+                break;
+            }
         }
-        console.log(item);
     });
 };
 
@@ -138,8 +196,12 @@ emitter.on("logged-in", async (user) => {
         includeItemTypes: ["Movie"]
     });
     const libs = libsRaw.data.Items;
-    window.latestMedia = await userLibApi.getLatestMedia({
+    const latestMedia = await userLibApi.getLatestMedia({
         userId: user[5]
+    });
+    const latestMovies = await userLibApi.getLatestMedia({
+        userId: user[5],
+        includeItemTypes: ["Movie"]
     });
     if (!user[7].User.PrimaryImageTag) {
         html = `<img src="../svg/avatar.svg">`;
@@ -162,6 +224,7 @@ emitter.on("logged-in", async (user) => {
         sk.classList.add("hide");
     });
     latestMedia.data.forEach(async (item) => {
+        console.log(item)
         document.querySelector(".latestMediaSlider .track__cont").insertAdjacentHTML("beforeend", `<div class="track" data-index=${latestMedia.data.indexOf(item)}></div>`);
         if (item.ImageBlurHashes.Backdrop) {
             console.log(`${window.server}/Items/${item.Id}/Images/Backdrop?imgTag=${item.BackdropImageTags[0]}`);
@@ -174,7 +237,7 @@ emitter.on("logged-in", async (user) => {
             <div class="title"></div>
             <div class="overview">
             <div>${item.ProductionYear}</div>
-            <div><i class="bi bi-star-fill"></i>${item.CommunityRating}</div>
+            <div><span class="mdi mdi-star-half-full"></span>${item.CommunityRating}</div>
             <div>${ticksToMin(item.RunTimeTicks)}min</div>
             </div>     
             <div class="buttons">
@@ -210,14 +273,14 @@ emitter.on("logged-in", async (user) => {
                 <div class="slide__background">
                 <canvas class="placeholder" width="1080" height="720" style="width: 100%; height: 100%"></canvas>
                 <div class="icon__image">
-                <i class="bi bi-mic-fill"></i>
+                <span class="mdi mdi-book-music"></span>
                 </div>
                 </div>
                 <div class="info__cont">
                 <div class="title"></div>
                 <div class="overview">
                 <div>${item.ProductionYear}</div>
-                <div><i class="bi bi-star-fill"></i>${item.CommunityRating}</div>
+                <div><span class="mdi mdi-star-half-full"></span>${item.CommunityRating}</div>
                 <div>${ticksToMin(item.RunTimeTicks)}min</div>
                 </div>
                 <div class="buttons">
@@ -256,6 +319,6 @@ emitter.on("logged-in", async (user) => {
     } else {
         document.querySelector(".track__cont").classList.add("hide");
     }
-
-    createVerticalSlider("Library", libs);
+    createCardGrid("Library", libs);
+    createCardGrid("Movies", latestMovies.data, user[5], userLibApi);
 });
