@@ -1,0 +1,24 @@
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+    
+jobs:
+  build:
+    runs-on: 'windows-latest'
+
+    steps:
+    - uses: actions/checkout@v2
+    - uses: actions/setup-python@v2
+      with:
+        python-version: 3.9
+
+    - run: pip install -r requirements.txt pyinstaller
+    - run: pyinstaller main_win.spec
+    - uses: actions/upload-artifact@v3
+      with:
+        name: JellyPlayer_Win
+        path: |
+              dist/*
+              main.spec
