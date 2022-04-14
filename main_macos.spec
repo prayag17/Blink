@@ -46,4 +46,4 @@ coll = COLLECT(exe,
 app = BUNDLE(coll,
              name='JellyPlayer',
              icon='assets/icon.icns',
-             bundle_identifier=None)
+             bundle_identifier='com.jellyplayer')
