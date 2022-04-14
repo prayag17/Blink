@@ -23,6 +23,4 @@ jobs:
     - uses: actions/upload-artifact@v3
       with:
         name: JellyPlayer
-        path: |
-              dist/*
-              main.spec
+        path: main.spec
