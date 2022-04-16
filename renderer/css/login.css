@@ -18,14 +18,18 @@
 	--mdc-theme--primary-bg: var(--main-bg) !important;
 }
 
-.login button {
+.login .mdc-button {
+	font-family: "Montserrat" !important;
 	background-color: rgb(255 255 255 / 0.3) !important;
-	border-radius: 100px;
 	border: 2px solid white !important;
 	overflow: hidden;
 }
 .login .mdc-button__ripple > * {
 	background-color: rgb(0 0 0 / 0.3) !important;
+}
+
+.login .mdc-text-field--outlined {
+	font-family: "Montserrat" !important;
 }
 
 .login
@@ -64,6 +68,31 @@
 .login .mdc-text-field:not(.mdc-text-field--disabled) .mdc-text-field__input {
 	color: rgb(255 255 255 / 0.87);
 	caret-color: white;
+}
+
+.login
+	.mdc-checkbox
+	.mdc-checkbox__native-control:enabled:checked
+	~ .mdc-checkbox__background,
+.login
+	.mdc-checkbox
+	.mdc-checkbox__native-control:enabled:indeterminate
+	~ .mdc-checkbox__background,
+.login
+	.mdc-checkbox
+	.mdc-checkbox__native-control[data-indeterminate="true"]:enabled
+	~ .mdc-checkbox__background {
+	border-color: transparent !important;
+}
+
+.login .mdc-checkbox {
+	--mdc-ripple-color: white;
+	--mdc-checkbox-unchecked-color: white;
+	--mdc-checkbox-checked-color: rgb(255 255 255 / 0.3) !important;
+}
+
+.login .mdc-form-field {
+	--mdc-theme-text-primary-on-background: rgb(255 255 255 / 0.87);
 }
 
 #background {
@@ -430,6 +459,7 @@ section.user__cont {
 	justify-content: center;
 	align-items: center;
 	flex-flow: column;
+	padding: 0 !important;
 }
 
 .user__card h1 {
@@ -556,6 +586,7 @@ input[type="checkbox"]:checked + .tick > path {
 	row-gap: 20px;
 	-moz-column-gap: 20px;
 	column-gap: 20px;
+	align-items: stretch;
 }
 
 .back {

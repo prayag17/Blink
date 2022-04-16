@@ -40,13 +40,6 @@ html {
 	background: var(--main-bg);
 }
 
-input,
-button {
-	width: 100%;
-	height: 2.65em;
-	outline: none;
-}
-
 .input {
 	position: relative;
 	font-size: calc(60vw / 20);

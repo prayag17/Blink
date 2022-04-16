@@ -152,7 +152,7 @@ const createAlert = (type, msg, page) => {
     }, 3005);
 };
 
-const createDialog = (title, msg, btn, type, page) => {
+const createDialog = (title, msg, btn, type, page, exitBg) => {
     html = `<div class="dialog__cont">
     <div class="dialog ${type}">
     <div class="icon">
@@ -197,11 +197,16 @@ const createDialog = (title, msg, btn, type, page) => {
         </div>`;
         document.querySelector('.dialog').insertAdjacentHTML('beforeend', html);
     }
+    document.querySelectorAll(".mdc-button").forEach(button => {
+        mdc.ripple.MDCRipple.attachTo(button);
+    });
     document.querySelector('.dialog').classList.add('active');
     document.querySelector('.dialog__close').classList.add('active');
-    document.querySelector('.dialog__close').addEventListener('click', () => {
-        closeDialog();
-    });
+    if (!exitBg) {
+        document.querySelector('.dialog__close').addEventListener('click', () => {
+            closeDialog();
+        });
+    }
     document.querySelector('.loader').classList.add('hide');
 };
 
@@ -212,44 +217,70 @@ const sendClearDataRequest = () => {
 const createManualLogin = (from_users) => {
     html = `<h3 class="title__name">Login</h3>
     <div class="manual__form user">
-    <div class="input">
-    <input type="text" value="" class="user__name"  onblur="setLabelPos(this)">
-    <label class="input__label" for="user__name">Username</label>
+    <div class="mdc-text-field mdc-text-field--outlined">
+    <input type="text" class="mdc-text-field__input first-name-input server__url" id="user__name">
+    <span class="mdc-notched-outline">
+    <span class="mdc-notched-outline__leading"></span>
+    <span class="mdc-notched-outline__notch">
+    <span class="mdc-floating-label" id="my-label-id">Username</span>
+    </span>
+    <span class="mdc-notched-outline__trailing"></span>
+    </span>
     </div>
-    <div class="input">
-    <input type="password" value="" class="user__password" onblur="setLabelPos(this)">
-    <label class="input__label" for="user__password">Password</label>
+    <div class="mdc-text-field mdc-text-field--outlined">
+    <input type="text" class="mdc-text-field__input first-name-input server__url" id="user__password">
+    <span class="mdc-notched-outline">
+    <span class="mdc-notched-outline__leading"></span>
+    <span class="mdc-notched-outline__notch">
+    <span class="mdc-floating-label" id="my-label-id">Password</span>
+    </span>
+    <span class="mdc-notched-outline__trailing"></span>
+    </span>
     </div>
-    <div class="input checkbox">
-    <label>Remember me</label>
-    <input class="remember__user" type="checkbox" value="true" style="-webkit-appearance: none;">
-    <svg class="tick" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
-    <path d="M13.854 3.646L6.5 11L2.646 7.146" stroke="black" stroke-linecap="round"/>
+    <div class="mdc-form-field">
+    <div class="mdc-checkbox">
+    <input type="checkbox"
+    class="mdc-checkbox__native-control"
+    id="remember__user"/>
+    <div class="mdc-checkbox__background">
+    <svg class="mdc-checkbox__checkmark"
+    viewBox="0 0 24 24">
+    <path class="mdc-checkbox__checkmark-path"
+    fill="none"
+    d="M1.73,12.91 8.1,19.28 22.79,4.59"/>
     </svg>
+    <div class="mdc-checkbox__mixedmark"></div>
     </div>
-    <button class="clicky user__login" onclick="sendAuthInfo(document.querySelector('.user__name').value, document.querySelector('.user__password').value, document.querySelector('.remember__user'))">
-    <label>Login</label>
+    <div class="mdc-checkbox__ripple"></div>
+    </div>
+    <label for="remember__user">Remember me</label>
+    </div>
+    <button class="mdc-button mdc-button--raised" onclick="sendAuthInfo(document.querySelector('#user__name').value, document.querySelector('#user__password').value, document.querySelector('#remember__user'))">
+    <span class="mdc-button__ripple"></span>
+    <span class="mdc-button__focus-ring"></span>
+    <span class="mdc-button__label">Login</span>
     </button>
-    <button class="change__server clicky" onclick="changeServer('.manual__login')">
-    <span>Change Server</span>
+    <button class="mdc-button mdc-button--raised" onclick="changeServer('.manual__login')">
+    <span class="mdc-button__ripple"></span>
+    <span class="mdc-button__focus-ring"></span>
+    <span class="mdc-button__label">Change Server</span>
     </button>
     </div>`;
     if (from_users == false) {
         document.querySelector('.back').classList.add("hide");
     }
     document.querySelector('.manual__input').insertAdjacentHTML('beforeend', html);
+    document.querySelectorAll(".mdc-button").forEach(button => {
+        mdc.ripple.MDCRipple.attachTo(button);
+    });
+    document.querySelectorAll(".mdc-text-field").forEach(textField => {
+        mdc.textField.MDCTextField.attachTo(textField);
+    });
+    mdc.checkbox.MDCCheckbox.attachTo(document.querySelector(".mdc-checkbox"));
     document.querySelector('.manual__login').classList.remove('hide');
     document.querySelector(".purple").classList.add("active");
     document.querySelector(".blue").classList.add("active");
     document.querySelector('.manual__login').scrollIntoView({ behavior: "smooth" });
-};
-
-const setLabelPos = (element) => {
-    if (element.value.length < 1) {
-        element.parentNode.querySelector('.input__label').classList.remove('inputLabelActive');
-    } else {
-        element.parentNode.querySelector('.input__label').classList.add('inputLabelActive');
-    }
 };
 
 const createEnterPassword = (userName, userImg, userId) => {
@@ -280,6 +311,14 @@ const createEnterPassword = (userName, userImg, userId) => {
         html = `<img class="user__svg" src="../svg/avatar.svg">`;
         document.querySelector('.manual__input').querySelector('.user__info').insertAdjacentHTML('afterbegin', html);
     }
+    document.querySelector('.manual__input').insertAdjacentHTML('beforeend', html);
+    document.querySelectorAll(".mdc-button").forEach(button => {
+        mdc.ripple.MDCRipple.attachTo(button);
+    });
+    document.querySelectorAll(".mdc-text-field").forEach(textField => {
+        mdc.textField.MDCTextField.attachTo(textField);
+    });
+    mdc.checkbox.MDCCheckbox.attachTo(document.querySelector(".mdc-checkbox"));
     document.querySelector('.manual__login').classList.remove('hide');
     document.querySelector(".blue").classList.add("active");
     document.querySelector('.manual__login').scrollIntoView({ behavior: "smooth" });
@@ -342,7 +381,7 @@ emitter.on("serverGo-true", () => {
 });
 emitter.on("server-url", (server) => {
     if (server == "offline") {
-        createDialog("Error", "Can't connect to Jellyfin server", "remove__server", "error", ".server");
+        createDialog("Error", "Can't connect to Jellyfin server", "remove__server", "error", ".server", true);
     }
 });
 emitter.on("user-saved", (user) => {
@@ -365,7 +404,8 @@ emitter.on("user-saved", (user) => {
             emitter.emit("logged-in", [window.server, user[0], user[1], authUser.data.AccessToken, `${base_token}, Token=${authUser.data.AccessToken}`, authUser.data.User.Id, authUser.data.User.Name, authUser.data]);
         } catch (error) {
             console.log(`[Err]Can't login, Reason: ${error}`);
-            createAlert("error", "Invalid Username or Password entered try again", ".manual__login");
+            document.querySelector('.loader').classList.add('hide');
+            createDialog("Error", "Invalid Username or Password", "remove__server", "error", ".server", true);
         }
     };
     auth();

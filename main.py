@@ -7,7 +7,7 @@ from PySide6.QtWebEngineWidgets import QWebEngineView
 from PySide6.QtWebEngineCore import QWebEngineSettings
 from PySide6.QtWebChannel import QWebChannel
 import renderer
-app = QApplication(["--enable-smooth-scrolling"])
+app = QApplication(sys.argv)
 os.environ['QTWEBENGINE_REMOTE_DEBUGGING'] = "9000"
 
 try:
@@ -18,9 +18,6 @@ except ImportError:
     pass
 
 storage = localStoragePy('prayag.jellyplayer.app', 'sqlite')
-print(f"Server Url:{storage.getItem('server')}")
-print([storage.getItem("UserName"), storage.getItem("UserPw"), storage.getItem("openHome")])
-
 
 def restart():
     QApplication.quit()
