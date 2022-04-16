@@ -22,13 +22,15 @@
     <script type="module">
         import { decode } from "https://cdn.jsdelivr.net/npm/blurhash@1.1.5/+esm"
         import { UserApi, Configuration, LibraryApi, ItemsApi, UserLibraryApi } from 'https://cdn.jsdelivr.net/npm/@jellyfin/client-axios/+esm';
-        window.decode = decode
+        window.decode = decode;
         window.UserApi = UserApi;
         window.Configuration = Configuration;
         window.LibraryApi = LibraryApi;
         window.UserLibraryApi = UserLibraryApi;
         window.ItemsApi = ItemsApi;
     </script>
+    <link href="https://unpkg.com/material-components-web@13.0.0/dist/material-components-web.min.css" rel="stylesheet">
+    <script src="https://unpkg.com/material-components-web@13.0.0/dist/material-components-web.min.js"></script>
 </head>
 <body>
     <main>
@@ -56,12 +58,20 @@
                         <object data="../../assets/logo.svg" type="image/svg+xml"></object>
                     </div>
                     <div class="form__cont">
-                        <div class="input">
-                            <input id="serverUrl" type="url" class="input__text server__url" onblur="setLabelPos(this)">
-                            <label for="serverUrl" class="input__label">Server Address</label>
+                        <div class="mdc-text-field mdc-text-field--outlined">
+                            <input type="text" class="mdc-text-field__input first-name-input server__url">
+                            <span class="mdc-notched-outline">
+                                <span class="mdc-notched-outline__leading"></span>
+                                <span class="mdc-notched-outline__notch">
+                                    <span class="mdc-floating-label" id="my-label-id">Server Address</span>
+                                </span>
+                                <span class="mdc-notched-outline__trailing"></span>
+                            </span>
                         </div>
-                        <button class="input__btn save__server clicky">
-                            <span class="btn__label">Save</span>
+                        <button class="mdc-button mdc-button--raised save__server">
+                            <span class="mdc-button__ripple"></span>
+                            <span class="mdc-button__focus-ring"></span>
+                            <span class="mdc-button__label">Save</span>
                         </button>
                         <div class="info">
                             <span class="mdi mdi-information-outline"></span>
@@ -76,11 +86,15 @@
             <section class="page users hide">
                 <h3 class="title__name">Users</h3>
                 <section class="user__cont"></section>
-                <button class="change__server clicky" onclick="createManualLogin(true);document.querySelector('.manual__login').classList.remove('hide');document.querySelector('.manual__login').scrollIntoView({ behavior: 'smooth' });setInterval(() => {document.querySelector('.server').classList.add('hide');}, 1000);">
-                    <span>Manual Login</span>
+                <button class="mdc-button mdc-button--raised" onclick="createManualLogin(true);document.querySelector('.manual__login').classList.remove('hide');document.querySelector('.manual__login').scrollIntoView({ behavior: 'smooth' });setInterval(() => {document.querySelector('.server').classList.add('hide');}, 1000);">
+                    <span class="mdc-button__ripple"></span>
+                    <span class="mdc-button__focus-ring"></span>
+                    <span class="mdc-button__label">Manual login</span>
                 </button>
-                <button class="change__server clicky" onclick="changeServer('.users')">
-                    <span>Change Server</span>
+                <button class="mdc-button mdc-button--raised" onclick="changeServer('.users')">
+                    <span class="mdc-button__ripple"></span>
+                    <span class="mdc-button__focus-ring"></span>
+                    <span class="mdc-button__label">Change Server</span>
                 </button>
             </section>
             <section class="page manual__login hide">
@@ -90,6 +104,14 @@
                 <section class="manual__input"></section>
             </section>
         </div>
+        <script defer>
+            document.querySelectorAll(".mdc-button").forEach(button => {
+                mdc.ripple.MDCRipple.attachTo(button)
+            });
+            document.querySelectorAll(".mdc-text-field").forEach(textField => {
+                mdc.textField.MDCTextField.attachTo(textField);
+            });
+        </script>
         <script src="qrc:/renderer/js/login.js" defer></script>       
         <script src="qrc:/renderer/js/main.js" defer></script>
     </main>

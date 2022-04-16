@@ -5,6 +5,7 @@ const user__cont = document.querySelector('.users');
 let html;
 var server;
 
+
 function generateUUID() { // Public Domain/MIT
     var d = new Date().getTime();//Timestamp
     var d2 = ((typeof performance !== 'undefined') && performance.now && (performance.now()*1000)) || 0;//Time in microseconds since page-load or 0 if unsupported
@@ -65,13 +66,11 @@ window.onload = () => {
         } else if(window.serverOnline == "openHomeTrue") {
             window.getAuthinfo();
         } else if (window.serverOnline == "serverOffline") {
-            console.log("s24oi")
             emitter.emit("server-url", "offline");
         }
         
     });
     emitter.on("get-server", async () => {
-        console.log('sw')
         window.getServer();
     });
     document.querySelector(".loader").classList.add("hide");
@@ -137,7 +136,7 @@ const closeDialog = () => {
 const createAlert = (type, msg, page) => {     
     html = `<div class="alert ${type}">
     <div class="icon">
-    <i class="bi bi-exclamation-octagon"></i>
+    <span class="mdi mdi-alert-octagram-outline"></span>
     </div>
     <div class="msg">
     ${msg}
@@ -157,7 +156,7 @@ const createDialog = (title, msg, btn, type, page) => {
     html = `<div class="dialog__cont">
     <div class="dialog ${type}">
     <div class="icon">
-    <i class="bi bi-exclamation-octagon"></i>
+    <span class="mdi mdi-alert-octagram-outline"></span>
     </div>
     <div class="title">
     ${title}
@@ -171,21 +170,29 @@ const createDialog = (title, msg, btn, type, page) => {
     document.querySelector(page).insertAdjacentHTML('beforeend', html);
     if (btn == "yes__no") {
         html = `<div class="buttons">
-        <button class="clicky yes" onclick="sendClearDataRequest()">
-        <label>Yes</label>
+        <button class="mdc-button mdc-button--raised" onclick="sendClearDataRequest()">
+        <span class="mdc-button__ripple"></span>
+        <span class="mdc-button__focus-ring"></span>
+        <span class="mdc-button__label">Yes</span>
         </button>
-        <button class="clicky no" onclick="closeDialog()">
-        <label>No</label>
+        <button class="mdc-button mdc-button--raised" onclick="closeDialog()">
+        <span class="mdc-button__ripple"></span>
+        <span class="mdc-button__focus-ring"></span>
+        <span class="mdc-button__label">No</span>
         </button>
         </div>`;
         document.querySelector('.dialog').insertAdjacentHTML('beforeend', html);
     } else if (btn == "remove__server") {
         html = `<div class="buttons">
-        <button class="clicky rem__serv" onclick="sendClearDataRequest()">
-        <label>Remove Server</label>
+        <button class="mdc-button mdc-button--raised" onclick="sendClearDataRequest()">
+        <span class="mdc-button__ripple"></span>
+        <span class="mdc-button__focus-ring"></span>
+        <span class="mdc-button__label">Remove Server</span>
         </button>
-        <button class="clicky reload" onclick="window.backend.restart()">
-        <label>Restart JellyPlayer</label>
+        <button class="mdc-button mdc-button--raised" onclick="window.backend.restart()">
+        <span class="mdc-button__ripple"></span>
+        <span class="mdc-button__focus-ring"></span>
+        <span class="mdc-button__label">Restart JellyPlayer</span>
         </button>
         </div>`;
         document.querySelector('.dialog').insertAdjacentHTML('beforeend', html);
@@ -289,7 +296,6 @@ const sendAuthInfo = (userName, password, checkbox) => {
                     Pw: password
                 }
             });
-            console.log(authUser)
             emitter.emit("logged-in", [window.server, userName, password ,authUser.data.AccessToken, `${base_token}, Token=${authUser.data.AccessToken}`, authUser.data.User.Id, authUser.data.User.Name, authUser.data]);
         } catch (error) {
             document.querySelector(".loader").classList.add("hide");
@@ -335,7 +341,6 @@ emitter.on("serverGo-true", () => {
     });
 });
 emitter.on("server-url", (server) => {
-    console.log(server)
     if (server == "offline") {
         createDialog("Error", "Can't connect to Jellyfin server", "remove__server", "error", ".server");
     }

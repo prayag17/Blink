@@ -13,6 +13,59 @@
 	background: rgb(255 255 255/1);
 }
 
+.login {
+	--mdc-theme--primary: white !important;
+	--mdc-theme--primary-bg: var(--main-bg) !important;
+}
+
+.login button {
+	background-color: rgb(255 255 255 / 0.3) !important;
+	border-radius: 100px;
+	border: 2px solid white !important;
+	overflow: hidden;
+}
+.login .mdc-button__ripple > * {
+	background-color: rgb(0 0 0 / 0.3) !important;
+}
+
+.login
+	.mdc-text-field--outlined:not(.mdc-text-field--disabled)
+	.mdc-notched-outline__leading,
+.login
+	.mdc-text-field--outlined:not(.mdc-text-field--disabled)
+	.mdc-notched-outline__notch,
+.login
+	.mdc-text-field--outlined:not(.mdc-text-field--disabled)
+	.mdc-notched-outline__trailing {
+	border-color: rgb(255 255 255 / 0.4) !important;
+}
+
+.login
+	.mdc-text-field--outlined:not(.mdc-text-field--disabled).mdc-text-field--focused
+	.mdc-notched-outline__leading,
+.login
+	.mdc-text-field--outlined:not(.mdc-text-field--disabled).mdc-text-field--focused
+	.mdc-notched-outline__notch,
+.login
+	.mdc-text-field--outlined:not(.mdc-text-field--disabled).mdc-text-field--focused
+	.mdc-notched-outline__trailing {
+	border-color: rgb(255, 255, 255) !important;
+}
+
+.login .mdc-text-field:not(.mdc-text-field--disabled) .mdc-floating-label {
+	color: rgb(255 255 255 / 0.6);
+}
+.login
+	.mdc-text-field--focused:not(.mdc-text-field--disabled)
+	.mdc-floating-label {
+	color: white !important;
+}
+
+.login .mdc-text-field:not(.mdc-text-field--disabled) .mdc-text-field__input {
+	color: rgb(255 255 255 / 0.87);
+	caret-color: white;
+}
+
 #background {
 	background: transparent;
 	position: fixed;
@@ -118,30 +171,6 @@ button.clicky:active::after {
 	box-shadow: 0 0 0 0 white;
 	opacity: 0.5;
 	transition: 0s;
-}
-
-input[type="text"],
-input[type="url"],
-input[type="password"] {
-	background: transparent;
-	border: none;
-	border-bottom: 3px solid white;
-	color: white;
-}
-
-button {
-	--clr: currentColor;
-	overflow: hidden;
-	background: #ffffff4b;
-	border: 2px solid white;
-	color: white;
-	border-radius: 100px;
-	width: 100%;
-	transition: background var(--transition-time-default);
-}
-
-button:hover {
-	background: #ffffff6b;
 }
 
 .input__label {

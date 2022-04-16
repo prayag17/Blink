@@ -127,6 +127,11 @@ const createCardGrid = (type, data, usrId, api) => {
             }
             document.querySelector(`.${type.toLowerCase()} .card[data-index="${data.indexOf(item)}"] .card__text__cont`).insertAdjacentHTML("beforeend", `<div class="card__text secondary">${item.ProductionYear}</div>`);
             document.querySelector(`.${type.toLowerCase()} .card[data-index="${data.indexOf(item)}"]`).classList.add("primary");
+            itmInfo = await api.getItem({
+                userId: usrId,
+                itemId: item.Id
+            });
+            document.querySelector(`.${type.toLowerCase()} .card[data-index="${data.indexOf(item)}"]`).insertAdjacentHTML("beforeend", `<div class="card__info__cont"><div class="card__info__title">${itmInfo.data.Name}</div><div class="card__info__overview">${itmInfo.data.Overview}</div></div>`);
             switch (item.Type) {
                 case "books":
                 document.querySelector(`.${type.toLowerCase()} .card[data-index="${data.indexOf(item)}"] .mdi`).classList.add("mdi-book-multiple-outline");
