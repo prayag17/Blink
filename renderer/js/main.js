@@ -64,7 +64,6 @@ const createCardGrid = (type, data, usrId, api) => {
     document.querySelector(".library__page").insertAdjacentHTML("beforeend", `<div class="content ${type.toLowerCase()}"><div class="grid"></div></div>`);
     document.querySelector(`.content.${type.toLowerCase()}`).insertAdjacentHTML("afterbegin", `<h2>${type}</h2>`);
     data.forEach(async item => {
-        console.log(item)
         html = `<div class="card" data-index="${data.indexOf(item)}">
         <div class="image__cont">
         <canvas class="placeholder"></canvas>
@@ -127,11 +126,6 @@ const createCardGrid = (type, data, usrId, api) => {
             }
             document.querySelector(`.${type.toLowerCase()} .card[data-index="${data.indexOf(item)}"] .card__text__cont`).insertAdjacentHTML("beforeend", `<div class="card__text secondary">${item.ProductionYear}</div>`);
             document.querySelector(`.${type.toLowerCase()} .card[data-index="${data.indexOf(item)}"]`).classList.add("primary");
-            itmInfo = await api.getItem({
-                userId: usrId,
-                itemId: item.Id
-            });
-            document.querySelector(`.${type.toLowerCase()} .card[data-index="${data.indexOf(item)}"]`).insertAdjacentHTML("beforeend", `<div class="card__info__cont"><div class="card__info__title">${itmInfo.data.Name}</div><div class="card__info__overview">${itmInfo.data.Overview}</div></div>`);
             switch (item.Type) {
                 case "books":
                 document.querySelector(`.${type.toLowerCase()} .card[data-index="${data.indexOf(item)}"] .mdi`).classList.add("mdi-book-multiple-outline");
@@ -203,10 +197,6 @@ emitter.on("logged-in", async (user) => {
     const libs = libsRaw.data.Items;
     const latestMedia = await userLibApi.getLatestMedia({
         userId: user[5]
-    });
-    const latestMovies = await userLibApi.getLatestMedia({
-        userId: user[5],
-        includeItemTypes: ["Movie"]
     });
     if (!user[7].User.PrimaryImageTag) {
         html = `<img src="../svg/avatar.svg">`;
@@ -325,5 +315,12 @@ emitter.on("logged-in", async (user) => {
         document.querySelector(".track__cont").classList.add("hide");
     }
     createCardGrid("Library", libs);
-    createCardGrid("Movies", latestMovies.data, user[5], userLibApi);
+    let latest;
+    libs.forEach(async library => {
+        latest = await userLibApi.getLatestMedia({
+            userId: user[5],
+            includeItemTypes: [library.Name]
+        });
+        createCardGrid(library.Name, latest.data, user[5], userLibApi);
+    });
 });

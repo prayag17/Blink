@@ -218,7 +218,7 @@ const createManualLogin = (from_users) => {
     html = `<h3 class="title__name">Login</h3>
     <div class="manual__form user">
     <div class="mdc-text-field mdc-text-field--outlined">
-    <input type="text" class="mdc-text-field__input first-name-input server__url" id="user__name">
+    <input type="text" class="mdc-text-field__input first-name-input" id="user__name">
     <span class="mdc-notched-outline">
     <span class="mdc-notched-outline__leading"></span>
     <span class="mdc-notched-outline__notch">
@@ -227,8 +227,8 @@ const createManualLogin = (from_users) => {
     <span class="mdc-notched-outline__trailing"></span>
     </span>
     </div>
-    <div class="mdc-text-field mdc-text-field--outlined">
-    <input type="text" class="mdc-text-field__input first-name-input server__url" id="user__password">
+    <div class="mdc-text-field mdc-text-field--outlined mdc-text-field--with-trailing-icon">
+    <input type="password" class="mdc-text-field__input first-name-input" id="user__password">
     <span class="mdc-notched-outline">
     <span class="mdc-notched-outline__leading"></span>
     <span class="mdc-notched-outline__notch">
@@ -236,6 +236,7 @@ const createManualLogin = (from_users) => {
     </span>
     <span class="mdc-notched-outline__trailing"></span>
     </span>
+    <i class="mdi mdi-eye-outline mdc-text-field__icon mdc-text-field__icon--trailing" tabindex="0" data-passvisible="false" role="button" onclick="if(this.dataset.passvisible=='false'){document.querySelector('#user__password').setAttribute('type', 'text');this.dataset.passvisible='true';this.classList.add('mdi-eye-off-outline');this.classList.remove('mdi-eye-outline')} else if(this.dataset.passvisible=='true'){document.querySelector('#user__password').setAttribute('type', 'password');this.dataset.passvisible='false';this.classList.add('mdi-eye-outline');this.classList.remove('mdi-eye-off-outline')}"></i>
     </div>
     <div class="mdc-form-field">
     <div class="mdc-checkbox">
@@ -288,30 +289,54 @@ const createEnterPassword = (userName, userImg, userId) => {
     <div class="user__info">
     <h3 class="title__name">Hello, ${userName}</h3>
     </div>
-    <div class="input">
-    <input type="password" value="" class="user__password" onblur="setLabelPos(this)">
-    <label for="user__password" class="input__label">Password</label>
+    <div class="mdc-text-field mdc-text-field--outlined mdc-text-field--with-trailing-icon">
+    <input type="password" class="mdc-text-field__input first-name-input" id="user__password">
+    <span class="mdc-notched-outline">
+    <span class="mdc-notched-outline__leading"></span>
+    <span class="mdc-notched-outline__notch">
+    <span class="mdc-floating-label" id="my-label-id">Password</span>
+    </span>
+    <span class="mdc-notched-outline__trailing"></span>
+    </span>
+    <i class="mdi mdi-eye-outline mdc-text-field__icon mdc-text-field__icon--trailing" tabindex="0" data-passvisible="false" role="button" onclick="if(this.dataset.passvisible=='false'){document.querySelector('#user__password').setAttribute('type', 'text');this.dataset.passvisible='true';this.classList.add('mdi-eye-off-outline');this.classList.remove('mdi-eye-outline')} else if(this.dataset.passvisible=='true'){document.querySelector('#user__password').setAttribute('type', 'password');this.dataset.passvisible='false';this.classList.add('mdi-eye-outline');this.classList.remove('mdi-eye-off-outline')}"></i>
     </div>
-    <div class="input checkbox">
-    <label>Remember me</label>
-    <input class="remember__user" type="checkbox" value="true" style="-webkit-appearance: none;">
-    <svg class="tick" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
-    <path d="M13.854 3.646L6.5 11L2.646 7.146" stroke="black" stroke-linecap="round"/>
+    <div class="mdc-form-field">
+    <div class="mdc-checkbox">
+    <input type="checkbox"
+    class="mdc-checkbox__native-control"
+    id="remember__user"/>
+    <div class="mdc-checkbox__background">
+    <svg class="mdc-checkbox__checkmark"
+    viewBox="0 0 24 24">
+    <path class="mdc-checkbox__checkmark-path"
+    fill="none"
+    d="M1.73,12.91 8.1,19.28 22.79,4.59"/>
     </svg>
+    <div class="mdc-checkbox__mixedmark"></div>
     </div>
-    <button class="user__login clicky" data-user="${userName}" onclick="sendAuthInfo(this.dataset.user, document.querySelector('.user__password').value, document.querySelector('.remember__user'))">
-    <span>Login</span>
+    <div class="mdc-checkbox__ripple"></div>
+    </div>
+    <label for="remember__user">Remember me</label>
+    </div>
+    <button class="mdc-button mdc-button--raised" onclick="sendAuthInfo(this.dataset.user, document.querySelector('#user__password').value, document.querySelector('#remember__user'))">
+    <span class="mdc-button__ripple"></span>
+    <span class="mdc-button__focus-ring"></span>
+    <span class="mdc-button__label">Login</span>
+    </button>
+    <button class="mdc-button mdc-button--raised" onclick="changeServer('.manual__login')">
+    <span class="mdc-button__ripple"></span>
+    <span class="mdc-button__focus-ring"></span>
+    <span class="mdc-button__label">Change Server</span>
     </button>
     </div>`;
     document.querySelector('.manual__input').insertAdjacentHTML('beforeend', html);
     if (userImg == true) {
         html = `<img class="user__img" src="${window.server}/Users/${userId}/Images/Primary"></img>`;
-        document.querySelector('.manual__input').querySelector('.user__info').insertAdjacentHTML('afterbegin', html);
+        document.querySelector('.user__info').insertAdjacentHTML('afterbegin', html);
     } else if (userImg == false) {
-        html = `<img class="user__svg" src="../svg/avatar.svg">`;
-        document.querySelector('.manual__input').querySelector('.user__info').insertAdjacentHTML('afterbegin', html);
+        html = `<img class="user__svg" data-tp src="../svg/avatar.svg">`;
+        document.querySelector('.user__info').insertAdjacentHTML('afterbegin', html);
     }
-    document.querySelector('.manual__input').insertAdjacentHTML('beforeend', html);
     document.querySelectorAll(".mdc-button").forEach(button => {
         mdc.ripple.MDCRipple.attachTo(button);
     });
@@ -344,8 +369,9 @@ const sendAuthInfo = (userName, password, checkbox) => {
         }
     };
     if (auth() != "err") {
+        console.log(checkbox.checked);
         if (checkbox.checked == true) {
-            window.setAuthInfoDatabase(userName, password);
+            // window.setAuthInfoDatabase(userName, password);
         }
     }
 };

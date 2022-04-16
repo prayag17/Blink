@@ -32,6 +32,17 @@
 	font-family: "Montserrat" !important;
 }
 
+.login .mdc-text-field--outlined {
+	--border-clr: rgb(255 255 255 / 0.4);
+}
+.login .mdc-text-field--outlined:hover {
+	--border-clr: rgb(255 255 255 / 0.8);
+}
+
+.login .mdc-text-field--outlined .mdc-notched-outline__leading {
+	transition: background var(--transition-time-default);
+}
+
 .login
 	.mdc-text-field--outlined:not(.mdc-text-field--disabled)
 	.mdc-notched-outline__leading,
@@ -41,7 +52,7 @@
 .login
 	.mdc-text-field--outlined:not(.mdc-text-field--disabled)
 	.mdc-notched-outline__trailing {
-	border-color: rgb(255 255 255 / 0.4) !important;
+	border-color: var(--border-clr) !important;
 }
 
 .login
@@ -93,6 +104,11 @@
 
 .login .mdc-form-field {
 	--mdc-theme-text-primary-on-background: rgb(255 255 255 / 0.87);
+}
+
+.login .mdc-text-field__icon::before {
+	font-size: 26px;
+	color: var(--border-clr);
 }
 
 #background {
@@ -487,7 +503,7 @@ section.user__cont {
 	flex-flow: column;
 	grid-gap: 2em;
 	justify-content: center;
-	align-items: center;
+	align-items: stretch;
 }
 
 .user__info {
