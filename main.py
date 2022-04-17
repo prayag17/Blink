@@ -7,8 +7,8 @@ from PySide6.QtWebEngineWidgets import QWebEngineView
 from PySide6.QtWebEngineCore import QWebEngineSettings
 from PySide6.QtWebChannel import QWebChannel
 import renderer
-app = QApplication(sys.argv)
-os.environ['QTWEBENGINE_REMOTE_DEBUGGING'] = "9000"
+app = QApplication(["--disable-gpu-driver-bug-workarounds", "--enable-gpu-rasterization"])
+# os.environ['QTWEBENGINE_REMOTE_DEBUGGING'] = "9000"
 
 try:
     from ctypes import windll
@@ -35,6 +35,7 @@ class Backend(QObject):
                     else:
                         return "serverGoTrue"
             except:
+                
                 return "serverOffline"
         else:
             return "serverGoFalse"
@@ -109,7 +110,6 @@ class LoginWin(QMainWindow):
         
         self.inspector = QWebEngineView()
         self.inspector.setWindowTitle("Inspector")
-        self.inspector.load(QUrl("http://127.0.0.1:9000"))
         
         self.backend = Backend()
         self.channel = QWebChannel()

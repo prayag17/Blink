@@ -69,6 +69,7 @@
 
 .login .mdc-text-field:not(.mdc-text-field--disabled) .mdc-floating-label {
 	color: rgb(255 255 255 / 0.6);
+	font-family: "Montserrat" !important;
 }
 .login
 	.mdc-text-field--focused:not(.mdc-text-field--disabled)
@@ -79,6 +80,11 @@
 .login .mdc-text-field:not(.mdc-text-field--disabled) .mdc-text-field__input {
 	color: rgb(255 255 255 / 0.87);
 	caret-color: white;
+	font-family: "Montserrat" !important;
+}
+
+.mdc-form-field > label {
+	font-family: "Montserrat" !important;
 }
 
 .login
@@ -175,9 +181,12 @@
 	max-width: 30em;
 }
 
-.logo object {
+.logo {
+	width: 120%;
+}
+
+.logo img {
 	width: 100%;
-	height: 100%;
 }
 
 .manual__input {
@@ -192,6 +201,7 @@
 	display: flex;
 	flex-flow: column;
 	grid-gap: 3em;
+	align-items: center;
 }
 
 button.clicky {

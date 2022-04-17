@@ -59,95 +59,86 @@ const sliderAnim = (slider) => {
     });
 };
 
-const createCardGrid = (type, data, usrId, api) => {
-    let itmInfo;
-    document.querySelector(".library__page").insertAdjacentHTML("beforeend", `<div class="content ${type.toLowerCase()}"><div class="grid"></div></div>`);
-    document.querySelector(`.content.${type.toLowerCase()}`).insertAdjacentHTML("afterbegin", `<h2>${type}</h2>`);
-    data.forEach(async item => {
-        html = `<div class="card" data-index="${data.indexOf(item)}">
-        <div class="image__cont">
-        <canvas class="placeholder"></canvas>
-        <div class="icon__image">
-        <span class="mdi">
-        </div>
-        <div class="primary__image hide">
-        <img>
-        </div>
-        </div>
-        <div class="card__text__cont">
-        <div class="card__text primary">${item.Name}</div>
-        </div>
-        </div>`;
-        document.querySelector(`.content.${type.toLowerCase()} .grid`).insertAdjacentHTML("beforeend", html);
-        if (item.CollectionType) {
-            if (item.ImageTags.Primary) {
-                window.itm = item;
-                backdrop = item.ImageTags.Primary;
-                blurhashval = decode(item.ImageBlurHashes.Primary[backdrop], 1080, 720);
-                blurhasdpix = document.querySelector(`.${type.toLowerCase()} .card[data-index="${data.indexOf(item)}"] .placeholder`).getContext("2d").createImageData(1080, 720);
-                blurhasdpix.data.set(blurhashval);
-                document.querySelector(`.${type.toLowerCase()} .card[data-index="${data.indexOf(item)}"] .placeholder`).getContext("2d").putImageData(blurhasdpix, 0, 0);
-                document.querySelector(`.${type.toLowerCase()} .card[data-index="${data.indexOf(item)}"] .primary__image img`).setAttribute("src", `${window.server}/Items/${item.Id}/Images/Primary?imgTag=${item.ImageTags.Primary[0]}`);
-                // document.querySelector(`.${type.toLowerCase()} .card[data-index="${data.indexOf(item)}"] .primary__image img`).style.aspectRatio = item;
-                document.querySelector(`.${type.toLowerCase()} .card[data-index="${data.indexOf(item)}"] .primary__image img`).setAttribute("onload", `document.querySelector('.${type.toLowerCase()} .card[data-index="${data.indexOf(item)}"] .placeholder').setAttribute('style', 'opacity:0;')`);
-                document.querySelector(`.${type.toLowerCase()} .card[data-index="${data.indexOf(item)}"] .primary__image`).classList.remove("hide");
+const createCardGrid = (type, data) => {
+    let typeClass = type.replace(/\s+/g, '');
+    if (data.length != 0) {
+        document.querySelector(".library__page").insertAdjacentHTML("beforeend", `<div class="content ${typeClass.toLowerCase()}"><div class="grid"></div></div>`);
+        setTimeout(() => {
+            document.querySelector(`.content.${typeClass.toLowerCase()}`).insertAdjacentHTML("afterbegin", `<h2>${type}</h2>`);
+        }, 1);
+        setTimeout(() => {
+            for (let item of data) {
+                html = `<div class="card" data-index="${data.indexOf(item)}">
+                <div class="image__cont">
+                <canvas class="placeholder"></canvas>
+                <div class="icon__image">
+                <span class="mdi">
+                </div>
+                <div class="primary__image hide">
+                <img>
+                </div>
+                </div>
+                <div class="card__text__cont">
+                <div class="card__text primary">${item.Name}</div>
+                </div>
+                </div>`;
+                document.querySelector(`.content.${typeClass.toLowerCase()} .grid`).insertAdjacentHTML("beforeend", html);
+                if (item.CollectionType) {
+                    if (item.ImageTags.Primary) {
+                        document.querySelector(`.${typeClass.toLowerCase()} .card[data-index="${data.indexOf(item)}"] .primary__image img`).setAttribute("src", `${window.server}/Items/${item.Id}/Images/Primary?imgTag=${item.ImageTags.Primary[0]}`);
+                        document.querySelector(`.${typeClass.toLowerCase()} .card[data-index="${data.indexOf(item)}"] .primary__image`).classList.remove("hide");
+                    }
+                    switch (item.CollectionType) {
+                        case "books":
+                        document.querySelector(`.${typeClass.toLowerCase()} .card[data-index="${data.indexOf(item)}"] .mdi`).classList.add("mdi-book-multiple-outline");
+                        break;
+                        case "boxsets":
+                        document.querySelector(`.${typeClass.toLowerCase()} .card[data-index="${data.indexOf(item)}"] .mdi`).classList.add("mdi-folder-outline");
+                        break;
+                        case "movies":
+                        document.querySelector(`.${typeClass.toLowerCase()} .card[data-index="${data.indexOf(item)}"] .mdi`).classList.add("mdi-play-box-multiple-outline");
+                        break;
+                        case "music":
+                        document.querySelector(`.${typeClass.toLowerCase()} .card[data-index="${data.indexOf(item)}"] .mdi`).classList.add("mdi-music-box-multiple-outline");
+                        break;
+                        case "playlists":
+                        document.querySelector(`.${typeClass.toLowerCase()} .card[data-index="${data.indexOf(item)}"] .mdi`).classList.add("mdi-playlist-music");
+                        break;
+                        case "tvshows":
+                        document.querySelector(`.${typeClass.toLowerCase()} .card[data-index="${data.indexOf(item)}"] .mdi`).classList.add("mdi-youtube-tv");
+                        break;
+                    }
+                } else if (item.Type) {
+                    if (item.ImageTags.Primary) {
+                        document.querySelector(`.${typeClass.toLowerCase()} .card[data-index="${data.indexOf(item)}"] .primary__image img`).setAttribute("src", `${window.server}/Items/${item.Id}/Images/Primary?imgTag=${item.ImageTags.Primary[0]}`);
+                        document.querySelector(`.${typeClass.toLowerCase()} .card[data-index="${data.indexOf(item)}"] .primary__image`).classList.remove("hide");
+                    }
+                    document.querySelector(`.${typeClass.toLowerCase()} .card[data-index="${data.indexOf(item)}"] .card__text__cont`).insertAdjacentHTML("beforeend", `<div class="card__text secondary">${item.ProductionYear}</div>`);
+                    document.querySelector(`.${typeClass.toLowerCase()} .card[data-index="${data.indexOf(item)}"]`).classList.add("primary");
+                    switch (item.Type) {
+                        case "books":
+                        document.querySelector(`.${typeClass.toLowerCase()} .card[data-index="${data.indexOf(item)}"] .mdi`).classList.add("mdi-book-multiple-outline");
+                        break;
+                        case "boxsets":
+                        document.querySelector(`.${typeClass.toLowerCase()} .card[data-index="${data.indexOf(item)}"] .mdi`).classList.add("mdi-folder-outline");
+                        break;
+                        case "Movie":
+                        document.querySelector(`.${typeClass.toLowerCase()} .card[data-index="${data.indexOf(item)}"] .mdi`).classList.add("mdi-play-box-multiple-outline");
+                        break;
+                        case "music":
+                        document.querySelector(`.${typeClass.toLowerCase()} .card[data-index="${data.indexOf(item)}"] .mdi`).classList.add("mdi-music-box-multiple-outline");
+                        break;
+                        case "playlists":
+                        document.querySelector(`.${typeClass.toLowerCase()} .card[data-index="${data.indexOf(item)}"] .mdi`).classList.add("mdi-playlist-music");
+                        break;
+                        case "tvshows":
+                        document.querySelector(`.${typeClass.toLowerCase()} .card[data-index="${data.indexOf(item)}"] .mdi`).classList.add("mdi-youtube-tv");
+                        break;
+                    }
+                }
             }
-            switch (item.CollectionType) {
-                case "books":
-                document.querySelector(`.${type.toLowerCase()} .card[data-index="${data.indexOf(item)}"] .mdi`).classList.add("mdi-book-multiple-outline");
-                break;
-                case "boxsets":
-                document.querySelector(`.${type.toLowerCase()} .card[data-index="${data.indexOf(item)}"] .mdi`).classList.add("mdi-folder-outline");
-                break;
-                case "movies":
-                document.querySelector(`.${type.toLowerCase()} .card[data-index="${data.indexOf(item)}"] .mdi`).classList.add("mdi-play-box-multiple-outline");
-                break;
-                case "music":
-                document.querySelector(`.${type.toLowerCase()} .card[data-index="${data.indexOf(item)}"] .mdi`).classList.add("mdi-music-box-multiple-outline");
-                break;
-                case "playlists":
-                document.querySelector(`.${type.toLowerCase()} .card[data-index="${data.indexOf(item)}"] .mdi`).classList.add("mdi-playlist-music");
-                break;
-                case "tvshows":
-                document.querySelector(`.${type.toLowerCase()} .card[data-index="${data.indexOf(item)}"] .mdi`).classList.add("mdi-youtube-tv");
-                break;
-            }
-        } else if (item.Type) {
-            if (item.ImageTags.Primary) {
-                backdrop = item.ImageTags.Primary;
-                blurhashval = decode(item.ImageBlurHashes.Primary[backdrop], 720, 1080);
-                blurhasdpix = document.querySelector(`.${type.toLowerCase()} .card[data-index="${data.indexOf(item)}"] .placeholder`).getContext("2d").createImageData(720, 1080);
-                blurhasdpix.data.set(blurhashval);
-                document.querySelector(`.${type.toLowerCase()} .card[data-index="${data.indexOf(item)}"] .placeholder`).getContext("2d").putImageData(blurhasdpix, 0, 0);
-                document.querySelector(`.${type.toLowerCase()} .card[data-index="${data.indexOf(item)}"] .primary__image img`).setAttribute("src", `${window.server}/Items/${item.Id}/Images/Primary?imgTag=${item.ImageTags.Primary[0]}`);
-                // document.querySelector(`.${type.toLowerCase()} .card[data-index="${data.indexOf(item)}"] .primary__image img`).style.aspectRatio = item;
-                document.querySelector(`.${type.toLowerCase()} .card[data-index="${data.indexOf(item)}"] .primary__image img`).setAttribute("onload", `document.querySelector('.${type.toLowerCase()} .card[data-index="${data.indexOf(item)}"] .placeholder').setAttribute('style', 'opacity:0;')`);
-                document.querySelector(`.${type.toLowerCase()} .card[data-index="${data.indexOf(item)}"] .primary__image`).classList.remove("hide");
-            }
-            document.querySelector(`.${type.toLowerCase()} .card[data-index="${data.indexOf(item)}"] .card__text__cont`).insertAdjacentHTML("beforeend", `<div class="card__text secondary">${item.ProductionYear}</div>`);
-            document.querySelector(`.${type.toLowerCase()} .card[data-index="${data.indexOf(item)}"]`).classList.add("primary");
-            switch (item.Type) {
-                case "books":
-                document.querySelector(`.${type.toLowerCase()} .card[data-index="${data.indexOf(item)}"] .mdi`).classList.add("mdi-book-multiple-outline");
-                break;
-                case "boxsets":
-                document.querySelector(`.${type.toLowerCase()} .card[data-index="${data.indexOf(item)}"] .mdi`).classList.add("mdi-folder-outline");
-                break;
-                case "Movie":
-                document.querySelector(`.${type.toLowerCase()} .card[data-index="${data.indexOf(item)}"] .mdi`).classList.add("mdi-play-box-multiple-outline");
-                break;
-                case "music":
-                document.querySelector(`.${type.toLowerCase()} .card[data-index="${data.indexOf(item)}"] .mdi`).classList.add("mdi-music-box-multiple-outline");
-                break;
-                case "playlists":
-                document.querySelector(`.${type.toLowerCase()} .card[data-index="${data.indexOf(item)}"] .mdi`).classList.add("mdi-playlist-music");
-                break;
-                case "tvshows":
-                document.querySelector(`.${type.toLowerCase()} .card[data-index="${data.indexOf(item)}"] .mdi`).classList.add("mdi-youtube-tv");
-                break;
-            }
-        }
-    });
+        }, 0);
+    }    
 };
 
 emitter.on("logged-in", async (user) => {
@@ -184,16 +175,10 @@ emitter.on("logged-in", async (user) => {
         password: user[2],
         accessToken: user[3]
     });
-    console.log(UserConf);
     const libApi = new LibraryApi(UserConf);
     const itemsApi = new ItemsApi(UserConf);
     const userLibApi = new UserLibraryApi(UserConf);
     const libsRaw = await libApi.getMediaFolders();
-    const movies = await itemsApi.getItems({
-        userId: user[5],
-        recursive: true,
-        includeItemTypes: ["Movie"]
-    });
     const libs = libsRaw.data.Items;
     const latestMedia = await userLibApi.getLatestMedia({
         userId: user[5]
@@ -205,11 +190,12 @@ emitter.on("logged-in", async (user) => {
         html = `<img src="${window.server}/Users/${user[5]}/Images/Primary">`;
         document.querySelector(".user__menu .image").insertAdjacentHTML("afterbegin", html);
     }
-    const mainPage = document.querySelector(".main");
-    libs.forEach(item => {
-        html = `<div class="menu__button" data-page="${item.Name.toLowerCase()}">${item.Name}</div>`;
-        document.querySelector(".submenu .sub").insertAdjacentHTML("beforeend", html);
-    });
+    setTimeout(() => {        
+        for (let item of libs) {
+            html = `<div class="menu__button" data-page="${item.Name.toLowerCase()}">${item.Name}</div>`;
+            document.querySelector(".submenu .sub").insertAdjacentHTML("beforeend", html);
+        }
+    }, 0);
     document.querySelectorAll(".menu__button").forEach(btn => {
         if (btn.dataset.page == document.querySelector(".library__page.current").dataset.page) {
             btn.classList.add("active");
@@ -218,17 +204,14 @@ emitter.on("logged-in", async (user) => {
     document.querySelectorAll(".menu .skeleton__loader").forEach(sk => {
         sk.classList.add("hide");
     });
-    latestMedia.data.forEach(async (item) => {
-        console.log(item)
+    for (let item of latestMedia.data) {
         document.querySelector(".latestMediaSlider .track__cont").insertAdjacentHTML("beforeend", `<div class="track" data-index=${latestMedia.data.indexOf(item)}></div>`);
         if (item.ImageBlurHashes.Backdrop) {
-            console.log(`${window.server}/Items/${item.Id}/Images/Backdrop?imgTag=${item.BackdropImageTags[0]}`);
             html = `<div class="slide" data-index=${latestMedia.data.indexOf(item)}>
-            <div class="slide__background"> 
-            <canvas class="placeholder" width="1080" height="720" style="width: 100%; height: 100%"></canvas>
+            <div class="slide__background" data-depth="0.8"> 
             <img src="${window.server}/Items/${item.Id}/Images/Backdrop?imgTag=${item.BackdropImageTags[0]}">
             </div>
-            <div class="info__cont">
+            <div class="info__cont" data-depth="0.2">
             <div class="title"></div>
             <div class="overview">
             <div>${item.ProductionYear}</div>
@@ -246,9 +229,6 @@ emitter.on("logged-in", async (user) => {
             </div>
             </div>`;
             document.querySelector(".latestMediaSlider").insertAdjacentHTML("beforeend", html);
-            document.querySelector(`[data-index='${latestMedia.data.indexOf(item)}'] .slide__background img`).onload = () => {
-                document.querySelector(`.slide[data-index='${latestMedia.data.indexOf(item)}'] .placeholder`).setAttribute('style', 'opacity: 0;');
-            };
             if (item.ImageTags.Logo) {
                 html = `<div style="background: url('${window.server}/Items/${item.Id}/Images/Logo?imgTag=${item.ImageTags.Logo[0]}');">`;
                 document.querySelector(`[data-index='${latestMedia.data.indexOf(item)}'] .info__cont .title`).insertAdjacentHTML("beforeend", html);
@@ -256,22 +236,15 @@ emitter.on("logged-in", async (user) => {
             } else {
                 document.querySelector(".info__cont .title").insertAdjacentHTML("beforeend", item.Name);
             }
-            backdrop = item.BackdropImageTags[0];
-            blurhashval = decode(item.ImageBlurHashes.Backdrop[backdrop], 1080, 720);
-            console.log(blurhashval);
-            blurhasdpix = document.querySelector(`[data-index="${latestMedia.data.indexOf(item)}"] .placeholder`).getContext("2d").createImageData(1080, 720);
-            blurhasdpix.data.set(blurhashval);
-            document.querySelector(`[data-index="${latestMedia.data.indexOf(item)}"] .placeholder`).getContext("2d").putImageData(blurhasdpix, 0, 0);
         } else {
             if (item.Type == "AudioBook") {
                 html = `<div class="slide" data-index="${latestMedia.data.indexOf(item)}">
-                <div class="slide__background">
-                <canvas class="placeholder" width="1080" height="720" style="width: 100%; height: 100%"></canvas>
+                <div class="slide__background" data-depth="0.8">
                 <div class="icon__image">
                 <span class="mdi mdi-book-music"></span>
                 </div>
                 </div>
-                <div class="info__cont">
+                <div class="info__cont" data-depth="0.2">
                 <div class="title"></div>
                 <div class="overview">
                 <div>${item.ProductionYear}</div>
@@ -298,17 +271,12 @@ emitter.on("logged-in", async (user) => {
                 }
             }
             // } else if (!item) { }
-        }
-        document.querySelectorAll(".main__animated__page .skeleton__loader").forEach(sk => {
-            sk.classList.add("hide");
-        });
-        
+        }        
         if (latestMedia.data.indexOf(item) == 0) {
             document.querySelector(".slide").classList.add("active");
             document.querySelector(`.track[data-index="${Array.prototype.indexOf.call(document.querySelectorAll(".slide"), document.querySelector(".slide.active"))}"]`).classList.add("active");
         }
-    });
-    console.log(latestMedia.data);
+    }
     if (latestMedia.data.length > 1) {
         sliderAnim(".slide");
     } else {
@@ -316,11 +284,16 @@ emitter.on("logged-in", async (user) => {
     }
     createCardGrid("Library", libs);
     let latest;
-    libs.forEach(async library => {
-        latest = await userLibApi.getLatestMedia({
-            userId: user[5],
-            includeItemTypes: [library.Name]
-        });
-        createCardGrid(library.Name, latest.data, user[5], userLibApi);
+    setTimeout(async () => {
+        for (let library of libs){
+            latest = await userLibApi.getLatestMedia({
+                userId: user[5],
+                parentId: library.Id
+            });
+            createCardGrid(library.Name, latest.data);
+        }
+    }, 0);
+    document.querySelectorAll(".main__animated__page .skeleton__loader").forEach(sk => {
+        sk.classList.add("hide");
     });
 });

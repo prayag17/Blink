@@ -2,9 +2,9 @@ name: Build_Linux
 
 on:
   push:
-    branches: [ main ]
+    branches: [ build ]
   pull_request:
-    branches: [ main ]
+    branches: [ build ]
     
 jobs:
   build:

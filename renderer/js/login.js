@@ -318,7 +318,7 @@ const createEnterPassword = (userName, userImg, userId) => {
     </div>
     <label for="remember__user">Remember me</label>
     </div>
-    <button class="mdc-button mdc-button--raised" onclick="sendAuthInfo(this.dataset.user, document.querySelector('#user__password').value, document.querySelector('#remember__user'))">
+    <button class="mdc-button mdc-button--raised" data-user="${userName}" onclick="sendAuthInfo(this.dataset.user, document.querySelector('#user__password').value, document.querySelector('#remember__user'))">
     <span class="mdc-button__ripple"></span>
     <span class="mdc-button__focus-ring"></span>
     <span class="mdc-button__label">Login</span>
@@ -371,7 +371,7 @@ const sendAuthInfo = (userName, password, checkbox) => {
     if (auth() != "err") {
         console.log(checkbox.checked);
         if (checkbox.checked == true) {
-            // window.setAuthInfoDatabase(userName, password);
+            window.setAuthInfoDatabase(userName, password);
         }
     }
 };
