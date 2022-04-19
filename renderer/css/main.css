@@ -91,12 +91,7 @@ img {
 	width: 100%;
 	height: 100vh;
 	position: relative;
-	background: linear-gradient(
-		45deg,
-		rgba(10, 24, 39, 1) 0%,
-		rgba(10, 26, 51, 1) 32%,
-		rgba(8, 144, 149, 1) 100%
-	);
+	background: linear-gradient(45deg, var(--main-bg), var(--jf-blue-dark));
 	display: flex;
 	flex-direction: column;
 	flex-wrap: nowrap;
@@ -362,20 +357,13 @@ button.outlined {
 }
 
 .card {
-	width: 16.4vw !important;
 	height: -webkit-fit-content;
 	height: -moz-fit-content;
 	height: fit-content;
-	aspect-ratio: 1.6;
 	flex-shrink: 0;
 	border-radius: var(--rounding);
-	display: flex;
-	flex-direction: column;
-	flex-wrap: nowrap;
-	align-items: center;
-	justify-content: flex-start;
-	padding: 0;
-	gap: 0.5em;
+	display: block;
+	padding: 0.5em;
 }
 
 .image__cont {
@@ -390,6 +378,8 @@ button.outlined {
 .image__cont > * {
 	position: absolute;
 	inset: 0;
+	width: 100%;
+	height: 100%;
 }
 
 .image__cont object {
@@ -400,6 +390,7 @@ button.outlined {
 .primary__image img {
 	width: 100%;
 	height: 100%;
+	aspect-ratio: 0.777;
 }
 
 .image__cont .icon__image {
@@ -409,16 +400,19 @@ button.outlined {
 }
 
 .card__text {
-	font-size: 1.2em;
 	font-weight: 300;
 	color: white;
 	text-align: center !important;
+	white-space: nowrap;
+	width: 100%;
+	overflow: hidden;
+	text-overflow: ellipsis;
 }
 
 .content .grid {
 	display: flex;
-	flex-wrap: wrap;
-	gap: 1em;
+	flex-wrap: nowrap;
+	gap: 0;
 	justify-content: flex-start;
 }
 
@@ -432,6 +426,7 @@ button.outlined {
 	display: flex;
 	align-items: center;
 	gap: 0.5em;
+	margin: 0;
 }
 
 .content h2::before {
@@ -448,20 +443,9 @@ button.outlined {
 }
 
 .primary .image__cont {
-	flex: 1 0 16.5vw !important;
-	height: 16.5vw !important;
-}
-
-.card.primary {
-	width: 10.5vw !important;
-	flex-shrink: 1;
-	flex-grow: 0;
-	flex-basis: 10.5vw !important;
-	height: 16.5vw !important;
-	gap: 0;
-	border-radius: var(--rounding);
-	background: var(--main-bg);
-	overflow: hidden;
+	height: auto;
+	width: 100%;
+	aspect-ratio: 0.66667;
 }
 
 .primary .card__text {
@@ -476,15 +460,6 @@ button.outlined {
 .card__text__cont {
 	width: 100%;
 	text-align: center;
-	height: 2.4em;
-}
-
-.primary .card__text__cont {
-	opacity: 0;
-	transition: opacity var(--transition-time-default),
-		transform var(--transition-time-default);
-	background: rgb(0 0 0 / 0.5);
-	transform: translateY(0);
 }
 
 .card__text.secondary {
@@ -493,11 +468,34 @@ button.outlined {
 	font-weight: 300;
 }
 
-.card.primary:hover {
-	z-index: 100;
+.thumb .image__cont {
+	aspect-ratio: 1.777;
 }
 
-.card.primary:hover .card__text__cont {
-	opacity: 1;
-	transform: translateY(-2.3em);
+.square .image__cont {
+	aspect-ratio: 1;
+}
+.content__header {
+	display: flex;
+	justify-content: space-between;
+	width: 100%;
+}
+
+.content__header .buttons {
+	width: -webkit-fit-content;
+	width: -moz-fit-content;
+	width: fit-content;
+	margin: 0 !important;
+}
+
+.content__header button {
+	aspect-ratio: 1/1;
+	height: auto;
+	font-size: xx-large;
+	color: white !important;
+	--mdc-text-button-hover-state-layer-color: white;
+}
+
+.content__header .mdc-button__ripple {
+	border-radius: 100% !important;
 }

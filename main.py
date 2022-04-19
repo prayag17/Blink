@@ -1,14 +1,14 @@
 import sys,os,requests
 from localStoragePy import localStoragePy
-from PySide6.QtWidgets import QApplication, QMainWindow
+from PySide6.QtWidgets import QApplication, QMainWindow, QWidget
 from PySide6.QtCore import QUrl, Slot, QObject, QProcess
 from PySide6.QtGui import QIcon, QPixmap
 from PySide6.QtWebEngineWidgets import QWebEngineView
 from PySide6.QtWebEngineCore import QWebEngineSettings
 from PySide6.QtWebChannel import QWebChannel
+# import mpv
 import renderer
 app = QApplication(["--disable-gpu-driver-bug-workarounds", "--enable-gpu-rasterization"])
-# os.environ['QTWEBENGINE_REMOTE_DEBUGGING'] = "9000"
 
 try:
     from ctypes import windll
@@ -88,6 +88,14 @@ class Backend(QObject):
     def restart(self):
         QApplication.quit()
         status = QProcess.startDetached(sys.executable, sys.argv)
+        
+    # @Slot(str)
+    # def launchPlayer(self, videoUrl):
+    #     import locale
+    #     locale.setlocale(locale.LC_NUMERIC, 'C')
+    #     playerwindow = PlayerWindow(videoUrl)
+    #     window.hide()
+    #     playerwindow.showMaximized()
 
 class LoginWin(QMainWindow):
     def __init__(self):
@@ -96,7 +104,6 @@ class LoginWin(QMainWindow):
         self.dir = os.path.dirname(os.path.abspath(__file__))
         self.view= QWebEngineView(self)
         self.setCentralWidget(self.view)
-        # self.setWindowIcon()
         
         self.view.settings().setAttribute(QWebEngineSettings.JavascriptEnabled, True)
         self.view.settings().setAttribute(QWebEngineSettings.PluginsEnabled, True)
@@ -120,6 +127,14 @@ class LoginWin(QMainWindow):
         if ok:
             self.view.page().setDevToolsPage(self.inspector.page())
             self.inspector.show()
+
+# class PlayerWindow(QMainWindow):
+#     def __init__(self,videoUrl,parent=None):
+#         super().__init__(parent)
+#         self.container = QWidget(self)
+#         self.setCentralWidget(self.container)
+#         player = mpv.MPV(wid=str(int(self.container.winId())))
+#         player.play(videoUrl)
 
 window = LoginWin()
 window.showMaximized()

@@ -1,10 +1,27 @@
 const mainPageCont = document.querySelector("main");
 const loginPage = document.querySelector(".login");
 const bg = document.querySelector("#background");
-let blurhashval;
-let blurhasdpix;
 let backdrop;
-let itemInfo;
+let tempData;
+
+var homePageLayout = [
+    {
+        "name": "Libraries",
+        "cardType": "thumb",
+        "data": ""
+    },
+    {
+        "name": "Continue Watching",
+        "cardType": "thumb",
+        "data": ""
+    },
+    {
+        "name": "Next Up",
+        "cardType": "thumb",
+        "data": ""
+    }
+];
+
 const pageTransition = (from, to, background) => {
     document.querySelector(from).classList.add("moveFadeOut");
     document.querySelector(to).classList.add("moveFadeIn");
@@ -59,13 +76,53 @@ const sliderAnim = (slider) => {
     });
 };
 
-const createCardGrid = (type, data) => {
+const createCardGrid = (type, data, cardType) => {
     let typeClass = type.replace(/\s+/g, '');
     if (data.length != 0) {
-        document.querySelector(".library__page").insertAdjacentHTML("beforeend", `<div class="content ${typeClass.toLowerCase()}"><div class="grid"></div></div>`);
+        document.querySelector(".library__page").insertAdjacentHTML("beforeend", `<div class="content ${typeClass.toLowerCase()} ${cardType}"><div class="slider__cont"><div class="grid"></div></div>`);
         setTimeout(() => {
-            document.querySelector(`.content.${typeClass.toLowerCase()}`).insertAdjacentHTML("afterbegin", `<h2>${type}</h2>`);
-        }, 1);
+            let counter = 0;
+            document.querySelector(`.content.${typeClass.toLowerCase()}`).insertAdjacentHTML("afterbegin", `<div class="content__header"><h2>${type}</h2><div class="buttons">
+            <button class="mdc-button mdc-button--touch slider-back">
+            <span class="mdc-button__ripple"></span>
+            <span class="mdc-button__touch"></span>
+            <span class="mdc-button__label"><i class="mdi mdi-chevron-left"></i></span>
+            </button>
+            <button class="mdc-button mdc-button--touch slider-forward">
+            <span class="mdc-button__ripple"></span>
+            <span class="mdc-button__touch"></span>
+            <span class="mdc-button__label"><i class="mdi mdi-chevron-right"></i></span>
+            </button>
+            </div>
+            </div>`);
+            document.querySelector(`.content.${typeClass.toLowerCase()} .slider-forward`).addEventListener("click", () => {
+                console.log(counter);
+                document.querySelector(`.content.${typeClass.toLowerCase()} .grid`).style.transition = `transform var(--transition-time-slow-1) ease-in-out`;
+                counter++;
+                switch (cardType) {
+                    case "thumb":
+                    if (counter > data.length / 4) {
+                        counter = 0;
+                    }
+                    break;
+                    default:
+                    if (counter > data.length / 6) {
+                        counter = 0;
+                    }
+                    break;
+                }
+                document.querySelector(`.content.${typeClass.toLowerCase()} .grid`).style.transform = `translateX(${-document.querySelector(`.grid`).clientWidth * counter}px)`;
+            });
+            document.querySelector(`.content.${typeClass.toLowerCase()} .slider-back`).addEventListener("click", () => {
+                document.querySelector(`.content.${typeClass.toLowerCase()} .grid`).style.transition = `transform var(--transition-time-slow-1) ease-in-out`;
+                counter--;
+                if (counter < 0) {
+                    counter = 0;
+                }
+                console.log(counter);
+                document.querySelector(`.content.${typeClass.toLowerCase()} .grid`).style.transform = `translateX(${-document.querySelector(`.grid`).clientWidth * counter}px)`;
+            });
+        }, 0);
         setTimeout(() => {
             for (let item of data) {
                 html = `<div class="card" data-index="${data.indexOf(item)}">
@@ -83,11 +140,11 @@ const createCardGrid = (type, data) => {
                 </div>
                 </div>`;
                 document.querySelector(`.content.${typeClass.toLowerCase()} .grid`).insertAdjacentHTML("beforeend", html);
+                if (item.ImageTags.Primary) {
+                    document.querySelector(`.${typeClass.toLowerCase()} .card[data-index="${data.indexOf(item)}"] .primary__image img`).setAttribute("src", `${window.server}/Items/${item.Id}/Images/Primary?imgTag=${item.ImageTags.Primary[0]}`);
+                    document.querySelector(`.${typeClass.toLowerCase()} .card[data-index="${data.indexOf(item)}"] .primary__image`).classList.remove("hide");
+                }
                 if (item.CollectionType) {
-                    if (item.ImageTags.Primary) {
-                        document.querySelector(`.${typeClass.toLowerCase()} .card[data-index="${data.indexOf(item)}"] .primary__image img`).setAttribute("src", `${window.server}/Items/${item.Id}/Images/Primary?imgTag=${item.ImageTags.Primary[0]}`);
-                        document.querySelector(`.${typeClass.toLowerCase()} .card[data-index="${data.indexOf(item)}"] .primary__image`).classList.remove("hide");
-                    }
                     switch (item.CollectionType) {
                         case "books":
                         document.querySelector(`.${typeClass.toLowerCase()} .card[data-index="${data.indexOf(item)}"] .mdi`).classList.add("mdi-book-multiple-outline");
@@ -107,34 +164,63 @@ const createCardGrid = (type, data) => {
                         case "tvshows":
                         document.querySelector(`.${typeClass.toLowerCase()} .card[data-index="${data.indexOf(item)}"] .mdi`).classList.add("mdi-youtube-tv");
                         break;
-                    }
-                } else if (item.Type) {
-                    if (item.ImageTags.Primary) {
-                        document.querySelector(`.${typeClass.toLowerCase()} .card[data-index="${data.indexOf(item)}"] .primary__image img`).setAttribute("src", `${window.server}/Items/${item.Id}/Images/Primary?imgTag=${item.ImageTags.Primary[0]}`);
-                        document.querySelector(`.${typeClass.toLowerCase()} .card[data-index="${data.indexOf(item)}"] .primary__image`).classList.remove("hide");
-                    }
-                    document.querySelector(`.${typeClass.toLowerCase()} .card[data-index="${data.indexOf(item)}"] .card__text__cont`).insertAdjacentHTML("beforeend", `<div class="card__text secondary">${item.ProductionYear}</div>`);
-                    document.querySelector(`.${typeClass.toLowerCase()} .card[data-index="${data.indexOf(item)}"]`).classList.add("primary");
-                    switch (item.Type) {
-                        case "books":
-                        document.querySelector(`.${typeClass.toLowerCase()} .card[data-index="${data.indexOf(item)}"] .mdi`).classList.add("mdi-book-multiple-outline");
+                        default:
+                        document.querySelector(`.${typeClass.toLowerCase()} .card[data-index="${data.indexOf(item)}"] .mdi`).classList.add("mdi-file-outline");
                         break;
-                        case "boxsets":
-                        document.querySelector(`.${typeClass.toLowerCase()} .card[data-index="${data.indexOf(item)}"] .mdi`).classList.add("mdi-folder-outline");
+                    }
+                } else {
+                    switch (item.Type) {
+                        case "Episode":
+                        document.querySelector(`.${typeClass.toLowerCase()} .card[data-index="${data.indexOf(item)}"] .mdi`).classList.add("mdi-television-classic");
+                        break;
+                        case "Book":
+                        document.querySelector(`.${typeClass.toLowerCase()} .card[data-index="${data.indexOf(item)}"] .mdi`).classList.add("mdi-book-open-page-variant-outline");
                         break;
                         case "Movie":
-                        document.querySelector(`.${typeClass.toLowerCase()} .card[data-index="${data.indexOf(item)}"] .mdi`).classList.add("mdi-play-box-multiple-outline");
+                        document.querySelector(`.${typeClass.toLowerCase()} .card[data-index="${data.indexOf(item)}"] .mdi`).classList.add("mdi-movie-outline");
                         break;
-                        case "music":
-                        document.querySelector(`.${typeClass.toLowerCase()} .card[data-index="${data.indexOf(item)}"] .mdi`).classList.add("mdi-music-box-multiple-outline");
+                        case "MusicAlbum":
+                        document.querySelector(`.${typeClass.toLowerCase()} .card[data-index="${data.indexOf(item)}"] .mdi`).classList.add("mdi-album");
                         break;
-                        case "playlists":
-                        document.querySelector(`.${typeClass.toLowerCase()} .card[data-index="${data.indexOf(item)}"] .mdi`).classList.add("mdi-playlist-music");
+                        case "Audio":
+                        document.querySelector(`.${typeClass.toLowerCase()} .card[data-index="${data.indexOf(item)}"] .mdi`).classList.add("mdi-music");
                         break;
-                        case "tvshows":
+                        case "Series":
                         document.querySelector(`.${typeClass.toLowerCase()} .card[data-index="${data.indexOf(item)}"] .mdi`).classList.add("mdi-youtube-tv");
                         break;
+                        default:
+                        document.querySelector(`.${typeClass.toLowerCase()} .card[data-index="${data.indexOf(item)}"] .mdi`).classList.add("mdi-file-outline");
+                        break;
                     }
+                }
+                if (item.ProductionYear) {
+                    document.querySelector(`.${typeClass.toLowerCase()} .card[data-index="${data.indexOf(item)}"] .card__text__cont`).insertAdjacentHTML("beforeend", `<div class="card__text secondary">${item.ProductionYear}</div>`);
+                }
+            }
+            for (let card of document.querySelectorAll(".primary .card")) {
+                tempData = card.parentElement.clientWidth;
+                card.style.width = `${tempData / 6}px`;
+            }
+            for (let card of document.querySelectorAll(".square .card")) {
+                tempData = card.parentElement.clientWidth;
+                card.style.width = `${tempData / 6}px`;
+            }
+            for (let card of document.querySelectorAll(".thumb .card")) {
+                tempData = card.parentElement.clientWidth;
+                card.style.width = `${tempData / 4}px`;
+            }
+            window.onresize = () => {
+                for (let card of document.querySelectorAll(".primary .card")) {
+                    tempData = card.parentElement.clientWidth;
+                    card.style.width = `${tempData / 6}px`;
+                }
+                for (let card of document.querySelectorAll(".square .card")) {
+                    tempData = card.parentElement.clientWidth;
+                    card.style.width = `${tempData / 6}px`;
+                }
+                for (let card of document.querySelectorAll(".thumb .card")) {
+                    tempData = card.parentElement.clientWidth;
+                    card.style.width = `${tempData / 4}px`;
                 }
             }
         }, 0);
@@ -178,6 +264,7 @@ emitter.on("logged-in", async (user) => {
     const libApi = new LibraryApi(UserConf);
     const itemsApi = new ItemsApi(UserConf);
     const userLibApi = new UserLibraryApi(UserConf);
+    const tvshowsApi = new TvShowsApi(UserConf);
     const libsRaw = await libApi.getMediaFolders();
     const libs = libsRaw.data.Items;
     const latestMedia = await userLibApi.getLatestMedia({
@@ -282,15 +369,32 @@ emitter.on("logged-in", async (user) => {
     } else {
         document.querySelector(".track__cont").classList.add("hide");
     }
-    createCardGrid("Library", libs);
     let latest;
+    tempData = await itemsApi.getResumeItems({ userId: user[5], limit: 24, mediaTypes: "Video" });
+    homePageLayout[0].data = libs;
+    homePageLayout[1].data = tempData.data.Items;
+    tempData = await tvshowsApi.getNextUp({ userId: user[5] });
+    homePageLayout[2].data = tempData.data.Items;
+    // Array.prototype.push.call(homePageLayout[0], { "data": libs });
+    // Array.prototype.push.call(homePageLayout[1], { "data": tempData.data.Items });
+    // tempData = await tvshowsApi.getNextUp({ userId: user[5] });
+    // Array.prototype.push.call(homePageLayout[2], { "data": tempData.data.Items });
+    // homePageLayout[1].push({ "data": libs });
     setTimeout(async () => {
-        for (let library of libs){
+        window.libs = libs
+        for (let library of libs) {
             latest = await userLibApi.getLatestMedia({
                 userId: user[5],
                 parentId: library.Id
             });
-            createCardGrid(library.Name, latest.data);
+            if (library.CollectionType == "music") {
+                homePageLayout.push({ "name": `Latest ${library.Name}`, "cardType": "square", "data": latest.data });
+            } else {
+                homePageLayout.push({ "name": `Latest ${library.Name}`, "cardType": "primary", "data": latest.data });
+            }
+        }
+        for (let lib of homePageLayout) {
+            createCardGrid(lib.name, lib.data, lib.cardType);
         }
     }, 0);
     document.querySelectorAll(".main__animated__page .skeleton__loader").forEach(sk => {

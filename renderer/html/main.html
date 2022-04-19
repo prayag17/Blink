@@ -22,13 +22,14 @@
     <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
     <script type="module">
         import { decode } from "https://cdn.jsdelivr.net/npm/blurhash@1.1.5/+esm"
-        import { UserApi, Configuration, LibraryApi, ItemsApi, UserLibraryApi } from 'https://cdn.jsdelivr.net/npm/@jellyfin/client-axios/+esm';
+        import { UserApi, Configuration, LibraryApi, ItemsApi, UserLibraryApi, TvShowsApi } from 'https://cdn.jsdelivr.net/npm/@jellyfin/client-axios/+esm';
         window.decode = decode;
         window.UserApi = UserApi;
         window.Configuration = Configuration;
         window.LibraryApi = LibraryApi;
         window.UserLibraryApi = UserLibraryApi;
         window.ItemsApi = ItemsApi;
+        window.TvShowsApi = TvShowsApi;
     </script>
     <link href="https://unpkg.com/material-components-web@13.0.0/dist/material-components-web.min.css" rel="stylesheet">
     <script src="https://unpkg.com/material-components-web@13.0.0/dist/material-components-web.min.js"></script>
