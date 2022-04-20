@@ -122,6 +122,16 @@ const createCardGrid = (type, data, cardType) => {
                 console.log(counter);
                 document.querySelector(`.content.${typeClass.toLowerCase()} .grid`).style.transform = `translateX(${-document.querySelector(`.grid`).clientWidth * counter}px)`;
             });
+            if (data.length <= 6 && cardType == "primary") {
+                for (let child of document.querySelector(`.${typeClass.toLowerCase()} .content__header .buttons`).children)
+                child.setAttribute("disabled", true);
+            }else if (data.length <= 6 && cardType == "square") {
+                for (let child of document.querySelector(`.${typeClass.toLowerCase()} .content__header .buttons`).children)
+                child.setAttribute("disabled", true);
+            }else if (data.length <= 4 && cardType == "thumb") {
+                for (let child of document.querySelector(`.${typeClass.toLowerCase()} .content__header .buttons`).children)
+                child.setAttribute("disabled", true);
+            }
         }, 0);
         setTimeout(() => {
             for (let item of data) {
@@ -237,8 +247,9 @@ emitter.on("logged-in", async (user) => {
     </div>
     <div class="submenu">
     <div class="skeleton__loader"></div>
+    <div class="vertical__tab__highlighter"></div>
     <div class="sub">
-    <div class="menu__button" data-page="home">Home</div>
+    <div class="menu__button" data-page="home"><i class="mdi mdi-home-variant-outline"></i>Home</div>
     </div>
     </div>
     </section>
@@ -279,8 +290,37 @@ emitter.on("logged-in", async (user) => {
     }
     setTimeout(() => {        
         for (let item of libs) {
-            html = `<div class="menu__button" data-page="${item.Name.toLowerCase()}">${item.Name}</div>`;
-            document.querySelector(".submenu .sub").insertAdjacentHTML("beforeend", html);
+            console.log(item)
+            if (item.CollectionType) {
+                html = `<div class="menu__button" data-page="${item.CollectionType.toLowerCase()}"><div class="mdi"></div>${item.Name}</div>`;
+                document.querySelector(".submenu .sub").insertAdjacentHTML("beforeend", html);
+                switch (item.CollectionType) {
+                    case "books":
+                        document.querySelector(`.menu__button[data-page="books"] .mdi`).classList.add("mdi-book-multiple-outline");
+                        break;
+                    case "boxsets":
+                        document.querySelector(`.menu__button[data-page="boxsets"] .mdi`).classList.add("mdi-folder-outline");
+                        break;
+                    case "movies":
+                        document.querySelector(`.menu__button[data-page="movies"] .mdi`).classList.add("mdi-play-box-multiple-outline");
+                        break;
+                    case "music":
+                        document.querySelector(`.menu__button[data-page="music"] .mdi`).classList.add("mdi-music-box-multiple-outline");
+                        break;
+                    case "playlists":
+                        document.querySelector(`.menu__button[data-page="playlists"] .mdi`).classList.add("mdi-playlist-music");
+                        break;
+                    case "tvshows":
+                        document.querySelector(`.menu__button[data-page="tvshows"] .mdi`).classList.add("mdi-youtube-tv");
+                        break;
+                    default:
+                        document.querySelector(`.menu__button[data-page="${item.CollectionType.toLowerCase()}"] .mdi`).classList.add("mdi-file-outline");
+                        break;
+                }
+            } else {
+                html = `<div class="menu__button" data-page="${item.Name.toLowerCase()}"><div class="mdi mdi-folder-outline"></div>${item.Name}</div>`;
+                document.querySelector(".submenu .sub").insertAdjacentHTML("beforeend", html);
+            }
         }
     }, 0);
     document.querySelectorAll(".menu__button").forEach(btn => {
@@ -288,6 +328,8 @@ emitter.on("logged-in", async (user) => {
             btn.classList.add("active");
         }
     });
+    document.querySelector(".vertical__tab__highlighter").style.top = `${document.querySelector(".menu__button.active").getBoundingClientRect().top}px`;
+    document.querySelector(".vertical__tab__highlighter").style.height = `${document.querySelector(".menu__button.active").getBoundingClientRect().height}px`;
     document.querySelectorAll(".menu .skeleton__loader").forEach(sk => {
         sk.classList.add("hide");
     });

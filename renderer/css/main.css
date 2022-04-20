@@ -85,6 +85,13 @@ img {
 	font-size: 1.3rem;
 	padding: 0.5em;
 	position: relative;
+	display: flex;
+	gap: 0.5em;
+	transition: gap var(--transition-time-fast-1);
+}
+
+.menu__button:hover {
+	gap: 0.7em;
 }
 
 .main__animated__page {
@@ -363,7 +370,7 @@ button.outlined {
 	flex-shrink: 0;
 	border-radius: var(--rounding);
 	display: block;
-	padding: 0.5em;
+	padding: 0 1em 0 0;
 }
 
 .image__cont {
@@ -498,4 +505,44 @@ button.outlined {
 
 .content__header .mdc-button__ripple {
 	border-radius: 100% !important;
+}
+
+.mdc-button:disabled {
+	opacity: 0;
+}
+
+.sub {
+	margin-top: 1em;
+}
+
+.menu__button.active {
+	font-size: 1.5rem;
+}
+
+.menu__button .mdi {
+	background: linear-gradient(
+		45deg,
+		var(--jf-blue-light),
+		var(--jf-purple-light) 80%
+	);
+	-webkit-background-clip: text;
+	background-clip: text;
+	transition: color var(--transition-time-fast-1);
+}
+
+.menu__button.active .mdi {
+	color: transparent;
+}
+
+.vertical__tab__highlighter {
+	width: 2.5px;
+	position: fixed;
+	background: linear-gradient(
+		45deg,
+		var(--jf-blue-light),
+		var(--jf-purple-light)
+	);
+	border-radius: var(--rounding);
+	left: 15px;
+	transition: top var(--transition-time-fast-1) ease-in-out;
 }

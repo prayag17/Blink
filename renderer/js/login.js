@@ -84,9 +84,8 @@ const createUserList = async (server) => {
     document.querySelector('.loader').classList.remove('hide');
     let users = await window.userApi.getPublicUsers();
     let userlist = users.data;
-    console.log(userlist);
     if (userlist.length != 0) {
-        userlist.forEach(user => {
+        for (let user of userlist) {
             if (user.PrimaryImageTag) {
                 html = `<div class="user__card" data-user="${user.Name}" data-userid="${user.Id}" onclick="createEnterPassword(this.dataset.user, true, this.dataset.userid)">
                 <div class="content">
@@ -104,9 +103,8 @@ const createUserList = async (server) => {
                 </div>`;
             }
             document.querySelector('.user__cont').insertAdjacentHTML('beforeend', html);
-        });
+        }
         document.querySelector('.users').classList.remove('hide');
-        document.querySelector(".purple").classList.add("active");
         document.querySelector('.users').scrollIntoView({ behavior: "smooth" });
         document.querySelector('.loader').classList.add('hide');
         setTimeout(() => {
@@ -279,9 +277,10 @@ const createManualLogin = (from_users) => {
     });
     mdc.checkbox.MDCCheckbox.attachTo(document.querySelector(".mdc-checkbox"));
     document.querySelector('.manual__login').classList.remove('hide');
-    document.querySelector(".purple").classList.add("active");
-    document.querySelector(".blue").classList.add("active");
     document.querySelector('.manual__login').scrollIntoView({ behavior: "smooth" });
+    // setTimeout(() => {
+    //     document.querySelector('.users').classList.add('hide');
+    // }, 1000);
 };
 
 const createEnterPassword = (userName, userImg, userId) => {
@@ -345,8 +344,10 @@ const createEnterPassword = (userName, userImg, userId) => {
     });
     mdc.checkbox.MDCCheckbox.attachTo(document.querySelector(".mdc-checkbox"));
     document.querySelector('.manual__login').classList.remove('hide');
-    document.querySelector(".blue").classList.add("active");
     document.querySelector('.manual__login').scrollIntoView({ behavior: "smooth" });
+    // setTimeout(() => {
+    //     document.querySelector('.users').classList.add('hide');
+    // }, 1000);
 };
 
 const sendAuthInfo = (userName, password, checkbox) => {
@@ -383,7 +384,6 @@ const changeServer = (page) => {
 const goBack = (from, to, loginForm) => {
     to.classList.remove("hide");
     to.scrollIntoView({ behavior: "smooth" });
-    document.querySelector(".blue").classList.remove("active");
     setTimeout(() => {
         from.classList.add('hide');
         from.querySelector(`.${loginForm}`).remove();
