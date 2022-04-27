@@ -7,29 +7,38 @@
 - Install Requirements:
   - Install Python 3
   - Install dependencies
+    - Install node deps for frontend, go to JellyPlayer-FrontEnd dir and run the following command
 
-    ```console
-    pip3 install -r requirements.txt --default-timeout=1000 
-    ```
+      ```console
+      npm install
+      ```
+
+    - Install Python deps
+
+      ```console
+      pip3 install -r requirements.txt --default-timeout=1000
+      ```
 
 - Run App:
   
-  - Complie Renderer Files(html,js,css):
+  - Complie Renderer Files(html,js,css):\
+    Go to JellyPlayer-FrontEnd dir and run.\
+    **Note: on windows use WSL to compile**
 
     ```console
-    pyside6-rcc main.qrc -o renderer.py 
+    npm run build 
     ```
 
   - Run JellyPlayer:
 
     ```console
-    python main.py
+    python3 main.py
     ```
 
-- Build EXE:
+<!-- - Build EXE:
 
   ```console
   pyinstaller --clean main.spec
   ```
 
-  The .exe file will generate at dist/JellyPlayer
+  The .exe file will generate at dist/JellyPlayer -->

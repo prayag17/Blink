@@ -31,11 +31,7 @@ const pageTransition = (from, to, background) => {
         document.querySelector(from).classList.remove("moveFadeOut");
         document.querySelector(from).classList.add("hide");
     }, 5000);
-    if (background == false) {
-        bg.querySelector(".purple").classList.remove("active");
-        bg.querySelector(".blue").classList.remove("active");
-    }
-};
+}
 
 const ticksToMin = (ticks) => {
     return Math.round(ticks / 600000000);
@@ -137,7 +133,6 @@ const createCardGrid = (type, data, cardType) => {
             for (let item of data) {
                 html = `<div class="card" data-index="${data.indexOf(item)}">
                 <div class="image__cont">
-                <canvas class="placeholder"></canvas>
                 <div class="icon__image">
                 <span class="mdi">
                 </div>
@@ -232,9 +227,44 @@ const createCardGrid = (type, data, cardType) => {
                     tempData = card.parentElement.clientWidth;
                     card.style.width = `${tempData / 4}px`;
                 }
-            }
+            };
         }, 0);
     }    
+};
+
+const createLibraryPage = async (page, userId, itemsApi) => {
+    let data;
+    // if (!document.querySelector(`.library__page[data-page='${page}']`)) {
+        html = `<div class="library__page" data-page="${page}">
+        <div class="skeleton__loader"></div>
+        <div class="tab__bar"></div>
+        <div class="libraryGrid primary"></div>
+        </div>`;
+        document.querySelector('.main__animated__page').insertAdjacentHTML("beforeend", html)
+        document.querySelector(`.library__page[data-page='${page}']`).scrollIntoView({ behavior: "smooth" });
+        data = await itemsApi.getItems({
+            userId: userId,
+            includeItemTypes: [`${page.toUpperCase()}`],
+            recursive: true
+        });
+        for (let item of data.data) {
+            html = `<div class="card" data-index="${data.data.indexOf(item)}">
+            <div class="image__cont">
+            <div class="icon__image">
+            <span class="mdi">
+            </div>
+            <div class="primary__image hide">
+            <img>
+            </div>
+            </div>
+            <div class="card__text__cont">
+            <div class="card__text primary">${item.Name}</div>
+            </div>
+            </div>`
+            document.querySelector(`.library__page[data-page='${page}'] .LibraryGrid`).insertAdjacentHTML("beforeend", html);
+    }
+            document.querySelector(`.library__page[data-page='${page}'] .skeleton__loader`).classList.add("hide");
+    // }
 };
 
 emitter.on("logged-in", async (user) => {
@@ -290,32 +320,36 @@ emitter.on("logged-in", async (user) => {
     }
     setTimeout(() => {        
         for (let item of libs) {
-            console.log(item)
             if (item.CollectionType) {
                 html = `<div class="menu__button" data-page="${item.CollectionType.toLowerCase()}"><div class="mdi"></div>${item.Name}</div>`;
                 document.querySelector(".submenu .sub").insertAdjacentHTML("beforeend", html);
+                for (let menuBtn of document.querySelectorAll('.menu__button')) {
+                    menuBtn.addEventListener("click", () => {
+                        createLibraryPage(menuBtn.dataset.page, user[5], itemsApi)
+                    })
+                }
                 switch (item.CollectionType) {
                     case "books":
-                        document.querySelector(`.menu__button[data-page="books"] .mdi`).classList.add("mdi-book-multiple-outline");
-                        break;
+                    document.querySelector(`.menu__button[data-page="books"] .mdi`).classList.add("mdi-book-multiple-outline");
+                    break;
                     case "boxsets":
-                        document.querySelector(`.menu__button[data-page="boxsets"] .mdi`).classList.add("mdi-folder-outline");
-                        break;
+                    document.querySelector(`.menu__button[data-page="boxsets"] .mdi`).classList.add("mdi-folder-outline");
+                    break;
                     case "movies":
-                        document.querySelector(`.menu__button[data-page="movies"] .mdi`).classList.add("mdi-play-box-multiple-outline");
-                        break;
+                    document.querySelector(`.menu__button[data-page="movies"] .mdi`).classList.add("mdi-play-box-multiple-outline");
+                    break;
                     case "music":
-                        document.querySelector(`.menu__button[data-page="music"] .mdi`).classList.add("mdi-music-box-multiple-outline");
-                        break;
+                    document.querySelector(`.menu__button[data-page="music"] .mdi`).classList.add("mdi-music-box-multiple-outline");
+                    break;
                     case "playlists":
-                        document.querySelector(`.menu__button[data-page="playlists"] .mdi`).classList.add("mdi-playlist-music");
-                        break;
+                    document.querySelector(`.menu__button[data-page="playlists"] .mdi`).classList.add("mdi-playlist-music");
+                    break;
                     case "tvshows":
-                        document.querySelector(`.menu__button[data-page="tvshows"] .mdi`).classList.add("mdi-youtube-tv");
-                        break;
+                    document.querySelector(`.menu__button[data-page="tvshows"] .mdi`).classList.add("mdi-youtube-tv");
+                    break;
                     default:
-                        document.querySelector(`.menu__button[data-page="${item.CollectionType.toLowerCase()}"] .mdi`).classList.add("mdi-file-outline");
-                        break;
+                    document.querySelector(`.menu__button[data-page="${item.CollectionType.toLowerCase()}"] .mdi`).classList.add("mdi-file-outline");
+                    break;
                 }
             } else {
                 html = `<div class="menu__button" data-page="${item.Name.toLowerCase()}"><div class="mdi mdi-folder-outline"></div>${item.Name}</div>`;

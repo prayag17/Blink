@@ -1,0 +1,3 @@
+[submodule "JellyPlayer-FrontEnd"]
+	path = JellyPlayer-FrontEnd
+	url = git@github.com:prayag17/JellyPlayer-FrontEnd.git
