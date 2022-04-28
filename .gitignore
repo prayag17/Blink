@@ -1,6 +1,7 @@
-dist
-build
+*dist
+*build
 __pycache__
 *.mkv
 *.mp4
 *mpv*
+sh-agent*
