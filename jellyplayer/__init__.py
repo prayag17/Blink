@@ -69,7 +69,7 @@ class PlayerWindow(QMainWindow):
 
 
 
-frontendProcess = subprocess.Popen(f'{sys.executable} {os.path.dirname(__file__)}/JellyPlayer-FrontEnd/frontend/dist/server.py', shell=True)
+frontendProcess = subprocess.Popen(f'{sys.executable} {os.path.dirname(__file__)}/jellyplayer-jellyfin-vue/frontend/dist/server.py', shell=True)
 window = MainWin()
 
 print(window.dir)
