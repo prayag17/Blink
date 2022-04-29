@@ -1,8 +1,0 @@
---extra-index-url https://download.qt.io/official_releases/QtForPython/split-wheels/
-localStoragePy==0.2.3
-requests==2.27.1
-pyinstaller==4.10
-pyside6==6.3.0
-flask==2.1.1
-waitress==2.1.1
-python-mpv==1.0.1

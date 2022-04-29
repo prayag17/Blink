@@ -5,3 +5,4 @@ __pycache__
 *.mp4
 *mpv*
 sh-agent*
+.pytest_cache
