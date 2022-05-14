@@ -1,27 +1,41 @@
 import QtWebEngine
-// import QtWebEngine.WebEngineSettings
 import QtWebChannel
-import QtQuick.Window
+import QtQuick
 import QtQuick.Controls
 
-Window{
-    id: mainWindow
-    title: "Jellyfin Player"
-    objectName: "mainWindow"
-    minimumHeight: 720
-    minimumWidth: 1280
-    visible: true
+import WebView
 
-    WebEngineView{
-      id:webView
-      url:"http://127.0.0.1:5000";
+Item{
+    id: window
+    objectName: "window"
+    // minimumHeight: 720
+    // minimumWidth: 1280
+    // visible: true
+
+    // QtObject{
+    //   id:mpvComObj
+    //   WebChannel.id: backend
+    //   function createMpv(url) {
+    //     video.play(url)
+    //   }
+    // }
+
+    // MpvObject{
+    //   id:video;
+    //   anchors.fill: parent
+    // }
+
+    // WebChannel{
+    //   id: channel
+    //   registeredObjects: [mpvComObj]
+    // }
+
+    WebView {
+      id:webView;
+      visible: true;
       width: mainWindow.width;
       height: mainWindow.height;
       anchors.fill: parent;
-      settings.localStorageEnabled: true;
-      settings.localContentCanAccessRemoteUrls: true;
-      settings.localContentCanAccessFileUrls: true;
-      settings.javascriptEnabled: true;
     }
-    property QtObject webChannel: webView.webChannel
+    // property QtObject webChannel: webView.webChannel
 }

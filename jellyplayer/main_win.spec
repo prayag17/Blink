@@ -4,10 +4,10 @@
 block_cipher = None
 
 
-a = Analysis(['main.py'],
-             pathex=[],
+a = Analysis(['__init__.py'],
+             pathex=['D:\\Jellyfin\\JellyPlayer\\jellyplayer'],
              binaries=[],
-             datas=[('JellyPlayer-FrontEnd/frontend/dist', 'mainWindow.qml')],
+             datas=[('jellyplayer-jellyfin-vue/frontend/dist', 'jellyplayer-jellyfin-vue/frontend/dist'), ('mainWindow.qml', '.')],
              hiddenimports=[],
              hookspath=[],
              hooksconfig={},
@@ -29,7 +29,7 @@ exe = EXE(pyz,
           bootloader_ignore_signals=False,
           strip=False,
           upx=True,
-          console=False,
+          console=True,
           disable_windowed_traceback=False,
           target_arch=None,
           codesign_identity=None,
@@ -42,4 +42,4 @@ coll = COLLECT(exe,
                strip=False,
                upx=True,
                upx_exclude=[],
-               name='JellyPlayer')
+               name='main_win')
