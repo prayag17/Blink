@@ -1,0 +1,3 @@
+[submodule "jellyplayer/jellyplayer-jellyfin-vue"]
+	path = jellyplayer/jellyplayer-jellyfin-vue
+	url = git@github.com:prayag17/jellyplayer-jellyfin-vue.git
