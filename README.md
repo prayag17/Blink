@@ -42,3 +42,7 @@
   ```
 
   The .exe file will generate at dist/JellyPlayer -->
+
+## Roadmap to Alpha 1
+
+![roadmap alpha 1](https://i.imgur.com/lBd6etl_d.webp?maxwidth=640&shape=thumb&fidelity=medium)
