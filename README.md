@@ -45,4 +45,8 @@
 
 ## Roadmap to Alpha 1
 
-![roadmap alpha 1](https://i.imgur.com/lBd6etl_d.webp?maxwidth=640&shape=thumb&fidelity=medium)
+Estimated release date: 15 July, 2022
+
+- [ ] Integration of libMPV for video playback (30% completed).
+- [ ] Add Jellyplayer specific player function to jf-vue for video playback (1% completed).
+- [ ] Use github action workflow to build JellyPlayer for multiple target OS.
