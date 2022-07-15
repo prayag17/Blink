@@ -2,6 +2,8 @@
 
 ## Modern Jellyfin Client
 
+## Note: The development of this client is on halt as I am waiting for jf-vue project(frontend for this project) to catch up to vue3
+
 ## Installation
 
 - Install Requirements:
