@@ -14,7 +14,7 @@ keywords = [
 ]
 
 [tool.poetry.dependencies]
-python = "~3.8"
+python = "^3.10"
 PySide6 = "^6.3.0"
 Flask = "^2.1.2"
 waitress = "^2.1.1"

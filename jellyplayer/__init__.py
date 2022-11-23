@@ -1,31 +1,22 @@
-from mpv import MPV, MpvRenderContext, MpvGlGetProcAddressFn
-__version__ = '0.1.0'
-
+from ctypes import windll, cast, c_void_p
+from PySide6.QtWebEngineCore import QWebEngineSettings
+from PySide6.QtWebEngineWidgets import QWebEngineView
+from PySide6.QtWebChannel import QWebChannel
+from PySide6.QtGui import QIcon, QPixmap
+from PySide6.QtCore import QUrl, Slot, QObject, QProcess, Qt, QCoreApplication, QMessageLogContext
+from PySide6.QtWidgets import QApplication, QMainWindow, QWidget
+from signal import SIGTERM, signal
+import platform
+import subprocess
 import sys
 import os
-import subprocess
-import platform
-from signal import SIGTERM, signal
-from PySide6.QtWidgets import QApplication, QMainWindow, QWidget
-from PySide6.QtCore import QUrl, Slot, QObject, QProcess, Qt, QCoreApplication, Signal, QSize
-from PySide6.QtGui import QIcon, QPixmap, QOpenGLContext
-from PySide6.QtWebChannel import QWebChannel
-from PySide6.QtWebEngineWidgets import QWebEngineView
-from PySide6.QtWebEngineCore import QWebEngineSettings
-from PySide6.QtWebEngineQuick import QtWebEngineQuick
-from PySide6.QtQuick import QQuickFramebufferObject, QQuickView, QQuickItem
-from PySide6.QtOpenGL import QOpenGLFramebufferObject
-from PySide6.QtOpenGLWidgets import QOpenGLWidget
-from PySide6.QtQml import QQmlApplicationEngine, QQmlComponent, qmlRegisterType
-from ctypes import windll, cast, c_void_p
-
-# if (platform.system() == "Windows"):
-#     from OpenGL import GL, WGL
-# else:
-#     from OpenGL import GL, GLX
 
 os.environ["PATH"] = os.path.dirname(
     __file__) + os.pathsep + os.environ["PATH"]
+
+from mpv import MPV, MpvRenderContext
+
+__version__ = '0.1.0'
 
 QCoreApplication.setAttribute(Qt.AA_ShareOpenGLContexts)
 app = QApplication(["--enable-smooth-scrolling", "--enable-gpu"])
@@ -45,6 +36,7 @@ def restart():
 
 class Backend(QObject):
     def __init__(self, player):
+        super().__init__()
         self.player = player
 
     def restart(self):
@@ -59,6 +51,12 @@ class Backend(QObject):
     def setTime(self, time):
         self.player.setTime(time)
 
+    @Slot(result=int)
+    def getTime(self):
+        return self.player.time_pos
+
+
+# def filehandler()
 
 class MainWin(QMainWindow):
     def __init__(self):
@@ -67,7 +65,7 @@ class MainWin(QMainWindow):
         self.dir = self.dirRaw.replace("\\", "/")
         self.view = QWebEngineView()
         self.view.load(QUrl("http://localhost:3000"))
-        # self.view.load(QUrl("http://localhost:2703"))
+        # self.view.load(QUrl("http://localhost:17066"))
         self.view.raise_()
         self.setCentralWidget(self.view)
         self.setWindowIcon(QIcon(QPixmap(f"{self.dir}/assets/icon.png")))
@@ -86,13 +84,9 @@ class MainWin(QMainWindow):
         self.inspector = QWebEngineView()
         self.inspector.setWindowTitle("Inspector")
 
-        self.backend = Backend(self.playerWid)
-        self.channel = QWebChannel()
-        self.channel.registerObject('backend', self.backend)
-
         self.playerWid = QWidget(self)
-        self.playerWid.setMinimumHeight(self.view.height)
-        self.playerWid.setMinimumWidth(self.view.width)
+        self.playerWid.setMinimumHeight(self.view.height())
+        self.playerWid.setMinimumWidth(self.view.width())
         self.playerWid.setAttribute(Qt.WA_DontCreateNativeAncestors)
         self.playerWid.setAttribute(Qt.WA_NativeWindow)
         self.playerWid.lower()
@@ -101,6 +95,10 @@ class MainWin(QMainWindow):
                           hwdec="nvdec",
                           log_handler=print,
                           loglevel='debug')
+
+        self.backend = Backend(self.playerWid)
+        self.channel = QWebChannel()
+        self.channel.registerObject('backend', self.backend)
 
     def handleLoaded(self, ok):
         if ok:
