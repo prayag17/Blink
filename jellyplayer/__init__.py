@@ -1,3 +1,4 @@
+from mpv import MPV, MpvRenderContext
 from ctypes import windll, cast, c_void_p
 from PySide6.QtWebEngineCore import QWebEngineSettings
 from PySide6.QtWebEngineWidgets import QWebEngineView
@@ -14,7 +15,6 @@ import os
 os.environ["PATH"] = os.path.dirname(
     __file__) + os.pathsep + os.environ["PATH"]
 
-from mpv import MPV, MpvRenderContext
 
 __version__ = '0.1.0'
 
@@ -64,10 +64,10 @@ class MainWin(QMainWindow):
         self.dirRaw = os.path.dirname(os.path.realpath(__file__))
         self.dir = self.dirRaw.replace("\\", "/")
         self.view = QWebEngineView()
-        self.view.load(QUrl("http://localhost:3000"))
-        # self.view.load(QUrl("http://localhost:17066"))
+        self.view.load(QUrl("http://localhost:5173"))
         self.view.raise_()
         self.setCentralWidget(self.view)
+
         self.setWindowIcon(QIcon(QPixmap(f"{self.dir}/assets/icon.png")))
 
         self.view.settings().setAttribute(QWebEngineSettings.JavascriptEnabled, True)
