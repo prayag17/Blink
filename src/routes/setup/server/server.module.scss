@@ -1,0 +1,22 @@
+/** @format */
+.logo {
+	width: min(60vw, 45em);
+	height: auto;
+	margin-bottom: 2em;
+}
+
+.serverContainer {
+	display: flex;
+	flex-direction: column;
+	justify-content: center;
+	align-items: center;
+	gap: 1.5em;
+	.textbox,
+	.button {
+		width: 100% !important;
+	}
+	.button {
+		padding: 1em;
+		border-radius: 100px;
+	}
+}

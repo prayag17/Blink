@@ -1,0 +1,30 @@
+/** @format */
+
+.user {
+	&List {
+		display: flex;
+		gap: 1em;
+		width: min(60vw, 45em);
+	}
+	&Card {
+		display: flex;
+		flex-flow: column;
+		flex: 1 1 0px;
+	}
+	&Icon {
+		font-size: 5em;
+		display: flex;
+		justify-content: center;
+		align-items: center;
+		background: $clr-accent-dark;
+	}
+}
+
+.buttons {
+	display: flex;
+	gap: 1em;
+	width: 100%;
+	.userEventButton {
+		flex: 1 1 0 !important;
+	}
+}

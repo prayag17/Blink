@@ -1,0 +1,44 @@
+{
+	"name": "jellyplayer-react",
+	"private": true,
+	"version": "0.0.0",
+	"type": "module",
+	"scripts": {
+		"dev": "vite",
+		"build": "vite build",
+		"preview": "vite preview",
+		"tauri": "tauri"
+	},
+	"dependencies": {
+		"@emotion/react": "^11.10.5",
+		"@emotion/styled": "^11.10.5",
+		"@fontsource/open-sans": "^4.5.13",
+		"@jellyfin/sdk": "^0.7.0",
+		"@mui/lab": "^5.0.0-alpha.110",
+		"@mui/material": "^5.10.15",
+		"events": "^3.3.0",
+		"framer-motion": "^7.10.2",
+		"localforage": "^1.10.0",
+		"match-sorter": "^6.3.1",
+		"mdi-material-ui": "^7.6.0",
+		"notistack": "^2.0.8",
+		"react": "^18.2.0",
+		"react-cookie": "^4.1.1",
+		"react-dom": "^18.2.0",
+		"react-material-ui-carousel": "^3.4.2",
+		"react-multi-carousel": "^2.8.2",
+		"react-router-dom": "^6.4.3",
+		"sort-by": "^1.2.0",
+		"uuid": "^9.0.0",
+		"vite-plugin-svgr": "^2.2.2"
+	},
+	"devDependencies": {
+		"@tauri-apps/cli": "^1.2.2",
+		"@types/react": "^18.0.24",
+		"@types/react-dom": "^18.0.8",
+		"@vitejs/plugin-react": "^2.2.0",
+		"sass": "^1.56.1",
+		"vite": "^3.2.3"
+	},
+	"license": "GPL-3.0-only"
+}

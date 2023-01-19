@@ -1,0 +1,73 @@
+/** @format */
+body {
+	font-family: "Open Sans";
+	background: $clr-background-default;
+	margin: 0;
+	padding: 0;
+	position: relative;
+	width: 100vw;
+	height: 100vh;
+}
+
+#root,
+.root-page {
+	height: 100vh;
+	width: 100vw;
+	overflow: hidden;
+}
+
+.centered {
+	position: absolute;
+	top: 50%;
+	left: 50%;
+	transform: translate(-50%, -50%);
+}
+
+.loading {
+	opacity: 0.35;
+}
+
+.fadeIn {
+	animation: 0.5s fadeIn forwards;
+}
+
+.fadeOut {
+	animation: 0.5s fadeOut forwards;
+}
+
+@keyframes fadeIn {
+	from {
+		opacity: 0;
+		transform: translate(-20px, 0);
+	}
+	to {
+		opacity: 1;
+		transform: translate(0px, 0px);
+	}
+}
+
+@keyframes fadeOut {
+	from {
+		opacity: 1;
+		transform: translate(0px, 0px);
+	}
+	to {
+		transform: translate(20px, 0);
+		opacity: 0;
+	}
+}
+
+h1 {
+	color: white !important;
+}
+
+.scrollY {
+	overflow-x: hidden;
+	overflow-y: auto;
+	height: 100vh;
+	box-sizing: border-box;
+}
+
+.empty {
+	display: none;
+}

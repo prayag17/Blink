@@ -1,0 +1,29 @@
+/** @format */
+
+.card-scroller {
+	// height: 20em;
+	&-slide {
+		overflow: visible;
+		display: flex;
+	}
+	&-button {
+		color: white;
+		position: absolute !important;
+		top: 49%;
+		transform: translateY(-50%);
+		background-color: $clr-background-dark !important;
+		border-radius: $border-radius-intensity-1 !important;
+		opacity: 0;
+		transition: opacity $transition-time-default !important;
+		&:hover,
+		&:focus {
+			opacity: 1;
+		}
+		&.right {
+			right: 0%;
+		}
+		&.left {
+			left: 0%;
+		}
+	}
+}

@@ -1,0 +1,13 @@
+/** @format */
+/** @format */
+
+@use "./styles/variables.scss" as *;
+
+:export {
+	clrAccentDefault: $clr-accent-default;
+	clrSecondaryDefault: $clr-secondary-default;
+	clrBackgroundDefault: $clr-background-default;
+
+	clrBackgroundDark: $clr-background-dark;
+	clrBackgroundLight: $clr-background-light;
+}
