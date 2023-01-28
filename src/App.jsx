@@ -19,6 +19,7 @@ import { EventEmitter as event } from "./eventEmitter.js";
 import { getUserApi } from "@jellyfin/sdk/lib/utils/api/user-api";
 
 // Theming
+import CssBaseline from "@mui/material/CssBaseline";
 import { theme } from "./theme";
 import "./styles/global.scss";
 
@@ -97,7 +98,7 @@ const AnimationWrapper = () => {
 	);
 };
 
-function App() {
+function App({ hideLoader }) {
 	const [userCookies] = useCookies(["user"]);
 	const navigate = useNavigate();
 	const cookies = new Cookies();
@@ -169,6 +170,7 @@ function App() {
 		<SnackbarProvider maxSnack={5}>
 			<ThemeProvider theme={theme}>
 				<AnimatePresence>
+					<CssBaseline />
 					<Routes key={location.pathname} location={location}>
 						<Route element={<AnimationWrapper />}>
 							{/* Main Routes */}

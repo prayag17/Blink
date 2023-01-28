@@ -66,6 +66,10 @@ export const AvatarImage = ({ userId }) => {
 	);
 };
 
+export const AvatarSideMenu = ({ userName }) => {
+	return <div></div>;
+};
+
 AvatarCard.propType = {
 	userName: PropTypes.string.isRequired,
 	userId: PropTypes.string.isRequired,

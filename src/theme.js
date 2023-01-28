@@ -22,6 +22,10 @@ export const theme = createTheme({
 		secondary: {
 			main: clrSecondaryDefault,
 		},
+		background: {
+			default: clrBackgroundDefault,
+			paper: clrBackgroundDark,
+		},
 		mode: "dark",
 	},
 	typography: {

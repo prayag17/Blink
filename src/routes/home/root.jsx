@@ -40,29 +40,9 @@ import Close from "mdi-material-ui/Close";
 import { getLibraryApi } from "@jellyfin/sdk/lib/utils/api/library-api";
 import { getUserApi } from "@jellyfin/sdk/lib/utils/api/user-api";
 import { getUserLibraryApi } from "@jellyfin/sdk/lib/utils/api/user-library-api";
+import { getUserViewsApi } from "@jellyfin/sdk/lib/utils/api/user-views-api";
 
 const drawerWidth = 320;
-
-const openedMixin = (theme) => ({
-	width: drawerWidth,
-	transition: theme.transitions.create("width", {
-		easing: theme.transitions.easing.sharp,
-		duration: theme.transitions.duration.enteringScreen,
-	}),
-	overflowX: "hidden",
-});
-
-const closedMixin = (theme) => ({
-	transition: theme.transitions.create("width", {
-		easing: theme.transitions.easing.sharp,
-		duration: theme.transitions.duration.leavingScreen,
-	}),
-	overflowX: "hidden",
-	width: `calc(${theme.spacing(7)} + 1px)`,
-	[theme.breakpoints.up("sm")]: {
-		width: `calc(${theme.spacing(8)} + 1px)`,
-	},
-});
 
 const DrawerHeader = styled("div")(({ theme }) => ({
 	display: "flex",
@@ -73,27 +53,20 @@ const DrawerHeader = styled("div")(({ theme }) => ({
 	...theme.mixins.toolbar,
 }));
 
-const Drawer = styled(MuiDrawer, {
+const MiniDrawer = styled(MuiDrawer, {
 	shouldForwardProp: (prop) => prop !== "open",
-})(({ theme, open }) => ({
-	width: drawerWidth,
+})(({ theme }) => ({
 	flexShrink: 0,
 	whiteSpace: "nowrap",
 	boxSizing: "border-box",
 	backgroundColor: theme.palette.primary.background.dark,
-	...(open && {
-		...openedMixin(theme),
-		"& .MuiDrawer-paper": openedMixin(theme),
-	}),
-	...(!open && {
-		...closedMixin(theme),
-		"& .MuiDrawer-paper": closedMixin(theme),
-	}),
+	overflowX: "hidden",
+	width: `calc(${theme.spacing(7)} + 1px)`,
 }));
 
 const AppBar = styled(MuiAppBar, {
 	shouldForwardProp: (prop) => prop !== "open",
-})(({ theme, open }) => ({
+})(({ theme }) => ({
 	zIndex: theme.zIndex.drawer + 1,
 	transition: theme.transitions.create(["width", "margin"], {
 		easing: theme.transitions.easing.sharp,
@@ -101,14 +74,6 @@ const AppBar = styled(MuiAppBar, {
 	}),
 	backgroundColor: "transparent",
 	backgroundImage: "none",
-	...(open && {
-		marginLeft: drawerWidth,
-		width: `calc(100% - ${drawerWidth}px)`,
-		transition: theme.transitions.create(["width", "margin"], {
-			easing: theme.transitions.easing.sharp,
-			duration: theme.transitions.duration.enteringScreen,
-		}),
-	}),
 }));
 
 export const Home = () => {
@@ -120,6 +85,11 @@ export const Home = () => {
 	const [user, setUser] = useState({
 		Name: "",
 	});
+
+	const excludeTypes = ["boxsets", "playlists", "livetv", "channels"];
+
+	// const [lestMediaTypes, setLatestMediaTypes] = useState([]);
+	const [latestMediaLibs, setLatestMediaLibs] = useState([]);
 	const [latestMedia, setLatestMedia] = useState([]);
 
 	const [drawerState, setDrawerState] = useState(false);
@@ -159,14 +129,38 @@ export const Home = () => {
 		return media;
 	};
 	const getLatestMovies = async (user) => {
-		const media = await getUserLibraryApi(window.api).getLatestMedia({
-			userId: user.Id,
-			fields: ["PrimaryImageAspectRatio", "Overview"],
-			enableUserData: true,
-			includeItemTypes: ["Movie"],
-		});
-		return media;
+		let latest = [];
+		for (const parentid of latestMediaLibs) {
+			let media = (
+				await getUserLibraryApi(window.api).getLatestMedia({
+					userId: user.Id,
+					limit: 16,
+					fields: ["PrimaryImageAspectRatio", "Overview"],
+					enableUserData: true,
+					parentId: parentid,
+				})
+			).data;
+			latest.push({
+				name: "Latest Media",
+				data: media,
+			});
+			// console.log("from a => ", latestMediaLibs);
+			setLatestMediaLibs((current) => {
+				current.filter((id) => id !== parentid);
+			});
+			console.log("from a => ", latestMediaLibs);
+		}
+		return latest;
 	};
+
+	const userViews = async (user) => {
+		const userviews = await getUserViewsApi(window.api).getUserViews({
+			userId: user.Id,
+		});
+		return userviews;
+	};
+
+	// const homeSection = []
 
 	useEffect(() => {
 		currentUser().then((usr) => {
@@ -174,19 +168,40 @@ export const Home = () => {
 			userLibs(usr.data).then((libs) => {
 				setUserLibraries(libs.data.Items);
 				setSkeletonStateSideMenu(true);
-				// console.log(userLibraries);
+				for (let library of userLibraries) {
+					if (excludeTypes.includes(library.CollectionType)) {
+						continue;
+					} else {
+						let libs = latestMediaLibs;
+						let updated = null;
+						if (
+							!libs.some(
+								(elem) =>
+									elem == library.CollectionType,
+							)
+						) {
+							updated = libs.push(library.Id);
+						} else {
+							updated = libs;
+						}
+
+						setLatestMediaLibs(libs);
+					}
+				}
 			});
 			getLatestMedia(usr.data).then((media) => {
 				setLatestMedia(media.data);
 				setSkeletonStateCarousel(true);
 			});
 			getLatestMovies(usr.data).then((media) => {
-				setLatestMovies(media.data);
+				// let latestmovies = latestMovies;
+				// latestmovies.push(media.data);
+				setLatestMovies(media);
 			});
 		});
-		for (let lib of latestMovies) {
-			console.log(lib);
-		}
+		// for (let lib of latestMovies) {
+		// console.log(lib);
+		// }
 	}, []);
 
 	return (
@@ -218,9 +233,9 @@ export const Home = () => {
 					</Toolbar>
 				</AppBar>
 
-				<Drawer
+				<MiniDrawer
 					variant="permanent"
-					open={drawerState}
+					open={false}
 					PaperProps={{
 						sx: {
 							backgroundColor: "inherit",
@@ -286,16 +301,6 @@ export const Home = () => {
 													]
 												}
 											</ListItemIcon>
-											<ListItemText
-												primary={
-													library.Name
-												}
-												sx={{
-													opacity: drawerState
-														? 1
-														: 0,
-												}}
-											/>
 										</ListItemButton>
 									</ListItem>
 								);
@@ -322,7 +327,73 @@ export const Home = () => {
 							></Skeleton>
 						</>
 					)}
-				</Drawer>
+				</MiniDrawer>
+
+				<MuiDrawer
+					anchor="left"
+					open={drawerState}
+					onClose={handleDrawerClose}
+				>
+					<DrawerHeader
+						className="Mui-DrawerHeader"
+						sx={{ position: "relative", height: "20vh" }}
+					>
+						{/* <div>
+						<Avatar src={""}/>
+						<Typography variant="h3">
+						{user["Name"]}
+						</Typography>
+					</div> */}
+						<IconButton
+							onClick={handleDrawerClose}
+							sx={{
+								position: "absolute",
+								top: "10%",
+								right: "5%",
+							}}
+						>
+							<Close />
+						</IconButton>
+					</DrawerHeader>
+					<Divider />
+					<List sx={{ border: "none" }}>
+						{userLibraries.map((library, index) => {
+							return (
+								<ListItem disablePadding key={index}>
+									<ListItemButton
+										sx={{
+											minHeight: 48,
+											justifyContent:
+												drawerState
+													? "initial"
+													: "center",
+											px: 2.5,
+										}}
+									>
+										<ListItemIcon
+											sx={{
+												minWidth: 0,
+												mr: 3,
+												justifyContent:
+													"center",
+											}}
+										>
+											{
+												MediaCollectionTypeIconCollection[
+													library
+														.CollectionType
+												]
+											}
+										</ListItemIcon>
+										<ListItemText
+											primary={library.Name}
+										/>
+									</ListItemButton>
+								</ListItem>
+							);
+						})}
+					</List>
+				</MuiDrawer>
 				{/* <h1>Hey {userId} this is WIP Home</h1> */}
 				<Box
 					component="main"
@@ -477,6 +548,7 @@ export const Home = () => {
 						</Typography>
 						<CardScroller displayCards={4}>
 							{userLibraries.map((library, index) => {
+								// console.log(userLibraries);
 								return (
 									<CardLandscape
 										key={index}
