@@ -88,8 +88,6 @@ export const Home = () => {
 
 	const excludeTypes = ["boxsets", "playlists", "livetv", "channels"];
 
-	// const [lestMediaTypes, setLatestMediaTypes] = useState([]);
-	const [latestMediaLibs, setLatestMediaLibs] = useState([]);
 	const [latestMedia, setLatestMedia] = useState([]);
 
 	const [drawerState, setDrawerState] = useState(false);
@@ -115,7 +113,7 @@ export const Home = () => {
 		return user;
 	};
 
-	const userLibs = async (user) => {
+	const userLibs = async () => {
 		const userLibs = await getLibraryApi(window.api).getMediaFolders();
 		return userLibs;
 	};
@@ -128,30 +126,6 @@ export const Home = () => {
 		});
 		return media;
 	};
-	const getLatestMovies = async (user) => {
-		let latest = [];
-		for (const parentid of latestMediaLibs) {
-			let media = (
-				await getUserLibraryApi(window.api).getLatestMedia({
-					userId: user.Id,
-					limit: 16,
-					fields: ["PrimaryImageAspectRatio", "Overview"],
-					enableUserData: true,
-					parentId: parentid,
-				})
-			).data;
-			latest.push({
-				name: "Latest Media",
-				data: media,
-			});
-			// console.log("from a => ", latestMediaLibs);
-			setLatestMediaLibs((current) => {
-				current.filter((id) => id !== parentid);
-			});
-			console.log("from a => ", latestMediaLibs);
-		}
-		return latest;
-	};
 
 	const userViews = async (user) => {
 		const userviews = await getUserViewsApi(window.api).getUserViews({
@@ -160,48 +134,18 @@ export const Home = () => {
 		return userviews;
 	};
 
-	// const homeSection = []
-
 	useEffect(() => {
 		currentUser().then((usr) => {
 			setUser(usr.data);
-			userLibs(usr.data).then((libs) => {
+			userLibs().then((libs) => {
 				setUserLibraries(libs.data.Items);
 				setSkeletonStateSideMenu(true);
-				for (let library of userLibraries) {
-					if (excludeTypes.includes(library.CollectionType)) {
-						continue;
-					} else {
-						let libs = latestMediaLibs;
-						let updated = null;
-						if (
-							!libs.some(
-								(elem) =>
-									elem == library.CollectionType,
-							)
-						) {
-							updated = libs.push(library.Id);
-						} else {
-							updated = libs;
-						}
-
-						setLatestMediaLibs(libs);
-					}
-				}
 			});
 			getLatestMedia(usr.data).then((media) => {
 				setLatestMedia(media.data);
 				setSkeletonStateCarousel(true);
 			});
-			getLatestMovies(usr.data).then((media) => {
-				// let latestmovies = latestMovies;
-				// latestmovies.push(media.data);
-				setLatestMovies(media);
-			});
 		});
-		// for (let lib of latestMovies) {
-		// console.log(lib);
-		// }
 	}, []);
 
 	return (
