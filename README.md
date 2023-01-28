@@ -7,12 +7,12 @@
 # :warning: Getting started:
 - Install Nodejs and Rust.
 - install depencies using npm:
-  ```
+  ```shell
   npm install
   ```
 
 # :information_source: Development:
-- Runing the app:
+- Running the app:
   ```shell
   npm run tauri dev
   ```
@@ -20,6 +20,7 @@
   ```shell
   npm run tauri build
   ```
+- other commands can be found inside the `"scripts"` inside [package.json](https://github.com/prayag17/JellyPlayer/blob/main/package.json)
 
 # :sos: Help Wanted:
 - Home sections containing latest media.
