@@ -1,4 +1,4 @@
-![JellyPlayer: A modern jellyfin client](https://rawcdn.githack.com/prayag17/JellyPlayer/6fb9e2ce601ed64c194ae7228c18446a8b5db584/assets/Banner.png)
+![Banner](https://user-images.githubusercontent.com/55829513/215268063-c7e114c2-0200-42e9-9e38-6dc765fcf6cc.png)
 
 # :memo: Prerequisites:
 - Nodejs (≥19.1.0)
