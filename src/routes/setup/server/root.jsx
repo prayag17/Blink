@@ -12,11 +12,14 @@ import { getSystemApi } from "@jellyfin/sdk/lib/utils/api/system-api";
 import TextField from "@mui/material/TextField";
 import Typography from "@mui/material/Typography";
 import Grid from "@mui/material/Grid";
-import ListItem from "@mui/material/ListItem";
-import ListItemText from "@mui/material/ListItemText";
+import LoadingButton from "@mui/lab/LoadingButton";
+import SvgIcon from "@mui/material/SvgIcon";
 import Button from "@mui/material/Button";
 import LinearProgress from "@mui/material/LinearProgress";
 import Container from "@mui/material/Container";
+
+import { mdiChevronRight } from "@mdi/js";
+
 import { useSnackbar } from "notistack";
 
 // Svgs
@@ -130,6 +133,8 @@ export const ServerSetup = (props) => {
 	const [currentServer, setCurrentServer] = useCookies(["currentServer"]);
 	const cookies = new Cookies();
 
+	const [loading, setLoading] = useState(false);
+
 	const addServer = async () => {
 		event.emit("create-jellyfin-api", serverIp);
 		let sysInfo = await getSystemApi(window.api).getPublicSystemInfo();
@@ -156,8 +161,9 @@ export const ServerSetup = (props) => {
 	};
 
 	const handleAddServer = () => {
+		setLoading(true);
 		let data;
-		setServerCheckState(true);
+		// setServerCheckState(true);
 		fetch(`${serverIp}/System/Ping`, {
 			body: JSON.stringify(data),
 		})
@@ -165,20 +171,23 @@ export const ServerSetup = (props) => {
 			.then((data) => {
 				if (data == "Jellyfin Server") {
 					console.log(true);
-					setServerCheckState(false);
+					// setServerCheckState(false);
 					addServer();
+					setLoading(false);
 					return true;
 				} else {
-					setServerCheckState(false);
+					// setServerCheckState(false);
 					enqueueSnackbar(
 						"The server address does not seem be a jellyfin server",
 						{ variant: "error" },
 					);
+					setLoading(false);
 					return false;
 				}
 			})
 			.catch((error) => {
-				setServerCheckState(false);
+				// setServerCheckState(false);
+				setLoading(false);
 				enqueueSnackbar(
 					"Unable to verify whether the give address is a valid Jellyfin server",
 					{ variant: "error" },
@@ -189,7 +198,6 @@ export const ServerSetup = (props) => {
 
 	return (
 		<>
-			{checkingServer && <LinearProgress />}
 			{isJfServer && <Navigate to="/login" />}
 			<Container
 				maxWidth="md"
@@ -222,14 +230,21 @@ export const ServerSetup = (props) => {
 						></TextField>
 					</Grid>
 					<Grid item xl={5} md={6} sx={{ width: "100%" }}>
-						<Button
+						<LoadingButton
 							variant="contained"
 							sx={{ width: "100%" }}
 							size="large"
+							loading={loading}
+							endIcon={
+								<SvgIcon>
+									<path d={mdiChevronRight}></path>
+								</SvgIcon>
+							}
+							loadingPosition="end"
 							onClick={handleAddServer}
 						>
 							Add Server
-						</Button>
+						</LoadingButton>
 					</Grid>
 				</Grid>
 			</Container>

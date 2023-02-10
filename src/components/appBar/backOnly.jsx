@@ -3,7 +3,7 @@
 import AppBar from "@mui/material/AppBar";
 import Toolbar from "@mui/material/Toolbar";
 import IconButton from "@mui/material/IconButton";
-import ArrowLeft from "mdi-material-ui/ArrowLeft";
+import { MdiArrowLeft } from "../icons/mdiArrowLeft";
 import { useNavigate } from "react-router-dom";
 
 export const AppBarBackOnly = () => {
@@ -24,7 +24,7 @@ export const AppBarBackOnly = () => {
 					onClick={handleBack}
 					sx={{ mr: 2 }}
 				>
-					<ArrowLeft />
+					<MdiArrowLeft />
 				</IconButton>
 			</Toolbar>
 		</AppBar>

@@ -7,9 +7,9 @@ import { EventEmitter as event } from "../../eventEmitter.js";
 import { motion } from "framer-motion";
 
 // import Icon from "mdi-material-ui";
-import EyeOffOutline from "mdi-material-ui/EyeOffOutline";
-import EyeOutline from "mdi-material-ui/EyeOutline";
-import ChevronRight from "mdi-material-ui/ChevronRight";
+import { MdiEyeOffOutline } from "../../components/icons/mdiEyeOffOutline";
+import { MdiEyeOutline } from "../../components/icons/mdiEyeOutline";
+import { MdiChevronRight } from "../../components/icons/mdiChevronRight";
 
 import Container from "@mui/material/Container";
 import Grid from "@mui/material/Grid";
@@ -19,7 +19,6 @@ import FormControl from "@mui/material/FormControl";
 import InputAdornment from "@mui/material/InputAdornment";
 import InputLabel from "@mui/material/InputLabel";
 import IconButton from "@mui/material/IconButton";
-import Avatar from "@mui/material/Avatar";
 import LoadingButton from "@mui/lab/LoadingButton";
 import Button from "@mui/material/Button";
 import { useSnackbar } from "notistack";
@@ -101,7 +100,12 @@ export const LoginWithImage = () => {
 							<br />
 						</Typography>
 					</Grid>
-					<Grid item>
+					<Grid
+						container
+						direction="column"
+						justifyContent="center"
+						alignItems="center"
+					>
 						<AvatarImage userId={userId} />
 						<Typography
 							color="textPrimary"
@@ -136,9 +140,9 @@ export const LoginWithImage = () => {
 											aria-label="toggle password visibility"
 										>
 											{password.showpass ? (
-												<EyeOffOutline />
+												<MdiEyeOffOutline />
 											) : (
-												<EyeOutline />
+												<MdiEyeOutline />
 											)}
 										</IconButton>
 									</InputAdornment>
@@ -149,7 +153,7 @@ export const LoginWithImage = () => {
 					<Grid item minWidth="100%">
 						<LoadingButton
 							variant="contained"
-							endIcon={<ChevronRight />}
+							endIcon={<MdiChevronRight />}
 							onClick={handleLogin}
 							loading={loading}
 							loadingPosition="end"
@@ -188,8 +192,9 @@ export const UserLogin = () => {
 	useEffect(() => {
 		getUsers().then((users) => {
 			setUsers(users.data);
+			console.log(userList);
 		});
-	});
+	}, []);
 
 	return (
 		<>
@@ -206,16 +211,16 @@ export const UserLogin = () => {
 								className="userCard"
 								index={index}
 							>
-								{item.ImageTags == undefined ? (
+								{item.PrimaryImageTag ? (
 									<AvatarCard
 										userName={item.Name}
 										userId={item.Id}
-										userImageAvailable={false}
+										userImageAvailable={true}
 									></AvatarCard>
 								) : (
 									<AvatarCard
 										userName={item.Name}
-										userImageAvailable={true}
+										userImageAvailable={false}
 									></AvatarCard>
 								)}
 							</Link>
@@ -360,9 +365,9 @@ export const UserLoginManual = () => {
 											aria-label="toggle password visibility"
 										>
 											{password.showpass ? (
-												<EyeOffOutline />
+												<MdiEyeOffOutline />
 											) : (
-												<EyeOutline />
+												<MdiEyeOutline />
 											)}
 										</IconButton>
 									</InputAdornment>
@@ -373,7 +378,7 @@ export const UserLoginManual = () => {
 					<Grid item xl={5} md={6} sx={{ width: "100%" }}>
 						<LoadingButton
 							variant="contained"
-							endIcon={<ChevronRight />}
+							endIcon={<MdiChevronRight />}
 							onClick={handleLogin}
 							loading={loading}
 							loadingPosition="end"

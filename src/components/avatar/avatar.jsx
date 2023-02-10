@@ -22,6 +22,7 @@ export const AvatarCard = ({ userName, userId, userImageAvailable }) => {
 								"/Users/" +
 								userId +
 								"/Images/Primary')",
+							// http://localhost/Users/{userId}/Images/{imageType}
 						}}
 					></div>
 				) : (
