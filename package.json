@@ -30,6 +30,7 @@
 		"react-multi-carousel": "^2.8.2",
 		"react-router-dom": "^6.4.3",
 		"sort-by": "^1.2.0",
+		"tauri-plugin-store-api": "github:tauri-apps/tauri-plugin-store",
 		"uuid": "^9.0.0",
 		"vite-plugin-svgr": "^2.2.2"
 	},
