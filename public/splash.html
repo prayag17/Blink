@@ -11,80 +11,90 @@
 </head>
 
 <body>
-  <svg class="spinner" viewBox="0 0 50 50">
-    <circle class="path" cx="25" cy="25" r="20" fill="none" stroke-width="5"></circle>
-  </svg>
+  <main>
+    <img src="./assetsStatic/LogoBig.png" alt="" srcset="">
+    <div class="loading">
+      <div class="indicator"></div>
+    </div>
+  </main>
+  <div class="background"></div>
   <style>
     html,
     body {
       overflow: hidden;
-      height: 100%;
-      background-image: linear-gradient(-105deg, #009acc, #363795);
+      height: 100vh;
+      width: 100vw;
+      margin: 0;
+      padding: 0;
+      background: black;
     }
 
-    .spinner {
-      -webkit-animation: rotate 2s linear infinite;
-      animation: rotate 2s linear infinite;
-      z-index: 2;
-      position: absolute;
+    .background {
+      position: fixed;
+      z-index: 0;
       top: 50%;
       left: 50%;
-      margin: -25px 0 0 -25px;
-      width: 50px;
-      height: 50px;
+      transform: translate(-50%, -50%);
+      width: calc(100vw + 5em);
+      height: calc(100vh + 5em);
+      background-image: url("./assetsStatic/meshbackground.png");
+      background-size: cover;
+      filter: blur(1em) brightness(0.3);
+      /* background-position: center; */
     }
 
-    .spinner .path {
-      stroke: #93bfec;
-      stroke-linecap: round;
-      -webkit-animation: dash 1.5s ease-in-out infinite;
-      animation: dash 1.5s ease-in-out infinite;
+    main {
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      z-index: 1;
+      width: 100%;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
     }
 
-    @-webkit-keyframes rotate {
-      100% {
-        transform: rotate(360deg);
-      }
+    img {
+      width: 100%;
+      object-fit: contain;
     }
 
-    @keyframes rotate {
-      100% {
-        transform: rotate(360deg);
-      }
+    .loading {
+      position: relative;
+      width: 50%;
+      background:
+        hsl(255, 100%, 4%);
+      ;
+      height: 4px;
+      overflow: hidden;
     }
 
-    @-webkit-keyframes dash {
+    .indicator {
+      background: hsl(337, 96%, 56%);
+      width: 100%;
+      height: 100%;
+      /* transform: scaleX(0.5); */
+      transform-origin: left;
+      animation: loading 1s infinite;
+    }
+
+    @keyframes loading {
       0% {
-        stroke-dasharray: 1, 150;
-        stroke-dashoffset: 0;
-      }
-
-      50% {
-        stroke-dasharray: 90, 150;
-        stroke-dashoffset: -35;
+        transform: scaleX(0) translateX(-100%);
+        transform-origin: left;
       }
 
       100% {
-        stroke-dasharray: 90, 150;
-        stroke-dashoffset: -124;
-      }
-    }
-
-    @keyframes dash {
-      0% {
-        stroke-dasharray: 1, 150;
-        stroke-dashoffset: 0;
+        transform: scaleX(1) translateX(100%);
+        transform-origin: left;
       }
 
-      50% {
-        stroke-dasharray: 90, 150;
-        stroke-dashoffset: -35;
-      }
-
-      100% {
-        stroke-dasharray: 90, 150;
-        stroke-dashoffset: -124;
-      }
+      /* 100% {
+        transform: scaleX(0) translateX(-100%);
+        transform-origin: left;
+      } */
     }
   </style>
 </body>
