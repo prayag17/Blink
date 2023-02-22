@@ -65,7 +65,7 @@
 			},
 			{
 				"width": 800,
-				"height": 600,
+				"height": 300,
 				"center": true,
 				"decorations": false,
 				"resizable": false,
