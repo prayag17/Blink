@@ -8,7 +8,7 @@ const servers = new Store(".servers.dat");
  * Set server in .servers.dat
  * @param {object} data - Server info
  */
-const setServer = async (data) => {
+const setServer = (data) => {
 	let server = servers.set("server", data);
 };
 
@@ -17,7 +17,15 @@ const setServer = async (data) => {
  * @returns {object}
  */
 const getServer = async () => {
-	let server = servers.get("server");
+	let server = await servers.get("server");
 	return server;
 };
-export { setServer, getServer };
+
+/**
+ * Delete the given server from client storage
+ */
+const delServer = async () => {
+	await servers.delete("server");
+};
+
+export { setServer, getServer, delServer };

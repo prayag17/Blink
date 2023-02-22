@@ -2,10 +2,11 @@
 
 import { useState, useEffect } from "react";
 import { Cookies, useCookies } from "react-cookie";
-import { Navigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { v4 as uuidv4 } from "uuid";
 
 import { EventEmitter as event } from "../../../eventEmitter.js";
+import { setServer } from "../../../utils/store/servers.js";
 import { getSystemApi } from "@jellyfin/sdk/lib/utils/api/system-api";
 
 // MUI
@@ -126,57 +127,53 @@ export const ServerList = () => {
 export const ServerSetup = (props) => {
 	const [serverIp, setServerIp] = useState("");
 	const [checkingServer, setServerCheckState] = useState(false);
-	const [isJfServer, setIsJfServerState] = useState(false);
 
 	const { enqueueSnackbar } = useSnackbar();
-	const [serverlistCookies, setServerList] = useCookies(["servers"]);
-	const [currentServer, setCurrentServer] = useCookies(["currentServer"]);
-	const cookies = new Cookies();
+
+	const navigate = useNavigate();
 
 	const [loading, setLoading] = useState(false);
 
+	const usersAvailable = async () => {
+		const users = await getUserApi(window.api).getPublicUsers();
+		console.log("Users => ", users);
+		if (users.data.length >= 1) {
+			return true;
+		} else {
+			return false;
+		}
+	};
 	const addServer = async () => {
 		event.emit("create-jellyfin-api", serverIp);
 		let sysInfo = await getSystemApi(window.api).getPublicSystemInfo();
 		sysInfo = sysInfo.data;
-		let initServerList = cookies.get("servers");
-		if (initServerList == null) {
-			initServerList = [];
+
+		// Set Server Config to Tauri store
+		sysInfo.Ip = serverIp;
+		setServer(sysInfo);
+
+		const usersAvailablity = usersAvailable();
+		if (usersAvailablity == true) {
+			console.log(usersAvailablity);
+			navigate("/login/users");
 		} else {
-			initServerList = JSON.parse(initServerList);
+			navigate("/login/manual");
 		}
-		let serverConf = {
-			serverName: sysInfo.ServerName,
-			id: sysInfo.Id,
-			jellyfinVersion: sysInfo.Version,
-			serverAddress: serverIp,
-		};
-		let jfId = sysInfo.Id;
-		let server = {};
-		server[sysInfo.Id] = serverConf;
-		server = JSON.stringify([...initServerList, server]);
-		setServerList("servers", server, { path: "/" });
-		setCurrentServer("currentServer", sysInfo.Id, { path: "/" });
-		setIsJfServerState(true);
 	};
 
 	const handleAddServer = () => {
 		setLoading(true);
 		let data;
-		// setServerCheckState(true);
 		fetch(`${serverIp}/System/Ping`, {
 			body: JSON.stringify(data),
 		})
 			.then((res) => res.json())
 			.then((data) => {
 				if (data == "Jellyfin Server") {
-					console.log(true);
-					// setServerCheckState(false);
 					addServer();
 					setLoading(false);
 					return true;
 				} else {
-					// setServerCheckState(false);
 					enqueueSnackbar(
 						"The server address does not seem be a jellyfin server",
 						{ variant: "error" },
@@ -186,7 +183,6 @@ export const ServerSetup = (props) => {
 				}
 			})
 			.catch((error) => {
-				// setServerCheckState(false);
 				setLoading(false);
 				enqueueSnackbar(
 					"Unable to verify whether the give address is a valid Jellyfin server",
@@ -198,7 +194,6 @@ export const ServerSetup = (props) => {
 
 	return (
 		<>
-			{isJfServer && <Navigate to="/login" />}
 			<Container
 				maxWidth="md"
 				className={
