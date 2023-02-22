@@ -13,10 +13,10 @@
 <body>
   <main>
     <img src="./assetsStatic/LogoBig.png" alt="" srcset="">
-    <div class="loading">
-      <div class="indicator"></div>
-    </div>
   </main>
+  <div class="loading">
+    <div class="indicator"></div>
+  </div>
   <div class="background"></div>
   <style>
     html,
@@ -39,8 +39,7 @@
       height: calc(100vh + 5em);
       background-image: url("./assetsStatic/meshbackground.png");
       background-size: cover;
-      filter: blur(1em) brightness(0.3);
-      /* background-position: center; */
+      filter: brightness(0.3);
     }
 
     main {
@@ -62,12 +61,13 @@
     }
 
     .loading {
-      position: relative;
-      width: 50%;
-      background:
-        hsl(255, 100%, 4%);
-      ;
-      height: 4px;
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      width: 100vw;
+      background: hsla(255, 100%, 4%, 0.5);
+      z-index: 1;
+      height: 14px;
       overflow: hidden;
     }
 

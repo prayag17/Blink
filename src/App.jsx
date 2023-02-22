@@ -186,6 +186,7 @@ function App() {
 				}
 			} else {
 				navigate("/setup/server");
+				setChecking(false);
 			}
 		});
 	};
