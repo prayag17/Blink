@@ -1,11 +1,11 @@
 [package]
-name = "app"
-version = "0.1.0"
-description = "A Tauri App"
-authors = ["you"]
-license = ""
-repository = ""
-default-run = "app"
+name = "jellyplayer"
+version = "1.0.0"
+description = "A Modern Jellyfin Client"
+authors = ["prayag17", "JellyPlayer contributors (https://github.com/prayag17/JellyPlayer/graphs/contributors)"]
+license = "GPL-3.0-only"
+repository = "https://github.com/prayag17/JellyPlayer/"
+default-run = "jellyplayer"
 edition = "2021"
 rust-version = "1.59"
 
