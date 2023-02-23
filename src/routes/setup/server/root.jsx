@@ -8,6 +8,7 @@ import { v4 as uuidv4 } from "uuid";
 import { EventEmitter as event } from "../../../eventEmitter.js";
 import { setServer } from "../../../utils/store/servers.js";
 import { getSystemApi } from "@jellyfin/sdk/lib/utils/api/system-api";
+import { getUserApi } from "@jellyfin/sdk/lib/utils/api/user-api";
 
 // MUI
 import TextField from "@mui/material/TextField";
@@ -15,8 +16,6 @@ import Typography from "@mui/material/Typography";
 import Grid from "@mui/material/Grid";
 import LoadingButton from "@mui/lab/LoadingButton";
 import SvgIcon from "@mui/material/SvgIcon";
-import Button from "@mui/material/Button";
-import LinearProgress from "@mui/material/LinearProgress";
 import Container from "@mui/material/Container";
 
 import { mdiChevronRight } from "@mdi/js";
@@ -136,8 +135,8 @@ export const ServerSetup = (props) => {
 
 	const usersAvailable = async () => {
 		const users = await getUserApi(window.api).getPublicUsers();
-		console.log("Users => ", users);
 		if (users.data.length >= 1) {
+			console.log("Users => ", users.data);
 			return true;
 		} else {
 			return false;
@@ -152,7 +151,7 @@ export const ServerSetup = (props) => {
 		sysInfo.Ip = serverIp;
 		setServer(sysInfo);
 
-		const usersAvailablity = usersAvailable();
+		const usersAvailablity = await usersAvailable();
 		if (usersAvailablity == true) {
 			console.log(usersAvailablity);
 			navigate("/login/users");
@@ -195,7 +194,7 @@ export const ServerSetup = (props) => {
 	return (
 		<>
 			<Container
-				maxWidth="md"
+				maxWidth="sm"
 				className={
 					checkingServer
 						? "centered serverContainer loading"
@@ -210,7 +209,7 @@ export const ServerSetup = (props) => {
 					alignItems="center"
 				>
 					<Grid item xl={5} md={6} sx={{ marginBottom: "1em" }}>
-						<JellyplayerLogo className="logo" />
+						<Typography variant="h3">Add Server</Typography>
 					</Grid>
 					<Grid item xl={5} md={6} sx={{ width: "100%" }}>
 						<TextField

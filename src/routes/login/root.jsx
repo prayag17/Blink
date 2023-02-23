@@ -1,10 +1,11 @@
 /** @format */
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { Cookies, useCookies } from "react-cookie";
 import { useNavigate, useParams, Link } from "react-router-dom";
 import { EventEmitter as event } from "../../eventEmitter.js";
-import { motion } from "framer-motion";
+
+import { saveUser } from "../../utils/store/user.js";
 
 // import Icon from "mdi-material-ui";
 import { MdiEyeOffOutline } from "../../components/icons/mdiEyeOffOutline";
@@ -22,6 +23,9 @@ import IconButton from "@mui/material/IconButton";
 import LoadingButton from "@mui/lab/LoadingButton";
 import Button from "@mui/material/Button";
 import { useSnackbar } from "notistack";
+import FormGroup from "@mui/material/FormGroup";
+import FormControlLabel from "@mui/material/FormControlLabel";
+import Checkbox from "@mui/material/Checkbox";
 
 import { AvatarCard, AvatarImage } from "../../components/avatar/avatar.jsx";
 import { AppBarBackOnly } from "../../components/appBar/backOnly.jsx";
@@ -34,11 +38,15 @@ import "./login.module.scss";
 
 export const LoginWithImage = () => {
 	const { userName, userId } = useParams();
+
 	const [password, setPassword] = useState({
 		showpass: false,
 	});
 	const [loading, setLoading] = useState(false);
+	const [rememberMe, setRememberMe] = useState(true);
+
 	const navigate = useNavigate();
+
 	const { enqueueSnackbar } = useSnackbar();
 
 	const handlePassword = (prop) => (event) => {
@@ -73,10 +81,17 @@ export const LoginWithImage = () => {
 		setLoading(true);
 		const user = await authUser();
 		sessionStorage.setItem("accessToken", user.data.AccessToken);
+		if (rememberMe == true) {
+			saveUser(userName, password.password);
+		}
 		event.emit("set-api-accessToken", window.api.basePath);
 		// setAccessToken(user.data.AccessToken)
 		setLoading(false);
 		navigate(`/home`);
+	};
+
+	const handleCheckRememberMe = (event) => {
+		setRememberMe(event.target.checked);
 	};
 
 	return (
@@ -90,7 +105,13 @@ export const LoginWithImage = () => {
 					alignItems="center"
 					spacing={2}
 				>
-					<Grid item marginBottom={2}>
+					<Grid
+						container
+						direction="column"
+						justifyContent="center"
+						alignItems="center"
+						marginBottom={2}
+					>
 						<Typography
 							textAlign="center"
 							variant="h3"
@@ -116,39 +137,53 @@ export const LoginWithImage = () => {
 						</Typography>
 					</Grid>
 					<Grid item minWidth="100%">
-						<br />
-						<FormControl variant="outlined" fullWidth>
-							<InputLabel htmlFor="user-password">
-								Password:
-							</InputLabel>
-							<OutlinedInput
-								id="user-password"
-								type={
-									password.showpass
-										? "text"
-										: "password"
+						<FormGroup>
+							<FormControl variant="outlined" fullWidth>
+								<InputLabel htmlFor="user-password">
+									Password:
+								</InputLabel>
+								<OutlinedInput
+									id="user-password"
+									type={
+										password.showpass
+											? "text"
+											: "password"
+									}
+									variant="outlined"
+									onChange={handlePassword(
+										"password",
+									)}
+									label="Password:"
+									endAdornment={
+										<InputAdornment position="end">
+											<IconButton
+												onClick={
+													handleShowPassword
+												}
+												aria-label="toggle password visibility"
+											>
+												{password.showpass ? (
+													<MdiEyeOffOutline />
+												) : (
+													<MdiEyeOutline />
+												)}
+											</IconButton>
+										</InputAdornment>
+									}
+								/>
+							</FormControl>
+							<FormControlLabel
+								control={
+									<Checkbox
+										checked={rememberMe}
+										onChange={
+											handleCheckRememberMe
+										}
+									/>
 								}
-								variant="outlined"
-								onChange={handlePassword("password")}
-								label="Password:"
-								endAdornment={
-									<InputAdornment position="end">
-										<IconButton
-											onClick={
-												handleShowPassword
-											}
-											aria-label="toggle password visibility"
-										>
-											{password.showpass ? (
-												<MdiEyeOffOutline />
-											) : (
-												<MdiEyeOutline />
-											)}
-										</IconButton>
-									</InputAdornment>
-								}
+								label="Remember me"
 							/>
-						</FormControl>
+						</FormGroup>
 					</Grid>
 					<Grid item minWidth="100%">
 						<LoadingButton
@@ -172,10 +207,6 @@ export const LoginWithImage = () => {
 export const UserLogin = () => {
 	const [userList, setUsers] = useState([]);
 	const navigate = useNavigate();
-	const cookies = new Cookies();
-
-	const currentServer = cookies.get("currentServer");
-	const serverList = cookies.get("servers");
 
 	const handleChangeServer = () => {
 		navigate("/servers/list");
@@ -189,7 +220,7 @@ export const UserLogin = () => {
 		return users;
 		// return {};
 	};
-	useEffect(() => {
+	useMemo(() => {
 		getUsers().then((users) => {
 			setUsers(users.data);
 			console.log(userList);
@@ -200,7 +231,9 @@ export const UserLogin = () => {
 		<>
 			<AppBarBackOnly />
 			<Container maxWidth="md" className="centered">
-				<h1 color="white">WIP-user login</h1>
+				<Typography variant="h3" sx={{ marginBottom: "1em" }}>
+					Users
+				</Typography>
 				<div className="userList">
 					{userList.map((item, index) => {
 						return (
@@ -251,6 +284,8 @@ export const UserLogin = () => {
 
 export const UserLoginManual = () => {
 	const [loading, setLoading] = useState(false);
+	const [rememberMe, setRememberMe] = useState(true);
+
 	const navigate = useNavigate();
 	const { enqueueSnackbar } = useSnackbar();
 
@@ -297,10 +332,17 @@ export const UserLoginManual = () => {
 		setLoading(true);
 		const user = await authUser();
 		sessionStorage.setItem("accessToken", user.data.AccessToken);
+		if (rememberMe == true) {
+			saveUser(userName, password.password);
+		}
 		event.emit("set-api-accessToken", window.api.basePath);
 		// setAccessToken(user.data.AccessToken)
 		setLoading(false);
 		navigate(`/home`);
+	};
+
+	const handleCheckRememberMe = (event) => {
+		setRememberMe(event.target.checked);
 	};
 
 	return (
@@ -338,42 +380,57 @@ export const UserLoginManual = () => {
 						</FormControl>
 					</Grid>
 					<Grid sx={{ width: "100%" }} item xl={5} md={6}>
-						<FormControl
-							sx={{ width: "100%" }}
-							variant="outlined"
-						>
-							<InputLabel htmlFor="user-password">
-								Password:
-							</InputLabel>
-							<OutlinedInput
-								fullWidth
-								id="user-password"
-								type={
-									password.showpass
-										? "text"
-										: "password"
-								}
+						<FormGroup>
+							<FormControl
+								sx={{ width: "100%" }}
 								variant="outlined"
-								onChange={handlePassword("password")}
-								label="Password:"
-								endAdornment={
-									<InputAdornment position="end">
-										<IconButton
-											onClick={
-												handleShowPassword
-											}
-											aria-label="toggle password visibility"
-										>
-											{password.showpass ? (
-												<MdiEyeOffOutline />
-											) : (
-												<MdiEyeOutline />
-											)}
-										</IconButton>
-									</InputAdornment>
+							>
+								<InputLabel htmlFor="user-password">
+									Password:
+								</InputLabel>
+								<OutlinedInput
+									fullWidth
+									id="user-password"
+									type={
+										password.showpass
+											? "text"
+											: "password"
+									}
+									variant="outlined"
+									onChange={handlePassword(
+										"password",
+									)}
+									label="Password:"
+									endAdornment={
+										<InputAdornment position="end">
+											<IconButton
+												onClick={
+													handleShowPassword
+												}
+												aria-label="toggle password visibility"
+											>
+												{password.showpass ? (
+													<MdiEyeOffOutline />
+												) : (
+													<MdiEyeOutline />
+												)}
+											</IconButton>
+										</InputAdornment>
+									}
+								/>
+							</FormControl>
+							<FormControlLabel
+								control={
+									<Checkbox
+										checked={rememberMe}
+										onChange={
+											handleCheckRememberMe
+										}
+									/>
 								}
+								label="Remember me"
 							/>
-						</FormControl>
+						</FormGroup>
 					</Grid>
 					<Grid item xl={5} md={6} sx={{ width: "100%" }}>
 						<LoadingButton
