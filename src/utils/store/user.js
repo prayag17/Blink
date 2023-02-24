@@ -10,10 +10,19 @@ const user = new Store(".user.dat");
  * @param {string} userPassword - User's Password
  */
 const saveUser = (userName, userPassword) => {
-	let details = user.set("details", {
+	let details = user.set("user", {
 		Name: userName,
 		Password: userPassword,
 	});
 };
 
-export { saveUser };
+/**
+ * Get saved user fro .user.dat
+ * @return {object}
+ */
+const getUser = async () => {
+	let details = await user.get("user");
+	return details;
+};
+
+export { saveUser, getUser };

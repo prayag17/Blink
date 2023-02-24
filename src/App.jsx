@@ -52,6 +52,7 @@ import { Jellyfin } from "@jellyfin/sdk";
 import { version as appVer } from "../package.json";
 import { v4 as uuidv4 } from "uuid";
 import { delServer, getServer } from "./utils/store/servers.js";
+import { getUser } from "./utils/store/user.js";
 
 const jellyfin = new Jellyfin({
 	clientInfo: {
@@ -120,7 +121,6 @@ function App() {
 
 	const serverAvailable = async () => {
 		const server = await getServer();
-		console.log("Server Store => ", server);
 
 		if (server == null) {
 			console.log("server not found");
@@ -136,11 +136,20 @@ function App() {
 
 	const usersAvailable = async () => {
 		const users = await getUserApi(window.api).getPublicUsers();
-		console.log("Users => ", users);
 		if (users.data.length >= 1) {
 			return true;
 		} else {
 			return false;
+		}
+	};
+
+	const userSaved = async () => {
+		const user = await getUser();
+		console.log("User store => ", user);
+		if (user == null) {
+			return false;
+		} else {
+			return true;
 		}
 	};
 
@@ -170,23 +179,52 @@ function App() {
 			});
 	};
 
+	const userLogin = async () => {
+		const user = await getUser();
+		const auth = await api.authenticateUserByName(
+			user.Name,
+			user.Password,
+		);
+		sessionStorage.setItem("accessToken", auth.data.AccessToken);
+		event.emit("set-api-accessToken", window.api.basePath);
+
+		navigate("/home");
+	};
+
 	const LogicalRoutes = () => {
 		serverAvailable().then(async (server) => {
 			if (server == true) {
 				pingServer();
 				if (serverReachable == true) {
-					usersAvailable().then((usersAvailablity) => {
-						if (usersAvailablity == true) {
-							console.log(usersAvailablity);
-							navigate("/login/users");
+					userSaved().then((user_available) => {
+						if (user_available == true) {
+							userLogin();
 						} else {
-							navigate("/login/manual");
+							usersAvailable().then(
+								(users_list_available) => {
+									if (users_list_available == true) {
+										navigate("/login/users");
+									} else {
+										navigate("/login/manual");
+									}
+								},
+							);
 						}
 					});
 				}
 			} else {
 				navigate("/setup/server");
 				setChecking(false);
+			}
+		});
+	};
+
+	const LoginLogicalRoutes = () => {
+		usersAvailable().then((users_list_available) => {
+			if (users_list_available == true) {
+				navigate("/login/users");
+			} else {
+				navigate("/login/manual");
 			}
 		});
 	};
@@ -279,17 +317,11 @@ function App() {
 								path="/"
 								element={<LogicalRoutes />}
 							/>
-							{/* <Route
+							<Route
 								exact
 								path="/login"
-								element={
-									usersPresent ? (
-										<Navigate to="/login/users"></Navigate>
-									) : (
-										<Navigate to="/login/manual"></Navigate>
-									)
-								}
-							/> */}
+								element={<LoginLogicalRoutes />}
+							/>
 						</Route>
 					</Routes>
 				</AnimatePresence>

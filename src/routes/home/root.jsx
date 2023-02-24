@@ -1,7 +1,6 @@
 /** @format */
 
 import { useState, useEffect } from "react";
-import { Cookies } from "react-cookie";
 
 import { theme } from "../../theme";
 import "./home.module.scss";
@@ -41,6 +40,7 @@ import { getLibraryApi } from "@jellyfin/sdk/lib/utils/api/library-api";
 import { getUserApi } from "@jellyfin/sdk/lib/utils/api/user-api";
 import { getUserLibraryApi } from "@jellyfin/sdk/lib/utils/api/user-library-api";
 import { getUserViewsApi } from "@jellyfin/sdk/lib/utils/api/user-views-api";
+import { useNavigate } from "react-router-dom";
 
 const drawerWidth = 320;
 
@@ -61,7 +61,7 @@ const MiniDrawer = styled(MuiDrawer, {
 	boxSizing: "border-box",
 	backgroundColor: theme.palette.primary.background.dark,
 	overflowX: "hidden",
-	width: `calc(${theme.spacing(7)} + 1px)`,
+	width: `calc(${theme.spacing(7)} + 10px)`,
 }));
 
 const AppBar = styled(MuiAppBar, {
@@ -86,12 +86,12 @@ export const Home = () => {
 		Name: "",
 	});
 
+	const navigate = useNavigate();
 	const excludeTypes = ["boxsets", "playlists", "livetv", "channels"];
 
 	const [latestMedia, setLatestMedia] = useState([]);
 
 	const [drawerState, setDrawerState] = useState(false);
-	const cookies = new Cookies();
 
 	const scrollTrigger = useScrollTrigger({ threshold: 5 });
 
@@ -105,6 +105,7 @@ export const Home = () => {
 
 	const handleLogout = async () => {
 		await window.api.logout();
+		navigate("/login");
 		console.log("logged out user");
 	};
 
@@ -184,6 +185,7 @@ export const Home = () => {
 						sx: {
 							backgroundColor: "inherit",
 							border: "none",
+							width: `calc(${theme.spacing(7)} + 10px)`,
 						},
 					}}
 				>
@@ -253,21 +255,10 @@ export const Home = () => {
 					) : (
 						<>
 							<Skeleton
-								height={50}
-								variant="rectangular"
-								animation="wave"
-							></Skeleton>
-							<br />
-							<Skeleton
-								height={50}
-								variant="rectangular"
-								animation="wave"
-							></Skeleton>
-							<br />
-							<Skeleton
-								height={50}
-								variant="rectangular"
-								animation="wave"
+								height="100%"
+								variant="rounded"
+								width="calc(100% - 10px )"
+								sx={{ margin: "5px" }}
 							></Skeleton>
 						</>
 					)}
