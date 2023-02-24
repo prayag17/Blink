@@ -5,6 +5,7 @@ import { Cookies, useCookies } from "react-cookie";
 import { useNavigate, useParams, Link } from "react-router-dom";
 import { EventEmitter as event } from "../../eventEmitter.js";
 
+import { getServer } from "../../utils/store/servers.js";
 import { saveUser } from "../../utils/store/user.js";
 
 // import Icon from "mdi-material-ui";
@@ -220,11 +221,27 @@ export const UserLogin = () => {
 		return users;
 		// return {};
 	};
+
+	const createApi = async () => {
+		const server = await getServer();
+		event.emit("create-jellyfin-api", server.Ip);
+	};
+
 	useMemo(() => {
-		getUsers().then((users) => {
-			setUsers(users.data);
-			console.log(userList);
-		});
+		// TODO Implement a better way to check and create api object when page reloaded. Hint: Maybe use session api or something (*route - login*)
+		if (!window.api) {
+			createApi().then(() => {
+				getUsers().then((users) => {
+					setUsers(users.data);
+					console.log(userList);
+				});
+			});
+		} else {
+			getUsers().then((users) => {
+				setUsers(users.data);
+				console.log(userList);
+			});
+		}
 	}, []);
 
 	return (

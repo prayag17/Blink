@@ -2,6 +2,10 @@
 
 import { useState, useEffect } from "react";
 
+import { EventEmitter as event } from "../../eventEmitter";
+import { getServer } from "../../utils/store/servers";
+import { getUser } from "../../utils/store/user";
+
 import { theme } from "../../theme";
 import "./home.module.scss";
 
@@ -22,6 +26,7 @@ import Divider from "@mui/material/Divider";
 import Paper from "@mui/material/Paper";
 import Typography from "@mui/material/Typography";
 import useScrollTrigger from "@mui/material/useScrollTrigger";
+import Tooltip from "@mui/material/Tooltip";
 
 import Carousel from "react-material-ui-carousel";
 
@@ -135,18 +140,48 @@ export const Home = () => {
 		return userviews;
 	};
 
+	const authUser = async () => {
+		const server = await getServer();
+		const user = await getUser();
+		event.emit("create-jellyfin-api", server.Ip);
+		const auth = await api.authenticateUserByName(
+			user.Name,
+			user.Password,
+		);
+		sessionStorage.setItem("accessToken", auth.data.AccessToken);
+		event.emit("set-api-accessToken", window.api.basePath);
+	};
+
 	useEffect(() => {
-		currentUser().then((usr) => {
-			setUser(usr.data);
-			userLibs().then((libs) => {
-				setUserLibraries(libs.data.Items);
-				setSkeletonStateSideMenu(true);
+		// TODO Implement a better way to check and create api object when page reloaded. Hint: Maybe use session api or something (*route - home*)
+		if (!window.api) {
+			authUser().then(() => {
+				currentUser().then((usr) => {
+					setUser(usr.data);
+					userLibs().then((libs) => {
+						setUserLibraries(libs.data.Items);
+						setSkeletonStateSideMenu(true);
+					});
+					getLatestMedia(usr.data).then((media) => {
+						console.log("Using this");
+						setLatestMedia(media.data);
+						setSkeletonStateCarousel(true);
+					});
+				});
 			});
-			getLatestMedia(usr.data).then((media) => {
-				setLatestMedia(media.data);
-				setSkeletonStateCarousel(true);
+		} else {
+			currentUser().then((usr) => {
+				setUser(usr.data);
+				userLibs().then((libs) => {
+					setUserLibraries(libs.data.Items);
+					setSkeletonStateSideMenu(true);
+				});
+				getLatestMedia(usr.data).then((media) => {
+					setLatestMedia(media.data);
+					setSkeletonStateCarousel(true);
+				});
 			});
-		});
+		}
 	}, []);
 
 	return (
@@ -191,7 +226,7 @@ export const Home = () => {
 				>
 					<DrawerHeader
 						className="Mui-DrawerHeader"
-						sx={{ position: "relative", height: "20vh" }}
+						sx={{ position: "relative" }}
 					>
 						{/* <div>
 						<Avatar src={""}/>
@@ -216,39 +251,44 @@ export const Home = () => {
 						<List sx={{ border: "none" }}>
 							{userLibraries.map((library, index) => {
 								return (
-									<ListItem
-										disablePadding
+									<Tooltip
+										title={library.Name}
+										placement="right"
+										arrow
+										followCursor
 										key={index}
 									>
-										<ListItemButton
-											sx={{
-												minHeight: 48,
-												justifyContent:
-													drawerState
-														? "initial"
-														: "center",
-												px: 2.5,
-											}}
-										>
-											<ListItemIcon
+										<ListItem disablePadding>
+											<ListItemButton
 												sx={{
-													minWidth: 0,
-													mr: drawerState
-														? 3
-														: "auto",
+													minHeight: 48,
 													justifyContent:
-														"center",
+														drawerState
+															? "initial"
+															: "center",
+													px: 2.5,
 												}}
 											>
-												{
-													MediaCollectionTypeIconCollection[
-														library
-															.CollectionType
-													]
-												}
-											</ListItemIcon>
-										</ListItemButton>
-									</ListItem>
+												<ListItemIcon
+													sx={{
+														minWidth: 0,
+														mr: drawerState
+															? 3
+															: "auto",
+														justifyContent:
+															"center",
+													}}
+												>
+													{
+														MediaCollectionTypeIconCollection[
+															library
+																.CollectionType
+														]
+													}
+												</ListItemIcon>
+											</ListItemButton>
+										</ListItem>
+									</Tooltip>
 								);
 							})}
 						</List>

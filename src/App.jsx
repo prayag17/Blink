@@ -117,7 +117,7 @@ function App() {
 	const navigate = useNavigate();
 
 	const [serverReachable, setServerReachable] = useState(true);
-	const [checkingServer, setChecking] = useState(true);
+	const [checkingServer, setChecking] = useState(false);
 
 	const serverAvailable = async () => {
 		const server = await getServer();
@@ -154,6 +154,7 @@ function App() {
 	};
 
 	const pingServer = () => {
+		setChecking(true);
 		let data;
 		fetch(`${window.api.basePath}/System/Ping`, {
 			body: JSON.stringify(data),

@@ -14,7 +14,7 @@ const setServer = (data) => {
 
 /**
  * Get Server list
- * @returns {object}
+ * @returns {object} server
  */
 const getServer = async () => {
 	let server = await servers.get("server");

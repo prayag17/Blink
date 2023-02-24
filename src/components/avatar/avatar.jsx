@@ -10,7 +10,7 @@ import "./avatar.module.scss";
 
 export const AvatarCard = ({ userName, userId, userImageAvailable }) => {
 	return (
-		<ButtonBase className="card square">
+		<ButtonBase className="card square" sx={{ borderRadius: "10px" }}>
 			<div className="card-image-container">
 				{userImageAvailable ? (
 					<div

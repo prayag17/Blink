@@ -7,9 +7,11 @@
 		width: min(60vw, 45em);
 	}
 	&Card {
+		border-radius: $border-radius-default;
 		display: flex;
 		flex-flow: column;
 		flex: 1 1 0px;
+		overflow: hidden;
 	}
 	&Icon {
 		font-size: 5em;

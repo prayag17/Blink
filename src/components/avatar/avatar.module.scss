@@ -12,11 +12,13 @@
 	flex-direction: column;
 	gap: 0.5em;
 	margin-bottom: 0.5em;
+	overflow: hidden;
 	.card-image {
 		position: absolute;
 		inset: 0;
 		&-container {
 			font-size: 5em;
+			z-index: 0;
 		}
 		&-icon {
 			font-size: 1.5em !important;
