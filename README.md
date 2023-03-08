@@ -11,7 +11,7 @@
   npm install
   ```
 
-# :information_source: Development:
+# :hammer_and_wrench: Development:
 - Running the app:
   ```shell
   npm run tauri dev
@@ -22,5 +22,12 @@
   ```
 - other commands can be found inside the `"scripts"` inside [package.json](https://github.com/prayag17/JellyPlayer/blob/main/package.json)
 
-# :sos: Help Wanted:
-- Home sections containing latest media.
+#  :information_source: Contribution:
+- Checkout `issues` to see currently worked on features and bugs
+- Add features or fix bugs
+- Create a pull request
+
+
+# :page_facing_up: Roadmap:
+- Checkout [GitHub Project](https://github.com/users/prayag17/projects/3)
+  > **Note** : There is no current due date for alpha 1 release 
