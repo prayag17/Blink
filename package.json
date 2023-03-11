@@ -15,7 +15,7 @@
 		"@fontsource/open-sans": "^4.5.13",
 		"@jellyfin/sdk": "^0.7.0",
 		"@mdi/js": "^7.1.96",
-		"@mui/lab": "^5.0.0-alpha.110",
+		"@mui/lab": "^5.0.0-alpha.122",
 		"@mui/material": "^5.10.15",
 		"events": "^3.3.0",
 		"framer-motion": "^7.10.2",
