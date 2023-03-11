@@ -38,9 +38,9 @@
 		"@tauri-apps/cli": "^1.2.2",
 		"@types/react": "^18.0.24",
 		"@types/react-dom": "^18.0.8",
-		"@vitejs/plugin-react": "^2.2.0",
+		"@vitejs/plugin-react": "^3.1.0",
 		"sass": "^1.56.1",
-		"vite": "^3.2.3"
+		"vite": "^4.1.4"
 	},
 	"license": "GPL-3.0-only"
 }
