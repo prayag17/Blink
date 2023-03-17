@@ -6,7 +6,7 @@ import { useNavigate } from "react-router-dom";
 import { v4 as uuidv4 } from "uuid";
 
 import { EventEmitter as event } from "../../../eventEmitter.js";
-import { setServer } from "../../../utils/store/servers.js";
+import { setServer } from "../../../utils/storage/servers.js";
 import { getSystemApi } from "@jellyfin/sdk/lib/utils/api/system-api";
 import { getUserApi } from "@jellyfin/sdk/lib/utils/api/user-api";
 

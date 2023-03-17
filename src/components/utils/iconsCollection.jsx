@@ -29,6 +29,7 @@ export const MediaCollectionTypeIconCollection = {
 	photos: <ImageMultiple />,
 	livetv: <TelevisionClassic />,
 	folder: <FolderOutline />,
+	logout: <FolderOutline />,
 };
 
 export const MediaCollectionTypeIconCollectionCard = {

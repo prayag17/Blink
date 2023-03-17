@@ -5,8 +5,8 @@ import { Cookies, useCookies } from "react-cookie";
 import { useNavigate, useParams, Link } from "react-router-dom";
 import { EventEmitter as event } from "../../eventEmitter.js";
 
-import { getServer } from "../../utils/store/servers.js";
-import { saveUser } from "../../utils/store/user.js";
+import { getServer } from "../../utils/storage/servers.js";
+import { saveUser } from "../../utils/storage/user.js";
 
 // import Icon from "mdi-material-ui";
 import { MdiEyeOffOutline } from "../../components/icons/mdiEyeOffOutline";

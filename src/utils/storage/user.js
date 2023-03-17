@@ -9,11 +9,12 @@ const user = new Store(".user.dat");
  * @param {string} userName - User's name
  * @param {string} userPassword - User's Password
  */
-const saveUser = (userName, userPassword) => {
+const saveUser = async (userName, userPassword) => {
 	let details = user.set("user", {
 		Name: userName,
-		Password: userPassword,
+		Password: userPassword || "",
 	});
+	await servers.save();
 };
 
 /**

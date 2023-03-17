@@ -20,6 +20,8 @@ import { relaunch } from "@tauri-apps/api/process";
 
 import { getUserApi } from "@jellyfin/sdk/lib/utils/api/user-api";
 
+import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
+
 // Theming
 import CssBaseline from "@mui/material/CssBaseline";
 import { theme } from "./theme";
@@ -44,6 +46,8 @@ import {
 	UserLoginManual,
 } from "./routes/login/root";
 
+import { SideMenu } from "./components/menu/sidemenu.jsx";
+
 // Fonts
 import "@fontsource/open-sans";
 
@@ -51,8 +55,8 @@ import "@fontsource/open-sans";
 import { Jellyfin } from "@jellyfin/sdk";
 import { version as appVer } from "../package.json";
 import { v4 as uuidv4 } from "uuid";
-import { delServer, getServer } from "./utils/store/servers.js";
-import { getUser } from "./utils/store/user.js";
+import { delServer, getServer } from "./utils/storage/servers.js";
+import { getUser } from "./utils/storage/user.js";
 
 const jellyfin = new Jellyfin({
 	clientInfo: {
@@ -284,48 +288,58 @@ function App() {
 					</DialogActions>
 				</Dialog>
 				<AnimatePresence>
-					<CssBaseline />
-					<Routes key={location.pathname} location={location}>
-						<Route element={<AnimationWrapper />}>
-							{/* Main Routes */}
-							<Route path="/home" element={<Home />} />
-							<Route
-								path="/setup/server"
-								element={<ServerSetup />}
-							/>
-							<Route
-								path="/servers/list"
-								element={<ServerList />}
-							/>
-							<Route
-								exact
-								path="/login/withImg/:userName/:userId/"
-								element={<LoginWithImage />}
-							/>
-							<Route
-								exact
-								path="/login/users"
-								element={<UserLogin />}
-							/>
-							<Route
-								path="/login/manual"
-								element={<UserLoginManual />}
-							/>
+					<div style={{ display: "flex" }}>
+						<CssBaseline />
+						<SideMenu />
+						<Routes
+							key={location.pathname}
+							location={location}
+						>
+							<Route element={<AnimationWrapper />}>
+								{/* Main Routes */}
+								<Route
+									path="/home"
+									element={<Home />}
+								/>
+								<Route
+									path="/setup/server"
+									element={<ServerSetup />}
+								/>
+								<Route
+									path="/servers/list"
+									element={<ServerList />}
+								/>
+								<Route
+									exact
+									path="/login/withImg/:userName/:userId/"
+									element={<LoginWithImage />}
+								/>
+								<Route
+									exact
+									path="/login/users"
+									element={<UserLogin />}
+								/>
+								<Route
+									path="/login/manual"
+									element={<UserLoginManual />}
+								/>
 
-							{/* Logical Routes */}
+								{/* Logical Routes */}
 
-							<Route
-								path="/"
-								element={<LogicalRoutes />}
-							/>
-							<Route
-								exact
-								path="/login"
-								element={<LoginLogicalRoutes />}
-							/>
-						</Route>
-					</Routes>
+								<Route
+									path="/"
+									element={<LogicalRoutes />}
+								/>
+								<Route
+									exact
+									path="/login"
+									element={<LoginLogicalRoutes />}
+								/>
+							</Route>
+						</Routes>
+					</div>
 				</AnimatePresence>
+				<ReactQueryDevtools />
 			</ThemeProvider>
 		</SnackbarProvider>
 	);

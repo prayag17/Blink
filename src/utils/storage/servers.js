@@ -8,8 +8,9 @@ const servers = new Store(".servers.dat");
  * Set server in .servers.dat
  * @param {object} data - Server info
  */
-const setServer = (data) => {
+const setServer = async (data) => {
 	let server = servers.set("server", data);
+	await servers.save();
 };
 
 /**
@@ -26,6 +27,7 @@ const getServer = async () => {
  */
 const delServer = async () => {
 	await servers.delete("server");
+	await servers.save();
 };
 
 export { setServer, getServer, delServer };
