@@ -6,8 +6,8 @@ import PropTypes from "prop-types";
 import Carousel from "react-multi-carousel";
 import "react-multi-carousel/lib/styles.css";
 
-import ChevronLeft from "mdi-material-ui/ChevronLeft";
-import ChevronRight from "mdi-material-ui/ChevronRight";
+import { MdiChevronLeft } from "../icons/mdiChevronLeft";
+import { MdiChevronRight } from "../icons/mdiChevronRight";
 
 import { styled } from "@mui/material/styles";
 import Button from "@mui/material/Button";
@@ -27,7 +27,7 @@ const SliderButtonRight = ({ onClick }) => {
 			className="card-scroller-button right"
 			variant="text"
 		>
-			<ChevronRight />
+			<MdiChevronRight />
 		</CarouselButton>
 	);
 };
@@ -39,7 +39,7 @@ const SliderButtonLeft = ({ onClick }) => {
 			className="card-scroller-button left"
 			variant="text"
 		>
-			<ChevronLeft />
+			<MdiChevronLeft />
 		</CarouselButton>
 	);
 };

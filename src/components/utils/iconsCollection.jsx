@@ -1,62 +1,62 @@
 /** @format */
 
-import MovieOutline from "mdi-material-ui/MovieOutline";
-import MusicBoxMultipleOutline from "mdi-material-ui/MusicBoxMultipleOutline";
-import PlaylistMusicOutline from "mdi-material-ui/PlaylistMusicOutline";
-import Television from "mdi-material-ui/Television";
-import FolderOutline from "mdi-material-ui/FolderOutline";
-import FolderMusicOutline from "mdi-material-ui/FolderMusicOutline";
-import Youtube from "mdi-material-ui/Youtube";
-import MultiMedia from "mdi-material-ui/Multimedia";
-import BookMultiple from "mdi-material-ui/BookMultiple";
-import ImageMultiple from "mdi-material-ui/ImageMultiple";
-import TelevisionClassic from "mdi-material-ui/TelevisionClassic";
-import Filmstrip from "mdi-material-ui/Filmstrip";
-import Microphone from "mdi-material-ui/Microphone";
-import Image from "mdi-material-ui/Image";
-import Book from "mdi-material-ui/Book";
+import { MdiMovieOutline } from "../icons/mdiMovieOutline";
+import { MdiMusicBoxMultipleOutline } from "../icons/mdiMusicBoxMultipleOutline";
+import { MdiPlaylistMusicOutline } from "../icons/mdiPlaylistMusicOutline";
+import { MdiTelevision } from "../icons/mdiTelevision";
+import { MdiFolderOutline } from "../icons/mdiFolderOutline";
+import { MdiFolderMusicOutline } from "../icons/mdiFolderMusicOutline";
+import { MdiYoutube } from "../icons/mdiYoutube";
+import { MdiMultimedia } from "../icons/mdiMultiMedia";
+import { MdiBookMultiple } from "../icons/mdiBookMultiple";
+import { MdiImageMultiple } from "../icons/mdiImageMultiple";
+import { MdiTelevisionClassic } from "../icons/mdiTelevisionClassic";
+import { MdiFilmstrip } from "../icons/mdiFilmstrip";
+import { MdiMicrophone } from "../icons/mdiMicrophone";
+import { MdiImage } from "../icons/mdiImage";
+import { MdiBook } from "../icons/mdiBook";
 
 export const MediaCollectionTypeIconCollection = {
-	universal: <MultiMedia />,
-	movies: <MovieOutline />,
-	music: <MusicBoxMultipleOutline />,
-	playlists: <PlaylistMusicOutline />,
-	tvshows: <Television />,
-	boxsets: <MovieOutline />,
-	musicvideos: <FolderMusicOutline />,
-	trailers: <Youtube />,
-	books: <BookMultiple />,
-	photos: <ImageMultiple />,
-	livetv: <TelevisionClassic />,
-	folder: <FolderOutline />,
-	logout: <FolderOutline />,
+	universal: <MdiMultimedia />,
+	movies: <MdiMovieOutline />,
+	music: <MdiMusicBoxMultipleOutline />,
+	playlists: <MdiPlaylistMusicOutline />,
+	tvshows: <MdiTelevision />,
+	boxsets: <MdiMovieOutline />,
+	musicvideos: <MdiFolderMusicOutline />,
+	trailers: <MdiYoutube />,
+	books: <MdiBookMultiple />,
+	photos: <MdiImageMultiple />,
+	livetv: <MdiTelevisionClassic />,
+	folder: <MdiFolderOutline />,
+	logout: <MdiFolderOutline />,
 };
 
 export const MediaCollectionTypeIconCollectionCard = {
-	universal: <MultiMedia className="card-image-icon" />,
-	movies: <MovieOutline className="card-image-icon" />,
-	music: <MusicBoxMultipleOutline className="card-image-icon" />,
-	playlists: <PlaylistMusicOutline className="card-image-icon" />,
-	tvshows: <Television className="card-image-icon" />,
-	boxsets: <MovieOutline className="card-image-icon" />,
-	musicvideos: <FolderMusicOutline className="card-image-icon" />,
-	trailers: <Youtube className="card-image-icon" />,
-	books: <BookMultiple className="card-image-icon" />,
-	photos: <ImageMultiple className="card-image-icon" />,
-	livetv: <TelevisionClassic className="card-image-icon" />,
-	folder: <FolderOutline className="card-image-icon" />,
+	universal: <MdiMultimedia className="card-image-icon" />,
+	movies: <MdiMovieOutline className="card-image-icon" />,
+	music: <MdiMusicBoxMultipleOutline className="card-image-icon" />,
+	playlists: <MdiPlaylistMusicOutline className="card-image-icon" />,
+	tvshows: <MdiTelevision className="card-image-icon" />,
+	boxsets: <MdiMovieOutline className="card-image-icon" />,
+	musicvideos: <MdiFolderMusicOutline className="card-image-icon" />,
+	trailers: <MdiYoutube className="card-image-icon" />,
+	books: <MdiBookMultiple className="card-image-icon" />,
+	photos: <MdiImageMultiple className="card-image-icon" />,
+	livetv: <MdiTelevisionClassic className="card-image-icon" />,
+	folder: <MdiFolderOutline className="card-image-icon" />,
 };
 
 export const MediaTypeIconCollection = {
-	Video: <Filmstrip className="hero-carousel-background-icon" />,
-	Audio: <Microphone className="hero-carousel-background-icon" />,
-	Photo: <Image className="hero-carousel-background-icon" />,
-	Book: <Book className="hero-carousel-background-icon" />,
+	Video: <MdiFilmstrip className="hero-carousel-background-icon" />,
+	Audio: <MdiMicrophone className="hero-carousel-background-icon" />,
+	Photo: <MdiImage className="hero-carousel-background-icon" />,
+	Book: <MdiBook className="hero-carousel-background-icon" />,
 };
 
 export const MediaTypeIconCollectionCard = {
-	Video: <Filmstrip className="card-image-icon" />,
-	Audio: <Microphone className="card-image-icon" />,
-	Photo: <Image className="card-image-icon" />,
-	Book: <Book className="card-image-icon" />,
+	Video: <MdiFilmstrip className="card-image-icon" />,
+	Audio: <MdiMicrophone className="card-image-icon" />,
+	Photo: <MdiImage className="card-image-icon" />,
+	Book: <MdiBook className="card-image-icon" />,
 };

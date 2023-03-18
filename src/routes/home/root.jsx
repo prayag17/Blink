@@ -16,7 +16,10 @@ import Skeleton from "@mui/material/Skeleton";
 import Button from "@mui/material/Button";
 import Paper from "@mui/material/Paper";
 import Typography from "@mui/material/Typography";
-import useScrollTrigger from "@mui/material/useScrollTrigger";
+import Chip from "@mui/material/Chip";
+import Divider from "@mui/material/Divider";
+
+import { yellow } from "@mui/material/colors";
 
 import Carousel from "react-material-ui-carousel";
 
@@ -24,11 +27,10 @@ import Carousel from "react-material-ui-carousel";
 import { CardLandscape, CardPotrait } from "../../components/card/card";
 import { CardScroller } from "../../components/cardScroller/cardScroller";
 // Icons
-import {
-	MediaCollectionTypeIconCollection,
-	MediaTypeIconCollection,
-} from "../../components/utils/iconsCollection.jsx";
-import Close from "mdi-material-ui/Close";
+import { MediaTypeIconCollection } from "../../components/utils/iconsCollection.jsx";
+import { MdiStarHalfFull } from "../../components/icons/mdiStarHalfFull";
+import { MdiPlayOutline } from "../../components/icons/mdiPlayOutline";
+import { MdiChevronRight } from "../../components/icons/mdiChevronRight";
 
 import { useDispatch, useSelector } from "react-redux";
 import { showSidemenu } from "../../utils/slice/sidemenu";
@@ -38,6 +40,9 @@ import { getUserApi } from "@jellyfin/sdk/lib/utils/api/user-api";
 import { getUserLibraryApi } from "@jellyfin/sdk/lib/utils/api/user-library-api";
 import { getUserViewsApi } from "@jellyfin/sdk/lib/utils/api/user-views-api";
 import { useNavigate } from "react-router-dom";
+
+import { formateDate } from "../../utils/date/formateDate";
+import { getRuntime } from "../../utils/date/time";
 
 export const Home = () => {
 	const queryClient = useQueryClient();
@@ -56,6 +61,7 @@ export const Home = () => {
 			event.emit("set-api-accessToken", window.api.basePath);
 			return true;
 		},
+		enabled: !window.api,
 	});
 
 	const libraries = useQuery({
@@ -86,7 +92,6 @@ export const Home = () => {
 					enableUserData: true,
 				},
 			);
-			console.log(media);
 			return media.data;
 		},
 		enabled: !!user.data,
@@ -311,15 +316,149 @@ export const Home = () => {
 											<Typography
 												variant="h3"
 												className="hero-carousel-text"
+												sx={{ mb: 2.5 }}
 											>
-												{item.Name}
+												{!item.ImageTags
+													.Logo ? (
+													item.Name
+												) : (
+													<img
+														className="hero-carousel-text-logo"
+														src={
+															window
+																.api
+																.basePath +
+															"/Items/" +
+															item.Id +
+															"/Images/Logo?quality=80&tag=" +
+															item
+																.ImageTags
+																.Logo
+														}
+													></img>
+												)}
 											</Typography>
+											<Box
+												sx={{
+													display: "flex",
+													alignItems:
+														"center",
+													width: "fit-content",
+													gap: "1em",
+													mb: 1.5,
+												}}
+												className="hero-carousel-info"
+											>
+												<Typography
+													variant="subtitle1"
+													// color="GrayText"
+												>
+													{formateDate(
+														item.PremiereDate,
+													)}
+												</Typography>
+												<Divider
+													variant="middle"
+													component="div"
+													orientation="vertical"
+													flexItem
+												/>
+												<Chip
+													variant="outlined"
+													label={
+														item.OfficialRating
+													}
+												/>
+												<Divider
+													variant="middle"
+													component="div"
+													orientation="vertical"
+													flexItem
+												/>
+												<Box
+													sx={{
+														display: "flex",
+														gap: "0.25em",
+														alignItems:
+															"center",
+													}}
+													className="hero-carousel-info-rating"
+												>
+													<MdiStarHalfFull
+														colorA={
+															yellow[700]
+														}
+													/>
+													<Typography variant="subtitle1">
+														{Math.round(
+															item.CommunityRating *
+																10,
+														) / 10}
+													</Typography>
+												</Box>
+												<Divider
+													variant="middle"
+													component="div"
+													orientation="vertical"
+													flexItem
+												/>
+												<Typography variant="subtitle1">
+													{getRuntime(
+														item.RunTimeTicks,
+													)}
+												</Typography>
+											</Box>
 											<Typography
 												variant="subtitle1"
 												className="hero-carousel-text"
+												sx={{
+													display: "-webkit-box",
+													maxWidth:
+														"70%",
+													maxHeight:
+														"30%",
+													textOverflow:
+														"ellipsis",
+													overflow:
+														"hidden",
+													WebkitLineClamp:
+														"3",
+													WebkitBoxOrient:
+														"vertical",
+													opacity: 0.7,
+												}}
 											>
 												{item.Overview}
 											</Typography>
+											{/* TODO Link PLay and More info buttons in carousel */}
+											<Box
+												sx={{
+													display: "flex",
+													gap: 3,
+													mt: 3,
+												}}
+												className="hero-carousel-button-container"
+											>
+												<Button
+													variant="contained"
+													endIcon={
+														<MdiPlayOutline />
+													}
+													disabled
+												>
+													Play
+												</Button>
+												<Button
+													color="white"
+													variant="outlined"
+													endIcon={
+														<MdiChevronRight />
+													}
+													disabled
+												>
+													More info
+												</Button>
+											</Box>
 										</Box>
 									</Paper>
 								);

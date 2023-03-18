@@ -4,7 +4,7 @@ import PropTypes from "prop-types";
 import Typography from "@mui/material/Typography";
 import ButtonBase from "@mui/material/ButtonBase";
 
-import Account from "mdi-material-ui/Account";
+import { MdiAccount } from "../icons/mdiAccount";
 
 import "./avatar.module.scss";
 
@@ -29,7 +29,7 @@ export const AvatarCard = ({ userName, userId, userImageAvailable }) => {
 					<div className="card-image empty"></div>
 				)}
 				<div className="card-image-icon-container">
-					<Account className="card-image-icon" />
+					<MdiAccount className="card-image-icon" />
 				</div>
 			</div>
 			<div className="card-text-container">
@@ -61,7 +61,7 @@ export const AvatarImage = ({ userId }) => {
 			></div>
 
 			<div className="avatar-image-icon-container">
-				<Account className="avatar-image-icon" />
+				<MdiAccount className="avatar-image-icon" />
 			</div>
 		</div>
 	);

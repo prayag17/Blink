@@ -26,6 +26,9 @@ export const theme = createTheme({
 			default: clrBackgroundDefault,
 			paper: clrBackgroundDark,
 		},
+		white: {
+			main: "#ffffff",
+		},
 		mode: "dark",
 	},
 	typography: {

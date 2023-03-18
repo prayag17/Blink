@@ -20,6 +20,7 @@ import { relaunch } from "@tauri-apps/api/process";
 
 import { getUserApi } from "@jellyfin/sdk/lib/utils/api/user-api";
 
+import { useQuery } from "@tanstack/react-query";
 import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 
 // Theming

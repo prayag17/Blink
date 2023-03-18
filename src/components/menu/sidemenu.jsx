@@ -4,10 +4,11 @@ import PropTypes from "prop-types";
 import { useQueryClient, useQuery, QueryClient } from "@tanstack/react-query";
 import { getLibraryApi } from "@jellyfin/sdk/lib/utils/api/library-api";
 
+import { useNavigate } from "react-router-dom";
+
 import { theme } from "../../theme";
 
 import { styled } from "@mui/material/styles";
-import MuiAppBar from "@mui/material/AppBar";
 import Skeleton from "@mui/material/Skeleton";
 import Tooltip from "@mui/material/Tooltip";
 import List from "@mui/material/List";
@@ -16,15 +17,15 @@ import ListItemText from "@mui/material/ListItemText";
 import ListItemIcon from "@mui/material/ListItemIcon";
 import ListItemButton from "@mui/material/ListItemButton";
 import IconButton from "@mui/material/IconButton";
-import Toolbar from "@mui/material/Toolbar";
 import Divider from "@mui/material/Divider";
 import MuiDrawer from "@mui/material/Drawer";
 
-import MenuIcon from "mdi-material-ui/Menu";
+import { MdiMenu } from "../icons/mdiMenu";
+import { MdiLogoutVariant } from "../icons/mdiLogoutVariant";
 
 import { MediaCollectionTypeIconCollection } from "../../components/utils/iconsCollection.jsx";
 
-import { useSelector, shallowEqual } from "react-redux";
+import { useSelector } from "react-redux";
 
 const drawerWidth = 320;
 
@@ -51,6 +52,7 @@ const MiniDrawer = styled(MuiDrawer, {
 export const SideMenu = ({}) => {
 	const queryClient = useQueryClient();
 	const visible = useSelector((state) => state.sidebar.visible);
+	const navigate = useNavigate();
 	let libraries = useQuery({
 		queryKey: ["sidemenu", "libraries"],
 		queryFn: async () => {
@@ -59,6 +61,13 @@ export const SideMenu = ({}) => {
 		},
 	});
 	const handleDrawerOpen = () => {};
+
+	const handleLogout = async () => {
+		await window.api.logout();
+		navigate("/login");
+		console.log("logged out user");
+	};
+
 	return (
 		<MiniDrawer
 			variant="permanent"
@@ -70,6 +79,7 @@ export const SideMenu = ({}) => {
 					width: visible
 						? `calc(${theme.spacing(7)} + 10px)`
 						: 0,
+					height: "100vh",
 					// display: visible ? "block" : "none",
 				},
 			}}
@@ -94,7 +104,7 @@ export const SideMenu = ({}) => {
 					aria-label="open drawer"
 					onClick={handleDrawerOpen}
 				>
-					<MenuIcon />
+					<MdiMenu />
 				</IconButton>
 			</DrawerHeader>
 			<Divider />
@@ -108,44 +118,75 @@ export const SideMenu = ({}) => {
 					></Skeleton>
 				</>
 			) : (
-				<List sx={{ border: "none" }}>
-					{libraries.data.Items.map((library, index) => {
-						return (
-							<Tooltip
-								title={library.Name}
-								placement="right"
-								arrow
-								followCursor
-								key={index}
-							>
-								<ListItem disablePadding>
-									<ListItemButton
-										sx={{
-											minHeight: 48,
-											justifyContent: "center",
-											px: 2.5,
-										}}
-									>
-										<ListItemIcon
+				<>
+					<List sx={{ border: "none" }}>
+						{libraries.data.Items.map((library, index) => {
+							return (
+								<Tooltip
+									title={library.Name}
+									placement="right"
+									arrow
+									followCursor
+									key={index}
+								>
+									<ListItem disablePadding>
+										<ListItemButton
 											sx={{
-												minWidth: 0,
+												minHeight: 48,
 												justifyContent:
 													"center",
+												px: 2.5,
 											}}
 										>
-											{
-												MediaCollectionTypeIconCollection[
-													library
-														.CollectionType
-												]
-											}
-										</ListItemIcon>
-									</ListItemButton>
-								</ListItem>
-							</Tooltip>
-						);
-					})}
-				</List>
+											<ListItemIcon
+												sx={{
+													minWidth: 0,
+													justifyContent:
+														"center",
+												}}
+											>
+												{
+													MediaCollectionTypeIconCollection[
+														library
+															.CollectionType
+													]
+												}
+											</ListItemIcon>
+										</ListItemButton>
+									</ListItem>
+								</Tooltip>
+							);
+						})}
+					</List>
+					<List sx={{ marginTop: "auto" }}>
+						<Tooltip
+							title="Logout"
+							placement="right"
+							followCursor
+							arrow
+						>
+							<ListItem disablePadding>
+								<ListItemButton
+									sx={{
+										minHeight: 48,
+										justifyContent: "center",
+										px: 2.5,
+									}}
+									onClick={handleLogout}
+								>
+									<ListItemIcon
+										sx={{
+											minWidth: 0,
+											justifyContent: "center",
+										}}
+									>
+										<MdiLogoutVariant></MdiLogoutVariant>
+									</ListItemIcon>
+								</ListItemButton>
+							</ListItem>
+						</Tooltip>
+					</List>
+				</>
 			)}
 		</MiniDrawer>
 	);

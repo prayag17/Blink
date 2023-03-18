@@ -39,6 +39,7 @@
 			left: 0;
 			right: 0;
 			bottom: 0;
+			background-position: center;
 		}
 		&-icon {
 			position: absolute;
@@ -63,6 +64,13 @@
 		display: -webkit-box;
 		overflow: hidden;
 		-webkit-line-clamp: 2;
+		margin-bottom: 0.5em;
+		&-logo {
+			max-width: 6em;
+			height: 2em;
+			object-fit: contain;
+			object-position: bottom;
+		}
 	}
 	&-detail {
 		position: relative;
