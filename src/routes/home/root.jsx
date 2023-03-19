@@ -38,11 +38,13 @@ import { showSidemenu } from "../../utils/slice/sidemenu";
 import { getLibraryApi } from "@jellyfin/sdk/lib/utils/api/library-api";
 import { getUserApi } from "@jellyfin/sdk/lib/utils/api/user-api";
 import { getUserLibraryApi } from "@jellyfin/sdk/lib/utils/api/user-library-api";
-import { getUserViewsApi } from "@jellyfin/sdk/lib/utils/api/user-views-api";
+import { getItemsApi } from "@jellyfin/sdk/lib/utils/api/items-api";
+import { getTvShowsApi } from "@jellyfin/sdk/lib/utils/api/tv-shows-api";
 import { useNavigate } from "react-router-dom";
 
 import { formateDate } from "../../utils/date/formateDate";
 import { getRuntime } from "../../utils/date/time";
+import { CarouselSkeleton } from "../../components/skeleton/carousel";
 
 export const Home = () => {
 	const queryClient = useQueryClient();
@@ -97,6 +99,48 @@ export const Home = () => {
 		enabled: !!user.data,
 	});
 
+	const resumeItemsVideo = useQuery({
+		queryKey: ["home", "resume", "video"],
+		queryFn: async () => {
+			const resumeItems = await getItemsApi(window.api).getResumeItems(
+				{
+					userId: user.data.Id,
+					limit: 16,
+					mediaTypes: ["Video"],
+				},
+			);
+			return resumeItems.data;
+		},
+		enabled: !!user.data,
+	});
+
+	const resumeItemsAudio = useQuery({
+		queryKey: ["home", "resume", "audio"],
+		queryFn: async () => {
+			const resumeItems = await getItemsApi(window.api).getResumeItems(
+				{
+					userId: user.data.Id,
+					limit: 16,
+					mediaTypes: ["Audio"],
+				},
+			);
+			return resumeItems.data;
+		},
+		enabled: !!user.data,
+	});
+
+	const upNextItems = useQuery({
+		queryKey: ["home", "upNext"],
+		queryFn: async () => {
+			const upNext = await getTvShowsApi(window.api).getNextUp({
+				userId: user.data.Id,
+				limit: 16,
+			});
+			return upNext.data;
+		},
+		enabled: !!user.data,
+	});
+
 	const [userLibraries, setUserLibraries] = useState([]);
 	const [latestMovies, setLatestMovies] = useState([]);
 	const [Auser, setUser] = useState({
@@ -109,13 +153,77 @@ export const Home = () => {
 	});
 
 	const navigate = useNavigate();
+
+	const [layoutState, setLayoutState] = useState(null);
+
+	const layout = [
+		{
+			type: "libs",
+			name: "Libraries",
+			data: libraries.data,
+			// isLoading: libraries.isLoading,
+			isLoading: false,
+		},
+		{
+			type: "resumeVideo",
+			name: "Continue Watching",
+			data: resumeItemsVideo.data,
+			// isLoading: resumeItemsVideo.isLoading,
+			isLoading: false,
+		},
+		{
+			type: "resumeAudio",
+			name: "Continue Listnening",
+			data: resumeItemsAudio.data,
+			// isLoading: resumeItemsAudio.isLoading,
+			isLoading: false,
+		},
+		{
+			type: "nextup",
+			name: "Next Up",
+			data: upNextItems.data,
+			// isLoading: upNextItems.isLoading,
+			isLoading: false,
+		},
+	];
+
 	const excludeTypes = ["boxsets", "playlists", "livetv", "channels"];
+
+	const getLatestMedia = async () => {
+		libraries.data.Items.map(async (lib) => {
+			// console.log(lib);
+			if (excludeTypes.includes(lib.CollectionType)) {
+				return;
+			} else {
+				let latmedia = await getUserLibraryApi(
+					window.api,
+				).getLatestMedia({
+					userId: user.data.Id,
+					parentId: lib.Id,
+					limit: 16,
+				});
+				layout.push({
+					type: "latestMedia",
+					name: `Latest ${lib.Name}`,
+					data: latmedia.data,
+					isLoading: false,
+				});
+			}
+		});
+	};
 
 	const handleLogout = async () => {
 		await window.api.logout();
 		navigate("/login");
 		console.log("logged out user");
 	};
+
+	useEffect(() => {
+		if (libraries.isSuccess) {
+			getLatestMedia();
+			setLayoutState(layout);
+		}
+	}, []);
 
 	return (
 		<>
@@ -124,71 +232,6 @@ export const Home = () => {
 					display: "flex",
 				}}
 			>
-				{/* <MuiDrawer
-					anchor="left"
-					open={drawerState}
-					onClose={handleDrawerClose}
-				>
-					<DrawerHeader
-						className="Mui-DrawerHeader"
-						sx={{ position: "relative", height: "20vh" }}
-					>
-						<div>
-						<Avatar src={""}/>
-						<Typography variant="h3">
-						{user["Name"]}
-						</Typography>
-					</div>
-						<IconButton
-							onClick={handleDrawerClose}
-							sx={{
-								position: "absolute",
-								top: "10%",
-								right: "5%",
-							}}
-						>
-							<Close />
-						</IconButton>
-					</DrawerHeader>
-					<Divider />
-					<List sx={{ border: "none" }}>
-						{userLibraries.map((library, index) => {
-							return (
-								<ListItem disablePadding key={index}>
-									<ListItemButton
-										sx={{
-											minHeight: 48,
-											justifyContent:
-												drawerState
-													? "initial"
-													: "center",
-											px: 2.5,
-										}}
-									>
-										<ListItemIcon
-											sx={{
-												minWidth: 0,
-												mr: 3,
-												justifyContent:
-													"center",
-											}}
-										>
-											{
-												MediaCollectionTypeIconCollection[
-													library
-														.CollectionType
-												]
-											}
-										</ListItemIcon>
-										<ListItemText
-											primary={library.Name}
-										/>
-									</ListItemButton>
-								</ListItem>
-							);
-						})}
-					</List>
-				</MuiDrawer> */}
 				<Box
 					component="main"
 					className="scrollY"
@@ -227,46 +270,7 @@ export const Home = () => {
 						interval={10000}
 					>
 						{latestMedia.isLoading ? (
-							<Paper
-								className="hero-carousel-slide"
-								sx={{
-									background:
-										theme.palette.primary
-											.background.dark,
-								}}
-							>
-								<div className="hero-carousel-background">
-									<Skeleton
-										variant="rectangular"
-										height="100%"
-										animation="wave"
-									></Skeleton>
-								</div>
-								<Box className="hero-carousel-detail">
-									<Typography
-										variant="h3"
-										className="hero-carousel-text"
-									>
-										<Skeleton
-											variant="text"
-											sx={{ fontSize: "5rem" }}
-											width={300}
-											animation="wave"
-										></Skeleton>
-									</Typography>
-									<Typography
-										variant="p"
-										className="hero-carousel-text"
-									>
-										<Skeleton
-											variant="text"
-											sx={{ fontSize: "3rem" }}
-											width={400}
-											animation="wave"
-										></Skeleton>
-									</Typography>
-								</Box>
-							</Paper>
+							<CarouselSkeleton />
 						) : (
 							// <></>
 							latestMedia.data != null &&
@@ -465,8 +469,25 @@ export const Home = () => {
 							})
 						)}
 					</Carousel>
+					<CardScroller displayCards={4} title={"Libraries"}>
+						{libraries.isLoading == false &&
+							libraries.data.Items.map((item, index) => {
+								return (
+									<CardLandscape
+										key={index}
+										itemName={item.Name}
+										itemId={item.Id}
+										// imageTags={false}
+										imageTags={
+											!!item.ImageTags.Primary
+										}
+										iconType={item.CollectionType}
+									></CardLandscape>
+								);
+							})}
+					</CardScroller>
 
-					<Box className="home-section">
+					{/* <Box className="home-section">
 						<Typography
 							variant="h4"
 							color="textPrimary"
@@ -491,32 +512,7 @@ export const Home = () => {
 								);
 							})}
 						</CardScroller>
-					</Box>
-
-					<Box className="home-section">
-						<Typography
-							variant="h4"
-							color="textPrimary"
-							className="home-section-heading"
-						>
-							<div className="home-section-heading-decoration"></div>{" "}
-							Latest Movies
-						</Typography>
-						<CardScroller displayCards={7}>
-							{latestMovies.map((movie, index) => {
-								return (
-									<CardPotrait
-										key={index}
-										itemName={movie.Name}
-										itemId={movie.Id}
-										imageTags={movie.imageTags}
-										iconType={movie.MediaType}
-									></CardPotrait>
-								);
-							})}
-						</CardScroller>
-					</Box>
-
+					</Box> */}
 					<Button variant="contained" onClick={handleLogout}>
 						Logout
 					</Button>
@@ -525,3 +521,69 @@ export const Home = () => {
 		</>
 	);
 };
+
+/* <MuiDrawer
+					anchor="left"
+					open={drawerState}
+					onClose={handleDrawerClose}
+				>
+					<DrawerHeader
+						className="Mui-DrawerHeader"
+						sx={{ position: "relative", height: "20vh" }}
+					>
+						<div>
+						<Avatar src={""}/>
+						<Typography variant="h3">
+						{user["Name"]}
+						</Typography>
+					</div>
+						<IconButton
+							onClick={handleDrawerClose}
+							sx={{
+								position: "absolute",
+								top: "10%",
+								right: "5%",
+							}}
+						>
+							<Close />
+						</IconButton>
+					</DrawerHeader>
+					<Divider />
+					<List sx={{ border: "none" }}>
+						{userLibraries.map((library, index) => {
+							return (
+								<ListItem disablePadding key={index}>
+									<ListItemButton
+										sx={{
+											minHeight: 48,
+											justifyContent:
+												drawerState
+													? "initial"
+													: "center",
+											px: 2.5,
+										}}
+									>
+										<ListItemIcon
+											sx={{
+												minWidth: 0,
+												mr: 3,
+												justifyContent:
+													"center",
+											}}
+										>
+											{
+												MediaCollectionTypeIconCollection[
+													library
+														.CollectionType
+												]
+											}
+										</ListItemIcon>
+										<ListItemText
+											primary={library.Name}
+										/>
+									</ListItemButton>
+								</ListItem>
+							);
+						})}
+					</List>
+				</MuiDrawer> */

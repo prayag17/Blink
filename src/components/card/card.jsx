@@ -2,6 +2,10 @@
 import React from "react";
 import PropTypes from "prop-types";
 
+import Card from "@mui/material/Card";
+import CardContent from "@mui/material/CardContent";
+import CardMedia from "@mui/material/CardMedia";
+import CardActionArea from "@mui/material/CardActionArea";
 import Typography from "@mui/material/Typography";
 
 import {
@@ -13,43 +17,43 @@ import "./card.module.scss";
 
 export const CardLandscape = ({ itemName, itemId, imageTags, iconType }) => {
 	const imageAvailable = () => {
-		console.log(imageTags);
-		if (imageTags == undefined) {
-			console.log("hee");
+		if (imageTags == {}) {
 			return false;
 		} else {
+			console.log("hee");
 			return true;
 		}
 	};
+	console.log(!!imageTags.Primary);
 	return (
-		<div className="card landscape">
-			<div className="card-image-container">
-				{imageAvailable ? (
-					<div
-						className="card-image"
-						style={{
-							backgroundImage:
-								"url('" +
-								window.api.basePath +
-								"/Items/" +
-								itemId +
-								"/Images/Primary')",
-						}}
-					></div>
+		<Card className="card landscape">
+			<CardActionArea>
+				{imageTags ? (
+					<CardMedia
+						component="img"
+						image={
+							window.api.basePath +
+							"/Items/" +
+							itemId +
+							"/Images/Primary"
+						}
+						// alt={MediaCollectionTypeIconCollectionCard[iconType]}
+						alt={itemName}
+						className="card-image-container"
+					></CardMedia>
 				) : (
-					<div className="card-image empty"></div>
+					<CardMedia className="card-image-container">
+						{MediaCollectionTypeIconCollectionCard[iconType]}
+					</CardMedia>
 				)}
-				<div className="card-image-icon-container">
-					{MediaCollectionTypeIconCollectionCard[iconType]}
-				</div>
-			</div>
 
-			<div className="card-text-container">
-				<Typography variant="button" color="white">
-					{itemName}
-				</Typography>
-			</div>
-		</div>
+				<div className="card-text-container">
+					<Typography variant="button" color="white">
+						{itemName}
+					</Typography>
+				</div>
+			</CardActionArea>
+		</Card>
 	);
 };
 

@@ -1,6 +1,6 @@
 /** @format */
 
-import { useRef, useEffect } from "react";
+import { useState, useEffect } from "react";
 import PropTypes from "prop-types";
 
 import Carousel from "react-multi-carousel";
@@ -10,41 +10,13 @@ import { MdiChevronLeft } from "../icons/mdiChevronLeft";
 import { MdiChevronRight } from "../icons/mdiChevronRight";
 
 import { styled } from "@mui/material/styles";
-import Button from "@mui/material/Button";
+import IconButton from "@mui/material/IconButton";
+import Box from "@mui/material/Box";
+import Typography from "@mui/material/Typography";
 import ButtonGroup from "@mui/material/ButtonGroup";
 
 import "./cardScroller.module.scss";
-
-const CarouselButton = styled(Button)(() => ({
-	color: "white",
-	height: "100%",
-}));
-
-const SliderButtonRight = ({ onClick }) => {
-	return (
-		<CarouselButton
-			onClick={() => onClick()}
-			className="card-scroller-button right"
-			variant="text"
-		>
-			<MdiChevronRight />
-		</CarouselButton>
-	);
-};
-
-const SliderButtonLeft = ({ onClick }) => {
-	return (
-		<CarouselButton
-			onClick={() => onClick()}
-			className="card-scroller-button left"
-			variant="text"
-		>
-			<MdiChevronLeft />
-		</CarouselButton>
-	);
-};
-
-export const CardScroller = ({ children, displayCards }) => {
+export const CardScroller = ({ children, displayCards, title }) => {
 	const responsive = {
 		desktop: {
 			breakpoint: { max: 3000, min: 1024 },
@@ -63,21 +35,51 @@ export const CardScroller = ({ children, displayCards }) => {
 		},
 	};
 
+	const [carouselRef, setCarouselRef] = useState();
+
 	return (
-		<Carousel
-			swipeable={false}
-			draggable={false}
-			responsive={responsive}
-			arrows={true}
-			customRightArrow={<SliderButtonRight />}
-			customLeftArrow={<SliderButtonLeft />}
-			className="card-scroller"
-		>
-			{children}
-		</Carousel>
+		<Box className="card-scroller-container">
+			<Box sx={{ mb: 2 }} className="card-scroller-header-container">
+				<Typography
+					variant="h4"
+					color="textPrimary"
+					className="card-scroller-heading"
+				>
+					<div className="card-scroller-heading-decoration"></div>{" "}
+					{title}
+				</Typography>
+				<ButtonGroup className="card-scroller-button-group">
+					<IconButton
+						className="card-scroller-button"
+						onClick={() => carouselRef.previous()}
+					>
+						<MdiChevronLeft />
+					</IconButton>
+					<IconButton
+						className="card-scroller-button"
+						onClick={() => carouselRef.next()}
+					>
+						<MdiChevronRight />
+					</IconButton>
+				</ButtonGroup>
+			</Box>
+			<Carousel
+				swipeable={false}
+				draggable={false}
+				responsive={responsive}
+				arrows={false}
+				ref={(el) => setCarouselRef(el)}
+				// customButtonGroup={<HomeSectionHeader />}
+				// renderButtonGroupOutside={true}
+				className="card-scroller"
+			>
+				{children}
+			</Carousel>
+		</Box>
 	);
 };
 
 CardScroller.propTypes = {
 	displayCards: PropTypes.number.isRequired,
+	title: PropTypes.string.isRequired,
 };

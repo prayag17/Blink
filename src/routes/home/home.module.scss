@@ -89,19 +89,3 @@
 		border-radius: 0;
 	}
 }
-
-.home-section {
-	&-heading {
-		display: flex;
-		align-items: center;
-		justify-content: flex-start;
-		gap: 0.35em;
-		position: relative;
-		margin-bottom: 0.25em !important;
-		&-decoration {
-			width: 0.75em;
-			height: 3px;
-			background: white;
-		}
-	}
-}

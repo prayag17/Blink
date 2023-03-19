@@ -7,23 +7,25 @@
 		display: flex;
 	}
 	&-button {
-		color: white;
-		position: absolute !important;
-		top: 49%;
-		transform: translateY(-50%);
-		background-color: $clr-background-dark !important;
-		border-radius: $border-radius-intensity-1 !important;
-		opacity: 0;
-		transition: opacity $transition-time-default !important;
-		&:hover,
-		&:focus {
-			opacity: 1;
-		}
-		&.right {
-			right: 0%;
-		}
-		&.left {
-			left: 0%;
+		aspect-ratio: 1;
+	}
+	&-header-container {
+		display: flex;
+		width: 100%;
+		justify-content: space-between;
+		align-items: center;
+	}
+	&-heading {
+		display: flex;
+		align-items: center;
+		justify-content: flex-start;
+		gap: 0.35em;
+		position: relative;
+		margin-bottom: 0.25em !important;
+		&-decoration {
+			width: 0.75em;
+			height: 3px;
+			background: white;
 		}
 	}
 }
