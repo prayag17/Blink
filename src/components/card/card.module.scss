@@ -25,17 +25,11 @@
 			font-size: 4.5em !important;
 
 			&-container {
-				display: flex;
+				display: flex !important;
+				aspect-ratio: 1.777;
 				justify-content: center;
 				align-items: center;
-				position: absolute;
-				top: 0;
-				left: 0;
-				right: 0;
-				bottom: 0;
 				width: 100% !important;
-				height: 100% !important;
-				border-radius: $border-radius-default;
 				color: $clr-accent-default;
 				background: $clr-accent-dark;
 				z-index: 0;
@@ -48,5 +42,6 @@
 		flex-direction: column;
 		justify-content: center;
 		align-items: center;
+		padding: 0 !important;
 	}
 }

@@ -16,17 +16,8 @@ import {
 import "./card.module.scss";
 
 export const CardLandscape = ({ itemName, itemId, imageTags, iconType }) => {
-	const imageAvailable = () => {
-		if (imageTags == {}) {
-			return false;
-		} else {
-			console.log("hee");
-			return true;
-		}
-	};
-	console.log(!!imageTags.Primary);
 	return (
-		<Card className="card landscape">
+		<Card className="card landscape" elevation={10}>
 			<CardActionArea>
 				{imageTags ? (
 					<CardMedia
@@ -37,40 +28,35 @@ export const CardLandscape = ({ itemName, itemId, imageTags, iconType }) => {
 							itemId +
 							"/Images/Primary"
 						}
-						// alt={MediaCollectionTypeIconCollectionCard[iconType]}
 						alt={itemName}
 						className="card-image-container"
 					></CardMedia>
 				) : (
-					<CardMedia className="card-image-container">
+					<CardMedia className="card-image-icon-container">
 						{MediaCollectionTypeIconCollectionCard[iconType]}
 					</CardMedia>
 				)}
 
-				<div className="card-text-container">
-					<Typography variant="button" color="white">
+				<CardContent className="card-text-container">
+					<Typography
+						gutterBottom
+						variant="button"
+						component="div"
+						color="white"
+					>
 						{itemName}
 					</Typography>
-				</div>
+				</CardContent>
 			</CardActionArea>
 		</Card>
 	);
 };
 
 export const CardPotrait = ({ itemName, itemId, imageTags, iconType }) => {
-	const imageAvailable = () => {
-		console.log(imageTags);
-		if (imageTags == undefined) {
-			console.log("hee");
-			return false;
-		} else {
-			return true;
-		}
-	};
 	return (
 		<div className="card portrait">
 			<div className="card-image-container">
-				{imageAvailable ? (
+				{imageTags ? (
 					<div
 						className="card-image"
 						style={{
@@ -102,13 +88,13 @@ export const CardPotrait = ({ itemName, itemId, imageTags, iconType }) => {
 CardLandscape.propTypes = {
 	itemName: PropTypes.string.isRequired,
 	itemId: PropTypes.string.isRequired,
-	imageTags: PropTypes.object,
+	imageTags: PropTypes.bool,
 	iconType: PropTypes.string.isRequired,
 };
 
 CardPotrait.propTypes = {
 	itemName: PropTypes.string.isRequired,
 	itemId: PropTypes.string.isRequired,
-	imageTags: PropTypes.object,
+	imageTags: PropTypes.bool,
 	iconType: PropTypes.string.isRequired,
 };
