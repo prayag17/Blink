@@ -14,7 +14,7 @@
 		"@emotion/styled": "^11.10.5",
 		"@fontsource/open-sans": "^4.5.13",
 		"@jellyfin/sdk": "^0.7.0",
-		"@mdi/js": "^7.1.96",
+		"@mdi/js": "^7.2.96",
 		"@mui/lab": "^5.0.0-alpha.122",
 		"@mui/material": "^5.11.12",
 		"@reduxjs/toolkit": "^1.9.3",
