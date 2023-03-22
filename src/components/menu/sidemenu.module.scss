@@ -1,0 +1,21 @@
+/** @format */
+
+.sidemenu {
+	&-item {
+		position: relative;
+		&-active::before {
+			content: "";
+			position: absolute;
+			top: 15%;
+			bottom: 15%;
+			left: 7%;
+			width: 5px;
+			border-radius: 10px;
+			background: linear-gradient(
+				135deg,
+				$clr-accent-default,
+				$clr-secondary-default
+			);
+		}
+	}
+}

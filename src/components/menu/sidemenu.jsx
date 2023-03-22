@@ -4,7 +4,7 @@ import PropTypes from "prop-types";
 import { useQueryClient, useQuery, QueryClient } from "@tanstack/react-query";
 import { getLibraryApi } from "@jellyfin/sdk/lib/utils/api/library-api";
 
-import { useNavigate } from "react-router-dom";
+import { useNavigate, NavLink } from "react-router-dom";
 
 import { theme } from "../../theme";
 
@@ -26,6 +26,9 @@ import { MdiLogoutVariant } from "../icons/mdiLogoutVariant";
 import { MediaCollectionTypeIconCollection } from "../../components/utils/iconsCollection.jsx";
 
 import { useSelector } from "react-redux";
+import { MdiHomeVariantOutline } from "../icons/mdiHomeVariantOutline";
+
+import "./sidemenu.module.scss";
 
 const drawerWidth = 320;
 
@@ -129,36 +132,99 @@ export const SideMenu = ({}) => {
 									followCursor
 									key={index}
 								>
-									<ListItem disablePadding>
-										<ListItemButton
-											sx={{
-												minHeight: 48,
-												justifyContent:
-													"center",
-												px: 2.5,
-											}}
+									<ListItem
+										className="sidemenu-item"
+										disablePadding
+									>
+										<NavLink
+											to={
+												"/library/" +
+												library.Id
+											}
+											className={({
+												isActive,
+												isPending,
+											}) =>
+												isPending
+													? "sidemenu-item-pending"
+													: isActive
+													? "sidemenu-item-active"
+													: ""
+											}
 										>
-											<ListItemIcon
+											<ListItemButton
 												sx={{
-													minWidth: 0,
+													minHeight: 48,
 													justifyContent:
 														"center",
+													px: 2.5,
 												}}
 											>
-												{
-													MediaCollectionTypeIconCollection[
-														library
-															.CollectionType
-													]
-												}
-											</ListItemIcon>
-										</ListItemButton>
+												<ListItemIcon
+													sx={{
+														minWidth: 0,
+														justifyContent:
+															"center",
+													}}
+												>
+													{
+														MediaCollectionTypeIconCollection[
+															library
+																.CollectionType
+														]
+													}
+												</ListItemIcon>
+											</ListItemButton>
+										</NavLink>
 									</ListItem>
 								</Tooltip>
 							);
 						})}
 					</List>
 					<List sx={{ marginTop: "auto" }}>
+						<Tooltip
+							title="Home"
+							placement="right"
+							followCursor
+							arrow
+						>
+							<ListItem
+								className="sidemenu-item"
+								disablePadding
+							>
+								<NavLink
+									to="/home"
+									className={({
+										isActive,
+										isPending,
+									}) =>
+										isPending
+											? "sidemenu-item-pending"
+											: isActive
+											? "sidemenu-item-active"
+											: ""
+									}
+								>
+									<ListItemButton
+										sx={{
+											minHeight: 48,
+											justifyContent: "center",
+											px: 2.5,
+										}}
+									>
+										<ListItemIcon
+											sx={{
+												minWidth: 0,
+												justifyContent:
+													"center",
+											}}
+										>
+											<MdiHomeVariantOutline></MdiHomeVariantOutline>
+										</ListItemIcon>
+									</ListItemButton>
+								</NavLink>
+							</ListItem>
+						</Tooltip>
 						<Tooltip
 							title="Logout"
 							placement="right"

@@ -324,6 +324,10 @@ function App() {
 									path="/login/manual"
 									element={<UserLoginManual />}
 								/>
+								<Route
+									path="/library/:id"
+									element={<></>}
+								/>
 
 								{/* Logical Routes */}
 
