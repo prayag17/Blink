@@ -2,6 +2,8 @@
 
 import { useState, useEffect } from "react";
 
+import { Blurhash, BlurhashCanvas } from "react-blurhash";
+
 import { useQueryClient, useQuery } from "@tanstack/react-query";
 
 import { EventEmitter as event } from "../../eventEmitter";
@@ -40,6 +42,7 @@ import { getUserApi } from "@jellyfin/sdk/lib/utils/api/user-api";
 import { getUserLibraryApi } from "@jellyfin/sdk/lib/utils/api/user-library-api";
 import { getItemsApi } from "@jellyfin/sdk/lib/utils/api/items-api";
 import { getTvShowsApi } from "@jellyfin/sdk/lib/utils/api/tv-shows-api";
+
 import { useNavigate } from "react-router-dom";
 
 import { formateDate } from "../../utils/date/formateDate";
@@ -141,11 +144,27 @@ export const Home = () => {
 		enabled: !!user.data,
 	});
 
-	const [userLibraries, setUserLibraries] = useState([]);
-	const [latestMovies, setLatestMovies] = useState([]);
-	const [Auser, setUser] = useState({
-		Name: "",
-	});
+	const fetchLatestMedia = async (lib) => {
+		const latmedia = useQuery({
+			queryKey: ["home", "latestMedia", lib.name],
+			queryFn: async () => {
+				const media = await getUserLibraryApi(
+					window.api,
+				).getLatestMedia({
+					userId: user.data.Id,
+					parentId: lib.parentId,
+					limit: 16,
+				});
+				return media.data;
+			},
+		});
+		return latmedia;
+	};
+
+	const [latestMediaContent, setLatestMediaContent] = useState([]);
+	const [latestMediaLib, setLatestMediaLib] = useState("");
+
+	// const latestMediaData = useQueries(latestMediaContent);
 
 	const dispatch = useDispatch();
 	const dataT = useSelector((state) => {
@@ -187,6 +206,8 @@ export const Home = () => {
 		},
 	];
 
+	const latestMediaLayout = [];
+
 	const excludeTypes = ["boxsets", "playlists", "livetv", "channels"];
 
 	const getLatestMedia = async () => {
@@ -195,19 +216,13 @@ export const Home = () => {
 			if (excludeTypes.includes(lib.CollectionType)) {
 				return;
 			} else {
-				let latmedia = await getUserLibraryApi(
-					window.api,
-				).getLatestMedia({
-					userId: user.data.Id,
-					parentId: lib.Id,
-					limit: 16,
-				});
-				layout.push({
+				latestMediaLayout.push({
 					type: "latestMedia",
 					name: `Latest ${lib.Name}`,
-					data: latmedia.data,
+					parentId: lib.Id,
 					isLoading: false,
 				});
+				setLatestMediaContent(latestMediaLayout);
 			}
 		});
 	};
@@ -221,7 +236,11 @@ export const Home = () => {
 	useEffect(() => {
 		if (libraries.isSuccess) {
 			getLatestMedia();
-			setLayoutState(layout);
+			console.log(latestMediaContent);
+			for (let lib of latestMediaContent) {
+				console.log(lib);
+				fetchLatestMedia(lib);
+			}
 		}
 	}, []);
 
@@ -291,19 +310,41 @@ export const Home = () => {
 										<div className="hero-carousel-background-container">
 											{item.ImageBlurHashes
 												.Backdrop ? (
-												<div
-													className="hero-carousel-background-image"
-													style={{
-														backgroundImage: `url(${
-															window
-																.api
-																.basePath +
-															"/Items/" +
-															item.Id +
-															"/Images/Backdrop"
-														})`,
-													}}
-												></div>
+												<>
+													<BlurhashCanvas
+														hash={
+															item
+																.ImageBlurHashes
+																.Backdrop[
+																item
+																	.BackdropImageTags[0]
+															]
+														}
+														// hash="LEHV6nWB2yk8pyo0adR*.7kCMdnj"
+														width="1080"
+														height="720"
+														resolutionX={
+															512
+														}
+														resolutionY={
+															512
+														}
+														className="hero-carousel-background-blurhash"
+													/>
+													<div
+														className="hero-carousel-background-image"
+														style={{
+															backgroundImage: `url(${
+																window
+																	.api
+																	.basePath +
+																"/Items/" +
+																item.Id +
+																"/Images/Backdrop"
+															})`,
+														}}
+													></div>
+												</>
 											) : (
 												<div className="hero-carousel-background-image empty"></div>
 											)}
