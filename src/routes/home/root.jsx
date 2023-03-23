@@ -8,7 +8,7 @@ import { useQueryClient, useQuery } from "@tanstack/react-query";
 
 import { EventEmitter as event } from "../../eventEmitter";
 import { getServer } from "../../utils/storage/servers";
-import { getUser } from "../../utils/storage/user";
+import { getUser, delUser } from "../../utils/storage/user";
 
 import { theme } from "../../theme";
 import "./home.module.scss";
@@ -49,7 +49,7 @@ import { formateDate } from "../../utils/date/formateDate";
 import { getRuntime } from "../../utils/date/time";
 import { CarouselSkeleton } from "../../components/skeleton/carousel";
 
-export const Home = () => {
+const Home = () => {
 	const queryClient = useQueryClient();
 
 	const authUser = useQuery({
@@ -58,7 +58,7 @@ export const Home = () => {
 			const server = await getServer();
 			const user = await getUser();
 			event.emit("create-jellyfin-api", server.Ip);
-			const auth = await api.authenticateUserByName(
+			const auth = await window.api.authenticateUserByName(
 				user.Name,
 				user.Password,
 			);
@@ -228,9 +228,10 @@ export const Home = () => {
 	};
 
 	const handleLogout = async () => {
+		console.log("Logging out user...");
 		await window.api.logout();
+		delUser();
 		navigate("/login");
-		console.log("logged out user");
 	};
 
 	useEffect(() => {
@@ -311,7 +312,7 @@ export const Home = () => {
 											{item.ImageBlurHashes
 												.Backdrop ? (
 												<>
-													<BlurhashCanvas
+													<Blurhash
 														hash={
 															item
 																.ImageBlurHashes
@@ -361,7 +362,9 @@ export const Home = () => {
 											<Typography
 												variant="h3"
 												className="hero-carousel-text"
-												sx={{ mb: 2.5 }}
+												sx={{
+													mb: 2.5,
+												}}
 											>
 												{!item.ImageTags
 													.Logo ? (
@@ -511,7 +514,9 @@ export const Home = () => {
 						)}
 					</Carousel>
 					<CardScroller displayCards={4} title={"Libraries"}>
-						{libraries.isLoading == false &&
+						{libraries.isLoading ? (
+							<>"loading...</>
+						) : (
 							libraries.data.Items.map((item, index) => {
 								return (
 									<CardLandscape
@@ -525,7 +530,8 @@ export const Home = () => {
 										iconType={item.CollectionType}
 									></CardLandscape>
 								);
-							})}
+							})
+						)}
 					</CardScroller>
 
 					{/* <Box className="home-section">
@@ -628,3 +634,5 @@ export const Home = () => {
 						})}
 					</List>
 				</MuiDrawer> */
+
+export default Home;

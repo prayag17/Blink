@@ -1,5 +1,5 @@
 /** @format */
-import PropTypes from "prop-types";
+import { delUser } from "../../utils/storage/user";
 
 import { useQueryClient, useQuery, QueryClient } from "@tanstack/react-query";
 import { getLibraryApi } from "@jellyfin/sdk/lib/utils/api/library-api";
@@ -62,13 +62,15 @@ export const SideMenu = ({}) => {
 			let libs = await getLibraryApi(window.api).getMediaFolders();
 			return libs.data;
 		},
+		enabled: visible,
 	});
 	const handleDrawerOpen = () => {};
 
 	const handleLogout = async () => {
+		console.log("Logging out user...");
 		await window.api.logout();
+		delUser();
 		navigate("/login");
-		console.log("logged out user");
 	};
 
 	return (
@@ -133,7 +135,7 @@ export const SideMenu = ({}) => {
 									key={index}
 								>
 									<ListItem
-										className="sidemenu-item"
+										className="sidemenu-item-container"
 										disablePadding
 									>
 										<NavLink
@@ -146,10 +148,10 @@ export const SideMenu = ({}) => {
 												isPending,
 											}) =>
 												isPending
-													? "sidemenu-item-pending"
+													? "sidemenu-item-pending sidemenu-item"
 													: isActive
-													? "sidemenu-item-active"
-													: ""
+													? "sidemenu-item-active sidemenu-item"
+													: "sidemenu-item"
 											}
 										>
 											<ListItemButton
@@ -159,6 +161,7 @@ export const SideMenu = ({}) => {
 														"center",
 													px: 2.5,
 												}}
+												color="white"
 											>
 												<ListItemIcon
 													sx={{
@@ -189,7 +192,7 @@ export const SideMenu = ({}) => {
 							arrow
 						>
 							<ListItem
-								className="sidemenu-item"
+								className="sidemenu-item-container"
 								disablePadding
 							>
 								<NavLink
@@ -199,10 +202,10 @@ export const SideMenu = ({}) => {
 										isPending,
 									}) =>
 										isPending
-											? "sidemenu-item-pending"
+											? "sidemenu-item-pending sidemenu-item"
 											: isActive
-											? "sidemenu-item-active"
-											: ""
+											? "sidemenu-item-active sidemenu-item"
+											: "sidemenu-item"
 									}
 								>
 									<ListItemButton

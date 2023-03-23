@@ -3,7 +3,7 @@
 .sidemenu {
 	&-item {
 		position: relative;
-		&-active::before {
+		&::before {
 			content: "";
 			position: absolute;
 			top: 15%;
@@ -16,6 +16,14 @@
 				$clr-accent-default,
 				$clr-secondary-default
 			);
+			opacity: 0;
+			transform: translateX(-10px);
+			transition: transform $transition-time-default,
+				opacity $transition-time-default;
+		}
+		&-active::before {
+			opacity: 1;
+			transform: translateX(0);
 		}
 	}
 }

@@ -66,7 +66,7 @@ export const LoginWithImage = () => {
 
 	const authUser = async () => {
 		try {
-			const auth = await api.authenticateUserByName(
+			const auth = await window.api.authenticateUserByName(
 				userName,
 				password.password,
 			);
@@ -331,7 +331,7 @@ export const UserLoginManual = () => {
 
 	const authUser = async () => {
 		try {
-			const auth = await api.authenticateUserByName(
+			const auth = await window.api.authenticateUserByName(
 				userName,
 				password.password,
 			);

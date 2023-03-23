@@ -14,7 +14,7 @@ const saveUser = async (userName, userPassword) => {
 		Name: userName,
 		Password: userPassword || "",
 	});
-	await servers.save();
+	await user.save();
 };
 
 /**
@@ -26,4 +26,10 @@ const getUser = async () => {
 	return details;
 };
 
-export { saveUser, getUser };
+/**
+ * Delete user from storage
+ */
+const delUser = async () => {
+	await user.clear();
+};
+export { saveUser, getUser, delUser };

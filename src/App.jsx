@@ -1,6 +1,6 @@
 /** @format */
 
-import { useState, useMemo } from "react";
+import React, { useState, Suspense } from "react";
 import { ThemeProvider } from "@mui/material/styles";
 import { SnackbarProvider } from "notistack";
 import { useCookies, Cookies } from "react-cookie";
@@ -40,7 +40,7 @@ import CircularProgress from "@mui/material/CircularProgress";
 
 // Routes
 import { ServerSetup, ServerList } from "./routes/setup/server/root";
-import { Home } from "./routes/home/root";
+import Home from "./routes/home/root";
 import {
 	UserLogin,
 	LoginWithImage,
@@ -292,56 +292,74 @@ function App() {
 					<div style={{ display: "flex" }}>
 						<CssBaseline />
 						<SideMenu />
-						<Routes
-							key={location.pathname}
-							location={location}
+						<Suspense
+							fallback={
+								<Box
+									sx={{
+										display: "flex",
+										width: "100%",
+										height: "100vh",
+										justifyContent: "center",
+										alignItems: "center",
+									}}
+								>
+									<CircularProgress />
+								</Box>
+							}
 						>
-							<Route element={<AnimationWrapper />}>
-								{/* Main Routes */}
-								<Route
-									path="/home"
-									element={<Home />}
-								/>
-								<Route
-									path="/setup/server"
-									element={<ServerSetup />}
-								/>
-								<Route
-									path="/servers/list"
-									element={<ServerList />}
-								/>
-								<Route
-									exact
-									path="/login/withImg/:userName/:userId/"
-									element={<LoginWithImage />}
-								/>
-								<Route
-									exact
-									path="/login/users"
-									element={<UserLogin />}
-								/>
-								<Route
-									path="/login/manual"
-									element={<UserLoginManual />}
-								/>
-								<Route
-									path="/library/:id"
-									element={<></>}
-								/>
+							<Routes
+								key={location.pathname}
+								location={location}
+							>
+								<Route element={<AnimationWrapper />}>
+									{/* Main Routes */}
+									<Route
+										path="/home"
+										element={<Home />}
+									/>
+									<Route
+										path="/setup/server"
+										element={<ServerSetup />}
+									/>
+									<Route
+										path="/servers/list"
+										element={<ServerList />}
+									/>
+									<Route
+										exact
+										path="/login/withImg/:userName/:userId/"
+										element={<LoginWithImage />}
+									/>
+									<Route
+										exact
+										path="/login/users"
+										element={<UserLogin />}
+									/>
+									<Route
+										path="/login/manual"
+										element={<UserLoginManual />}
+									/>
+									<Route
+										path="/library/:id"
+										element={<></>}
+									/>
 
-								{/* Logical Routes */}
+									{/* Logical Routes */}
 
-								<Route
-									path="/"
-									element={<LogicalRoutes />}
-								/>
-								<Route
-									exact
-									path="/login"
-									element={<LoginLogicalRoutes />}
-								/>
-							</Route>
-						</Routes>
+									<Route
+										path="/"
+										element={<LogicalRoutes />}
+									/>
+									<Route
+										exact
+										path="/login"
+										element={
+											<LoginLogicalRoutes />
+										}
+									/>
+								</Route>
+							</Routes>
+						</Suspense>
 					</div>
 				</AnimatePresence>
 				<ReactQueryDevtools />
