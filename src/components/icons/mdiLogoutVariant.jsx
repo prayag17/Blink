@@ -3,9 +3,9 @@ import SvgIcon from "@mui/material/SvgIcon";
 
 import { mdiLogoutVariant } from "@mdi/js";
 
-export const MdiLogoutVariant = () => {
+export const MdiLogoutVariant = (props) => {
 	return (
-		<SvgIcon>
+		<SvgIcon {...props}>
 			<path d={mdiLogoutVariant}></path>
 		</SvgIcon>
 	);

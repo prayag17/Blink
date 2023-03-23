@@ -4,9 +4,9 @@ import SvgIcon from "@mui/material/SvgIcon";
 
 import { mdiTelevision } from "@mdi/js";
 
-export const MdiTelevision = () => {
+export const MdiTelevision = (props) => {
 	return (
-		<SvgIcon>
+		<SvgIcon {...props}>
 			<path d={mdiTelevision}></path>
 		</SvgIcon>
 	);

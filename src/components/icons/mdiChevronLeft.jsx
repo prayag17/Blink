@@ -3,9 +3,9 @@ import SvgIcon from "@mui/material/SvgIcon";
 
 import { mdiChevronLeft } from "@mdi/js";
 
-export const MdiChevronLeft = () => {
+export const MdiChevronLeft = (props) => {
 	return (
-		<SvgIcon>
+		<SvgIcon {...props}>
 			<path d={mdiChevronLeft}></path>
 		</SvgIcon>
 	);

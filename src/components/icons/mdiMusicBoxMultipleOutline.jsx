@@ -4,9 +4,9 @@ import SvgIcon from "@mui/material/SvgIcon";
 
 import { mdiMusicBoxMultipleOutline } from "@mdi/js";
 
-export const MdiMusicBoxMultipleOutline = () => {
+export const MdiMusicBoxMultipleOutline = (props) => {
 	return (
-		<SvgIcon>
+		<SvgIcon {...props}>
 			<path d={mdiMusicBoxMultipleOutline}></path>
 		</SvgIcon>
 	);

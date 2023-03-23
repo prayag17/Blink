@@ -2,11 +2,23 @@
 
 $clr-accent-default: hsl(337, 96%, 56%);
 $clr-accent-dark: hsl(337, 96%, 10%);
-$clr-secondary-default: hsl(273, 100%, 22%);
+$clr-secondary-default: hsl(273, 100%, 25%);
+$clr-secondary-dark: hsl(273, 100%, 10%);
 $clr-background-default: hsl(256, 100%, 6%);
 
 $clr-background-dark: hsl(256, 100%, 4%);
 $clr-background-light: hsl(256, 100%, 16%);
+
+$clr-gradient-default: linear-gradient(
+	135deg,
+	$clr-accent-default,
+	$clr-secondary-default
+);
+$clr-gradient-dark: linear-gradient(
+	135deg,
+	$clr-accent-dark,
+	$clr-secondary-dark
+);
 
 $border-radius-default: 10px;
 $border-radius-intensity-1: 5px;

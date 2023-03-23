@@ -23,6 +23,7 @@
 		}
 		&-icon {
 			font-size: 4.5em !important;
+			fill: url(#clr-gradient-default) !important;
 
 			&-container {
 				display: flex !important;
@@ -30,8 +31,8 @@
 				justify-content: center;
 				align-items: center;
 				width: 100% !important;
-				color: $clr-accent-default;
-				background: $clr-accent-dark;
+				color: transparent;
+				background: $clr-gradient-dark;
 				z-index: 0;
 			}
 		}

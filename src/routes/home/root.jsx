@@ -325,10 +325,10 @@ const Home = () => {
 														width="1080"
 														height="720"
 														resolutionX={
-															512
+															720
 														}
 														resolutionY={
-															512
+															1080
 														}
 														className="hero-carousel-background-blurhash"
 													/>
@@ -433,9 +433,9 @@ const Home = () => {
 													className="hero-carousel-info-rating"
 												>
 													<MdiStarHalfFull
-														colorA={
-															yellow[700]
-														}
+														sx={{
+															color: yellow[700],
+														}}
 													/>
 													<Typography variant="subtitle1">
 														{Math.round(

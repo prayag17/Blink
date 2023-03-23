@@ -4,9 +4,9 @@ import SvgIcon from "@mui/material/SvgIcon";
 
 import { mdiBook } from "@mdi/js";
 
-export const MdiBook = () => {
+export const MdiBook = (props) => {
 	return (
-		<SvgIcon>
+		<SvgIcon {...props}>
 			<path d={mdiBook}></path>
 		</SvgIcon>
 	);

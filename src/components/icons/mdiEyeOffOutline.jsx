@@ -4,9 +4,9 @@ import SvgIcon from "@mui/material/SvgIcon";
 
 import { mdiEyeOffOutline } from "@mdi/js";
 
-export const MdiEyeOffOutline = () => {
+export const MdiEyeOffOutline = (props) => {
 	return (
-		<SvgIcon>
+		<SvgIcon {...props}>
 			<path d={mdiEyeOffOutline}></path>
 		</SvgIcon>
 	);

@@ -29,6 +29,10 @@ export const CardLandscape = ({ itemName, itemId, imageTags, iconType }) => {
 							"/Images/Primary"
 						}
 						alt={itemName}
+						sx={{
+							width: "100%",
+							aspectRatio: 1.777,
+						}}
 						className="card-image-container"
 					></CardMedia>
 				) : (

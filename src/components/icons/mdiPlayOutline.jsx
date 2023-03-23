@@ -3,9 +3,9 @@ import SvgIcon from "@mui/material/SvgIcon";
 
 import { mdiPlayOutline } from "@mdi/js";
 
-export const MdiPlayOutline = () => {
+export const MdiPlayOutline = (props) => {
 	return (
-		<SvgIcon>
+		<SvgIcon {...props}>
 			<path d={mdiPlayOutline}></path>
 		</SvgIcon>
 	);

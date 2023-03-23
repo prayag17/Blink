@@ -4,9 +4,9 @@ import SvgIcon from "@mui/material/SvgIcon";
 
 import { mdiMicrophone } from "@mdi/js";
 
-export const MdiMicrophone = () => {
+export const MdiMicrophone = (props) => {
 	return (
-		<SvgIcon>
+		<SvgIcon {...props}>
 			<path d={mdiMicrophone}></path>
 		</SvgIcon>
 	);

@@ -3,9 +3,9 @@ import SvgIcon from "@mui/material/SvgIcon";
 
 import { mdiMenu } from "@mdi/js";
 
-export const MdiMenu = () => {
+export const MdiMenu = (props) => {
 	return (
-		<SvgIcon>
+		<SvgIcon {...props}>
 			<path d={mdiMenu}></path>
 		</SvgIcon>
 	);

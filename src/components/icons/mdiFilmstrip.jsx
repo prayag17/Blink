@@ -4,9 +4,9 @@ import SvgIcon from "@mui/material/SvgIcon";
 
 import { mdiFilmstrip } from "@mdi/js";
 
-export const MdiFilmstrip = () => {
+export const MdiFilmstrip = (props) => {
 	return (
-		<SvgIcon>
+		<SvgIcon {...props}>
 			<path d={mdiFilmstrip}></path>
 		</SvgIcon>
 	);
