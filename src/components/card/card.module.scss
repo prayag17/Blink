@@ -2,6 +2,7 @@
 
 .card {
 	margin-right: 1em;
+	border-radius: $border-radius-default;
 
 	&.landscape {
 		--image-aspect-ratio: 1.77;
@@ -13,8 +14,7 @@
 
 	&-image {
 		position: relative;
-		z-index: 1;
-		border-radius: 10px;
+		border-radius: $border-radius-default;
 		aspect-ratio: var(--image-aspect-ratio);
 		background-size: cover;
 		background-position: center;
@@ -33,16 +33,14 @@
 				width: 100% !important;
 				color: transparent;
 				background: $clr-gradient-dark;
-				z-index: 0;
+				border-radius: $border-radius-default;
 			}
 		}
 	}
 	&-text-container {
-		margin-top: 0.5em;
 		display: flex;
 		flex-direction: column;
 		justify-content: center;
 		align-items: center;
-		padding: 0 !important;
 	}
 }

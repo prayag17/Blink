@@ -111,6 +111,7 @@ const Home = () => {
 					userId: user.data.Id,
 					limit: 16,
 					mediaTypes: ["Video"],
+					enableUserData: true,
 				},
 			);
 			return resumeItems.data;
@@ -126,6 +127,7 @@ const Home = () => {
 					userId: user.data.Id,
 					limit: 16,
 					mediaTypes: ["Audio"],
+					enableUserData: true,
 				},
 			);
 			return resumeItems.data;
@@ -528,6 +530,7 @@ const Home = () => {
 										imageTags={
 											!!item.ImageTags.Primary
 										}
+										cardType="lib"
 										iconType={item.CollectionType}
 									></CardLandscape>
 								);
@@ -545,14 +548,127 @@ const Home = () => {
 									return (
 										<CardLandscape
 											key={index}
-											itemName={item.Name}
-											itemId={item.Id}
+											itemName={
+												!!item.SeriesId
+													? item.SeriesName
+													: item.Name
+											}
+											itemId={
+												!!item.SeriesId
+													? item.SeriesId
+													: item.Id
+											}
+											// imageTags={false}
+											imageTags={
+												!!item.ImageTags
+													.Primary
+											}
+											cardType="thumb"
+											iconType={item.Type}
+											subText={
+												!!item.SeriesId
+													? "S" +
+													  item.ParentIndexNumber +
+													  ":E" +
+													  item.IndexNumber +
+													  " - " +
+													  item.Name
+													: item.ProductionYear
+											}
+										></CardLandscape>
+									);
+								},
+							)}
+						</CardScroller>
+					)}
+					{resumeItemsVideo.isLoading ? (
+						<CardsSkeleton />
+					) : resumeItemsVideo.data.Items.length == 0 ? (
+						<></>
+					) : (
+						<CardScroller
+							displayCards={4}
+							title="Continue Watching"
+						>
+							{resumeItemsVideo.data.Items.map(
+								(item, index) => {
+									return (
+										<CardLandscape
+											key={index}
+											itemName={
+												!!item.SeriesId
+													? item.SeriesName
+													: item.Name
+											}
+											itemId={
+												!!item.SeriesId
+													? item.SeriesId
+													: item.Id
+											}
+											// imageTags={false}
+											imageTags={
+												!!item.ImageTags
+													.Primary
+											}
+											cardType="thumb"
+											iconType={item.Type}
+											subText={
+												!!item.SeriesId
+													? "S" +
+													  item.ParentIndexNumber +
+													  ":E" +
+													  item.IndexNumber +
+													  " - " +
+													  item.Name
+													: item.ProductionYear
+											}
+											playedPercent={
+												item.UserData
+													.PlayedPercentage
+											}
+										></CardLandscape>
+									);
+								},
+							)}
+						</CardScroller>
+					)}
+					{resumeItemsAudio.isLoading ? (
+						<CardsSkeleton />
+					) : resumeItemsAudio.data.Items.length == 0 ? (
+						<></>
+					) : (
+						<CardScroller
+							displayCards={4}
+							title="Continue Listening"
+						>
+							{resumeItemsAudio.data.Items.map(
+								(item, index) => {
+									return (
+										<CardLandscape
+											key={index}
+											itemName={
+												!!item.SeriesId
+													? item.SeriesName
+													: item.Name
+											}
+											itemId={
+												!!item.SeriesId
+													? item.SeriesId
+													: item.Id
+											}
 											// imageTags={false}
 											imageTags={
 												!!item.ImageTags
 													.Primary
 											}
 											iconType={item.Type}
+											subText={
+												item.ProductionYear
+											}
+											playedPercent={
+												item.UserData
+													.PlayedPercentage
+											}
 										></CardLandscape>
 									);
 								},
