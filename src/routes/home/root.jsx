@@ -48,6 +48,7 @@ import { useNavigate } from "react-router-dom";
 import { formateDate } from "../../utils/date/formateDate";
 import { getRuntime } from "../../utils/date/time";
 import { CarouselSkeleton } from "../../components/skeleton/carousel";
+import { CardsSkeleton } from "../../components/skeleton/cards";
 
 const Home = () => {
 	const queryClient = useQueryClient();
@@ -513,9 +514,9 @@ const Home = () => {
 							})
 						)}
 					</Carousel>
-					<CardScroller displayCards={4} title={"Libraries"}>
+					<CardScroller displayCards={4} title="Libraries">
 						{libraries.isLoading ? (
-							<>"loading...</>
+							<CardsSkeleton />
 						) : (
 							libraries.data.Items.map((item, index) => {
 								return (
@@ -533,9 +534,33 @@ const Home = () => {
 							})
 						)}
 					</CardScroller>
-
+					{upNextItems.isLoading ? (
+						<CardsSkeleton />
+					) : upNextItems.data.Items.length == 0 ? (
+						<></>
+					) : (
+						<CardScroller displayCards={4} title="Up Next">
+							{upNextItems.data.Items.map(
+								(item, index) => {
+									return (
+										<CardLandscape
+											key={index}
+											itemName={item.Name}
+											itemId={item.Id}
+											// imageTags={false}
+											imageTags={
+												!!item.ImageTags
+													.Primary
+											}
+											iconType={item.Type}
+										></CardLandscape>
+									);
+								},
+							)}
+						</CardScroller>
+					)}
 					{/* <Box className="home-section">
-						<Typography
+					<Typography
 							variant="h4"
 							color="textPrimary"
 							className="home-section-heading"
