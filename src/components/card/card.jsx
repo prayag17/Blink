@@ -3,7 +3,7 @@ import React from "react";
 import PropTypes from "prop-types";
 
 import Box from "@mui/material/Box";
-import Card from "@mui/material/Card";
+import MuiCard from "@mui/material/Card";
 import CardContent from "@mui/material/CardContent";
 import CardMedia from "@mui/material/CardMedia";
 import CardActionArea from "@mui/material/CardActionArea";
@@ -18,7 +18,7 @@ import {
 import { borderRadiusDefault } from "../../palette.module.scss";
 import "./card.module.scss";
 
-export const CardLandscape = ({
+export const Card = ({
 	itemName,
 	itemId,
 	imageTags,
@@ -26,20 +26,24 @@ export const CardLandscape = ({
 	cardType = "",
 	subText = "",
 	playedPercent,
+	cardOrientation,
+	props,
 }) => {
 	return (
-		<Card
-			className="card landscape"
+		<MuiCard
+			className={"card " + cardOrientation}
 			sx={{
 				background: "transparent",
 				borderRadius: borderRadiusDefault,
+				mr: 1,
 			}}
-			// elevation={10}
+			elevation={0}
+			{...props}
 		>
 			<CardActionArea>
 				<Box
 					className="card-media-container"
-					sx={{ position: "relative" }}
+					sx={{ position: "relative", m: 1 }}
 				>
 					{imageTags ? (
 						cardType == "thumb" ? (
@@ -54,7 +58,10 @@ export const CardLandscape = ({
 								alt={itemName}
 								sx={{
 									width: "100%",
-									aspectRatio: 1.777,
+									aspectRatio:
+										cardOrientation == "landscape"
+											? 1.777
+											: 0.666,
 								}}
 								className="card-image"
 							></CardMedia>
@@ -70,7 +77,10 @@ export const CardLandscape = ({
 								alt={itemName}
 								sx={{
 									width: "100%",
-									aspectRatio: 1.777,
+									aspectRatio:
+										cardOrientation == "landscape"
+											? 1.777
+											: 0.666,
 								}}
 								className="card-image"
 							></CardMedia>
@@ -94,7 +104,7 @@ export const CardLandscape = ({
 								left: "5%",
 								bottom: "5%",
 								borderRadius: "100px",
-								height: 0.035,
+								height: "5px",
 							}}
 						/>
 					)}
@@ -130,44 +140,11 @@ export const CardLandscape = ({
 					</Typography>
 				</CardContent>
 			</CardActionArea>
-		</Card>
+		</MuiCard>
 	);
 };
 
-export const CardPotrait = ({ itemName, itemId, imageTags, iconType }) => {
-	return (
-		<div className="card portrait">
-			<div className="card-image-container">
-				{imageTags ? (
-					<div
-						className="card-image"
-						style={{
-							backgroundImage:
-								"url('" +
-								window.api.basePath +
-								"/Items/" +
-								itemId +
-								"/Images/Primary?quality=95&fillHeight=350&fillWidth=243')",
-						}}
-					></div>
-				) : (
-					<div className="card-image empty"></div>
-				)}
-				<div className="card-image-icon-container">
-					{MediaTypeIconCollectionCard[iconType]}
-				</div>
-			</div>
-
-			<div className="card-text-container">
-				<Typography variant="button" color="white">
-					{itemName}
-				</Typography>
-			</div>
-		</div>
-	);
-};
-
-CardLandscape.propTypes = {
+Card.propTypes = {
 	itemName: PropTypes.string.isRequired,
 	itemId: PropTypes.string.isRequired,
 	imageTags: PropTypes.bool,
@@ -175,11 +152,5 @@ CardLandscape.propTypes = {
 	cardType: PropTypes.string,
 	subText: PropTypes.string || PropTypes.number,
 	playedPercent: PropTypes.number,
-};
-
-CardPotrait.propTypes = {
-	itemName: PropTypes.string.isRequired,
-	itemId: PropTypes.string.isRequired,
-	imageTags: PropTypes.bool,
-	iconType: PropTypes.string,
+	cardOrientation: PropTypes.string.isRequired,
 };

@@ -1,8 +1,8 @@
 /** @format */
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useLayoutEffect } from "react";
 
-import { Blurhash, BlurhashCanvas } from "react-blurhash";
+import { Blurhash } from "react-blurhash";
 
 import { useQueryClient, useQuery } from "@tanstack/react-query";
 
@@ -26,8 +26,12 @@ import { yellow } from "@mui/material/colors";
 import Carousel from "react-material-ui-carousel";
 
 // Custom Components
-import { CardLandscape, CardPotrait } from "../../components/card/card";
+import { Card } from "../../components/card/card";
 import { CardScroller } from "../../components/cardScroller/cardScroller";
+import { LatestMediaSection } from "../../components/homeSection/latestMediaSection";
+import { CarouselSkeleton } from "../../components/skeleton/carousel";
+import { CardsSkeleton } from "../../components/skeleton/cards";
+
 // Icons
 import { MediaTypeIconCollection } from "../../components/utils/iconsCollection.jsx";
 import { MdiStarHalfFull } from "../../components/icons/mdiStarHalfFull";
@@ -43,12 +47,10 @@ import { getUserLibraryApi } from "@jellyfin/sdk/lib/utils/api/user-library-api"
 import { getItemsApi } from "@jellyfin/sdk/lib/utils/api/items-api";
 import { getTvShowsApi } from "@jellyfin/sdk/lib/utils/api/tv-shows-api";
 
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 
 import { formateDate } from "../../utils/date/formateDate";
 import { getRuntime } from "../../utils/date/time";
-import { CarouselSkeleton } from "../../components/skeleton/carousel";
-import { CardsSkeleton } from "../../components/skeleton/cards";
 
 const Home = () => {
 	const queryClient = useQueryClient();
@@ -147,88 +149,14 @@ const Home = () => {
 		enabled: !!user.data,
 	});
 
-	const fetchLatestMedia = async (lib) => {
-		const latmedia = useQuery({
-			queryKey: ["home", "latestMedia", lib.name],
-			queryFn: async () => {
-				const media = await getUserLibraryApi(
-					window.api,
-				).getLatestMedia({
-					userId: user.data.Id,
-					parentId: lib.parentId,
-					limit: 16,
-				});
-				return media.data;
-			},
-		});
-		return latmedia;
-	};
-
-	const [latestMediaContent, setLatestMediaContent] = useState([]);
-	const [latestMediaLib, setLatestMediaLib] = useState("");
-
-	// const latestMediaData = useQueries(latestMediaContent);
+	const [latestMediaLibs, setLatestMediaLibs] = useState([]);
 
 	const dispatch = useDispatch();
-	const dataT = useSelector((state) => {
-		state.sidebar.data;
-	});
 
 	const navigate = useNavigate();
-
-	const [layoutState, setLayoutState] = useState(null);
-
-	const layout = [
-		{
-			type: "libs",
-			name: "Libraries",
-			data: libraries.data,
-			// isLoading: libraries.isLoading,
-			isLoading: false,
-		},
-		{
-			type: "resumeVideo",
-			name: "Continue Watching",
-			data: resumeItemsVideo.data,
-			// isLoading: resumeItemsVideo.isLoading,
-			isLoading: false,
-		},
-		{
-			type: "resumeAudio",
-			name: "Continue Listnening",
-			data: resumeItemsAudio.data,
-			// isLoading: resumeItemsAudio.isLoading,
-			isLoading: false,
-		},
-		{
-			type: "nextup",
-			name: "Next Up",
-			data: upNextItems.data,
-			// isLoading: upNextItems.isLoading,
-			isLoading: false,
-		},
-	];
-
-	const latestMediaLayout = [];
+	const location = useLocation();
 
 	const excludeTypes = ["boxsets", "playlists", "livetv", "channels"];
-
-	const getLatestMedia = async () => {
-		libraries.data.Items.map(async (lib) => {
-			// console.log(lib);
-			if (excludeTypes.includes(lib.CollectionType)) {
-				return;
-			} else {
-				latestMediaLayout.push({
-					type: "latestMedia",
-					name: `Latest ${lib.Name}`,
-					parentId: lib.Id,
-					isLoading: false,
-				});
-				setLatestMediaContent(latestMediaLayout);
-			}
-		});
-	};
 
 	const handleLogout = async () => {
 		console.log("Logging out user...");
@@ -237,16 +165,24 @@ const Home = () => {
 		navigate("/login");
 	};
 
-	useEffect(() => {
-		if (libraries.isSuccess) {
-			getLatestMedia();
-			console.log(latestMediaContent);
-			for (let lib of latestMediaContent) {
-				console.log(lib);
-				fetchLatestMedia(lib);
+	let tempData = [];
+	if (libraries.status == "success") {
+		libraries.data.Items.map((lib) => {
+			if (!excludeTypes.includes(lib.CollectionType)) {
+				tempData = latestMediaLibs;
+				if (
+					!tempData.some(
+						(el) =>
+							JSON.stringify(el) ==
+							JSON.stringify([lib.Id, lib.Name]),
+					)
+				) {
+					tempData.push([lib.Id, lib.Name]);
+					setLatestMediaLibs(tempData);
+				}
 			}
-		}
-	}, []);
+		});
+	}
 
 	return (
 		<>
@@ -522,7 +458,7 @@ const Home = () => {
 						) : (
 							libraries.data.Items.map((item, index) => {
 								return (
-									<CardLandscape
+									<Card
 										key={index}
 										itemName={item.Name}
 										itemId={item.Id}
@@ -532,7 +468,7 @@ const Home = () => {
 										}
 										cardType="lib"
 										iconType={item.CollectionType}
-									></CardLandscape>
+									></Card>
 								);
 							})
 						)}
@@ -546,7 +482,7 @@ const Home = () => {
 							{upNextItems.data.Items.map(
 								(item, index) => {
 									return (
-										<CardLandscape
+										<Card
 											key={index}
 											itemName={
 												!!item.SeriesId
@@ -575,7 +511,8 @@ const Home = () => {
 													  item.Name
 													: item.ProductionYear
 											}
-										></CardLandscape>
+											cardOrientation="landscape"
+										></Card>
 									);
 								},
 							)}
@@ -593,7 +530,7 @@ const Home = () => {
 							{resumeItemsVideo.data.Items.map(
 								(item, index) => {
 									return (
-										<CardLandscape
+										<Card
 											key={index}
 											itemName={
 												!!item.SeriesId
@@ -626,7 +563,8 @@ const Home = () => {
 												item.UserData
 													.PlayedPercentage
 											}
-										></CardLandscape>
+											cardOrientation="landscape"
+										></Card>
 									);
 								},
 							)}
@@ -644,7 +582,7 @@ const Home = () => {
 							{resumeItemsAudio.data.Items.map(
 								(item, index) => {
 									return (
-										<CardLandscape
+										<Card
 											key={index}
 											itemName={
 												!!item.SeriesId
@@ -669,38 +607,21 @@ const Home = () => {
 												item.UserData
 													.PlayedPercentage
 											}
-										></CardLandscape>
+											cardOrientation="landscape"
+										></Card>
 									);
 								},
 							)}
 						</CardScroller>
 					)}
-					{/* <Box className="home-section">
-					<Typography
-							variant="h4"
-							color="textPrimary"
-							className="home-section-heading"
-						>
-							<div className="home-section-heading-decoration"></div>{" "}
-							Libraries
-						</Typography>
-						<CardScroller displayCards={4}>
-							{userLibraries.map((library, index) => {
-								// console.log(userLibraries);
-								return (
-									<CardLandscape
-										key={index}
-										itemName={library.Name}
-										itemId={library.Id}
-										imageTags={library.imageTags}
-										iconType={
-											library.CollectionType
-										}
-									></CardLandscape>
-								);
-							})}
-						</CardScroller>
-					</Box> */}
+					{latestMediaLibs.map((lib, index) => {
+						return (
+							<LatestMediaSection
+								key={lib[0]}
+								latestMediaLib={lib}
+							/>
+						);
+					})}
 					<Button variant="contained" onClick={handleLogout}>
 						Logout
 					</Button>

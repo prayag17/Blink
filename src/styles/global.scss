@@ -1,4 +1,18 @@
 /** @format */
+::-webkit-scrollbar {
+	width: 10px;
+	background: $clr-background-dark;
+}
+::-webkit-scrollbar-track {
+	background-color: transparent;
+	&:hover {
+		background: rgb(255 255 255 / 0.25);
+	}
+}
+::-webkit-scrollbar-thumb {
+	background: rgb(255 255 255 / 0.25);
+}
+
 body {
 	font-family: "Open Sans";
 	background: $clr-background-default;
