@@ -12,7 +12,7 @@ import LinearProgress from "@mui/material/LinearProgress";
 
 import {
 	MediaCollectionTypeIconCollectionCard,
-	MediaTypeIconCollectionCard,
+	TypeIconCollectionCard,
 } from "../utils/iconsCollection";
 
 import { borderRadiusDefault } from "../../palette.module.scss";
@@ -43,12 +43,19 @@ export const Card = ({
 			<CardActionArea>
 				<Box
 					className="card-media-container"
-					sx={{ position: "relative", m: 1 }}
+					sx={{
+						position: "relative",
+						m: 1,
+						aspectRatio:
+							cardOrientation == "landscape"
+								? "1.777"
+								: "0.666",
+					}}
 				>
-					{imageTags ? (
-						cardType == "thumb" ? (
+					{imageTags &&
+						(cardType == "thumb" ? (
 							<CardMedia
-								component="img"
+								component="div"
 								image={
 									window.api.basePath +
 									"/Items/" +
@@ -67,7 +74,7 @@ export const Card = ({
 							></CardMedia>
 						) : (
 							<CardMedia
-								component="img"
+								component="div"
 								image={
 									window.api.basePath +
 									"/Items/" +
@@ -84,16 +91,14 @@ export const Card = ({
 								}}
 								className="card-image"
 							></CardMedia>
-						)
-					) : (
-						<CardMedia className="card-image-icon-container">
-							{cardType == "lib"
-								? MediaCollectionTypeIconCollectionCard[
-										iconType
-								  ]
-								: MediaTypeIconCollectionCard[iconType]}
-						</CardMedia>
-					)}
+						))}
+					<div className="card-image-icon-container">
+						{cardType == "lib"
+							? MediaCollectionTypeIconCollectionCard[
+									iconType
+							  ]
+							: TypeIconCollectionCard[iconType]}
+					</div>
 					{!!playedPercent && (
 						<LinearProgress
 							variant="determinate"
@@ -123,7 +128,10 @@ export const Card = ({
 						component="div"
 						color="white"
 						fontWeight={500}
-						textAlign="center"
+						textAlign="left"
+						noWrap
+						width="fit-content"
+						maxWidth="100%"
 					>
 						{itemName}
 					</Typography>
@@ -132,9 +140,12 @@ export const Card = ({
 						variant="subtitle2"
 						component="div"
 						color="gray"
-						textAlign="center"
+						textAlign="left"
 						// textOverflow={}
 						// fontSize="0.85em"
+						width="fit-content"
+						maxWidth="100%"
+						noWrap
 					>
 						{subText}
 					</Typography>
@@ -150,7 +161,7 @@ Card.propTypes = {
 	imageTags: PropTypes.bool,
 	iconType: PropTypes.string.isRequired,
 	cardType: PropTypes.string,
-	subText: PropTypes.string || PropTypes.number,
+	subText: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
 	playedPercent: PropTypes.number,
 	cardOrientation: PropTypes.string.isRequired,
 };

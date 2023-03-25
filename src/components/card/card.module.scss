@@ -2,19 +2,9 @@
 
 .card {
 	border-radius: $border-radius-default;
-
-	&.landscape {
-		--image-aspect-ratio: 1.77;
-	}
-
-	&.portrait {
-		--image-aspect-ratio: 0.65;
-	}
-
 	&-image {
 		position: relative;
 		border-radius: $border-radius-default;
-		aspect-ratio: var(--image-aspect-ratio);
 		background-size: cover;
 		background-position: center;
 		&-container {
@@ -32,7 +22,12 @@
 				width: 100% !important;
 				color: transparent;
 				background: $clr-gradient-dark;
-				border-radius: $border-radius-default;
+				border-radius: 10px;
+				position: absolute;
+				top: 0;
+				bottom: 0;
+				height: 100%;
+				z-index: -1;
 			}
 		}
 	}
