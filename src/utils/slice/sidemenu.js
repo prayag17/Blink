@@ -10,8 +10,11 @@ export const sideBarSlice = createSlice({
 		showSidemenu: (state) => {
 			state.visible = true;
 		},
+		hideSidemenu: (state) => {
+			state.visible - false;
+		},
 	},
 });
 
-export const { showSidemenu } = sideBarSlice.actions;
+export const { showSidemenu, hideSidemenu } = sideBarSlice.actions;
 export default sideBarSlice.reducer;

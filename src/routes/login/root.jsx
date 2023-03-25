@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useMemo } from "react";
 import { Cookies, useCookies } from "react-cookie";
+import { useQuery } from "@tanstack/react-query";
 import { useNavigate, useParams, Link } from "react-router-dom";
 import { EventEmitter as event } from "../../eventEmitter.js";
 
@@ -34,6 +35,7 @@ import { AppBarBackOnly } from "../../components/appBar/backOnly.jsx";
 // import { jellyfin } from "../../jellyfin";
 // import getSystemApi from "@jellyfin/sdk";
 import { getUserApi } from "@jellyfin/sdk/lib/utils/api/user-api";
+import { getBrandingApi } from "@jellyfin/sdk/lib/utils/api/branding-api";
 
 import "./login.module.scss";
 
@@ -311,6 +313,17 @@ export const UserLoginManual = () => {
 	});
 	const [userName, setUserName] = useState("");
 
+	const server = useQuery({
+		queryKey: ["login, manual", "serverInfo"],
+		queryFn: async () => {
+			const result = await getBrandingApi(
+				window.api,
+			).getBrandingOptions();
+			return result.data;
+		},
+		enabled: !window.api,
+	});
+
 	const handleUsername = (event) => {
 		setUserName(event.target.value);
 	};
@@ -361,6 +374,15 @@ export const UserLoginManual = () => {
 	const handleCheckRememberMe = (event) => {
 		setRememberMe(event.target.checked);
 	};
+
+	const createApi = async () => {
+		const server = await getServer();
+		event.emit("create-jellyfin-api", server.Ip);
+	};
+
+	if (!window.api) {
+		createApi();
+	}
 
 	return (
 		<>
@@ -461,6 +483,12 @@ export const UserLoginManual = () => {
 						>
 							Login
 						</LoadingButton>
+					</Grid>
+					<Grid item xl={15} md={6} sx={{ width: "100%" }}>
+						<Typography variant="subtitle2">
+							{server.isSuccess &&
+								server.data.LoginDisclaimer}
+						</Typography>
 					</Grid>
 				</Grid>
 			</Container>

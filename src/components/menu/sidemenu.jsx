@@ -26,7 +26,9 @@ import { MdiLogoutVariant } from "../icons/mdiLogoutVariant";
 
 import { MediaCollectionTypeIconCollection } from "../../components/utils/iconsCollection.jsx";
 
-import { useSelector } from "react-redux";
+import { useSelector, useDispatch } from "react-redux";
+import { hideSidemenu } from "../../utils/slice/sidemenu";
+
 import { MdiHomeVariantOutline } from "../icons/mdiHomeVariantOutline";
 
 import "./sidemenu.module.scss";
@@ -76,11 +78,13 @@ export const SideMenu = ({}) => {
 		enabled: !!user.data,
 	});
 	const handleDrawerOpen = () => {};
+	const dispatch = useDispatch();
 
 	const handleLogout = async () => {
 		console.log("Logging out user...");
 		await window.api.logout();
 		delUser();
+		dispatch(hideSidemenu());
 		navigate("/login");
 	};
 
