@@ -41,7 +41,7 @@ import { MdiChevronRight } from "../../components/icons/mdiChevronRight";
 import { useDispatch, useSelector } from "react-redux";
 import { showSidemenu } from "../../utils/slice/sidemenu";
 
-import { getLibraryApi } from "@jellyfin/sdk/lib/utils/api/library-api";
+import { getUserViewsApi } from "@jellyfin/sdk/lib/utils/api/user-views-api";
 import { getUserApi } from "@jellyfin/sdk/lib/utils/api/user-api";
 import { getUserLibraryApi } from "@jellyfin/sdk/lib/utils/api/user-library-api";
 import { getItemsApi } from "@jellyfin/sdk/lib/utils/api/items-api";
@@ -72,15 +72,6 @@ const Home = () => {
 		enabled: !window.api,
 	});
 
-	const libraries = useQuery({
-		queryKey: ["home", "libraries"],
-		queryFn: async () => {
-			let libs = await getLibraryApi(window.api).getMediaFolders();
-			dispatch(showSidemenu());
-			return libs.data;
-		},
-	});
-
 	const user = useQuery({
 		queryKey: ["home", "user"],
 		queryFn: async () => {
@@ -88,6 +79,18 @@ const Home = () => {
 			return usr.data;
 		},
 		enabled: !!authUser,
+	});
+
+	const libraries = useQuery({
+		queryKey: ["home", "libraries"],
+		queryFn: async () => {
+			let libs = await getUserViewsApi(window.api).getUserViews({
+				userId: user.data.Id,
+			});
+			dispatch(showSidemenu());
+			return libs.data;
+		},
+		enabled: !!user.data,
 	});
 
 	const latestMedia = useQuery({
@@ -340,9 +343,9 @@ const Home = () => {
 													variant="subtitle1"
 													// color="GrayText"
 												>
-													{formateDate(
-														item.PremiereDate,
-													)}
+													{!!item.ProductionYear
+														? item.ProductionYear
+														: "Unknown"}
 												</Typography>
 												<Divider
 													variant="middle"
@@ -353,7 +356,9 @@ const Home = () => {
 												<Chip
 													variant="outlined"
 													label={
-														item.OfficialRating
+														!!item.OfficialRating
+															? item.OfficialRating
+															: "Not Rated"
 													}
 												/>
 												<Divider
@@ -371,17 +376,28 @@ const Home = () => {
 													}}
 													className="hero-carousel-info-rating"
 												>
-													<MdiStarHalfFull
-														sx={{
-															color: yellow[700],
-														}}
-													/>
-													<Typography variant="subtitle1">
-														{Math.round(
-															item.CommunityRating *
-																10,
-														) / 10}
-													</Typography>
+													{!!item.CommunityRating ? (
+														<>
+															<MdiStarHalfFull
+																sx={{
+																	color: yellow[700],
+																}}
+															/>
+															<Typography variant="subtitle1">
+																{Math.round(
+																	item.CommunityRating *
+																		10,
+																) /
+																	10}
+															</Typography>
+														</>
+													) : (
+														<Typography variant="subtitle1">
+															No
+															Community
+															Rating
+														</Typography>
+													)}
 												</Box>
 												<Divider
 													variant="middle"
@@ -456,6 +472,7 @@ const Home = () => {
 						{libraries.isLoading ? (
 							<CardsSkeleton />
 						) : (
+							libraries.status == "success" &&
 							libraries.data.Items.map((item, index) => {
 								return (
 									<Card
@@ -467,6 +484,7 @@ const Home = () => {
 											!!item.ImageTags.Primary
 										}
 										cardType="lib"
+										cardOrientation="landscape"
 										iconType={item.CollectionType}
 									></Card>
 								);
@@ -475,7 +493,8 @@ const Home = () => {
 					</CardScroller>
 					{upNextItems.isLoading ? (
 						<CardsSkeleton />
-					) : upNextItems.data.Items.length == 0 ? (
+					) : upNextItems.isSuccess &&
+					  upNextItems.data.Items.length == 0 ? (
 						<></>
 					) : (
 						<CardScroller displayCards={4} title="Up Next">
@@ -544,8 +563,15 @@ const Home = () => {
 											}
 											// imageTags={false}
 											imageTags={
-												!!item.ImageTags
-													.Primary
+												!!item.SeriesId
+													? item
+															.ParentBackdropImageTags
+															.length !=
+													  0
+													: item
+															.BackdropImageTags
+															.length !=
+													  0
 											}
 											cardType="thumb"
 											iconType={item.Type}

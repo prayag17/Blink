@@ -65,11 +65,10 @@
 			left: 70%;
 			top: 50%;
 			transform: translate(-50%, -50%);
-			color: $clr-accent-default;
-
+			fill: url(#clr-gradient-default) !important;
 			&-container {
 				position: absolute;
-				background: $clr-accent-dark;
+				background: $clr-gradient-dark;
 				z-index: 0;
 				top: 0;
 				left: 0;

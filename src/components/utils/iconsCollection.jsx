@@ -48,14 +48,14 @@ export const MediaCollectionTypeIconCollectionCard = {
 };
 
 export const MediaTypeIconCollection = {
-	Video: <MdiFilmstrip className="hero-carousel-background-icon" />,
+	Movie: <MdiFilmstrip className="hero-carousel-background-icon" />,
 	Audio: <MdiMicrophone className="hero-carousel-background-icon" />,
 	Photo: <MdiImage className="hero-carousel-background-icon" />,
 	Book: <MdiBook className="hero-carousel-background-icon" />,
 };
 
 export const MediaTypeIconCollectionCard = {
-	Video: <MdiFilmstrip className="card-image-icon" />,
+	Movie: <MdiFilmstrip className="card-image-icon" />,
 	Audio: <MdiMicrophone className="card-image-icon" />,
 	Photo: <MdiImage className="card-image-icon" />,
 	Book: <MdiBook className="card-image-icon" />,

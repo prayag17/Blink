@@ -60,8 +60,8 @@ export const Card = ({
 									width: "100%",
 									aspectRatio:
 										cardOrientation == "landscape"
-											? 1.777
-											: 0.666,
+											? "1.777"
+											: "0.666",
 								}}
 								className="card-image"
 							></CardMedia>
@@ -79,8 +79,8 @@ export const Card = ({
 									width: "100%",
 									aspectRatio:
 										cardOrientation == "landscape"
-											? 1.777
-											: 0.666,
+											? "1.777"
+											: "0.666",
 								}}
 								className="card-image"
 							></CardMedia>

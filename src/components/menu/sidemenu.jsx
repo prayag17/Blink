@@ -2,7 +2,8 @@
 import { delUser } from "../../utils/storage/user";
 
 import { useQueryClient, useQuery, QueryClient } from "@tanstack/react-query";
-import { getLibraryApi } from "@jellyfin/sdk/lib/utils/api/library-api";
+import { getUserViewsApi } from "@jellyfin/sdk/lib/utils/api/user-views-api";
+import { getUserApi } from "@jellyfin/sdk/lib/utils/api/user-api";
 
 import { useNavigate, NavLink } from "react-router-dom";
 
@@ -56,13 +57,23 @@ export const SideMenu = ({}) => {
 	const queryClient = useQueryClient();
 	const visible = useSelector((state) => state.sidebar.visible);
 	const navigate = useNavigate();
+	const user = useQuery({
+		queryKey: ["home", "user"],
+		queryFn: async () => {
+			let usr = await getUserApi(window.api).getCurrentUser();
+			return usr.data;
+		},
+		enabled: visible,
+	});
 	let libraries = useQuery({
 		queryKey: ["sidemenu", "libraries"],
 		queryFn: async () => {
-			let libs = await getLibraryApi(window.api).getMediaFolders();
+			let libs = await getUserViewsApi(window.api).getUserViews({
+				userId: user.data.Id,
+			});
 			return libs.data;
 		},
-		enabled: visible,
+		enabled: !!user.data,
 	});
 	const handleDrawerOpen = () => {};
 
