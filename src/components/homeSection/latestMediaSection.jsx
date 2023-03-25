@@ -30,7 +30,7 @@ export const LatestMediaSection = ({ latestMediaLib }) => {
 		queryFn: () => fetchLatestMedia(latestMediaLib[0]),
 		enabled: !!user.data,
 	});
-	if (data.isFetching) {
+	if (data.isLoading) {
 		return <CardsSkeleton />;
 	}
 	if (data.isSuccess && data.data.length >= 1) {
