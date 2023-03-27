@@ -15,7 +15,7 @@
 		"@fontsource/open-sans": "^4.5.13",
 		"@jellyfin/sdk": "^0.7.0",
 		"@mdi/js": "^7.2.96",
-		"@mui/lab": "^5.0.0-alpha.123",
+		"@mui/lab": "^5.0.0-alpha.124",
 		"@mui/material": "^5.11.14",
 		"@reduxjs/toolkit": "^1.9.3",
 		"@tanstack/react-query": "^4.26.1",
