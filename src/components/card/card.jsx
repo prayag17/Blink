@@ -49,7 +49,9 @@ export const Card = ({
 						aspectRatio:
 							cardOrientation == "landscape"
 								? "1.777"
-								: "0.666",
+								: cardOrientation == "portait"
+								? "0.666"
+								: "1",
 					}}
 				>
 					{imageTags &&
@@ -68,7 +70,10 @@ export const Card = ({
 									aspectRatio:
 										cardOrientation == "landscape"
 											? "1.777"
-											: "0.666",
+											: cardOrientation ==
+											  "portait"
+											? "0.666"
+											: "1",
 								}}
 								className="card-image"
 							></CardMedia>
@@ -87,7 +92,10 @@ export const Card = ({
 									aspectRatio:
 										cardOrientation == "landscape"
 											? "1.777"
-											: "0.666",
+											: cardOrientation ==
+											  "portait"
+											? "0.666"
+											: "1",
 								}}
 								className="card-image"
 							></CardMedia>

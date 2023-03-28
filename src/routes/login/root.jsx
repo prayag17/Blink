@@ -1,7 +1,6 @@
 /** @format */
 
 import { useState, useEffect, useMemo } from "react";
-import { Cookies, useCookies } from "react-cookie";
 import { useQuery } from "@tanstack/react-query";
 import { useNavigate, useParams, Link } from "react-router-dom";
 import { EventEmitter as event } from "../../eventEmitter.js";
@@ -30,6 +29,8 @@ import FormControlLabel from "@mui/material/FormControlLabel";
 import Checkbox from "@mui/material/Checkbox";
 
 import { AvatarCard, AvatarImage } from "../../components/avatar/avatar.jsx";
+import { CardScroller } from "../../components/cardScroller/cardScroller.jsx";
+import { Card } from "../../components/card/card.jsx";
 import { AppBarBackOnly } from "../../components/appBar/backOnly.jsx";
 
 // import { jellyfin } from "../../jellyfin";
@@ -38,6 +39,7 @@ import { getUserApi } from "@jellyfin/sdk/lib/utils/api/user-api";
 import { getBrandingApi } from "@jellyfin/sdk/lib/utils/api/branding-api";
 
 import "./login.module.scss";
+import { CardsSkeleton } from "../../components/skeleton/cards.jsx";
 
 export const LoginWithImage = () => {
 	const { userName, userId } = useParams();
@@ -88,7 +90,6 @@ export const LoginWithImage = () => {
 			saveUser(userName, password.password);
 		}
 		event.emit("set-api-accessToken", window.api.basePath);
-		// setAccessToken(user.data.AccessToken)
 		setLoading(false);
 		navigate(`/home`);
 	};
@@ -217,68 +218,52 @@ export const UserLogin = () => {
 	const handleManualLogin = () => {
 		navigate("/login/manual");
 	};
-	const getUsers = async () => {
-		const users = await getUserApi(window.api).getPublicUsers();
-		// console.log(users.data);
-		return users;
-		// return {};
-	};
-
-	const createApi = async () => {
-		const server = await getServer();
-		event.emit("create-jellyfin-api", server.Ip);
-	};
-
-	useMemo(() => {
-		// TODO Implement a better way to check and create api object when page reloaded. Hint: Maybe use session api or something (*route - login*)
-		if (!window.api) {
-			createApi().then(() => {
-				getUsers().then((users) => {
-					setUsers(users.data);
-					console.log(userList);
-				});
-			});
-		} else {
-			getUsers().then((users) => {
-				setUsers(users.data);
-				console.log(userList);
-			});
-		}
-	}, []);
+	const users = useQuery({
+		queryKey: ["login", "users"],
+		queryFn: async () => {
+			const users = await getUserApi(window.api).getPublicUsers();
+			// console.log(users.data);
+			return users.data;
+			// return {};
+		},
+	});
 
 	return (
 		<>
 			<AppBarBackOnly />
 			<Container maxWidth="md" className="centered">
-				<Typography variant="h3" sx={{ marginBottom: "1em" }}>
+				{/* <Typography variant="h3" sx={{ marginBottom: "1em" }}>
 					Users
-				</Typography>
-				<div className="userList">
-					{userList.map((item, index) => {
-						return (
-							//
-							<Link
-								to={`/login/withImg/${item.Name}/${item.Id}/`}
-								key={item.Id}
-								className="userCard"
-								index={index}
-							>
-								{item.PrimaryImageTag ? (
-									<AvatarCard
-										userName={item.Name}
-										userId={item.Id}
-										userImageAvailable={true}
-									></AvatarCard>
-								) : (
-									<AvatarCard
-										userName={item.Name}
-										userImageAvailable={false}
-									></AvatarCard>
-								)}
-							</Link>
-						);
-					})}
-				</div>
+				</Typography> */}
+				{users.isLoading ? (
+					<CardsSkeleton />
+				) : (
+					<CardScroller displayCards={5} title="Users">
+						{users.data.map((item, index) => {
+							return (
+								//
+								<Link
+									to={`/login/withImg/${item.Name}/${item.Id}/`}
+									key={item.Id}
+									className="userCard"
+									index={index}
+								>
+									<Card
+										key={index}
+										itemName={item.Name}
+										itemId={item.Id}
+										imageTags={
+											!!item.PrimaryImageTag
+										}
+										// cardType="sqaure"
+										iconType="Person"
+										cardOrientation="sqaure"
+									/>
+								</Link>
+							);
+						})}
+					</CardScroller>
+				)}
 				<div className="buttons">
 					<Button
 						color="secondary"
@@ -374,15 +359,6 @@ export const UserLoginManual = () => {
 	const handleCheckRememberMe = (event) => {
 		setRememberMe(event.target.checked);
 	};
-
-	const createApi = async () => {
-		const server = await getServer();
-		event.emit("create-jellyfin-api", server.Ip);
-	};
-
-	if (!window.api) {
-		createApi();
-	}
 
 	return (
 		<>

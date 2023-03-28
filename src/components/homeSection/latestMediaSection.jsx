@@ -60,7 +60,11 @@ export const LatestMediaSection = ({ latestMediaLib }) => {
 							playedPercent={
 								item.UserData.PlayedPercentage
 							}
-							cardOrientation="portait"
+							cardOrientation={
+								item.PrimaryImageAspectRatio == 1
+									? "sqaure"
+									: "portait"
+							}
 						></Card>
 					);
 				})}

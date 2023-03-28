@@ -69,7 +69,7 @@ const Home = () => {
 			event.emit("set-api-accessToken", window.api.basePath);
 			return true;
 		},
-		enabled: !window.api,
+		enabled: false,
 	});
 
 	const user = useQuery({
@@ -633,7 +633,7 @@ const Home = () => {
 												item.UserData
 													.PlayedPercentage
 											}
-											cardOrientation="landscape"
+											cardOrientation="sqaure"
 										></Card>
 									);
 								},

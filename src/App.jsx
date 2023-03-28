@@ -3,7 +3,6 @@
 import React, { useState, Suspense } from "react";
 import { ThemeProvider } from "@mui/material/styles";
 import { SnackbarProvider } from "notistack";
-import { useCookies, Cookies } from "react-cookie";
 import {
 	Routes,
 	Route,
@@ -118,11 +117,15 @@ const AnimationWrapper = () => {
 };
 
 function App() {
-	const [userCookies] = useCookies(["user"]);
 	const navigate = useNavigate();
 
 	const [serverReachable, setServerReachable] = useState(true);
 	const [checkingServer, setChecking] = useState(false);
+
+	const createApi = async () => {
+		const server = await getServer();
+		event.emit("create-jellyfin-api", server.Ip);
+	};
 
 	const serverAvailable = async () => {
 		const server = await getServer();
@@ -131,10 +134,10 @@ function App() {
 			console.log("server not found");
 			return false;
 		} else {
-			if (!window.api) {
-				console.log("Creating Jf api (without accessToken)");
-				event.emit("create-jellyfin-api", server.Ip);
-			}
+			// if (!window.api) {
+			// 	console.log("Creating Jf api (without accessToken)");
+			// 	event.emit("create-jellyfin-api", server.Ip);
+			// }
 			return true;
 		}
 	};
@@ -194,7 +197,7 @@ function App() {
 		sessionStorage.setItem("accessToken", auth.data.AccessToken);
 		event.emit("set-api-accessToken", window.api.basePath);
 
-		navigate("/home");
+		// navigate("/home");
 	};
 
 	const LogicalRoutes = () => {
@@ -204,7 +207,7 @@ function App() {
 				if (serverReachable == true) {
 					userSaved().then((user_available) => {
 						if (user_available == true) {
-							userLogin();
+							navigate("/home");
 						} else {
 							usersAvailable().then(
 								(users_list_available) => {
@@ -243,6 +246,17 @@ function App() {
 		await delServer();
 	};
 	const location = useLocation();
+
+	if (!window.api) {
+		console.log("WindowAPi not present");
+		createApi().then(
+			userSaved().then((userSavedBool) => {
+				if (userSavedBool) {
+					userLogin();
+				}
+			}),
+		);
+	}
 
 	return (
 		<SnackbarProvider maxSnack={5}>
