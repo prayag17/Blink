@@ -1,5 +1,15 @@
 /** @format */
 
 .appBar {
-	transition: background $transition-time-default;
+	transition: background $transition-time-default,
+		box-shadow $transition-time-default;
+	&.backdropVisible {
+		background: $clr-background-dark;
+	}
+	&-avatar {
+		background: $clr-gradient-dark;
+		&-icon {
+			fill: url(#clr-gradient-default) !important;
+		}
+	}
 }

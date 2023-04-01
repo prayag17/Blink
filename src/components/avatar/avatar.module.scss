@@ -1,44 +1,5 @@
 /** @format */
 
-.userCard {
-	text-decoration: none !important;
-}
-
-.card.square {
-	width: fit-content;
-	display: flex;
-	justify-content: center;
-	align-items: center;
-	flex-direction: column;
-	gap: 0.5em;
-	margin-bottom: 0.5em;
-	overflow: hidden;
-	.card-image {
-		position: absolute;
-		inset: 0;
-		&-container {
-			font-size: 5em;
-			z-index: 0;
-		}
-		&-icon {
-			font-size: 1.5em !important;
-			&-container {
-				position: static;
-				width: 1.5em !important;
-				height: 1.5em !important;
-				aspect-ratio: 1;
-				border-radius: $border-radius-default;
-				color: $clr-accent-default;
-				background: $clr-accent-dark;
-			}
-		}
-	}
-	.card-text {
-		margin: 0 !important;
-		text-decoration: none !important;
-	}
-}
-
 .avatar-image {
 	aspect-ratio: 1;
 	height: 100%;
@@ -59,6 +20,6 @@
 		padding: 0.2em;
 		background: $clr-accent-dark;
 		color: $clr-accent-default;
-		font-size: 6em !important;
+		font-size: 2em !important;
 	}
 }

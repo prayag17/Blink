@@ -28,7 +28,7 @@ import FormGroup from "@mui/material/FormGroup";
 import FormControlLabel from "@mui/material/FormControlLabel";
 import Checkbox from "@mui/material/Checkbox";
 
-import { AvatarCard, AvatarImage } from "../../components/avatar/avatar.jsx";
+import { AvatarImage } from "../../components/avatar/avatar.jsx";
 import { CardScroller } from "../../components/cardScroller/cardScroller.jsx";
 import { Card } from "../../components/card/card.jsx";
 import { AppBarBackOnly } from "../../components/appBar/backOnly.jsx";

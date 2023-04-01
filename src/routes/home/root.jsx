@@ -80,7 +80,6 @@ const Home = () => {
 			let usr = await getUserApi(window.api).getCurrentUser();
 			return usr.data;
 		},
-		enabled: !!authUser,
 	});
 
 	const libraries = useQuery({
