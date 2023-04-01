@@ -106,3 +106,11 @@
 		border-radius: 0;
 	}
 }
+
+.backdropContainer {
+	background: linear-gradient(
+		45deg,
+		$clr-background-default,
+		$clr-background-light
+	);
+}

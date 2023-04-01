@@ -1,6 +1,6 @@
 /** @format */
 
-import { useState, useEffect, useLayoutEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 
 import { Blurhash } from "react-blurhash";
 
@@ -20,6 +20,7 @@ import Paper from "@mui/material/Paper";
 import Typography from "@mui/material/Typography";
 import Chip from "@mui/material/Chip";
 import Divider from "@mui/material/Divider";
+import useScrollTrigger from "@mui/material/useScrollTrigger";
 
 import { yellow } from "@mui/material/colors";
 
@@ -40,6 +41,7 @@ import { MdiChevronRight } from "../../components/icons/mdiChevronRight";
 
 import { useDispatch, useSelector } from "react-redux";
 import { showSidemenu } from "../../utils/slice/sidemenu";
+import { showAppBar, setBackdrop } from "../../utils/slice/appBar";
 
 import { getUserViewsApi } from "@jellyfin/sdk/lib/utils/api/user-views-api";
 import { getUserApi } from "@jellyfin/sdk/lib/utils/api/user-api";
@@ -84,10 +86,10 @@ const Home = () => {
 	const libraries = useQuery({
 		queryKey: ["home", "libraries"],
 		queryFn: async () => {
+			dispatch(showSidemenu());
 			let libs = await getUserViewsApi(window.api).getUserViews({
 				userId: user.data.Id,
 			});
-			dispatch(showSidemenu());
 			return libs.data;
 		},
 		enabled: !!user.data,
@@ -187,6 +189,24 @@ const Home = () => {
 		});
 	}
 
+	const appBarVisiblity = useSelector((state) => state.appBar.visible);
+
+	if (!appBarVisiblity) {
+		dispatch(showAppBar());
+	}
+
+	const [scrollTarget, setScrollTarget] = useState(undefined);
+
+	const trigger = useScrollTrigger({
+		disableHysteresis: true,
+		threshold: 0,
+		target: scrollTarget,
+	});
+
+	useEffect(() => {
+		dispatch(setBackdrop(trigger));
+	}, [trigger]);
+
 	return (
 		<>
 			<Box
@@ -197,7 +217,18 @@ const Home = () => {
 				<Box
 					component="main"
 					className="scrollY"
-					sx={{ flexGrow: 1, p: 3 }}
+					sx={{
+						flexGrow: 1,
+						pt: 11,
+						px: 3,
+						pb: 3,
+						position: "relative",
+					}}
+					ref={(node) => {
+						if (node) {
+							setScrollTarget(node);
+						}
+					}}
 				>
 					<Carousel
 						className="hero-carousel"
@@ -648,6 +679,7 @@ const Home = () => {
 							/>
 						);
 					})}
+
 					<Button variant="contained" onClick={handleLogout}>
 						Logout
 					</Button>

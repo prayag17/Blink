@@ -57,6 +57,7 @@ import { version as appVer } from "../package.json";
 import { v4 as uuidv4 } from "uuid";
 import { delServer, getServer } from "./utils/storage/servers.js";
 import { getUser } from "./utils/storage/user.js";
+import { AppBar } from "./components/appBar/appBar.jsx";
 
 const jellyfin = new Jellyfin({
 	clientInfo: {
@@ -306,6 +307,7 @@ function App() {
 					<div style={{ display: "flex" }}>
 						<CssBaseline />
 						<SideMenu />
+						<AppBar />
 						<Suspense
 							fallback={
 								<Box

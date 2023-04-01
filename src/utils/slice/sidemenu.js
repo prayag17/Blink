@@ -11,7 +11,7 @@ export const sideBarSlice = createSlice({
 			state.visible = true;
 		},
 		hideSidemenu: (state) => {
-			state.visible - false;
+			state.visible = false;
 		},
 	},
 });

@@ -57,6 +57,7 @@ const MiniDrawer = styled(MuiDrawer, {
 
 export const SideMenu = ({}) => {
 	const queryClient = useQueryClient();
+
 	const visible = useSelector((state) => state.sidebar.visible);
 	const navigate = useNavigate();
 	const user = useQuery({
