@@ -1,12 +1,11 @@
 /** @format */
 
-import React, { useState, Suspense } from "react";
+import React, { useState } from "react";
 import { ThemeProvider } from "@mui/material/styles";
 import { SnackbarProvider } from "notistack";
 import {
 	Routes,
 	Route,
-	Navigate,
 	useNavigate,
 	useLocation,
 	Outlet,
@@ -45,8 +44,10 @@ import {
 	LoginWithImage,
 	UserLoginManual,
 } from "./routes/login/root";
+import LibraryView from "./routes/library/root.jsx";
 
 import { SideMenu } from "./components/menu/sidemenu.jsx";
+import { AppBar } from "./components/appBar/appBar.jsx";
 
 // Fonts
 import "@fontsource/open-sans";
@@ -57,7 +58,6 @@ import { version as appVer } from "../package.json";
 import { v4 as uuidv4 } from "uuid";
 import { delServer, getServer } from "./utils/storage/servers.js";
 import { getUser } from "./utils/storage/user.js";
-import { AppBar } from "./components/appBar/appBar.jsx";
 
 const jellyfin = new Jellyfin({
 	clientInfo: {
@@ -308,74 +308,56 @@ function App() {
 						<CssBaseline />
 						<SideMenu />
 						<AppBar />
-						<Suspense
-							fallback={
-								<Box
-									sx={{
-										display: "flex",
-										width: "100%",
-										height: "100vh",
-										justifyContent: "center",
-										alignItems: "center",
-									}}
-								>
-									<CircularProgress />
-								</Box>
-							}
+						<Routes
+							key={location.pathname}
+							location={location}
 						>
-							<Routes
-								key={location.pathname}
-								location={location}
-							>
-								<Route element={<AnimationWrapper />}>
-									{/* Main Routes */}
-									<Route
-										path="/home"
-										element={<Home />}
-									/>
-									<Route
-										path="/setup/server"
-										element={<ServerSetup />}
-									/>
-									<Route
-										path="/servers/list"
-										element={<ServerList />}
-									/>
-									<Route
-										exact
-										path="/login/withImg/:userName/:userId/"
-										element={<LoginWithImage />}
-									/>
-									<Route
-										exact
-										path="/login/users"
-										element={<UserLogin />}
-									/>
-									<Route
-										path="/login/manual"
-										element={<UserLoginManual />}
-									/>
-									<Route
-										path="/library/:id"
-										element={<></>}
-									/>
+							<Route element={<AnimationWrapper />}>
+								{/* Main Routes */}
+								<Route
+									path="/home"
+									element={<Home />}
+								/>
+								<Route
+									path="/setup/server"
+									element={<ServerSetup />}
+								/>
+								<Route
+									path="/servers/list"
+									element={<ServerList />}
+								/>
+								<Route
+									exact
+									path="/login/withImg/:userName/:userId/"
+									element={<LoginWithImage />}
+								/>
+								<Route
+									exact
+									path="/login/users"
+									element={<UserLogin />}
+								/>
+								<Route
+									path="/login/manual"
+									element={<UserLoginManual />}
+								/>
+								<Route
+									path="/library/:id"
+									element={<LibraryView />}
+								/>
 
-									{/* Logical Routes */}
+								{/* Logical Routes */}
 
-									<Route
-										path="/"
-										element={<LogicalRoutes />}
-									/>
-									<Route
-										exact
-										path="/login"
-										element={
-											<LoginLogicalRoutes />
-										}
-									/>
-								</Route>
-							</Routes>
-						</Suspense>
+								<Route
+									path="/"
+									element={<LogicalRoutes />}
+								/>
+								<Route
+									exact
+									path="/login"
+									element={<LoginLogicalRoutes />}
+								/>
+							</Route>
+						</Routes>
 					</div>
 				</AnimatePresence>
 				<ReactQueryDevtools />
