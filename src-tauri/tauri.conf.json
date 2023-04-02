@@ -8,7 +8,7 @@
 	},
 	"package": {
 		"productName": "JellyPlayer",
-		"version": "../package.json"
+		"version": "1.0.0"
 	},
 	"tauri": {
 		"allowlist": {
