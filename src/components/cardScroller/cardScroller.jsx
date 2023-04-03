@@ -18,6 +18,12 @@ import ButtonGroup from "@mui/material/ButtonGroup";
 import "./cardScroller.module.scss";
 export const CardScroller = ({ children, displayCards, title }) => {
 	const responsive = {
+		superLargeDesktop: {
+			// the naming can be any, depends on you.
+			breakpoint: { max: 4000, min: 3000 },
+			items: displayCards + 1,
+			slidesToSlide: displayCards + 1,
+		},
 		desktop: {
 			breakpoint: { max: 3000, min: 1025 },
 			items: displayCards,
@@ -25,13 +31,13 @@ export const CardScroller = ({ children, displayCards, title }) => {
 		},
 		tablet: {
 			breakpoint: { max: 1024, min: 464 },
-			items: displayCards - 1,
-			slidesToSlide: displayCards - 1, // optional, default to 1.
+			items: displayCards - 2,
+			slidesToSlide: displayCards - 2, // optional, default to 1.
 		},
 		mobile: {
 			breakpoint: { max: 464, min: 0 },
-			items: displayCards - 2,
-			slidesToSlide: displayCards - 2, // optional, default to 1.
+			items: displayCards - 3,
+			slidesToSlide: displayCards - 3, // optional, default to 1.
 		},
 	};
 
