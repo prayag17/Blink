@@ -59,6 +59,8 @@ import { v4 as uuidv4 } from "uuid";
 import { delServer, getServer } from "./utils/storage/servers.js";
 import { getUser } from "./utils/storage/user.js";
 
+import { useDispatch } from "react-redux";
+import { showSidemenu } from "./utils/slice/sidemenu.js";
 const jellyfin = new Jellyfin({
 	clientInfo: {
 		name: "JellyPlayer",
@@ -120,12 +122,15 @@ const AnimationWrapper = () => {
 function App() {
 	const navigate = useNavigate();
 
+	const dispatch = useDispatch();
+
 	const [serverReachable, setServerReachable] = useState(true);
 	const [checkingServer, setChecking] = useState(false);
 
 	const createApi = async () => {
 		const server = await getServer();
 		event.emit("create-jellyfin-api", server.Ip);
+		dispatch(showSidemenu());
 	};
 
 	const serverAvailable = async () => {

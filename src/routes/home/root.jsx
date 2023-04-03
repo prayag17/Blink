@@ -85,7 +85,6 @@ const Home = () => {
 	const libraries = useQuery({
 		queryKey: ["home", "libraries"],
 		queryFn: async () => {
-			dispatch(showSidemenu());
 			let libs = await getUserViewsApi(window.api).getUserViews({
 				userId: user.data.Id,
 			});
