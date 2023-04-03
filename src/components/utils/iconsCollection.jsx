@@ -7,7 +7,7 @@ import { MdiTelevision } from "../icons/mdiTelevision";
 import { MdiFolderOutline } from "../icons/mdiFolderOutline";
 import { MdiFolderMusicOutline } from "../icons/mdiFolderMusicOutline";
 import { MdiYoutube } from "../icons/mdiYoutube";
-import { MdiMultimedia } from "../icons/mdiMultiMedia";
+import { MdiMultimedia } from "../icons/mdiMultimedia";
 import { MdiBookMultiple } from "../icons/mdiBookMultiple";
 import { MdiImageMultiple } from "../icons/mdiImageMultiple";
 import { MdiTelevisionClassic } from "../icons/mdiTelevisionClassic";
