@@ -12,6 +12,7 @@ import { MdiMagnify } from "../icons/mdiMagnify";
 import { theme } from "../../theme";
 
 import { useSelector } from "react-redux";
+import { useLocation } from "react-router-dom";
 
 import { getUserApi } from "@jellyfin/sdk/lib/utils/api/user-api";
 import { useQueryClient, useQuery } from "@tanstack/react-query";
@@ -23,6 +24,9 @@ import { MdiHeartOutline } from "../icons/mdiHeartOutline";
 export const AppBar = () => {
 	const visible = useSelector((state) => state.appBar.visible);
 	const backdropVisible = useSelector((state) => state.appBar.backdrop);
+
+	const location = useLocation();
+	console.log(location);
 
 	const user = useQuery({
 		queryKey: ["appBar", "user"],
