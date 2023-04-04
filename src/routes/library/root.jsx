@@ -1,7 +1,12 @@
 /** @format */
 import { useState, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { showAppBar, setBackdrop } from "../../utils/slice/appBar";
+import {
+	showAppBar,
+	setBackdrop,
+	setPage,
+	removePage,
+} from "../../utils/slice/appBar";
 import { useParams } from "react-router-dom";
 
 import { useQuery } from "@tanstack/react-query";
@@ -48,8 +53,27 @@ const LibraryView = () => {
 		return result.data;
 	};
 
+	const fetchLib = async (libraryId) => {
+		const result = await getItemsApi(window.api).getItems({
+			userId: user.data.Id,
+			ids: [libraryId],
+		});
+		return result.data;
+	};
+
+	const currentLib = useQuery({
+		queryKey: ["libraryView", "currentLib", id],
+		queryFn: () => fetchLib(id),
+		enabled: !!user.data,
+	});
+
+	if (currentLib.isSuccess) {
+		// console.log(currentLib.data.)
+		dispatch(setPage(currentLib.data.Items[0].Name));
+	}
+
 	const items = useQuery({
-		queryKey: ["libraryView", id],
+		queryKey: ["libraryView", "currentLibItems", id],
 		queryFn: () => fetchLibItems(id),
 		enabled: !!user.data,
 	});
@@ -57,6 +81,10 @@ const LibraryView = () => {
 	useEffect(() => {
 		dispatch(setBackdrop(trigger));
 	}, [trigger]);
+
+	if (currentLib.isLoading || items.isLoading) {
+		return <h1>Loading...</h1>;
+	}
 
 	return (
 		<Box

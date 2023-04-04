@@ -49,7 +49,7 @@ import { getUserLibraryApi } from "@jellyfin/sdk/lib/utils/api/user-library-api"
 import { getItemsApi } from "@jellyfin/sdk/lib/utils/api/items-api";
 import { getTvShowsApi } from "@jellyfin/sdk/lib/utils/api/tv-shows-api";
 
-import { useNavigate, useLocation } from "react-router-dom";
+import { useNavigate, useLocation, Link } from "react-router-dom";
 
 import { formateDate } from "../../utils/date/formateDate";
 import { getRuntime } from "../../utils/date/time";
@@ -497,29 +497,40 @@ const Home = () => {
 							})
 						)}
 					</Carousel>
-					<CardScroller displayCards={4} title="Libraries">
-						{libraries.isLoading ? (
-							<CardsSkeleton />
-						) : (
-							libraries.status == "success" &&
-							libraries.data.Items.map((item, index) => {
-								return (
-									<Card
-										key={index}
-										itemName={item.Name}
-										itemId={item.Id}
-										// imageTags={false}
-										imageTags={
-											!!item.ImageTags.Primary
-										}
-										cardType="lib"
-										cardOrientation="landscape"
-										iconType={item.CollectionType}
-									></Card>
-								);
-							})
-						)}
-					</CardScroller>
+					{libraries.isLoading ? (
+						<CardsSkeleton />
+					) : (
+						<CardScroller displayCards={4} title="Libraries">
+							{libraries.status == "success" &&
+								libraries.data.Items.map(
+									(item, index) => {
+										return (
+											<Card
+												key={index}
+												itemName={item.Name}
+												itemId={item.Id}
+												// imageTags={false}
+												imageTags={
+													!!item
+														.ImageTags
+														.Primary
+												}
+												cardType="lib"
+												cardOrientation="landscape"
+												iconType={
+													item.CollectionType
+												}
+												onClickEvent={() => {
+													navigate(
+														`/library/${item.Id}`,
+													);
+												}}
+											></Card>
+										);
+									},
+								)}
+						</CardScroller>
+					)}
 					{upNextItems.isLoading ? (
 						<CardsSkeleton />
 					) : upNextItems.isSuccess &&

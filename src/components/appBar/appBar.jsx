@@ -1,18 +1,20 @@
 /** @format */
+import { useEffect } from "react";
 
 import MuiAppBar from "@mui/material/AppBar";
 import TextField from "@mui/material/TextField";
 import IconButton from "@mui/material/IconButton";
-import InputAdornment from "@mui/material/InputAdornment";
 import Toolbar from "@mui/material/Toolbar";
 import Avatar from "@mui/material/Avatar";
 import Box from "@mui/material/Box";
+import Typography from "@mui/material/Typography";
 
 import { MdiMagnify } from "../icons/mdiMagnify";
 import { theme } from "../../theme";
 
-import { useSelector } from "react-redux";
-import { useLocation } from "react-router-dom";
+import { useDispatch, useSelector } from "react-redux";
+import { useLocation, useNavigate } from "react-router-dom";
+import { removePage } from "../../utils/slice/appBar";
 
 import { getUserApi } from "@jellyfin/sdk/lib/utils/api/user-api";
 import { useQueryClient, useQuery } from "@tanstack/react-query";
@@ -20,13 +22,17 @@ import { useQueryClient, useQuery } from "@tanstack/react-query";
 import "./appBar.module.scss";
 import { MdiAccount } from "../icons/mdiAccount";
 import { MdiHeartOutline } from "../icons/mdiHeartOutline";
+import { MdiArrowLeft } from "../icons/mdiArrowLeft";
 
 export const AppBar = () => {
+	const dispatch = useDispatch();
+	const navigate = useNavigate();
+
 	const visible = useSelector((state) => state.appBar.visible);
+	const page = useSelector((state) => state.appBar.page);
 	const backdropVisible = useSelector((state) => state.appBar.backdrop);
 
 	const location = useLocation();
-	console.log(location);
 
 	const user = useQuery({
 		queryKey: ["appBar", "user"],
@@ -34,6 +40,12 @@ export const AppBar = () => {
 			let usr = await getUserApi(window.api).getCurrentUser();
 			return usr.data;
 		},
+	});
+
+	useEffect(() => {
+		if (location.pathname == "/home") {
+			dispatch(removePage());
+		}
 	});
 
 	return (
@@ -50,7 +62,26 @@ export const AppBar = () => {
 				elevation={backdropVisible ? 6 : 0}
 			>
 				<Toolbar sx={{ justifyContent: "space-between" }}>
-					<Box sx={{ display: "flex", gap: 1 }}>
+					<Box
+						sx={{
+							display: "flex",
+							gap: 1,
+							alignItems: "center",
+						}}
+					>
+						{page != undefined && (
+							<>
+								<IconButton
+									onClick={() => navigate(-1)}
+								>
+									<MdiArrowLeft />
+								</IconButton>
+								<Typography sx={{ mr: 3 }} variant="h5">
+									{page}
+								</Typography>
+							</>
+						)}
+
 						<TextField
 							variant="outlined"
 							placeholder="Search..."

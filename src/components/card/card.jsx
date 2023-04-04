@@ -28,6 +28,7 @@ export const Card = ({
 	playedPercent,
 	cardOrientation,
 	props,
+	onClickEvent,
 }) => {
 	return (
 		<MuiCard
@@ -40,7 +41,9 @@ export const Card = ({
 			elevation={0}
 			{...props}
 		>
-			<CardActionArea>
+			<CardActionArea
+				onClick={!!onClickEvent ? onClickEvent : () => {}}
+			>
 				<Box
 					className="card-media-container"
 					sx={{
@@ -172,4 +175,5 @@ Card.propTypes = {
 	subText: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
 	playedPercent: PropTypes.number,
 	cardOrientation: PropTypes.string.isRequired,
+	onClickEvent: PropTypes.func,
 };
