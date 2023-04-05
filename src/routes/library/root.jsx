@@ -12,16 +12,16 @@ import { useQuery } from "@tanstack/react-query";
 
 import Box from "@mui/material/Box";
 import Grid2 from "@mui/material/Unstable_Grid2";
-import useScrollTrigger from "@mui/material/useScrollTrigger";
+import Stack from "@mui/material/Stack";
 import AppBar from "@mui/material/AppBar";
 import Toolbar from "@mui/material/Toolbar";
 import Typography from "@mui/material/Typography";
 import CircularProgress from "@mui/material/CircularProgress";
 import Divider from "@mui/material/Divider";
 import Chip from "@mui/material/Chip";
-import FormControl from "@mui/material/FormControl";
+import IconButton from "@mui/material/IconButton";
 import TextField from "@mui/material/TextField";
-import Select from "@mui/material/Select";
+import Checkbox from "@mui/material/Checkbox";
 import MenuItem from "@mui/material/MenuItem";
 
 import { theme } from "../../theme";
@@ -36,6 +36,8 @@ import { getPersonsApi } from "@jellyfin/sdk/lib/utils/api/persons-api";
 
 import { Card } from "../../components/card/card";
 import { EmptyNotice } from "../../components/emptyNotice/emptyNoticee";
+import { MdiSortDescending } from "../../components/icons/mdiSortDescending";
+import { MdiSortAscending } from "../../components/icons/mdiSortAscending";
 
 const LibraryView = () => {
 	const dispatch = useDispatch();
@@ -53,6 +55,20 @@ const LibraryView = () => {
 			return usr.data;
 		},
 	});
+
+	const [sortAscending, setSortAscending] = useState(false);
+	const [sortBy, setSortBy] = useState("SortName");
+	const [sortByData, setSortByData] = useState([
+		{ title: "Name", value: "SortName" },
+		{ title: "Rating", value: "CommunityRating" },
+		{ title: "Release Date", value: "PremiereDate" },
+	]);
+	const handleSortChange = (e) => {
+		setSortAscending(e.target.checked);
+	};
+	const handleSortBy = (e) => {
+		setSortBy(e.target.value);
+	};
 
 	const fetchLib = async (libraryId) => {
 		const result = await getItemsApi(window.api).getItems({
@@ -78,26 +94,26 @@ const LibraryView = () => {
 		if (currentLib.isSuccess) {
 			if (currentLib.data.Items[0].CollectionType == "movies") {
 				setViewType([
-					{ title: "movies", value: "Movie" },
-					{ title: "collections", value: "BoxSet" },
-					{ title: "actors", value: "Person" },
-					{ title: "genres", value: "Genre" },
-					{ title: "studios", value: "Studio" },
+					{ title: "Movies", value: "Movie" },
+					{ title: "Collections", value: "BoxSet" },
+					{ title: "Actors", value: "Person" },
+					{ title: "Genres", value: "Genre" },
+					{ title: "Studios", value: "Studio" },
 				]);
 			} else if (currentLib.data.Items[0].CollectionType == "music") {
 				setViewType([
-					{ title: "albums", value: "MusicAlbum" },
-					{ title: "artists", value: "MusicArtist" },
-					{ title: "genres", value: "MusicGenre" },
+					{ title: "Albums", value: "MusicAlbum" },
+					{ title: "Artists", value: "MusicArtist" },
+					{ title: "Genres", value: "MusicGenre" },
 				]);
 			} else if (
 				currentLib.data.Items[0].CollectionType == "tvshows"
 			) {
 				setViewType([
-					{ title: "series", value: "Series" },
-					{ title: "actors", value: "Person" },
-					{ title: "genres", value: "Genre" },
-					{ title: "networks", value: "Studio" },
+					{ title: "Series", value: "Series" },
+					{ title: "Actors", value: "Person" },
+					{ title: "Genres", value: "Genre" },
+					{ title: "Networks", value: "Studio" },
 				]);
 			} else {
 				setViewType([]);
@@ -139,13 +155,20 @@ const LibraryView = () => {
 				parentId: libraryId,
 				recursive: true,
 				includeItemTypes: [currentViewType],
+				sortOrder: [sortAscending ? "Ascending" : "Descending"],
+				sortBy: sortBy,
 			});
 		}
 		return result.data;
 	};
 
 	const items = useQuery({
-		queryKey: ["libraryView", "currentLibItems", id, currentViewType],
+		queryKey: [
+			"libraryView",
+			"currentLibItems",
+			id,
+			`${currentViewType} - ${sortAscending} - ${sortBy}`,
+		],
 		queryFn: () => fetchLibItems(id),
 		enabled: !!user.data,
 	});
@@ -154,12 +177,13 @@ const LibraryView = () => {
 
 	const handleCurrentViewType = (e) => {
 		setCurrentViewType(e.target.value);
-		console.log(e.target.value);
 	};
 
 	useEffect(() => {
 		if (viewType.length != 0) setCurrentViewType(viewType[0].value);
 	}, [viewType]);
+
+	const allowedSortViews = ["Movie", "Series", "MusicAlbum"];
 
 	return (
 		<Box
@@ -187,54 +211,109 @@ const LibraryView = () => {
 					}}
 				>
 					<Divider />
-					<Toolbar>
-						<Typography
-							variant="h5"
-							sx={{ mr: 2, flexShrink: 0 }}
-							noWrap
-						>
-							{currentLib.isLoading ? (
-								<CircularProgress sx={{ p: 1 }} />
-							) : (
-								currentLib.data.Items[0].Name
-							)}
-						</Typography>
-						<Chip
-							label={
-								items.isLoading ? (
+					<Toolbar sx={{ justifyContent: "space-between" }}>
+						<Stack alignItems="center" direction="row">
+							<Typography
+								variant="h5"
+								sx={{ mr: 2, flexShrink: 0 }}
+								noWrap
+							>
+								{currentLib.isLoading ? (
 									<CircularProgress sx={{ p: 1 }} />
 								) : (
-									items.data.TotalRecordCount
-								)
-							}
-						/>
+									currentLib.data.Items[0].Name
+								)}
+							</Typography>
+							<Chip
+								label={
+									items.isLoading ? (
+										<CircularProgress
+											sx={{ p: 1.5 }}
+										/>
+									) : (
+										items.data.TotalRecordCount
+									)
+								}
+							/>
+						</Stack>
 
 						{/* <InputLabel id="demo-simple-select-label">
 								Age
 							</InputLabel> */}
-						{viewType.length != 0 && (
-							<TextField
-								select
-								hiddenLabel
-								defaultValue={viewType[0].value}
-								size="small"
-								variant="filled"
-								fullWidth
-								sx={{ ml: "75%" }}
-								onChange={handleCurrentViewType}
-							>
-								{viewType.map((item, index) => {
-									return (
-										<MenuItem
-											key={item.value}
-											value={item.value}
-										>
-											{item.title}
-										</MenuItem>
-									);
-								})}
-							</TextField>
-						)}
+						<Stack
+							direction="row"
+							spacing={2}
+							divider={
+								<Divider
+									orientation="vertical"
+									flexItem
+								/>
+							}
+						>
+							{allowedSortViews.includes(
+								currentViewType,
+							) && (
+								<>
+									<Checkbox
+										icon={<MdiSortDescending />}
+										checkedIcon={
+											<MdiSortAscending />
+										}
+										color="white"
+										onChange={handleSortChange}
+										defaultValue={sortAscending}
+									/>
+									<TextField
+										select
+										hiddenLabel
+										defaultValue={
+											sortByData[0].value
+										}
+										size="small"
+										variant="filled"
+										onChange={handleSortBy}
+									>
+										{sortByData.map(
+											(item, index) => {
+												return (
+													<MenuItem
+														key={
+															item.value
+														}
+														value={
+															item.value
+														}
+													>
+														{`By ${item.title}`}
+													</MenuItem>
+												);
+											},
+										)}
+									</TextField>
+								</>
+							)}
+							{viewType.length != 0 && (
+								<TextField
+									select
+									hiddenLabel
+									defaultValue={viewType[0].value}
+									size="small"
+									variant="filled"
+									onChange={handleCurrentViewType}
+								>
+									{viewType.map((item, index) => {
+										return (
+											<MenuItem
+												key={item.value}
+												value={item.value}
+											>
+												{item.title}
+											</MenuItem>
+										);
+									})}
+								</TextField>
+							)}
+						</Stack>
 					</Toolbar>
 				</AppBar>
 				<Grid2 container columns={{ xs: 3, sm: 5, md: 8 }}>
@@ -276,6 +355,17 @@ const LibraryView = () => {
 													"MusicGenre"
 													? "square"
 													: "portait"
+											}
+											watchedStatus={
+												!!item.UserData
+													? item.UserData
+															.Played
+													: false
+											}
+											watchedCount={
+												!!item.UserData &&
+												item.UserData
+													.UnplayedItemCount
 											}
 										></Card>
 									</Grid2>

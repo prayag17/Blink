@@ -9,6 +9,7 @@ import CardMedia from "@mui/material/CardMedia";
 import CardActionArea from "@mui/material/CardActionArea";
 import Typography from "@mui/material/Typography";
 import LinearProgress from "@mui/material/LinearProgress";
+import Chip from "@mui/material/Chip";
 
 import {
 	MediaCollectionTypeIconCollectionCard,
@@ -17,6 +18,7 @@ import {
 
 import { borderRadiusDefault } from "../../palette.module.scss";
 import "./card.module.scss";
+import { MdiCheck } from "../icons/mdiCheck";
 
 export const Card = ({
 	itemName,
@@ -29,6 +31,8 @@ export const Card = ({
 	cardOrientation,
 	props,
 	onClickEvent,
+	watchedStatus,
+	watchedCount,
 }) => {
 	return (
 		<MuiCard
@@ -57,6 +61,18 @@ export const Card = ({
 								: "1",
 					}}
 				>
+					{watchedStatus && (
+						<Chip
+							className="card-indicator"
+							label={<MdiCheck />}
+						/>
+					)}
+					{!!watchedCount && (
+						<Chip
+							className="card-indicator card-indicator-text"
+							label={watchedCount}
+						></Chip>
+					)}
 					{imageTags &&
 						(cardType == "thumb" ? (
 							<CardMedia
@@ -77,6 +93,8 @@ export const Card = ({
 											  "portait"
 											? "0.666"
 											: "1",
+									borderRadius: borderRadiusDefault,
+									overflow: "hidden",
 								}}
 								className="card-image"
 							></CardMedia>
@@ -176,4 +194,6 @@ Card.propTypes = {
 	playedPercent: PropTypes.number,
 	cardOrientation: PropTypes.string.isRequired,
 	onClickEvent: PropTypes.func,
+	watchedStatus: PropTypes.bool,
+	watchedCount: PropTypes.number,
 };
