@@ -30,3 +30,8 @@
 # 📃 Roadmap:
 - Checkout [GitHub Project](https://github.com/users/prayag17/projects/3)
   > **Note** : There is no current due date for alpha 1 release 
+
+# 🎊 Special thanks to:
+- @ferferga for helping in development behind the scenes.
+- All contributors of jellyfin/jellyfin-vue.
+- And also @jellyfin for creating the main service 
