@@ -32,6 +32,6 @@
   > **Note** : There is no current due date for alpha 1 release 
 
 # 🎊 Special thanks to:
-- @ferferga for helping in development behind the scenes.
-- All contributors of jellyfin/jellyfin-vue.
-- And also @jellyfin for creating the main service 
+- [@ferferga](https://github.com/ferferga) for helping in development behind the scenes.
+- All contributors of [jellyfin/jellyfin-vue](https://github.com/jellyfin/jellyfin-vue).
+- And also [@jellyfin](https://github.com/jellyfin/) for creating the main service 
