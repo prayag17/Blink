@@ -6,7 +6,7 @@ export const appBarSlice = createSlice({
 	initialState: {
 		visible: false,
 		backdrop: false,
-		page: undefined,
+		backButtonVisible: false,
 	},
 	reducers: {
 		showAppBar: (state) => {
@@ -18,15 +18,20 @@ export const appBarSlice = createSlice({
 		setBackdrop: (state, action) => {
 			state.backdrop = action.payload;
 		},
-		setPage: (state, action) => {
-			state.page = action.payload;
+		showBackButton: (state, action) => {
+			state.backButtonVisible = true;
 		},
-		removePage: (state) => {
-			state.page = undefined;
+		hideBackButton: (state) => {
+			state.backButtonVisible = false;
 		},
 	},
 });
 
-export const { showAppBar, hideAppBar, setBackdrop, setPage, removePage } =
-	appBarSlice.actions;
+export const {
+	showAppBar,
+	hideAppBar,
+	setBackdrop,
+	showBackButton,
+	hideBackButton,
+} = appBarSlice.actions;
 export default appBarSlice.reducer;

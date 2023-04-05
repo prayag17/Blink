@@ -1,15 +1,18 @@
 /** @format */
 ::-webkit-scrollbar {
+	z-index: 10000;
 	width: 10px;
 	background: $clr-background-dark;
 }
 ::-webkit-scrollbar-track {
+	z-index: 10000;
 	background-color: transparent;
 	&:hover {
 		background: rgb(255 255 255 / 0.25);
 	}
 }
 ::-webkit-scrollbar-thumb {
+	z-index: 10000;
 	background: rgb(255 255 255 / 0.25);
 }
 

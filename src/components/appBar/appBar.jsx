@@ -7,14 +7,14 @@ import IconButton from "@mui/material/IconButton";
 import Toolbar from "@mui/material/Toolbar";
 import Avatar from "@mui/material/Avatar";
 import Box from "@mui/material/Box";
-import Typography from "@mui/material/Typography";
+import Zoom from "@mui/material/Zoom";
 
 import { MdiMagnify } from "../icons/mdiMagnify";
 import { theme } from "../../theme";
 
 import { useDispatch, useSelector } from "react-redux";
 import { useLocation, useNavigate } from "react-router-dom";
-import { removePage } from "../../utils/slice/appBar";
+import { hideBackButton } from "../../utils/slice/appBar";
 
 import { getUserApi } from "@jellyfin/sdk/lib/utils/api/user-api";
 import { useQueryClient, useQuery } from "@tanstack/react-query";
@@ -29,7 +29,9 @@ export const AppBar = () => {
 	const navigate = useNavigate();
 
 	const visible = useSelector((state) => state.appBar.visible);
-	const page = useSelector((state) => state.appBar.page);
+	const backButtonVisible = useSelector(
+		(state) => state.appBar.backButtonVisible,
+	);
 	const backdropVisible = useSelector((state) => state.appBar.backdrop);
 
 	const location = useLocation();
@@ -44,7 +46,7 @@ export const AppBar = () => {
 
 	useEffect(() => {
 		if (location.pathname == "/home") {
-			dispatch(removePage());
+			dispatch(hideBackButton());
 		}
 	});
 
@@ -52,8 +54,8 @@ export const AppBar = () => {
 		visible && (
 			<MuiAppBar
 				sx={{
-					width: `calc(100vw - ${theme.spacing(7)} - 20px)`,
-					mr: "10px",
+					width: `calc(100vw - ${theme.spacing(7)} - 10px)`,
+					// mr: "10px",
 					background: "transparent",
 				}}
 				className={
@@ -69,18 +71,18 @@ export const AppBar = () => {
 							alignItems: "center",
 						}}
 					>
-						{page != undefined && (
-							<>
-								<IconButton
-									onClick={() => navigate(-1)}
-								>
-									<MdiArrowLeft />
-								</IconButton>
-								<Typography sx={{ mr: 3 }} variant="h5">
-									{page}
-								</Typography>
-							</>
-						)}
+						<IconButton
+							onClick={() => navigate(-1)}
+							sx={{
+								transition: "transform 0.2s",
+								transform: backButtonVisible
+									? "scale(1)"
+									: "scale(0)",
+								transformOrigin: "left",
+							}}
+						>
+							<MdiArrowLeft />
+						</IconButton>
 
 						<TextField
 							variant="outlined"
