@@ -1,5 +1,5 @@
 /** @format */
-import React from "react";
+import React, { useState } from "react";
 import PropTypes from "prop-types";
 
 import Box from "@mui/material/Box";
@@ -10,6 +10,7 @@ import CardActionArea from "@mui/material/CardActionArea";
 import Typography from "@mui/material/Typography";
 import LinearProgress from "@mui/material/LinearProgress";
 import Chip from "@mui/material/Chip";
+import { Blurhash } from "react-blurhash";
 
 import {
 	MediaCollectionTypeIconCollectionCard,
@@ -33,7 +34,9 @@ export const Card = ({
 	onClickEvent,
 	watchedStatus,
 	watchedCount,
+	blurhash,
 }) => {
+	const [imgLoading, setImgLoading] = useState(true);
 	return (
 		<MuiCard
 			className={"card " + cardOrientation}
@@ -73,54 +76,82 @@ export const Card = ({
 							label={watchedCount}
 						></Chip>
 					)}
-					{imageTags &&
-						(cardType == "thumb" ? (
-							<CardMedia
-								component="div"
-								image={
-									window.api.basePath +
-									"/Items/" +
-									itemId +
-									"/Images/Backdrop?fillHeight=300&fillWidth=532&quality=96"
-								}
-								alt={itemName}
-								sx={{
-									width: "100%",
-									aspectRatio:
-										cardOrientation == "landscape"
-											? "1.777"
-											: cardOrientation ==
-											  "portait"
-											? "0.666"
-											: "1",
-									borderRadius: borderRadiusDefault,
-									overflow: "hidden",
-								}}
-								className="card-image"
-							></CardMedia>
-						) : (
-							<CardMedia
-								component="div"
-								image={
-									window.api.basePath +
-									"/Items/" +
-									itemId +
-									"/Images/Primary"
-								}
-								alt={itemName}
-								sx={{
-									width: "100%",
-									aspectRatio:
-										cardOrientation == "landscape"
-											? "1.777"
-											: cardOrientation ==
-											  "portait"
-											? "0.666"
-											: "1",
-								}}
-								className="card-image"
-							></CardMedia>
-						))}
+					<div
+						class="card-media-image-container"
+						style={{ opacity: imgLoading ? 0 : 1 }}
+					>
+						{imageTags &&
+							(cardType == "thumb" ? (
+								<CardMedia
+									component="img"
+									image={
+										window.api.basePath +
+										"/Items/" +
+										itemId +
+										"/Images/Backdrop?fillHeight=300&fillWidth=532&quality=96"
+									}
+									alt={itemName}
+									sx={{
+										width: "100%",
+										aspectRatio:
+											cardOrientation ==
+											"landscape"
+												? "1.777"
+												: cardOrientation ==
+												  "portait"
+												? "0.666"
+												: "1",
+										borderRadius:
+											borderRadiusDefault,
+										overflow: "hidden",
+									}}
+									onLoad={() => setImgLoading(false)}
+									className="card-image"
+								></CardMedia>
+							) : (
+								<CardMedia
+									component="img"
+									image={
+										window.api.basePath +
+										"/Items/" +
+										itemId +
+										"/Images/Primary"
+									}
+									alt={itemName}
+									sx={{
+										width: "100%",
+										aspectRatio:
+											cardOrientation ==
+											"landscape"
+												? "1.777"
+												: cardOrientation ==
+												  "portait"
+												? "0.666"
+												: "1",
+									}}
+									className="card-image"
+									onLoad={() => setImgLoading(false)}
+								></CardMedia>
+							))}
+					</div>
+					{!!blurhash && (
+						<Blurhash
+							hash={blurhash}
+							width="100%"
+							height="100%"
+							resolutionX={64}
+							resolutionY={64}
+							style={{
+								aspectRatio:
+									cardOrientation == "landscape"
+										? "1.777"
+										: cardOrientation == "portait"
+										? "0.666"
+										: "1",
+							}}
+							className="card-image-blurhash"
+						/>
+					)}
 					<div className="card-image-icon-container">
 						{cardType == "lib"
 							? MediaCollectionTypeIconCollectionCard[
@@ -196,4 +227,5 @@ Card.propTypes = {
 	onClickEvent: PropTypes.func,
 	watchedStatus: PropTypes.bool,
 	watchedCount: PropTypes.number,
+	blurhash: PropTypes.string,
 };

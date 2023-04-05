@@ -65,6 +65,19 @@ export const LatestMediaSection = ({ latestMediaLib }) => {
 									? "sqaure"
 									: "portait"
 							}
+							blurhash={
+								item.ImageBlurHashes == {}
+									? ""
+									: !!item.ImageTags.Primary
+									? !!item.ImageBlurHashes.Primary
+										? item.ImageBlurHashes
+												.Primary[
+												item.ImageTags
+													.Primary
+										  ]
+										: ""
+									: ""
+							}
 						></Card>
 					);
 				})}

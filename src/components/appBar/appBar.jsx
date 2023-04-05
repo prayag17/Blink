@@ -37,7 +37,7 @@ export const AppBar = () => {
 	const location = useLocation();
 
 	const user = useQuery({
-		queryKey: ["appBar", "user"],
+		queryKey: ["user"],
 		queryFn: async () => {
 			let usr = await getUserApi(window.api).getCurrentUser();
 			return usr.data;

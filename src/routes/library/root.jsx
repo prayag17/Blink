@@ -367,6 +367,26 @@ const LibraryView = () => {
 												item.UserData
 													.UnplayedItemCount
 											}
+											blurhash={
+												item.ImageBlurHashes ==
+												{}
+													? ""
+													: !!item
+															.ImageTags
+															.Primary
+													? !!item
+															.ImageBlurHashes
+															.Primary
+														? item
+																.ImageBlurHashes
+																.Primary[
+																item
+																	.ImageTags
+																	.Primary
+														  ]
+														: ""
+													: ""
+											}
 										></Card>
 									</Grid2>
 								);

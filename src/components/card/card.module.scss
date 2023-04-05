@@ -2,6 +2,9 @@
 
 .card {
 	border-radius: $border-radius-default;
+	&-media-image-container {
+		transition: opacity $transition-time-default;
+	}
 	&-image {
 		position: relative;
 		border-radius: $border-radius-default;
@@ -9,6 +12,8 @@
 		background-position: center;
 		&-container {
 			position: relative;
+			border-radius: $border-radius-default;
+			overflow: hidden;
 		}
 		&-icon {
 			font-size: 4.5em !important;
@@ -27,8 +32,18 @@
 				top: 0;
 				bottom: 0;
 				height: 100%;
-				z-index: -1;
+				z-index: -2;
 			}
+		}
+		&-blurhash {
+			position: absolute !important;
+			width: 100%;
+			height: 100%;
+			top: 0;
+			left: 0;
+			border-radius: $border-radius-default;
+			overflow: hidden;
+			z-index: -1;
 		}
 	}
 	&-text-container {

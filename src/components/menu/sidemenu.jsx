@@ -61,7 +61,7 @@ export const SideMenu = ({}) => {
 	const visible = useSelector((state) => state.sidebar.visible);
 	const navigate = useNavigate();
 	const user = useQuery({
-		queryKey: ["home", "user"],
+		queryKey: ["user"],
 		queryFn: async () => {
 			let usr = await getUserApi(window.api).getCurrentUser();
 			return usr.data;
@@ -69,7 +69,7 @@ export const SideMenu = ({}) => {
 		enabled: visible,
 	});
 	let libraries = useQuery({
-		queryKey: ["sidemenu", "libraries"],
+		queryKey: ["libraries"],
 		queryFn: async () => {
 			let libs = await getUserViewsApi(window.api).getUserViews({
 				userId: user.data.Id,

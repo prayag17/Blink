@@ -75,7 +75,7 @@ const Home = () => {
 	});
 
 	const user = useQuery({
-		queryKey: ["home", "user"],
+		queryKey: ["user"],
 		queryFn: async () => {
 			let usr = await getUserApi(window.api).getCurrentUser();
 			return usr.data;
@@ -83,7 +83,7 @@ const Home = () => {
 	});
 
 	const libraries = useQuery({
-		queryKey: ["home", "libraries"],
+		queryKey: ["libraries"],
 		queryFn: async () => {
 			let libs = await getUserViewsApi(window.api).getUserViews({
 				userId: user.data.Id,
@@ -525,6 +525,26 @@ const Home = () => {
 														`/library/${item.Id}`,
 													);
 												}}
+												blurhash={
+													item.ImageBlurHashes ==
+													{}
+														? ""
+														: !!item
+																.ImageTags
+																.Primary
+														? !!item
+																.ImageBlurHashes
+																.Primary
+															? item
+																	.ImageBlurHashes
+																	.Primary[
+																	item
+																		.ImageTags
+																		.Primary
+															  ]
+															: ""
+														: ""
+												}
 											></Card>
 										);
 									},
@@ -571,6 +591,26 @@ const Home = () => {
 													: item.ProductionYear
 											}
 											cardOrientation="landscape"
+											blurhash={
+												item.ImageBlurHashes ==
+												{}
+													? ""
+													: !!item
+															.ImageTags
+															.Primary
+													? !!item
+															.ImageBlurHashes
+															.Primary
+														? item
+																.ImageBlurHashes
+																.Primary[
+																item
+																	.ImageTags
+																	.Primary
+														  ]
+														: ""
+													: ""
+											}
 										></Card>
 									);
 								},
@@ -630,6 +670,26 @@ const Home = () => {
 													.PlayedPercentage
 											}
 											cardOrientation="landscape"
+											blurhash={
+												item.ImageBlurHashes ==
+												{}
+													? ""
+													: !!item
+															.ImageTags
+															.Primary
+													? !!item
+															.ImageBlurHashes
+															.Primary
+														? item
+																.ImageBlurHashes
+																.Primary[
+																item
+																	.ImageTags
+																	.Primary
+														  ]
+														: ""
+													: ""
+											}
 										></Card>
 									);
 								},
@@ -674,6 +734,26 @@ const Home = () => {
 													.PlayedPercentage
 											}
 											cardOrientation="sqaure"
+											blurhash={
+												item.ImageBlurHashes ==
+												{}
+													? ""
+													: !!item
+															.ImageTags
+															.Primary
+													? !!item
+															.ImageBlurHashes
+															.Primary
+														? item
+																.ImageBlurHashes
+																.Primary[
+																item
+																	.ImageTags
+																	.Primary
+														  ]
+														: ""
+													: ""
+											}
 										></Card>
 									);
 								},
