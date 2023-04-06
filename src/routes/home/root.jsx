@@ -676,16 +676,16 @@ const Home = () => {
 													? ""
 													: !!item
 															.ImageTags
-															.Primary
+															.Backdrop
 													? !!item
 															.ImageBlurHashes
-															.Primary
+															.Backdrop
 														? item
 																.ImageBlurHashes
-																.Primary[
+																.Backdrop[
 																item
 																	.ImageTags
-																	.Primary
+																	.Backdrop
 														  ]
 														: ""
 													: ""

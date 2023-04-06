@@ -102,7 +102,6 @@ const LibraryView = () => {
 	const [isFavourite, setIsFavourite] = useState(false);
 	const [isLiked, setIsLiked] = useState(false);
 	const [isUnliked, setIsUnliked] = useState(false);
-
 	const availableWatchStatus = [
 		{
 			title: "Played",
@@ -133,6 +132,39 @@ const LibraryView = () => {
 			title: "UnLiked",
 			value: false,
 			state: (val) => setIsUnliked(val),
+		},
+	];
+
+	const [hasSubtitles, setHasSubtitles] = useState(false);
+	const [hasTrailer, setHasTrailer] = useState(false);
+	const [hasSpecialFeature, setHasSpecialFeature] = useState(false);
+	const [hasThemeSong, setHasThemeSong] = useState(false);
+	const [hasThemeVideo, setHasThemeVideo] = useState(false);
+	const availableFeatureFilters = [
+		{
+			title: "Subtitles",
+			value: false,
+			state: (val) => setHasSubtitles(val),
+		},
+		{
+			title: "Trailer",
+			value: false,
+			state: (val) => setHasTrailer(val),
+		},
+		{
+			title: "Special Feature",
+			value: false,
+			state: (val) => setHasSpecialFeature(val),
+		},
+		{
+			title: "Theme Song",
+			value: false,
+			state: (val) => setHasThemeSong(val),
+		},
+		{
+			title: "Theme Video",
+			vslue: false,
+			state: (val) => setHasThemeVideo(val),
 		},
 	];
 
@@ -213,6 +245,11 @@ const LibraryView = () => {
 					isLiked && "IsFavoriteOrLikes",
 					isUnliked && "Dislikes",
 				],
+				hasSubtitles: hasSubtitles ? true : undefined,
+				hasTrailer: hasTrailer ? true : undefined,
+				hasSpecialFeature: hasSpecialFeature ? true : undefined,
+				hasThemeSong: hasThemeSong ? true : undefined,
+				hasThemeVideo: hasThemeVideo ? true : undefined,
 			});
 		}
 		return result.data;
@@ -235,6 +272,13 @@ const LibraryView = () => {
 					isLiked,
 					isUnliked,
 				],
+				[
+					hasSubtitles,
+					hasTrailer,
+					hasSpecialFeature,
+					hasThemeSong,
+					hasThemeVideo,
+				],
 			],
 		],
 		queryFn: () => fetchLibItems(id),
@@ -252,6 +296,14 @@ const LibraryView = () => {
 	}, [viewType]);
 
 	const allowedSortViews = ["Movie", "Series", "MusicAlbum"];
+	const allowedFilterViews = [
+		"Movie",
+		"Series",
+		"MusicAlbum",
+		"AudioBook",
+		"Audio",
+	];
+	const onlyStatusFilterViews = ["AudioBook", "Audio"];
 
 	const [filterButtonAnchorEl, setFilterButtonAnchorEl] = useState(null);
 	const filterMenuOpen = Boolean(filterButtonAnchorEl);
@@ -339,7 +391,7 @@ const LibraryView = () => {
 								/>
 							}
 						>
-							{allowedSortViews.includes(
+							{allowedFilterViews.includes(
 								currentViewType,
 							) && (
 								<>
@@ -380,6 +432,9 @@ const LibraryView = () => {
 											vertical: "top",
 											horizontal: "center",
 										}}
+										sx={{
+											maxHeight: "55%",
+										}}
 									>
 										<Accordion>
 											<AccordionSummary
@@ -399,7 +454,14 @@ const LibraryView = () => {
 												</Typography>
 											</AccordionSummary>
 											<Divider />
-											<AccordionDetails>
+											<AccordionDetails
+												sx={{
+													maxHeight:
+														"15em",
+													overflow:
+														"auto",
+												}}
+											>
 												<Stack>
 													{availableWatchStatus.map(
 														(
@@ -440,6 +502,76 @@ const LibraryView = () => {
 												</Stack>
 											</AccordionDetails>
 										</Accordion>
+										{!onlyStatusFilterViews.includes(
+											currentViewType,
+										) && (
+											<Accordion>
+												<AccordionSummary
+													expandIcon={
+														<MdiChevronDown />
+													}
+													aria-controls="panel1bh-content"
+													id="panel1bh-header"
+												>
+													<Typography
+														sx={{
+															width: "33%",
+															flexShrink: 0,
+														}}
+													>
+														Features
+													</Typography>
+												</AccordionSummary>
+												<Divider />
+												<AccordionDetails
+													sx={{
+														maxHeight:
+															"15em",
+														overflow:
+															"auto",
+													}}
+												>
+													<Stack>
+														{availableFeatureFilters.map(
+															(
+																item,
+																index,
+															) => {
+																return (
+																	<MenuItem
+																		sx={{
+																			justifyContent:
+																				"space-between",
+																		}}
+																		key={
+																			index
+																		}
+																	>
+																		{
+																			item.title
+																		}
+																		<Checkbox
+																			value={
+																				item.value
+																			}
+																			onChange={(
+																				e,
+																			) =>
+																				item.state(
+																					e
+																						.target
+																						.checked,
+																				)
+																			}
+																		/>
+																	</MenuItem>
+																);
+															},
+														)}
+													</Stack>
+												</AccordionDetails>
+											</Accordion>
+										)}
 									</Menu>
 								</>
 							)}
