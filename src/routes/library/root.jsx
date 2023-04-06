@@ -296,14 +296,8 @@ const LibraryView = () => {
 	}, [viewType]);
 
 	const allowedSortViews = ["Movie", "Series", "MusicAlbum"];
-	const allowedFilterViews = [
-		"Movie",
-		"Series",
-		"MusicAlbum",
-		"AudioBook",
-		"Audio",
-	];
-	const onlyStatusFilterViews = ["AudioBook", "Audio"];
+	const allowedFilterViews = ["movies", "tvshows", "music", "books"];
+	const onlyStatusFilterViews = ["books"];
 
 	const [filterButtonAnchorEl, setFilterButtonAnchorEl] = useState(null);
 	const filterMenuOpen = Boolean(filterButtonAnchorEl);
@@ -391,120 +385,61 @@ const LibraryView = () => {
 								/>
 							}
 						>
-							{allowedFilterViews.includes(
-								currentViewType,
-							) && (
-								<>
-									<Button
-										id="basic-button"
-										aria-controls={
-											open
-												? "basic-menu"
-												: undefined
-										}
-										aria-haspopup="true"
-										aria-expanded={
-											open ? "true" : undefined
-										}
-										endIcon={<MdiChevronDown />}
-										onClick={openFiltersMenu}
-										color="white"
-									>
-										Filter
-									</Button>
-									<Menu
-										id="basic-menu"
-										anchorEl={
-											filterButtonAnchorEl
-										}
-										open={filterMenuOpen}
-										onClose={closeFiltersMenu}
-										MenuListProps={{
-											"aria-labelledby":
-												"basic-button",
-											sx: { p: 1 },
-										}}
-										anchorOrigin={{
-											vertical: "bottom",
-											horizontal: "center",
-										}}
-										transformOrigin={{
-											vertical: "top",
-											horizontal: "center",
-										}}
-										sx={{
-											maxHeight: "55%",
-										}}
-									>
-										<Accordion>
-											<AccordionSummary
-												expandIcon={
-													<MdiChevronDown />
-												}
-												aria-controls="panel1bh-content"
-												id="panel1bh-header"
-											>
-												<Typography
-													sx={{
-														width: "33%",
-														flexShrink: 0,
-													}}
-												>
-													Status
-												</Typography>
-											</AccordionSummary>
-											<Divider />
-											<AccordionDetails
-												sx={{
-													maxHeight:
-														"15em",
-													overflow:
-														"auto",
-												}}
-											>
-												<Stack>
-													{availableWatchStatus.map(
-														(
-															item,
-															index,
-														) => {
-															return (
-																<MenuItem
-																	sx={{
-																		justifyContent:
-																			"space-between",
-																	}}
-																	key={
-																		index
-																	}
-																>
-																	{
-																		item.title
-																	}
-																	<Checkbox
-																		value={
-																			item.value
-																		}
-																		onChange={(
-																			e,
-																		) =>
-																			item.state(
-																				e
-																					.target
-																					.checked,
-																			)
-																		}
-																	/>
-																</MenuItem>
-															);
-														},
-													)}
-												</Stack>
-											</AccordionDetails>
-										</Accordion>
-										{!onlyStatusFilterViews.includes(
-											currentViewType,
-										) && (
+							{currentLib.isSuccess &&
+								allowedFilterViews.includes(
+									currentLib.data.Items[0]
+										.CollectionType,
+								) && (
+									<>
+										<Button
+											id="basic-button"
+											aria-controls={
+												open
+													? "basic-menu"
+													: undefined
+											}
+											aria-haspopup="true"
+											aria-expanded={
+												open
+													? "true"
+													: undefined
+											}
+											endIcon={
+												<MdiChevronDown />
+											}
+											onClick={openFiltersMenu}
+											color="white"
+										>
+											Filter
+										</Button>
+										<Menu
+											id="basic-menu"
+											anchorEl={
+												filterButtonAnchorEl
+											}
+											open={filterMenuOpen}
+											onClose={
+												closeFiltersMenu
+											}
+											MenuListProps={{
+												"aria-labelledby":
+													"basic-button",
+												sx: { p: 1 },
+											}}
+											anchorOrigin={{
+												vertical: "bottom",
+												horizontal:
+													"center",
+											}}
+											transformOrigin={{
+												vertical: "top",
+												horizontal:
+													"center",
+											}}
+											sx={{
+												maxHeight: "55%",
+											}}
+										>
 											<Accordion>
 												<AccordionSummary
 													expandIcon={
@@ -519,7 +454,7 @@ const LibraryView = () => {
 															flexShrink: 0,
 														}}
 													>
-														Features
+														Status
 													</Typography>
 												</AccordionSummary>
 												<Divider />
@@ -532,7 +467,7 @@ const LibraryView = () => {
 													}}
 												>
 													<Stack>
-														{availableFeatureFilters.map(
+														{availableWatchStatus.map(
 															(
 																item,
 																index,
@@ -571,10 +506,81 @@ const LibraryView = () => {
 													</Stack>
 												</AccordionDetails>
 											</Accordion>
-										)}
-									</Menu>
-								</>
-							)}
+											{!onlyStatusFilterViews.includes(
+												currentLib.data
+													.Items[0]
+													.CollectionType,
+											) && (
+												<Accordion>
+													<AccordionSummary
+														expandIcon={
+															<MdiChevronDown />
+														}
+														aria-controls="panel1bh-content"
+														id="panel1bh-header"
+													>
+														<Typography
+															sx={{
+																width: "33%",
+																flexShrink: 0,
+															}}
+														>
+															Features
+														</Typography>
+													</AccordionSummary>
+													<Divider />
+													<AccordionDetails
+														sx={{
+															maxHeight:
+																"15em",
+															overflow:
+																"auto",
+														}}
+													>
+														<Stack>
+															{availableFeatureFilters.map(
+																(
+																	item,
+																	index,
+																) => {
+																	return (
+																		<MenuItem
+																			sx={{
+																				justifyContent:
+																					"space-between",
+																			}}
+																			key={
+																				index
+																			}
+																		>
+																			{
+																				item.title
+																			}
+																			<Checkbox
+																				value={
+																					item.value
+																				}
+																				onChange={(
+																					e,
+																				) =>
+																					item.state(
+																						e
+																							.target
+																							.checked,
+																					)
+																				}
+																			/>
+																		</MenuItem>
+																	);
+																},
+															)}
+														</Stack>
+													</AccordionDetails>
+												</Accordion>
+											)}
+										</Menu>
+									</>
+								)}
 							{allowedSortViews.includes(
 								currentViewType,
 							) && (
