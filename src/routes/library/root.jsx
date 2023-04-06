@@ -297,7 +297,7 @@ const LibraryView = () => {
 
 	const allowedSortViews = ["Movie", "Series", "MusicAlbum"];
 	const allowedFilterViews = ["movies", "tvshows", "music", "books"];
-	const onlyStatusFilterViews = ["books"];
+	const onlyStatusFilterViews = ["books", "music"];
 
 	const [filterButtonAnchorEl, setFilterButtonAnchorEl] = useState(null);
 	const filterMenuOpen = Boolean(filterButtonAnchorEl);
