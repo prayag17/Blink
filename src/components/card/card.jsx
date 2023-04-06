@@ -77,7 +77,7 @@ export const Card = ({
 						></Chip>
 					)}
 					<div
-						class="card-media-image-container"
+						className="card-media-image-container"
 						style={{ opacity: imgLoading ? 0 : 1 }}
 					>
 						{imageTags &&

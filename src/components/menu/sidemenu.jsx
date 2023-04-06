@@ -1,11 +1,12 @@
 /** @format */
+import { useEffect, useState } from "react";
 import { delUser } from "../../utils/storage/user";
 
 import { useQueryClient, useQuery, QueryClient } from "@tanstack/react-query";
 import { getUserViewsApi } from "@jellyfin/sdk/lib/utils/api/user-views-api";
 import { getUserApi } from "@jellyfin/sdk/lib/utils/api/user-api";
 
-import { useNavigate, NavLink } from "react-router-dom";
+import { useNavigate, NavLink, useLocation } from "react-router-dom";
 
 import { theme } from "../../theme";
 
@@ -56,7 +57,9 @@ const MiniDrawer = styled(MuiDrawer, {
 }));
 
 export const SideMenu = ({}) => {
-	const queryClient = useQueryClient();
+	const location = useLocation();
+
+	const [display, setDisplay] = useState(false);
 
 	const visible = useSelector((state) => state.sidebar.visible);
 	const navigate = useNavigate();
@@ -66,7 +69,7 @@ export const SideMenu = ({}) => {
 			let usr = await getUserApi(window.api).getCurrentUser();
 			return usr.data;
 		},
-		enabled: visible,
+		enabled: false,
 	});
 	let libraries = useQuery({
 		queryKey: ["libraries"],
@@ -89,147 +92,200 @@ export const SideMenu = ({}) => {
 		navigate("/login");
 	};
 
-	return (
-		<MiniDrawer
-			variant="permanent"
-			open={false}
-			PaperProps={{
-				sx: {
-					backgroundColor: "inherit",
-					border: "none",
+	const getCurrentPathWithoutParam = () => {
+		return location.pathname.slice(0, location.pathname.lastIndexOf("/"));
+	};
+
+	useEffect(() => {
+		// console.log(());
+		if (
+			getCurrentPathWithoutParam() != "/login" &&
+			getCurrentPathWithoutParam != "/setup/server"
+		) {
+			setDisplay(true);
+		}
+		console.log(location);
+	}, [location]);
+
+	if (!display) {
+		return <></>;
+	}
+
+	if (display) {
+		return (
+			<MiniDrawer
+				variant="permanent"
+				open={false}
+				PaperProps={{
+					sx: {
+						backgroundColor: "inherit",
+						border: "none",
+						width: visible
+							? `calc(${theme.spacing(7)} + 10px)`
+							: 0,
+						height: "100vh",
+						// display: visible ? "block" : "none",
+					},
+				}}
+				sx={{
 					width: visible
 						? `calc(${theme.spacing(7)} + 10px)`
 						: 0,
-					height: "100vh",
-					// display: visible ? "block" : "none",
-				},
-			}}
-			sx={{
-				width: visible ? `calc(${theme.spacing(7)} + 10px)` : 0,
-			}}
-		>
-			<DrawerHeader
-				className="Mui-DrawerHeader"
-				sx={{
-					justifyContent: "center",
 				}}
 			>
-				{/* <div>
+				<DrawerHeader
+					className="Mui-DrawerHeader"
+					sx={{
+						justifyContent: "center",
+					}}
+				>
+					{/* <div>
 						<Avatar src={""}/>
 						<Typography variant="h3">
 						{user["Name"]}
 						</Typography>
 					</div> */}
-				<IconButton
-					color="inherit"
-					aria-label="open drawer"
-					onClick={handleDrawerOpen}
-				>
-					<MdiMenu />
-				</IconButton>
-			</DrawerHeader>
-			<Divider />
-			{libraries.isLoading ? (
-				<>
-					<Skeleton
-						height="100%"
-						variant="rounded"
-						width="calc(100% - 10px )"
-						sx={{ margin: "5px" }}
-					></Skeleton>
-				</>
-			) : (
-				<>
-					<List sx={{ border: "none" }}>
-						{libraries.data.Items.map((library, index) => {
-							return (
-								<Tooltip
-									title={library.Name}
-									placement="right"
-									arrow
-									followCursor
-									key={index}
-								>
-									<ListItem
-										className="sidemenu-item-container"
-										disablePadding
-									>
-										<NavLink
-											to={
-												"/library/" +
-												library.Id
-											}
-											className={({
-												isActive,
-												isPending,
-											}) =>
-												isPending
-													? "sidemenu-item-pending sidemenu-item"
-													: isActive
-													? "sidemenu-item-active sidemenu-item"
-													: "sidemenu-item"
-											}
+					<IconButton
+						color="inherit"
+						aria-label="open drawer"
+						onClick={handleDrawerOpen}
+					>
+						<MdiMenu />
+					</IconButton>
+				</DrawerHeader>
+				<Divider />
+				{libraries.isLoading ? (
+					<>
+						<Skeleton
+							height="100%"
+							variant="rounded"
+							width="calc(100% - 10px )"
+							sx={{ margin: "5px" }}
+						></Skeleton>
+					</>
+				) : (
+					<>
+						<List sx={{ border: "none" }}>
+							{libraries.data.Items.map(
+								(library, index) => {
+									return (
+										<Tooltip
+											title={library.Name}
+											placement="right"
+											arrow
+											followCursor
+											key={index}
 										>
-											<ListItemButton
+											<ListItem
+												className="sidemenu-item-container"
+												disablePadding
+											>
+												<NavLink
+													to={
+														"/library/" +
+														library.Id
+													}
+													className={({
+														isActive,
+														isPending,
+													}) =>
+														isPending
+															? "sidemenu-item-pending sidemenu-item"
+															: isActive
+															? "sidemenu-item-active sidemenu-item"
+															: "sidemenu-item"
+													}
+												>
+													<ListItemButton
+														sx={{
+															minHeight: 48,
+															justifyContent:
+																"center",
+															px: 2.5,
+														}}
+														color="white"
+													>
+														<ListItemIcon
+															sx={{
+																minWidth: 0,
+																justifyContent:
+																	"center",
+															}}
+														>
+															{
+																MediaCollectionTypeIconCollection[
+																	library
+																		.CollectionType
+																]
+															}
+														</ListItemIcon>
+													</ListItemButton>
+												</NavLink>
+											</ListItem>
+										</Tooltip>
+									);
+								},
+							)}
+						</List>
+						<List sx={{ marginTop: "auto" }}>
+							<Tooltip
+								title="Home"
+								placement="right"
+								followCursor
+								arrow
+							>
+								<ListItem
+									className="sidemenu-item-container"
+									disablePadding
+								>
+									<NavLink
+										to="/home"
+										className={({
+											isActive,
+											isPending,
+										}) =>
+											isPending
+												? "sidemenu-item-pending sidemenu-item"
+												: isActive
+												? "sidemenu-item-active sidemenu-item"
+												: "sidemenu-item"
+										}
+									>
+										<ListItemButton
+											sx={{
+												minHeight: 48,
+												justifyContent:
+													"center",
+												px: 2.5,
+											}}
+										>
+											<ListItemIcon
 												sx={{
-													minHeight: 48,
+													minWidth: 0,
 													justifyContent:
 														"center",
-													px: 2.5,
 												}}
-												color="white"
 											>
-												<ListItemIcon
-													sx={{
-														minWidth: 0,
-														justifyContent:
-															"center",
-													}}
-												>
-													{
-														MediaCollectionTypeIconCollection[
-															library
-																.CollectionType
-														]
-													}
-												</ListItemIcon>
-											</ListItemButton>
-										</NavLink>
-									</ListItem>
-								</Tooltip>
-							);
-						})}
-					</List>
-					<List sx={{ marginTop: "auto" }}>
-						<Tooltip
-							title="Home"
-							placement="right"
-							followCursor
-							arrow
-						>
-							<ListItem
-								className="sidemenu-item-container"
-								disablePadding
+												<MdiHomeVariantOutline></MdiHomeVariantOutline>
+											</ListItemIcon>
+										</ListItemButton>
+									</NavLink>
+								</ListItem>
+							</Tooltip>
+							<Tooltip
+								title="Logout"
+								placement="right"
+								followCursor
+								arrow
 							>
-								<NavLink
-									to="/home"
-									className={({
-										isActive,
-										isPending,
-									}) =>
-										isPending
-											? "sidemenu-item-pending sidemenu-item"
-											: isActive
-											? "sidemenu-item-active sidemenu-item"
-											: "sidemenu-item"
-									}
-								>
+								<ListItem disablePadding>
 									<ListItemButton
 										sx={{
 											minHeight: 48,
 											justifyContent: "center",
 											px: 2.5,
 										}}
+										onClick={handleLogout}
 									>
 										<ListItemIcon
 											sx={{
@@ -238,43 +294,17 @@ export const SideMenu = ({}) => {
 													"center",
 											}}
 										>
-											<MdiHomeVariantOutline></MdiHomeVariantOutline>
+											<MdiLogoutVariant></MdiLogoutVariant>
 										</ListItemIcon>
 									</ListItemButton>
-								</NavLink>
-							</ListItem>
-						</Tooltip>
-						<Tooltip
-							title="Logout"
-							placement="right"
-							followCursor
-							arrow
-						>
-							<ListItem disablePadding>
-								<ListItemButton
-									sx={{
-										minHeight: 48,
-										justifyContent: "center",
-										px: 2.5,
-									}}
-									onClick={handleLogout}
-								>
-									<ListItemIcon
-										sx={{
-											minWidth: 0,
-											justifyContent: "center",
-										}}
-									>
-										<MdiLogoutVariant></MdiLogoutVariant>
-									</ListItemIcon>
-								</ListItemButton>
-							</ListItem>
-						</Tooltip>
-					</List>
-				</>
-			)}
-		</MiniDrawer>
-	);
+								</ListItem>
+							</Tooltip>
+						</List>
+					</>
+				)}
+			</MiniDrawer>
+		);
+	}
 };
 
 // SideMenu.propTypes = {

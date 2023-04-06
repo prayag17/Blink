@@ -14,7 +14,7 @@ export const EmptyNotice = () => {
 				justifyContent: "center",
 				alignItems: "center",
 				flexFlow: "column",
-				opacity: 0.4,
+				opacity: 0.2,
 			}}
 		>
 			<MdiEmoticonCryOutline sx={{ fontSize: 200 }} />

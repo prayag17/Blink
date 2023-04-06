@@ -19,10 +19,16 @@ import Typography from "@mui/material/Typography";
 import CircularProgress from "@mui/material/CircularProgress";
 import Divider from "@mui/material/Divider";
 import Chip from "@mui/material/Chip";
-import IconButton from "@mui/material/IconButton";
 import TextField from "@mui/material/TextField";
 import Checkbox from "@mui/material/Checkbox";
+import Menu from "@mui/material/Menu";
 import MenuItem from "@mui/material/MenuItem";
+import Accordion from "@mui/material/Accordion";
+import AccordionSummary from "@mui/material/AccordionSummary";
+import AccordionDetails from "@mui/material/AccordionDetails";
+import Button from "@mui/material/Button";
+import List from "@mui/material/List";
+import ListItem from "@mui/material/ListItem";
 
 import { theme } from "../../theme";
 
@@ -35,9 +41,11 @@ import { getStudiosApi } from "@jellyfin/sdk/lib/utils/api/studios-api";
 import { getPersonsApi } from "@jellyfin/sdk/lib/utils/api/persons-api";
 
 import { Card } from "../../components/card/card";
-import { EmptyNotice } from "../../components/emptyNotice/emptyNoticee";
+import { EmptyNotice } from "../../components/emptyNotice/emptyNotice";
 import { MdiSortDescending } from "../../components/icons/mdiSortDescending";
 import { MdiSortAscending } from "../../components/icons/mdiSortAscending";
+import { MdiChevronRight } from "../../components/icons/mdiChevronRight";
+import { MdiChevronDown } from "../../components/icons/mdiChevronDown";
 
 const LibraryView = () => {
 	const dispatch = useDispatch();
@@ -87,6 +95,46 @@ const LibraryView = () => {
 		// console.log(currentLib.data.)
 		dispatch(showBackButton());
 	}
+
+	const [isPlayed, setIsPlayed] = useState(false);
+	const [isUnPlayed, setIsUnPlayed] = useState(false);
+	const [isResumable, setIsResumable] = useState(false);
+	const [isFavourite, setIsFavourite] = useState(false);
+	const [isLiked, setIsLiked] = useState(false);
+	const [isUnliked, setIsUnliked] = useState(false);
+
+	const availableWatchStatus = [
+		{
+			title: "Played",
+			value: false,
+			state: (val) => setIsPlayed(val),
+		},
+		{
+			title: "Unplayed",
+			value: false,
+			state: (val) => setIsUnPlayed(val),
+		},
+		{
+			title: "Resumable",
+			value: false,
+			state: (val) => setIsResumable(val),
+		},
+		{
+			title: "Favourite",
+			value: false,
+			state: (val) => setIsFavourite(val),
+		},
+		{
+			title: "Liked",
+			value: false,
+			state: (val) => setIsLiked(val),
+		},
+		{
+			title: "UnLiked",
+			value: false,
+			state: (val) => setIsUnliked(val),
+		},
+	];
 
 	const [currentViewType, setCurrentViewType] = useState(undefined);
 	const [viewType, setViewType] = useState([]);
@@ -157,6 +205,14 @@ const LibraryView = () => {
 				includeItemTypes: [currentViewType],
 				sortOrder: [sortAscending ? "Ascending" : "Descending"],
 				sortBy: sortBy,
+				filters: [
+					isPlayed && "IsPlayed",
+					isUnPlayed && "IsUnplayed",
+					isResumable && "IsResumable",
+					isFavourite && "IsFavorite",
+					isLiked && "IsFavoriteOrLikes",
+					isUnliked && "Dislikes",
+				],
 			});
 		}
 		return result.data;
@@ -167,7 +223,19 @@ const LibraryView = () => {
 			"libraryView",
 			"currentLibItems",
 			id,
-			`${currentViewType} - ${sortAscending} - ${sortBy}`,
+			[
+				currentViewType,
+				sortAscending,
+				sortBy,
+				[
+					isPlayed,
+					isUnPlayed,
+					isResumable,
+					isFavourite,
+					isLiked,
+					isUnliked,
+				],
+			],
 		],
 		queryFn: () => fetchLibItems(id),
 		enabled: !!user.data,
@@ -184,6 +252,26 @@ const LibraryView = () => {
 	}, [viewType]);
 
 	const allowedSortViews = ["Movie", "Series", "MusicAlbum"];
+
+	const [filterButtonAnchorEl, setFilterButtonAnchorEl] = useState(null);
+	const filterMenuOpen = Boolean(filterButtonAnchorEl);
+	const openFiltersMenu = (event) => {
+		setFilterButtonAnchorEl(event.currentTarget);
+	};
+	const closeFiltersMenu = () => {
+		setFilterButtonAnchorEl(null);
+	};
+
+	useEffect(() => {
+		console.log(
+			isPlayed,
+			isUnPlayed,
+			isResumable,
+			isFavourite,
+			isLiked,
+			isUnliked,
+		);
+	}, [isPlayed, isUnPlayed, isResumable, isFavourite, isLiked, isUnliked]);
 
 	return (
 		<Box
@@ -247,9 +335,114 @@ const LibraryView = () => {
 								<Divider
 									orientation="vertical"
 									flexItem
+									variant="inset"
 								/>
 							}
 						>
+							{allowedSortViews.includes(
+								currentViewType,
+							) && (
+								<>
+									<Button
+										id="basic-button"
+										aria-controls={
+											open
+												? "basic-menu"
+												: undefined
+										}
+										aria-haspopup="true"
+										aria-expanded={
+											open ? "true" : undefined
+										}
+										endIcon={<MdiChevronDown />}
+										onClick={openFiltersMenu}
+										color="white"
+									>
+										Filter
+									</Button>
+									<Menu
+										id="basic-menu"
+										anchorEl={
+											filterButtonAnchorEl
+										}
+										open={filterMenuOpen}
+										onClose={closeFiltersMenu}
+										MenuListProps={{
+											"aria-labelledby":
+												"basic-button",
+											sx: { p: 1 },
+										}}
+										anchorOrigin={{
+											vertical: "bottom",
+											horizontal: "center",
+										}}
+										transformOrigin={{
+											vertical: "top",
+											horizontal: "center",
+										}}
+									>
+										<Accordion>
+											<AccordionSummary
+												expandIcon={
+													<MdiChevronDown />
+												}
+												aria-controls="panel1bh-content"
+												id="panel1bh-header"
+											>
+												<Typography
+													sx={{
+														width: "33%",
+														flexShrink: 0,
+													}}
+												>
+													Status
+												</Typography>
+											</AccordionSummary>
+											<Divider />
+											<AccordionDetails>
+												<Stack>
+													{availableWatchStatus.map(
+														(
+															item,
+															index,
+														) => {
+															return (
+																<MenuItem
+																	sx={{
+																		justifyContent:
+																			"space-between",
+																	}}
+																	key={
+																		index
+																	}
+																>
+																	{
+																		item.title
+																	}
+																	<Checkbox
+																		value={
+																			item.value
+																		}
+																		onChange={(
+																			e,
+																		) =>
+																			item.state(
+																				e
+																					.target
+																					.checked,
+																			)
+																		}
+																	/>
+																</MenuItem>
+															);
+														},
+													)}
+												</Stack>
+											</AccordionDetails>
+										</Accordion>
+									</Menu>
+								</>
+							)}
 							{allowedSortViews.includes(
 								currentViewType,
 							) && (
@@ -316,12 +509,15 @@ const LibraryView = () => {
 						</Stack>
 					</Toolbar>
 				</AppBar>
-				<Grid2 container columns={{ xs: 3, sm: 5, md: 8 }}>
-					{items.isSuccess &&
-						(items.data.TotalRecordCount == 0 ? (
-							<EmptyNotice />
-						) : (
-							items.data.Items.map((item, index) => {
+				{items.isSuccess &&
+					(items.data.TotalRecordCount == 0 ? (
+						<EmptyNotice />
+					) : (
+						<Grid2
+							container
+							columns={{ xs: 3, sm: 5, md: 8 }}
+						>
+							{items.data.Items.map((item, index) => {
 								return (
 									<Grid2
 										key={index}
@@ -390,9 +586,9 @@ const LibraryView = () => {
 										></Card>
 									</Grid2>
 								);
-							})
-						))}
-				</Grid2>
+							})}
+						</Grid2>
+					))}
 			</Box>
 		</Box>
 	);
