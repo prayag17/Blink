@@ -64,12 +64,15 @@ export const Card = ({
 								: "1",
 					}}
 				>
-					{watchedStatus && (
-						<Chip
-							className="card-indicator"
-							label={<MdiCheck />}
-						/>
-					)}
+					<Chip
+						className="card-indicator"
+						label={<MdiCheck />}
+						sx={{
+							transition: "opacity 150ms",
+							opacity: watchedStatus ? 1 : 0,
+						}}
+					/>
+
 					{!!watchedCount && (
 						<Chip
 							className="card-indicator card-indicator-text"

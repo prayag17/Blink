@@ -46,6 +46,7 @@ import { MdiSortDescending } from "../../components/icons/mdiSortDescending";
 import { MdiSortAscending } from "../../components/icons/mdiSortAscending";
 import { MdiChevronRight } from "../../components/icons/mdiChevronRight";
 import { MdiChevronDown } from "../../components/icons/mdiChevronDown";
+import { MdiFilterOutline } from "../../components/icons/mdiFilterOutline";
 
 const LibraryView = () => {
 	const dispatch = useDispatch();
@@ -168,6 +169,19 @@ const LibraryView = () => {
 		},
 	];
 
+	const [isBluRay, setIsBluRay] = useState(false);
+	const [isDVD, setIsDVD] = useState(false);
+	const [isHD, setIsHD] = useState(false);
+	const [is4K, setIs4K] = useState(false);
+	const [is3D, setIs3D] = useState(false);
+	const availableVideoTypeFilters = [
+		{ title: "Blu-Ray", value: false, state: (val) => setIsBluRay(val) },
+		{ title: "DVD", value: false, state: (val) => setIsDVD(val) },
+		{ title: "HD", value: false, state: (val) => setIsHD(val) },
+		{ title: "4K", value: false, state: (val) => setIs4K(val) },
+		{ title: "3D", value: false, state: (val) => setIs3D(val) },
+	];
+
 	const [currentViewType, setCurrentViewType] = useState(undefined);
 	const [viewType, setViewType] = useState([]);
 	useEffect(() => {
@@ -250,6 +264,10 @@ const LibraryView = () => {
 				hasSpecialFeature: hasSpecialFeature ? true : undefined,
 				hasThemeSong: hasThemeSong ? true : undefined,
 				hasThemeVideo: hasThemeVideo ? true : undefined,
+				videoTypes: [isBluRay && "BluRay", isDVD && "Dvd"],
+				isHd: isHD ? true : undefined,
+				is4K: is4K ? true : undefined,
+				is3D: is3D ? true : undefined,
 			});
 		}
 		return result.data;
@@ -279,6 +297,7 @@ const LibraryView = () => {
 					hasThemeSong,
 					hasThemeVideo,
 				],
+				[isBluRay, isDVD, isHD, is4K, is3D],
 			],
 		],
 		queryFn: () => fetchLibItems(id),
@@ -404,11 +423,16 @@ const LibraryView = () => {
 													? "true"
 													: undefined
 											}
+											startIcon={
+												<MdiFilterOutline />
+											}
 											endIcon={
 												<MdiChevronDown />
 											}
 											onClick={openFiltersMenu}
 											color="white"
+											// sx={{ p: 1 }}
+											// size="small"
 										>
 											Filter
 										</Button>
@@ -539,6 +563,79 @@ const LibraryView = () => {
 													>
 														<Stack>
 															{availableFeatureFilters.map(
+																(
+																	item,
+																	index,
+																) => {
+																	return (
+																		<MenuItem
+																			sx={{
+																				justifyContent:
+																					"space-between",
+																			}}
+																			key={
+																				index
+																			}
+																		>
+																			{
+																				item.title
+																			}
+																			<Checkbox
+																				value={
+																					item.value
+																				}
+																				onChange={(
+																					e,
+																				) =>
+																					item.state(
+																						e
+																							.target
+																							.checked,
+																					)
+																				}
+																			/>
+																		</MenuItem>
+																	);
+																},
+															)}
+														</Stack>
+													</AccordionDetails>
+												</Accordion>
+											)}
+											{!onlyStatusFilterViews.includes(
+												currentLib.data
+													.Items[0]
+													.CollectionType,
+											) && (
+												<Accordion>
+													<AccordionSummary
+														expandIcon={
+															<MdiChevronDown />
+														}
+														aria-controls="panel1bh-content"
+														id="panel1bh-header"
+													>
+														<Typography
+															sx={{
+																flexShrink: 0,
+															}}
+															noWrap
+														>
+															Video
+															Type
+														</Typography>
+													</AccordionSummary>
+													<Divider />
+													<AccordionDetails
+														sx={{
+															maxHeight:
+																"15em",
+															overflow:
+																"auto",
+														}}
+													>
+														<Stack>
+															{availableVideoTypeFilters.map(
 																(
 																	item,
 																	index,
