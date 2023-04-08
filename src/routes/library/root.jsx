@@ -690,6 +690,9 @@ const LibraryView = () => {
 										color="white"
 										onChange={handleSortChange}
 										defaultValue={sortAscending}
+										sx={{
+											color: "white !important",
+										}}
 									/>
 									<TextField
 										select
@@ -818,6 +821,7 @@ const LibraryView = () => {
 														: ""
 													: ""
 											}
+											currentUser={user.data}
 										></Card>
 									</Grid2>
 								);

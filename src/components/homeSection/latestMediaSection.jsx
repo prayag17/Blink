@@ -65,6 +65,10 @@ export const LatestMediaSection = ({ latestMediaLib }) => {
 									? "sqaure"
 									: "portait"
 							}
+							watchedStatus={item.UserData.Played}
+							watchedCount={
+								item.UserData.UnplayedItemCount
+							}
 							blurhash={
 								item.ImageBlurHashes == {}
 									? ""
@@ -78,6 +82,8 @@ export const LatestMediaSection = ({ latestMediaLib }) => {
 										: ""
 									: ""
 							}
+							currentUser={user.data}
+							favourite={item.UserData.IsFavorite}
 						></Card>
 					);
 				})}

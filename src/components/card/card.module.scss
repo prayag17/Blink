@@ -2,8 +2,29 @@
 
 .card {
 	border-radius: $border-radius-default;
-	&-media-image-container {
-		transition: opacity $transition-time-default;
+	&-media {
+		&-container {
+			position: relative;
+			border-radius: $border-radius-default;
+			overflow: hidden;
+		}
+		&-overlay {
+			position: absolute;
+			top: 0;
+			left: 0;
+			right: 0;
+			bottom: 0;
+			background: rgb(0 0 0 / 0.6);
+			opacity: 0;
+			transition: opacity $transition-time-default;
+			z-index: 10;
+		}
+		&-image-container {
+			transition: opacity $transition-time-default;
+		}
+	}
+	&:hover .card-media-overlay {
+		opacity: 1;
 	}
 	&-image {
 		position: relative;

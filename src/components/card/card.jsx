@@ -10,7 +10,10 @@ import CardActionArea from "@mui/material/CardActionArea";
 import Typography from "@mui/material/Typography";
 import LinearProgress from "@mui/material/LinearProgress";
 import Chip from "@mui/material/Chip";
+import ButtonGroup from "@mui/material/ButtonGroup";
+import IconButton from "@mui/material/IconButton";
 import { Blurhash } from "react-blurhash";
+import { green, pink } from "@mui/material/colors";
 
 import {
 	MediaCollectionTypeIconCollectionCard,
@@ -21,6 +24,11 @@ import { borderRadiusDefault } from "../../palette.module.scss";
 import "./card.module.scss";
 import { MdiCheck } from "../icons/mdiCheck";
 
+import { getPlaystateApi } from "@jellyfin/sdk/lib/utils/api/playstate-api";
+import { getUserLibraryApi } from "@jellyfin/sdk/lib/utils/api/user-library-api";
+import { MdiHeartOutline } from "../icons/mdiHeartOutline";
+import { MdiHeart } from "../icons/mdiHeart";
+
 export const Card = ({
 	itemName,
 	itemId,
@@ -30,13 +38,88 @@ export const Card = ({
 	subText = "",
 	playedPercent,
 	cardOrientation,
-	props,
+	cardProps,
 	onClickEvent,
 	watchedStatus,
 	watchedCount,
 	blurhash,
+	currentUser,
+	favourite,
 }) => {
 	const [imgLoading, setImgLoading] = useState(true);
+	const [isWatched, setIsWatched] = useState(watchedStatus);
+	const [isFavourite, setIsFavourite] = useState(favourite);
+	const [watchedCountState, setWatchedCountState] = useState(watchedCount);
+	const handleMarkAsPlayOrUnMarkAsPlay = async () => {
+		let result;
+		if (!isWatched) {
+			result = await getPlaystateApi(window.api).markPlayedItem({
+				userId: currentUser.Id,
+				itemId: itemId,
+			});
+		} else if (isWatched) {
+			result = await getPlaystateApi(window.api).markUnplayedItem({
+				userId: currentUser.Id,
+				itemId: itemId,
+			});
+		}
+		console.log(result.data);
+		setIsWatched(result.data.Played);
+		setWatchedCountState(result.data.UnplayedItemCount);
+	};
+	const handleLiking = async () => {
+		let result;
+		if (isFavourite) {
+			result = await getUserLibraryApi(window.api).unmarkFavoriteItem({
+				userId: currentUser.Id,
+				itemId: itemId,
+			});
+		} else if (!isFavourite) {
+			result = await getUserLibraryApi(window.api).markFavoriteItem({
+				userId: currentUser.Id,
+				itemId: itemId,
+			});
+		}
+		console.log(result.data.IsFavorite);
+		setIsFavourite(result.data.IsFavorite);
+	};
+
+	const availableMarkButtonTypes = [
+		"Audio",
+		"AudioBook",
+		"Book",
+		"BoxSet",
+		"CollectionFolder",
+		"Movie",
+		"MusicAlbum",
+		"MusicVideo",
+		"Season",
+		"Series",
+		"Video",
+		"Episode",
+	];
+	const allowedLikeButton = [
+		"Audio",
+		"AudioBook",
+		"Book",
+		"BoxSet",
+		"CollectionFolder",
+		"Movie",
+		"MusicAlbum",
+		"MusicVideo",
+		"Season",
+		"Series",
+		"Video",
+		"Channel",
+		"MusicAlbum",
+		"MusicArtist",
+		"Person",
+		"Photo",
+		"Playlist",
+		"Studio",
+		"Episode",
+	];
+
 	return (
 		<MuiCard
 			className={"card " + cardOrientation}
@@ -46,7 +129,7 @@ export const Card = ({
 				mr: 1,
 			}}
 			elevation={0}
-			{...props}
+			{...cardProps}
 		>
 			<CardActionArea
 				onClick={!!onClickEvent ? onClickEvent : () => {}}
@@ -64,118 +147,168 @@ export const Card = ({
 								: "1",
 					}}
 				>
-					<Chip
-						className="card-indicator"
-						label={<MdiCheck />}
-						sx={{
-							transition: "opacity 150ms",
-							opacity: watchedStatus ? 1 : 0,
-						}}
-					/>
-
-					{!!watchedCount && (
+					<>
 						<Chip
-							className="card-indicator card-indicator-text"
-							label={watchedCount}
-						></Chip>
-					)}
-					<div
-						className="card-media-image-container"
-						style={{ opacity: imgLoading ? 0 : 1 }}
-					>
-						{imageTags &&
-							(cardType == "thumb" ? (
-								<CardMedia
-									component="img"
-									image={
-										window.api.basePath +
-										"/Items/" +
-										itemId +
-										"/Images/Backdrop?fillHeight=300&fillWidth=532&quality=96"
-									}
-									alt={itemName}
-									sx={{
-										width: "100%",
-										aspectRatio:
-											cardOrientation ==
-											"landscape"
-												? "1.777"
-												: cardOrientation ==
-												  "portait"
-												? "0.666"
-												: "1",
-										borderRadius:
-											borderRadiusDefault,
-										overflow: "hidden",
-									}}
-									onLoad={() => setImgLoading(false)}
-									className="card-image"
-								></CardMedia>
-							) : (
-								<CardMedia
-									component="img"
-									image={
-										window.api.basePath +
-										"/Items/" +
-										itemId +
-										"/Images/Primary"
-									}
-									alt={itemName}
-									sx={{
-										width: "100%",
-										aspectRatio:
-											cardOrientation ==
-											"landscape"
-												? "1.777"
-												: cardOrientation ==
-												  "portait"
-												? "0.666"
-												: "1",
-									}}
-									className="card-image"
-									onLoad={() => setImgLoading(false)}
-								></CardMedia>
-							))}
-					</div>
-					{!!blurhash && (
-						<Blurhash
-							hash={blurhash}
-							width="100%"
-							height="100%"
-							resolutionX={64}
-							resolutionY={64}
-							style={{
-								aspectRatio:
-									cardOrientation == "landscape"
-										? "1.777"
-										: cardOrientation == "portait"
-										? "0.666"
-										: "1",
-							}}
-							className="card-image-blurhash"
-						/>
-					)}
-					<div className="card-image-icon-container">
-						{cardType == "lib"
-							? MediaCollectionTypeIconCollectionCard[
-									iconType
-							  ]
-							: TypeIconCollectionCard[iconType]}
-					</div>
-					{!!playedPercent && (
-						<LinearProgress
-							variant="determinate"
-							value={playedPercent}
+							className="card-indicator"
+							label={<MdiCheck />}
 							sx={{
-								width: "90%",
-								position: "absolute",
-								left: "5%",
-								bottom: "5%",
-								borderRadius: "100px",
-								height: "5px",
+								transition: "opacity 150ms",
+								opacity: isWatched ? 1 : 0,
 							}}
 						/>
-					)}
+
+						{!!watchedCountState && (
+							<Chip
+								className="card-indicator card-indicator-text"
+								label={watchedCountState}
+							></Chip>
+						)}
+						<div
+							className="card-media-image-container"
+							style={{ opacity: imgLoading ? 0 : 1 }}
+						>
+							{imageTags &&
+								(cardType == "thumb" ? (
+									<CardMedia
+										component="img"
+										image={
+											window.api.basePath +
+											"/Items/" +
+											itemId +
+											"/Images/Backdrop?fillHeight=300&fillWidth=532&quality=96"
+										}
+										alt={itemName}
+										sx={{
+											width: "100%",
+											aspectRatio:
+												cardOrientation ==
+												"landscape"
+													? "1.777"
+													: cardOrientation ==
+													  "portait"
+													? "0.666"
+													: "1",
+											borderRadius:
+												borderRadiusDefault,
+											overflow: "hidden",
+										}}
+										onLoad={() =>
+											setImgLoading(false)
+										}
+										className="card-image"
+									></CardMedia>
+								) : (
+									<CardMedia
+										component="img"
+										image={
+											window.api.basePath +
+											"/Items/" +
+											itemId +
+											"/Images/Primary"
+										}
+										alt={itemName}
+										sx={{
+											width: "100%",
+											aspectRatio:
+												cardOrientation ==
+												"landscape"
+													? "1.777"
+													: cardOrientation ==
+													  "portait"
+													? "0.666"
+													: "1",
+										}}
+										className="card-image"
+										onLoad={() =>
+											setImgLoading(false)
+										}
+									></CardMedia>
+								))}
+						</div>
+						{!!blurhash && (
+							<Blurhash
+								hash={blurhash}
+								width="100%"
+								height="100%"
+								resolutionX={64}
+								resolutionY={64}
+								style={{
+									aspectRatio:
+										cardOrientation == "landscape"
+											? "1.777"
+											: cardOrientation ==
+											  "portait"
+											? "0.666"
+											: "1",
+								}}
+								className="card-image-blurhash"
+							/>
+						)}
+						<div className="card-image-icon-container">
+							{cardType == "lib"
+								? MediaCollectionTypeIconCollectionCard[
+										iconType
+								  ]
+								: TypeIconCollectionCard[iconType]}
+						</div>
+						{!!playedPercent && (
+							<LinearProgress
+								variant="determinate"
+								value={playedPercent}
+								sx={{
+									width: "90%",
+									position: "absolute",
+									left: "5%",
+									bottom: "5%",
+									borderRadius: "100px",
+									height: "5px",
+								}}
+							/>
+						)}
+					</>
+					<Box
+						className="card-media-overlay"
+						sx={{
+							display: "flex",
+							alignItems: "flex-end",
+							justifyContent: "flex-end",
+							p: 1,
+						}}
+					>
+						<ButtonGroup>
+							{availableMarkButtonTypes.includes(
+								iconType,
+							) && (
+								<IconButton
+									onClick={(e) => {
+										e.stopPropagation();
+										handleMarkAsPlayOrUnMarkAsPlay(
+											watchedStatus,
+										);
+									}}
+								>
+									<MdiCheck
+										sx={{
+											color: isWatched
+												? green[200]
+												: "white",
+										}}
+									/>
+								</IconButton>
+							)}
+							{allowedLikeButton.includes(iconType) && (
+								<IconButton onClick={handleLiking}>
+									{isFavourite ? (
+										<MdiHeart
+											sx={{ color: pink[700] }}
+										/>
+									) : (
+										<MdiHeartOutline />
+									)}
+								</IconButton>
+							)}
+						</ButtonGroup>
+					</Box>
 				</Box>
 
 				<CardContent
@@ -231,4 +364,6 @@ Card.propTypes = {
 	watchedStatus: PropTypes.bool,
 	watchedCount: PropTypes.number,
 	blurhash: PropTypes.string,
+	currentUser: PropTypes.object,
+	favourite: PropTypes.bool,
 };

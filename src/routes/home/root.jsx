@@ -545,6 +545,9 @@ const Home = () => {
 															: ""
 														: ""
 												}
+												currentUser={
+													user.data
+												}
 											></Card>
 										);
 									},
@@ -610,6 +613,11 @@ const Home = () => {
 														  ]
 														: ""
 													: ""
+											}
+											currentUser={user.data}
+											favourite={
+												item.UserData
+													.IsFavorite
 											}
 										></Card>
 									);
@@ -690,6 +698,11 @@ const Home = () => {
 														: ""
 													: ""
 											}
+											currentUser={user.data}
+											favourite={
+												item.UserData
+													.IsFavorite
+											}
 										></Card>
 									);
 								},
@@ -753,6 +766,11 @@ const Home = () => {
 														  ]
 														: ""
 													: ""
+											}
+											currentUser={user.data}
+											favourite={
+												item.UserData
+													.IsFavorite
 											}
 										></Card>
 									);

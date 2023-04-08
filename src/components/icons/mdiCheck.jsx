@@ -6,7 +6,7 @@ import { mdiCheck } from "@mdi/js";
 
 export const MdiCheck = (props) => {
 	return (
-		<SvgIcon {...props}>
+		<SvgIcon color="red" {...props}>
 			<path d={mdiCheck}></path>
 		</SvgIcon>
 	);
