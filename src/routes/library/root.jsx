@@ -6,7 +6,7 @@ import {
 	setBackdrop,
 	showBackButton,
 } from "../../utils/slice/appBar";
-import { useParams } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
 
 import { useQuery } from "@tanstack/react-query";
 
@@ -27,8 +27,6 @@ import Accordion from "@mui/material/Accordion";
 import AccordionSummary from "@mui/material/AccordionSummary";
 import AccordionDetails from "@mui/material/AccordionDetails";
 import Button from "@mui/material/Button";
-import List from "@mui/material/List";
-import ListItem from "@mui/material/ListItem";
 
 import { theme } from "../../theme";
 
@@ -42,13 +40,14 @@ import { getPersonsApi } from "@jellyfin/sdk/lib/utils/api/persons-api";
 
 import { Card } from "../../components/card/card";
 import { EmptyNotice } from "../../components/emptyNotice/emptyNotice";
+
 import { MdiSortDescending } from "../../components/icons/mdiSortDescending";
 import { MdiSortAscending } from "../../components/icons/mdiSortAscending";
-import { MdiChevronRight } from "../../components/icons/mdiChevronRight";
 import { MdiChevronDown } from "../../components/icons/mdiChevronDown";
 import { MdiFilterOutline } from "../../components/icons/mdiFilterOutline";
 
 const LibraryView = () => {
+	const navigate = useNavigate();
 	const dispatch = useDispatch();
 	const appBarVisiblity = useSelector((state) => state.appBar.visible);
 
@@ -93,7 +92,6 @@ const LibraryView = () => {
 	});
 
 	if (currentLib.isSuccess) {
-		// console.log(currentLib.data.)
 		dispatch(showBackButton());
 	}
 
@@ -216,7 +214,6 @@ const LibraryView = () => {
 	}, [currentLib.isSuccess]);
 
 	const fetchLibItems = async (libraryId) => {
-		console.log(libraryId);
 		let result;
 		if (currentViewType == "MusicArtist") {
 			result = await getArtistsApi(window.api).getAlbumArtists({
@@ -326,17 +323,6 @@ const LibraryView = () => {
 	const closeFiltersMenu = () => {
 		setFilterButtonAnchorEl(null);
 	};
-
-	useEffect(() => {
-		console.log(
-			isPlayed,
-			isUnPlayed,
-			isResumable,
-			isFavourite,
-			isLiked,
-			isUnliked,
-		);
-	}, [isPlayed, isUnPlayed, isResumable, isFavourite, isLiked, isUnliked]);
 
 	return (
 		<Box
@@ -822,6 +808,11 @@ const LibraryView = () => {
 													: ""
 											}
 											currentUser={user.data}
+											onClickEvent={() => {
+												navigate(
+													`/item/${item.Type}/${item.Id}`,
+												);
+											}}
 										></Card>
 									</Grid2>
 								);

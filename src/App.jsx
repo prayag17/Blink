@@ -45,6 +45,7 @@ import {
 	UserLoginManual,
 } from "./routes/login/root";
 import LibraryView from "./routes/library/root.jsx";
+import ItemMovie from "./routes/item/Movie/root.jsx";
 
 import { SideMenu } from "./components/menu/sidemenu.jsx";
 import { AppBar } from "./components/appBar/appBar.jsx";
@@ -348,6 +349,10 @@ function App() {
 								<Route
 									path="/library/:id"
 									element={<LibraryView />}
+								/>
+								<Route
+									path="/item/Movie/:id"
+									element={<ItemMovie />}
 								/>
 
 								{/* Logical Routes */}

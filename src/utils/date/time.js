@@ -22,3 +22,18 @@ export const getRuntime = (ticks) => {
 	}
 	return formatedTime;
 };
+
+export const getRuntimeFull = (ticks) => {
+	let time = ticksToMs(ticks);
+	let formatedTime = "";
+	let timeSec = Math.round(time / 1000);
+	let timeMin = Math.round(timeSec / 60);
+	if (timeMin > 60) {
+		let timeHr = Math.floor(timeMin / 60);
+		timeMin -= timeHr * 60;
+		formatedTime = `${timeHr}hour ${timeMin}minutes`;
+	} else {
+		formatedTime = `${timeMin}minutes`;
+	}
+	return formatedTime;
+};

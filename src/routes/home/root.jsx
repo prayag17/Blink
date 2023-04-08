@@ -208,589 +208,552 @@ const Home = () => {
 	return (
 		<>
 			<Box
+				component="main"
+				className="scrollY"
 				sx={{
-					display: "flex",
+					flexGrow: 1,
+					pt: 11,
+					px: 3,
+					pb: 3,
+					position: "relative",
+				}}
+				ref={(node) => {
+					if (node) {
+						setScrollTarget(node);
+					}
 				}}
 			>
-				<Box
-					component="main"
-					className="scrollY"
+				<Carousel
+					className="hero-carousel"
+					autoPlay={true}
+					animation="fade"
+					height="70vh"
+					IndicatorIcon={
+						<div className="hero-carousel-indicator"></div>
+					}
+					activeIndicatorIconButtonProps={{
+						style: {
+							background: "rgb(255 255 255)",
+						},
+					}}
+					indicatorIconButtonProps={{
+						style: {
+							background: "rgb(255 255 255 / 0.3)",
+							borderRadius: "2px",
+							width: "100%",
+							flexShrink: "1",
+						},
+					}}
+					indicatorContainerProps={{
+						style: {
+							display: "flex",
+							gap: "1em",
+						},
+					}}
 					sx={{
-						flexGrow: 1,
-						pt: 11,
-						px: 3,
-						pb: 3,
-						position: "relative",
+						marginBottom: "1.5em",
 					}}
-					ref={(node) => {
-						if (node) {
-							setScrollTarget(node);
-						}
-					}}
+					interval={10000}
 				>
-					<Carousel
-						className="hero-carousel"
-						autoPlay={true}
-						animation="fade"
-						height="70vh"
-						IndicatorIcon={
-							<div className="hero-carousel-indicator"></div>
-						}
-						activeIndicatorIconButtonProps={{
-							style: {
-								background: "rgb(255 255 255)",
-							},
-						}}
-						indicatorIconButtonProps={{
-							style: {
-								background: "rgb(255 255 255 / 0.3)",
-								borderRadius: "2px",
-								width: "100%",
-								flexShrink: "1",
-							},
-						}}
-						indicatorContainerProps={{
-							style: {
-								display: "flex",
-								gap: "1em",
-							},
-						}}
-						sx={{
-							marginBottom: "1.5em",
-						}}
-						interval={10000}
-					>
-						{latestMedia.isLoading ? (
-							<CarouselSkeleton />
-						) : (
-							// <></>
-							latestMedia.data != null &&
-							latestMedia.data.map((item, index) => {
-								// console.log(item);
-								return (
-									<Paper
-										className="hero-carousel-slide"
-										sx={{
-											background:
-												theme.palette
-													.primary
-													.background
-													.dark,
-										}}
-										key={index}
-									>
-										<div className="hero-carousel-background-container">
-											{item.ImageBlurHashes
-												.Backdrop ? (
-												<>
-													<Blurhash
-														hash={
-															item
-																.ImageBlurHashes
-																.Backdrop[
-																item
-																	.BackdropImageTags[0]
-															]
-														}
-														// hash="LEHV6nWB2yk8pyo0adR*.7kCMdnj"
-														width="1080"
-														height="720"
-														resolutionX={
-															720
-														}
-														resolutionY={
-															1080
-														}
-														className="hero-carousel-background-blurhash"
-													/>
-													<div
-														className="hero-carousel-background-image"
-														style={{
-															backgroundImage: `url(${
-																window
-																	.api
-																	.basePath +
-																"/Items/" +
-																item.Id +
-																"/Images/Backdrop"
-															})`,
-														}}
-													></div>
-												</>
-											) : (
-												<div className="hero-carousel-background-image empty"></div>
-											)}
-											<div className="hero-carousel-background-icon-container">
-												{
-													MediaTypeIconCollection[
+					{latestMedia.isLoading ? (
+						<CarouselSkeleton />
+					) : (
+						// <></>
+						latestMedia.data != null &&
+						latestMedia.data.map((item, index) => {
+							// console.log(item);
+							return (
+								<Paper
+									className="hero-carousel-slide"
+									sx={{
+										background:
+											theme.palette.primary
+												.background.dark,
+									}}
+									key={index}
+								>
+									<div className="hero-carousel-background-container">
+										{item.ImageBlurHashes
+											.Backdrop ? (
+											<>
+												<Blurhash
+													hash={
 														item
-															.MediaType
-													]
-												}
-											</div>
-										</div>
-										<Box className="hero-carousel-detail">
-											<Typography
-												variant="h3"
-												className="hero-carousel-text"
-												sx={{
-													mb: 2.5,
-												}}
-											>
-												{!item.ImageTags
-													.Logo ? (
-													item.Name
-												) : (
-													<img
-														className="hero-carousel-text-logo"
-														src={
+															.ImageBlurHashes
+															.Backdrop[
+															item
+																.BackdropImageTags[0]
+														]
+													}
+													// hash="LEHV6nWB2yk8pyo0adR*.7kCMdnj"
+													width="1080"
+													height="720"
+													resolutionX={
+														720
+													}
+													resolutionY={
+														1080
+													}
+													className="hero-carousel-background-blurhash"
+												/>
+												<div
+													className="hero-carousel-background-image"
+													style={{
+														backgroundImage: `url(${
 															window
 																.api
 																.basePath +
 															"/Items/" +
 															item.Id +
-															"/Images/Logo?quality=80&tag=" +
-															item
-																.ImageTags
-																.Logo
-														}
-													></img>
-												)}
-											</Typography>
-											<Box
-												sx={{
-													display: "flex",
-													alignItems:
-														"center",
-													width: "fit-content",
-													gap: "1em",
-													mb: 1.5,
-												}}
-												className="hero-carousel-info"
-											>
-												<Typography
-													variant="subtitle1"
-													// color="GrayText"
-												>
-													{!!item.ProductionYear
-														? item.ProductionYear
-														: "Unknown"}
-												</Typography>
-												<Divider
-													variant="middle"
-													component="div"
-													orientation="vertical"
-													flexItem
-												/>
-												<Chip
-													variant="outlined"
-													label={
-														!!item.OfficialRating
-															? item.OfficialRating
-															: "Not Rated"
-													}
-												/>
-												<Divider
-													variant="middle"
-													component="div"
-													orientation="vertical"
-													flexItem
-												/>
-												<Box
-													sx={{
-														display: "flex",
-														gap: "0.25em",
-														alignItems:
-															"center",
+															"/Images/Backdrop"
+														})`,
 													}}
-													className="hero-carousel-info-rating"
-												>
-													{!!item.CommunityRating ? (
-														<>
-															<MdiStarHalfFull
-																sx={{
-																	color: yellow[700],
-																}}
-															/>
-															<Typography variant="subtitle1">
-																{Math.round(
-																	item.CommunityRating *
-																		10,
-																) /
-																	10}
-															</Typography>
-														</>
-													) : (
-														<Typography variant="subtitle1">
-															No
-															Community
-															Rating
-														</Typography>
-													)}
-												</Box>
-												<Divider
-													variant="middle"
-													component="div"
-													orientation="vertical"
-													flexItem
-												/>
-												<Typography variant="subtitle1">
-													{getRuntime(
-														item.RunTimeTicks,
-													)}
-												</Typography>
-											</Box>
+												></div>
+											</>
+										) : (
+											<div className="hero-carousel-background-image empty"></div>
+										)}
+										<div className="hero-carousel-background-icon-container">
+											{
+												MediaTypeIconCollection[
+													item.MediaType
+												]
+											}
+										</div>
+									</div>
+									<Box className="hero-carousel-detail">
+										<Typography
+											variant="h3"
+											className="hero-carousel-text"
+											sx={{
+												mb: 2.5,
+											}}
+										>
+											{!item.ImageTags.Logo ? (
+												item.Name
+											) : (
+												<img
+													className="hero-carousel-text-logo"
+													src={
+														window.api
+															.basePath +
+														"/Items/" +
+														item.Id +
+														"/Images/Logo?quality=80&tag=" +
+														item
+															.ImageTags
+															.Logo
+													}
+												></img>
+											)}
+										</Typography>
+										<Box
+											sx={{
+												display: "flex",
+												alignItems:
+													"center",
+												width: "fit-content",
+												gap: "1em",
+												mb: 1.5,
+											}}
+											className="hero-carousel-info"
+										>
 											<Typography
 												variant="subtitle1"
-												className="hero-carousel-text"
-												sx={{
-													display: "-webkit-box",
-													maxWidth:
-														"70%",
-													maxHeight:
-														"30%",
-													textOverflow:
-														"ellipsis",
-													overflow:
-														"hidden",
-													WebkitLineClamp:
-														"3",
-													WebkitBoxOrient:
-														"vertical",
-													opacity: 0.7,
-												}}
+												// color="GrayText"
 											>
-												{item.Overview}
+												{!!item.ProductionYear
+													? item.ProductionYear
+													: "Unknown"}
 											</Typography>
-											{/* TODO Link PLay and More info buttons in carousel */}
+											<Divider
+												variant="middle"
+												component="div"
+												orientation="vertical"
+												flexItem
+											/>
+											<Chip
+												variant="outlined"
+												label={
+													!!item.OfficialRating
+														? item.OfficialRating
+														: "Not Rated"
+												}
+											/>
+											<Divider
+												variant="middle"
+												component="div"
+												orientation="vertical"
+												flexItem
+											/>
 											<Box
 												sx={{
 													display: "flex",
-													gap: 3,
-													mt: 3,
+													gap: "0.25em",
+													alignItems:
+														"center",
 												}}
-												className="hero-carousel-button-container"
+												className="hero-carousel-info-rating"
 											>
-												<Button
-													variant="contained"
-													endIcon={
-														<MdiPlayOutline />
-													}
-													disabled
-												>
-													Play
-												</Button>
-												<Button
-													color="white"
-													variant="outlined"
-													endIcon={
-														<MdiChevronRight />
-													}
-													disabled
-												>
-													More info
-												</Button>
+												{!!item.CommunityRating ? (
+													<>
+														<MdiStarHalfFull
+															sx={{
+																color: yellow[700],
+															}}
+														/>
+														<Typography variant="subtitle1">
+															{Math.round(
+																item.CommunityRating *
+																	10,
+															) /
+																10}
+														</Typography>
+													</>
+												) : (
+													<Typography variant="subtitle1">
+														No
+														Community
+														Rating
+													</Typography>
+												)}
 											</Box>
+											<Divider
+												variant="middle"
+												component="div"
+												orientation="vertical"
+												flexItem
+											/>
+											<Typography variant="subtitle1">
+												{getRuntime(
+													item.RunTimeTicks,
+												)}
+											</Typography>
 										</Box>
-									</Paper>
-								);
-							})
-						)}
-					</Carousel>
-					{libraries.isLoading ? (
-						<CardsSkeleton />
-					) : (
-						<CardScroller displayCards={4} title="Libraries">
-							{libraries.status == "success" &&
-								libraries.data.Items.map(
-									(item, index) => {
-										return (
-											<Card
-												key={index}
-												itemName={item.Name}
-												itemId={item.Id}
-												// imageTags={false}
-												imageTags={
-													!!item
-														.ImageTags
+										<Typography
+											variant="subtitle1"
+											className="hero-carousel-text"
+											sx={{
+												display: "-webkit-box",
+												maxWidth: "70%",
+												maxHeight: "30%",
+												textOverflow:
+													"ellipsis",
+												overflow: "hidden",
+												WebkitLineClamp:
+													"3",
+												WebkitBoxOrient:
+													"vertical",
+												opacity: 0.7,
+											}}
+										>
+											{item.Overview}
+										</Typography>
+										{/* TODO Link PLay and More info buttons in carousel */}
+										<Box
+											sx={{
+												display: "flex",
+												gap: 3,
+												mt: 3,
+											}}
+											className="hero-carousel-button-container"
+										>
+											<Button
+												variant="contained"
+												endIcon={
+													<MdiPlayOutline />
+												}
+												disabled
+											>
+												Play
+											</Button>
+											<Button
+												color="white"
+												variant="outlined"
+												endIcon={
+													<MdiChevronRight />
+												}
+												disabled
+											>
+												More info
+											</Button>
+										</Box>
+									</Box>
+								</Paper>
+							);
+						})
+					)}
+				</Carousel>
+				{libraries.isLoading ? (
+					<CardsSkeleton />
+				) : (
+					<CardScroller displayCards={4} title="Libraries">
+						{libraries.status == "success" &&
+							libraries.data.Items.map((item, index) => {
+								return (
+									<Card
+										key={index}
+										itemName={item.Name}
+										itemId={item.Id}
+										// imageTags={false}
+										imageTags={
+											!!item.ImageTags.Primary
+										}
+										cardType="lib"
+										cardOrientation="landscape"
+										iconType={item.CollectionType}
+										onClickEvent={() => {
+											navigate(
+												`/library/${item.Id}`,
+											);
+										}}
+										blurhash={
+											item.ImageBlurHashes ==
+											{}
+												? ""
+												: !!item.ImageTags
 														.Primary
-												}
-												cardType="lib"
-												cardOrientation="landscape"
-												iconType={
-													item.CollectionType
-												}
-												onClickEvent={() => {
-													navigate(
-														`/library/${item.Id}`,
-													);
-												}}
-												blurhash={
-													item.ImageBlurHashes ==
-													{}
-														? ""
-														: !!item
+												? !!item
+														.ImageBlurHashes
+														.Primary
+													? item
+															.ImageBlurHashes
+															.Primary[
+															item
 																.ImageTags
 																.Primary
-														? !!item
-																.ImageBlurHashes
-																.Primary
-															? item
-																	.ImageBlurHashes
-																	.Primary[
-																	item
-																		.ImageTags
-																		.Primary
-															  ]
-															: ""
-														: ""
-												}
-												currentUser={
-													user.data
-												}
-											></Card>
-										);
-									},
-								)}
-						</CardScroller>
-					)}
-					{upNextItems.isLoading ? (
-						<CardsSkeleton />
-					) : upNextItems.isSuccess &&
-					  upNextItems.data.Items.length == 0 ? (
-						<></>
-					) : (
-						<CardScroller displayCards={4} title="Up Next">
-							{upNextItems.data.Items.map(
-								(item, index) => {
-									return (
-										<Card
-											key={index}
-											itemName={
-												!!item.SeriesId
-													? item.SeriesName
-													: item.Name
-											}
-											itemId={
-												!!item.SeriesId
-													? item.SeriesId
-													: item.Id
-											}
-											// imageTags={false}
-											imageTags={
-												!!item.ImageTags
+													  ]
+													: ""
+												: ""
+										}
+										currentUser={user.data}
+									></Card>
+								);
+							})}
+					</CardScroller>
+				)}
+				{upNextItems.isLoading ? (
+					<CardsSkeleton />
+				) : upNextItems.isSuccess &&
+				  upNextItems.data.Items.length == 0 ? (
+					<></>
+				) : (
+					<CardScroller displayCards={4} title="Up Next">
+						{upNextItems.data.Items.map((item, index) => {
+							return (
+								<Card
+									key={index}
+									itemName={
+										!!item.SeriesId
+											? item.SeriesName
+											: item.Name
+									}
+									itemId={
+										!!item.SeriesId
+											? item.SeriesId
+											: item.Id
+									}
+									// imageTags={false}
+									imageTags={
+										!!item.ImageTags.Primary
+									}
+									cardType="thumb"
+									iconType={item.Type}
+									subText={
+										!!item.SeriesId
+											? "S" +
+											  item.ParentIndexNumber +
+											  ":E" +
+											  item.IndexNumber +
+											  " - " +
+											  item.Name
+											: item.ProductionYear
+									}
+									cardOrientation="landscape"
+									blurhash={
+										item.ImageBlurHashes == {}
+											? ""
+											: !!item.ImageTags
 													.Primary
-											}
-											cardType="thumb"
-											iconType={item.Type}
-											subText={
-												!!item.SeriesId
-													? "S" +
-													  item.ParentIndexNumber +
-													  ":E" +
-													  item.IndexNumber +
-													  " - " +
-													  item.Name
-													: item.ProductionYear
-											}
-											cardOrientation="landscape"
-											blurhash={
-												item.ImageBlurHashes ==
-												{}
-													? ""
-													: !!item
+											? !!item.ImageBlurHashes
+													.Primary
+												? item
+														.ImageBlurHashes
+														.Primary[
+														item
 															.ImageTags
 															.Primary
-													? !!item
-															.ImageBlurHashes
-															.Primary
-														? item
-																.ImageBlurHashes
-																.Primary[
-																item
-																	.ImageTags
-																	.Primary
-														  ]
-														: ""
-													: ""
-											}
-											currentUser={user.data}
-											favourite={
-												item.UserData
-													.IsFavorite
-											}
-										></Card>
-									);
-								},
-							)}
-						</CardScroller>
-					)}
-					{resumeItemsVideo.isLoading ? (
-						<CardsSkeleton />
-					) : resumeItemsVideo.data.Items.length == 0 ? (
-						<></>
-					) : (
-						<CardScroller
-							displayCards={4}
-							title="Continue Watching"
-						>
-							{resumeItemsVideo.data.Items.map(
-								(item, index) => {
-									return (
-										<Card
-											key={index}
-											itemName={
-												!!item.SeriesId
-													? item.SeriesName
-													: item.Name
-											}
-											itemId={
-												!!item.SeriesId
-													? item.SeriesId
-													: item.Id
-											}
-											// imageTags={false}
-											imageTags={
-												!!item.SeriesId
+												  ]
+												: ""
+											: ""
+									}
+									currentUser={user.data}
+									favourite={
+										item.UserData.IsFavorite
+									}
+								></Card>
+							);
+						})}
+					</CardScroller>
+				)}
+				{resumeItemsVideo.isLoading ? (
+					<CardsSkeleton />
+				) : resumeItemsVideo.data.Items.length == 0 ? (
+					<></>
+				) : (
+					<CardScroller
+						displayCards={4}
+						title="Continue Watching"
+					>
+						{resumeItemsVideo.data.Items.map(
+							(item, index) => {
+								return (
+									<Card
+										key={index}
+										itemName={
+											!!item.SeriesId
+												? item.SeriesName
+												: item.Name
+										}
+										itemId={
+											!!item.SeriesId
+												? item.SeriesId
+												: item.Id
+										}
+										// imageTags={false}
+										imageTags={
+											!!item.SeriesId
+												? item
+														.ParentBackdropImageTags
+														.length !=
+												  0
+												: item
+														.BackdropImageTags
+														.length !=
+												  0
+										}
+										cardType="thumb"
+										iconType={item.Type}
+										subText={
+											!!item.SeriesId
+												? "S" +
+												  item.ParentIndexNumber +
+												  ":E" +
+												  item.IndexNumber +
+												  " - " +
+												  item.Name
+												: item.ProductionYear
+										}
+										playedPercent={
+											item.UserData
+												.PlayedPercentage
+										}
+										cardOrientation="landscape"
+										blurhash={
+											item.ImageBlurHashes ==
+											{}
+												? ""
+												: !!item.ImageTags
+														.Backdrop
+												? !!item
+														.ImageBlurHashes
+														.Backdrop
 													? item
-															.ParentBackdropImageTags
-															.length !=
-													  0
-													: item
-															.BackdropImageTags
-															.length !=
-													  0
-											}
-											cardType="thumb"
-											iconType={item.Type}
-											subText={
-												!!item.SeriesId
-													? "S" +
-													  item.ParentIndexNumber +
-													  ":E" +
-													  item.IndexNumber +
-													  " - " +
-													  item.Name
-													: item.ProductionYear
-											}
-											playedPercent={
-												item.UserData
-													.PlayedPercentage
-											}
-											cardOrientation="landscape"
-											blurhash={
-												item.ImageBlurHashes ==
-												{}
-													? ""
-													: !!item
-															.ImageTags
-															.Backdrop
-													? !!item
 															.ImageBlurHashes
-															.Backdrop
-														? item
-																.ImageBlurHashes
-																.Backdrop[
-																item
-																	.ImageTags
-																	.Backdrop
-														  ]
-														: ""
+															.Backdrop[
+															item
+																.ImageTags
+																.Backdrop
+													  ]
 													: ""
-											}
-											currentUser={user.data}
-											favourite={
-												item.UserData
-													.IsFavorite
-											}
-										></Card>
-									);
-								},
-							)}
-						</CardScroller>
-					)}
-					{resumeItemsAudio.isLoading ? (
-						<CardsSkeleton />
-					) : resumeItemsAudio.data.Items.length == 0 ? (
-						<></>
-					) : (
-						<CardScroller
-							displayCards={4}
-							title="Continue Listening"
-						>
-							{resumeItemsAudio.data.Items.map(
-								(item, index) => {
-									return (
-										<Card
-											key={index}
-											itemName={
-												!!item.SeriesId
-													? item.SeriesName
-													: item.Name
-											}
-											itemId={
-												!!item.SeriesId
-													? item.SeriesId
-													: item.Id
-											}
-											// imageTags={false}
-											imageTags={
-												!!item.ImageTags
-													.Primary
-											}
-											iconType={item.Type}
-											subText={
-												item.ProductionYear
-											}
-											playedPercent={
-												item.UserData
-													.PlayedPercentage
-											}
-											cardOrientation="sqaure"
-											blurhash={
-												item.ImageBlurHashes ==
-												{}
-													? ""
-													: !!item
-															.ImageTags
-															.Primary
-													? !!item
+												: ""
+										}
+										currentUser={user.data}
+										favourite={
+											item.UserData.IsFavorite
+										}
+									></Card>
+								);
+							},
+						)}
+					</CardScroller>
+				)}
+				{resumeItemsAudio.isLoading ? (
+					<CardsSkeleton />
+				) : resumeItemsAudio.data.Items.length == 0 ? (
+					<></>
+				) : (
+					<CardScroller
+						displayCards={4}
+						title="Continue Listening"
+					>
+						{resumeItemsAudio.data.Items.map(
+							(item, index) => {
+								return (
+									<Card
+										key={index}
+										itemName={
+											!!item.SeriesId
+												? item.SeriesName
+												: item.Name
+										}
+										itemId={
+											!!item.SeriesId
+												? item.SeriesId
+												: item.Id
+										}
+										// imageTags={false}
+										imageTags={
+											!!item.ImageTags.Primary
+										}
+										iconType={item.Type}
+										subText={item.ProductionYear}
+										playedPercent={
+											item.UserData
+												.PlayedPercentage
+										}
+										cardOrientation="sqaure"
+										blurhash={
+											item.ImageBlurHashes ==
+											{}
+												? ""
+												: !!item.ImageTags
+														.Primary
+												? !!item
+														.ImageBlurHashes
+														.Primary
+													? item
 															.ImageBlurHashes
-															.Primary
-														? item
-																.ImageBlurHashes
-																.Primary[
-																item
-																	.ImageTags
-																	.Primary
-														  ]
-														: ""
+															.Primary[
+															item
+																.ImageTags
+																.Primary
+													  ]
 													: ""
-											}
-											currentUser={user.data}
-											favourite={
-												item.UserData
-													.IsFavorite
-											}
-										></Card>
-									);
-								},
-							)}
-						</CardScroller>
-					)}
-					{latestMediaLibs.map((lib, index) => {
-						return (
-							<LatestMediaSection
-								key={lib[0]}
-								latestMediaLib={lib}
-							/>
-						);
-					})}
+												: ""
+										}
+										currentUser={user.data}
+										favourite={
+											item.UserData.IsFavorite
+										}
+									></Card>
+								);
+							},
+						)}
+					</CardScroller>
+				)}
+				{latestMediaLibs.map((lib, index) => {
+					return (
+						<LatestMediaSection
+							key={lib[0]}
+							latestMediaLib={lib}
+						/>
+					);
+				})}
 
-					<Button variant="contained" onClick={handleLogout}>
-						Logout
-					</Button>
-				</Box>
+				<Button variant="contained" onClick={handleLogout}>
+					Logout
+				</Button>
 			</Box>
 		</>
 	);

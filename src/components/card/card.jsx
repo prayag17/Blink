@@ -282,9 +282,7 @@ export const Card = ({
 								<IconButton
 									onClick={(e) => {
 										e.stopPropagation();
-										handleMarkAsPlayOrUnMarkAsPlay(
-											watchedStatus,
-										);
+										handleMarkAsPlayOrUnMarkAsPlay();
 									}}
 								>
 									<MdiCheck
@@ -297,7 +295,12 @@ export const Card = ({
 								</IconButton>
 							)}
 							{allowedLikeButton.includes(iconType) && (
-								<IconButton onClick={handleLiking}>
+								<IconButton
+									onClick={(e) => {
+										e.stopPropagation();
+										handleLiking();
+									}}
+								>
 									{isFavourite ? (
 										<MdiHeart
 											sx={{ color: pink[700] }}
