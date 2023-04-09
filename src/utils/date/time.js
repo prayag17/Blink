@@ -31,9 +31,9 @@ export const getRuntimeFull = (ticks) => {
 	if (timeMin > 60) {
 		let timeHr = Math.floor(timeMin / 60);
 		timeMin -= timeHr * 60;
-		formatedTime = `${timeHr}hour ${timeMin}minutes`;
+		formatedTime = `${timeHr} hour ${timeMin} minutes`;
 	} else {
-		formatedTime = `${timeMin}minutes`;
+		formatedTime = `${timeMin} minutes`;
 	}
 	return formatedTime;
 };

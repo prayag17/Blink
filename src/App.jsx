@@ -46,6 +46,7 @@ import {
 } from "./routes/login/root";
 import LibraryView from "./routes/library/root.jsx";
 import ItemMovie from "./routes/item/Movie/root.jsx";
+import ItemSeries from "./routes/item/Series/root.jsx";
 
 import { SideMenu } from "./components/menu/sidemenu.jsx";
 import { AppBar } from "./components/appBar/appBar.jsx";
@@ -246,11 +247,14 @@ function App() {
 	};
 
 	const handleRelaunch = async () => {
-		await relaunch();
+		let result = await relaunch();
+		console.log(result);
 	};
 
 	const handleRemoveServer = async () => {
 		await delServer();
+		let result = await relaunch();
+		console.log(result);
 	};
 	const location = useLocation();
 
@@ -353,6 +357,10 @@ function App() {
 								<Route
 									path="/item/Movie/:id"
 									element={<ItemMovie />}
+								/>
+								<Route
+									path="/item/Series/:id"
+									element={<ItemSeries />}
 								/>
 
 								{/* Logical Routes */}

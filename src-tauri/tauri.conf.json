@@ -12,7 +12,13 @@
 	},
 	"tauri": {
 		"allowlist": {
-			"all": false
+			"all": false,
+			"process": {
+				"all": false,
+				"exit": true,
+				"relaunch": true,
+				"relaunchDangerousAllowSymlinkMacos": false
+			}
 		},
 		"bundle": {
 			"active": true,

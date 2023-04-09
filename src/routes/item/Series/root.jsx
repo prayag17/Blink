@@ -30,9 +30,9 @@ import { TypeIconCollectionCard } from "../../../components/utils/iconsCollectio
 import { Card } from "../../../components/card/card";
 import { CardScroller } from "../../../components/cardScroller/cardScroller";
 
-import "./Movie.module.scss";
+import "./Series.module.scss";
 
-const ItemMovie = () => {
+const ItemSeries = () => {
 	const { id } = useParams();
 	const dispatch = useDispatch();
 	const appBarVisiblity = useSelector((state) => state.appBar.visible);
@@ -63,7 +63,7 @@ const ItemMovie = () => {
 	});
 
 	const item = useQuery({
-		queryKey: ["item,Movie", id],
+		queryKey: ["item, Series", id],
 		queryFn: async () => {
 			const result = await getUserLibraryApi(window.api).getItem({
 				userId: user.data.Id,
@@ -359,4 +359,4 @@ const ItemMovie = () => {
 	}
 };
 
-export default ItemMovie;
+export default ItemSeries;

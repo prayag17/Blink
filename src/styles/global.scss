@@ -29,8 +29,9 @@ body {
 #root,
 .root-page {
 	height: 100vh;
-	width: 100vw;
+	width: 100%;
 	overflow: hidden;
+	position: relative;
 }
 
 .centered {
@@ -82,6 +83,7 @@ h1 {
 	overflow-x: hidden;
 	overflow-y: auto;
 	height: 100vh;
+	width: inherit;
 	box-sizing: border-box;
 }
 

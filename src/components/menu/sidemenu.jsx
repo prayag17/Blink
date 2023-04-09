@@ -28,7 +28,7 @@ import { MdiLogoutVariant } from "../icons/mdiLogoutVariant";
 import { MediaCollectionTypeIconCollection } from "../../components/utils/iconsCollection.jsx";
 
 import { useSelector, useDispatch } from "react-redux";
-import { hideSidemenu } from "../../utils/slice/sidemenu";
+import { hideSidemenu, setBackdrop } from "../../utils/slice/sidemenu";
 
 import { MdiHomeVariantOutline } from "../icons/mdiHomeVariantOutline";
 
@@ -62,6 +62,7 @@ export const SideMenu = ({}) => {
 	const [display, setDisplay] = useState(false);
 
 	const visible = useSelector((state) => state.sidebar.visible);
+	const backdrop = useSelector((state) => state.sidebar.backdrop);
 	const navigate = useNavigate();
 	const user = useQuery({
 		queryKey: ["user"],
@@ -97,14 +98,12 @@ export const SideMenu = ({}) => {
 	};
 
 	useEffect(() => {
-		// console.log(());
 		if (
 			getCurrentPathWithoutParam() != "/login" &&
-			getCurrentPathWithoutParam != "/setup/server"
+			getCurrentPathWithoutParam() != "/setup/server"
 		) {
 			setDisplay(true);
 		}
-		console.log(location);
 	}, [location]);
 
 	if (!display) {
@@ -131,6 +130,10 @@ export const SideMenu = ({}) => {
 					width: visible
 						? `calc(${theme.spacing(7)} + 10px)`
 						: 0,
+					background: backdrop
+						? theme.palette.background.paper
+						: "transparent",
+					borderLeft: "1px solid white",
 				}}
 			>
 				<DrawerHeader

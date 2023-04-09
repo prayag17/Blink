@@ -772,7 +772,9 @@ const LibraryView = () => {
 												item.Type ==
 													"MusicAlbum" ||
 												item.Type ==
-													"MusicGenre"
+													"MusicGenre" ||
+												item.Type ==
+													"Playlist"
 													? "square"
 													: "portait"
 											}
