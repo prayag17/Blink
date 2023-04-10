@@ -1,15 +1,12 @@
 /** @format */
 import { useState, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import {
-	showAppBar,
-	setBackdrop,
-	showBackButton,
-} from "../../utils/slice/appBar";
+import { showAppBar, showBackButton } from "../../utils/slice/appBar";
 import { useParams, useNavigate } from "react-router-dom";
 
 import { useQuery } from "@tanstack/react-query";
 
+import useScrollTrigger from "@mui/material/useScrollTrigger";
 import Box from "@mui/material/Box";
 import Grid2 from "@mui/material/Unstable_Grid2";
 import Stack from "@mui/material/Stack";
@@ -301,8 +298,6 @@ const LibraryView = () => {
 		enabled: !!user.data,
 	});
 
-	dispatch(setBackdrop(true));
-
 	const handleCurrentViewType = (e) => {
 		setCurrentViewType(e.target.value);
 	};
@@ -324,6 +319,11 @@ const LibraryView = () => {
 		setFilterButtonAnchorEl(null);
 	};
 
+	const trigger = useScrollTrigger({
+		disableHysteresis: true,
+		threshold: 1,
+	});
+
 	return (
 		<Box
 			sx={{
@@ -343,13 +343,28 @@ const LibraryView = () => {
 			>
 				<AppBar
 					position="fixed"
-					elevation={0}
+					elevation={trigger ? 1 : 0}
 					sx={{
-						width: `calc(100vw - ${theme.spacing(7)} - 10px)`,
+						width: `calc(100vw - ${theme.spacing(7)})`,
 						mt: 8,
+						background: "transparent",
+						backgroundColor: trigger
+							? `${theme.palette.background.paper} !important`
+							: "transparent",
+						transition:
+							"transition: background-color 150ms, box-shadow 150ms !important",
 					}}
 				>
-					<Divider />
+					<Divider
+						sx={{
+							transform: trigger
+								? "scaleX(1)"
+								: "scaleX(0)",
+							transition: "transform 150ms",
+							transformOrigin: "left",
+							transitionDelay: "50ms",
+						}}
+					/>
 					<Toolbar sx={{ justifyContent: "space-between" }}>
 						<Stack alignItems="center" direction="row">
 							<Typography

@@ -1,6 +1,6 @@
 /** @format */
 
-import { useState, useEffect, useRef } from "react";
+import { useState } from "react";
 
 import { Blurhash } from "react-blurhash";
 
@@ -14,13 +14,11 @@ import { theme } from "../../theme";
 import "./home.module.scss";
 
 import Box from "@mui/material/Box";
-import Skeleton from "@mui/material/Skeleton";
 import Button from "@mui/material/Button";
 import Paper from "@mui/material/Paper";
 import Typography from "@mui/material/Typography";
 import Chip from "@mui/material/Chip";
 import Divider from "@mui/material/Divider";
-import useScrollTrigger from "@mui/material/useScrollTrigger";
 
 import { yellow } from "@mui/material/colors";
 
@@ -40,8 +38,7 @@ import { MdiPlayOutline } from "../../components/icons/mdiPlayOutline";
 import { MdiChevronRight } from "../../components/icons/mdiChevronRight";
 
 import { useDispatch, useSelector } from "react-redux";
-import { showSidemenu } from "../../utils/slice/sidemenu";
-import { showAppBar, setBackdrop } from "../../utils/slice/appBar";
+import { showAppBar } from "../../utils/slice/appBar";
 
 import { getUserViewsApi } from "@jellyfin/sdk/lib/utils/api/user-views-api";
 import { getUserApi } from "@jellyfin/sdk/lib/utils/api/user-api";
@@ -49,14 +46,12 @@ import { getUserLibraryApi } from "@jellyfin/sdk/lib/utils/api/user-library-api"
 import { getItemsApi } from "@jellyfin/sdk/lib/utils/api/items-api";
 import { getTvShowsApi } from "@jellyfin/sdk/lib/utils/api/tv-shows-api";
 
-import { useNavigate, useLocation, Link } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 
 import { formateDate } from "../../utils/date/formateDate";
 import { getRuntime } from "../../utils/date/time";
 
 const Home = () => {
-	const queryClient = useQueryClient();
-
 	const authUser = useQuery({
 		queryKey: ["home", "authenticateUser"],
 		queryFn: async () => {
@@ -193,18 +188,6 @@ const Home = () => {
 		dispatch(showAppBar());
 	}
 
-	const [scrollTarget, setScrollTarget] = useState(undefined);
-
-	const trigger = useScrollTrigger({
-		disableHysteresis: true,
-		threshold: 0,
-		target: scrollTarget,
-	});
-
-	useEffect(() => {
-		dispatch(setBackdrop(trigger));
-	}, [trigger]);
-
 	return (
 		<>
 			<Box
@@ -216,11 +199,6 @@ const Home = () => {
 					px: 3,
 					pb: 3,
 					position: "relative",
-				}}
-				ref={(node) => {
-					if (node) {
-						setScrollTarget(node);
-					}
 				}}
 			>
 				<Carousel

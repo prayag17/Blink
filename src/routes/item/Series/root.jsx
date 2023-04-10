@@ -6,17 +6,12 @@ import CircularProgress from "@mui/material/CircularProgress";
 import Typography from "@mui/material/Typography";
 import Stack from "@mui/material/Stack";
 import Chip from "@mui/material/Chip";
-import useScrollTrigger from "@mui/material/useScrollTrigger";
 import Divider from "@mui/material/Divider";
 import LinearProgress from "@mui/material/LinearProgress";
 import MenuItem from "@mui/material/MenuItem";
 
 import { Blurhash } from "react-blurhash";
-import {
-	setBackdrop,
-	showAppBar,
-	showBackButton,
-} from "../../../utils/slice/appBar";
+import { showAppBar, showBackButton } from "../../../utils/slice/appBar";
 import { useDispatch, useSelector } from "react-redux";
 import { useParams } from "react-router-dom";
 
@@ -36,23 +31,15 @@ const ItemSeries = () => {
 	const { id } = useParams();
 	const dispatch = useDispatch();
 	const appBarVisiblity = useSelector((state) => state.appBar.visible);
-	const [scrollTarget, setScrollTarget] = useState(undefined);
 	const [primageImageLoaded, setPrimaryImageLoaded] = useState(false);
 	const [backdropImageLoaded, setBackdropImageLoaded] = useState(false);
-
-	const trigger = useScrollTrigger({
-		disableHysteresis: true,
-		threshold: 0,
-		target: scrollTarget,
-	});
 
 	useEffect(() => {
 		if (!appBarVisiblity) {
 			dispatch(showAppBar());
 		}
-		dispatch(setBackdrop(trigger));
 		dispatch(showBackButton());
-	}, [trigger]);
+	}, []);
 
 	const user = useQuery({
 		queryKey: ["user"],
@@ -78,7 +65,7 @@ const ItemSeries = () => {
 			<Box
 				sx={{
 					width: "100%",
-					height: "100%",
+					height: "100vh",
 					display: "flex",
 					alignItems: "center",
 					justifyContent: "center",
@@ -121,11 +108,6 @@ const ItemSeries = () => {
 						position: "relative",
 						flexFlow: "column",
 						gap: 5,
-					}}
-					ref={(node) => {
-						if (node) {
-							setScrollTarget(node);
-						}
 					}}
 				>
 					<Box className="item-detail-header">

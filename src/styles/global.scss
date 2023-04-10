@@ -1,19 +1,22 @@
 /** @format */
 ::-webkit-scrollbar {
-	z-index: 10000;
-	width: 10px;
+	width: 14px;
 	background: $clr-background-dark;
 }
 ::-webkit-scrollbar-track {
-	z-index: 10000;
 	background-color: transparent;
 	&:hover {
-		background: rgb(255 255 255 / 0.25);
+		background-color: rgb(255 255 255 / 0.15);
 	}
 }
 ::-webkit-scrollbar-thumb {
-	z-index: 10000;
-	background: rgb(255 255 255 / 0.25);
+	border: 4px solid transparent;
+	background-clip: padding-box;
+	border-radius: 9999px;
+	background-color: rgb(255 255 255 / 0.25);
+	&:hover {
+		background-color: rgb(255 255 255 / 0.35);
+	}
 }
 
 body {
@@ -24,14 +27,17 @@ body {
 	position: relative;
 	width: 100vw;
 	height: 100vh;
+	overflow-x: hidden;
+	overflow-y: overlay;
 }
 
 #root,
 .root-page {
-	height: 100vh;
+	height: fit-content;
 	width: 100%;
-	overflow: hidden;
 	position: relative;
+	overflow-y: visible;
+	overflow-x: hidden;
 }
 
 .centered {
@@ -81,8 +87,8 @@ h1 {
 
 .scrollY {
 	overflow-x: hidden;
-	overflow-y: auto;
-	height: 100vh;
+	overflow-y: visible;
+	height: fit-content;
 	width: inherit;
 	box-sizing: border-box;
 }

@@ -7,7 +7,7 @@ import IconButton from "@mui/material/IconButton";
 import Toolbar from "@mui/material/Toolbar";
 import Avatar from "@mui/material/Avatar";
 import Box from "@mui/material/Box";
-import Zoom from "@mui/material/Zoom";
+import useScrollTrigger from "@mui/material/useScrollTrigger";
 
 import { MdiMagnify } from "../icons/mdiMagnify";
 import { theme } from "../../theme";
@@ -44,6 +44,11 @@ export const AppBar = () => {
 		},
 	});
 
+	const trigger = useScrollTrigger({
+		disableHysteresis: true,
+		threshold: 0,
+	});
+
 	useEffect(() => {
 		if (location.pathname == "/home") {
 			dispatch(hideBackButton());
@@ -54,13 +59,11 @@ export const AppBar = () => {
 		visible && (
 			<MuiAppBar
 				sx={{
-					width: `calc(100vw - ${theme.spacing(7)} - 10px)`,
+					width: `calc(100vw - ${theme.spacing(7)})`,
 					// mr: "10px",
-					background: "transparent",
+					backgroundColor: "transparent",
 				}}
-				className={
-					backdropVisible ? "appBar backdropVisible" : "appBar"
-				}
+				className={trigger ? "appBar backdropVisible" : "appBar"}
 				elevation={backdropVisible ? 6 : 0}
 			>
 				<Toolbar sx={{ justifyContent: "space-between" }}>
