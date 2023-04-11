@@ -8,28 +8,35 @@ import Stack from "@mui/material/Stack";
 import Chip from "@mui/material/Chip";
 import Divider from "@mui/material/Divider";
 import LinearProgress from "@mui/material/LinearProgress";
-import MenuItem from "@mui/material/MenuItem";
+import Tabs from "@mui/material/Tabs";
+import Tab from "@mui/material/Tab";
 
 import { Blurhash } from "react-blurhash";
-import { showAppBar, showBackButton } from "../../../utils/slice/appBar";
+import { showAppBar, showBackButton } from "../../utils/slice/appBar";
 import { useDispatch, useSelector } from "react-redux";
 import { useParams } from "react-router-dom";
 
 import { getUserApi } from "@jellyfin/sdk/lib/utils/api/user-api";
 import { getUserLibraryApi } from "@jellyfin/sdk/lib/utils/api/user-library-api";
+import { getLibraryApi } from "@jellyfin/sdk/lib/utils/api/library-api";
+import { getTvShowsApi } from "@jellyfin/sdk/lib/utils/api/tv-shows-api";
+
 import { useQuery } from "@tanstack/react-query";
-import { MdiStarHalfFull } from "../../../components/icons/mdiStarHalfFull";
-import { getRuntimeFull } from "../../../utils/date/time";
-import { TypeIconCollectionCard } from "../../../components/utils/iconsCollection";
+import { MdiStarHalfFull } from "../../components/icons/mdiStarHalfFull";
+import { getRuntimeFull } from "../../utils/date/time";
+import { TypeIconCollectionCard } from "../../components/utils/iconsCollection";
 
-import { Card } from "../../../components/card/card";
-import { CardScroller } from "../../../components/cardScroller/cardScroller";
+import { Card } from "../../components/card/card";
+import { CardScroller } from "../../components/cardScroller/cardScroller";
 
-import "./Movie.module.scss";
+import "./item.module.scss";
 
-const ItemMovie = () => {
+const ItemDetail = () => {
 	const { id } = useParams();
 	const dispatch = useDispatch();
+	const [isMovie, setIsMovie] = useState(false);
+	const [isSeries, setIsSeries] = useState(false);
+	const [isMusicItem, setIsMusicItem] = useState(false);
 	const appBarVisiblity = useSelector((state) => state.appBar.visible);
 	const [primageImageLoaded, setPrimaryImageLoaded] = useState(false);
 	const [backdropImageLoaded, setBackdropImageLoaded] = useState(false);
@@ -50,7 +57,7 @@ const ItemMovie = () => {
 	});
 
 	const item = useQuery({
-		queryKey: ["item,Movie", id],
+		queryKey: ["item", id],
 		queryFn: async () => {
 			const result = await getUserLibraryApi(window.api).getItem({
 				userId: user.data.Id,
@@ -60,7 +67,54 @@ const ItemMovie = () => {
 		},
 		enabled: !!user.data,
 	});
-	if (item.isLoading) {
+
+	const similarItems = useQuery({
+		queryKey: ["item", "similarItem", id],
+		queryFn: async () => {
+			let result;
+			if (item.data.Type == "Movie") {
+				result = await getLibraryApi(window.api).getSimilarMovies({
+					userId: user.data.Id,
+					itemId: item.data.Id,
+				});
+			} else if (item.data.Type == "Series") {
+				result = await getLibraryApi(window.api).getSimilarShows({
+					userId: user.data.Id,
+					itemId: item.data.Id,
+				});
+			} else if (item.data.Type == "MusicAlbum") {
+				result = await getLibraryApi(window.api).getSimilarAlbums({
+					userId: user.data.Id,
+					itemId: item.data.Id,
+				});
+			} else if (item.data.Type == "MusicArtist") {
+				result = await getLibraryApi(window.api).getSimilarArtists({
+					userId: user.data.Id,
+					itemId: item.data.Id,
+				});
+			} else {
+				result = await getLibraryApi(window.api).getSimilarItems({
+					userId: user.data.Id,
+					itemId: item.data.Id,
+				});
+			}
+			return result.data;
+		},
+		enabled: item.isSuccess,
+	});
+
+	const seasons = useQuery({
+		queryKey: ["item", "seasons", id],
+		queryFn: async () => {
+			const result = await getTvShowsApi(window.api).getSeasons({
+				seriesId: item.data.Id,
+			});
+			return result.data;
+		},
+		enabled: item.isSuccess,
+	});
+
+	if (item.isLoading || similarItems.isLoading) {
 		return (
 			<Box
 				sx={{
@@ -75,7 +129,7 @@ const ItemMovie = () => {
 			</Box>
 		);
 	}
-	if (item.isSuccess) {
+	if (item.isSuccess && similarItems.isSuccess) {
 		return (
 			<>
 				<Box className="item-detail-backdrop">
@@ -107,10 +161,10 @@ const ItemMovie = () => {
 						pb: 3,
 						position: "relative",
 						flexFlow: "column",
-						gap: 5,
+						gap: 1,
 					}}
 				>
-					<Box className="item-detail-header">
+					<Box className="item-detail-header" mb={5}>
 						<Box className="item-detail-header-backdrop">
 							{item.data.BackdropImageTags.length != 0 && (
 								<img
@@ -157,7 +211,14 @@ const ItemMovie = () => {
 								{TypeIconCollectionCard[item.data.Type]}
 							</Box>
 						</Box>
-						<Box className="item-detail-image-container">
+						<Box
+							className="item-detail-image-container"
+							sx={
+								item.data.Type.includes("Music") && {
+									aspectRatio: "1",
+								}
+							}
+						>
 							{!!item.data.ImageTags.Primary && (
 								<img
 									src={
@@ -244,12 +305,14 @@ const ItemMovie = () => {
 								}
 								ex={{ alignItems: "center" }}
 							>
-								<Typography
-									sx={{ flexGrow: 0 }}
-									variant="subtitle1"
-								>
-									{item.data.ProductionYear}
-								</Typography>
+								{item.data.ProductionYear && (
+									<Typography
+										sx={{ flexGrow: 0 }}
+										variant="subtitle1"
+									>
+										{item.data.ProductionYear}
+									</Typography>
+								)}
 								<Chip
 									variant="outlined"
 									label={
@@ -284,61 +347,176 @@ const ItemMovie = () => {
 										</Typography>
 									)}
 								</Box>
-								<Typography variant="subtitle1">
-									{getRuntimeFull(
-										item.data.RunTimeTicks,
-									)}
-								</Typography>
+								{!!item.data.RunTimeTicks && (
+									<Typography variant="subtitle1">
+										{getRuntimeFull(
+											item.data.RunTimeTicks,
+										)}
+									</Typography>
+								)}
 							</Stack>
 						</Box>
 					</Box>
-					<Box className="item-media-container">
-						<Stack
-							direction="row"
-							gap={1}
-							alignItems="center"
+					{item.data.Genres != 0 && (
+						<Box className="item-media-container">
+							<Stack
+								direction="row"
+								gap={1}
+								alignItems="center"
+							>
+								<Typography variant="h5">
+									Genre
+								</Typography>
+								{item.data.Genres.map(
+									(genre, index) => {
+										return (
+											<Chip
+												key={index}
+												variant="filled"
+												label={genre}
+											/>
+										);
+									},
+								)}
+							</Stack>
+						</Box>
+					)}
+					<Typography variant="body1" mt={3} mb={5}>
+						{item.data.Overview}
+					</Typography>
+					{item.data.People.length != 0 && (
+						<CardScroller
+							headingProps={{
+								variant: "h5",
+								fontSize: "1.8em",
+							}}
+							displayCards={8}
+							title="Cast"
 						>
-							<Typography variant="h5">Genre</Typography>
-							{item.data.Genres.map((genre, index) => {
+							{item.data.People.map((person, index) => {
 								return (
-									<Chip
+									<Card
 										key={index}
-										variant="filled"
-										label={genre}
+										itemName={person.Name}
+										itemId={person.Id}
+										// imageTags={false}
+										imageTags={
+											!!person.PrimaryImageTag
+										}
+										iconType="Person"
+										subText={person.Role}
+										cardOrientation="sqaure"
+										currentUser={user.data}
 									/>
 								);
 							})}
-						</Stack>
-					</Box>
-					<Typography variant="body1">
-						{item.data.Overview}
-					</Typography>
-					<CardScroller displayCards={8} title="Cast">
-						{item.data.People.map((person, index) => {
-							return (
-								<Card
-									key={index}
-									itemName={person.Name}
-									itemId={person.Id}
-									// imageTags={false}
-									imageTags={
-										!!person.PrimaryImageTag
-									}
-									iconType="Person"
-									subText={person.Role}
-									cardOrientation="sqaure"
-									currentUser={user.data}
-								/>
-							);
-						})}
-					</CardScroller>
+						</CardScroller>
+					)}
+					{seasons.isSuccess && (
+						<Box>
+							<Tabs value={0}>
+								{seasons.data.Items.map(
+									(season, index) => {
+										return (
+											<Tab
+												label={season.Name}
+											/>
+										);
+									},
+								)}
+							</Tabs>
+						</Box>
+					)}
+					{similarItems.data.Items.length != 0 && (
+						<CardScroller
+							headingProps={{
+								variant: "h5",
+								fontSize: "1.8em",
+							}}
+							displayCards={8}
+							title={`More Like This`}
+						>
+							{similarItems.data.Items.map(
+								(simItem, index) => {
+									return (
+										<Card
+											key={index}
+											itemName={simItem.Name}
+											itemId={simItem.Id}
+											// imageTags={false}
+											imageTags={
+												!!simItem.ImageTags
+													.Primary
+											}
+											iconType={simItem.Type}
+											subText={
+												simItem.ProductionYear
+											}
+											playedPercent={
+												!!simItem.UserData
+													? simItem
+															.UserData
+															.PlayedPercentage
+													: 0
+											}
+											cardOrientation={
+												simItem.Type ==
+													"MusicArtist" ||
+												simItem.Type ==
+													"MusicAlbum" ||
+												simItem.Type ==
+													"MusicGenre" ||
+												simItem.Type ==
+													"Playlist"
+													? "square"
+													: "portait"
+											}
+											currentUser={user.data}
+											blurhash={
+												simItem.ImageBlurHashes ==
+												{}
+													? ""
+													: !!simItem
+															.ImageTags
+															.Primary
+													? !!simItem
+															.ImageBlurHashes
+															.Primary
+														? simItem
+																.ImageBlurHashes
+																.Primary[
+																simItem
+																	.ImageTags
+																	.Primary
+														  ]
+														: ""
+													: ""
+											}
+											watchedStatus={
+												!!simItem.UserData
+													? simItem
+															.UserData
+															.Played
+													: false
+											}
+											watchedCount={
+												!!simItem.UserData &&
+												simItem.UserData
+													.UnplayedItemCount
+											}
+										/>
+									);
+								},
+							)}
+						</CardScroller>
+					)}
 				</Box>
 			</>
 		);
 	}
-	if (item.isError) {
+	if (item.isError || similarItems.isError) {
 		return <h1>{"Something went wrong :("}</h1>;
 	}
 };
 
-export default ItemMovie;
+export default ItemDetail;

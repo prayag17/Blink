@@ -827,7 +827,7 @@ const LibraryView = () => {
 											currentUser={user.data}
 											onClickEvent={() => {
 												navigate(
-													`/item/${item.Type}/${item.Id}`,
+													`/item/${item.Id}`,
 												);
 											}}
 										></Card>

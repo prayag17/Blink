@@ -16,7 +16,12 @@ import Typography from "@mui/material/Typography";
 import ButtonGroup from "@mui/material/ButtonGroup";
 
 import "./cardScroller.module.scss";
-export const CardScroller = ({ children, displayCards, title }) => {
+export const CardScroller = ({
+	children,
+	displayCards,
+	title,
+	headingProps,
+}) => {
 	const responsive = {
 		superLargeDesktop: {
 			// the naming can be any, depends on you.
@@ -50,6 +55,7 @@ export const CardScroller = ({ children, displayCards, title }) => {
 					variant="h4"
 					color="textPrimary"
 					className="card-scroller-heading"
+					{...headingProps}
 				>
 					<div className="card-scroller-heading-decoration"></div>{" "}
 					{title}
@@ -88,4 +94,5 @@ export const CardScroller = ({ children, displayCards, title }) => {
 CardScroller.propTypes = {
 	displayCards: PropTypes.number.isRequired,
 	title: PropTypes.string.isRequired,
+	headingProps: PropTypes.any,
 };
