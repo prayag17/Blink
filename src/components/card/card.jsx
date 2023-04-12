@@ -2,6 +2,8 @@
 import React, { useState } from "react";
 import PropTypes from "prop-types";
 
+import { useNavigate } from "react-router-dom";
+
 import Box from "@mui/material/Box";
 import MuiCard from "@mui/material/Card";
 import CardContent from "@mui/material/CardContent";
@@ -46,6 +48,7 @@ export const Card = ({
 	currentUser,
 	favourite,
 }) => {
+	const navigate = useNavigate();
 	const [imgLoading, setImgLoading] = useState(true);
 	const [isWatched, setIsWatched] = useState(watchedStatus);
 	const [isFavourite, setIsFavourite] = useState(favourite);
@@ -132,7 +135,13 @@ export const Card = ({
 			{...cardProps}
 		>
 			<CardActionArea
-				onClick={!!onClickEvent ? onClickEvent : () => {}}
+				onClick={
+					!!onClickEvent
+						? onClickEvent
+						: () => {
+								navigate(`/item/${itemId}`);
+						  }
+				}
 			>
 				<Box
 					className="card-media-container"

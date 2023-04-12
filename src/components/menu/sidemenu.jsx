@@ -71,6 +71,7 @@ export const SideMenu = ({}) => {
 			return usr.data;
 		},
 		enabled: false,
+		networkMode: "always",
 	});
 	let libraries = useQuery({
 		queryKey: ["libraries"],
@@ -81,6 +82,7 @@ export const SideMenu = ({}) => {
 			return libs.data;
 		},
 		enabled: !!user.data,
+		networkMode: "always",
 	});
 	const handleDrawerOpen = () => {};
 	const dispatch = useDispatch();
@@ -133,7 +135,6 @@ export const SideMenu = ({}) => {
 					background: backdrop
 						? theme.palette.background.paper
 						: "transparent",
-					borderLeft: "1px solid white",
 				}}
 			>
 				<DrawerHeader

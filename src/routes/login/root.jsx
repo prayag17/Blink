@@ -5,6 +5,9 @@ import { useQuery } from "@tanstack/react-query";
 import { useNavigate, useParams, Link } from "react-router-dom";
 import { EventEmitter as event } from "../../eventEmitter.js";
 
+import { useDispatch } from "react-redux";
+import { showSidemenu } from "../../utils/slice/sidemenu.js";
+
 import { getServer } from "../../utils/storage/servers.js";
 import { saveUser } from "../../utils/storage/user.js";
 
@@ -23,6 +26,8 @@ import InputLabel from "@mui/material/InputLabel";
 import IconButton from "@mui/material/IconButton";
 import LoadingButton from "@mui/lab/LoadingButton";
 import Button from "@mui/material/Button";
+import Box from "@mui/material/Box";
+import LinearProgress from "@mui/material/LinearProgress";
 import { useSnackbar } from "notistack";
 import FormGroup from "@mui/material/FormGroup";
 import FormControlLabel from "@mui/material/FormControlLabel";
@@ -42,6 +47,7 @@ import "./login.module.scss";
 import { CardsSkeleton } from "../../components/skeleton/cards.jsx";
 
 export const LoginWithImage = () => {
+	const dispatch = useDispatch();
 	const { userName, userId } = useParams();
 
 	const [password, setPassword] = useState({
@@ -91,6 +97,7 @@ export const LoginWithImage = () => {
 		}
 		event.emit("set-api-accessToken", window.api.basePath);
 		setLoading(false);
+		dispatch(showSidemenu());
 		navigate(`/home`);
 	};
 
@@ -101,7 +108,15 @@ export const LoginWithImage = () => {
 	return (
 		<>
 			<AppBarBackOnly />
-			<Container maxWidth="xs" className="centered">
+			<Container
+				maxWidth="xs"
+				sx={{
+					height: "100vh",
+					display: "flex",
+					justifyContent: "center",
+					alignItems: "center",
+				}}
+			>
 				<Grid
 					container
 					direction="column"
@@ -222,47 +237,52 @@ export const UserLogin = () => {
 		queryKey: ["login", "users"],
 		queryFn: async () => {
 			const users = await getUserApi(window.api).getPublicUsers();
-			// console.log(users.data);
+			console.log(users.data);
 			return users.data;
 			// return {};
 		},
+		networkMode: "always",
 	});
 
 	return (
 		<>
 			<AppBarBackOnly />
-			<Container maxWidth="md" className="centered">
+			<Container
+				maxWidth="md"
+				sx={{
+					height: "100vh",
+					display: "flex",
+					justifyContent: "center",
+					alignItems: "center",
+				}}
+			>
 				{/* <Typography variant="h3" sx={{ marginBottom: "1em" }}>
 					Users
 				</Typography> */}
 				{users.isLoading ? (
 					<CardsSkeleton />
 				) : (
-					<CardScroller displayCards={5} title="Users">
+					<Grid container direction="row">
 						{users.data.map((item, index) => {
 							return (
-								//
-								<Link
-									to={`/login/withImg/${item.Name}/${item.Id}/`}
-									key={item.Id}
-									className="userCard"
-									index={index}
-								>
-									<Card
-										key={index}
-										itemName={item.Name}
-										itemId={item.Id}
-										imageTags={
-											!!item.PrimaryImageTag
-										}
-										// cardType="sqaure"
-										iconType="Person"
-										cardOrientation="sqaure"
-									/>
-								</Link>
+								<Card
+									key={index}
+									itemName={item.Name}
+									itemId={item.Id}
+									imageTags={!!item.PrimaryImageTag}
+									// cardType="sqaure"
+									iconType="Person"
+									cardOrientation="sqaure"
+									onClickEvent={navigate(
+										`/login/withImg/${item.Name}/${item.Id}/`,
+									)}
+									cardProps={{
+										sx: { width: "33%" },
+									}}
+								/>
 							);
 						})}
-					</CardScroller>
+					</Grid>
 				)}
 				<div className="buttons">
 					<Button
@@ -290,6 +310,7 @@ export const UserLoginManual = () => {
 	const [loading, setLoading] = useState(false);
 	const [rememberMe, setRememberMe] = useState(true);
 
+	const dispatch = useDispatch();
 	const navigate = useNavigate();
 	const { enqueueSnackbar } = useSnackbar();
 
@@ -307,6 +328,7 @@ export const UserLoginManual = () => {
 			return result.data;
 		},
 		enabled: !window.api,
+		networkMode: "always",
 	});
 
 	const handleUsername = (event) => {
@@ -353,6 +375,7 @@ export const UserLoginManual = () => {
 		event.emit("set-api-accessToken", window.api.basePath);
 		// setAccessToken(user.data.AccessToken)
 		setLoading(false);
+		dispatch(showSidemenu());
 		navigate(`/home`);
 	};
 
@@ -362,14 +385,27 @@ export const UserLoginManual = () => {
 
 	return (
 		<>
+			{server.isLoading && <LinearProgress />}
 			<AppBarBackOnly />
-			<Container maxWidth="xs" className="centered">
+			<Container
+				maxWidth="xs"
+				sx={{
+					height: "100vh",
+					display: "flex",
+					justifyContent: "center",
+					alignItems: "center",
+				}}
+			>
 				<Grid
 					container
 					spacing={2}
 					direction="column"
 					justifyContent="center"
 					alignItems="center"
+					sx={{
+						opacity: server.isLoading ? 0 : 1,
+						transition: "opacity 200ms",
+					}}
 				>
 					<Grid item xl={5} md={6} sx={{ marginBottom: "1em" }}>
 						<Typography variant="h3" color="textPrimary">

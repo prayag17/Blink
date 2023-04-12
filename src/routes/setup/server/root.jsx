@@ -1,7 +1,6 @@
 /** @format */
 
 import { useState, useEffect } from "react";
-import { Cookies, useCookies } from "react-cookie";
 import { useNavigate } from "react-router-dom";
 import { v4 as uuidv4 } from "uuid";
 
@@ -31,7 +30,6 @@ import "./server.module.scss";
 export const ServerList = () => {
 	const [renderServerList, setRenderServerList] = useState(false);
 	const [serverListRender, setServerListRender] = useState([]);
-	const cookies = new Cookies();
 
 	const currentServer = cookies.get("currentServer");
 	const serverList = cookies.get("servers");

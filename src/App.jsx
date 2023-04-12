@@ -1,6 +1,9 @@
 /** @format */
 
 import React, { useState } from "react";
+
+import Konami from "react-konami-code";
+
 import { ThemeProvider } from "@mui/material/styles";
 import { SnackbarProvider } from "notistack";
 import {
@@ -267,6 +270,10 @@ function App() {
 			}),
 		);
 	}
+	const [easterEgg, setEasterEgg] = useState(false);
+	const sixtyNine = () => {
+		setEasterEgg(true);
+	};
 
 	return (
 		<SnackbarProvider maxSnack={5}>
@@ -284,6 +291,21 @@ function App() {
 						<CircularProgress />
 					</Box>
 				)}
+
+				<Konami resetDelay={1000} action={sixtyNine}></Konami>
+				<Dialog
+					open={easterEgg}
+					onClose={() => setEasterEgg(false)}
+				>
+					<iframe
+						width="560"
+						height="315"
+						src="https://www.youtube.com/embed/dQw4w9WgXcQ?controls=0&autoplay=1"
+						title="EasterEgg"
+						frameborder="0"
+						allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+					></iframe>
+				</Dialog>
 				{/* Show Dialog if server not reachable */}
 				<Dialog
 					open={!serverReachable}

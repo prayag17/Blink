@@ -52,6 +52,8 @@ import { formateDate } from "../../utils/date/formateDate";
 import { getRuntime } from "../../utils/date/time";
 
 const Home = () => {
+	const queryClient = useQueryClient();
+
 	const authUser = useQuery({
 		queryKey: ["home", "authenticateUser"],
 		queryFn: async () => {
@@ -67,6 +69,7 @@ const Home = () => {
 			return true;
 		},
 		enabled: false,
+		networkMode: "always",
 	});
 
 	const user = useQuery({
@@ -75,6 +78,7 @@ const Home = () => {
 			let usr = await getUserApi(window.api).getCurrentUser();
 			return usr.data;
 		},
+		networkMode: "always",
 	});
 
 	const libraries = useQuery({
@@ -86,6 +90,7 @@ const Home = () => {
 			return libs.data;
 		},
 		enabled: !!user.data,
+		networkMode: "always",
 	});
 
 	const latestMedia = useQuery({
@@ -101,6 +106,7 @@ const Home = () => {
 			return media.data;
 		},
 		enabled: !!user.data,
+		networkMode: "always",
 	});
 
 	const resumeItemsVideo = useQuery({
@@ -117,6 +123,7 @@ const Home = () => {
 			return resumeItems.data;
 		},
 		enabled: !!user.data,
+		networkMode: "always",
 	});
 
 	const resumeItemsAudio = useQuery({
@@ -133,6 +140,7 @@ const Home = () => {
 			return resumeItems.data;
 		},
 		enabled: !!user.data,
+		networkMode: "always",
 	});
 
 	const upNextItems = useQuery({
@@ -145,6 +153,7 @@ const Home = () => {
 			return upNext.data;
 		},
 		enabled: !!user.data,
+		networkMode: "always",
 	});
 
 	const [latestMediaLibs, setLatestMediaLibs] = useState([]);
@@ -186,6 +195,11 @@ const Home = () => {
 
 	if (!appBarVisiblity) {
 		dispatch(showAppBar());
+	}
+
+	if (user.isPaused) {
+		user.refetch();
+		console.log(user.isError);
 	}
 
 	return (
@@ -451,7 +465,11 @@ const Home = () => {
 												endIcon={
 													<MdiChevronRight />
 												}
-												disabled
+												onClick={() =>
+													navigate(
+														`/item/${item.Id}`,
+													)
+												}
 											>
 												More info
 											</Button>

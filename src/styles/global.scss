@@ -38,6 +38,11 @@ body {
 	position: relative;
 	overflow-y: visible;
 	overflow-x: hidden;
+	min-height: 100vh;
+	// display: flex;
+	// flex-direction: column;
+	// justify-content: center;
+	// align-items: center;
 }
 
 .centered {

@@ -296,6 +296,7 @@ const LibraryView = () => {
 		],
 		queryFn: () => fetchLibItems(id),
 		enabled: !!user.data,
+		networkMode: "always",
 	});
 
 	const handleCurrentViewType = (e) => {
@@ -754,7 +755,7 @@ const LibraryView = () => {
 					) : (
 						<Grid2
 							container
-							columns={{ xs: 3, sm: 5, md: 8 }}
+							columns={{ xs: 2, sm: 4, md: 8 }}
 						>
 							{items.data.Items.map((item, index) => {
 								return (

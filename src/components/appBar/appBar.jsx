@@ -42,6 +42,8 @@ export const AppBar = () => {
 			let usr = await getUserApi(window.api).getCurrentUser();
 			return usr.data;
 		},
+		enabled: visible,
+		networkMode: "always",
 	});
 
 	const trigger = useScrollTrigger({
