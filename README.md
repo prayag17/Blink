@@ -6,6 +6,7 @@
 
 # ℹ️ Getting started:
 - Install Nodejs and Rust.
+  > **Note** : Install Rust from https://www.rust-lang.org/learn/get-started
 - install depencies using npm:
   ```shell
   npm install
