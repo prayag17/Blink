@@ -4,6 +4,8 @@ import PropTypes from "prop-types";
 
 import { useNavigate } from "react-router-dom";
 
+import Divider from "@mui/material/Divider";
+import Stack from "@mui/material/Stack";
 import Box from "@mui/material/Box";
 import MuiCard from "@mui/material/Card";
 import CardContent from "@mui/material/CardContent";
@@ -30,9 +32,13 @@ import { getPlaystateApi } from "@jellyfin/sdk/lib/utils/api/playstate-api";
 import { getUserLibraryApi } from "@jellyfin/sdk/lib/utils/api/user-library-api";
 import { MdiHeartOutline } from "../icons/mdiHeartOutline";
 import { MdiHeart } from "../icons/mdiHeart";
+import { endsAt, getRuntime } from "../../utils/date/time";
+import { MdiStarHalfFull } from "../icons/mdiStarHalfFull";
 
 export const EpisodeCard = ({
 	itemName,
+	itemRating,
+	itemTicks,
 	itemId,
 	imageTags,
 	subText = "",
@@ -247,22 +253,103 @@ export const EpisodeCard = ({
 							</Typography>
 						</>
 					)}
-					<Typography
-						gutterBottom={false}
-						variant="h6"
-						component="div"
-						color="white"
-						fontWeight={500}
-						textAlign="left"
-						noWrap
-						width="fit-content"
-						maxWidth="100%"
+					<Box
 						sx={{
+							display: "flex",
 							opacity: !!showName ? 0.75 : 1,
+							justifyContent: "space-between",
+							alignItems: "center",
 						}}
+						width="100%"
+						mb={0.5}
+						mt={0.5}
 					>
-						{itemName}
-					</Typography>
+						<Typography
+							gutterBottom={false}
+							variant="h6"
+							component="div"
+							color="white"
+							fontWeight={500}
+							textAlign="left"
+							noWrap
+							width="fit-content"
+							maxWidth="100%"
+						>
+							{itemName}
+						</Typography>
+						<Typography
+							gutterBottom={false}
+							variant="h6"
+							component="div"
+							color="white"
+							fontWeight={300}
+							textAlign="left"
+							noWrap
+							width="fit-content"
+							maxWidth="100%"
+							sx={{
+								opacity: 0.65,
+							}}
+						>
+							{getRuntime(itemTicks)}
+						</Typography>
+					</Box>
+					<Stack
+						alignItems="flex-start"
+						width="100%"
+						direction="row"
+						gap={1}
+						divider={
+							<Divider
+								flexItem
+								orientation="vertical"
+								variant="middle"
+							/>
+						}
+						mb={1}
+					>
+						<Typography
+							gutterBottom={false}
+							variant="subtitle1"
+							component="div"
+							color="white"
+							fontWeight={300}
+							textAlign="left"
+							noWrap
+							width="fit-content"
+							maxWidth="100%"
+							sx={{
+								opacity: 0.65,
+								display: "flex",
+								alignItems: "center",
+								justifyContent: "flex-start",
+							}}
+						>
+							<MdiStarHalfFull
+								sx={{ fontSize: "1.2em", mr: "0.25em" }}
+							/>{" "}
+							{itemRating}
+						</Typography>
+						<Typography
+							gutterBottom={false}
+							variant="subtitle1"
+							component="div"
+							color="white"
+							fontWeight={300}
+							textAlign="left"
+							noWrap
+							width="fit-content"
+							maxWidth="100%"
+							sx={{
+								opacity: 0.65,
+								display: "flex",
+								alignItems: "center",
+								justifyContent: "flex-start",
+							}}
+						>
+							{endsAt(itemTicks)}
+						</Typography>
+					</Stack>
 					<Typography
 						gutterBottom
 						variant="body2"
@@ -271,7 +358,13 @@ export const EpisodeCard = ({
 						textAlign="left"
 						width="fit-content"
 						maxWidth="100%"
-						sx={{ opacity: 0.5 }}
+						sx={{
+							display: "-webkit-box",
+							overflow: "hidden",
+							WebkitBoxOrient: "vertical",
+							WebkitLineClamp: 3,
+							opacity: 0.45,
+						}}
 					>
 						{subText}
 					</Typography>
@@ -294,4 +387,6 @@ EpisodeCard.propTypes = {
 	favourite: PropTypes.bool,
 	showName: PropTypes.string,
 	episodeLocation: PropTypes.string,
+	itemTicks: PropTypes.number.isRequired,
+	itemRating: PropTypes.number.isRequired,
 };

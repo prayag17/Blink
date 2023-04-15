@@ -709,6 +709,12 @@ const ItemDetail = () => {
 																	currentUser={
 																		user.data
 																	}
+																	itemTicks={
+																		mitem.RunTimeTicks
+																	}
+																	itemRating={
+																		mitem.CommunityRating
+																	}
 																/>
 															</Grid2>
 														);
