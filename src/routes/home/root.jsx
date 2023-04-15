@@ -52,8 +52,6 @@ import { formateDate } from "../../utils/date/formateDate";
 import { getRuntime } from "../../utils/date/time";
 
 const Home = () => {
-	const queryClient = useQueryClient();
-
 	const authUser = useQuery({
 		queryKey: ["home", "authenticateUser"],
 		queryFn: async () => {

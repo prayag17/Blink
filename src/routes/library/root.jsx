@@ -241,7 +241,15 @@ const LibraryView = () => {
 			result = await getItemsApi(window.api).getItems({
 				userId: user.data.Id,
 				parentId: libraryId,
-				recursive: true,
+				recursive:
+					currentLib.data.Items[0].CollectionType ===
+						"homevideos" ||
+					currentLib.data.Items[0].Type === "Folder" ||
+					(currentLib.data.Items[0].Type ===
+						"CollectionFolder" &&
+						!("CollectionType" in currentLib.data.Items[0]))
+						? undefined
+						: true,
 				includeItemTypes: [currentViewType],
 				sortOrder: [sortAscending ? "Ascending" : "Descending"],
 				sortBy: sortBy,
@@ -295,7 +303,7 @@ const LibraryView = () => {
 			],
 		],
 		queryFn: () => fetchLibItems(id),
-		enabled: !!user.data,
+		enabled: currentLib.isSuccess,
 		networkMode: "always",
 	});
 
@@ -307,7 +315,14 @@ const LibraryView = () => {
 		if (viewType.length != 0) setCurrentViewType(viewType[0].value);
 	}, [viewType]);
 
-	const allowedSortViews = ["Movie", "Series", "MusicAlbum"];
+	const disabledSortViews = [
+		"MusicArtist",
+		"Person",
+		"Genre",
+		"MusicGenre",
+		"MusicGenre",
+		"Studio",
+	];
 	const allowedFilterViews = ["movies", "tvshows", "music", "books"];
 	const onlyStatusFilterViews = ["books", "music"];
 
@@ -680,7 +695,7 @@ const LibraryView = () => {
 										</Menu>
 									</>
 								)}
-							{allowedSortViews.includes(
+							{!disabledSortViews.includes(
 								currentViewType,
 							) && (
 								<>
@@ -826,11 +841,6 @@ const LibraryView = () => {
 													: ""
 											}
 											currentUser={user.data}
-											onClickEvent={() => {
-												navigate(
-													`/item/${item.Id}`,
-												);
-											}}
 										></Card>
 									</Grid2>
 								);

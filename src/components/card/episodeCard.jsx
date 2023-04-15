@@ -31,28 +31,25 @@ import { getUserLibraryApi } from "@jellyfin/sdk/lib/utils/api/user-library-api"
 import { MdiHeartOutline } from "../icons/mdiHeartOutline";
 import { MdiHeart } from "../icons/mdiHeart";
 
-export const Card = ({
+export const EpisodeCard = ({
 	itemName,
 	itemId,
 	imageTags,
-	iconType,
-	cardType = "",
 	subText = "",
 	playedPercent,
-	cardOrientation,
 	cardProps,
 	onClickEvent,
 	watchedStatus,
-	watchedCount,
 	blurhash,
 	currentUser,
 	favourite,
+	showName,
+	episodeLocation,
 }) => {
 	const navigate = useNavigate();
 	const [imgLoading, setImgLoading] = useState(true);
 	const [isWatched, setIsWatched] = useState(watchedStatus);
 	const [isFavourite, setIsFavourite] = useState(favourite);
-	const [watchedCountState, setWatchedCountState] = useState(watchedCount);
 	const handleMarkAsPlayOrUnMarkAsPlay = async () => {
 		let result;
 		if (!isWatched) {
@@ -68,7 +65,6 @@ export const Card = ({
 		}
 		console.log(result.data);
 		setIsWatched(result.data.Played);
-		setWatchedCountState(result.data.UnplayedItemCount);
 	};
 	const handleLiking = async () => {
 		let result;
@@ -87,45 +83,9 @@ export const Card = ({
 		setIsFavourite(result.data.IsFavorite);
 	};
 
-	const availableMarkButtonTypes = [
-		"Audio",
-		"AudioBook",
-		"Book",
-		"BoxSet",
-		"CollectionFolder",
-		"Movie",
-		"MusicAlbum",
-		"MusicVideo",
-		"Season",
-		"Series",
-		"Video",
-		"Episode",
-	];
-	const allowedLikeButton = [
-		"Audio",
-		"AudioBook",
-		"Book",
-		"BoxSet",
-		"CollectionFolder",
-		"Movie",
-		"MusicAlbum",
-		"MusicVideo",
-		"Season",
-		"Series",
-		"Video",
-		"Channel",
-		"MusicAlbum",
-		"MusicArtist",
-		"Person",
-		"Photo",
-		"Playlist",
-		"Studio",
-		"Episode",
-	];
-
 	return (
 		<MuiCard
-			className={"card " + cardOrientation}
+			className="card landscape"
 			sx={{
 				background: "transparent",
 				borderRadius: borderRadiusDefault,
@@ -150,12 +110,7 @@ export const Card = ({
 					sx={{
 						position: "relative",
 						m: 1,
-						aspectRatio:
-							cardOrientation == "landscape"
-								? "1.777"
-								: cardOrientation == "portait"
-								? "0.666"
-								: "1",
+						aspectRatio: "1.777",
 					}}
 				>
 					<>
@@ -167,100 +122,47 @@ export const Card = ({
 								opacity: isWatched ? 1 : 0,
 							}}
 						/>
-
-						{!!watchedCountState && (
-							<Chip
-								className="card-indicator card-indicator-text"
-								label={watchedCountState}
-							></Chip>
-						)}
 						<div
 							className="card-media-image-container"
 							style={{ opacity: imgLoading ? 0 : 1 }}
 						>
-							{imageTags &&
-								(cardType == "thumb" ? (
-									<CardMedia
-										component="img"
-										image={
-											window.api.basePath +
-											"/Items/" +
-											itemId +
-											"/Images/Backdrop?fillHeight=300&fillWidth=532&quality=96"
-										}
-										alt={itemName}
-										sx={{
-											width: "100%",
-											aspectRatio:
-												cardOrientation ==
-												"landscape"
-													? "1.777"
-													: cardOrientation ==
-													  "portait"
-													? "0.666"
-													: "1",
-											borderRadius:
-												borderRadiusDefault,
-											overflow: "hidden",
-										}}
-										onLoad={() =>
-											setImgLoading(false)
-										}
-										className="card-image"
-									></CardMedia>
-								) : (
-									<CardMedia
-										component="img"
-										image={
-											window.api.basePath +
-											"/Items/" +
-											itemId +
-											"/Images/Primary"
-										}
-										alt={itemName}
-										sx={{
-											width: "100%",
-											aspectRatio:
-												cardOrientation ==
-												"landscape"
-													? "1.777"
-													: cardOrientation ==
-													  "portait"
-													? "0.666"
-													: "1",
-										}}
-										className="card-image"
-										onLoad={() =>
-											setImgLoading(false)
-										}
-									></CardMedia>
-								))}
+							{imageTags && (
+								<CardMedia
+									component="img"
+									image={
+										window.api.basePath +
+										"/Items/" +
+										itemId +
+										"/Images/Primary?fillHeight=300&fillWidth=532&quality=96"
+									}
+									alt={itemName}
+									sx={{
+										width: "100%",
+										aspectRatio: "1.777",
+										borderRadius:
+											borderRadiusDefault,
+										overflow: "hidden",
+									}}
+									onLoad={() => setImgLoading(false)}
+									className="card-image"
+								></CardMedia>
+							)}
 						</div>
 						{!!blurhash && (
 							<Blurhash
 								hash={blurhash}
 								width="100%"
 								height="100%"
-								resolutionX={64}
-								resolutionY={64}
+								resolutionX={512}
+								resolutionY={910}
 								style={{
-									aspectRatio:
-										cardOrientation == "landscape"
-											? "1.777"
-											: cardOrientation ==
-											  "portait"
-											? "0.666"
-											: "1",
+									aspectRatio: "1.777",
 								}}
 								className="card-image-blurhash"
 							/>
 						)}
 						<div className="card-image-icon-container">
-							{cardType == "lib"
-								? MediaCollectionTypeIconCollectionCard[
-										iconType
-								  ]
-								: TypeIconCollectionCard[iconType]}
+							{TypeIconCollectionCard["Episode"]}
 						</div>
 						{!!playedPercent && (
 							<LinearProgress
@@ -274,6 +176,7 @@ export const Card = ({
 									borderRadius: "100px",
 									height: "5px",
 								}}
+								color="white"
 							/>
 						)}
 					</>
@@ -287,40 +190,34 @@ export const Card = ({
 						}}
 					>
 						<ButtonGroup>
-							{availableMarkButtonTypes.includes(
-								iconType,
-							) && (
-								<IconButton
-									onClick={(e) => {
-										e.stopPropagation();
-										handleMarkAsPlayOrUnMarkAsPlay();
+							<IconButton
+								onClick={(e) => {
+									e.stopPropagation();
+									handleMarkAsPlayOrUnMarkAsPlay();
+								}}
+							>
+								<MdiCheck
+									sx={{
+										color: isWatched
+											? green[200]
+											: "white",
 									}}
-								>
-									<MdiCheck
-										sx={{
-											color: isWatched
-												? green[200]
-												: "white",
-										}}
+								/>
+							</IconButton>
+							<IconButton
+								onClick={(e) => {
+									e.stopPropagation();
+									handleLiking();
+								}}
+							>
+								{isFavourite ? (
+									<MdiHeart
+										sx={{ color: pink[700] }}
 									/>
-								</IconButton>
-							)}
-							{allowedLikeButton.includes(iconType) && (
-								<IconButton
-									onClick={(e) => {
-										e.stopPropagation();
-										handleLiking();
-									}}
-								>
-									{isFavourite ? (
-										<MdiHeart
-											sx={{ color: pink[700] }}
-										/>
-									) : (
-										<MdiHeartOutline />
-									)}
-								</IconButton>
-							)}
+								) : (
+									<MdiHeartOutline />
+								)}
+							</IconButton>
 						</ButtonGroup>
 					</Box>
 				</Box>
@@ -329,9 +226,27 @@ export const Card = ({
 					className="card-text-container"
 					sx={{
 						padding: "0 0.5em",
+						alignItems: "flex-start",
 						backgroundColor: "transparent",
 					}}
 				>
+					{!!showName && (
+						<>
+							<Typography
+								gutterBottom={false}
+								variant="h5"
+								component="div"
+								color="white"
+								fontWeight={500}
+								textAlign="left"
+								noWrap
+								width="fit-content"
+								maxWidth="100%"
+							>
+								{`${showName} - ${episodeLocation}`}
+							</Typography>
+						</>
+					)}
 					<Typography
 						gutterBottom={false}
 						variant="h6"
@@ -342,20 +257,21 @@ export const Card = ({
 						noWrap
 						width="fit-content"
 						maxWidth="100%"
+						sx={{
+							opacity: !!showName ? 0.75 : 1,
+						}}
 					>
 						{itemName}
 					</Typography>
 					<Typography
 						gutterBottom
-						variant="subtitle2"
+						variant="body2"
 						component="div"
-						color="gray"
+						color="white"
 						textAlign="left"
-						// textOverflow={}
-						// fontSize="0.85em"
 						width="fit-content"
 						maxWidth="100%"
-						noWrap
+						sx={{ opacity: 0.5 }}
 					>
 						{subText}
 					</Typography>
@@ -365,19 +281,17 @@ export const Card = ({
 	);
 };
 
-Card.propTypes = {
+EpisodeCard.propTypes = {
 	itemName: PropTypes.string.isRequired,
 	itemId: PropTypes.string.isRequired,
 	imageTags: PropTypes.bool,
-	iconType: PropTypes.string.isRequired,
-	cardType: PropTypes.string,
 	subText: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
 	playedPercent: PropTypes.number,
-	cardOrientation: PropTypes.string.isRequired,
 	onClickEvent: PropTypes.func,
 	watchedStatus: PropTypes.bool,
-	watchedCount: PropTypes.number,
 	blurhash: PropTypes.string,
 	currentUser: PropTypes.object,
 	favourite: PropTypes.bool,
+	showName: PropTypes.string,
+	episodeLocation: PropTypes.string,
 };

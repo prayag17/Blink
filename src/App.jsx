@@ -213,24 +213,31 @@ function App() {
 	const LogicalRoutes = () => {
 		serverAvailable().then(async (server) => {
 			if (server == true) {
-				pingServer();
-				if (serverReachable == true) {
-					userSaved().then((user_available) => {
-						if (user_available == true) {
-							navigate("/home");
-						} else {
-							usersAvailable().then(
-								(users_list_available) => {
-									if (users_list_available == true) {
-										navigate("/login/users");
-									} else {
-										navigate("/login/manual");
-									}
-								},
-							);
-						}
-					});
-				}
+				createApi().then(() => {
+					pingServer();
+					if (serverReachable == true) {
+						userSaved().then((user_available) => {
+							if (user_available == true) {
+								navigate("/home");
+							} else {
+								usersAvailable().then(
+									(users_list_available) => {
+										if (
+											users_list_available ==
+											true
+										) {
+											navigate("/login/users");
+										} else {
+											navigate(
+												"/login/manual",
+											);
+										}
+									},
+								);
+							}
+						});
+					}
+				});
 			} else {
 				navigate("/setup/server");
 				setChecking(false);
@@ -262,13 +269,17 @@ function App() {
 
 	if (!window.api) {
 		console.log("WindowAPi not present");
-		createApi().then(
-			userSaved().then((userSavedBool) => {
-				if (userSavedBool) {
-					userLogin();
-				}
-			}),
-		);
+		serverAvailable().then((available) => {
+			if (available) {
+				createApi().then(
+					userSaved().then((userSavedBool) => {
+						if (userSavedBool) {
+							userLogin();
+						}
+					}),
+				);
+			}
+		});
 	}
 	const [easterEgg, setEasterEgg] = useState(false);
 	const sixtyNine = () => {
@@ -358,12 +369,10 @@ function App() {
 									element={<ServerList />}
 								/>
 								<Route
-									exact
 									path="/login/withImg/:userName/:userId/"
 									element={<LoginWithImage />}
 								/>
 								<Route
-									exact
 									path="/login/users"
 									element={<UserLogin />}
 								/>
@@ -387,7 +396,6 @@ function App() {
 									element={<LogicalRoutes />}
 								/>
 								<Route
-									exact
 									path="/login"
 									element={<LoginLogicalRoutes />}
 								/>

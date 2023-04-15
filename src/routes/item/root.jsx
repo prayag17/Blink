@@ -2,6 +2,9 @@
 import { useState, useEffect } from "react";
 import PropTypes from "prop-types";
 
+import CardMedia from "@mui/material/CardMedia";
+import CardContent from "@mui/material/CardContent";
+import MuiCard from "@mui/material/Card";
 import Box from "@mui/material/Box";
 import CircularProgress from "@mui/material/CircularProgress";
 import Typography from "@mui/material/Typography";
@@ -18,7 +21,7 @@ import { showAppBar, showBackButton } from "../../utils/slice/appBar";
 import { useDispatch, useSelector } from "react-redux";
 import { useParams, useNavigate } from "react-router-dom";
 
-import { BaseItemKind } from "@jellyfin/sdk/lib/generated-client";
+import { BaseItemKind, ItemFields } from "@jellyfin/sdk/lib/generated-client";
 import { getUserApi } from "@jellyfin/sdk/lib/utils/api/user-api";
 import { getUserLibraryApi } from "@jellyfin/sdk/lib/utils/api/user-library-api";
 import { getLibraryApi } from "@jellyfin/sdk/lib/utils/api/library-api";
@@ -31,6 +34,7 @@ import { getRuntimeFull } from "../../utils/date/time";
 import { TypeIconCollectionCard } from "../../components/utils/iconsCollection";
 
 import { Card } from "../../components/card/card";
+import { EpisodeCard } from "../../components/card/episodeCard";
 import { CardScroller } from "../../components/cardScroller/cardScroller";
 
 import "./item.module.scss";
@@ -46,11 +50,7 @@ function TabPanel(props) {
 			aria-labelledby={`full-width-tab-${index}`}
 			{...other}
 		>
-			{value === index && (
-				<Box sx={{ p: 3 }}>
-					<Typography>{children}</Typography>
-				</Box>
-			)}
+			{value === index && <Box>{children}</Box>}
 		</div>
 	);
 }
@@ -160,9 +160,10 @@ const ItemDetail = () => {
 	const episodes = useQuery({
 		queryKey: ["item", "episode", `season ${currentSeason + 1}`],
 		queryFn: async () => {
-			const result = await getTvShowsApi(window.api).getEpisodes({
-				seriesId: item.data.Id,
-				seasonId: seasons.data.Items[currentSeason].Id,
+			const result = await getItemsApi(window.api).getItems({
+				userId: user.data.Id,
+				parentId: seasons.data.Items[currentSeason].Id,
+				fields: [ItemFields.SeasonUserData, "Overview"],
 			});
 			return result.data;
 		},
@@ -233,31 +234,26 @@ const ItemDetail = () => {
 		enabled: item.isSuccess && item.data.Type == "Person",
 		networkMode: "always",
 	});
-	const personDataEmpty = (pitem) => {
-		let result;
-		switch (pitem) {
-			case "Movies":
-				result = personMovies.data.Items.length == 0;
-				break;
-			case "TV Shows":
-				result = personShows.data.Items.length == 0;
-				break;
-			case "Books":
-				result = personBooks.data.Items.length == 0;
-				break;
-			case "Photos":
-				result = personPhotos.data.Items.length == 0;
-				break;
-			default:
-				result = true;
-				break;
-		}
-		console.log("Result => ", result);
-		return result;
-	};
+	const personEpisodes = useQuery({
+		queryKey: ["item", "personEpisodes"],
+		queryFn: async () => {
+			const result = await getItemsApi(window.api).getItems({
+				userId: user.data.Id,
+				personIds: [id],
+				includeItemTypes: [BaseItemKind.Episode],
+				recursive: true,
+				fields: ["SeasonUserData", "Overview"],
+				sortBy: ["PremiereDate", "ProductionYear", "SortName"],
+			});
+			return result.data;
+		},
+		enabled: item.isSuccess && item.data.Type == "Person",
+		networkMode: "always",
+	});
 
 	const [activePersonTab, setActivePersonTab] = useState(0);
-	const personTabs = ["Movies", "TV Shows", "Books", "Photos"];
+
+	const personTabs = ["Movies", "TV Shows", "Books", "Photos", "Episodes"];
 
 	if (item.isLoading || similarItems.isLoading) {
 		return (
@@ -610,6 +606,7 @@ const ItemDetail = () => {
 								onChange={(e, newVal) => {
 									setCurrentSeason(newVal);
 								}}
+								sx={{ mb: 2 }}
 							>
 								{seasons.data.Items.map(
 									(season, index) => {
@@ -632,7 +629,92 @@ const ItemDetail = () => {
 										index={index}
 										key={index}
 									>
-										Item {index}
+										<Grid2
+											container
+											columns={{
+												xs: 2,
+												sm: 3,
+												md: 4,
+											}}
+										>
+											{episodes.isSuccess &&
+												episodes.data.Items.map(
+													(
+														mitem,
+														mindex,
+													) => {
+														return (
+															<Grid2
+																key={
+																	mindex
+																}
+																xs={
+																	1
+																}
+																sm={
+																	1
+																}
+																md={
+																	1
+																}
+															>
+																<EpisodeCard
+																	itemId={
+																		mitem.Id
+																	}
+																	itemName={`${mitem.IndexNumber}. ${mitem.Name}`}
+																	imageTags={
+																		!!mitem
+																			.ImageTags
+																			.Primary
+																	}
+																	subText={
+																		mitem.Overview
+																	}
+																	playedPercent={
+																		mitem
+																			.UserData
+																			.PlayedPercentage
+																	}
+																	watchedStatus={
+																		mitem
+																			.UserData
+																			.Played
+																	}
+																	favourite={
+																		mitem
+																			.UserData
+																			.IsFavorite
+																	}
+																	blurhash={
+																		mitem.ImageBlurHashes ==
+																		{}
+																			? ""
+																			: !!mitem
+																					.ImageTags
+																					.Primary
+																			? !!mitem
+																					.ImageBlurHashes
+																					.Primary
+																				? mitem
+																						.ImageBlurHashes
+																						.Primary[
+																						mitem
+																							.ImageTags
+																							.Primary
+																				  ]
+																				: ""
+																			: ""
+																	}
+																	currentUser={
+																		user.data
+																	}
+																/>
+															</Grid2>
+														);
+													},
+												)}
+										</Grid2>
 									</TabPanel>
 								);
 							})}
@@ -671,7 +753,8 @@ const ItemDetail = () => {
 						personShows.isSuccess &&
 						personMovies.isSuccess &&
 						personBooks.isSuccess &&
-						personPhotos.isSuccess && (
+						personPhotos.isSuccess &&
+						personEpisodes.isSuccess && (
 							<Box>
 								<Box
 									sx={{
@@ -723,6 +806,13 @@ const ItemDetail = () => {
 															(pitem ==
 																"Photos" &&
 																personPhotos
+																	.data
+																	.Items
+																	.length ==
+																	0) ||
+															(pitem ==
+																"Episodes" &&
+																personEpisodes
 																	.data
 																	.Items
 																	.length ==
@@ -968,6 +1058,332 @@ const ItemDetail = () => {
 																			);
 																		}}
 																	></Card>
+																</Grid2>
+															);
+														},
+													)}
+												</Grid2>
+											)}
+											{pitem == "Books" && (
+												<Grid2
+													container
+													columns={{
+														xs: 4,
+														sm: 6,
+														md: 8,
+													}}
+												>
+													{personBooks.data.Items.map(
+														(
+															mitem,
+															mindex,
+														) => {
+															return (
+																<Grid2
+																	key={
+																		mindex
+																	}
+																	xs={
+																		1
+																	}
+																	sm={
+																		1
+																	}
+																	md={
+																		1
+																	}
+																>
+																	<Card
+																		itemName={
+																			mitem.Name
+																		}
+																		itemId={
+																			mitem.Id
+																		}
+																		imageTags={
+																			!!mitem
+																				.ImageTags
+																				.Primary
+																		}
+																		subText={
+																			mitem.ProductionYear
+																		}
+																		iconType={
+																			mitem.Type
+																		}
+																		playedPercent={
+																			!!mitem.UserData
+																				? mitem
+																						.UserData
+																						.PlayedPercentage
+																				: 0
+																		}
+																		cardOrientation={
+																			mitem.Type ==
+																				"MusicArtist" ||
+																			mitem.Type ==
+																				"MusicAlbum" ||
+																			mitem.Type ==
+																				"MusicGenre" ||
+																			mitem.Type ==
+																				"Playlist"
+																				? "square"
+																				: "portait"
+																		}
+																		watchedStatus={
+																			!!mitem.UserData
+																				? mitem
+																						.UserData
+																						.Played
+																				: false
+																		}
+																		watchedCount={
+																			!!mitem.UserData &&
+																			mitem
+																				.UserData
+																				.UnplayedItemCount
+																		}
+																		blurhash={
+																			mitem.ImageBlurHashes ==
+																			{}
+																				? ""
+																				: !!mitem
+																						.ImageTags
+																						.Primary
+																				? !!mitem
+																						.ImageBlurHashes
+																						.Primary
+																					? mitem
+																							.ImageBlurHashes
+																							.Primary[
+																							mitem
+																								.ImageTags
+																								.Primary
+																					  ]
+																					: ""
+																				: ""
+																		}
+																		currentUser={
+																			user.data
+																		}
+																		onClickEvent={() => {
+																			navigate(
+																				`/item/${mitem.Id}`,
+																			);
+																		}}
+																	></Card>
+																</Grid2>
+															);
+														},
+													)}
+												</Grid2>
+											)}
+											{pitem == "Photos" && (
+												<Grid2
+													container
+													columns={{
+														xs: 4,
+														sm: 6,
+														md: 8,
+													}}
+												>
+													{personPhotos.data.Items.map(
+														(
+															mitem,
+															mindex,
+														) => {
+															return (
+																<Grid2
+																	key={
+																		mindex
+																	}
+																	xs={
+																		1
+																	}
+																	sm={
+																		1
+																	}
+																	md={
+																		1
+																	}
+																>
+																	<Card
+																		itemName={
+																			mitem.Name
+																		}
+																		itemId={
+																			mitem.Id
+																		}
+																		imageTags={
+																			!!mitem
+																				.ImageTags
+																				.Primary
+																		}
+																		subText={
+																			mitem.ProductionYear
+																		}
+																		iconType={
+																			mitem.Type
+																		}
+																		playedPercent={
+																			!!mitem.UserData
+																				? mitem
+																						.UserData
+																						.PlayedPercentage
+																				: 0
+																		}
+																		cardOrientation={
+																			mitem.Type ==
+																				"MusicArtist" ||
+																			mitem.Type ==
+																				"MusicAlbum" ||
+																			mitem.Type ==
+																				"MusicGenre" ||
+																			mitem.Type ==
+																				"Playlist"
+																				? "square"
+																				: "portait"
+																		}
+																		watchedStatus={
+																			!!mitem.UserData
+																				? mitem
+																						.UserData
+																						.Played
+																				: false
+																		}
+																		watchedCount={
+																			!!mitem.UserData &&
+																			mitem
+																				.UserData
+																				.UnplayedItemCount
+																		}
+																		blurhash={
+																			mitem.ImageBlurHashes ==
+																			{}
+																				? ""
+																				: !!mitem
+																						.ImageTags
+																						.Primary
+																				? !!mitem
+																						.ImageBlurHashes
+																						.Primary
+																					? mitem
+																							.ImageBlurHashes
+																							.Primary[
+																							mitem
+																								.ImageTags
+																								.Primary
+																					  ]
+																					: ""
+																				: ""
+																		}
+																		currentUser={
+																			user.data
+																		}
+																		onClickEvent={() => {
+																			navigate(
+																				`/item/${mitem.Id}`,
+																			);
+																		}}
+																	></Card>
+																</Grid2>
+															);
+														},
+													)}
+												</Grid2>
+											)}
+											{pitem == "Episodes" && (
+												<Grid2
+													container
+													columns={{
+														xs: 2,
+														sm: 3,
+														md: 4,
+													}}
+												>
+													{personEpisodes.data.Items.map(
+														(
+															mitem,
+															mindex,
+														) => {
+															return (
+																<Grid2
+																	key={
+																		mindex
+																	}
+																	xs={
+																		1
+																	}
+																	sm={
+																		1
+																	}
+																	md={
+																		1
+																	}
+																>
+																	<EpisodeCard
+																		itemId={
+																			mitem.Id
+																		}
+																		itemName={
+																			mitem.Name
+																		}
+																		imageTags={
+																			!!mitem
+																				.ImageTags
+																				.Primary
+																		}
+																		subText={
+																			mitem.Overview
+																		}
+																		playedPercent={
+																			mitem
+																				.UserData
+																				.PlayedPercentage
+																		}
+																		watchedStatus={
+																			mitem
+																				.UserData
+																				.Played
+																		}
+																		watchedCount={
+																			mitem
+																				.UserData
+																				.PlayCount
+																		}
+																		blurhash={
+																			mitem.ImageBlurHashes ==
+																			{}
+																				? ""
+																				: !!mitem
+																						.ImageTags
+																						.Primary
+																				? !!mitem
+																						.ImageBlurHashes
+																						.Primary
+																					? mitem
+																							.ImageBlurHashes
+																							.Primary[
+																							mitem
+																								.ImageTags
+																								.Primary
+																					  ]
+																					: ""
+																				: ""
+																		}
+																		currentUser={
+																			user.data
+																		}
+																		favourite={
+																			mitem
+																				.UserData
+																				.IsFavorite
+																		}
+																		showName={
+																			mitem.SeriesName
+																		}
+																		episodeLocation={`S${mitem.ParentIndexNumber}:E${mitem.IndexNumber}`}
+																	/>
 																</Grid2>
 															);
 														},
