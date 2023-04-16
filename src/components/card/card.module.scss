@@ -23,7 +23,8 @@
 			transition: opacity $transition-time-default;
 		}
 	}
-	&:hover .card-media-overlay {
+	&:hover .card-media-overlay,
+	&:focus .card-media-overlay {
 		opacity: 1;
 	}
 	&-image {

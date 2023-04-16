@@ -66,7 +66,6 @@ export const Card = ({
 				itemId: itemId,
 			});
 		}
-		console.log(result.data);
 		setIsWatched(result.data.Played);
 		setWatchedCountState(result.data.UnplayedItemCount);
 	};
@@ -83,7 +82,6 @@ export const Card = ({
 				itemId: itemId,
 			});
 		}
-		console.log(result.data.IsFavorite);
 		setIsFavourite(result.data.IsFavorite);
 	};
 
@@ -299,7 +297,7 @@ export const Card = ({
 									<MdiCheck
 										sx={{
 											color: isWatched
-												? green[200]
+												? green[400]
 												: "white",
 										}}
 									/>

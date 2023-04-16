@@ -15,6 +15,7 @@ import Skeleton from "@mui/material/Skeleton";
 import Tooltip from "@mui/material/Tooltip";
 import List from "@mui/material/List";
 import ListItem from "@mui/material/ListItem";
+import Link from "@mui/material/Link";
 import ListItemText from "@mui/material/ListItemText";
 import ListItemIcon from "@mui/material/ListItemIcon";
 import ListItemButton from "@mui/material/ListItemButton";
@@ -184,47 +185,37 @@ export const SideMenu = ({}) => {
 												className="sidemenu-item-container"
 												disablePadding
 											>
-												<NavLink
+												<ListItemButton
+													component={
+														NavLink
+													}
 													to={
 														"/library/" +
 														library.Id
 													}
-													className={({
-														isActive,
-														isPending,
-													}) =>
-														isPending
-															? "sidemenu-item-pending sidemenu-item"
-															: isActive
-															? "sidemenu-item-active sidemenu-item"
-															: "sidemenu-item"
-													}
+													className="sidemenu-item"
+													sx={{
+														minHeight: 48,
+														justifyContent:
+															"center",
+														px: 2.5,
+													}}
 												>
-													<ListItemButton
+													<ListItemIcon
 														sx={{
-															minHeight: 48,
+															minWidth: 0,
 															justifyContent:
 																"center",
-															px: 2.5,
 														}}
-														color="white"
 													>
-														<ListItemIcon
-															sx={{
-																minWidth: 0,
-																justifyContent:
-																	"center",
-															}}
-														>
-															{
-																MediaCollectionTypeIconCollection[
-																	library
-																		.CollectionType
-																]
-															}
-														</ListItemIcon>
-													</ListItemButton>
-												</NavLink>
+														{
+															MediaCollectionTypeIconCollection[
+																library
+																	.CollectionType
+															]
+														}
+													</ListItemIcon>
+												</ListItemButton>
 											</ListItem>
 										</Tooltip>
 									);

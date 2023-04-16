@@ -2,9 +2,6 @@
 import { useState, useEffect } from "react";
 import PropTypes from "prop-types";
 
-import CardMedia from "@mui/material/CardMedia";
-import CardContent from "@mui/material/CardContent";
-import MuiCard from "@mui/material/Card";
 import Box from "@mui/material/Box";
 import CircularProgress from "@mui/material/CircularProgress";
 import Typography from "@mui/material/Typography";
@@ -15,6 +12,9 @@ import LinearProgress from "@mui/material/LinearProgress";
 import Tabs from "@mui/material/Tabs";
 import Tab from "@mui/material/Tab";
 import Grid2 from "@mui/material/Unstable_Grid2";
+import Button from "@mui/material/Button";
+import IconButton from "@mui/material/IconButton";
+import { green, pink } from "@mui/material/colors";
 
 import { Blurhash } from "react-blurhash";
 import { showAppBar, showBackButton } from "../../utils/slice/appBar";
@@ -27,8 +27,11 @@ import { getUserLibraryApi } from "@jellyfin/sdk/lib/utils/api/user-library-api"
 import { getLibraryApi } from "@jellyfin/sdk/lib/utils/api/library-api";
 import { getTvShowsApi } from "@jellyfin/sdk/lib/utils/api/tv-shows-api";
 import { getItemsApi } from "@jellyfin/sdk/lib/utils/api/items-api";
+import { getPlaystateApi } from "@jellyfin/sdk/lib/utils/api/playstate-api";
 
 import { useQuery } from "@tanstack/react-query";
+
+import { MdiPlayOutline } from "../../components/icons/mdiPlayOutline";
 import { MdiStarHalfFull } from "../../components/icons/mdiStarHalfFull";
 import { getRuntimeFull } from "../../utils/date/time";
 import { TypeIconCollectionCard } from "../../components/utils/iconsCollection";
@@ -38,7 +41,9 @@ import { EpisodeCard } from "../../components/card/episodeCard";
 import { CardScroller } from "../../components/cardScroller/cardScroller";
 
 import "./item.module.scss";
-
+import { MdiCheck } from "../../components/icons/mdiCheck";
+import { MdiHeartOutline } from "../../components/icons/mdiHeartOutline";
+import { MdiHeart } from "../../components/icons/mdiHeart";
 function TabPanel(props) {
 	const { children, value, index, ...other } = props;
 
@@ -251,6 +256,38 @@ const ItemDetail = () => {
 		networkMode: "always",
 	});
 
+	const handleMarkPlayedOrunPlayed = async () => {
+		let result;
+		if (!item.data.UserData.Played) {
+			result = await getPlaystateApi(window.api).markPlayedItem({
+				userId: user.data.Id,
+				itemId: item.data.Id,
+			});
+		} else if (item.data.UserData.Played) {
+			result = await getPlaystateApi(window.api).markUnplayedItem({
+				userId: user.data.Id,
+				itemId: item.data.Id,
+			});
+		}
+		item.refetch();
+	};
+	const handleLiking = async () => {
+		let result;
+		if (item.data.UserData.IsFavorite) {
+			result = await getUserLibraryApi(window.api).unmarkFavoriteItem({
+				userId: user.data.Id,
+				itemId: item.data.Id,
+			});
+			console.log(result.statusText);
+		} else if (!item.data.UserData.IsFavorite) {
+			result = await getUserLibraryApi(window.api).markFavoriteItem({
+				userId: user.data.Id,
+				itemId: item.data.Id,
+			});
+		}
+		item.refetch();
+	};
+
 	const [activePersonTab, setActivePersonTab] = useState(0);
 
 	const personTabs = ["Movies", "TV Shows", "Books", "Photos", "Episodes"];
@@ -449,23 +486,6 @@ const ItemDetail = () => {
 											item.data.Name
 										)}
 									</Typography>
-									{!!item.data.UserData
-										.PlayedPercentage && (
-										<LinearProgress
-											variant="determinate"
-											value={
-												item.data.UserData
-													.PlayedPercentage
-											}
-											sx={{
-												borderRadius: 1000,
-												width: "75%",
-												mt: 1,
-												mb: 1,
-											}}
-											color="primary"
-										/>
-									)}
 									<Typography
 										variant="subtitle1"
 										color="gray"
@@ -545,6 +565,87 @@ const ItemDetail = () => {
 									)}
 								</Stack>
 							</Box>
+							<Stack
+								direction="row"
+								gap={1}
+								alignItems="center"
+								justifyContent="center"
+								ml="auto"
+								mr={2}
+							>
+								{item.data.Type != "Person" &&
+									item.data.Type !=
+										"MusicArtist" && (
+										<>
+											<Button
+												variant="contained"
+												size="large"
+												startIcon={
+													<MdiPlayOutline />
+												}
+												sx={{
+													position:
+														"relative",
+													overflow:
+														"hidden",
+												}}
+												disabled
+											>
+												Play
+												{!!item.data
+													.UserData
+													.PlayedPercentage && (
+													<LinearProgress
+														variant="determinate"
+														value={
+															item
+																.data
+																.UserData
+																.PlayedPercentage
+														}
+														color="white"
+														sx={{
+															position:
+																"absolute",
+															height: "100%",
+															width: "100%",
+															background:
+																"transparent",
+															zIndex: "0",
+															opacity: 0.2,
+														}}
+													/>
+												)}
+											</Button>
+
+											<IconButton
+												onClick={
+													handleMarkPlayedOrunPlayed
+												}
+											>
+												<MdiCheck
+													sx={{
+														color: item
+															.data
+															.UserData
+															.Played
+															? green[400]
+															: "white",
+													}}
+												/>
+											</IconButton>
+										</>
+									)}
+								<IconButton onClick={handleLiking}>
+									{item.data.UserData.IsFavorite ? (
+										<MdiHeart
+											sx={{ color: pink[700] }}
+										/>
+									) : (
+										<MdiHeartOutline />
+									)}
+								</IconButton>
+							</Stack>
 						</Box>
 						<Box
 							className="item-detail-tagline"

@@ -43,6 +43,8 @@ import { MdiSortAscending } from "../../components/icons/mdiSortAscending";
 import { MdiChevronDown } from "../../components/icons/mdiChevronDown";
 import { MdiFilterOutline } from "../../components/icons/mdiFilterOutline";
 
+import { clrBackgroundDarkOpacity0_8 } from "../../palette.module.scss";
+
 const LibraryView = () => {
 	const navigate = useNavigate();
 	const dispatch = useDispatch();
@@ -363,12 +365,13 @@ const LibraryView = () => {
 					sx={{
 						width: `calc(100vw - ${theme.spacing(7)})`,
 						mt: 8,
+						backdropFilter: `blur(30px)`,
 						background: "transparent",
 						backgroundColor: trigger
-							? `${theme.palette.background.paper} !important`
+							? `${clrBackgroundDarkOpacity0_8} !important`
 							: "transparent",
 						transition:
-							"transition: background-color 150ms, box-shadow 150ms !important",
+							"transition: background-color 150ms, box-shadow 150ms, backdrop-filter 150ms !important",
 					}}
 				>
 					<Divider

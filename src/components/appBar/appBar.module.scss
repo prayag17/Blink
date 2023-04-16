@@ -2,9 +2,11 @@
 
 .appBar {
 	transition: background-color $transition-time-fast,
+		backdrop-filter $transition-time-fast,
 		box-shadow $transition-time-default !important;
 	&.backdropVisible {
-		background-color: $clr-background-dark;
+		background-color: $clr-background-dark-opacity-0_8;
+		backdrop-filter: blur(30px);
 	}
 	&-avatar {
 		background: $clr-gradient-dark;

@@ -21,7 +21,7 @@
 			transition: transform $transition-time-default,
 				opacity $transition-time-default;
 		}
-		&-active::before {
+		&.active::before {
 			opacity: 1;
 			transform: translateX(0);
 		}
