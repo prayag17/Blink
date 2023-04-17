@@ -44,6 +44,7 @@ import "./item.module.scss";
 import { MdiCheck } from "../../components/icons/mdiCheck";
 import { MdiHeartOutline } from "../../components/icons/mdiHeartOutline";
 import { MdiHeart } from "../../components/icons/mdiHeart";
+import { EpisodeCardsSkeleton } from "../../components/skeleton/episodeCards";
 function TabPanel(props) {
 	const { children, value, index, ...other } = props;
 
@@ -111,6 +112,7 @@ const ItemDetail = () => {
 		},
 		enabled: !!user.data,
 		networkMode: "always",
+		refetchOnWindowFocus: true,
 	});
 
 	const similarItems = useQuery({
@@ -147,6 +149,7 @@ const ItemDetail = () => {
 		},
 		enabled: item.isSuccess,
 		networkMode: "always",
+		refetchOnWindowFocus: true,
 	});
 
 	const seasons = useQuery({
@@ -159,6 +162,7 @@ const ItemDetail = () => {
 		},
 		enabled: item.isSuccess && item.data.Type == "Series",
 		networkMode: "always",
+		refetchOnWindowFocus: true,
 	});
 
 	const [currentSeason, setCurrentSeason] = useState(0);
@@ -174,6 +178,7 @@ const ItemDetail = () => {
 		},
 		enabled: seasons.isSuccess,
 		networkMode: "always",
+		refetchOnWindowFocus: true,
 	});
 
 	const personShows = useQuery({
@@ -591,7 +596,14 @@ const ItemDetail = () => {
 												}}
 												disabled
 											>
-												Play
+												{!!item.data
+													.UserData
+													.PlayedPercentage &&
+												item.data.UserData
+													.PlayedPercentage >
+													0
+													? "Resume"
+													: "Play"}
 												{!!item.data
 													.UserData
 													.PlayedPercentage && (
@@ -738,7 +750,9 @@ const ItemDetail = () => {
 												md: 4,
 											}}
 										>
-											{episodes.isSuccess &&
+											{episodes.isLoading ? (
+												<EpisodeCardsSkeleton />
+											) : (
 												episodes.data.Items.map(
 													(
 														mitem,
@@ -820,7 +834,8 @@ const ItemDetail = () => {
 															</Grid2>
 														);
 													},
-												)}
+												)
+											)}
 										</Grid2>
 									</TabPanel>
 								);

@@ -128,9 +128,9 @@ export const EpisodeCard = ({
 								opacity: isWatched ? 1 : 0,
 							}}
 						/>
-						<div
+						<Box
 							className="card-media-image-container"
-							style={{ opacity: imgLoading ? 0 : 1 }}
+							sx={{ opacity: imgLoading ? 0 : 1 }}
 						>
 							{imageTags && (
 								<CardMedia
@@ -153,7 +153,7 @@ export const EpisodeCard = ({
 									className="card-image"
 								></CardMedia>
 							)}
-						</div>
+						</Box>
 						{!!blurhash && (
 							<Blurhash
 								hash={blurhash}

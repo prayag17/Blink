@@ -55,14 +55,10 @@ export const getRuntimeFull = (ticks) => {
  */
 export const endsAt = (ticks) => {
 	let current = new Date();
-	let currentTime =
-		current.getHours() * 3600000 + current.getMinutes() * 60000;
+	let currentTime = current.getTime();
 	let time = ticksToMs(ticks);
 	let calculatedTime = currentTime + time;
-	let hr = Math.floor(calculatedTime / 3600000);
-	calculatedTime -= hr * 3600000;
-	let min = Math.floor(calculatedTime / 60000);
-	let formated = new Date(calculatedTime).toLocaleTimeString([], {
+	let formated = new Date(calculatedTime).toLocaleString([], {
 		hour: "2-digit",
 		minute: "2-digit",
 	});
