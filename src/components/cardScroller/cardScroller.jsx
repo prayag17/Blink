@@ -21,6 +21,7 @@ export const CardScroller = ({
 	displayCards,
 	title,
 	headingProps,
+	disableDecoration = false,
 }) => {
 	const responsive = {
 		superLargeDesktop: {
@@ -50,7 +51,14 @@ export const CardScroller = ({
 
 	return (
 		<Box className="card-scroller-container" sx={{ mb: 4 }}>
-			<Box sx={{ mb: 2 }} className="card-scroller-header-container">
+			<Box
+				sx={{ mb: 2 }}
+				className={
+					disableDecoration
+						? `card-scroller-header-container hidden-decoration`
+						: `card-scroller-header-container`
+				}
+			>
 				<Typography
 					variant="h4"
 					color="textPrimary"

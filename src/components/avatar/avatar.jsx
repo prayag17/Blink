@@ -1,6 +1,7 @@
 /** @format */
 import PropTypes from "prop-types";
 
+import Box from "@mui/material/Box";
 import Typography from "@mui/material/Typography";
 import ButtonBase from "@mui/material/ButtonBase";
 
@@ -10,7 +11,7 @@ import "./avatar.module.scss";
 
 export const AvatarImage = ({ userId, userImageTags }) => {
 	return (
-		<div className="avatar-image-container">
+		<Box className="avatar-image-container">
 			{!!userImageTags && (
 				<div
 					className="avatar-image"
@@ -28,7 +29,7 @@ export const AvatarImage = ({ userId, userImageTags }) => {
 			<div className="avatar-image-icon-container">
 				<MdiAccount className="avatar-image-icon" />
 			</div>
-		</div>
+		</Box>
 	);
 };
 

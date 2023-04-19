@@ -3,6 +3,11 @@
 	width: 14px;
 	background: $clr-background-dark;
 }
+
+.roundedScrollbar::-webkit-scrollbar-track {
+	border-radius: 1000px;
+}
+
 ::-webkit-scrollbar-track {
 	background-color: transparent;
 	&:hover {
@@ -96,6 +101,7 @@ h1 {
 	height: fit-content;
 	width: inherit;
 	box-sizing: border-box;
+	min-height: 100vh;
 }
 
 .empty {

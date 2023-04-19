@@ -271,6 +271,7 @@ function App() {
 		console.log("WindowAPi not present");
 		serverAvailable().then((available) => {
 			if (available) {
+				console.log(available);
 				createApi().then(
 					userSaved().then((userSavedBool) => {
 						if (userSavedBool) {

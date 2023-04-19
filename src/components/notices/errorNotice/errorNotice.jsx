@@ -1,10 +1,10 @@
 /** @format */
 
 import Box from "@mui/material/Box";
-import { MdiEmoticonCryOutline } from "../icons/mdiEmoticonCryOutline";
 import Typography from "@mui/material/Typography";
+import { MdiEmoticonDead } from "../../icons/mdiEmoticonDead";
 
-export const EmptyNotice = () => {
+export const ErrorNotice = () => {
 	return (
 		<Box
 			sx={{
@@ -17,8 +17,8 @@ export const EmptyNotice = () => {
 				opacity: 0.2,
 			}}
 		>
-			<MdiEmoticonCryOutline sx={{ fontSize: 200 }} />
-			<Typography variant="h3">Nothing found</Typography>
+			<MdiEmoticonDead sx={{ fontSize: 200 }} />
+			<Typography variant="h3">Something went wrong</Typography>
 		</Box>
 	);
 };

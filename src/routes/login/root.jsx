@@ -17,7 +17,7 @@ import { MdiEyeOutline } from "../../components/icons/mdiEyeOutline";
 import { MdiChevronRight } from "../../components/icons/mdiChevronRight";
 
 import Container from "@mui/material/Container";
-import Grid from "@mui/material/Grid";
+import Grid from "@mui/material/Unstable_Grid2";
 import Typography from "@mui/material/Typography";
 import OutlinedInput from "@mui/material/OutlinedInput";
 import FormControl from "@mui/material/FormControl";
@@ -27,6 +27,7 @@ import IconButton from "@mui/material/IconButton";
 import LoadingButton from "@mui/lab/LoadingButton";
 import Button from "@mui/material/Button";
 import Box from "@mui/material/Box";
+import CircularProgress from "@mui/material/CircularProgress";
 import LinearProgress from "@mui/material/LinearProgress";
 import { useSnackbar } from "notistack";
 import FormGroup from "@mui/material/FormGroup";
@@ -45,6 +46,7 @@ import { getBrandingApi } from "@jellyfin/sdk/lib/utils/api/branding-api";
 
 import "./login.module.scss";
 import { CardsSkeleton } from "../../components/skeleton/cards.jsx";
+import { ErrorNotice } from "../../components/notices/errorNotice/errorNotice.jsx";
 
 export const LoginWithImage = () => {
 	const dispatch = useDispatch();
@@ -123,6 +125,7 @@ export const LoginWithImage = () => {
 					justifyContent="center"
 					alignItems="center"
 					spacing={2}
+					width="100%"
 				>
 					<Grid
 						container
@@ -135,9 +138,9 @@ export const LoginWithImage = () => {
 							textAlign="center"
 							variant="h3"
 							color="textPrimary"
+							mb={2}
 						>
 							Login
-							<br />
 						</Typography>
 					</Grid>
 					<Grid
@@ -145,6 +148,7 @@ export const LoginWithImage = () => {
 						direction="column"
 						justifyContent="center"
 						alignItems="center"
+						mb={1}
 					>
 						<AvatarImage userId={userId} />
 						<Typography
@@ -244,66 +248,97 @@ export const UserLogin = () => {
 		networkMode: "always",
 	});
 
-	return (
-		<>
-			<AppBarBackOnly />
-			<Container
-				maxWidth="md"
-				sx={{
-					height: "100vh",
-					display: "flex",
-					justifyContent: "center",
-					alignItems: "center",
-				}}
-			>
-				{/* <Typography variant="h3" sx={{ marginBottom: "1em" }}>
-					Users
-				</Typography> */}
-				{users.isLoading ? (
-					<CardsSkeleton />
-				) : (
-					<Grid container direction="row">
+	if (users.isLoading) {
+		return <LinearProgress />;
+	}
+	if (users.isSuccess) {
+		return (
+			<>
+				<AppBarBackOnly />
+				<Container
+					maxWidth="md"
+					sx={{
+						height: "100vh",
+						display: "flex",
+						flexDirection: "column",
+						justifyContent: "center",
+						alignItems: "center",
+					}}
+				>
+					<Typography variant="h3" mb={2}>
+						Users
+					</Typography>
+
+					<Grid
+						container
+						columns={{
+							xs: 2,
+							sm: 3,
+							md: 4,
+						}}
+						wrap="nowrap"
+						alignItems="center"
+						overflow="auto"
+						width="100%"
+						mb={3}
+						paddingBottom={2}
+						className="roundedScrollbar"
+					>
 						{users.data.map((item, index) => {
 							return (
-								<Card
+								<Grid
 									key={index}
-									itemName={item.Name}
-									itemId={item.Id}
-									imageTags={!!item.PrimaryImageTag}
-									// cardType="sqaure"
-									iconType="Person"
-									cardOrientation="sqaure"
-									onClickEvent={navigate(
-										`/login/withImg/${item.Name}/${item.Id}/`,
-									)}
-									cardProps={{
-										sx: { width: "33%" },
-									}}
-								/>
+									flexShrink={0}
+									flexGrow={1}
+									xs={1}
+									sm={1}
+									md={1}
+								>
+									<Card
+										key={index}
+										itemName={item.Name}
+										itemId={item.Id}
+										imageTags={
+											!!item.PrimaryImageTag
+										}
+										// cardType="sqaure"
+										iconType="Person"
+										cardOrientation="sqaure"
+										onClickEvent={() =>
+											navigate(
+												`/login/withImg/${item.Name}/${item.Id}/`,
+											)
+										}
+									/>
+								</Grid>
 							);
 						})}
 					</Grid>
-				)}
-				<div className="buttons">
-					<Button
-						color="secondary"
-						variant="contained"
-						className="userEventButton"
-						onClick={handleChangeServer}
-					>
-						Change Server
-					</Button>
-					<Button
-						variant="contained"
-						className="userEventButton"
-						onClick={handleManualLogin}
-					>
-						Manual Login
-					</Button>
-				</div>
-			</Container>
-		</>
-	);
+
+					<div className="buttons">
+						<Button
+							color="secondary"
+							variant="contained"
+							className="userEventButton"
+							onClick={handleChangeServer}
+						>
+							Change Server
+						</Button>
+						<Button
+							variant="contained"
+							className="userEventButton"
+							onClick={handleManualLogin}
+						>
+							Manual Login
+						</Button>
+					</div>
+				</Container>
+			</>
+		);
+	}
+	if (users.isError) {
+		return <ErrorNotice />;
+	}
 };
 
 export const UserLoginManual = () => {

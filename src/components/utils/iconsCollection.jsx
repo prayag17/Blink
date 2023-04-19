@@ -101,4 +101,5 @@ export const TypeIconCollectionCard = {
 	UserView: <MdiMultimedia className="card-image-icon" />,
 	Video: <MdiFilmstrip className="card-image-icon" />,
 	Year: <MdiMultimedia className="card-image-icon" />,
+	Genre: <MdiDramaMasks className="card-image-icon" />,
 };

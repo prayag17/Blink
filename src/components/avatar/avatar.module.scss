@@ -18,8 +18,8 @@
 	&-icon {
 		height: 100%;
 		padding: 0.2em;
-		background: $clr-accent-dark;
-		color: $clr-accent-default;
-		font-size: 2em !important;
+		background: $clr-gradient-dark;
+		fill: url(#clr-gradient-default) !important;
+		font-size: 7em !important;
 	}
 }

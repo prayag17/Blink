@@ -15,6 +15,7 @@ export const LatestMediaSection = ({ latestMediaLib }) => {
 			let usr = await getUserApi(window.api).getCurrentUser();
 			return usr.data;
 		},
+		networkMode: "always",
 	});
 	const fetchLatestMedia = async (library) => {
 		const media = await getUserLibraryApi(window.api).getLatestMedia({
@@ -29,6 +30,7 @@ export const LatestMediaSection = ({ latestMediaLib }) => {
 		queryKey: ["homeSection, latestMedia", latestMediaLib],
 		queryFn: () => fetchLatestMedia(latestMediaLib[0]),
 		enabled: !!user.data,
+		networkMode: "always",
 	});
 	if (data.isLoading) {
 		return <CardsSkeleton />;

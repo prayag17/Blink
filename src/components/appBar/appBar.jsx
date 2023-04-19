@@ -1,5 +1,5 @@
 /** @format */
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 
 import MuiAppBar from "@mui/material/AppBar";
 import TextField from "@mui/material/TextField";
@@ -28,7 +28,7 @@ export const AppBar = () => {
 	const dispatch = useDispatch();
 	const navigate = useNavigate();
 
-	const visible = useSelector((state) => state.appBar.visible);
+	const [display, setDisplay] = useState(false);
 	const backButtonVisible = useSelector(
 		(state) => state.appBar.backButtonVisible,
 	);
@@ -42,7 +42,7 @@ export const AppBar = () => {
 			let usr = await getUserApi(window.api).getCurrentUser();
 			return usr.data;
 		},
-		enabled: visible,
+		enabled: display,
 		networkMode: "always",
 	});
 
@@ -52,13 +52,27 @@ export const AppBar = () => {
 	});
 
 	useEffect(() => {
+		if (
+			location.pathname.includes("login") ||
+			location.pathname.includes("setup")
+		) {
+			setDisplay(false);
+		} else {
+			setDisplay(true);
+		}
+	}, [location]);
+
+	useEffect(() => {
 		if (location.pathname == "/home") {
 			dispatch(hideBackButton());
 		}
-	});
+	}, [location]);
 
-	return (
-		visible && (
+	if (!display) {
+		return <></>;
+	}
+	if (display) {
+		return (
 			<MuiAppBar
 				sx={{
 					width: `calc(100vw - ${theme.spacing(7)})`,
@@ -130,6 +144,6 @@ export const AppBar = () => {
 					</Box>
 				</Toolbar>
 			</MuiAppBar>
-		)
-	);
+		);
+	}
 };

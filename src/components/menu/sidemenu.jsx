@@ -62,7 +62,6 @@ export const SideMenu = ({}) => {
 
 	const [display, setDisplay] = useState(false);
 
-	const visible = useSelector((state) => state.sidebar.visible);
 	const backdrop = useSelector((state) => state.sidebar.backdrop);
 	const navigate = useNavigate();
 	const user = useQuery({
@@ -96,15 +95,18 @@ export const SideMenu = ({}) => {
 		navigate("/login");
 	};
 
-	const getCurrentPathWithoutParam = () => {
+	const getCurrentLocation = () => {
 		return location.pathname.slice(0, location.pathname.lastIndexOf("/"));
 	};
 
 	useEffect(() => {
+		console.log(location.pathname.includes("login"));
 		if (
-			getCurrentPathWithoutParam() != "/login" &&
-			getCurrentPathWithoutParam() != "/setup/server"
+			location.pathname.includes("login") ||
+			location.pathname.includes("setup")
 		) {
+			setDisplay(false);
+		} else {
 			setDisplay(true);
 		}
 	}, [location]);
@@ -122,17 +124,13 @@ export const SideMenu = ({}) => {
 					sx: {
 						backgroundColor: "inherit",
 						border: "none",
-						width: visible
-							? `calc(${theme.spacing(7)} + 10px)`
-							: 0,
+						width: `calc(${theme.spacing(7)} + 10px)`,
 						height: "100vh",
 						// display: visible ? "block" : "none",
 					},
 				}}
 				sx={{
-					width: visible
-						? `calc(${theme.spacing(7)} + 10px)`
-						: 0,
+					width: `calc(${theme.spacing(7)} + 10px)`,
 					background: backdrop
 						? theme.palette.background.paper
 						: "transparent",

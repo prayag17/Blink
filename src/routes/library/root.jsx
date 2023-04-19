@@ -36,7 +36,7 @@ import { getStudiosApi } from "@jellyfin/sdk/lib/utils/api/studios-api";
 import { getPersonsApi } from "@jellyfin/sdk/lib/utils/api/persons-api";
 
 import { Card } from "../../components/card/card";
-import { EmptyNotice } from "../../components/emptyNotice/emptyNotice";
+import { EmptyNotice } from "../../components/notices/emptyNotice/emptyNotice";
 
 import { MdiSortDescending } from "../../components/icons/mdiSortDescending";
 import { MdiSortAscending } from "../../components/icons/mdiSortAscending";
@@ -44,6 +44,7 @@ import { MdiChevronDown } from "../../components/icons/mdiChevronDown";
 import { MdiFilterOutline } from "../../components/icons/mdiFilterOutline";
 
 import { clrBackgroundDarkOpacity0_8 } from "../../palette.module.scss";
+import { ErrorNotice } from "../../components/notices/errorNotice/errorNotice";
 
 const LibraryView = () => {
 	const navigate = useNavigate();
@@ -365,7 +366,7 @@ const LibraryView = () => {
 					sx={{
 						width: `calc(100vw - ${theme.spacing(7)})`,
 						mt: 8,
-						backdropFilter: `blur(30px)`,
+						backdropFilter: trigger ? `blur(30px)` : "none",
 						background: "transparent",
 						backgroundColor: trigger
 							? `${clrBackgroundDarkOpacity0_8} !important`
@@ -850,6 +851,7 @@ const LibraryView = () => {
 							})}
 						</Grid2>
 					))}
+				{items.isError && <ErrorNotice />}
 			</Box>
 		</Box>
 	);

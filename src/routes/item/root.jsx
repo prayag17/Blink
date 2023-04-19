@@ -45,6 +45,7 @@ import { MdiCheck } from "../../components/icons/mdiCheck";
 import { MdiHeartOutline } from "../../components/icons/mdiHeartOutline";
 import { MdiHeart } from "../../components/icons/mdiHeart";
 import { EpisodeCardsSkeleton } from "../../components/skeleton/episodeCards";
+import { ErrorNotice } from "../../components/notices/errorNotice/errorNotice";
 function TabPanel(props) {
 	const { children, value, index, ...other } = props;
 
@@ -157,6 +158,22 @@ const ItemDetail = () => {
 		queryFn: async () => {
 			const result = await getTvShowsApi(window.api).getSeasons({
 				seriesId: item.data.Id,
+			});
+			return result.data;
+		},
+		enabled: item.isSuccess && item.data.Type == "Series",
+		networkMode: "always",
+		refetchOnWindowFocus: true,
+	});
+
+	const nextUpEpisode = useQuery({
+		queryKey: ["item", "seasons", id, "nextUp"],
+		queryFn: async () => {
+			const result = await getTvShowsApi(window.api).getNextUp({
+				userId: user.data.Id,
+				limit: 1,
+				parentId: item.data.Id,
+				disableFirstEpisode: true,
 			});
 			return result.data;
 		},
@@ -311,7 +328,8 @@ const ItemDetail = () => {
 				<CircularProgress />
 			</Box>
 		);
-	} else if (item.isSuccess && similarItems.isSuccess) {
+	}
+	if (item.isSuccess && similarItems.isSuccess) {
 		return (
 			<>
 				<Box className="item-detail-backdrop">
@@ -477,9 +495,9 @@ const ItemDetail = () => {
 								>
 									<Typography
 										variant="h3"
-										sx={{ width: "30%" }}
 										textOverflow="ellipsis"
 										whiteSpace="nowrap"
+										width="100%"
 									>
 										{!!item.data.ImageTags
 											.Logo ? (
@@ -710,6 +728,77 @@ const ItemDetail = () => {
 							</Typography>
 						</Box>
 					)}
+
+					{nextUpEpisode.isSuccess && (
+						<Grid2
+							container
+							columns={{
+								xs: 2,
+								sm: 3,
+								md: 4,
+							}}
+						>
+							{nextUpEpisode.data.Items.map(
+								(mitem, mindex) => {
+									return (
+										<Grid2
+											key={mindex}
+											xs={1}
+											sm={1}
+											md={1}
+										>
+											<EpisodeCard
+												itemId={mitem.Id}
+												itemName={`${mitem.IndexNumber}. ${mitem.Name}`}
+												imageTags={
+													!!mitem
+														.ImageTags
+														.Primary
+												}
+												playedPercent={
+													mitem.UserData
+														.PlayedPercentage
+												}
+												watchedStatus={
+													mitem.UserData
+														.Played
+												}
+												favourite={
+													mitem.UserData
+														.IsFavorite
+												}
+												blurhash={
+													mitem.ImageBlurHashes ==
+													{}
+														? ""
+														: !!mitem
+																.ImageTags
+																.Primary
+														? !!mitem
+																.ImageBlurHashes
+																.Primary
+															? mitem
+																	.ImageBlurHashes
+																	.Primary[
+																	mitem
+																		.ImageTags
+																		.Primary
+															  ]
+															: ""
+														: ""
+												}
+												currentUser={
+													user.data
+												}
+												centerAlignText
+											/>
+										</Grid2>
+									);
+								},
+							)}
+						</Grid2>
+					)}
+
 					{seasons.isSuccess && (
 						<Box>
 							<Tabs
@@ -1609,8 +1698,9 @@ const ItemDetail = () => {
 				</Box>
 			</>
 		);
-	} else if (item.isError || similarItems.isError) {
-		return <h1>{"Something went wrong :("}</h1>;
+	}
+	if (item.isError || similarItems.isError) {
+		return <ErrorNotice />;
 	}
 };
 

@@ -51,6 +51,7 @@ export const EpisodeCard = ({
 	favourite,
 	showName,
 	episodeLocation,
+	centerAlignText = false,
 }) => {
 	const navigate = useNavigate();
 	const [imgLoading, setImgLoading] = useState(true);
@@ -270,29 +271,33 @@ export const EpisodeCard = ({
 							component="div"
 							color="white"
 							fontWeight={500}
-							textAlign="left"
+							textAlign={
+								centerAlignText ? "center" : "left"
+							}
 							noWrap
 							width="fit-content"
 							maxWidth="100%"
 						>
 							{itemName}
 						</Typography>
-						<Typography
-							gutterBottom={false}
-							variant="h6"
-							component="div"
-							color="white"
-							fontWeight={300}
-							textAlign="left"
-							noWrap
-							width="fit-content"
-							maxWidth="100%"
-							sx={{
-								opacity: 0.65,
-							}}
-						>
-							{getRuntime(itemTicks)}
-						</Typography>
+						{!!itemTicks && (
+							<Typography
+								gutterBottom={false}
+								variant="h6"
+								component="div"
+								color="white"
+								fontWeight={300}
+								textAlign="left"
+								noWrap
+								width="fit-content"
+								maxWidth="100%"
+								sx={{
+									opacity: 0.65,
+								}}
+							>
+								{getRuntime(itemTicks)}
+							</Typography>
+						)}
 					</Box>
 					<Stack
 						alignItems="flex-start"
@@ -308,47 +313,54 @@ export const EpisodeCard = ({
 						}
 						mb={1}
 					>
-						<Typography
-							gutterBottom={false}
-							variant="subtitle1"
-							component="div"
-							color="white"
-							fontWeight={300}
-							textAlign="left"
-							noWrap
-							width="fit-content"
-							maxWidth="100%"
-							sx={{
-								opacity: 0.65,
-								display: "flex",
-								alignItems: "center",
-								justifyContent: "flex-start",
-							}}
-						>
-							<MdiStarHalfFull
-								sx={{ fontSize: "1.2em", mr: "0.25em" }}
-							/>{" "}
-							{itemRating}
-						</Typography>
-						<Typography
-							gutterBottom={false}
-							variant="subtitle1"
-							component="div"
-							color="white"
-							fontWeight={300}
-							textAlign="left"
-							noWrap
-							width="fit-content"
-							maxWidth="100%"
-							sx={{
-								opacity: 0.65,
-								display: "flex",
-								alignItems: "center",
-								justifyContent: "flex-start",
-							}}
-						>
-							{endsAt(itemTicks)}
-						</Typography>
+						{!!itemRating && (
+							<Typography
+								gutterBottom={false}
+								variant="subtitle1"
+								component="div"
+								color="white"
+								fontWeight={300}
+								textAlign="left"
+								noWrap
+								width="fit-content"
+								maxWidth="100%"
+								sx={{
+									opacity: 0.65,
+									display: "flex",
+									alignItems: "center",
+									justifyContent: "flex-start",
+								}}
+							>
+								<MdiStarHalfFull
+									sx={{
+										fontSize: "1.2em",
+										mr: "0.25em",
+									}}
+								/>{" "}
+								{itemRating}
+							</Typography>
+						)}
+						{!!itemTicks && (
+							<Typography
+								gutterBottom={false}
+								variant="subtitle1"
+								component="div"
+								color="white"
+								fontWeight={300}
+								textAlign="left"
+								noWrap
+								width="fit-content"
+								maxWidth="100%"
+								sx={{
+									opacity: 0.65,
+									display: "flex",
+									alignItems: "center",
+									justifyContent: "flex-start",
+								}}
+							>
+								{endsAt(itemTicks)}
+							</Typography>
+						)}
 					</Stack>
 					<Typography
 						gutterBottom
@@ -387,6 +399,7 @@ EpisodeCard.propTypes = {
 	favourite: PropTypes.bool,
 	showName: PropTypes.string,
 	episodeLocation: PropTypes.string,
-	itemTicks: PropTypes.number.isRequired,
-	itemRating: PropTypes.number.isRequired,
+	itemTicks: PropTypes.number,
+	itemRating: PropTypes.number,
+	centerAlignText: PropTypes.bool,
 };
