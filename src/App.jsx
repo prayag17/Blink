@@ -61,10 +61,11 @@ import { Jellyfin } from "@jellyfin/sdk";
 import { version as appVer } from "../package.json";
 import { v4 as uuidv4 } from "uuid";
 import { delServer, getServer } from "./utils/storage/servers.js";
-import { getUser } from "./utils/storage/user.js";
+import { delUser, getUser } from "./utils/storage/user.js";
 
 import { useDispatch } from "react-redux";
 import { showSidemenu } from "./utils/slice/sidemenu.js";
+import FavouritePage from "./routes/favourite/root.jsx";
 const jellyfin = new Jellyfin({
 	clientInfo: {
 		name: "JellyPlayer",
@@ -77,10 +78,7 @@ const jellyfin = new Jellyfin({
 });
 
 event.on("create-jellyfin-api", (serverAddress) => {
-	window.api = jellyfin.createApi(
-		serverAddress,
-		sessionStorage.getItem("accessToken"),
-	);
+	window.api = jellyfin.createApi(serverAddress);
 	// window.api = jellyfin.createApi(serverAddress);
 });
 event.on("set-api-accessToken", (serverAddress) => {
@@ -262,6 +260,7 @@ function App() {
 
 	const handleRemoveServer = async () => {
 		await delServer();
+		await delUser();
 		let result = await relaunch();
 		console.log(result);
 	};
@@ -388,6 +387,10 @@ function App() {
 								<Route
 									path="/item/:id"
 									element={<ItemDetail />}
+								/>
+								<Route
+									path="/favourite"
+									element={<FavouritePage />}
 								/>
 
 								{/* Logical Routes */}

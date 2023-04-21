@@ -134,7 +134,7 @@ export const Card = ({
 		>
 			<CardActionArea
 				sx={{ p: "1px" }}
-				component="div"
+				component={Box}
 				onClick={
 					!!onClickEvent
 						? onClickEvent
@@ -142,6 +142,7 @@ export const Card = ({
 								navigate(`/item/${itemId}`);
 						  }
 				}
+				className="cardBox"
 			>
 				<Box
 					className="card-media-container"

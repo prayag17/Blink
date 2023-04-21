@@ -167,6 +167,8 @@ const Home = () => {
 		console.log("Logging out user...");
 		await window.api.logout();
 		delUser();
+		sessionStorage.removeItem("accessToken");
+		event.emit("create-jellyfin-api", window.api.basePath);
 		navigate("/login");
 	};
 

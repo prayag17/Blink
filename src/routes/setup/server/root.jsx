@@ -216,7 +216,20 @@ export const ServerSetup = (props) => {
 							variant="outlined"
 							// inputRef={serverIp}
 							onChange={(event) => {
-								setServerIp(event.target.value);
+								if (
+									event.target.value.charAt(
+										event.target.value.length - 1,
+									) == "/"
+								) {
+									setServerIp(
+										event.target.value.slice(
+											0,
+											-1,
+										),
+									);
+								} else {
+									setServerIp(event.target.value);
+								}
 							}}
 							helperText="Add your server adddress with https:// or http://"
 						></TextField>

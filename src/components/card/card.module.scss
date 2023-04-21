@@ -24,8 +24,9 @@
 			transition: opacity $transition-time-default;
 		}
 	}
-	&:hover .card-media-overlay,
-	&:focus .card-media-overlay {
+	&Box:hover .card-media-overlay,
+	&Box:focus-within .card-media-overlay,
+	&Box:focus .card-media-overlay {
 		opacity: 1;
 	}
 	&-image {

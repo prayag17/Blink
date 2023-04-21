@@ -2,7 +2,8 @@
 import React, { useState } from "react";
 import PropTypes from "prop-types";
 
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
+// import Link from "@mui/material/Link";
 
 import Divider from "@mui/material/Divider";
 import Stack from "@mui/material/Stack";
@@ -52,6 +53,7 @@ export const EpisodeCard = ({
 	showName,
 	episodeLocation,
 	centerAlignText = false,
+	parentId,
 }) => {
 	const navigate = useNavigate();
 	const [imgLoading, setImgLoading] = useState(true);
@@ -111,6 +113,7 @@ export const EpisodeCard = ({
 								navigate(`/item/${itemId}`);
 						  }
 				}
+				className="cardBox"
 			>
 				<Box
 					className="card-media-container"
@@ -249,8 +252,19 @@ export const EpisodeCard = ({
 								noWrap
 								width="fit-content"
 								maxWidth="100%"
+								onClick={(e) => {
+									e.stopPropagation();
+									navigate(`/item/${parentId}`);
+								}}
+								sx={{
+									"&:hover": {
+										textDecoration: "underline",
+									},
+								}}
 							>
-								{`${showName} - ${episodeLocation}`}
+								{showName}
+								{" - "}
+								{episodeLocation}
 							</Typography>
 						</>
 					)}
@@ -402,4 +416,5 @@ EpisodeCard.propTypes = {
 	itemTicks: PropTypes.number,
 	itemRating: PropTypes.number,
 	centerAlignText: PropTypes.bool,
+	parentId: PropTypes.any,
 };

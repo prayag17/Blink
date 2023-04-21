@@ -91,7 +91,8 @@ export const SideMenu = ({}) => {
 		console.log("Logging out user...");
 		await window.api.logout();
 		delUser();
-		dispatch(hideSidemenu());
+		sessionStorage.removeItem("accessToken");
+		event.emit("create-jellyfin-api", window.api.basePath);
 		navigate("/login");
 	};
 
@@ -231,38 +232,26 @@ export const SideMenu = ({}) => {
 									className="sidemenu-item-container"
 									disablePadding
 								>
-									<NavLink
+									<ListItemButton
+										component={NavLink}
 										to="/home"
-										className={({
-											isActive,
-											isPending,
-										}) =>
-											isPending
-												? "sidemenu-item-pending sidemenu-item"
-												: isActive
-												? "sidemenu-item-active sidemenu-item"
-												: "sidemenu-item"
-										}
+										className="sidemenu-item"
+										sx={{
+											minHeight: 48,
+											justifyContent: "center",
+											px: 2.5,
+										}}
 									>
-										<ListItemButton
+										<ListItemIcon
 											sx={{
-												minHeight: 48,
+												minWidth: 0,
 												justifyContent:
 													"center",
-												px: 2.5,
 											}}
 										>
-											<ListItemIcon
-												sx={{
-													minWidth: 0,
-													justifyContent:
-														"center",
-												}}
-											>
-												<MdiHomeVariantOutline></MdiHomeVariantOutline>
-											</ListItemIcon>
-										</ListItemButton>
-									</NavLink>
+											<MdiHomeVariantOutline></MdiHomeVariantOutline>
+										</ListItemIcon>
+									</ListItemButton>
 								</ListItem>
 							</Tooltip>
 							<Tooltip

@@ -14,6 +14,7 @@ import Tab from "@mui/material/Tab";
 import Grid2 from "@mui/material/Unstable_Grid2";
 import Button from "@mui/material/Button";
 import IconButton from "@mui/material/IconButton";
+// import Chip from "@mui/material/Chip";
 import { green, pink } from "@mui/material/colors";
 
 import { Blurhash } from "react-blurhash";
@@ -56,6 +57,7 @@ function TabPanel(props) {
 			id={`full-width-tabpanel-${index}`}
 			aria-labelledby={`full-width-tab-${index}`}
 			{...other}
+			style={{ marginTop: "1em" }}
 		>
 			{value === index && <Box>{children}</Box>}
 		</div>
@@ -198,24 +200,8 @@ const ItemDetail = () => {
 		refetchOnWindowFocus: true,
 	});
 
-	const personShows = useQuery({
-		queryKey: ["item", "personShows"],
-		queryFn: async () => {
-			const result = await getItemsApi(window.api).getItems({
-				userId: user.data.Id,
-				personIds: [id],
-				includeItemTypes: [BaseItemKind.Series],
-				recursive: true,
-				sortBy: ["PremiereDate", "ProductionYear", "SortName"],
-				sortOrder: ["Descending"],
-			});
-			return result.data;
-		},
-		enabled: item.isSuccess && item.data.Type == "Person",
-		networkMode: "always",
-	});
 	const personMovies = useQuery({
-		queryKey: ["item", "personMovies"],
+		queryKey: ["item", id, "personMovies"],
 		queryFn: async () => {
 			const result = await getItemsApi(window.api).getItems({
 				userId: user.data.Id,
@@ -230,8 +216,25 @@ const ItemDetail = () => {
 		enabled: item.isSuccess && item.data.Type == "Person",
 		networkMode: "always",
 	});
+	const personShows = useQuery({
+		queryKey: ["item", id, "personShows"],
+		queryFn: async () => {
+			const result = await getItemsApi(window.api).getItems({
+				userId: user.data.Id,
+				personIds: [id],
+				includeItemTypes: [BaseItemKind.Series],
+				recursive: true,
+				sortBy: ["PremiereDate", "ProductionYear", "SortName"],
+				sortOrder: ["Descending"],
+			});
+			return result.data;
+		},
+		enabled: item.isSuccess && item.data.Type == "Person",
+		networkMode: "always",
+	});
+
 	const personBooks = useQuery({
-		queryKey: ["item", "personBooks"],
+		queryKey: ["item", id, "personBooks"],
 		queryFn: async () => {
 			const result = await getItemsApi(window.api).getItems({
 				userId: user.data.Id,
@@ -247,7 +250,7 @@ const ItemDetail = () => {
 		networkMode: "always",
 	});
 	const personPhotos = useQuery({
-		queryKey: ["item", "personPhotos"],
+		queryKey: ["item", id, "personPhotos"],
 		queryFn: async () => {
 			const result = await getItemsApi(window.api).getItems({
 				userId: user.data.Id,
@@ -262,7 +265,7 @@ const ItemDetail = () => {
 		networkMode: "always",
 	});
 	const personEpisodes = useQuery({
-		queryKey: ["item", "personEpisodes"],
+		queryKey: ["item", id, "personEpisodes"],
 		queryFn: async () => {
 			const result = await getItemsApi(window.api).getItems({
 				userId: user.data.Id,
@@ -314,6 +317,34 @@ const ItemDetail = () => {
 
 	const personTabs = ["Movies", "TV Shows", "Books", "Photos", "Episodes"];
 
+	useEffect(() => {
+		if (
+			personMovies.isSuccess &&
+			personShows.isSuccess &&
+			personBooks.isSuccess &&
+			personPhotos.isSuccess &&
+			personEpisodes.isSuccess
+		) {
+			if (personMovies.data.Items.length != 0) {
+				setActivePersonTab(0);
+			} else if (personShows.data.Items.length != 0) {
+				setActivePersonTab(1);
+			} else if (personBooks.data.Items.length != 0) {
+				setActivePersonTab(2);
+			} else if (personPhotos.data.Items.length != 0) {
+				setActivePersonTab(3);
+			} else if (personEpisodes.data.Items.length != 0) {
+				setActivePersonTab(4);
+			}
+		}
+	}, [
+		personMovies.isLoading,
+		personShows.isLoading,
+		personBooks.isLoading,
+		personPhotos.isLoading,
+		personEpisodes.isLoading,
+	]);
+
 	if (item.isLoading || similarItems.isLoading) {
 		return (
 			<Box
@@ -362,7 +393,6 @@ const ItemDetail = () => {
 						pb: 3,
 						position: "relative",
 						flexFlow: "column",
-						gap: 1,
 					}}
 				>
 					<Box className="item-detail-header" mb={0}>
@@ -434,6 +464,19 @@ const ItemDetail = () => {
 										: {}
 								}
 							>
+								<Chip
+									className="card-indicator"
+									label={<MdiCheck />}
+									sx={{
+										transition: "opacity 150ms",
+										opacity: item.data.UserData
+											.Played
+											? 1
+											: 0,
+										top: 5,
+										right: 5,
+									}}
+								/>
 								{!!item.data.ImageTags.Primary && (
 									<img
 										src={
@@ -691,7 +734,10 @@ const ItemDetail = () => {
 						</Box>
 					</Box>
 					{item.data.Genres != 0 && (
-						<Box className="item-media-container">
+						<Box
+							className="item-media-container"
+							sx={{ mb: 2 }}
+						>
 							<Stack
 								direction="row"
 								gap={1}
@@ -800,7 +846,7 @@ const ItemDetail = () => {
 					)}
 
 					{seasons.isSuccess && (
-						<Box>
+						<Box sx={{ mb: 2 }}>
 							<Tabs
 								variant="scrollable"
 								scrollButtons="auto"
@@ -809,6 +855,7 @@ const ItemDetail = () => {
 									setCurrentSeason(newVal);
 								}}
 								sx={{ mb: 2 }}
+								selectionFollowsFocus
 							>
 								{seasons.data.Items.map(
 									(season, index) => {
@@ -939,6 +986,7 @@ const ItemDetail = () => {
 							}}
 							displayCards={8}
 							title="Cast"
+							disableDecoration
 						>
 							{item.data.People.map((person, index) => {
 								return (
@@ -1594,6 +1642,9 @@ const ItemDetail = () => {
 																			mitem.SeriesName
 																		}
 																		episodeLocation={`S${mitem.ParentIndexNumber}:E${mitem.IndexNumber}`}
+																		parentId={
+																			mitem.SeriesId
+																		}
 																	/>
 																</Grid2>
 															);
@@ -1615,6 +1666,7 @@ const ItemDetail = () => {
 							}}
 							displayCards={8}
 							title={`More Like This`}
+							disableDecoration
 						>
 							{similarItems.data.Items.map(
 								(simItem, index) => {

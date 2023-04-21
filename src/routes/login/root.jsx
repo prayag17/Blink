@@ -362,7 +362,7 @@ export const UserLoginManual = () => {
 			).getBrandingOptions();
 			return result.data;
 		},
-		enabled: !window.api,
+		enabled: !!window.api,
 		networkMode: "always",
 	});
 
@@ -410,7 +410,6 @@ export const UserLoginManual = () => {
 		event.emit("set-api-accessToken", window.api.basePath);
 		// setAccessToken(user.data.AccessToken)
 		setLoading(false);
-		dispatch(showSidemenu());
 		navigate(`/home`);
 	};
 

@@ -52,7 +52,7 @@ export const CardScroller = ({
 	return (
 		<Box className="card-scroller-container" sx={{ mb: 4 }}>
 			<Box
-				sx={{ mb: 2 }}
+				sx={{ mb: 1 }}
 				className={
 					disableDecoration
 						? `card-scroller-header-container hidden-decoration`
