@@ -1,6 +1,9 @@
 /** @format */
 
 .item-detail {
+	&-heading {
+		opacity: 0.85;
+	}
 	&-backdrop {
 		position: fixed;
 		top: 0;
