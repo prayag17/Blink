@@ -7,6 +7,9 @@ import IconButton from "@mui/material/IconButton";
 import Toolbar from "@mui/material/Toolbar";
 import Avatar from "@mui/material/Avatar";
 import Box from "@mui/material/Box";
+import ListItemIcon from "@mui/material/ListItemIcon";
+import Menu from "@mui/material/Menu";
+import MenuItem from "@mui/material/MenuItem";
 import useScrollTrigger from "@mui/material/useScrollTrigger";
 
 import { MdiMagnify } from "../icons/mdiMagnify";
@@ -23,6 +26,8 @@ import "./appBar.module.scss";
 import { MdiAccount } from "../icons/mdiAccount";
 import { MdiHeartOutline } from "../icons/mdiHeartOutline";
 import { MdiArrowLeft } from "../icons/mdiArrowLeft";
+import { MdiCog } from "../icons/mdiCog";
+import { MdiInformation } from "../icons/mdiInformation";
 
 export const AppBar = () => {
 	const dispatch = useDispatch();
@@ -50,6 +55,15 @@ export const AppBar = () => {
 		disableHysteresis: true,
 		threshold: 0,
 	});
+
+	const [anchorEl, setAnchorEl] = useState(null);
+	const openMenu = Boolean(anchorEl);
+	const handleMenuOpen = (event) => {
+		setAnchorEl(event.currentTarget);
+	};
+	const handleMenuClose = () => {
+		setAnchorEl(null);
+	};
 
 	useEffect(() => {
 		if (
@@ -116,7 +130,10 @@ export const AppBar = () => {
 						<IconButton>
 							<MdiHeartOutline />
 						</IconButton>
-						<IconButton sx={{ p: 0 }}>
+						<IconButton
+							sx={{ p: 0 }}
+							onClick={handleMenuOpen}
+						>
 							{user.isSuccess &&
 								(user.data.PrimaryImageTag ==
 								undefined ? (
@@ -141,6 +158,27 @@ export const AppBar = () => {
 									</Avatar>
 								))}
 						</IconButton>
+						<Menu
+							anchorEl={anchorEl}
+							open={openMenu}
+							onClose={handleMenuClose}
+							sx={{ mt: 1 }}
+						>
+							<MenuItem
+								onClick={() => navigate("/settings")}
+							>
+								<ListItemIcon>
+									<MdiCog />
+								</ListItemIcon>
+								Settings
+							</MenuItem>
+							<MenuItem onClick={() => navigate("/about")}>
+								<ListItemIcon>
+									<MdiInformation />
+								</ListItemIcon>
+								About
+							</MenuItem>
+						</Menu>
 					</Box>
 				</Toolbar>
 			</MuiAppBar>

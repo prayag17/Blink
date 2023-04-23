@@ -40,15 +40,13 @@ import Box from "@mui/material/Box";
 import CircularProgress from "@mui/material/CircularProgress";
 
 // Routes
-import { ServerSetup, ServerList } from "./routes/setup/server/root";
-import Home from "./routes/home/root";
-import {
-	UserLogin,
-	LoginWithImage,
-	UserLoginManual,
-} from "./routes/login/root";
-import LibraryView from "./routes/library/root.jsx";
-import ItemDetail from "./routes/item/root.jsx";
+import { ServerSetup, ServerList } from "./routes/setup/server";
+import Home from "./routes/home";
+import { UserLogin, LoginWithImage, UserLoginManual } from "./routes/login";
+import LibraryView from "./routes/library";
+import ItemDetail from "./routes/item";
+import Settings from "./routes/settings";
+import About from "./routes/about";
 
 import { SideMenu } from "./components/menu/sidemenu.jsx";
 import { AppBar } from "./components/appBar/appBar.jsx";
@@ -65,7 +63,7 @@ import { delUser, getUser } from "./utils/storage/user.js";
 
 import { useDispatch } from "react-redux";
 import { showSidemenu } from "./utils/slice/sidemenu.js";
-import FavouritePage from "./routes/favourite/root.jsx";
+import FavouritePage from "./routes/favourite/index.jsx";
 const jellyfin = new Jellyfin({
 	clientInfo: {
 		name: "JellyPlayer",
@@ -391,6 +389,14 @@ function App() {
 								<Route
 									path="/favourite"
 									element={<FavouritePage />}
+								/>
+								<Route
+									path="/settings"
+									element={<Settings />}
+								/>
+								<Route
+									path="/about"
+									element={<About />}
 								/>
 
 								{/* Logical Routes */}

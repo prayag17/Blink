@@ -16,8 +16,9 @@ const ticksToMs = (ticks) => {
 export const getRuntime = (ticks) => {
 	let time = ticksToMs(ticks);
 	let formatedTime = "";
-	let timeSec = Math.round(time / 1000);
-	let timeMin = Math.round(timeSec / 60);
+	let timeSec = Math.floor(time / 1000);
+	let timeMin = Math.floor(timeSec / 60);
+	timeSec -= timeMin * 60;
 	if (timeMin > 60) {
 		let timeHr = Math.floor(timeMin / 60);
 		timeMin -= timeHr * 60;
@@ -65,7 +66,7 @@ export const getRuntimeFull = (ticks) => {
 		timeMin -= timeHr * 60;
 		formatedTime = `${timeHr} hour ${timeMin} minutes`;
 	} else {
-		formatedTime = `${timeMin} minutes`;
+		formatedTime = `${timeMin} minutes ${timeSec} seconds`;
 	}
 	return formatedTime;
 };

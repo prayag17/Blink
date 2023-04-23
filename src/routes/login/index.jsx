@@ -12,9 +12,9 @@ import { getServer } from "../../utils/storage/servers.js";
 import { saveUser } from "../../utils/storage/user.js";
 
 // import Icon from "mdi-material-ui";
-import { MdiEyeOffOutline } from "../../components/icons/mdiEyeOffOutline";
-import { MdiEyeOutline } from "../../components/icons/mdiEyeOutline";
-import { MdiChevronRight } from "../../components/icons/mdiChevronRight";
+import { MdiEyeOffOutline } from "../../components/icons/mdiEyeOffOutline.jsx";
+import { MdiEyeOutline } from "../../components/icons/mdiEyeOutline.jsx";
+import { MdiChevronRight } from "../../components/icons/mdiChevronRight.jsx";
 
 import Container from "@mui/material/Container";
 import Grid from "@mui/material/Unstable_Grid2";

@@ -1,0 +1,16 @@
+/** @format */
+
+.about {
+	&-sections {
+		&-container {
+			position: relative;
+		}
+	}
+	&-logo {
+		width: 75% !important;
+		max-width: 50vw;
+		height: 15em;
+		object-fit: contain;
+		object-position: center;
+	}
+}
