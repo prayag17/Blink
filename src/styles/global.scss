@@ -4,6 +4,11 @@
 	background: $clr-background-dark;
 }
 
+div::-webkit-scrollbar {
+	width: 14px;
+	background: transparent;
+}
+
 .roundedScrollbar::-webkit-scrollbar-track {
 	border-radius: 1000px;
 }
