@@ -137,13 +137,8 @@ function App() {
 		const server = await getServer();
 
 		if (server == null) {
-			console.log("server not found");
 			return false;
 		} else {
-			// if (!window.api) {
-			// 	console.log("Creating Jf api (without accessToken)");
-			// 	event.emit("create-jellyfin-api", server.Ip);
-			// }
 			return true;
 		}
 	};
@@ -159,7 +154,6 @@ function App() {
 
 	const userSaved = async () => {
 		const user = await getUser();
-		console.log("User store => ", user);
 		if (user == null) {
 			return false;
 		} else {
@@ -189,7 +183,6 @@ function App() {
 			})
 			.catch((error) => {
 				setServerReachable(false);
-				console.error(error);
 				setChecking(false);
 			});
 	};
@@ -253,22 +246,18 @@ function App() {
 
 	const handleRelaunch = async () => {
 		let result = await relaunch();
-		console.log(result);
 	};
 
 	const handleRemoveServer = async () => {
 		await delServer();
 		await delUser();
 		let result = await relaunch();
-		console.log(result);
 	};
 	const location = useLocation();
 
 	if (!window.api) {
-		console.log("WindowAPi not present");
 		serverAvailable().then((available) => {
 			if (available) {
-				console.log(available);
 				createApi().then(
 					userSaved().then((userSavedBool) => {
 						if (userSavedBool) {

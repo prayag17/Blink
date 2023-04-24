@@ -1,0 +1,36 @@
+/** @format */
+.library-list {
+	&-image {
+		position: relative;
+		width: 100%;
+		height: 100%;
+		z-index: 1;
+		object-fit: cover;
+		&-container {
+			position: relative;
+			width: 4.5em;
+			height: 4.5em;
+			aspect-ratio: 1;
+			border-radius: $border-radius-intensity-1;
+			overflow: hidden;
+			box-shadow: 0 2px 7px rgb(0 0 0 / 0.2);
+		}
+	}
+	&-icon {
+		font-size: 3em;
+		fill: url(#clr-gradient-default) !important;
+
+		&-container {
+			position: absolute;
+			top: 0;
+			left: 0;
+			width: 100%;
+			height: 100%;
+			display: flex;
+			justify-content: center;
+			align-items: center;
+			z-index: 0;
+			background: $clr-gradient-dark;
+		}
+	}
+}

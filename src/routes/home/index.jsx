@@ -253,7 +253,6 @@ const Home = () => {
 						// <></>
 						latestMedia.data != null &&
 						latestMedia.data.map((item, index) => {
-							// console.log(item);
 							return (
 								<Paper
 									className="hero-carousel-slide"
@@ -281,10 +280,10 @@ const Home = () => {
 													width="1080"
 													height="720"
 													resolutionX={
-														720
+														64
 													}
 													resolutionY={
-														1080
+														96
 													}
 													className="hero-carousel-background-blurhash"
 												/>

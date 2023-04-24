@@ -24,10 +24,17 @@ import Accordion from "@mui/material/Accordion";
 import AccordionSummary from "@mui/material/AccordionSummary";
 import AccordionDetails from "@mui/material/AccordionDetails";
 import Button from "@mui/material/Button";
+import Paper from "@mui/material/Paper";
+import Table from "@mui/material/Table";
+import TableContainer from "@mui/material/TableContainer";
+import TableRow from "@mui/material/TableRow";
+import TableCell from "@mui/material/TableCell";
+import IconButton from "@mui/material/IconButton";
 
 import { theme } from "../../theme";
 
 import { getUserApi } from "@jellyfin/sdk/lib/utils/api/user-api";
+import { getUserLibraryApi } from "@jellyfin/sdk/lib/utils/api/user-library-api";
 import { getItemsApi } from "@jellyfin/sdk/lib/utils/api/items-api";
 import { getArtistsApi } from "@jellyfin/sdk/lib/utils/api/artists-api";
 import { getGenresApi } from "@jellyfin/sdk/lib/utils/api/genres-api";
@@ -45,6 +52,16 @@ import { MdiFilterOutline } from "../../components/icons/mdiFilterOutline";
 
 import { clrBackgroundDarkOpacity0_8 } from "../../palette.module.scss";
 import { ErrorNotice } from "../../components/notices/errorNotice/errorNotice";
+import {
+	BaseItemKind,
+	CollectionTypeOptions,
+} from "@jellyfin/sdk/lib/generated-client";
+import { getRuntimeMusic } from "../../utils/date/time";
+
+import "./library.module.scss";
+import { MdiMusic } from "../../components/icons/mdiMusic";
+import { MdiHeart } from "../../components/icons/mdiHeart";
+import { MdiHeartOutline } from "../../components/icons/mdiHeartOutline";
 
 const LibraryView = () => {
 	const navigate = useNavigate();
@@ -64,12 +81,17 @@ const LibraryView = () => {
 		},
 	});
 
-	const [sortAscending, setSortAscending] = useState(false);
+	const [sortAscending, setSortAscending] = useState(true);
 	const [sortBy, setSortBy] = useState("SortName");
 	const [sortByData, setSortByData] = useState([
 		{ title: "Name", value: "SortName" },
+		{ title: "Critic Rating", value: "CriticRating" },
 		{ title: "Rating", value: "CommunityRating" },
 		{ title: "Release Date", value: "PremiereDate" },
+		{ title: "Date Added", value: "DateCreated" },
+		{ title: "Play Count", value: "PlayCount" },
+		{ title: "Runtime", value: "Runtime" },
+		{ title: "Random", value: "Random" },
 	]);
 	const handleSortChange = (e) => {
 		setSortAscending(e.target.checked);
@@ -98,7 +120,7 @@ const LibraryView = () => {
 	const [isPlayed, setIsPlayed] = useState(false);
 	const [isUnPlayed, setIsUnPlayed] = useState(false);
 	const [isResumable, setIsResumable] = useState(false);
-	const [isFavourite, setIsFavourite] = useState(false);
+	const [isFavorite, setisFavorite] = useState(false);
 	const [isLiked, setIsLiked] = useState(false);
 	const [isUnliked, setIsUnliked] = useState(false);
 	const availableWatchStatus = [
@@ -120,7 +142,7 @@ const LibraryView = () => {
 		{
 			title: "Favourite",
 			value: false,
-			state: (val) => setIsFavourite(val),
+			state: (val) => setisFavorite(val),
 		},
 		{
 			title: "Liked",
@@ -186,26 +208,27 @@ const LibraryView = () => {
 		if (currentLib.isSuccess) {
 			if (currentLib.data.Items[0].CollectionType == "movies") {
 				setViewType([
-					{ title: "Movies", value: "Movie" },
-					{ title: "Collections", value: "BoxSet" },
-					{ title: "Actors", value: "Person" },
-					{ title: "Genres", value: "Genre" },
-					{ title: "Studios", value: "Studio" },
+					{ title: "Movies", value: BaseItemKind.Movie },
+					{ title: "Collections", value: BaseItemKind.BoxSet },
+					{ title: "Actors", value: BaseItemKind.Person },
+					{ title: "Genres", value: BaseItemKind.Genre },
+					{ title: "Studios", value: BaseItemKind.Studio },
 				]);
 			} else if (currentLib.data.Items[0].CollectionType == "music") {
 				setViewType([
-					{ title: "Albums", value: "MusicAlbum" },
-					{ title: "Artists", value: "MusicArtist" },
-					{ title: "Genres", value: "MusicGenre" },
+					{ title: "Songs", value: BaseItemKind.Audio },
+					{ title: "Albums", value: BaseItemKind.MusicAlbum },
+					{ title: "Artists", value: BaseItemKind.MusicArtist },
+					{ title: "Genres", value: BaseItemKind.MusicGenre },
 				]);
 			} else if (
 				currentLib.data.Items[0].CollectionType == "tvshows"
 			) {
 				setViewType([
-					{ title: "Series", value: "Series" },
-					{ title: "Actors", value: "Person" },
-					{ title: "Genres", value: "Genre" },
-					{ title: "Networks", value: "Studio" },
+					{ title: "Series", value: BaseItemKind.Series },
+					{ title: "Actors", value: BaseItemKind.Person },
+					{ title: "Genres", value: BaseItemKind.Genre },
+					{ title: "Networks", value: BaseItemKind.Studio },
 				]);
 			} else {
 				setViewType([]);
@@ -260,7 +283,7 @@ const LibraryView = () => {
 					isPlayed && "IsPlayed",
 					isUnPlayed && "IsUnplayed",
 					isResumable && "IsResumable",
-					isFavourite && "IsFavorite",
+					isFavorite && "IsFavorite",
 					isLiked && "IsFavoriteOrLikes",
 					isUnliked && "Dislikes",
 				],
@@ -291,7 +314,7 @@ const LibraryView = () => {
 					isPlayed,
 					isUnPlayed,
 					isResumable,
-					isFavourite,
+					isFavorite,
 					isLiked,
 					isUnliked,
 				],
@@ -342,6 +365,22 @@ const LibraryView = () => {
 		disableHysteresis: true,
 		threshold: 1,
 	});
+
+	const handleLiking = async (item) => {
+		let result;
+		if (item.UserData.isFavorite) {
+			result = await getUserLibraryApi(window.api).unmarkFavoriteItem({
+				userId: user.data.Id,
+				itemId: item.Id,
+			});
+		} else if (!item.UserData.isFavorite) {
+			result = await getUserLibraryApi(window.api).markFavoriteItem({
+				userId: user.data.Id,
+				itemId: item.Id,
+			});
+		}
+		items.refetch();
+	};
 
 	return (
 		<Box
@@ -708,12 +747,12 @@ const LibraryView = () => {
 										checkedIcon={
 											<MdiSortAscending />
 										}
-										color="white"
-										onChange={handleSortChange}
-										defaultValue={sortAscending}
 										sx={{
 											color: "white !important",
 										}}
+										color="white"
+										onChange={handleSortChange}
+										defaultValue={sortAscending}
 									/>
 									<TextField
 										select
@@ -771,7 +810,7 @@ const LibraryView = () => {
 				{items.isSuccess &&
 					(items.data.TotalRecordCount == 0 ? (
 						<EmptyNotice />
-					) : (
+					) : currentViewType != BaseItemKind.Audio ? (
 						<Grid2
 							container
 							columns={{ xs: 2, sm: 4, md: 8 }}
@@ -850,6 +889,80 @@ const LibraryView = () => {
 								);
 							})}
 						</Grid2>
+					) : (
+						<TableContainer>
+							<Table>
+								{items.data.Items.map((item, index) => {
+									return (
+										<TableRow
+											key={index}
+											sx={{
+												"& td,& th": {
+													borderBottom:
+														"1px solid rgb(255 255 255 / 0.1)",
+												},
+												"&:hover": {
+													background:
+														"rgb(255 255 255 / 0.05)",
+												},
+											}}
+										>
+											<TableCell width="4.5em">
+												<Box className="library-list-image-container">
+													{!!item
+														.ImageTags
+														.Primary && (
+														<img
+															className="library-list-image"
+															src={`${window.api.basePath}/Items/${item.Id}/Images/Primary?quality=80&tag=${item.ImageTags.Primary}`}
+														/>
+													)}
+													<Box className="library-list-icon-container">
+														<MdiMusic className="library-list-icon" />
+													</Box>
+												</Box>
+											</TableCell>
+											<TableCell>
+												<Typography variant="h6">
+													{item.Name}
+												</Typography>
+												<Typography
+													variant="subtitle1"
+													sx={{
+														opacity: 0.7,
+													}}
+												>
+													{item.Album}
+												</Typography>
+											</TableCell>
+											<TableCell>
+												<Typography variant="subtitle1">
+													{getRuntimeMusic(
+														item.RunTimeTicks,
+													)}
+												</Typography>
+											</TableCell>
+											<TableCell width="1em">
+												<IconButton
+													onClick={() => {
+														handleLiking(
+															item,
+														);
+													}}
+												>
+													{item.UserData
+														.IsFavorite ? (
+														<MdiHeart />
+													) : (
+														<MdiHeartOutline />
+													)}
+												</IconButton>
+											</TableCell>
+										</TableRow>
+									);
+								})}
+							</Table>
+						</TableContainer>
 					))}
 				{items.isError && <ErrorNotice />}
 			</Box>

@@ -21,6 +21,8 @@ import TableHead from "@mui/material/TableHead";
 import TableRow from "@mui/material/TableRow";
 import TableBody from "@mui/material/TableBody";
 import TableCell from "@mui/material/TableCell";
+import TextField from "@mui/material/TextField";
+import MenuItem from "@mui/material/MenuItem";
 import { green, pink } from "@mui/material/colors";
 
 import { AvatarImage } from "../../components/avatar/avatar";
@@ -37,6 +39,7 @@ import { getLibraryApi } from "@jellyfin/sdk/lib/utils/api/library-api";
 import { getTvShowsApi } from "@jellyfin/sdk/lib/utils/api/tv-shows-api";
 import { getItemsApi } from "@jellyfin/sdk/lib/utils/api/items-api";
 import { getPlaystateApi } from "@jellyfin/sdk/lib/utils/api/playstate-api";
+import { getVideosApi } from "@jellyfin/sdk/lib/utils/api/videos-api";
 
 import { useQuery } from "@tanstack/react-query";
 
@@ -303,6 +306,18 @@ const ItemDetail = () => {
 		networkMode: "always",
 	});
 
+	// const videoStreams = useQuery({
+	// 	queryKey: ["item", id, "videoTracks"],
+	// 	queryFn: async () => {
+	// 		const result = await getVideosApi(window.api).getVideoStream({
+	// 			itemId: item.data.Id,
+	// 		});
+	// 		return result.data;
+	// 	},
+	// 	enabled: item.isSuccess,
+	// 	networkMode: "always",
+	// });
+
 	const handleMarkPlayedOrunPlayed = async () => {
 		let result;
 		if (!item.data.UserData.Played) {
@@ -325,7 +340,6 @@ const ItemDetail = () => {
 				userId: user.data.Id,
 				itemId: item.data.Id,
 			});
-			console.log(result.statusText);
 		} else if (!item.data.UserData.IsFavorite) {
 			result = await getUserLibraryApi(window.api).markFavoriteItem({
 				userId: user.data.Id,
@@ -341,7 +355,6 @@ const ItemDetail = () => {
 				userId: user.data.Id,
 				itemId: track.Id,
 			});
-			console.log(result.statusText);
 		} else if (!track.UserData.IsFavorite) {
 			result = await getUserLibraryApi(window.api).markFavoriteItem({
 				userId: user.data.Id,
@@ -412,8 +425,8 @@ const ItemDetail = () => {
 							}
 							width="100%"
 							height="100%"
-							resolutionX={64}
-							resolutionY={96}
+							resolutionX={14}
+							resolutionY={22}
 							style={{
 								aspectRatio: "0.666",
 							}}
@@ -436,25 +449,50 @@ const ItemDetail = () => {
 				>
 					<Box className="item-detail-header" mb={0}>
 						<Box className="item-detail-header-backdrop">
-							{item.data.BackdropImageTags.length != 0 && (
-								<img
-									src={
-										window.api.basePath +
-										"/Items/" +
-										item.data.Id +
-										"/Images/Backdrop"
-									}
-									style={{
-										opacity: backdropImageLoaded
-											? 1
-											: 0,
-									}}
-									className="item-detail-image"
-									onLoad={() =>
-										setBackdropImageLoaded(true)
-									}
-								/>
-							)}
+							{item.data.Type != BaseItemKind.MusicAlbum
+								? item.data.BackdropImageTags.length !=
+										0 && (
+										<img
+											src={
+												item.data.Type ==
+												BaseItemKind.MusicAlbum
+													? `${window.api.basePath}/Items/${item.data.ParentBackdropItemId}/Images/Backdrop`
+													: `${window.api.basePath}/Items/${item.data.Id}/Images/Backdrop`
+											}
+											style={{
+												opacity: backdropImageLoaded
+													? 1
+													: 0,
+											}}
+											className="item-detail-image"
+											onLoad={() =>
+												setBackdropImageLoaded(
+													true,
+												)
+											}
+										/>
+								  )
+								: !!item.data.ParentBackdropItemId && (
+										<img
+											src={
+												item.data.Type ==
+												BaseItemKind.MusicAlbum
+													? `${window.api.basePath}/Items/${item.data.ParentBackdropItemId}/Images/Backdrop`
+													: `${window.api.basePath}/Items/${item.data.Id}/Images/Backdrop`
+											}
+											style={{
+												opacity: backdropImageLoaded
+													? 1
+													: 0,
+											}}
+											className="item-detail-image"
+											onLoad={() =>
+												setBackdropImageLoaded(
+													true,
+												)
+											}
+										/>
+								  )}
 							{item.data.BackdropImageTags.length != 0 && (
 								<Blurhash
 									hash={
@@ -466,8 +504,8 @@ const ItemDetail = () => {
 									}
 									width="100%"
 									height="100%"
-									resolutionX={64}
-									resolutionY={96}
+									resolutionX={12}
+									resolutionY={18}
 									style={{
 										aspectRatio: "0.666",
 									}}
@@ -522,7 +560,7 @@ const ItemDetail = () => {
 											window.api.basePath +
 											"/Items/" +
 											item.data.Id +
-											"/Images/Primary?quality=10"
+											"/Images/Primary?fillHeight=532&fillWidth=300&quality=96"
 										}
 										style={{
 											opacity: primageImageLoaded
@@ -549,8 +587,8 @@ const ItemDetail = () => {
 										}
 										width="100%"
 										height="100%"
-										resolutionX={64}
-										resolutionY={96}
+										resolutionX={12}
+										resolutionY={8}
 										style={{
 											aspectRatio: 0.666,
 										}}
@@ -773,7 +811,7 @@ const ItemDetail = () => {
 						</Box>
 					</Box>
 					{item.data.Genres != 0 && (
-						<Box sx={{ mb: 2 }}>
+						<Box sx={{ mb: 2, width: "50%" }}>
 							<Stack
 								direction="row"
 								gap={1}
@@ -815,18 +853,133 @@ const ItemDetail = () => {
 							>
 								Artists
 							</Typography>
-							{item.data.Artists.map((mitem, mindex) => {
-								return (
-									<Typography
-										key={mindex}
-										variant="h6"
-									>
-										{mitem}
+							<Stack
+								direction="row"
+								gap={0.5}
+								divider={
+									<Typography variant="h6">
+										,
 									</Typography>
-								);
-							})}
+								}
+							>
+								{item.data.Artists.map(
+									(mitem, mindex) => {
+										return (
+											<Typography
+												key={mindex}
+												variant="h6"
+											>
+												{mitem}
+											</Typography>
+										);
+									},
+								)}
+							</Stack>
 						</Stack>
 					)}
+
+					{!!item.data.MediaStreams &&
+						item.data.MediaStreams.length != 0 && (
+							<>
+								<Box sx={{ mb: 2, width: "50%" }}>
+									<Stack
+										direction="row"
+										gap={1}
+										alignItems="center"
+									>
+										<Typography
+											className="item-detail-heading"
+											variant="h5"
+											mr={2}
+										>
+											Video
+										</Typography>
+										<TextField
+											defaultValue={
+												item.data
+													.MediaStreams[0]
+													.DisplayTitle
+											}
+											select
+											fullWidth
+											hiddenLabel
+										>
+											{item.data.MediaStreams.map(
+												(
+													stream,
+													sindex,
+												) => {
+													if (
+														stream.Type ==
+														BaseItemKind.Video
+													)
+														return (
+															<MenuItem
+																key={
+																	sindex
+																}
+																value={
+																	stream.DisplayTitle
+																}
+															>
+																{
+																	stream.DisplayTitle
+																}
+															</MenuItem>
+														);
+												},
+											)}
+										</TextField>
+									</Stack>
+								</Box>
+								<Box sx={{ mb: 2, width: "50%" }}>
+									<Stack
+										direction="row"
+										gap={1}
+										alignItems="center"
+									>
+										<Typography
+											className="item-detail-heading"
+											variant="h5"
+											mr={2}
+										>
+											Audio
+										</Typography>
+										<TextField
+											select
+											fullWidth
+											hiddenLabel
+										>
+											{item.data.MediaStreams.map(
+												(
+													stream,
+													sindex,
+												) => {
+													if (
+														stream.Type ==
+														BaseItemKind.Audio
+													)
+														return (
+															<MenuItem
+																key={
+																	sindex
+																}
+																value={
+																	stream.DisplayTitle
+																}
+															>
+																{
+																	stream.DisplayTitle
+																}
+															</MenuItem>
+														);
+												},
+											)}
+										</TextField>
+									</Stack>
+								</Box>
+							</>
+						)}
 
 					{!!item.data.Overview && (
 						<Box mt={3}>
@@ -1557,11 +1710,6 @@ const ItemDetail = () => {
 																			mitem
 																				.UserData
 																				.Played
-																		}
-																		watchedCount={
-																			mitem
-																				.UserData
-																				.PlayCount
 																		}
 																		blurhash={
 																			mitem.ImageBlurHashes ==

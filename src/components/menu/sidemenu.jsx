@@ -101,7 +101,6 @@ export const SideMenu = ({}) => {
 	};
 
 	useEffect(() => {
-		console.log(location.pathname.includes("login"));
 		if (
 			location.pathname.includes("login") ||
 			location.pathname.includes("setup")

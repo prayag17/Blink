@@ -39,10 +39,11 @@
 		}
 	}
 	&-image {
+		position: absolute;
 		width: 100%;
 		height: 100%;
 		object-fit: cover;
-		position: absolute;
+		object-position: top;
 		transition: opacity $transition-time-default;
 		&-blurhash {
 			z-index: -1;
@@ -71,8 +72,8 @@
 	}
 	&-title-logo {
 		filter: drop-shadow(0 0 10px rgb(0 0 0 /0.2));
-		max-width: 75%;
-		height: 2em;
+		height: 100%;
+		width: 45%;
 		object-fit: contain;
 		object-position: bottom;
 	}

@@ -51,7 +51,7 @@ export const Card = ({
 	const navigate = useNavigate();
 	const [imgLoading, setImgLoading] = useState(true);
 	const [isWatched, setIsWatched] = useState(watchedStatus);
-	const [isFavourite, setIsFavourite] = useState(favourite);
+	const [isFavorite, setisFavorite] = useState(favourite);
 	const [watchedCountState, setWatchedCountState] = useState(watchedCount);
 	const handleMarkAsPlayOrUnMarkAsPlay = async () => {
 		let result;
@@ -71,18 +71,18 @@ export const Card = ({
 	};
 	const handleLiking = async () => {
 		let result;
-		if (isFavourite) {
+		if (isFavorite) {
 			result = await getUserLibraryApi(window.api).unmarkFavoriteItem({
 				userId: currentUser.Id,
 				itemId: itemId,
 			});
-		} else if (!isFavourite) {
+		} else if (!isFavorite) {
 			result = await getUserLibraryApi(window.api).markFavoriteItem({
 				userId: currentUser.Id,
 				itemId: itemId,
 			});
 		}
-		setIsFavourite(result.data.IsFavorite);
+		setisFavorite(result.data.IsFavorite);
 	};
 
 	const availableMarkButtonTypes = [
@@ -214,7 +214,7 @@ export const Card = ({
 											window.api.basePath +
 											"/Items/" +
 											itemId +
-											"/Images/Primary"
+											"/Images/Primary?fillHeight=532&fillWidth=300&quality=96"
 										}
 										alt={itemName}
 										sx={{
@@ -240,8 +240,8 @@ export const Card = ({
 								hash={blurhash}
 								width="100%"
 								height="100%"
-								resolutionX={64}
-								resolutionY={64}
+								resolutionX={24}
+								resolutionY={24}
 								style={{
 									aspectRatio:
 										cardOrientation == "landscape"
@@ -311,7 +311,7 @@ export const Card = ({
 										handleLiking();
 									}}
 								>
-									{isFavourite ? (
+									{isFavorite ? (
 										<MdiHeart
 											sx={{ color: pink[700] }}
 										/>

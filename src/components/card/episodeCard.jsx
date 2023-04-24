@@ -56,7 +56,6 @@ export const EpisodeCard = ({
 	parentId,
 }) => {
 	const navigate = useNavigate();
-	const [imgLoading, setImgLoading] = useState(true);
 	const [isWatched, setIsWatched] = useState(watchedStatus);
 	const [isFavourite, setIsFavourite] = useState(favourite);
 	const handleMarkAsPlayOrUnMarkAsPlay = async () => {
@@ -72,7 +71,6 @@ export const EpisodeCard = ({
 				itemId: itemId,
 			});
 		}
-		console.log(result.data);
 		setIsWatched(result.data.Played);
 	};
 	const handleLiking = async () => {
@@ -88,7 +86,6 @@ export const EpisodeCard = ({
 				itemId: itemId,
 			});
 		}
-		console.log(result.data.IsFavorite);
 		setIsFavourite(result.data.IsFavorite);
 	};
 
@@ -132,13 +129,10 @@ export const EpisodeCard = ({
 								opacity: isWatched ? 1 : 0,
 							}}
 						/>
-						<Box
-							className="card-media-image-container"
-							sx={{ opacity: imgLoading ? 0 : 1 }}
-						>
+						<Box className="card-media-image-container">
 							{imageTags && (
 								<CardMedia
-									component="img"
+									component="div"
 									image={
 										window.api.basePath +
 										"/Items/" +
@@ -153,7 +147,6 @@ export const EpisodeCard = ({
 											borderRadiusDefault,
 										overflow: "hidden",
 									}}
-									onLoad={() => setImgLoading(false)}
 									className="card-image"
 								></CardMedia>
 							)}
@@ -163,8 +156,8 @@ export const EpisodeCard = ({
 								hash={blurhash}
 								width="100%"
 								height="100%"
-								resolutionX={512}
-								resolutionY={910}
+								resolutionX={12}
+								resolutionY={18}
 								style={{
 									aspectRatio: "1.777",
 								}}

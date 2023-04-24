@@ -40,12 +40,22 @@ export const getRuntimeMusic = (ticks) => {
 	let timeSec = Math.floor(time / 1000);
 	let timeMin = Math.floor(timeSec / 60);
 	timeSec -= timeMin * 60;
+	timeSec = timeSec == 0 ? 0o0 : timeSec;
 	if (timeMin > 60) {
 		let timeHr = Math.floor(timeMin / 60);
 		timeMin -= timeHr * 60;
-		formatedTime = `${timeHr}:${timeMin}`;
+		formatedTime = `${timeHr}:${timeMin.toLocaleString([], {
+			minimumIntegerDigits: 2,
+			useGrouping: false,
+		})}:${timeSec.toLocaleString([], {
+			minimumIntegerDigits: 2,
+			useGrouping: false,
+		})}`;
 	} else {
-		formatedTime = `${timeMin}:${timeSec}`;
+		formatedTime = `${timeMin}:${timeSec.toLocaleString([], {
+			minimumIntegerDigits: 2,
+			useGrouping: false,
+		})}`;
 	}
 	return formatedTime;
 };
