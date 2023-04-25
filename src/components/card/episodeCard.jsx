@@ -96,6 +96,7 @@ export const EpisodeCard = ({
 				background: "transparent",
 				borderRadius: borderRadiusDefault,
 				mr: 1,
+				mb: 0.5,
 			}}
 			elevation={0}
 			{...cardProps}
@@ -300,6 +301,7 @@ export const EpisodeCard = ({
 								maxWidth="100%"
 								sx={{
 									opacity: 0.65,
+									flexShrink: 0,
 								}}
 							>
 								{getRuntime(itemTicks)}

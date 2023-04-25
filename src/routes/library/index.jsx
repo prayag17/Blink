@@ -331,6 +331,7 @@ const LibraryView = () => {
 		queryFn: () => fetchLibItems(id),
 		enabled: currentLib.isSuccess,
 		networkMode: "always",
+		refetchOnWindowFocus: false,
 	});
 
 	const handleCurrentViewType = (e) => {
@@ -807,163 +808,163 @@ const LibraryView = () => {
 						</Stack>
 					</Toolbar>
 				</AppBar>
-				{items.isSuccess &&
-					(items.data.TotalRecordCount == 0 ? (
-						<EmptyNotice />
-					) : currentViewType != BaseItemKind.Audio ? (
-						<Grid2
-							container
-							columns={{ xs: 2, sm: 4, md: 8 }}
-						>
+				{items.isLoading || items.isFetching ? (
+					<Box
+						sx={{
+							position: "absolute",
+							top: 0,
+							left: 0,
+							height: "100%",
+							width: "100%",
+							display: "flex",
+							justifyContent: "center",
+							alignItems: "center",
+						}}
+					>
+						<CircularProgress />
+					</Box>
+				) : items.data.TotalRecordCount == 0 ? (
+					<EmptyNotice />
+				) : currentViewType != BaseItemKind.Audio ? (
+					<Grid2 container columns={{ xs: 2, sm: 4, md: 8 }}>
+						{items.data.Items.map((item, index) => {
+							return (
+								<Grid2 key={index} xs={1} sm={1} md={1}>
+									<Card
+										itemName={item.Name}
+										itemId={item.Id}
+										imageTags={
+											!!item.ImageTags.Primary
+										}
+										subText={item.ProductionYear}
+										iconType={item.Type}
+										playedPercent={
+											!!item.UserData
+												? item.UserData
+														.PlayedPercentage
+												: 0
+										}
+										cardOrientation={
+											item.Type ==
+												"MusicArtist" ||
+											item.Type ==
+												"MusicAlbum" ||
+											item.Type ==
+												"MusicGenre" ||
+											item.Type == "Playlist"
+												? "square"
+												: "portait"
+										}
+										watchedStatus={
+											!!item.UserData
+												? item.UserData
+														.Played
+												: false
+										}
+										watchedCount={
+											!!item.UserData &&
+											item.UserData
+												.UnplayedItemCount
+										}
+										blurhash={
+											item.ImageBlurHashes ==
+											{}
+												? ""
+												: !!item.ImageTags
+														.Primary
+												? !!item
+														.ImageBlurHashes
+														.Primary
+													? item
+															.ImageBlurHashes
+															.Primary[
+															item
+																.ImageTags
+																.Primary
+													  ]
+													: ""
+												: ""
+										}
+										currentUser={user.data}
+									></Card>
+								</Grid2>
+							);
+						})}
+					</Grid2>
+				) : (
+					<TableContainer>
+						<Table>
 							{items.data.Items.map((item, index) => {
 								return (
-									<Grid2
+									<TableRow
 										key={index}
-										xs={1}
-										sm={1}
-										md={1}
+										sx={{
+											"& td,& th": {
+												borderBottom:
+													"1px solid rgb(255 255 255 / 0.1)",
+											},
+											"&:hover": {
+												background:
+													"rgb(255 255 255 / 0.05)",
+											},
+										}}
 									>
-										<Card
-											itemName={item.Name}
-											itemId={item.Id}
-											imageTags={
-												!!item.ImageTags
-													.Primary
-											}
-											subText={
-												item.ProductionYear
-											}
-											iconType={item.Type}
-											playedPercent={
-												!!item.UserData
-													? item.UserData
-															.PlayedPercentage
-													: 0
-											}
-											cardOrientation={
-												item.Type ==
-													"MusicArtist" ||
-												item.Type ==
-													"MusicAlbum" ||
-												item.Type ==
-													"MusicGenre" ||
-												item.Type ==
-													"Playlist"
-													? "square"
-													: "portait"
-											}
-											watchedStatus={
-												!!item.UserData
-													? item.UserData
-															.Played
-													: false
-											}
-											watchedCount={
-												!!item.UserData &&
-												item.UserData
-													.UnplayedItemCount
-											}
-											blurhash={
-												item.ImageBlurHashes ==
-												{}
-													? ""
-													: !!item
-															.ImageTags
-															.Primary
-													? !!item
-															.ImageBlurHashes
-															.Primary
-														? item
-																.ImageBlurHashes
-																.Primary[
-																item
-																	.ImageTags
-																	.Primary
-														  ]
-														: ""
-													: ""
-											}
-											currentUser={user.data}
-										></Card>
-									</Grid2>
+										<TableCell width="4.5em">
+											<Box className="library-list-image-container">
+												{!!item.ImageTags
+													.Primary && (
+													<img
+														className="library-list-image"
+														src={`${window.api.basePath}/Items/${item.Id}/Images/Primary?quality=80&tag=${item.ImageTags.Primary}`}
+													/>
+												)}
+												<Box className="library-list-icon-container">
+													<MdiMusic className="library-list-icon" />
+												</Box>
+											</Box>
+										</TableCell>
+										<TableCell>
+											<Typography variant="h6">
+												{item.Name}
+											</Typography>
+											<Typography
+												variant="subtitle1"
+												sx={{
+													opacity: 0.7,
+												}}
+											>
+												{item.Album}
+											</Typography>
+										</TableCell>
+										<TableCell>
+											<Typography variant="subtitle1">
+												{getRuntimeMusic(
+													item.RunTimeTicks,
+												)}
+											</Typography>
+										</TableCell>
+										<TableCell width="1em">
+											<IconButton
+												onClick={() => {
+													handleLiking(
+														item,
+													);
+												}}
+											>
+												{item.UserData
+													.IsFavorite ? (
+													<MdiHeart />
+												) : (
+													<MdiHeartOutline />
+												)}
+											</IconButton>
+										</TableCell>
+									</TableRow>
 								);
 							})}
-						</Grid2>
-					) : (
-						<TableContainer>
-							<Table>
-								{items.data.Items.map((item, index) => {
-									return (
-										<TableRow
-											key={index}
-											sx={{
-												"& td,& th": {
-													borderBottom:
-														"1px solid rgb(255 255 255 / 0.1)",
-												},
-												"&:hover": {
-													background:
-														"rgb(255 255 255 / 0.05)",
-												},
-											}}
-										>
-											<TableCell width="4.5em">
-												<Box className="library-list-image-container">
-													{!!item
-														.ImageTags
-														.Primary && (
-														<img
-															className="library-list-image"
-															src={`${window.api.basePath}/Items/${item.Id}/Images/Primary?quality=80&tag=${item.ImageTags.Primary}`}
-														/>
-													)}
-													<Box className="library-list-icon-container">
-														<MdiMusic className="library-list-icon" />
-													</Box>
-												</Box>
-											</TableCell>
-											<TableCell>
-												<Typography variant="h6">
-													{item.Name}
-												</Typography>
-												<Typography
-													variant="subtitle1"
-													sx={{
-														opacity: 0.7,
-													}}
-												>
-													{item.Album}
-												</Typography>
-											</TableCell>
-											<TableCell>
-												<Typography variant="subtitle1">
-													{getRuntimeMusic(
-														item.RunTimeTicks,
-													)}
-												</Typography>
-											</TableCell>
-											<TableCell width="1em">
-												<IconButton
-													onClick={() => {
-														handleLiking(
-															item,
-														);
-													}}
-												>
-													{item.UserData
-														.IsFavorite ? (
-														<MdiHeart />
-													) : (
-														<MdiHeartOutline />
-													)}
-												</IconButton>
-											</TableCell>
-										</TableRow>
-									);
-								})}
-							</Table>
-						</TableContainer>
-					))}
+						</Table>
+					</TableContainer>
+				)}
 				{items.isError && <ErrorNotice />}
 			</Box>
 		</Box>

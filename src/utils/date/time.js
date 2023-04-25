@@ -24,7 +24,7 @@ export const getRuntime = (ticks) => {
 		timeMin -= timeHr * 60;
 		formatedTime = `${timeHr}hr ${timeMin}min`;
 	} else {
-		formatedTime = `${timeMin}min ${timeSec}sec`;
+		formatedTime = `${timeMin}min`;
 	}
 	return formatedTime;
 };
