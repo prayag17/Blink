@@ -2,7 +2,7 @@
 import { useState, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { showAppBar, showBackButton } from "../../utils/slice/appBar";
-import { useParams, useNavigate } from "react-router-dom";
+import { useParams, useNavigate, Link } from "react-router-dom";
 
 import { useQuery } from "@tanstack/react-query";
 
@@ -24,12 +24,14 @@ import Accordion from "@mui/material/Accordion";
 import AccordionSummary from "@mui/material/AccordionSummary";
 import AccordionDetails from "@mui/material/AccordionDetails";
 import Button from "@mui/material/Button";
-import Paper from "@mui/material/Paper";
 import Table from "@mui/material/Table";
+import TableBody from "@mui/material/TableBody";
 import TableContainer from "@mui/material/TableContainer";
 import TableRow from "@mui/material/TableRow";
 import TableCell from "@mui/material/TableCell";
 import IconButton from "@mui/material/IconButton";
+import Pagination from "@mui/material/Pagination";
+import ButtonBase from "@mui/material/ButtonBase";
 
 import { theme } from "../../theme";
 
@@ -55,6 +57,7 @@ import { ErrorNotice } from "../../components/notices/errorNotice/errorNotice";
 import {
 	BaseItemKind,
 	CollectionTypeOptions,
+	ItemFields,
 } from "@jellyfin/sdk/lib/generated-client";
 import { getRuntimeMusic } from "../../utils/date/time";
 
@@ -67,6 +70,9 @@ const LibraryView = () => {
 	const navigate = useNavigate();
 	const dispatch = useDispatch();
 	const appBarVisiblity = useSelector((state) => state.appBar.visible);
+
+	const [page, setPage] = useState(1);
+	const maxDisplayItems = 50;
 
 	if (!appBarVisiblity) {
 		dispatch(showAppBar());
@@ -104,6 +110,7 @@ const LibraryView = () => {
 		const result = await getItemsApi(window.api).getItems({
 			userId: user.data.Id,
 			ids: [libraryId],
+			fields: [ItemFields.RecursiveItemCount],
 		});
 		return result.data;
 	};
@@ -296,6 +303,8 @@ const LibraryView = () => {
 				isHd: isHD ? true : undefined,
 				is4K: is4K ? true : undefined,
 				is3D: is3D ? true : undefined,
+				startIndex: maxDisplayItems * (page - 1),
+				limit: maxDisplayItems,
 			});
 		}
 		return result.data;
@@ -306,6 +315,7 @@ const LibraryView = () => {
 			"libraryView",
 			"currentLibItems",
 			id,
+			`page: ${page}`,
 			[
 				currentViewType,
 				sortAscending,
@@ -331,7 +341,7 @@ const LibraryView = () => {
 		queryFn: () => fetchLibItems(id),
 		enabled: currentLib.isSuccess,
 		networkMode: "always",
-		refetchOnWindowFocus: false,
+		keepPreviousData: true,
 	});
 
 	const handleCurrentViewType = (e) => {
@@ -821,7 +831,16 @@ const LibraryView = () => {
 							alignItems: "center",
 						}}
 					>
-						<CircularProgress />
+						<CircularProgress
+							variant="indeterminate"
+							sx={{
+								position: "absolute",
+								top: "50%",
+								left: "50%",
+								transform: "translate(-50%,50%)",
+								width: "50%",
+							}}
+						/>
 					</Box>
 				) : items.data.TotalRecordCount == 0 ? (
 					<EmptyNotice />
@@ -829,7 +848,12 @@ const LibraryView = () => {
 					<Grid2 container columns={{ xs: 2, sm: 4, md: 8 }}>
 						{items.data.Items.map((item, index) => {
 							return (
-								<Grid2 key={index} xs={1} sm={1} md={1}>
+								<Grid2
+									key={item.Id}
+									xs={1}
+									sm={1}
+									md={1}
+								>
 									<Card
 										itemName={item.Name}
 										itemId={item.Id}
@@ -894,77 +918,144 @@ const LibraryView = () => {
 				) : (
 					<TableContainer>
 						<Table>
-							{items.data.Items.map((item, index) => {
-								return (
-									<TableRow
-										key={index}
-										sx={{
-											"& td,& th": {
-												borderBottom:
-													"1px solid rgb(255 255 255 / 0.1)",
-											},
-											"&:hover": {
-												background:
-													"rgb(255 255 255 / 0.05)",
-											},
-										}}
-									>
-										<TableCell width="4.5em">
-											<Box className="library-list-image-container">
-												{!!item.ImageTags
-													.Primary && (
-													<img
-														className="library-list-image"
-														src={`${window.api.basePath}/Items/${item.Id}/Images/Primary?quality=80&tag=${item.ImageTags.Primary}`}
-													/>
-												)}
-												<Box className="library-list-icon-container">
-													<MdiMusic className="library-list-icon" />
+							<TableBody>
+								{items.data.Items.map((item, index) => {
+									return (
+										<TableRow
+											key={index}
+											sx={{
+												"& td,& th": {
+													borderBottom:
+														"1px solid rgb(255 255 255 / 0.1)",
+												},
+												"&:last-child td, &:last-child th":
+													{ border: 0 },
+												"&:hover": {
+													background:
+														"rgb(255 255 255 / 0.05)",
+												},
+											}}
+										>
+											<TableCell width="4.5em">
+												<Box className="library-list-image-container">
+													{!!item
+														.ImageTags
+														.Primary && (
+														<img
+															className="library-list-image"
+															src={`${window.api.basePath}/Items/${item.Id}/Images/Primary?quality=80&tag=${item.ImageTags.Primary}`}
+														/>
+													)}
+													<Box className="library-list-icon-container">
+														<MdiMusic className="library-list-icon" />
+													</Box>
 												</Box>
-											</Box>
-										</TableCell>
-										<TableCell>
-											<Typography variant="h6">
-												{item.Name}
-											</Typography>
-											<Typography
-												variant="subtitle1"
-												sx={{
-													opacity: 0.7,
-												}}
-											>
-												{item.Album}
-											</Typography>
-										</TableCell>
-										<TableCell>
-											<Typography variant="subtitle1">
-												{getRuntimeMusic(
-													item.RunTimeTicks,
-												)}
-											</Typography>
-										</TableCell>
-										<TableCell width="1em">
-											<IconButton
-												onClick={() => {
-													handleLiking(
-														item,
-													);
-												}}
-											>
-												{item.UserData
-													.IsFavorite ? (
-													<MdiHeart />
-												) : (
-													<MdiHeartOutline />
-												)}
-											</IconButton>
-										</TableCell>
-									</TableRow>
-								);
-							})}
+											</TableCell>
+											<TableCell>
+												<Typography variant="h6">
+													{item.Name}
+												</Typography>
+												<Stack
+													direction="row"
+													divider={
+														<Typography
+															variant="subtitle1"
+															sx={{
+																opacity: 0.7,
+															}}
+														>
+															,
+														</Typography>
+													}
+												>
+													{item.Artists.map(
+														(
+															artist,
+															aindex,
+														) => {
+															return (
+																<Typography
+																	variant="subtitle1"
+																	sx={{
+																		opacity: 0.7,
+																	}}
+																>
+																	{
+																		artist
+																	}
+																</Typography>
+															);
+														},
+													)}
+												</Stack>
+											</TableCell>
+											<TableCell>
+												<Typography variant="subtitle1">
+													{getRuntimeMusic(
+														item.RunTimeTicks,
+													)}
+												</Typography>
+											</TableCell>
+											<TableCell width="1em">
+												<IconButton
+													onClick={() => {
+														handleLiking(
+															item,
+														);
+													}}
+												>
+													{item.UserData
+														.IsFavorite ? (
+														<MdiHeart />
+													) : (
+														<MdiHeartOutline />
+													)}
+												</IconButton>
+											</TableCell>
+										</TableRow>
+									);
+								})}
+							</TableBody>
 						</Table>
 					</TableContainer>
 				)}
+
+				{!items.isFetching &&
+					items.isSuccess &&
+					items.data.TotalRecordCount > 75 && (
+						<Stack
+							alignItems="center"
+							justifyContent="center"
+							paddingTop={2}
+							direction="row"
+						>
+							<Typography
+								variant="subtitle2"
+								sx={{ opacity: 0.5 }}
+							>
+								{maxDisplayItems * (page - 1)} -{" "}
+								{items.data.TotalRecordCount <=
+								maxDisplayItems * page
+									? items.data.TotalRecordCount
+									: maxDisplayItems * page}{" "}
+								of {items.data.TotalRecordCount}
+							</Typography>
+							<Pagination
+								page={page}
+								onChange={(e, val) => {
+									setPage(val);
+								}}
+								count={Math.ceil(
+									items.data.TotalRecordCount /
+										maxDisplayItems,
+								)}
+								sx={{
+									width: "fit-content",
+								}}
+							/>
+						</Stack>
+					)}
+
 				{items.isError && <ErrorNotice />}
 			</Box>
 		</Box>

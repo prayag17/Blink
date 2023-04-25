@@ -93,6 +93,9 @@ const anim = {
 	animate: {
 		opacity: 1,
 	},
+	exit: {
+		opacity: 0,
+	},
 };
 
 const AnimationWrapper = () => {
@@ -102,8 +105,9 @@ const AnimationWrapper = () => {
 			variants={anim}
 			initial="initial"
 			animate="animate"
+			exit="exit"
 			transition={{
-				duration: 0.4,
+				duration: 0.35,
 			}}
 		>
 			<Outlet />
