@@ -3,6 +3,8 @@
 import React, { useState } from "react";
 
 import Konami from "react-konami-code";
+// @ts-ignore
+const Kon = Konami.default ? Konami.default : Konami;
 
 import { ThemeProvider } from "@mui/material/styles";
 import { SnackbarProvider } from "notistack";
@@ -286,7 +288,7 @@ function App() {
 					</Box>
 				)}
 
-				<Konami resetDelay={1000} action={sixtyNine}></Konami>
+				<Kon resetDelay={1000} action={sixtyNine}></Kon>
 				<Dialog
 					open={easterEgg}
 					onClose={() => setEasterEgg(false)}
