@@ -32,7 +32,11 @@ import { showAppBar, showBackButton } from "../../utils/slice/appBar";
 import { useDispatch, useSelector } from "react-redux";
 import { useParams, useNavigate } from "react-router-dom";
 
-import { BaseItemKind, ItemFields } from "@jellyfin/sdk/lib/generated-client";
+import {
+	BaseItemKind,
+	ItemFields,
+	MediaStreamType,
+} from "@jellyfin/sdk/lib/generated-client";
 import { getUserApi } from "@jellyfin/sdk/lib/utils/api/user-api";
 import { getUserLibraryApi } from "@jellyfin/sdk/lib/utils/api/user-library-api";
 import { getLibraryApi } from "@jellyfin/sdk/lib/utils/api/library-api";
@@ -93,9 +97,6 @@ const ItemDetail = () => {
 	const { id } = useParams();
 	const dispatch = useDispatch();
 	const navigate = useNavigate();
-	const [isMovie, setIsMovie] = useState(false);
-	const [isSeries, setIsSeries] = useState(false);
-	const [isMusicItem, setIsMusicItem] = useState(false);
 	const appBarVisiblity = useSelector((state) => state.appBar.visible);
 	const [primageImageLoaded, setPrimaryImageLoaded] = useState(false);
 	const [backdropImageLoaded, setBackdropImageLoaded] = useState(false);
@@ -397,6 +398,45 @@ const ItemDetail = () => {
 		personEpisodes.isLoading,
 	]);
 
+	const [videoTracks, setVideoTracks] = useState([]);
+	const [audioTracks, setAudioTracks] = useState([]);
+	const [subtitleTracks, setSubtitleTracks] = useState([]);
+
+	const [currentVideoTrack, setCurrentVideoTrack] = useState();
+	const [currentAudioTrack, setCurrentAudioTrack] = useState();
+	const [currentSubTrack, setCurrentSubTrack] = useState();
+
+	useEffect(() => {
+		if (item.isSuccess && !!item.data.MediaStreams) {
+			let videos = [];
+			let audios = [];
+			let subs = [];
+			for (let track of item.data.MediaStreams) {
+				switch (track.Type) {
+					case MediaStreamType.Video:
+						videos.push(track);
+						break;
+					case MediaStreamType.Audio:
+						audios.push(track);
+						break;
+					case MediaStreamType.Subtitle:
+						subs.push(track);
+						break;
+					default:
+						break;
+				}
+			}
+
+			setVideoTracks(videos);
+			setAudioTracks(audios);
+			setSubtitleTracks(subs);
+
+			setCurrentVideoTrack(videos[0].DisplayTitle);
+			setCurrentAudioTrack(audios[0].DisplayTitle);
+			setCurrentSubTrack(subs[0].DisplayTitle);
+		}
+	}, [item.isSuccess]);
+
 	if (item.isLoading || similarItems.isLoading) {
 		return (
 			<Box
@@ -434,6 +474,26 @@ const ItemDetail = () => {
 							className="item-detail-image-blurhash"
 						/>
 					)}
+					{!!item.data.ParentBackdropImageTags &&
+						item.data.ParentBackdropImageTags.length != 0 && (
+							<Blurhash
+								hash={
+									item.data.ImageBlurHashes.Backdrop[
+										item.data
+											.ParentBackdropImageTags[0]
+									]
+								}
+								width="100%"
+								height="100%"
+								resolutionX={14}
+								resolutionY={22}
+								style={{
+									aspectRatio: "0.666",
+								}}
+								punch={1}
+								className="item-detail-image-blurhash"
+							/>
+						)}
 				</Box>
 				<Box
 					recomponent="main"
@@ -447,7 +507,15 @@ const ItemDetail = () => {
 						flexFlow: "column",
 					}}
 				>
-					<Box className="item-detail-header" mb={0}>
+					<Box
+						className="item-detail-header"
+						mb={0}
+						paddingTop={
+							item.data.Type == BaseItemKind.MusicAlbum
+								? 10
+								: 0
+						}
+					>
 						<Box className="item-detail-header-backdrop">
 							{item.data.Type != BaseItemKind.MusicAlbum
 								? item.data.BackdropImageTags.length !=
@@ -810,177 +878,342 @@ const ItemDetail = () => {
 							</Typography>
 						</Box>
 					</Box>
-					{item.data.Genres != 0 && (
-						<Box sx={{ mb: 2, width: "50%" }}>
-							<Stack
-								direction="row"
-								gap={1}
-								alignItems="center"
-							>
-								<Typography
-									className="item-detail-heading"
-									variant="h5"
-									mr={2}
-								>
-									Genre
-								</Typography>
-								{item.data.Genres.map(
-									(genre, index) => {
-										return (
-											<Chip
-												key={index}
-												variant="filled"
-												label={genre}
-											/>
-										);
-									},
-								)}
-							</Stack>
-						</Box>
-					)}
-
-					{item.data.Type == BaseItemKind.MusicAlbum && (
-						<Stack
-							sx={{ mb: 2 }}
-							direction="row"
-							gap={1}
-							alignItems="center"
-						>
-							<Typography
-								className="item-detail-heading"
-								variant="h5"
-								mr={2}
-							>
-								Artists
-							</Typography>
-							<Stack
-								direction="row"
-								gap={0.5}
-								divider={
-									<Typography variant="h6">
-										,
-									</Typography>
-								}
-							>
-								{item.data.Artists.map(
-									(mitem, mindex) => {
-										return (
+					<TableContainer>
+						<Table>
+							<TableBody>
+								{item.data.Genres != 0 && (
+									<TableRow
+										sx={{
+											"& td, & th": {
+												border: 0,
+											},
+										}}
+									>
+										<TableCell
+											sx={{
+												paddingLeft: 0,
+												width: "5%",
+											}}
+										>
 											<Typography
-												key={mindex}
-												variant="h6"
+												className="item-detail-heading"
+												variant="h5"
+												mr={2}
 											>
-												{mitem}
+												Genre
 											</Typography>
-										);
-									},
+										</TableCell>
+										<TableCell>
+											<Stack
+												direction="row"
+												gap={1}
+											>
+												{item.data.Genres.map(
+													(
+														genre,
+														index,
+													) => {
+														return (
+															<Chip
+																key={
+																	index
+																}
+																variant="filled"
+																label={
+																	genre
+																}
+															/>
+														);
+													},
+												)}
+											</Stack>
+										</TableCell>
+									</TableRow>
 								)}
-							</Stack>
-						</Stack>
-					)}
 
-					{!!item.data.MediaStreams &&
-						item.data.MediaStreams.length != 0 && (
-							<>
-								<Box sx={{ mb: 2, width: "50%" }}>
-									<Stack
-										direction="row"
-										gap={1}
-										alignItems="center"
+								{item.data.Type ==
+									BaseItemKind.MusicAlbum && (
+									<TableRow
+										sx={{
+											"& td, & th": {
+												border: 0,
+											},
+										}}
 									>
-										<Typography
-											className="item-detail-heading"
-											variant="h5"
-											mr={2}
+										<TableCell
+											sx={{
+												paddingLeft: 0,
+												width: "5%",
+											}}
 										>
-											Video
-										</Typography>
-										<TextField
-											defaultValue={
-												item.data
-													.MediaStreams[0]
-													.DisplayTitle
-											}
-											select
-											fullWidth
-											hiddenLabel
-										>
-											{item.data.MediaStreams.map(
-												(
-													stream,
-													sindex,
-												) => {
-													if (
-														stream.Type ==
-														BaseItemKind.Video
-													)
+											<Typography
+												className="item-detail-heading"
+												variant="h5"
+												mr={2}
+											>
+												Artists
+											</Typography>
+										</TableCell>
+										<TableCell>
+											<Stack
+												direction="row"
+												gap={0.5}
+												divider={
+													<Typography variant="h6">
+														,
+													</Typography>
+												}
+												flexWrap="wrap"
+											>
+												{item.data.Artists.map(
+													(
+														mitem,
+														mindex,
+													) => {
 														return (
-															<MenuItem
+															<Typography
 																key={
-																	sindex
+																	mindex
 																}
-																value={
-																	stream.DisplayTitle
-																}
+																variant="h6"
+																noWrap
 															>
 																{
-																	stream.DisplayTitle
+																	mitem
 																}
-															</MenuItem>
+															</Typography>
 														);
-												},
-											)}
-										</TextField>
-									</Stack>
-								</Box>
-								<Box sx={{ mb: 2, width: "50%" }}>
-									<Stack
-										direction="row"
-										gap={1}
-										alignItems="center"
-									>
-										<Typography
-											className="item-detail-heading"
-											variant="h5"
-											mr={2}
-										>
-											Audio
-										</Typography>
-										<TextField
-											select
-											fullWidth
-											hiddenLabel
-										>
-											{item.data.MediaStreams.map(
-												(
-													stream,
-													sindex,
-												) => {
-													if (
-														stream.Type ==
-														BaseItemKind.Audio
-													)
-														return (
-															<MenuItem
-																key={
-																	sindex
-																}
-																value={
-																	stream.DisplayTitle
-																}
-															>
-																{
-																	stream.DisplayTitle
-																}
-															</MenuItem>
-														);
-												},
-											)}
-										</TextField>
-									</Stack>
-								</Box>
-							</>
-						)}
+													},
+												)}
+											</Stack>
+										</TableCell>
+									</TableRow>
+								)}
 
+								{!!item.data.MediaStreams &&
+									item.data.MediaStreams.length !=
+										0 && (
+										<>
+											{videoTracks != [] && (
+												<TableRow
+													sx={{
+														"& td, & th":
+															{
+																border: 0,
+															},
+													}}
+												>
+													<TableCell
+														sx={{
+															paddingLeft: 0,
+															width: "5%",
+														}}
+													>
+														<Typography
+															className="item-detail-heading"
+															variant="h5"
+															mr={
+																2
+															}
+														>
+															Video
+														</Typography>
+													</TableCell>
+													<TableCell>
+														<TextField
+															select
+															sx={{
+																width: "50%",
+															}}
+															hiddenLabel
+															value={
+																currentVideoTrack
+															}
+															onChange={(
+																e,
+															) => {
+																setCurrentVideoTrack(
+																	e
+																		.target
+																		.value,
+																);
+															}}
+														>
+															{videoTracks.map(
+																(
+																	stream,
+																	sindex,
+																) => {
+																	if (
+																		stream.Type ==
+																		BaseItemKind.Video
+																	)
+																		return (
+																			<MenuItem
+																				key={
+																					sindex
+																				}
+																				value={
+																					stream.DisplayTitle
+																				}
+																			>
+																				{
+																					stream.DisplayTitle
+																				}
+																			</MenuItem>
+																		);
+																},
+															)}
+														</TextField>
+													</TableCell>
+												</TableRow>
+											)}
+											{audioTracks != [] && (
+												<TableRow
+													sx={{
+														"& td, & th":
+															{
+																border: 0,
+															},
+													}}
+												>
+													<TableCell
+														sx={{
+															paddingLeft: 0,
+															width: "5%",
+														}}
+													>
+														<Typography
+															className="item-detail-heading"
+															variant="h5"
+															mr={
+																2
+															}
+														>
+															Audio
+														</Typography>
+													</TableCell>
+													<TableCell>
+														<TextField
+															select
+															sx={{
+																width: "50%",
+															}}
+															hiddenLabel
+															value={
+																currentAudioTrack
+															}
+															onChange={(
+																e,
+															) => {
+																setCurrentAudioTrack(
+																	e
+																		.target
+																		.value,
+																);
+															}}
+														>
+															{audioTracks.map(
+																(
+																	stream,
+																	sindex,
+																) => {
+																	return (
+																		<MenuItem
+																			key={
+																				sindex
+																			}
+																			value={
+																				stream.DisplayTitle
+																			}
+																		>
+																			{
+																				stream.DisplayTitle
+																			}
+																		</MenuItem>
+																	);
+																},
+															)}
+														</TextField>
+													</TableCell>
+												</TableRow>
+											)}
+											{subtitleTracks !=
+												[] && (
+												<TableRow
+													sx={{
+														"& td, & th":
+															{
+																border: 0,
+															},
+													}}
+												>
+													<TableCell
+														sx={{
+															paddingLeft: 0,
+															width: "5%",
+														}}
+													>
+														<Typography
+															className="item-detail-heading"
+															variant="h5"
+															mr={
+																2
+															}
+														>
+															Subtitle
+														</Typography>
+													</TableCell>
+													<TableCell>
+														<TextField
+															select
+															sx={{
+																width: "50%",
+															}}
+															hiddenLabel
+															value={
+																currentSubTrack
+															}
+															onChange={(
+																e,
+															) => {
+																setCurrentSubTrack(
+																	e
+																		.target
+																		.value,
+																);
+															}}
+														>
+															{subtitleTracks.map(
+																(
+																	stream,
+																	sindex,
+																) => {
+																	return (
+																		<MenuItem
+																			key={
+																				sindex
+																			}
+																			value={
+																				stream.DisplayTitle
+																			}
+																		>
+																			{
+																				stream.DisplayTitle
+																			}
+																		</MenuItem>
+																	);
+																},
+															)}
+														</TextField>
+													</TableCell>
+												</TableRow>
+											)}
+										</>
+									)}
+							</TableBody>
+						</Table>
+					</TableContainer>
 					{!!item.data.Overview && (
 						<Box mt={3}>
 							<Typography variant="h5" mb={1}>

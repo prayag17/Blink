@@ -58,6 +58,7 @@ import {
 	BaseItemKind,
 	CollectionTypeOptions,
 	ItemFields,
+	SortOrder,
 } from "@jellyfin/sdk/lib/generated-client";
 import { getRuntimeMusic } from "../../utils/date/time";
 
@@ -80,27 +81,21 @@ const LibraryView = () => {
 	const { id } = useParams();
 
 	const user = useQuery({
-		queryKey: ["libraryView", "user"],
+		queryKey: ["user"],
 		queryFn: async () => {
 			let usr = await getUserApi(window.api).getCurrentUser();
 			return usr.data;
 		},
+		networkMode: "always",
 	});
 
 	const [sortAscending, setSortAscending] = useState(true);
-	const [sortBy, setSortBy] = useState("SortName");
-	const [sortByData, setSortByData] = useState([
-		{ title: "Name", value: "SortName" },
-		{ title: "Critic Rating", value: "CriticRating" },
-		{ title: "Rating", value: "CommunityRating" },
-		{ title: "Release Date", value: "PremiereDate" },
-		{ title: "Date Added", value: "DateCreated" },
-		{ title: "Play Count", value: "PlayCount" },
-		{ title: "Runtime", value: "Runtime" },
-		{ title: "Random", value: "Random" },
-	]);
+	const [sortBy, setSortBy] = useState();
+	const [sortByData, setSortByData] = useState();
+
 	const handleSortChange = (e) => {
 		setSortAscending(e.target.checked);
+		console.log(e.target.checked);
 	};
 	const handleSortBy = (e) => {
 		setSortBy(e.target.value);
@@ -118,6 +113,7 @@ const LibraryView = () => {
 		queryKey: ["libraryView", "currentLib", id],
 		queryFn: () => fetchLib(id),
 		enabled: !!user.data,
+		networkMode: "always",
 	});
 
 	if (currentLib.isSuccess) {
@@ -223,8 +219,8 @@ const LibraryView = () => {
 				]);
 			} else if (currentLib.data.Items[0].CollectionType == "music") {
 				setViewType([
-					{ title: "Songs", value: BaseItemKind.Audio },
 					{ title: "Albums", value: BaseItemKind.MusicAlbum },
+					{ title: "Songs", value: BaseItemKind.Audio },
 					{ title: "Artists", value: BaseItemKind.MusicArtist },
 					{ title: "Genres", value: BaseItemKind.MusicGenre },
 				]);
@@ -240,8 +236,62 @@ const LibraryView = () => {
 			} else {
 				setViewType([]);
 			}
+
+			if (currentLib.data.Items[0].CollectionType == "movies") {
+				setSortByData([
+					{ title: "Name", value: "SortName" },
+					{ title: "Critic Rating", value: "CriticRating" },
+					{ title: "Rating", value: "CommunityRating" },
+					{ title: "Date Added", value: "DateCreated" },
+					{ title: "Play Count", value: "PlayCount" },
+					{ title: "Release Date", value: "PremiereDate" },
+					{ title: "Runtime", value: "Runtime" },
+					{ title: "Random", value: "Random" },
+				]);
+			} else if (
+				currentLib.data.Items[0].CollectionType == "tvshows"
+			) {
+				setSortByData([
+					{ title: "Name", value: "SortName" },
+					{ title: "Critic Rating", value: "CriticRating" },
+					{ title: "Rating", value: "CommunityRating" },
+					{ title: "Date Added", value: "DateCreated" },
+					{ title: "Date Played", value: "DatePlayed" },
+					{ title: "Release Date", value: "PremiereDate" },
+					{ title: "Random", value: "Random" },
+				]);
+			} else if (currentLib.data.Items[0].CollectionType == "music") {
+				setSortByData([
+					{ title: "Name", value: "Name" },
+					{ title: "Album Artist", value: "AlbumArtist" },
+					{ title: "Critic Rating", value: "CriticRating" },
+					{ title: "Rating", value: "CommunityRating" },
+					{ title: "Release Date", value: "PremiereDate" },
+					{ title: "Date Added", value: "DateCreated" },
+					{ title: "Play Count", value: "PlayCount" },
+					{ title: "Runtime", value: "Runtime" },
+					{ title: "Random", value: "Random" },
+				]);
+			} else {
+				setSortByData([
+					{ title: "Name", value: "SortName" },
+					{ title: "Critic Rating", value: "CriticRating" },
+					{ title: "Rating", value: "CommunityRating" },
+					{ title: "Release Date", value: "PremiereDate" },
+					{ title: "Date Added", value: "DateCreated" },
+					{ title: "Play Count", value: "PlayCount" },
+					{ title: "Runtime", value: "Runtime" },
+					{ title: "Random", value: "Random" },
+				]);
+			}
 		}
 	}, [currentLib.isSuccess]);
+
+	useEffect(() => {
+		if (sortByData != undefined) {
+			setSortBy(sortByData[0].value);
+		}
+	}, [sortByData]);
 
 	const fetchLibItems = async (libraryId) => {
 		let result;
@@ -284,7 +334,11 @@ const LibraryView = () => {
 						? undefined
 						: true,
 				includeItemTypes: [currentViewType],
-				sortOrder: [sortAscending ? "Ascending" : "Descending"],
+				sortOrder: [
+					sortAscending
+						? SortOrder.Ascending
+						: SortOrder.Descending,
+				],
 				sortBy: sortBy,
 				filters: [
 					isPlayed && "IsPlayed",
@@ -318,7 +372,9 @@ const LibraryView = () => {
 			`page: ${page}`,
 			[
 				currentViewType,
-				sortAscending,
+
+				sortAscending ? SortOrder.Ascending : SortOrder.Descending,
+				,
 				sortBy,
 				[
 					isPlayed,
@@ -753,52 +809,68 @@ const LibraryView = () => {
 								currentViewType,
 							) && (
 								<>
-									<Checkbox
-										icon={<MdiSortDescending />}
-										checkedIcon={
-											<MdiSortAscending />
-										}
-										sx={{
-											color: "white !important",
-										}}
-										color="white"
-										onChange={handleSortChange}
-										defaultValue={sortAscending}
-									/>
-									<TextField
-										select
-										hiddenLabel
-										defaultValue={
-											sortByData[0].value
-										}
-										size="small"
-										variant="filled"
-										onChange={handleSortBy}
-									>
-										{sortByData.map(
-											(item, index) => {
-												return (
-													<MenuItem
-														key={
-															item.value
-														}
-														value={
-															item.value
-														}
-													>
-														{`By ${item.title}`}
-													</MenuItem>
-												);
-											},
-										)}
-									</TextField>
+									{sortByData != undefined && (
+										<>
+											<Checkbox
+												icon={
+													<MdiSortDescending />
+												}
+												checkedIcon={
+													<MdiSortAscending />
+												}
+												sx={{
+													color: "white !important",
+												}}
+												color="white"
+												onChange={
+													handleSortChange
+												}
+												checked={
+													sortAscending
+												}
+											/>
+											<TextField
+												select
+												hiddenLabel
+												value={
+													sortByData[0]
+														.value
+												}
+												size="small"
+												variant="filled"
+												onChange={
+													handleSortBy
+												}
+											>
+												{sortByData.map(
+													(
+														item,
+														index,
+													) => {
+														return (
+															<MenuItem
+																key={
+																	index
+																}
+																value={
+																	item.value
+																}
+															>
+																{`By ${item.title}`}
+															</MenuItem>
+														);
+													},
+												)}
+											</TextField>
+										</>
+									)}
 								</>
 							)}
 							{viewType.length != 0 && (
 								<TextField
 									select
 									hiddenLabel
-									defaultValue={viewType[0].value}
+									value={viewType[0].value}
 									size="small"
 									variant="filled"
 									onChange={handleCurrentViewType}
@@ -979,6 +1051,9 @@ const LibraryView = () => {
 																	sx={{
 																		opacity: 0.7,
 																	}}
+																	key={
+																		aindex
+																	}
 																>
 																	{
 																		artist

@@ -76,7 +76,7 @@ export const getRuntimeFull = (ticks) => {
 		timeMin -= timeHr * 60;
 		formatedTime = `${timeHr} hour ${timeMin} minutes`;
 	} else {
-		formatedTime = `${timeMin} minutes ${timeSec} seconds`;
+		formatedTime = `${timeMin} minutes`;
 	}
 	return formatedTime;
 };

@@ -7,6 +7,7 @@ import { CardsSkeleton } from "../skeleton/cards";
 
 import { getUserApi } from "@jellyfin/sdk/lib/utils/api/user-api";
 import { getUserLibraryApi } from "@jellyfin/sdk/lib/utils/api/user-library-api";
+import { BaseItemKind } from "@jellyfin/sdk/lib/generated-client";
 
 export const LatestMediaSection = ({ latestMediaLib }) => {
 	const user = useQuery({
@@ -67,7 +68,11 @@ export const LatestMediaSection = ({ latestMediaLib }) => {
 									? "sqaure"
 									: "portait"
 							}
-							watchedStatus={item.UserData.Played}
+							watchedStatus={
+								item.Type == BaseItemKind.Audio
+									? false
+									: item.UserData.Played
+							}
 							watchedCount={
 								item.UserData.UnplayedItemCount
 							}
