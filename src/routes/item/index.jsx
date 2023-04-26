@@ -28,7 +28,6 @@ import { green, pink } from "@mui/material/colors";
 import { AvatarImage } from "../../components/avatar/avatar";
 
 import { Blurhash } from "react-blurhash";
-import { showAppBar, showBackButton } from "../../utils/slice/appBar";
 import { useDispatch, useSelector } from "react-redux";
 import { useParams, useNavigate } from "react-router-dom";
 
@@ -97,16 +96,8 @@ const ItemDetail = () => {
 	const { id } = useParams();
 	const dispatch = useDispatch();
 	const navigate = useNavigate();
-	const appBarVisiblity = useSelector((state) => state.appBar.visible);
 	const [primageImageLoaded, setPrimaryImageLoaded] = useState(false);
 	const [backdropImageLoaded, setBackdropImageLoaded] = useState(false);
-
-	useEffect(() => {
-		if (!appBarVisiblity) {
-			dispatch(showAppBar());
-		}
-		dispatch(showBackButton());
-	}, []);
 
 	const user = useQuery({
 		queryKey: ["user"],
@@ -509,7 +500,7 @@ const ItemDetail = () => {
 				>
 					<Box
 						className="item-detail-header"
-						mb={0}
+						mb={2}
 						paddingTop={
 							item.data.Type == BaseItemKind.MusicAlbum
 								? 10
@@ -698,8 +689,8 @@ const ItemDetail = () => {
 										)}
 									</Typography>
 									<Typography
-										variant="subtitle1"
-										color="gray"
+										variant="h6"
+										sx={{ opacity: 0.7 }}
 									>
 										{item.data.OriginalTitle}
 									</Typography>
@@ -865,6 +856,7 @@ const ItemDetail = () => {
 								</IconButton>
 							</Stack>
 						</Box>
+
 						<Box
 							className="item-detail-tagline"
 							sx={{ width: "100%" }}

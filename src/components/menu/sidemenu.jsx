@@ -70,7 +70,7 @@ export const SideMenu = ({}) => {
 			let usr = await getUserApi(window.api).getCurrentUser();
 			return usr.data;
 		},
-		enabled: false,
+		enabled: !!window.api,
 		networkMode: "always",
 	});
 	let libraries = useQuery({

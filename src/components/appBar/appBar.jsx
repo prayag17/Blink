@@ -17,7 +17,6 @@ import { theme } from "../../theme";
 
 import { useDispatch, useSelector } from "react-redux";
 import { useLocation, useNavigate } from "react-router-dom";
-import { hideBackButton } from "../../utils/slice/appBar";
 
 import { getUserApi } from "@jellyfin/sdk/lib/utils/api/user-api";
 import { useQueryClient, useQuery } from "@tanstack/react-query";
@@ -34,10 +33,7 @@ export const AppBar = () => {
 	const navigate = useNavigate();
 
 	const [display, setDisplay] = useState(false);
-	const backButtonVisible = useSelector(
-		(state) => state.appBar.backButtonVisible,
-	);
-	const backdropVisible = useSelector((state) => state.appBar.backdrop);
+	const [backButtonVisible, setBackButtonVisible] = useState(true);
 
 	const location = useLocation();
 
@@ -78,7 +74,9 @@ export const AppBar = () => {
 
 	useEffect(() => {
 		if (location.pathname == "/home") {
-			dispatch(hideBackButton());
+			setBackButtonVisible(false);
+		} else {
+			setBackButtonVisible(true);
 		}
 	}, [location]);
 
@@ -94,7 +92,7 @@ export const AppBar = () => {
 					backgroundColor: "transparent",
 				}}
 				className={trigger ? "appBar backdropVisible" : "appBar"}
-				elevation={backdropVisible ? 6 : 0}
+				elevation={0}
 			>
 				<Toolbar sx={{ justifyContent: "space-between" }}>
 					<Box

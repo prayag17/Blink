@@ -4,7 +4,7 @@ import { useState } from "react";
 
 import { Blurhash } from "react-blurhash";
 
-import { useQueryClient, useQuery } from "@tanstack/react-query";
+import { useQuery } from "@tanstack/react-query";
 
 import { EventEmitter as event } from "../../eventEmitter";
 import { getServer } from "../../utils/storage/servers";
@@ -37,18 +37,14 @@ import { MdiStarHalfFull } from "../../components/icons/mdiStarHalfFull";
 import { MdiPlayOutline } from "../../components/icons/mdiPlayOutline";
 import { MdiChevronRight } from "../../components/icons/mdiChevronRight";
 
-import { useDispatch, useSelector } from "react-redux";
-import { showAppBar } from "../../utils/slice/appBar";
-
 import { getUserViewsApi } from "@jellyfin/sdk/lib/utils/api/user-views-api";
 import { getUserApi } from "@jellyfin/sdk/lib/utils/api/user-api";
 import { getUserLibraryApi } from "@jellyfin/sdk/lib/utils/api/user-library-api";
 import { getItemsApi } from "@jellyfin/sdk/lib/utils/api/items-api";
 import { getTvShowsApi } from "@jellyfin/sdk/lib/utils/api/tv-shows-api";
 
-import { useNavigate, useLocation } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 
-import { formateDate } from "../../utils/date/formateDate";
 import { getRuntime } from "../../utils/date/time";
 
 const Home = () => {
@@ -156,10 +152,7 @@ const Home = () => {
 
 	const [latestMediaLibs, setLatestMediaLibs] = useState([]);
 
-	const dispatch = useDispatch();
-
 	const navigate = useNavigate();
-	const location = useLocation();
 
 	const excludeTypes = ["boxsets", "playlists", "livetv", "channels"];
 
@@ -189,12 +182,6 @@ const Home = () => {
 				}
 			}
 		});
-	}
-
-	const appBarVisiblity = useSelector((state) => state.appBar.visible);
-
-	if (!appBarVisiblity) {
-		dispatch(showAppBar());
 	}
 
 	if (user.isPaused) {

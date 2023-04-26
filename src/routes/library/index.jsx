@@ -1,7 +1,6 @@
 /** @format */
 import { useState, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { showAppBar, showBackButton } from "../../utils/slice/appBar";
 import { useParams, useNavigate, Link } from "react-router-dom";
 
 import { useQuery } from "@tanstack/react-query";
@@ -56,7 +55,6 @@ import { clrBackgroundDarkOpacity0_8 } from "../../palette.module.scss";
 import { ErrorNotice } from "../../components/notices/errorNotice/errorNotice";
 import {
 	BaseItemKind,
-	CollectionTypeOptions,
 	ItemFields,
 	SortOrder,
 } from "@jellyfin/sdk/lib/generated-client";
@@ -69,15 +67,10 @@ import { MdiHeartOutline } from "../../components/icons/mdiHeartOutline";
 
 const LibraryView = () => {
 	const navigate = useNavigate();
-	const dispatch = useDispatch();
-	const appBarVisiblity = useSelector((state) => state.appBar.visible);
 
 	const [page, setPage] = useState(1);
 	const maxDisplayItems = 50;
 
-	if (!appBarVisiblity) {
-		dispatch(showAppBar());
-	}
 	const { id } = useParams();
 
 	const user = useQuery({
@@ -115,10 +108,6 @@ const LibraryView = () => {
 		enabled: !!user.data,
 		networkMode: "always",
 	});
-
-	if (currentLib.isSuccess) {
-		dispatch(showBackButton());
-	}
 
 	const [isPlayed, setIsPlayed] = useState(false);
 	const [isUnPlayed, setIsUnPlayed] = useState(false);
@@ -405,7 +394,10 @@ const LibraryView = () => {
 	};
 
 	useEffect(() => {
-		if (viewType.length != 0) setCurrentViewType(viewType[0].value);
+		if (viewType.length != 0) {
+			setCurrentViewType(viewType[0].value);
+			console.log(viewType);
+		}
 	}, [viewType]);
 
 	const disabledSortViews = [
@@ -809,84 +801,94 @@ const LibraryView = () => {
 								currentViewType,
 							) && (
 								<>
-									{sortByData != undefined && (
-										<>
-											<Checkbox
-												icon={
-													<MdiSortDescending />
-												}
-												checkedIcon={
-													<MdiSortAscending />
-												}
-												sx={{
-													color: "white !important",
-												}}
-												color="white"
-												onChange={
-													handleSortChange
-												}
-												checked={
-													sortAscending
-												}
-											/>
-											<TextField
-												select
-												hiddenLabel
-												value={
-													sortByData[0]
-														.value
-												}
-												size="small"
-												variant="filled"
-												onChange={
-													handleSortBy
-												}
-											>
-												{sortByData.map(
-													(
-														item,
-														index,
-													) => {
-														return (
-															<MenuItem
-																key={
-																	index
-																}
-																value={
-																	item.value
-																}
-															>
-																{`By ${item.title}`}
-															</MenuItem>
-														);
-													},
-												)}
-											</TextField>
-										</>
-									)}
+									{sortByData != undefined &&
+										sortBy != undefined && (
+											<>
+												<Checkbox
+													icon={
+														<MdiSortDescending />
+													}
+													checkedIcon={
+														<MdiSortAscending />
+													}
+													sx={{
+														color: "white !important",
+													}}
+													color="white"
+													onChange={
+														handleSortChange
+													}
+													checked={
+														sortAscending
+													}
+												/>
+												<TextField
+													select
+													hiddenLabel
+													value={sortBy}
+													size="small"
+													variant="filled"
+													onChange={
+														handleSortBy
+													}
+												>
+													{sortByData.map(
+														(
+															item,
+															index,
+														) => {
+															return (
+																<MenuItem
+																	key={
+																		index
+																	}
+																	value={
+																		item.value
+																	}
+																>
+																	{`By ${item.title}`}
+																</MenuItem>
+															);
+														},
+													)}
+												</TextField>
+											</>
+										)}
 								</>
 							)}
-							{viewType.length != 0 && (
-								<TextField
-									select
-									hiddenLabel
-									value={viewType[0].value}
-									size="small"
-									variant="filled"
-									onChange={handleCurrentViewType}
-								>
-									{viewType.map((item, index) => {
-										return (
-											<MenuItem
-												key={item.value}
-												value={item.value}
-											>
-												{item.title}
-											</MenuItem>
-										);
-									})}
-								</TextField>
-							)}
+							{viewType.length != 0 &&
+								currentViewType != undefined && (
+									<TextField
+										select
+										hiddenLabel
+										// value={viewType[0].value}
+										value={currentViewType}
+										size="small"
+										variant="filled"
+										onChange={
+											handleCurrentViewType
+										}
+									>
+										{viewType.map(
+											(item, index) => {
+												return (
+													<MenuItem
+														key={
+															item.value
+														}
+														value={
+															item.value
+														}
+													>
+														{
+															item.title
+														}
+													</MenuItem>
+												);
+											},
+										)}
+									</TextField>
+								)}
 						</Stack>
 					</Toolbar>
 				</AppBar>
