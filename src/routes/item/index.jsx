@@ -24,7 +24,7 @@ import TableCell from "@mui/material/TableCell";
 import TextField from "@mui/material/TextField";
 import MenuItem from "@mui/material/MenuItem";
 import Link from "@mui/material/Link";
-import { green, pink } from "@mui/material/colors";
+import { green, pink, yellow } from "@mui/material/colors";
 
 import { AvatarImage } from "../../components/avatar/avatar";
 
@@ -48,8 +48,13 @@ import { getVideosApi } from "@jellyfin/sdk/lib/utils/api/videos-api";
 import { useQuery } from "@tanstack/react-query";
 
 import { MdiPlayOutline } from "../../components/icons/mdiPlayOutline";
-import { MdiStarHalfFull } from "../../components/icons/mdiStarHalfFull";
-import { getRuntimeMusic, getRuntimeFull } from "../../utils/date/time";
+import { MdiStar } from "../../components/icons/mdiStar";
+import { MdiCheck } from "../../components/icons/mdiCheck";
+import { MdiHeartOutline } from "../../components/icons/mdiHeartOutline";
+import { MdiHeart } from "../../components/icons/mdiHeart";
+import { MdiClockOutline } from "../../components/icons/mdiClockOutline";
+
+import { getRuntimeMusic, getRuntimeFull, endsAt } from "../../utils/date/time";
 import { TypeIconCollectionCard } from "../../components/utils/iconsCollection";
 
 import { Card } from "../../components/card/card";
@@ -57,12 +62,8 @@ import { EpisodeCard } from "../../components/card/episodeCard";
 import { CardScroller } from "../../components/cardScroller/cardScroller";
 
 import "./item.module.scss";
-import { MdiCheck } from "../../components/icons/mdiCheck";
-import { MdiHeartOutline } from "../../components/icons/mdiHeartOutline";
-import { MdiHeart } from "../../components/icons/mdiHeart";
 import { EpisodeCardsSkeleton } from "../../components/skeleton/episodeCards";
 import { ErrorNotice } from "../../components/notices/errorNotice/errorNotice";
-import { MdiClockOutline } from "../../components/icons/mdiClockOutline";
 function TabPanel(props) {
 	const { children, value, index, ...other } = props;
 
@@ -784,7 +785,11 @@ const ItemDetail = () => {
 											{!!item.data
 												.CommunityRating ? (
 												<>
-													<MdiStarHalfFull />
+													<MdiStar
+														sx={{
+															color: yellow[700],
+														}}
+													/>
 													<Typography variant="subtitle1">
 														{Math.round(
 															item
@@ -805,6 +810,14 @@ const ItemDetail = () => {
 									{!!item.data.RunTimeTicks && (
 										<Typography variant="subtitle1">
 											{getRuntimeFull(
+												item.data
+													.RunTimeTicks,
+											)}
+										</Typography>
+									)}
+									{!!item.data.RunTimeTicks && (
+										<Typography variant="subtitle1">
+											{endsAt(
 												item.data
 													.RunTimeTicks,
 											)}

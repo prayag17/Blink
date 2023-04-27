@@ -19,6 +19,7 @@ import Paper from "@mui/material/Paper";
 import Typography from "@mui/material/Typography";
 import Chip from "@mui/material/Chip";
 import Divider from "@mui/material/Divider";
+import Stack from "@mui/material/Stack";
 
 import { yellow } from "@mui/material/colors";
 
@@ -33,7 +34,7 @@ import { CardsSkeleton } from "../../components/skeleton/cards";
 
 // Icons
 import { MediaTypeIconCollection } from "../../components/utils/iconsCollection.jsx";
-import { MdiStarHalfFull } from "../../components/icons/mdiStarHalfFull";
+import { MdiStar } from "../../components/icons/mdiStar";
 import { MdiPlayOutline } from "../../components/icons/mdiPlayOutline";
 import { MdiChevronRight } from "../../components/icons/mdiChevronRight";
 
@@ -45,7 +46,7 @@ import { getTvShowsApi } from "@jellyfin/sdk/lib/utils/api/tv-shows-api";
 
 import { useNavigate } from "react-router-dom";
 
-import { getRuntime } from "../../utils/date/time";
+import { endsAt, getRuntime } from "../../utils/date/time";
 
 const Home = () => {
 	const authUser = useQuery({
@@ -325,15 +326,25 @@ const Home = () => {
 												></img>
 											)}
 										</Typography>
-										<Box
-											sx={{
-												display: "flex",
-												alignItems:
-													"center",
-												width: "fit-content",
-												gap: "1em",
-												mb: 1.5,
-											}}
+										<Stack
+											// sx={{
+											// 	display: "flex",
+											// 	alignItems:
+											// 		"center",
+											// 	width: "fit-content",
+											// 	gap: "1em",
+											// 	mb: 1.5,
+											// }}
+											direction="row"
+											gap={1}
+											divider={
+												<Divider
+													variant="middle"
+													component="div"
+													orientation="vertical"
+													flexItem
+												/>
+											}
 											className="hero-carousel-info"
 										>
 											<Typography
@@ -344,12 +355,6 @@ const Home = () => {
 													? item.ProductionYear
 													: "Unknown"}
 											</Typography>
-											<Divider
-												variant="middle"
-												component="div"
-												orientation="vertical"
-												flexItem
-											/>
 											<Chip
 												variant="outlined"
 												label={
@@ -357,12 +362,6 @@ const Home = () => {
 														? item.OfficialRating
 														: "Not Rated"
 												}
-											/>
-											<Divider
-												variant="middle"
-												component="div"
-												orientation="vertical"
-												flexItem
 											/>
 											<Box
 												sx={{
@@ -375,7 +374,7 @@ const Home = () => {
 											>
 												{!!item.CommunityRating ? (
 													<>
-														<MdiStarHalfFull
+														<MdiStar
 															sx={{
 																color: yellow[700],
 															}}
@@ -396,18 +395,21 @@ const Home = () => {
 													</Typography>
 												)}
 											</Box>
-											<Divider
-												variant="middle"
-												component="div"
-												orientation="vertical"
-												flexItem
-											/>
-											<Typography variant="subtitle1">
-												{getRuntime(
-													item.RunTimeTicks,
-												)}
-											</Typography>
-										</Box>
+											{!!item.RunTimeTicks && (
+												<Typography variant="subtitle1">
+													{getRuntime(
+														item.RunTimeTicks,
+													)}
+												</Typography>
+											)}
+											{!!item.RunTimeTicks && (
+												<Typography variant="subtitle1">
+													{endsAt(
+														item.RunTimeTicks,
+													)}
+												</Typography>
+											)}
+										</Stack>
 										<Typography
 											variant="subtitle1"
 											className="hero-carousel-text"
