@@ -18,6 +18,9 @@
 				"exit": true,
 				"relaunch": true,
 				"relaunchDangerousAllowSymlinkMacos": false
+			},
+			"shell": {
+				"all": true
 			}
 		},
 		"bundle": {

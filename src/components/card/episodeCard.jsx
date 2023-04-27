@@ -346,7 +346,7 @@ export const EpisodeCard = ({
 										mr: "0.25em",
 									}}
 								/>{" "}
-								{itemRating}
+								{Math.round(itemRating * 10) / 10}
 							</Typography>
 						)}
 						{!!itemTicks && (

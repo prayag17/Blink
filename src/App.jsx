@@ -24,7 +24,7 @@ import { relaunch } from "@tauri-apps/api/process";
 import { getUserApi } from "@jellyfin/sdk/lib/utils/api/user-api";
 
 import { useQuery } from "@tanstack/react-query";
-// import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
+import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 
 // Theming
 import CssBaseline from "@mui/material/CssBaseline";
@@ -400,6 +400,7 @@ function App() {
 						</Routes>
 					</div>
 				</AnimatePresence>
+				<ReactQueryDevtools />
 			</ThemeProvider>
 		</SnackbarProvider>
 	);

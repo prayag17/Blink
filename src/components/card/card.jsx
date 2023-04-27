@@ -348,13 +348,11 @@ export const Card = ({
 						gutterBottom
 						variant="subtitle2"
 						component="div"
-						color="gray"
 						textAlign="left"
-						// textOverflow={}
-						// fontSize="0.85em"
 						width="fit-content"
 						maxWidth="100%"
 						noWrap
+						sx={{ opacity: 0.5 }}
 					>
 						{subText}
 					</Typography>

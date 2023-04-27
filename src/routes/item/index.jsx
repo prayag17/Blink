@@ -23,6 +23,7 @@ import TableBody from "@mui/material/TableBody";
 import TableCell from "@mui/material/TableCell";
 import TextField from "@mui/material/TextField";
 import MenuItem from "@mui/material/MenuItem";
+import Link from "@mui/material/Link";
 import { green, pink } from "@mui/material/colors";
 
 import { AvatarImage } from "../../components/avatar/avatar";
@@ -502,9 +503,7 @@ const ItemDetail = () => {
 						className="item-detail-header"
 						mb={2}
 						paddingTop={
-							item.data.Type == BaseItemKind.MusicAlbum
-								? 10
-								: 0
+							item.data.Type.includes("Music") ? 10 : 0
 						}
 					>
 						<Box className="item-detail-header-backdrop">
@@ -682,7 +681,7 @@ const ItemDetail = () => {
 											.Logo ? (
 											<img
 												className="item-detail-title-logo"
-												src={`${window.api.basePath}/Items/${item.data.Id}/Images/Logo?quality=80&tag=${item.data.ImageTags.Logo}`}
+												src={`${window.api.basePath}/Items/${item.data.Id}/Images/Logo?cropWhitespace=True&quality=80&tag=${item.data.ImageTags.Logo}`}
 											/>
 										) : (
 											item.data.Name
@@ -710,53 +709,63 @@ const ItemDetail = () => {
 										width: "100%",
 									}}
 								>
-									{item.data.ProductionYear && (
-										<Typography
-											sx={{ flexGrow: 0 }}
-											variant="subtitle1"
-										>
-											{
-												item.data
-													.ProductionYear
-											}
-										</Typography>
-									)}
-									<Chip
-										variant="outlined"
-										label={
-											!!item.data
-												.OfficialRating
-												? item.data
-														.OfficialRating
-												: "Not Rated"
-										}
-									/>
-									<Box
-										sx={{
-											display: "flex",
-											gap: "0.25em",
-											alignItems: "center",
-										}}
-										className="item-detail-info-rating"
-									>
-										{!!item.data
-											.CommunityRating ? (
-											<>
-												<MdiStarHalfFull />
-												<Typography variant="subtitle1">
-													{Math.round(
-														item.data
-															.CommunityRating *
-															10,
-													) / 10}
-												</Typography>
-											</>
-										) : (
-											<Typography variant="subtitle1">
-												No Community Rating
+									{item.data.Type != "MusicArtist" &&
+										item.data.ProductionYear && (
+											<Typography
+												sx={{ flexGrow: 0 }}
+												variant="subtitle1"
+											>
+												{
+													item.data
+														.ProductionYear
+												}
 											</Typography>
 										)}
-									</Box>
+									{item.data.Type !=
+										"MusicArtist" && (
+										<Chip
+											variant="outlined"
+											label={
+												!!item.data
+													.OfficialRating
+													? item.data
+															.OfficialRating
+													: "Not Rated"
+											}
+										/>
+									)}
+									{item.data.Type !=
+										"MusicArtist" && (
+										<Box
+											sx={{
+												display: "flex",
+												gap: "0.25em",
+												alignItems:
+													"center",
+											}}
+											className="item-detail-info-rating"
+										>
+											{!!item.data
+												.CommunityRating ? (
+												<>
+													<MdiStarHalfFull />
+													<Typography variant="subtitle1">
+														{Math.round(
+															item
+																.data
+																.CommunityRating *
+																10,
+														) / 10}
+													</Typography>
+												</>
+											) : (
+												<Typography variant="subtitle1">
+													No Community
+													Rating
+												</Typography>
+											)}
+										</Box>
+									)}
 									{!!item.data.RunTimeTicks && (
 										<Typography variant="subtitle1">
 											{getRuntimeFull(
@@ -776,8 +785,9 @@ const ItemDetail = () => {
 								mr={2}
 							>
 								{item.data.Type != "Person" &&
-									item.data.Type !=
-										"MusicArtist" && (
+									!item.data.Type.includes(
+										"Music",
+									) && (
 										<>
 											<Button
 												variant="contained"
@@ -915,6 +925,68 @@ const ItemDetail = () => {
 																	genre
 																}
 															/>
+														);
+													},
+												)}
+											</Stack>
+										</TableCell>
+									</TableRow>
+								)}
+
+								{item.data.ExternalUrls.length != 0 && (
+									<TableRow
+										sx={{
+											"& td, & th": {
+												border: 0,
+											},
+										}}
+									>
+										<TableCell
+											sx={{
+												paddingLeft: 0,
+												width: "5%",
+											}}
+										>
+											<Typography
+												className="item-detail-heading"
+												variant="h5"
+												mr={2}
+											>
+												Links
+											</Typography>
+										</TableCell>
+										<TableCell>
+											<Stack
+												direction="row"
+												gap={0.5}
+												divider={
+													<Typography variant="h6">
+														,
+													</Typography>
+												}
+											>
+												{item.data.ExternalUrls.map(
+													(
+														item,
+														index,
+													) => {
+														return (
+															<Link
+																key={
+																	index
+																}
+																href={
+																	item.Url
+																}
+																target="_blank"
+																color="inherit"
+																variant="h6"
+																underline="hover"
+															>
+																{
+																	item.Name
+																}
+															</Link>
 														);
 													},
 												)}
@@ -1214,7 +1286,7 @@ const ItemDetail = () => {
 							<Typography
 								variant="body1"
 								sx={{ opacity: 0.8 }}
-								mb={5}
+								mb={2}
 							>
 								{item.data.Overview}
 							</Typography>
@@ -1985,73 +2057,83 @@ const ItemDetail = () => {
 						)}
 
 					{nextUpEpisode.isSuccess && (
-						<Grid2
-							container
-							columns={{
-								xs: 2,
-								sm: 3,
-								md: 4,
-							}}
-						>
-							{nextUpEpisode.data.Items.map(
-								(mitem, mindex) => {
-									return (
-										<Grid2
-											key={mindex}
-											xs={1}
-											sm={1}
-											md={1}
-										>
-											<EpisodeCard
-												itemId={mitem.Id}
-												itemName={`${mitem.IndexNumber}. ${mitem.Name}`}
-												imageTags={
-													!!mitem
-														.ImageTags
-														.Primary
-												}
-												playedPercent={
-													mitem.UserData
-														.PlayedPercentage
-												}
-												watchedStatus={
-													mitem.UserData
-														.Played
-												}
-												favourite={
-													mitem.UserData
-														.IsFavorite
-												}
-												blurhash={
-													mitem.ImageBlurHashes ==
-													{}
-														? ""
-														: !!mitem
-																.ImageTags
-																.Primary
-														? !!mitem
-																.ImageBlurHashes
-																.Primary
-															? mitem
+						<Box mt={0}>
+							<Typography variant="h5" mb={1}>
+								Next Up
+							</Typography>
+							<Grid2
+								container
+								columns={{
+									xs: 2,
+									sm: 3,
+									md: 4,
+								}}
+							>
+								{nextUpEpisode.data.Items.map(
+									(mitem, mindex) => {
+										return (
+											<Grid2
+												key={mindex}
+												xs={1}
+												sm={1}
+												md={1}
+											>
+												<EpisodeCard
+													itemId={
+														mitem.Id
+													}
+													itemName={`${mitem.IndexNumber}. ${mitem.Name}`}
+													imageTags={
+														!!mitem
+															.ImageTags
+															.Primary
+													}
+													playedPercent={
+														mitem
+															.UserData
+															.PlayedPercentage
+													}
+													watchedStatus={
+														mitem
+															.UserData
+															.Played
+													}
+													favourite={
+														mitem
+															.UserData
+															.IsFavorite
+													}
+													blurhash={
+														mitem.ImageBlurHashes ==
+														{}
+															? ""
+															: !!mitem
+																	.ImageTags
+																	.Primary
+															? !!mitem
 																	.ImageBlurHashes
-																	.Primary[
-																	mitem
-																		.ImageTags
-																		.Primary
-															  ]
+																	.Primary
+																? mitem
+																		.ImageBlurHashes
+																		.Primary[
+																		mitem
+																			.ImageTags
+																			.Primary
+																  ]
+																: ""
 															: ""
-														: ""
-												}
-												currentUser={
-													user.data
-												}
-												centerAlignText
-											/>
-										</Grid2>
-									);
-								},
-							)}
-						</Grid2>
+													}
+													currentUser={
+														user.data
+													}
+													centerAlignText
+												/>
+											</Grid2>
+										);
+									},
+								)}
+							</Grid2>
+						</Box>
 					)}
 
 					{seasons.isSuccess && (
@@ -2063,7 +2145,11 @@ const ItemDetail = () => {
 								onChange={(e, newVal) => {
 									setCurrentSeason(newVal);
 								}}
-								sx={{ mb: 2 }}
+								sx={{
+									borderBottom: 1,
+									borderColor: "divider",
+									mb: 2,
+								}}
 								selectionFollowsFocus
 							>
 								{seasons.data.Items.map(
@@ -2197,6 +2283,9 @@ const ItemDetail = () => {
 							displayCards={8}
 							title="Cast"
 							disableDecoration
+							boxProps={{
+								mt: 5,
+							}}
 						>
 							{item.data.People.map((person, index) => {
 								return (
