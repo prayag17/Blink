@@ -30,7 +30,7 @@ import { AvatarImage } from "../../components/avatar/avatar";
 
 import { Blurhash } from "react-blurhash";
 import { useDispatch, useSelector } from "react-redux";
-import { useParams, useNavigate } from "react-router-dom";
+import { useParams, useNavigate, Link as RouterLink } from "react-router-dom";
 
 import {
 	BaseItemKind,
@@ -693,6 +693,42 @@ const ItemDetail = () => {
 									>
 										{item.data.OriginalTitle}
 									</Typography>
+									{!!item.data.AlbumArtists && (
+										<Stack
+											direction="row"
+											gap={0.5}
+											divider={
+												<Typography variant="h6">
+													,
+												</Typography>
+											}
+										>
+											{item.data.AlbumArtists.map(
+												(
+													artist,
+													aindex,
+												) => {
+													return (
+														<Link
+															component={
+																RouterLink
+															}
+															variant="h6"
+															sx={{
+																opacity: 0.7,
+															}}
+															color="inherit"
+															to={`/item/${artist.Id}`}
+														>
+															{
+																artist.Name
+															}
+														</Link>
+													);
+												},
+											)}
+										</Stack>
+									)}
 								</Box>
 								<Stack
 									direction="row"

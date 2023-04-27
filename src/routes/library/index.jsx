@@ -441,6 +441,14 @@ const LibraryView = () => {
 		items.refetch();
 	};
 
+	const disablePaginationViews = [
+		"MusicArtist",
+		"Person",
+		"Genre",
+		"MusicGenre",
+		"Studio",
+	];
+
 	return (
 		<Box
 			sx={{
@@ -1098,8 +1106,9 @@ const LibraryView = () => {
 				)}
 
 				{!items.isFetching &&
+					!disablePaginationViews.includes(currentViewType) &&
 					items.isSuccess &&
-					items.data.TotalRecordCount > 75 && (
+					items.data.TotalRecordCount > maxDisplayItems && (
 						<Stack
 							alignItems="center"
 							justifyContent="center"
