@@ -175,7 +175,7 @@ const ItemDetail = () => {
 	});
 
 	const nextUpEpisode = useQuery({
-		queryKey: ["item", "seasons", id, "nextUp"],
+		queryKey: ["item", id, "nextUp"],
 		queryFn: async () => {
 			const result = await getTvShowsApi(window.api).getNextUp({
 				userId: user.data.Id,
@@ -2107,85 +2107,86 @@ const ItemDetail = () => {
 							</Box>
 						)}
 
-					{nextUpEpisode.isSuccess && (
-						<Box mt={0}>
-							<Typography variant="h5" mb={1}>
-								Next Up
-							</Typography>
-							<Grid2
-								container
-								columns={{
-									xs: 2,
-									sm: 3,
-									md: 4,
-								}}
-							>
-								{nextUpEpisode.data.Items.map(
-									(mitem, mindex) => {
-										return (
-											<Grid2
-												key={mindex}
-												xs={1}
-												sm={1}
-												md={1}
-											>
-												<EpisodeCard
-													itemId={
-														mitem.Id
-													}
-													itemName={`${mitem.IndexNumber}. ${mitem.Name}`}
-													imageTags={
-														!!mitem
-															.ImageTags
-															.Primary
-													}
-													playedPercent={
-														mitem
-															.UserData
-															.PlayedPercentage
-													}
-													watchedStatus={
-														mitem
-															.UserData
-															.Played
-													}
-													favourite={
-														mitem
-															.UserData
-															.IsFavorite
-													}
-													blurhash={
-														mitem.ImageBlurHashes ==
-														{}
-															? ""
-															: !!mitem
-																	.ImageTags
-																	.Primary
-															? !!mitem
-																	.ImageBlurHashes
-																	.Primary
-																? mitem
+					{nextUpEpisode.isSuccess &&
+						nextUpEpisode.data.TotalRecordCount != 0 && (
+							<Box mt={0}>
+								<Typography variant="h5" mb={1}>
+									Next Up
+								</Typography>
+								<Grid2
+									container
+									columns={{
+										xs: 2,
+										sm: 3,
+										md: 4,
+									}}
+								>
+									{nextUpEpisode.data.Items.map(
+										(mitem, mindex) => {
+											return (
+												<Grid2
+													key={mindex}
+													xs={1}
+													sm={1}
+													md={1}
+												>
+													<EpisodeCard
+														itemId={
+															mitem.Id
+														}
+														itemName={`${mitem.IndexNumber}. ${mitem.Name}`}
+														imageTags={
+															!!mitem
+																.ImageTags
+																.Primary
+														}
+														playedPercent={
+															mitem
+																.UserData
+																.PlayedPercentage
+														}
+														watchedStatus={
+															mitem
+																.UserData
+																.Played
+														}
+														favourite={
+															mitem
+																.UserData
+																.IsFavorite
+														}
+														blurhash={
+															mitem.ImageBlurHashes ==
+															{}
+																? ""
+																: !!mitem
+																		.ImageTags
+																		.Primary
+																? !!mitem
 																		.ImageBlurHashes
-																		.Primary[
-																		mitem
-																			.ImageTags
-																			.Primary
-																  ]
+																		.Primary
+																	? mitem
+																			.ImageBlurHashes
+																			.Primary[
+																			mitem
+																				.ImageTags
+																				.Primary
+																	  ]
+																	: ""
 																: ""
-															: ""
-													}
-													currentUser={
-														user.data
-													}
-													centerAlignText
-												/>
-											</Grid2>
-										);
-									},
-								)}
-							</Grid2>
-						</Box>
-					)}
+														}
+														currentUser={
+															user.data
+														}
+														centerAlignText
+													/>
+												</Grid2>
+											);
+										},
+									)}
+								</Grid2>
+							</Box>
+						)}
 
 					{seasons.isSuccess && (
 						<Box sx={{ mb: 2 }}>
@@ -2197,6 +2198,19 @@ const ItemDetail = () => {
 							>
 								<Typography variant="h5">
 									Episodes
+									<Chip
+										label={
+											episodes.isLoading ? (
+												<CircularProgress
+													sx={{ p: 1.5 }}
+												/>
+											) : (
+												episodes.data
+													.TotalRecordCount
+											)
+										}
+										sx={{ ml: 2 }}
+									/>
 								</Typography>
 								<TextField
 									value={currentSeason}
