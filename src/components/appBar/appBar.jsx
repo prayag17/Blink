@@ -33,7 +33,7 @@ export const AppBar = () => {
 	const navigate = useNavigate();
 
 	const [display, setDisplay] = useState(false);
-	const [backButtonVisible, setBackButtonVisible] = useState(true);
+	const [backButtonVisible, setBackButtonVisible] = useState(false);
 
 	const location = useLocation();
 
