@@ -56,6 +56,7 @@ export const EpisodeCard = ({
 	parentId,
 }) => {
 	const navigate = useNavigate();
+	const [imgLoaded, setImgLoaded] = useState(false);
 	const [isWatched, setIsWatched] = useState(watchedStatus);
 	const [isFavourite, setIsFavourite] = useState(favourite);
 	const handleMarkAsPlayOrUnMarkAsPlay = async () => {
@@ -130,10 +131,16 @@ export const EpisodeCard = ({
 								opacity: isWatched ? 1 : 0,
 							}}
 						/>
-						<Box className="card-media-image-container">
+						<Box
+							className="card-media-image-container"
+							sx={{
+								opacity: imgLoaded ? 1 : 0,
+								transition: "opacity 250ms",
+							}}
+						>
 							{imageTags && (
 								<CardMedia
-									component="div"
+									component="img"
 									image={
 										window.api.basePath +
 										"/Items/" +
@@ -148,6 +155,7 @@ export const EpisodeCard = ({
 											borderRadiusDefault,
 										overflow: "hidden",
 									}}
+									onLoad={() => setImgLoaded(true)}
 									className="card-image"
 								></CardMedia>
 							)}

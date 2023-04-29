@@ -26,7 +26,7 @@ import MenuItem from "@mui/material/MenuItem";
 import Link from "@mui/material/Link";
 import { green, pink, yellow } from "@mui/material/colors";
 
-import { AvatarImage } from "../../components/avatar/avatar";
+import { AnimatePresence, motion } from "framer-motion";
 
 import { Blurhash } from "react-blurhash";
 import { useDispatch, useSelector } from "react-redux";
@@ -204,6 +204,8 @@ const ItemDetail = () => {
 		enabled: seasons.isSuccess,
 		networkMode: "always",
 		refetchOnWindowFocus: true,
+		keepPreviousData: false,
+		cacheTime: 0,
 	});
 
 	const personMovies = useQuery({
@@ -2187,139 +2189,124 @@ const ItemDetail = () => {
 
 					{seasons.isSuccess && (
 						<Box sx={{ mb: 2 }}>
-							<Tabs
-								variant="scrollable"
-								scrollButtons="auto"
-								value={currentSeason}
-								onChange={(e, newVal) => {
-									setCurrentSeason(newVal);
-								}}
-								sx={{
-									borderBottom: 1,
-									borderColor: "divider",
-									mb: 2,
-								}}
-								selectionFollowsFocus
+							<Stack
+								alignItems="center"
+								direction="row"
+								justifyContent="space-between"
+								mb={1}
 							>
-								{seasons.data.Items.map(
-									(season, index) => {
-										return (
-											<Tab
-												label={season.Name}
-												{...a11yProps(
-													index,
-												)}
-												key={index}
-											/>
+								<Typography variant="h5">
+									Episodes
+								</Typography>
+								<TextField
+									value={currentSeason}
+									select
+									onChange={(e, newVal) => {
+										setCurrentSeason(
+											e.target.value,
 										);
-									},
+									}}
+									size="small"
+								>
+									{seasons.data.Items.map(
+										(season, index) => {
+											return (
+												<MenuItem
+													key={index}
+													value={index}
+												>
+													{season.Name}
+												</MenuItem>
+											);
+										},
+									)}
+								</TextField>
+							</Stack>
+
+							<Grid2
+								container
+								columns={{
+									xs: 2,
+									sm: 3,
+									md: 4,
+								}}
+							>
+								{episodes.isLoading ? (
+									<EpisodeCardsSkeleton />
+								) : (
+									episodes.data.Items.map(
+										(mitem, mindex) => {
+											return (
+												<Grid2
+													key={mindex}
+													xs={1}
+													sm={1}
+													md={1}
+												>
+													<EpisodeCard
+														itemId={
+															mitem.Id
+														}
+														itemName={`${mitem.IndexNumber}. ${mitem.Name}`}
+														imageTags={
+															!!mitem
+																.ImageTags
+																.Primary
+														}
+														subText={
+															mitem.Overview
+														}
+														playedPercent={
+															mitem
+																.UserData
+																.PlayedPercentage
+														}
+														watchedStatus={
+															mitem
+																.UserData
+																.Played
+														}
+														favourite={
+															mitem
+																.UserData
+																.IsFavorite
+														}
+														blurhash={
+															mitem.ImageBlurHashes ==
+															{}
+																? ""
+																: !!mitem
+																		.ImageTags
+																		.Primary
+																? !!mitem
+																		.ImageBlurHashes
+																		.Primary
+																	? mitem
+																			.ImageBlurHashes
+																			.Primary[
+																			mitem
+																				.ImageTags
+																				.Primary
+																	  ]
+																	: ""
+																: ""
+														}
+														currentUser={
+															user.data
+														}
+														itemTicks={
+															mitem.RunTimeTicks
+														}
+														itemRating={
+															mitem.CommunityRating
+														}
+													/>
+												</Grid2>
+											);
+										},
+									)
 								)}
-							</Tabs>
-							{seasons.data.Items.map((season, index) => {
-								return (
-									<TabPanel
-										value={currentSeason}
-										index={index}
-										key={index}
-									>
-										<Grid2
-											container
-											columns={{
-												xs: 2,
-												sm: 3,
-												md: 4,
-											}}
-										>
-											{episodes.isLoading ? (
-												<EpisodeCardsSkeleton />
-											) : (
-												episodes.data.Items.map(
-													(
-														mitem,
-														mindex,
-													) => {
-														return (
-															<Grid2
-																key={
-																	mindex
-																}
-																xs={
-																	1
-																}
-																sm={
-																	1
-																}
-																md={
-																	1
-																}
-															>
-																<EpisodeCard
-																	itemId={
-																		mitem.Id
-																	}
-																	itemName={`${mitem.IndexNumber}. ${mitem.Name}`}
-																	imageTags={
-																		!!mitem
-																			.ImageTags
-																			.Primary
-																	}
-																	subText={
-																		mitem.Overview
-																	}
-																	playedPercent={
-																		mitem
-																			.UserData
-																			.PlayedPercentage
-																	}
-																	watchedStatus={
-																		mitem
-																			.UserData
-																			.Played
-																	}
-																	favourite={
-																		mitem
-																			.UserData
-																			.IsFavorite
-																	}
-																	blurhash={
-																		mitem.ImageBlurHashes ==
-																		{}
-																			? ""
-																			: !!mitem
-																					.ImageTags
-																					.Primary
-																			? !!mitem
-																					.ImageBlurHashes
-																					.Primary
-																				? mitem
-																						.ImageBlurHashes
-																						.Primary[
-																						mitem
-																							.ImageTags
-																							.Primary
-																				  ]
-																				: ""
-																			: ""
-																	}
-																	currentUser={
-																		user.data
-																	}
-																	itemTicks={
-																		mitem.RunTimeTicks
-																	}
-																	itemRating={
-																		mitem.CommunityRating
-																	}
-																/>
-															</Grid2>
-														);
-													},
-												)
-											)}
-										</Grid2>
-									</TabPanel>
-								);
-							})}
+							</Grid2>
 						</Box>
 					)}
 
@@ -2333,7 +2320,7 @@ const ItemDetail = () => {
 							title="Cast"
 							disableDecoration
 							boxProps={{
-								mt: 5,
+								mt: 2,
 							}}
 						>
 							{item.data.People.map((person, index) => {

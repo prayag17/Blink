@@ -248,7 +248,7 @@ export const SideMenu = ({}) => {
 													"center",
 											}}
 										>
-											<MdiHomeVariantOutline></MdiHomeVariantOutline>
+											<MdiHomeVariantOutline />
 										</ListItemIcon>
 									</ListItemButton>
 								</ListItem>
