@@ -290,8 +290,9 @@ export const Card = ({
 								iconType,
 							) && (
 								<IconButton
-									onClick={(e) => {
+									onMouseDown={(e) => {
 										e.stopPropagation();
+										e.preventDefault();
 										handleMarkAsPlayOrUnMarkAsPlay();
 									}}
 								>
@@ -306,8 +307,9 @@ export const Card = ({
 							)}
 							{allowedLikeButton.includes(iconType) && (
 								<IconButton
-									onClick={(e) => {
+									onMouseDown={(e) => {
 										e.stopPropagation();
+										e.preventDefault();
 										handleLiking();
 									}}
 								>

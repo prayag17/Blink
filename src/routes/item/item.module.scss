@@ -23,13 +23,13 @@
 		&-backdrop {
 			position: absolute;
 			width: 100vw;
-			height: 135%;
+			height: 80vh;
 			top: -88px;
 			width: 100vw;
 			right: 0;
 			left: -24px;
 			z-index: -2;
-			filter: brightness(0.7);
+			filter: brightness(0.6);
 			mask-image: linear-gradient(0deg, transparent, black 75%);
 			-webkit-mask-image: linear-gradient(
 				0deg,

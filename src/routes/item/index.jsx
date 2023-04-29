@@ -2195,6 +2195,11 @@ const ItemDetail = () => {
 								direction="row"
 								justifyContent="space-between"
 								mb={1}
+								sx={{
+									paddingBottom: 1,
+									borderBottom: 1,
+									borderColor: "divider",
+								}}
 							>
 								<Typography variant="h5">
 									Episodes

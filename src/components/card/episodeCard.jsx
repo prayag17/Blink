@@ -203,8 +203,9 @@ export const EpisodeCard = ({
 					>
 						<ButtonGroup>
 							<IconButton
-								onClick={(e) => {
+								onMouseDown={(e) => {
 									e.stopPropagation();
+									e.preventDefault();
 									handleMarkAsPlayOrUnMarkAsPlay();
 								}}
 							>
@@ -217,8 +218,9 @@ export const EpisodeCard = ({
 								/>
 							</IconButton>
 							<IconButton
-								onClick={(e) => {
+								onMouseDown={(e) => {
 									e.stopPropagation();
+									e.preventDefault();
 									handleLiking();
 								}}
 							>
