@@ -1,6 +1,6 @@
 /** @format */
 import { useState, useEffect } from "react";
-import { useDispatch, useSelector } from "react-redux";
+import { motion } from "framer-motion";
 import { useParams, useNavigate, Link } from "react-router-dom";
 
 import { useQuery } from "@tanstack/react-query";
@@ -931,10 +931,24 @@ const LibraryView = () => {
 						{items.data.Items.map((item, index) => {
 							return (
 								<Grid2
+									component={motion.div}
 									key={item.Id}
 									xs={1}
 									sm={1}
 									md={1}
+									initial={{
+										scale: 0.8,
+										opacity: 0,
+									}}
+									animate={{
+										scale: 1,
+										opacity: 1,
+									}}
+									transition={{
+										duration: 0.25,
+										ease: "easeInOut",
+										delay: 0.02 * index,
+									}}
 								>
 									<Card
 										itemName={item.Name}
@@ -1004,6 +1018,7 @@ const LibraryView = () => {
 								{items.data.Items.map((item, index) => {
 									return (
 										<TableRow
+											component={motion.div}
 											key={index}
 											sx={{
 												"& td,& th": {
@@ -1016,6 +1031,19 @@ const LibraryView = () => {
 													background:
 														"rgb(255 255 255 / 0.05)",
 												},
+											}}
+											initial={{
+												scale: 0.8,
+												opacity: 0,
+											}}
+											animate={{
+												scale: 1,
+												opacity: 1,
+											}}
+											transition={{
+												duration: 0.25,
+												ease: "easeInOut",
+												delay: 0.02 * index,
 											}}
 										>
 											<TableCell width="4.5em">

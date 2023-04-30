@@ -90,12 +90,15 @@ event.on("set-api-accessToken", (serverAddress) => {
 
 const anim = {
 	initial: {
+		transform: "scale(0.99)",
 		opacity: 0,
 	},
 	animate: {
+		transform: "scale(1)",
 		opacity: 1,
 	},
 	exit: {
+		transform: "scale(0.99)",
 		opacity: 0,
 	},
 };

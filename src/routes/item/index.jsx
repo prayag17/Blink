@@ -26,7 +26,7 @@ import MenuItem from "@mui/material/MenuItem";
 import Link from "@mui/material/Link";
 import { green, pink, yellow } from "@mui/material/colors";
 
-import { AnimatePresence, motion } from "framer-motion";
+import { motion } from "framer-motion";
 
 import { Blurhash } from "react-blurhash";
 import { useDispatch, useSelector } from "react-redux";
@@ -2243,10 +2243,28 @@ const ItemDetail = () => {
 										(mitem, mindex) => {
 											return (
 												<Grid2
-													key={mindex}
+													component={
+														motion.div
+													}
+													key={mitem.Id}
 													xs={1}
 													sm={1}
 													md={1}
+													initial={{
+														y: 30,
+														opacity: 0,
+													}}
+													animate={{
+														y: 0,
+														opacity: 1,
+													}}
+													transition={{
+														duration: 0.45,
+														ease: "easeInOut",
+														delay:
+															mindex *
+															0.05,
+													}}
 												>
 													<EpisodeCard
 														itemId={
