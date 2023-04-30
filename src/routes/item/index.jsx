@@ -125,7 +125,7 @@ const ItemDetail = () => {
 	});
 
 	const similarItems = useQuery({
-		queryKey: ["item", "similarItem", id],
+		queryKey: ["item", id, "similarItem"],
 		queryFn: async () => {
 			let result;
 			if (item.data.Type == "Movie") {
@@ -162,7 +162,7 @@ const ItemDetail = () => {
 	});
 
 	const seasons = useQuery({
-		queryKey: ["item", "seasons", id],
+		queryKey: ["item", id, "seasons"],
 		queryFn: async () => {
 			const result = await getTvShowsApi(window.api).getSeasons({
 				seriesId: item.data.Id,
@@ -192,7 +192,7 @@ const ItemDetail = () => {
 
 	const [currentSeason, setCurrentSeason] = useState(0);
 	const episodes = useQuery({
-		queryKey: ["item", "episode", `season ${currentSeason + 1}`],
+		queryKey: ["item", id, `season ${currentSeason + 1}`, "episodes"],
 		queryFn: async () => {
 			const result = await getItemsApi(window.api).getItems({
 				userId: user.data.Id,
@@ -204,8 +204,6 @@ const ItemDetail = () => {
 		enabled: seasons.isSuccess,
 		networkMode: "always",
 		refetchOnWindowFocus: true,
-		keepPreviousData: false,
-		cacheTime: 0,
 	});
 
 	const personMovies = useQuery({
@@ -301,18 +299,6 @@ const ItemDetail = () => {
 		enabled: item.isSuccess && item.data.Type == BaseItemKind.MusicAlbum,
 		networkMode: "always",
 	});
-
-	// const videoStreams = useQuery({
-	// 	queryKey: ["item", id, "videoTracks"],
-	// 	queryFn: async () => {
-	// 		const result = await getVideosApi(window.api).getVideoStream({
-	// 			itemId: item.data.Id,
-	// 		});
-	// 		return result.data;
-	// 	},
-	// 	enabled: item.isSuccess,
-	// 	networkMode: "always",
-	// });
 
 	const handleMarkPlayedOrunPlayed = async () => {
 		let result;
