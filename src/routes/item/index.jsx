@@ -1563,6 +1563,24 @@ const ItemDetail = () => {
 																	md={
 																		1
 																	}
+																	component={
+																		motion.div
+																	}
+																	initial={{
+																		y: 30,
+																		opacity: 0,
+																	}}
+																	animate={{
+																		y: 0,
+																		opacity: 1,
+																	}}
+																	transition={{
+																		duration: 0.35,
+																		ease: "easeInOut",
+																		delay:
+																			mindex *
+																			0.05,
+																	}}
 																>
 																	<Card
 																		itemName={
@@ -1677,6 +1695,24 @@ const ItemDetail = () => {
 																	md={
 																		1
 																	}
+																	component={
+																		motion.div
+																	}
+																	initial={{
+																		y: 30,
+																		opacity: 0,
+																	}}
+																	animate={{
+																		y: 0,
+																		opacity: 1,
+																	}}
+																	transition={{
+																		duration: 0.35,
+																		ease: "easeInOut",
+																		delay:
+																			mindex *
+																			0.05,
+																	}}
 																>
 																	<Card
 																		itemName={
@@ -1791,6 +1827,24 @@ const ItemDetail = () => {
 																	md={
 																		1
 																	}
+																	component={
+																		motion.div
+																	}
+																	initial={{
+																		y: 30,
+																		opacity: 0,
+																	}}
+																	animate={{
+																		y: 0,
+																		opacity: 1,
+																	}}
+																	transition={{
+																		duration: 0.35,
+																		ease: "easeInOut",
+																		delay:
+																			mindex *
+																			0.05,
+																	}}
 																>
 																	<Card
 																		itemName={
@@ -1905,6 +1959,24 @@ const ItemDetail = () => {
 																	md={
 																		1
 																	}
+																	component={
+																		motion.div
+																	}
+																	initial={{
+																		y: 30,
+																		opacity: 0,
+																	}}
+																	animate={{
+																		y: 0,
+																		opacity: 1,
+																	}}
+																	transition={{
+																		duration: 0.35,
+																		ease: "easeInOut",
+																		delay:
+																			mindex *
+																			0.05,
+																	}}
 																>
 																	<Card
 																		itemName={
@@ -2019,6 +2091,24 @@ const ItemDetail = () => {
 																	md={
 																		1
 																	}
+																	component={
+																		motion.div
+																	}
+																	initial={{
+																		y: 30,
+																		opacity: 0,
+																	}}
+																	animate={{
+																		y: 0,
+																		opacity: 1,
+																	}}
+																	transition={{
+																		duration: 0.35,
+																		ease: "easeInOut",
+																		delay:
+																			mindex *
+																			0.05,
+																	}}
 																>
 																	<EpisodeCard
 																		itemId={
@@ -2243,13 +2333,13 @@ const ItemDetail = () => {
 										(mitem, mindex) => {
 											return (
 												<Grid2
-													component={
-														motion.div
-													}
 													key={mitem.Id}
 													xs={1}
 													sm={1}
 													md={1}
+													component={
+														motion.div
+													}
 													initial={{
 														y: 30,
 														opacity: 0,
@@ -2259,7 +2349,7 @@ const ItemDetail = () => {
 														opacity: 1,
 													}}
 													transition={{
-														duration: 0.45,
+														duration: 0.35,
 														ease: "easeInOut",
 														delay:
 															mindex *

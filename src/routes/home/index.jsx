@@ -47,6 +47,7 @@ import { getTvShowsApi } from "@jellyfin/sdk/lib/utils/api/tv-shows-api";
 import { useNavigate } from "react-router-dom";
 
 import { endsAt, getRuntime } from "../../utils/date/time";
+import { BaseItemKind, ItemFields } from "@jellyfin/sdk/lib/generated-client";
 
 const Home = () => {
 	const authUser = useQuery({
@@ -94,7 +95,7 @@ const Home = () => {
 			const media = await getUserLibraryApi(window.api).getLatestMedia(
 				{
 					userId: user.data.Id,
-					fields: "Overview",
+					fields: [ItemFields.Overview, ItemFields.ParentId],
 					enableUserData: true,
 				},
 			);
@@ -252,8 +253,42 @@ const Home = () => {
 									key={index}
 								>
 									<div className="hero-carousel-background-container">
-										{item.ImageBlurHashes
-											.Backdrop ? (
+										{item.Type ==
+										BaseItemKind.MusicAlbum ? (
+											item
+												.ParentBackdropImageTags
+												.length != 0 && (
+												<>
+													<Blurhash
+														hash={
+															item
+																.ImageBlurHashes
+																.Backdrop[
+																item
+																	.ParentBackdropImageTags[0]
+															]
+														}
+														// hash="LEHV6nWB2yk8pyo0adR*.7kCMdnj"
+														width="1080"
+														height="720"
+														resolutionX={
+															64
+														}
+														resolutionY={
+															96
+														}
+														className="hero-carousel-background-blurhash"
+													/>
+													<div
+														className="hero-carousel-background-image"
+														style={{
+															backgroundImage: `url(${window.api.basePath}/Items/${item.ParentBackdropItemId}/Images/Backdrop)`,
+														}}
+													></div>
+												</>
+											)
+										) : item.ImageBlurHashes
+												.Backdrop ? (
 											<>
 												<Blurhash
 													hash={

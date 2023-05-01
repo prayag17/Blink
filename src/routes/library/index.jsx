@@ -930,11 +930,11 @@ const LibraryView = () => {
 						{items.data.Items.map((item, index) => {
 							return (
 								<Grid2
-									component={motion.div}
 									key={item.Id}
 									xs={1}
 									sm={1}
 									md={1}
+									component={motion.div}
 									initial={{
 										scale: 0.8,
 										opacity: 0,
@@ -1005,6 +1005,9 @@ const LibraryView = () => {
 												: ""
 										}
 										currentUser={user.data}
+										favourite={
+											item.UserData.IsFavorite
+										}
 									></Card>
 								</Grid2>
 							);

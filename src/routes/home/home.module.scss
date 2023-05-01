@@ -84,7 +84,7 @@
 		-webkit-line-clamp: 2;
 		margin-bottom: 0.5em;
 		&-logo {
-			max-width: 6em;
+			max-width: 10em;
 			height: 2em;
 			object-fit: contain;
 			object-position: bottom;
@@ -96,7 +96,7 @@
 		display: flex;
 		height: 70vh;
 		width: 70%;
-		padding: 0 2em 2em 2em;
+		padding: 2em;
 		flex-direction: column;
 		justify-content: center;
 		align-items: flex-start;
