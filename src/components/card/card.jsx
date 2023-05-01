@@ -92,8 +92,6 @@ export const Card = ({
 		"BoxSet",
 		"CollectionFolder",
 		"Movie",
-		"MusicAlbum",
-		"MusicVideo",
 		"Season",
 		"Series",
 		"Video",
@@ -140,6 +138,7 @@ export const Card = ({
 						? onClickEvent
 						: () => {
 								navigate(`/item/${itemId}`);
+								console.log("going...");
 						  }
 				}
 				className="cardBox"
@@ -290,11 +289,12 @@ export const Card = ({
 								iconType,
 							) && (
 								<IconButton
-									onMouseDown={(e) => {
-										e.stopPropagation();
+									onClick={(e) => {
 										e.preventDefault();
+										e.stopPropagation();
 										handleMarkAsPlayOrUnMarkAsPlay();
 									}}
+									onFocus={(e) => e.stopPropagation}
 								>
 									<MdiCheck
 										sx={{
@@ -307,11 +307,12 @@ export const Card = ({
 							)}
 							{allowedLikeButton.includes(iconType) && (
 								<IconButton
-									onMouseDown={(e) => {
-										e.stopPropagation();
+									onClick={(e) => {
 										e.preventDefault();
+										e.stopPropagation();
 										handleLiking();
 									}}
+									onFocus={(e) => e.stopPropagation}
 								>
 									{isFavorite ? (
 										<MdiHeart

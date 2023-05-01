@@ -396,7 +396,6 @@ const LibraryView = () => {
 	useEffect(() => {
 		if (viewType.length != 0) {
 			setCurrentViewType(viewType[0].value);
-			console.log(viewType);
 		}
 	}, [viewType]);
 
