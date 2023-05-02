@@ -3,6 +3,7 @@
 # 📝 Prerequisites:
 - Nodejs (≥19.1.0)
 - Rust (≥1.66.1)
+- Visual Studio C++ Build tools
 
 # ℹ️ Getting started:
 - Install Nodejs and Rust.
