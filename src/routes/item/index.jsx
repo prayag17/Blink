@@ -26,7 +26,7 @@ import MenuItem from "@mui/material/MenuItem";
 import Link from "@mui/material/Link";
 import { green, pink, yellow } from "@mui/material/colors";
 
-import { motion } from "framer-motion";
+import { motion, useScroll } from "framer-motion";
 
 import { Blurhash } from "react-blurhash";
 import { useDispatch, useSelector } from "react-redux";
@@ -36,6 +36,7 @@ import {
 	BaseItemKind,
 	ItemFields,
 	MediaStreamType,
+	SortOrder,
 } from "@jellyfin/sdk/lib/generated-client";
 import { getUserApi } from "@jellyfin/sdk/lib/utils/api/user-api";
 import { getUserLibraryApi } from "@jellyfin/sdk/lib/utils/api/user-library-api";
@@ -64,6 +65,7 @@ import { CardScroller } from "../../components/cardScroller/cardScroller";
 import "./item.module.scss";
 import { EpisodeCardsSkeleton } from "../../components/skeleton/episodeCards";
 import { ErrorNotice } from "../../components/notices/errorNotice/errorNotice";
+import { ArtistAlbum } from "../../components/layouts/artist/artistAlbum";
 function TabPanel(props) {
 	const { children, value, index, ...other } = props;
 
@@ -300,6 +302,22 @@ const ItemDetail = () => {
 		networkMode: "always",
 	});
 
+	const artistDiscography = useQuery({
+		queryKey: ["item", id, "artist", "discography"],
+		queryFn: async () => {
+			const result = await getItemsApi(window.api).getItems({
+				albumArtistIds: [item.data.Id],
+				sortBy: ["PremiereDate", "ProductionYear", "SortName"],
+				sortOrder: [SortOrder.Descending],
+				recursive: true,
+				includeItemTypes: [BaseItemKind.MusicAlbum],
+				userId: user.data.Id,
+			});
+			return result.data;
+		},
+		enabled: item.isSuccess && item.data.Type == BaseItemKind.MusicArtist,
+	});
+
 	const handleMarkPlayedOrunPlayed = async () => {
 		let result;
 		if (!item.data.UserData.Played) {
@@ -378,6 +396,9 @@ const ItemDetail = () => {
 		personPhotos.isLoading,
 		personEpisodes.isLoading,
 	]);
+
+	const artistTabs = ["Discography"];
+	const [activeArtistTab, setActiveArtistTab] = useState(0);
 
 	const [videoTracks, setVideoTracks] = useState([]);
 	const [audioTracks, setAudioTracks] = useState([]);
@@ -707,6 +728,9 @@ const ItemDetail = () => {
 																opacity: 0.7,
 															}}
 															color="inherit"
+															key={
+																aindex
+															}
 															to={`/item/${artist.Id}`}
 														>
 															{
@@ -2422,6 +2446,60 @@ const ItemDetail = () => {
 							</Grid2>
 						</Box>
 					)}
+
+					{item.data.Type == BaseItemKind.MusicArtist &&
+						artistDiscography.isSuccess && (
+							<Box>
+								<Tabs
+									value={activeArtistTab}
+									onChange={(e, newVal) =>
+										setActiveArtistTab(newVal)
+									}
+									aria-label="artists-tabs"
+								>
+									{artistTabs.map((pitem, index) => {
+										return (
+											<Tab
+												label={pitem}
+												{...a11yProps(
+													index,
+												)}
+												key={index}
+											/>
+										);
+									})}
+								</Tabs>
+								{artistTabs.map((pitem, index) => {
+									return (
+										<TabPanel
+											value={activeArtistTab}
+											index={index}
+											key={index}
+										>
+											{pitem ==
+												"Discography" &&
+												artistDiscography.data.Items.map(
+													(album) => {
+														return (
+															<ArtistAlbum
+																key={
+																	album.Id
+																}
+																user={
+																	user.data
+																}
+																album={
+																	album
+																}
+															/>
+														);
+													},
+												)}
+										</TabPanel>
+									);
+								})}
+							</Box>
+						)}
 
 					{item.data.People.length != 0 && (
 						<CardScroller
