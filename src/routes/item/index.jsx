@@ -312,6 +312,7 @@ const ItemDetail = () => {
 				recursive: true,
 				includeItemTypes: [BaseItemKind.MusicAlbum],
 				userId: user.data.Id,
+				fields: [ItemFields.Overview],
 			});
 			return result.data;
 		},
@@ -2456,6 +2457,10 @@ const ItemDetail = () => {
 										setActiveArtistTab(newVal)
 									}
 									aria-label="artists-tabs"
+									sx={{
+										borderBottom: 1,
+										borderColor: "divider",
+									}}
 								>
 									{artistTabs.map((pitem, index) => {
 										return (

@@ -1,0 +1,11 @@
+/** @format */
+
+.album {
+	&-image-icon {
+		fill: url(#clr-gradient-default) !important;
+
+		&-container {
+			background: $clr-gradient-dark;
+		}
+	}
+}
