@@ -278,6 +278,7 @@ const Home = () => {
 															96
 														}
 														className="hero-carousel-background-blurhash"
+														punch={1}
 													/>
 													<div
 														className="hero-carousel-background-image"

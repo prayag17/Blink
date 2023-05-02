@@ -48,15 +48,15 @@
 			opacity: 1;
 			mask-image: linear-gradient(
 				to right,
-				transparent 10%,
-				rgba(0, 0, 0, 0.5) 50%,
-				black 90%
+				transparent 2%,
+				rgba(0, 0, 0, 0.5) 20%,
+				black 70%
 			);
 			-webkit-mask-image: linear-gradient(
 				to right,
-				transparent 10%,
-				rgba(0, 0, 0, 0.5) 50%,
-				black 90%
+				transparent 2%,
+				rgba(0, 0, 0, 0.5) 20%,
+				black 70%
 			);
 		}
 		&-icon {
