@@ -955,7 +955,13 @@ const LibraryView = () => {
 										imageTags={
 											!!item.ImageTags.Primary
 										}
-										subText={item.ProductionYear}
+										subText={
+											item.Type.includes(
+												"Music",
+											)
+												? item.AlbumArtist
+												: item.ProductionYear
+										}
 										iconType={item.Type}
 										playedPercent={
 											!!item.UserData

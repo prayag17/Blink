@@ -2460,6 +2460,7 @@ const ItemDetail = () => {
 									sx={{
 										borderBottom: 1,
 										borderColor: "divider",
+										mb: 5,
 									}}
 								>
 									{artistTabs.map((pitem, index) => {
@@ -2484,7 +2485,10 @@ const ItemDetail = () => {
 											{pitem ==
 												"Discography" &&
 												artistDiscography.data.Items.map(
-													(album) => {
+													(
+														album,
+														mindex,
+													) => {
 														return (
 															<ArtistAlbum
 																key={
@@ -2496,6 +2500,26 @@ const ItemDetail = () => {
 																album={
 																	album
 																}
+																boxProps={{
+																	component:
+																		motion.div,
+																	initial: {
+																		y: 30,
+																		opacity: 0,
+																	},
+																	animate: {
+																		y: 0,
+																		opacity: 1,
+																	},
+																	transition:
+																		{
+																			duration: 0.35,
+																			ease: "easeInOut",
+																			delay:
+																				mindex *
+																				0.05,
+																		},
+																}}
 															/>
 														);
 													},

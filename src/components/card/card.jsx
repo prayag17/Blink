@@ -14,6 +14,10 @@ import LinearProgress from "@mui/material/LinearProgress";
 import Chip from "@mui/material/Chip";
 import ButtonGroup from "@mui/material/ButtonGroup";
 import IconButton from "@mui/material/IconButton";
+import MuiLink from "@mui/material/Link";
+
+import { Link } from "react-router-dom";
+
 import { Blurhash } from "react-blurhash";
 import { green, pink } from "@mui/material/colors";
 
@@ -347,9 +351,10 @@ export const Card = ({
 					>
 						{itemName}
 					</Typography>
+
 					<Typography
 						gutterBottom
-						variant="subtitle2"
+						variant="subtitle1"
 						component="div"
 						textAlign="left"
 						width="fit-content"

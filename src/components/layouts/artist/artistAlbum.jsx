@@ -27,7 +27,7 @@ import { MdiAlbum } from "../../icons/mdiAlbum";
 
 import "./albumArtist.scss";
 
-export const ArtistAlbum = ({ user, album }) => {
+export const ArtistAlbum = ({ user, album, boxProps }) => {
 	const albumTracks = useQuery({
 		queryKey: ["artist", "album", album.Id],
 		queryFn: async () => {
@@ -58,7 +58,7 @@ export const ArtistAlbum = ({ user, album }) => {
 	const [imgLoaded, setImgLoaded] = useState(false);
 
 	return (
-		<Box>
+		<Box sx={{ mb: 6 }} {...boxProps}>
 			<Stack direction="row" gap={3} mb={3}>
 				{!!album.ImageTags?.Primary && (
 					<Box
@@ -108,7 +108,10 @@ export const ArtistAlbum = ({ user, album }) => {
 					</Box>
 				)}
 				<Stack>
-					<Typography variant="h5" sx={{ opacity: `0.7` }}>
+					<Typography
+						variant="h5"
+						sx={{ opacity: `0.7`, mb: 1 }}
+					>
 						{album.ProductionYear}
 					</Typography>
 					<MuiLink
