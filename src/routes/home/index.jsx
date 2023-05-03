@@ -254,7 +254,9 @@ const Home = () => {
 								>
 									<div className="hero-carousel-background-container">
 										{item.Type ==
-										BaseItemKind.MusicAlbum ? (
+											BaseItemKind.MusicAlbum ||
+										item.Type ==
+											BaseItemKind.Episode ? (
 											item
 												.ParentBackdropImageTags
 												.length != 0 && (
@@ -291,26 +293,32 @@ const Home = () => {
 										) : item.ImageBlurHashes
 												.Backdrop ? (
 											<>
-												<Blurhash
-													hash={
-														item
-															.ImageBlurHashes
-															.Backdrop[
+												{item
+													.BackdropImageTags
+													.length !=
+													0 && (
+													<Blurhash
+														hash={
 															item
-																.BackdropImageTags[0]
-														]
-													}
-													// hash="LEHV6nWB2yk8pyo0adR*.7kCMdnj"
-													width="1080"
-													height="720"
-													resolutionX={
-														64
-													}
-													resolutionY={
-														96
-													}
-													className="hero-carousel-background-blurhash"
-												/>
+																.ImageBlurHashes
+																.Backdrop[
+																item
+																	.BackdropImageTags[0]
+															]
+														}
+														// hash="LEHV6nWB2yk8pyo0adR*.7kCMdnj"
+														width="1080"
+														height="720"
+														resolutionX={
+															64
+														}
+														resolutionY={
+															96
+														}
+														className="hero-carousel-background-blurhash"
+														punch={1}
+													/>
+												)}
 												<div
 													className="hero-carousel-background-image"
 													style={{

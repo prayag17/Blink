@@ -405,9 +405,9 @@ const ItemDetail = () => {
 	const [audioTracks, setAudioTracks] = useState([]);
 	const [subtitleTracks, setSubtitleTracks] = useState([]);
 
-	const [currentVideoTrack, setCurrentVideoTrack] = useState();
-	const [currentAudioTrack, setCurrentAudioTrack] = useState();
-	const [currentSubTrack, setCurrentSubTrack] = useState();
+	const [currentVideoTrack, setCurrentVideoTrack] = useState("");
+	const [currentAudioTrack, setCurrentAudioTrack] = useState("");
+	const [currentSubTrack, setCurrentSubTrack] = useState("");
 
 	useEffect(() => {
 		if (item.isSuccess && !!item.data.MediaStreams) {

@@ -245,7 +245,10 @@ function App() {
 		});
 	};
 
-	const handleRelaunch = async () => {
+	const handleRelaunch = async (event, reason) => {
+		if (reason && reason == "backdropClick") {
+			return;
+		}
 		let result = await relaunch();
 	};
 
@@ -309,6 +312,7 @@ function App() {
 				<Dialog
 					open={!serverReachable}
 					onClose={handleRelaunch}
+					disableBa
 					aria-labelledby="alert-dialog-text"
 					aria-describedby="alert-dialog-desc"
 					maxWidth="md"

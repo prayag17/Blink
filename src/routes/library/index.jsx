@@ -469,8 +469,8 @@ const LibraryView = () => {
 					position="fixed"
 					elevation={trigger ? 1 : 0}
 					sx={{
-						width: `calc(100vw - ${theme.spacing(7)})`,
-						mt: 8,
+						width: `calc(100vw - ${theme.spacing(7)} - 10px)`,
+						top: `${8 * 8}px !important`,
 						backdropFilter: trigger ? `blur(30px)` : "none",
 						background: "transparent",
 						backgroundColor: trigger
@@ -987,9 +987,8 @@ const LibraryView = () => {
 												: false
 										}
 										watchedCount={
-											!!item.UserData &&
 											item.UserData
-												.UnplayedItemCount
+												?.UnplayedItemCount
 										}
 										blurhash={
 											item.ImageBlurHashes ==
@@ -1012,7 +1011,7 @@ const LibraryView = () => {
 										}
 										currentUser={user.data}
 										favourite={
-											item.UserData.IsFavorite
+											item.UserData?.IsFavorite
 										}
 									></Card>
 								</Grid2>
@@ -1026,7 +1025,7 @@ const LibraryView = () => {
 								{items.data.Items.map((item, index) => {
 									return (
 										<TableRow
-											component={motion.div}
+											component={motion.row}
 											key={index}
 											sx={{
 												"& td,& th": {
