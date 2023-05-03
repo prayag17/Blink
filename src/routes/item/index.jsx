@@ -66,6 +66,7 @@ import "./item.module.scss";
 import { EpisodeCardsSkeleton } from "../../components/skeleton/episodeCards";
 import { ErrorNotice } from "../../components/notices/errorNotice/errorNotice";
 import { ArtistAlbum } from "../../components/layouts/artist/artistAlbum";
+import { MdiMusic } from "../../components/icons/mdiMusic";
 function TabPanel(props) {
 	const { children, value, index, ...other } = props;
 
@@ -319,6 +320,23 @@ const ItemDetail = () => {
 		enabled: item.isSuccess && item.data.Type == BaseItemKind.MusicArtist,
 	});
 
+	const artistSongs = useQuery({
+		queryKey: ["item", id, "artist", "songs"],
+		queryFn: async () => {
+			const result = await getItemsApi(window.api).getItems({
+				artistIds: [item.data.Id],
+				sortBy: ["PremiereDate", "ProductionYear", "SortName"],
+				sortOrder: [SortOrder.Descending],
+				recursive: true,
+				includeItemTypes: [BaseItemKind.Audio],
+				userId: user.data.Id,
+				fields: [ItemFields.Overview],
+			});
+			return result.data;
+		},
+		enabled: item.isSuccess && item.data.Type == BaseItemKind.MusicArtist,
+	});
+
 	const handleMarkPlayedOrunPlayed = async () => {
 		let result;
 		if (!item.data.UserData.Played) {
@@ -398,7 +416,7 @@ const ItemDetail = () => {
 		personEpisodes.isLoading,
 	]);
 
-	const artistTabs = ["Discography"];
+	const artistTabs = ["Discography", "Songs"];
 	const [activeArtistTab, setActiveArtistTab] = useState(0);
 
 	const [videoTracks, setVideoTracks] = useState([]);
@@ -2449,7 +2467,8 @@ const ItemDetail = () => {
 					)}
 
 					{item.data.Type == BaseItemKind.MusicArtist &&
-						artistDiscography.isSuccess && (
+						artistDiscography.isSuccess &&
+						artistSongs.isSuccess && (
 							<Box>
 								<Tabs
 									value={activeArtistTab}
@@ -2460,7 +2479,7 @@ const ItemDetail = () => {
 									sx={{
 										borderBottom: 1,
 										borderColor: "divider",
-										mb: 5,
+										mb: 2,
 									}}
 								>
 									{artistTabs.map((pitem, index) => {
@@ -2486,19 +2505,19 @@ const ItemDetail = () => {
 												"Discography" &&
 												artistDiscography.data.Items.map(
 													(
-														album,
+														musicItem,
 														mindex,
 													) => {
 														return (
 															<ArtistAlbum
 																key={
-																	album.Id
+																	musicItem.Id
 																}
 																user={
 																	user.data
 																}
 																album={
-																	album
+																	musicItem
 																}
 																boxProps={{
 																	component:
@@ -2524,6 +2543,145 @@ const ItemDetail = () => {
 														);
 													},
 												)}
+											{pitem == "Songs" && (
+												<TableContainer>
+													<Table>
+														<TableBody>
+															{artistSongs.data.Items.map(
+																(
+																	music,
+																	mindex,
+																) => {
+																	return (
+																		<TableRow
+																			component={
+																				motion.row
+																			}
+																			key={
+																				mindex
+																			}
+																			sx={{
+																				"& td,& th":
+																					{
+																						borderBottom:
+																							"1px solid rgb(255 255 255 / 0.1)",
+																					},
+																				"&:last-child td, &:last-child th":
+																					{
+																						border: 0,
+																					},
+																				"&:hover":
+																					{
+																						background:
+																							"rgb(255 255 255 / 0.05)",
+																					},
+																			}}
+																			initial={{
+																				scale: 0.8,
+																				opacity: 0,
+																			}}
+																			animate={{
+																				scale: 1,
+																				opacity: 1,
+																			}}
+																			transition={{
+																				duration: 0.25,
+																				ease: "easeInOut",
+																				delay:
+																					0.02 *
+																					mindex,
+																			}}
+																		>
+																			<TableCell width="4.5em">
+																				<Box className="library-list-image-container">
+																					{!!music
+																						.ImageTags
+																						.Primary && (
+																						<img
+																							className="library-list-image"
+																							src={`${window.api.basePath}/Items/${music.Id}/Images/Primary?quality=80&tag=${music.ImageTags.Primary}`}
+																						/>
+																					)}
+																					<Box className="library-list-icon-container">
+																						<MdiMusic className="library-list-icon" />
+																					</Box>
+																				</Box>
+																			</TableCell>
+																			<TableCell>
+																				<Typography variant="h6">
+																					{
+																						music.Name
+																					}
+																				</Typography>
+																				<Stack
+																					direction="row"
+																					divider={
+																						<Typography
+																							variant="subtitle1"
+																							sx={{
+																								opacity: 0.7,
+																							}}
+																						>
+																							,
+																						</Typography>
+																					}
+																				>
+																					{music.Artists.map(
+																						(
+																							artist,
+																							aindex,
+																						) => {
+																							return (
+																								<Typography
+																									variant="subtitle1"
+																									sx={{
+																										opacity: 0.7,
+																									}}
+																									key={
+																										aindex
+																									}
+																								>
+																									{
+																										artist
+																									}
+																								</Typography>
+																							);
+																						},
+																					)}
+																				</Stack>
+																			</TableCell>
+																			<TableCell>
+																				<Typography variant="subtitle1">
+																					{getRuntimeMusic(
+																						music.RunTimeTicks,
+																					)}
+																				</Typography>
+																			</TableCell>
+																			<TableCell width="1em">
+																				<IconButton
+																					onClick={() => {
+																						handleLiking(
+																							music,
+																						);
+																					}}
+																				>
+																					{music
+																						.UserData
+																						.IsFavorite ? (
+																						<MdiHeart />
+																					) : (
+																						<MdiHeartOutline />
+																					)}
+																				</IconButton>
+																			</TableCell>
+																		</TableRow>
+																	);
+																},
+															)}
+														</TableBody>
+													</Table>
+												</TableContainer>
+											)}
 										</TabPanel>
 									);
 								})}

@@ -142,7 +142,6 @@ export const Card = ({
 						? onClickEvent
 						: () => {
 								navigate(`/item/${itemId}`);
-								console.log("going...");
 						  }
 				}
 				className="cardBox"
