@@ -26,10 +26,9 @@ import MenuItem from "@mui/material/MenuItem";
 import Link from "@mui/material/Link";
 import { green, pink, yellow } from "@mui/material/colors";
 
-import { motion, useScroll } from "framer-motion";
+import { motion } from "framer-motion";
 
 import { Blurhash } from "react-blurhash";
-import { useDispatch, useSelector } from "react-redux";
 import { useParams, useNavigate, Link as RouterLink } from "react-router-dom";
 
 import {
@@ -44,7 +43,6 @@ import { getLibraryApi } from "@jellyfin/sdk/lib/utils/api/library-api";
 import { getTvShowsApi } from "@jellyfin/sdk/lib/utils/api/tv-shows-api";
 import { getItemsApi } from "@jellyfin/sdk/lib/utils/api/items-api";
 import { getPlaystateApi } from "@jellyfin/sdk/lib/utils/api/playstate-api";
-import { getVideosApi } from "@jellyfin/sdk/lib/utils/api/videos-api";
 
 import { useQuery } from "@tanstack/react-query";
 
@@ -99,7 +97,6 @@ function a11yProps(index) {
 
 const ItemDetail = () => {
 	const { id } = useParams();
-	const dispatch = useDispatch();
 	const navigate = useNavigate();
 	const [primageImageLoaded, setPrimaryImageLoaded] = useState(false);
 	const [backdropImageLoaded, setBackdropImageLoaded] = useState(false);
@@ -318,6 +315,7 @@ const ItemDetail = () => {
 			return result.data;
 		},
 		enabled: item.isSuccess && item.data.Type == BaseItemKind.MusicArtist,
+		networkMode: "always",
 	});
 
 	const artistSongs = useQuery({
@@ -335,6 +333,25 @@ const ItemDetail = () => {
 			return result.data;
 		},
 		enabled: item.isSuccess && item.data.Type == BaseItemKind.MusicArtist,
+		networkMode: "always",
+	});
+
+	const artistAppearances = useQuery({
+		queryKey: ["item", id, "artist", "appearences"],
+		queryFn: async () => {
+			const result = await getItemsApi(window.api).getItems({
+				contributingArtistIds: [item.data.Id],
+				excludeItemIds: [item.data.Id],
+				sortBy: ["PremiereDate", "ProductionYear", "SortName"],
+				sortOrder: [SortOrder.Descending],
+				recursive: true,
+				includeItemTypes: [BaseItemKind.MusicAlbum],
+				userId: user.data.Id,
+			});
+			return result.data;
+		},
+		enabled: item.isSuccess && item.data.Type == BaseItemKind.MusicArtist,
+		networkMode: "always",
 	});
 
 	const handleMarkPlayedOrunPlayed = async () => {
@@ -416,8 +433,28 @@ const ItemDetail = () => {
 		personEpisodes.isLoading,
 	]);
 
-	const artistTabs = ["Discography", "Songs"];
+	const artistTabs = ["Discography", "Songs", "Appearances"];
 	const [activeArtistTab, setActiveArtistTab] = useState(0);
+
+	useEffect(() => {
+		if (
+			artistDiscography.isSuccess &&
+			artistSongs.isSuccess &&
+			artistAppearances.isSuccess
+		) {
+			if (artistDiscography.data.TotalRecordCount != 0) {
+				setActivePersonTab(0);
+			} else if (artistSongs.data.TotalRecordCount != 0) {
+				setActivePersonTab(1);
+			} else if (artistAppearances.data.TotalRecordCount != 0) {
+				setActivePersonTab(2);
+			}
+		}
+	}, [
+		artistDiscography.isLoading,
+		artistSongs.isLoading,
+		artistAppearances.isLoading,
+	]);
 
 	const [videoTracks, setVideoTracks] = useState([]);
 	const [audioTracks, setAudioTracks] = useState([]);
@@ -2393,7 +2430,6 @@ const ItemDetail = () => {
 													}}
 													transition={{
 														duration: 0.35,
-														ease: "easeInOut",
 														delay:
 															mindex *
 															0.05,
@@ -2468,7 +2504,8 @@ const ItemDetail = () => {
 
 					{item.data.Type == BaseItemKind.MusicArtist &&
 						artistDiscography.isSuccess &&
-						artistSongs.isSuccess && (
+						artistSongs.isSuccess &&
+						artistAppearances.isSuccess && (
 							<Box>
 								<Tabs
 									value={activeArtistTab}
@@ -2490,6 +2527,28 @@ const ItemDetail = () => {
 													index,
 												)}
 												key={index}
+												disabled={
+													(pitem ==
+														"Discography" &&
+														artistDiscography
+															.data
+															.TotalRecordCount ==
+															0) ||
+													(pitem ==
+														"Songs" &&
+														artistSongs
+															.data
+															.TotalRecordCount ==
+															0) ||
+													(pitem ==
+														"Appearances" &&
+														artistAppearances
+															.data
+															.TotalRecordCount ==
+															0)
+														? true
+														: false
+												}
 											/>
 										);
 									})}
@@ -2675,6 +2734,55 @@ const ItemDetail = () => {
 																				</IconButton>
 																			</TableCell>
 																		</TableRow>
+																	);
+																},
+															)}
+														</TableBody>
+													</Table>
+												</TableContainer>
+											)}
+											{pitem ==
+												"Appearances" && (
+												<TableContainer>
+													<Table>
+														<TableBody>
+															{artistAppearances.data.Items.map(
+																(
+																	musicItem,
+																	mindex,
+																) => {
+																	return (
+																		<ArtistAlbum
+																			key={
+																				musicItem.Id
+																			}
+																			user={
+																				user.data
+																			}
+																			album={
+																				musicItem
+																			}
+																			boxProps={{
+																				component:
+																					motion.div,
+																				initial: {
+																					y: 30,
+																					opacity: 0,
+																				},
+																				animate: {
+																					y: 0,
+																					opacity: 1,
+																				},
+																				transition:
+																					{
+																						duration: 0.35,
+																						ease: "easeInOut",
+																						delay:
+																							mindex *
+																							0.05,
+																					},
+																			}}
+																		/>
 																	);
 																},
 															)}

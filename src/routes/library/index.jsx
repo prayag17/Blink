@@ -30,7 +30,6 @@ import TableRow from "@mui/material/TableRow";
 import TableCell from "@mui/material/TableCell";
 import IconButton from "@mui/material/IconButton";
 import Pagination from "@mui/material/Pagination";
-import ButtonBase from "@mui/material/ButtonBase";
 
 import { theme } from "../../theme";
 
@@ -386,7 +385,8 @@ const LibraryView = () => {
 		queryFn: () => fetchLibItems(id),
 		enabled: currentLib.isSuccess,
 		networkMode: "always",
-		keepPreviousData: true,
+		keepPreviousData: false,
+		cacheTime: 0,
 	});
 
 	const handleCurrentViewType = (e) => {
@@ -1025,8 +1025,8 @@ const LibraryView = () => {
 								{items.data.Items.map((item, index) => {
 									return (
 										<TableRow
-											component={motion.row}
-											key={index}
+											component={motion.div}
+											key={item.Id}
 											sx={{
 												"& td,& th": {
 													borderBottom:

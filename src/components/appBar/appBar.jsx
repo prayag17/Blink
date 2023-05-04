@@ -15,11 +15,10 @@ import useScrollTrigger from "@mui/material/useScrollTrigger";
 import { MdiMagnify } from "../icons/mdiMagnify";
 import { theme } from "../../theme";
 
-import { useDispatch, useSelector } from "react-redux";
 import { useLocation, useNavigate } from "react-router-dom";
 
 import { getUserApi } from "@jellyfin/sdk/lib/utils/api/user-api";
-import { useQueryClient, useQuery } from "@tanstack/react-query";
+import { useQuery } from "@tanstack/react-query";
 
 import "./appBar.module.scss";
 import { MdiAccount } from "../icons/mdiAccount";
@@ -29,7 +28,6 @@ import { MdiCog } from "../icons/mdiCog";
 import { MdiInformation } from "../icons/mdiInformation";
 
 export const AppBar = () => {
-	const dispatch = useDispatch();
 	const navigate = useNavigate();
 
 	const [display, setDisplay] = useState(false);
@@ -64,7 +62,8 @@ export const AppBar = () => {
 	useEffect(() => {
 		if (
 			location.pathname.includes("login") ||
-			location.pathname.includes("setup")
+			location.pathname.includes("setup") ||
+			location.pathname === "/"
 		) {
 			setDisplay(false);
 		} else {
@@ -88,7 +87,6 @@ export const AppBar = () => {
 			<MuiAppBar
 				sx={{
 					width: `calc(100vw - ${theme.spacing(7)})`,
-					// mr: "10px",
 					backgroundColor: "transparent",
 				}}
 				className={trigger ? "appBar backdropVisible" : "appBar"}

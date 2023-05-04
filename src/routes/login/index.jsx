@@ -1,14 +1,10 @@
 /** @format */
 
-import { useState, useEffect, useMemo } from "react";
+import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { useNavigate, useParams, Link } from "react-router-dom";
 import { EventEmitter as event } from "../../eventEmitter.js";
 
-import { useDispatch } from "react-redux";
-import { showSidemenu } from "../../utils/slice/sidemenu.js";
-
-import { getServer } from "../../utils/storage/servers.js";
 import { saveUser } from "../../utils/storage/user.js";
 
 // import Icon from "mdi-material-ui";
@@ -26,8 +22,6 @@ import InputLabel from "@mui/material/InputLabel";
 import IconButton from "@mui/material/IconButton";
 import LoadingButton from "@mui/lab/LoadingButton";
 import Button from "@mui/material/Button";
-import Box from "@mui/material/Box";
-import CircularProgress from "@mui/material/CircularProgress";
 import LinearProgress from "@mui/material/LinearProgress";
 import { useSnackbar } from "notistack";
 import FormGroup from "@mui/material/FormGroup";
@@ -35,21 +29,16 @@ import FormControlLabel from "@mui/material/FormControlLabel";
 import Checkbox from "@mui/material/Checkbox";
 
 import { AvatarImage } from "../../components/avatar/avatar.jsx";
-import { CardScroller } from "../../components/cardScroller/cardScroller.jsx";
 import { Card } from "../../components/card/card.jsx";
 import { AppBarBackOnly } from "../../components/appBar/backOnly.jsx";
 
-// import { jellyfin } from "../../jellyfin";
-// import getSystemApi from "@jellyfin/sdk";
 import { getUserApi } from "@jellyfin/sdk/lib/utils/api/user-api";
 import { getBrandingApi } from "@jellyfin/sdk/lib/utils/api/branding-api";
 
 import "./login.module.scss";
-import { CardsSkeleton } from "../../components/skeleton/cards.jsx";
 import { ErrorNotice } from "../../components/notices/errorNotice/errorNotice.jsx";
 
 export const LoginWithImage = () => {
-	const dispatch = useDispatch();
 	const { userName, userId } = useParams();
 
 	const [password, setPassword] = useState({
@@ -99,7 +88,6 @@ export const LoginWithImage = () => {
 		}
 		event.emit("set-api-accessToken", window.api.basePath);
 		setLoading(false);
-		dispatch(showSidemenu());
 		navigate(`/home`);
 	};
 
@@ -159,7 +147,7 @@ export const LoginWithImage = () => {
 							{userName}
 						</Typography>
 					</Grid>
-					<Grid item minWidth="100%">
+					<Grid minWidth="100%">
 						<FormGroup>
 							<FormControl variant="outlined" fullWidth>
 								<InputLabel htmlFor="user-password">
@@ -208,7 +196,7 @@ export const LoginWithImage = () => {
 							/>
 						</FormGroup>
 					</Grid>
-					<Grid item minWidth="100%">
+					<Grid minWidth="100%">
 						<LoadingButton
 							variant="contained"
 							endIcon={<MdiChevronRight />}
@@ -241,9 +229,7 @@ export const UserLogin = () => {
 		queryKey: ["login", "users"],
 		queryFn: async () => {
 			const users = await getUserApi(window.api).getPublicUsers();
-			console.log(users.data);
 			return users.data;
-			// return {};
 		},
 		networkMode: "always",
 	});
@@ -345,7 +331,6 @@ export const UserLoginManual = () => {
 	const [loading, setLoading] = useState(false);
 	const [rememberMe, setRememberMe] = useState(true);
 
-	const dispatch = useDispatch();
 	const navigate = useNavigate();
 	const { enqueueSnackbar } = useSnackbar();
 
@@ -439,14 +424,15 @@ export const UserLoginManual = () => {
 					sx={{
 						opacity: server.isLoading ? 0 : 1,
 						transition: "opacity 200ms",
+						width: "100%",
 					}}
 				>
-					<Grid item xl={5} md={6} sx={{ marginBottom: "1em" }}>
+					<Grid sx={{ marginBottom: "1em" }}>
 						<Typography variant="h3" color="textPrimary">
 							Login
 						</Typography>
 					</Grid>
-					<Grid sx={{ width: "100%" }} item xl={5} md={6}>
+					<Grid sx={{ width: "100%" }}>
 						<FormControl
 							sx={{ width: "100%" }}
 							variant="outlined"
@@ -464,7 +450,7 @@ export const UserLoginManual = () => {
 							/>
 						</FormControl>
 					</Grid>
-					<Grid sx={{ width: "100%" }} item xl={5} md={6}>
+					<Grid sx={{ width: "100%" }}>
 						<FormGroup>
 							<FormControl
 								sx={{ width: "100%" }}
@@ -517,7 +503,7 @@ export const UserLoginManual = () => {
 							/>
 						</FormGroup>
 					</Grid>
-					<Grid item xl={5} md={6} sx={{ width: "100%" }}>
+					<Grid sx={{ width: "100%" }}>
 						<LoadingButton
 							variant="contained"
 							endIcon={<MdiChevronRight />}
@@ -530,7 +516,7 @@ export const UserLoginManual = () => {
 							Login
 						</LoadingButton>
 					</Grid>
-					<Grid item xl={15} md={6} sx={{ width: "100%" }}>
+					<Grid sx={{ width: "100%" }}>
 						<Typography variant="subtitle2">
 							{server.isSuccess &&
 								server.data.LoginDisclaimer}

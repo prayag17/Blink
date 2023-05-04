@@ -2,8 +2,7 @@
 import React, { useState } from "react";
 import PropTypes from "prop-types";
 
-import { useNavigate, Link } from "react-router-dom";
-// import Link from "@mui/material/Link";
+import { useNavigate } from "react-router-dom";
 
 import Divider from "@mui/material/Divider";
 import Stack from "@mui/material/Stack";
@@ -20,10 +19,7 @@ import IconButton from "@mui/material/IconButton";
 import { Blurhash } from "react-blurhash";
 import { green, pink } from "@mui/material/colors";
 
-import {
-	MediaCollectionTypeIconCollectionCard,
-	TypeIconCollectionCard,
-} from "../utils/iconsCollection";
+import { TypeIconCollectionCard } from "../utils/iconsCollection";
 
 import { borderRadiusDefault } from "../../palette.module.scss";
 import "./card.module.scss";

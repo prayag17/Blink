@@ -2,7 +2,7 @@
 import { useEffect, useState } from "react";
 import { delUser } from "../../utils/storage/user";
 
-import { useQueryClient, useQuery, QueryClient } from "@tanstack/react-query";
+import { useQuery } from "@tanstack/react-query";
 import { getUserViewsApi } from "@jellyfin/sdk/lib/utils/api/user-views-api";
 import { getUserApi } from "@jellyfin/sdk/lib/utils/api/user-api";
 
@@ -15,8 +15,6 @@ import Skeleton from "@mui/material/Skeleton";
 import Tooltip from "@mui/material/Tooltip";
 import List from "@mui/material/List";
 import ListItem from "@mui/material/ListItem";
-import Link from "@mui/material/Link";
-import ListItemText from "@mui/material/ListItemText";
 import ListItemIcon from "@mui/material/ListItemIcon";
 import ListItemButton from "@mui/material/ListItemButton";
 import IconButton from "@mui/material/IconButton";
@@ -28,10 +26,9 @@ import { MdiLogoutVariant } from "../icons/mdiLogoutVariant";
 
 import { MediaCollectionTypeIconCollection } from "../../components/utils/iconsCollection.jsx";
 
-import { useSelector, useDispatch } from "react-redux";
-import { hideSidemenu, setBackdrop } from "../../utils/slice/sidemenu";
-
 import { MdiHomeVariantOutline } from "../icons/mdiHomeVariantOutline";
+
+import { EventEmitter as event } from "../../eventEmitter.js";
 
 import "./sidemenu.module.scss";
 
@@ -42,7 +39,6 @@ const DrawerHeader = styled("div")(({ theme }) => ({
 	alignItems: "center",
 	justifyContent: "flex-end",
 	padding: theme.spacing(0, 1),
-	// necessary for content to be below app bar
 	...theme.mixins.toolbar,
 }));
 
@@ -54,7 +50,6 @@ const MiniDrawer = styled(MuiDrawer, {
 	boxSizing: "border-box",
 	backgroundColor: theme.palette.primary.background.dark,
 	overflowX: "hidden",
-	// width: `calc(${theme.spacing(7)} + 10px)`,
 }));
 
 export const SideMenu = ({}) => {
@@ -62,7 +57,6 @@ export const SideMenu = ({}) => {
 
 	const [display, setDisplay] = useState(false);
 
-	const backdrop = useSelector((state) => state.sidebar.backdrop);
 	const navigate = useNavigate();
 	const user = useQuery({
 		queryKey: ["user"],
@@ -70,7 +64,7 @@ export const SideMenu = ({}) => {
 			let usr = await getUserApi(window.api).getCurrentUser();
 			return usr.data;
 		},
-		enabled: !!window.api,
+		enabled: display,
 		networkMode: "always",
 	});
 	let libraries = useQuery({
@@ -85,7 +79,6 @@ export const SideMenu = ({}) => {
 		networkMode: "always",
 	});
 	const handleDrawerOpen = () => {};
-	const dispatch = useDispatch();
 
 	const handleLogout = async () => {
 		console.log("Logging out user...");
@@ -96,14 +89,11 @@ export const SideMenu = ({}) => {
 		navigate("/login");
 	};
 
-	const getCurrentLocation = () => {
-		return location.pathname.slice(0, location.pathname.lastIndexOf("/"));
-	};
-
 	useEffect(() => {
 		if (
 			location.pathname.includes("login") ||
-			location.pathname.includes("setup")
+			location.pathname.includes("setup") ||
+			location.pathname === "/"
 		) {
 			setDisplay(false);
 		} else {
@@ -131,9 +121,7 @@ export const SideMenu = ({}) => {
 				}}
 				sx={{
 					width: `calc(${theme.spacing(7)} + 10px)`,
-					background: backdrop
-						? theme.palette.background.paper
-						: "transparent",
+					background: theme.palette.background.paper,
 				}}
 			>
 				<DrawerHeader

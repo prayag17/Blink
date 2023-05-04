@@ -2,8 +2,6 @@
 import PropTypes from "prop-types";
 
 import Box from "@mui/material/Box";
-import Typography from "@mui/material/Typography";
-import ButtonBase from "@mui/material/ButtonBase";
 
 import { MdiAccount } from "../icons/mdiAccount";
 

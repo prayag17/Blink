@@ -2,7 +2,6 @@
 
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { v4 as uuidv4 } from "uuid";
 
 import { EventEmitter as event } from "../../../eventEmitter.js";
 import { setServer } from "../../../utils/storage/servers.js";
@@ -20,9 +19,6 @@ import Container from "@mui/material/Container";
 import { mdiChevronRight } from "@mdi/js";
 
 import { useSnackbar } from "notistack";
-
-// Svgs
-import { ReactComponent as JellyplayerLogo } from "../../../assets/logo.svg";
 
 // SCSS
 import "./server.module.scss";

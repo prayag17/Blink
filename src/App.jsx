@@ -23,7 +23,6 @@ import { relaunch } from "@tauri-apps/api/process";
 
 import { getUserApi } from "@jellyfin/sdk/lib/utils/api/user-api";
 
-import { useQuery } from "@tanstack/react-query";
 import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 
 // Theming
@@ -47,6 +46,7 @@ import Home from "./routes/home";
 import { UserLogin, LoginWithImage, UserLoginManual } from "./routes/login";
 import LibraryView from "./routes/library";
 import ItemDetail from "./routes/item";
+import FavouritePage from "./routes/favourite/index.jsx";
 import Settings from "./routes/settings";
 import About from "./routes/about";
 
@@ -63,9 +63,6 @@ import { v4 as uuidv4 } from "uuid";
 import { delServer, getServer } from "./utils/storage/servers.js";
 import { delUser, getUser } from "./utils/storage/user.js";
 
-import { useDispatch } from "react-redux";
-import { showSidemenu } from "./utils/slice/sidemenu.js";
-import FavouritePage from "./routes/favourite/index.jsx";
 const jellyfin = new Jellyfin({
 	clientInfo: {
 		name: "JellyPlayer",
@@ -123,15 +120,12 @@ const AnimationWrapper = () => {
 function App() {
 	const navigate = useNavigate();
 
-	const dispatch = useDispatch();
-
 	const [serverReachable, setServerReachable] = useState(true);
 	const [checkingServer, setChecking] = useState(false);
 
 	const createApi = async () => {
 		const server = await getServer();
 		event.emit("create-jellyfin-api", server.Ip);
-		dispatch(showSidemenu());
 	};
 
 	const serverAvailable = async () => {
@@ -183,6 +177,9 @@ function App() {
 				}
 			})
 			.catch((error) => {
+				enqueueSnackbar("Unable to reach server", {
+					variant: "error",
+				});
 				setServerReachable(false);
 				setChecking(false);
 			});
@@ -196,8 +193,6 @@ function App() {
 		);
 		sessionStorage.setItem("accessToken", auth.data.AccessToken);
 		event.emit("set-api-accessToken", window.api.basePath);
-
-		// navigate("/home");
 	};
 
 	const LogicalRoutes = () => {
@@ -347,7 +342,11 @@ function App() {
 							location={location}
 						>
 							<Route element={<AnimationWrapper />}>
-								{/* Main Routes */}
+								<Route
+									path="/"
+									element={<LogicalRoutes />}
+								/>
+
 								<Route
 									path="/home"
 									element={<Home />}
@@ -393,12 +392,6 @@ function App() {
 									element={<About />}
 								/>
 
-								{/* Logical Routes */}
-
-								<Route
-									path="/"
-									element={<LogicalRoutes />}
-								/>
 								<Route
 									path="/login"
 									element={<LoginLogicalRoutes />}

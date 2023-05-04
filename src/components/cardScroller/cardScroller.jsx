@@ -1,6 +1,6 @@
 /** @format */
 
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import PropTypes from "prop-types";
 
 import Carousel from "react-multi-carousel";
@@ -9,7 +9,6 @@ import "react-multi-carousel/lib/styles.css";
 import { MdiChevronLeft } from "../icons/mdiChevronLeft";
 import { MdiChevronRight } from "../icons/mdiChevronRight";
 
-import { styled } from "@mui/material/styles";
 import IconButton from "@mui/material/IconButton";
 import Box from "@mui/material/Box";
 import Typography from "@mui/material/Typography";

@@ -14,9 +14,6 @@ import LinearProgress from "@mui/material/LinearProgress";
 import Chip from "@mui/material/Chip";
 import ButtonGroup from "@mui/material/ButtonGroup";
 import IconButton from "@mui/material/IconButton";
-import MuiLink from "@mui/material/Link";
-
-import { Link } from "react-router-dom";
 
 import { Blurhash } from "react-blurhash";
 import { green, pink } from "@mui/material/colors";
