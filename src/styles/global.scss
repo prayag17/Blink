@@ -46,13 +46,9 @@ body {
 	height: fit-content;
 	width: 100%;
 	position: relative;
-	overflow-y: visible;
+	overflow-y: hidden;
 	overflow-x: hidden;
 	min-height: 100vh;
-	// display: flex;
-	// flex-direction: column;
-	// justify-content: center;
-	// align-items: center;
 }
 
 .centered {

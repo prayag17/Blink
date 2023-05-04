@@ -206,6 +206,19 @@ const ItemDetail = () => {
 		refetchOnWindowFocus: true,
 	});
 
+	const upcomingEpisodes = useQuery({
+		queryKey: ["item", id, "episode", "upcomingEpisodes"],
+		queryFn: async () => {
+			const result = await getItemsApi(window.api).getItems({
+				userId: user.data.Id,
+				parentId: item.data.ParentId,
+				startIndex: item.data.IndexNumber,
+			});
+			return result.data;
+		},
+		enabled: item.isSuccess && item.data.Type == BaseItemKind.Episode,
+	});
+
 	const personMovies = useQuery({
 		queryKey: ["item", id, "personMovies"],
 		queryFn: async () => {
@@ -569,17 +582,23 @@ const ItemDetail = () => {
 						className="item-detail-header"
 						mb={2}
 						paddingTop={
-							item.data.Type.includes("Music") ? 10 : 0
+							item.data.Type.includes("Music") ||
+							item.data.Type === BaseItemKind.Episode
+								? 10
+								: 0
 						}
 					>
 						<Box className="item-detail-header-backdrop">
-							{item.data.Type != BaseItemKind.MusicAlbum
+							{item.data.Type != BaseItemKind.MusicAlbum &&
+							item.data.Type != BaseItemKind.Episode
 								? item.data.BackdropImageTags.length !=
 										0 && (
 										<img
 											src={
-												item.data.Type ==
-												BaseItemKind.MusicAlbum
+												item.data.Type ===
+													BaseItemKind.MusicAlbum ||
+												item.data.Type ===
+													BaseItemKind.Episode
 													? `${window.api.basePath}/Items/${item.data.ParentBackdropItemId}/Images/Backdrop`
 													: `${window.api.basePath}/Items/${item.data.Id}/Images/Backdrop`
 											}
@@ -599,8 +618,10 @@ const ItemDetail = () => {
 								: !!item.data.ParentBackdropItemId && (
 										<img
 											src={
-												item.data.Type ==
-												BaseItemKind.MusicAlbum
+												item.data.Type ===
+													BaseItemKind.MusicAlbum ||
+												item.data.Type ===
+													BaseItemKind.Episode
 													? `${window.api.basePath}/Items/${item.data.ParentBackdropItemId}/Images/Backdrop`
 													: `${window.api.basePath}/Items/${item.data.Id}/Images/Backdrop`
 											}
@@ -650,20 +671,20 @@ const ItemDetail = () => {
 								display: "flex",
 								gap: 3,
 								flexDirection: "row",
-								alignItems: "flex-end",
+								alignItems:
+									item.data.Type ===
+									BaseItemKind.Episode
+										? "center !important"
+										: "flex-end",
 								justifyContent: "flex-start",
 								width: "100%",
 							}}
 						>
 							<Box
-								className="item-detail-image-container"
-								sx={
-									item.data.Type.includes("Music")
-										? {
-												aspectRatio: "1",
-										  }
-										: {}
-								}
+								className={`item-detail-image-container ${item.data.Type}`}
+								sx={{
+									aspectRatio: `${item.data.PrimaryImageAspectRatio}`,
+								}}
 							>
 								<Chip
 									className="card-indicator"
@@ -714,7 +735,9 @@ const ItemDetail = () => {
 										resolutionX={12}
 										resolutionY={8}
 										style={{
-											aspectRatio: 0.666,
+											aspectRatio:
+												item.data
+													.PrimaryImageAspectRatio,
 										}}
 										className="item-detail-image-blurhash"
 									/>
@@ -737,22 +760,59 @@ const ItemDetail = () => {
 									className="item-detail-title-name"
 									sx={{ mb: 1 }}
 								>
-									<Typography
-										variant="h3"
-										textOverflow="ellipsis"
-										whiteSpace="nowrap"
-										width="100%"
-									>
-										{!!item.data.ImageTags
-											.Logo ? (
-											<img
-												className="item-detail-title-logo"
-												src={`${window.api.basePath}/Items/${item.data.Id}/Images/Logo?cropWhitespace=True&quality=80&tag=${item.data.ImageTags.Logo}`}
-											/>
-										) : (
-											item.data.Name
-										)}
-									</Typography>
+									{item.data.Type ===
+										BaseItemKind.Episode && (
+										<Link
+											component={RouterLink}
+											to={`/item/${item.data.SeriesId}`}
+											variant="h3"
+											textOverflow="ellipsis"
+											whiteSpace="nowrap"
+											width="100%"
+											color="inherit"
+											underline="hover"
+											mb={1}
+										>
+											{!!item.data
+												.ParentLogoItemId ? (
+												<img
+													className="item-detail-title-logo"
+													src={`${window.api.basePath}/Items/${item.data.SeriesId}/Images/Logo?cropWhitespace=True&quality=80&tag=${item.data.ParentLogoImageTag}`}
+												/>
+											) : (
+												item.data.SeriesName
+											)}
+										</Link>
+									)}
+									{item.data.Type ===
+									BaseItemKind.Episode ? (
+										<Typography
+											variant="h4"
+											textOverflow="ellipsis"
+											whiteSpace="nowrap"
+											width="100%"
+											sx={{ opacity: 0.7 }}
+										>
+											{`S${item.data.ParentIndexNumber}:E${item.data.IndexNumber} - ${item.data.Name}`}
+										</Typography>
+									) : (
+										<Typography
+											variant="h3"
+											textOverflow="ellipsis"
+											whiteSpace="nowrap"
+											width="100%"
+										>
+											{!!item.data.ImageTags
+												.Logo ? (
+												<img
+													className="item-detail-title-logo"
+													src={`${window.api.basePath}/Items/${item.data.Id}/Images/Logo?cropWhitespace=True&quality=80&tag=${item.data.ImageTags.Logo}`}
+												/>
+											) : (
+												item.data.Name
+											)}
+										</Typography>
+									)}
 									<Typography
 										variant="h6"
 										sx={{ opacity: 0.7 }}
@@ -2796,6 +2856,44 @@ const ItemDetail = () => {
 							</Box>
 						)}
 
+					{item.data.Type === BaseItemKind.Episode && (
+						<CardScroller
+							headingProps={{
+								variant: "h5",
+								fontSize: "1.8em",
+							}}
+							displayCards={4}
+							title="Upcoming Episodes"
+							disableDecoration
+							boxProps={{
+								mt: 2,
+							}}
+						>
+							{upcomingEpisodes.isSuccess &&
+								upcomingEpisodes.data.Items.map(
+									(episode, index) => {
+										return (
+											<Card
+												key={episode.Id}
+												itemName={`E${episode.ParentIndexNumber}:S${episode.IndexNumber} - ${episode.Name}`}
+												itemId={episode.Id}
+												imageTags={
+													!!episode
+														.ImageTags
+														?.Primary
+												}
+												iconType="Episode"
+												cardOrientation="landscape"
+												currentUser={
+													user.data
+												}
+											/>
+										);
+									},
+								)}
+						</CardScroller>
+					)}
+
 					{item.data.People.length != 0 && (
 						<CardScroller
 							headingProps={{
@@ -2815,7 +2913,6 @@ const ItemDetail = () => {
 										key={index}
 										itemName={person.Name}
 										itemId={person.Id}
-										// imageTags={false}
 										imageTags={
 											!!person.PrimaryImageTag
 										}

@@ -372,10 +372,12 @@ function App() {
 									element={<UserLoginManual />}
 								/>
 								<Route
+									exact
 									path="/library/:id"
 									element={<LibraryView />}
 								/>
 								<Route
+									exact
 									path="/item/:id"
 									element={<ItemDetail />}
 								/>

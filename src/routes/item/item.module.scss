@@ -52,10 +52,13 @@
 			width: 15%;
 			flex-shrink: 0;
 			position: relative;
-			aspect-ratio: 0.666;
 			border-radius: $border-radius-default;
 			overflow: hidden;
 			box-shadow: 0 0 15px rgb(0 0 0 / 0.4);
+			&.Episode {
+				flex-shrink: 0;
+				flex-grow: 0.25;
+			}
 		}
 		&-icon-container {
 			background: $clr-gradient-dark;

@@ -50,7 +50,7 @@ export const CardScroller = ({
 	const [carouselRef, setCarouselRef] = useState();
 
 	return (
-		<Box {...boxProps} className="card-scroller-container" sx={{ mb: 4 }}>
+		<Box {...boxProps} className="card-scroller-container" mb={1}>
 			<Box
 				sx={{ mb: 1 }}
 				className={
