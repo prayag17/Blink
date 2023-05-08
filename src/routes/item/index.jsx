@@ -65,6 +65,7 @@ import { EpisodeCardsSkeleton } from "../../components/skeleton/episodeCards";
 import { ErrorNotice } from "../../components/notices/errorNotice/errorNotice";
 import { ArtistAlbum } from "../../components/layouts/artist/artistAlbum";
 import { MdiMusic } from "../../components/icons/mdiMusic";
+import { usePlaybackStore } from "../../utils/store/playback";
 function TabPanel(props) {
 	const { children, value, index, ...other } = props;
 
@@ -217,6 +218,7 @@ const ItemDetail = () => {
 			return result.data;
 		},
 		enabled: item.isSuccess && item.data.Type == BaseItemKind.Episode,
+		networkMode: "always",
 	});
 
 	const personMovies = useQuery({
@@ -508,6 +510,11 @@ const ItemDetail = () => {
 		}
 	}, [item.isSuccess]);
 
+	const [url, setUrl] = usePlaybackStore((state) => [
+		state.url,
+		state.setUrl,
+	]);
+
 	if (item.isLoading || similarItems.isLoading) {
 		return (
 			<Box
@@ -583,7 +590,8 @@ const ItemDetail = () => {
 						mb={2}
 						paddingTop={
 							item.data.Type.includes("Music") ||
-							item.data.Type === BaseItemKind.Episode
+							item.data.Type === BaseItemKind.Episode ||
+							!!item.data.PrimaryImageAspectRatio
 								? 10
 								: 0
 						}
@@ -683,7 +691,13 @@ const ItemDetail = () => {
 							<Box
 								className={`item-detail-image-container ${item.data.Type}`}
 								sx={{
-									aspectRatio: `${item.data.PrimaryImageAspectRatio}`,
+									aspectRatio: `${
+										!!item.data
+											.PrimaryImageAspectRatio
+											? item.data
+													.PrimaryImageAspectRatio
+											: 1
+									}`,
 								}}
 							>
 								<Chip
@@ -735,9 +749,13 @@ const ItemDetail = () => {
 										resolutionX={12}
 										resolutionY={8}
 										style={{
-											aspectRatio:
-												item.data
-													.PrimaryImageAspectRatio,
+											aspectRatio: `${
+												!!item.data
+													.PrimaryImageAspectRatio
+													? item.data
+															.PrimaryImageAspectRatio
+													: 1
+											}`,
 										}}
 										className="item-detail-image-blurhash"
 									/>
@@ -978,7 +996,20 @@ const ItemDetail = () => {
 													overflow:
 														"hidden",
 												}}
-												disabled
+												onClick={() => {
+													if (
+														!!item
+															.data
+															.VideoType
+													) {
+														setUrl(
+															`${window.api.basePath}/Videos/${item.data.Id}/stream.${item.data.MediaSources[0].Container}?Static=true&mediaSourceId=${item.data.Id}&deviceId=${window.api.deviceInfo.id}&api_key=${window.api.accessToken}&Tag=${item.data.MediaSources[0].ETag}`,
+														);
+													}
+													navigate(
+														`/player`,
+													);
+												}}
 											>
 												{!!item.data
 													.UserData
@@ -1223,6 +1254,55 @@ const ItemDetail = () => {
 																	mitem
 																}
 															</Typography>
+														);
+													},
+												)}
+											</Stack>
+										</TableCell>
+									</TableRow>
+								)}
+								{item.data.Studios.length != 0 && (
+									<TableRow
+										sx={{
+											"& td, & th": {
+												border: 0,
+											},
+										}}
+									>
+										<TableCell
+											sx={{
+												paddingLeft: 0,
+												width: "5%",
+											}}
+										>
+											<Typography
+												className="item-detail-heading"
+												variant="h5"
+												mr={2}
+											>
+												Studios
+											</Typography>
+										</TableCell>
+										<TableCell>
+											<Stack
+												direction="row"
+												gap={1}
+											>
+												{item.data.Genres.map(
+													(
+														genre,
+														index,
+													) => {
+														return (
+															<Chip
+																key={
+																	index
+																}
+																variant="filled"
+																label={
+																	genre
+																}
+															/>
 														);
 													},
 												)}
@@ -2674,7 +2754,7 @@ const ItemDetail = () => {
 																	return (
 																		<TableRow
 																			component={
-																				motion.row
+																				motion.div
 																			}
 																			key={
 																				mindex

@@ -93,6 +93,7 @@ export const SideMenu = ({}) => {
 		if (
 			location.pathname.includes("login") ||
 			location.pathname.includes("setup") ||
+			location.pathname.includes("player") ||
 			location.pathname === "/"
 		) {
 			setDisplay(false);
@@ -275,8 +276,3 @@ export const SideMenu = ({}) => {
 		);
 	}
 };
-
-// SideMenu.propTypes = {
-// 	skeleton: PropTypes.bool.isRequired,
-// 	data: PropTypes.array.isRequired,
-// };

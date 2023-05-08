@@ -19,6 +19,9 @@
 				"relaunch": true,
 				"relaunchDangerousAllowSymlinkMacos": false
 			},
+			"window": {
+				"setFullscreen": true
+			},
 			"shell": {
 				"all": true
 			}

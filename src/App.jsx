@@ -50,6 +50,8 @@ import FavouritePage from "./routes/favourite/index.jsx";
 import Settings from "./routes/settings";
 import About from "./routes/about";
 
+import VideoPlayer from "./routes/player/videoPlayer.jsx";
+
 import { SideMenu } from "./components/menu/sidemenu.jsx";
 import { AppBar } from "./components/appBar/appBar.jsx";
 
@@ -392,6 +394,10 @@ function App() {
 								<Route
 									path="/about"
 									element={<About />}
+								/>
+								<Route
+									path="/player"
+									element={<VideoPlayer />}
 								/>
 
 								<Route

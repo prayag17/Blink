@@ -37,6 +37,7 @@ export const ArtistAlbum = ({ user, album, boxProps }) => {
 			});
 			return result.data;
 		},
+		networkMode: "always",
 	});
 
 	const handleLikingTrack = async (track) => {
