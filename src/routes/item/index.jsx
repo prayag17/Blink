@@ -26,7 +26,7 @@ import MenuItem from "@mui/material/MenuItem";
 import Link from "@mui/material/Link";
 import { green, pink, yellow } from "@mui/material/colors";
 
-import { motion } from "framer-motion";
+import { AnimatePresence, motion } from "framer-motion";
 
 import { Blurhash } from "react-blurhash";
 import { useParams, useNavigate, Link as RouterLink } from "react-router-dom";
@@ -117,6 +117,7 @@ const ItemDetail = () => {
 			const result = await getUserLibraryApi(window.api).getItem({
 				userId: user.data.Id,
 				itemId: id,
+				fields: [ItemFields.Crew],
 			});
 			return result.data;
 		},
@@ -510,10 +511,29 @@ const ItemDetail = () => {
 		}
 	}, [item.isSuccess]);
 
-	const [url, setUrl] = usePlaybackStore((state) => [
-		state.url,
-		state.setUrl,
-	]);
+	const [setUrl, setPosition, setItemId, setItemName] = usePlaybackStore(
+		(state) => [
+			state.setUrl,
+			state.setPosition,
+			state.setItemId,
+			state.setItemName,
+		],
+	);
+
+	const [directors, setDirectors] = useState([]);
+	const [writers, setWriters] = useState([]);
+	useEffect(() => {
+		if (item.isSuccess) {
+			let direTp = item.data.People.filter(
+				(itm) => itm.Type == "Director",
+			);
+			setDirectors(direTp);
+			let writeTp = item.data.People.filter(
+				(itm) => itm.Type == "Writer",
+			);
+			setWriters(writeTp);
+		}
+	}, [item.isSuccess]);
 
 	if (item.isLoading || similarItems.isLoading) {
 		return (
@@ -1005,6 +1025,22 @@ const ItemDetail = () => {
 														setUrl(
 															`${window.api.basePath}/Videos/${item.data.Id}/stream.${item.data.MediaSources[0].Container}?Static=true&mediaSourceId=${item.data.Id}&deviceId=${window.api.deviceInfo.id}&api_key=${window.api.accessToken}&Tag=${item.data.MediaSources[0].ETag}`,
 														);
+														setPosition(
+															item
+																.data
+																.UserData
+																.PlaybackPositionTicks,
+														);
+														setItemName(
+															item
+																.data
+																.Name,
+														);
+														setItemId(
+															item
+																.data
+																.Id,
+														);
 													}
 													navigate(
 														`/player`,
@@ -1286,23 +1322,161 @@ const ItemDetail = () => {
 										<TableCell>
 											<Stack
 												direction="row"
-												gap={1}
+												gap={0.5}
+												divider={
+													<Typography variant="h6">
+														,
+													</Typography>
+												}
+												width="100%"
 											>
-												{item.data.Genres.map(
+												{item.data.Studios.map(
 													(
-														genre,
+														item,
 														index,
 													) => {
 														return (
-															<Chip
+															<Link
+																component={
+																	RouterLink
+																}
 																key={
 																	index
 																}
-																variant="filled"
-																label={
-																	genre
+																to={`/item/${item.Id}`}
+																color="inherit"
+																variant="h6"
+																underline="hover"
+																noWrap
+															>
+																{
+																	item.Name
 																}
-															/>
+															</Link>
+														);
+													},
+												)}
+											</Stack>
+										</TableCell>
+									</TableRow>
+								)}
+								{directors.length != 0 && (
+									<TableRow
+										sx={{
+											"& td, & th": {
+												border: 0,
+											},
+										}}
+									>
+										<TableCell
+											sx={{
+												paddingLeft: 0,
+												width: "5%",
+											}}
+										>
+											<Typography
+												className="item-detail-heading"
+												variant="h5"
+												mr={2}
+											>
+												Director
+											</Typography>
+										</TableCell>
+										<TableCell>
+											<Stack
+												direction="row"
+												gap={0.5}
+												divider={
+													<Typography variant="h6">
+														,
+													</Typography>
+												}
+											>
+												{directors.map(
+													(
+														item,
+														index,
+													) => {
+														return (
+															<Link
+																component={
+																	RouterLink
+																}
+																key={
+																	index
+																}
+																to={`/item/${item.Id}`}
+																color="inherit"
+																variant="h6"
+																underline="hover"
+																noWrap
+															>
+																{
+																	item.Name
+																}
+															</Link>
+														);
+													},
+												)}
+											</Stack>
+										</TableCell>
+									</TableRow>
+								)}
+								{writers.length != 0 && (
+									<TableRow
+										sx={{
+											"& td, & th": {
+												border: 0,
+											},
+										}}
+									>
+										<TableCell
+											sx={{
+												paddingLeft: 0,
+												width: "5%",
+											}}
+										>
+											<Typography
+												className="item-detail-heading"
+												variant="h5"
+												mr={2}
+											>
+												Writers
+											</Typography>
+										</TableCell>
+										<TableCell>
+											<Stack
+												direction="row"
+												gap={0.5}
+												divider={
+													<Typography variant="h6">
+														,
+													</Typography>
+												}
+											>
+												{writers.map(
+													(
+														item,
+														index,
+													) => {
+														return (
+															<Link
+																component={
+																	RouterLink
+																}
+																key={
+																	index
+																}
+																to={`/item/${item.Id}`}
+																color="inherit"
+																variant="h6"
+																underline="hover"
+																noWrap
+															>
+																{
+																	item.Name
+																}
+															</Link>
 														);
 													},
 												)}
@@ -2572,7 +2746,7 @@ const ItemDetail = () => {
 														duration: 0.35,
 														delay:
 															mindex *
-															0.05,
+															0.1,
 													}}
 												>
 													<EpisodeCard

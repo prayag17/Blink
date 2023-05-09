@@ -16,11 +16,23 @@ import { usePlaybackStore } from "../../utils/store/playback";
 
 import AppBar from "@mui/material/AppBar";
 import IconButton from "@mui/material/IconButton";
+
 import { useNavigate } from "react-router-dom";
 import { MdiChevronLeft } from "../../components/icons/mdiChevronLeft";
 
+import { secToTicks, ticksToSec } from "../../utils/date/time";
+
+import { getPlaystateApi } from "@jellyfin/sdk/lib/utils/api/playstate-api";
+
 const VideoPlayer = () => {
-	const url = usePlaybackStore((state) => state.url);
+	const [url, startPosition, itemId, itemName] = usePlaybackStore(
+		(state) => [
+			state.url,
+			state.startPosition,
+			state.itemId,
+			state.itemName,
+		],
+	);
 
 	const navigate = useNavigate();
 
@@ -42,7 +54,6 @@ const VideoPlayer = () => {
 	const handlePlayerReady = (player) => {
 		playerRef.current = player;
 
-		// You can handle player events here, for example:
 		player.on("waiting", () => {
 			videojs.log("player is waiting");
 		});
@@ -50,6 +61,17 @@ const VideoPlayer = () => {
 		player.on("dispose", () => {
 			videojs.log("player will dispose");
 		});
+
+		player.on("progress", async () => {
+			await getPlaystateApi(window.api).reportPlaybackProgress({
+				playbackProgressInfo: {
+					ItemId: itemId,
+					PlaybackStartTimeTicks: startPosition,
+					PositionTicks: secToTicks(player.currentTime()),
+				},
+			});
+		});
+		player.currentTime(ticksToSec(startPosition));
 	};
 
 	return (

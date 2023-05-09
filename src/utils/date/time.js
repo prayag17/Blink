@@ -3,9 +3,26 @@
  * @param {number} ticks - C# ticks of a particular item
  * @return {number} Converted ticks to Milliseconds
  */
-
 const ticksToMs = (ticks) => {
 	return Math.round(ticks / 10000);
+};
+
+/**
+ * @format
+ * @param {number} ticks - C# ticks of a particular item
+ * @return {number} Converted ticks to Seconds
+ */
+export const ticksToSec = (ticks) => {
+	return Math.round(ticksToMs(ticks) / 1000);
+};
+
+/**
+ * @format
+ * @param {number} sec - Sec of a particular item
+ * @return {number} Converted Seconds to C# ticks
+ */
+export const secToTicks = (ticks) => {
+	return Math.round(ticks * 10000000);
 };
 
 /**
