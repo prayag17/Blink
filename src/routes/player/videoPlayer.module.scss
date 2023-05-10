@@ -1,0 +1,11 @@
+/** @format */
+
+.video {
+	&-osd {
+		opacity: 0;
+		transition: opacity 0.1s linear;
+	}
+	&-osd-visible &-osd {
+		opacity: 1;
+	}
+}
