@@ -1,30 +1,51 @@
 /** @format */
-
-import React from "react";
-
-import videojs from "video.js";
-
-import { useParams } from "react-router-dom";
-import { useQuery } from "@tanstack/react-query";
-import { getVideosApi } from "@jellyfin/sdk/lib/utils/api/videos-api";
-
-import Box from "@mui/material/Box";
-
-// This imports the functional component from the previous sample.
-import VideoJS from "../../components/player/video";
-import { usePlaybackStore } from "../../utils/store/playback";
+import { appWindow } from "@tauri-apps/api/window";
 
 import AppBar from "@mui/material/AppBar";
+import Toolbar from "@mui/material/Toolbar";
+import Box from "@mui/material/Box";
 import IconButton from "@mui/material/IconButton";
+import Typography from "@mui/material/Typography";
+
+import ReactPlayer from "react-player";
+
+import { usePlaybackStore } from "../../utils/store/playback";
+import { MdiArrowLeft } from "../../components/icons/mdiArrowLeft";
 
 import { useNavigate } from "react-router-dom";
-import { MdiChevronLeft } from "../../components/icons/mdiChevronLeft";
-
+import { useRef, useState, useCallback } from "react";
 import { secToTicks, ticksToSec } from "../../utils/date/time";
 
 import { getPlaystateApi } from "@jellyfin/sdk/lib/utils/api/playstate-api";
 
-const VideoPlayer = () => {
+export const VideoPlayer = () => {
+	const navigate = useNavigate();
+
+	const playerRef = useRef();
+	const [isPlaying, setIsPlaying] = useState(true);
+	const [isMuted, setIsMuted] = useState(false);
+	const [isReady, setIsReady] = useState(false);
+
+	const onReady = useCallback(() => {
+		if (!isReady) {
+			const timeToStart = ticksToSec(startPosition);
+			playerRef.current.seekTo(timeToStart, "seconds");
+			setIsReady(true);
+		}
+	}, [isReady]);
+
+	const onProgress = async (e) => {
+		console.log(e);
+		await getPlaystateApi(window.api).reportPlaybackProgress({
+			playbackProgressInfo: {
+				ItemId: itemId,
+				IsMuted: isMuted,
+				PositionTicks: secToTicks(e.playedSeconds),
+				PlaybackStartTimeTicks: startPosition,
+			},
+		});
+	};
+
 	const [url, startPosition, itemId, itemName] = usePlaybackStore(
 		(state) => [
 			state.url,
@@ -33,57 +54,36 @@ const VideoPlayer = () => {
 			state.itemName,
 		],
 	);
-
-	const navigate = useNavigate();
-
-	const playerRef = React.useRef(null);
-
-	const videoJsOptions = {
-		autoplay: true,
-		controls: true,
-		responsive: true,
-		fill: true,
-		sources: [
-			{
-				src: url,
-				type: "video/mp4",
-			},
-		],
-	};
-
-	const handlePlayerReady = (player) => {
-		playerRef.current = player;
-
-		player.on("waiting", () => {
-			videojs.log("player is waiting");
-		});
-
-		player.on("dispose", () => {
-			videojs.log("player will dispose");
-		});
-
-		player.on("progress", async () => {
-			await getPlaystateApi(window.api).reportPlaybackProgress({
-				playbackProgressInfo: {
-					ItemId: itemId,
-					PlaybackStartTimeTicks: startPosition,
-					PositionTicks: secToTicks(player.currentTime()),
-				},
-			});
-		});
-		player.currentTime(ticksToSec(startPosition));
-	};
-
 	return (
-		<Box sx={{ height: "100vh", width: "100vw" }}>
-			<AppBar position="fixed">
-				<IconButton onClick={() => navigate(-1)}>
-					<MdiChevronLeft />
-				</IconButton>
+		<Box sx={{ background: "black" }}>
+			<AppBar
+				position="fixed"
+				elevation={0}
+				sx={{
+					background:
+						"linear-gradient(to bottom, rgb(0 0 0 / 0.75), transparent)",
+				}}
+			>
+				<Toolbar>
+					<IconButton onClick={() => navigate(-1)}>
+						<MdiArrowLeft />
+					</IconButton>
+					<Typography ml={2} variant="h6">
+						{itemName}
+					</Typography>
+				</Toolbar>
 			</AppBar>
-			<VideoJS options={videoJsOptions} onReady={handlePlayerReady} />
+			<ReactPlayer
+				ref={playerRef}
+				width="100vw"
+				height="100vh"
+				playing={true}
+				url={url}
+				controls={true}
+				onProgress={onProgress}
+				onReady={onReady}
+				muted={isMuted}
+			/>
 		</Box>
 	);
 };
-
-export default VideoPlayer;
