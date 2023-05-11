@@ -189,7 +189,7 @@ function App() {
 					);
 				}
 				try {
-					const api = sdk.createApi(best.address);
+					const api = jellyfin.createApi(best.address);
 					const { data } = await getSystemApi(
 						api,
 					).getPublicSystemInfo();

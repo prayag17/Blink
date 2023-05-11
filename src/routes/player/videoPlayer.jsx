@@ -7,6 +7,7 @@ import Box from "@mui/material/Box";
 import Stack from "@mui/material/Stack";
 import IconButton from "@mui/material/IconButton";
 import Typography from "@mui/material/Typography";
+import Slider from "@mui/material/Slider";
 
 import ReactPlayer from "react-player";
 
@@ -33,16 +34,22 @@ export const VideoPlayer = () => {
 	const [isMuted, setIsMuted] = useState(false);
 	const [isReady, setIsReady] = useState(false);
 
+	const [duration, setDuration] = useState(0);
+	const [progress, setProgress] = useState(0);
+	const [currentTime, setCurrentTime] = useState(0);
+
 	const onReady = useCallback(() => {
 		if (!isReady) {
 			const timeToStart = ticksToSec(startPosition);
 			playerRef.current.seekTo(timeToStart, "seconds");
+			setDuration(playerRef.current.getDuration());
 			setIsReady(true);
 		}
 	}, [isReady]);
 
+	const startTime = new Date(0);
+
 	const onProgress = async (e) => {
-		console.log(e);
 		await getPlaystateApi(window.api).reportPlaybackProgress({
 			playbackProgressInfo: {
 				ItemId: itemId,
@@ -52,6 +59,11 @@ export const VideoPlayer = () => {
 			},
 		});
 	};
+
+	const handleSeeking = useCallback((time, offset) => {
+		playerRef.current.seekTo(time / 100);
+		setCurrentTime(time / 100);
+	}, []);
 
 	const [url, startPosition, itemId, itemName] = usePlaybackStore(
 		(state) => [
@@ -109,28 +121,48 @@ export const VideoPlayer = () => {
 						</Typography>
 					</Toolbar>
 				</AppBar>
-				<Stack padding={2} direction="row">
-					<IconButton
-						onClick={() =>
-							playerRef.current.seekTo(
-								playerRef.current.getCurrentTime() - 15,
-							)
-						}
-					>
-						<MdiRewind />
-					</IconButton>
-					<IconButton onClick={() => setIsPlaying(!isPlaying)}>
-						{isPlaying ? <MdiPause /> : <MdiPlay />}
-					</IconButton>
-					<IconButton
-						onClick={() =>
-							playerRef.current.seekTo(
-								playerRef.current.getCurrentTime() + 15,
-							)
-						}
-					>
-						<MdiFastForward />
-					</IconButton>
+				<Stack direction="column" padding={2} width="100%">
+					<Stack width="100%">
+						<Slider
+							value={currentTime}
+							step={0.01}
+							max={100}
+							onChange={(e, newVal) => {
+								playerRef.current.seekTo(
+									(newVal / 100) *
+										playerRef.current.getDuration(),
+								);
+								setCurrentTime(newVal);
+							}}
+						/>
+					</Stack>
+					<Stack direction="row">
+						<IconButton
+							onClick={() =>
+								playerRef.current.seekTo(
+									playerRef.current.getCurrentTime() -
+										15,
+								)
+							}
+						>
+							<MdiRewind />
+						</IconButton>
+						<IconButton
+							onClick={() => setIsPlaying(!isPlaying)}
+						>
+							{isPlaying ? <MdiPause /> : <MdiPlay />}
+						</IconButton>
+						<IconButton
+							onClick={() =>
+								playerRef.current.seekTo(
+									playerRef.current.getCurrentTime() +
+										15,
+								)
+							}
+						>
+							<MdiFastForward />
+						</IconButton>
+					</Stack>
 				</Stack>
 			</Stack>
 			<ReactPlayer
@@ -139,7 +171,6 @@ export const VideoPlayer = () => {
 				height="100vh"
 				playing={isPlaying}
 				url={url}
-				// controls={true}
 				onProgress={onProgress}
 				onReady={onReady}
 				muted={isMuted}
