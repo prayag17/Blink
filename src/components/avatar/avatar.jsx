@@ -10,19 +10,17 @@ import "./avatar.module.scss";
 export const AvatarImage = ({ userId, userImageTags }) => {
 	return (
 		<Box className="avatar-image-container">
-			{!!userImageTags && (
-				<div
-					className="avatar-image"
-					style={{
-						backgroundImage:
-							"url('" +
-							window.api.basePath +
-							"/Users/" +
-							userId +
-							"/Images/Primary')",
-					}}
-				></div>
-			)}
+			<div
+				className="avatar-image"
+				style={{
+					backgroundImage:
+						"url('" +
+						window.api.basePath +
+						"/Users/" +
+						userId +
+						"/Images/Primary')",
+				}}
+			></div>
 
 			<div className="avatar-image-icon-container">
 				<MdiAccount className="avatar-image-icon" />

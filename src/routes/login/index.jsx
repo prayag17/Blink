@@ -287,8 +287,8 @@ export const UserLogin = () => {
 										imageTags={
 											!!item.PrimaryImageTag
 										}
-										// cardType="sqaure"
-										iconType="Person"
+										disableOverlay
+										iconType="User"
 										cardOrientation="sqaure"
 										onClickEvent={() =>
 											navigate(

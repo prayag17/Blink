@@ -408,7 +408,7 @@ function App() {
 						</Routes>
 					</div>
 				</AnimatePresence>
-				<ReactQueryDevtools />
+				{/* <ReactQueryDevtools /> */}
 			</ThemeProvider>
 		</SnackbarProvider>
 	);

@@ -23,6 +23,7 @@ import { MdiAccountMusic } from "../icons/mdiAccountMusic";
 import { MdiDramaMasks } from "../icons/mdiDramaMasks";
 import { MdiMusic } from "../icons/mdiMusic";
 import { MdiAccountTie } from "../icons/mdiAccountTie";
+import { MdiAccount } from "../icons/mdiAccount";
 
 export const MediaCollectionTypeIconCollection = {
 	universal: <MdiMultimedia />,
@@ -97,6 +98,7 @@ export const TypeIconCollectionCard = {
 	Trailer: <MdiYoutube className="card-image-icon" />,
 	TvChannel: <MdiTelevisionClassic className="card-image-icon" />,
 	TvProgram: <MdiTelevisionClassic className="card-image-icon" />,
+	User: <MdiAccount className="card-image-icon" />,
 	UserRootFolder: <MdiFolderOutline className="card-image-icon" />,
 	UserView: <MdiMultimedia className="card-image-icon" />,
 	Video: <MdiFilmstrip className="card-image-icon" />,

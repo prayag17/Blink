@@ -48,6 +48,7 @@ export const Card = ({
 	blurhash,
 	currentUser,
 	favourite,
+	disableOverlay,
 }) => {
 	const navigate = useNavigate();
 	const [imgLoading, setImgLoading] = useState(true);
@@ -175,6 +176,7 @@ export const Card = ({
 						<div
 							className="card-media-image-container"
 							style={{ opacity: imgLoading ? 0 : 1 }}
+							// style={{ opacity: 1 }}
 						>
 							{imageTags &&
 								(cardType == "thumb" ? (
@@ -210,10 +212,17 @@ export const Card = ({
 									<CardMedia
 										component="img"
 										image={
-											window.api.basePath +
-											"/Items/" +
-											itemId +
-											"/Images/Primary?fillHeight=532&fillWidth=300&quality=96"
+											iconType == "User"
+												? window.api
+														.basePath +
+												  "/Users/" +
+												  itemId +
+												  "/Images/Primary?fillHeight=532&fillWidth=300&quality=96"
+												: window.api
+														.basePath +
+												  "/Items/" +
+												  itemId +
+												  "/Images/Primary?fillHeight=532&fillWidth=300&quality=96"
 										}
 										alt={itemName}
 										sx={{
@@ -275,56 +284,66 @@ export const Card = ({
 							/>
 						)}
 					</>
-					<Box
-						className="card-media-overlay"
-						sx={{
-							display: "flex",
-							alignItems: "flex-end",
-							justifyContent: "flex-end",
-							p: 1,
-						}}
-					>
-						<ButtonGroup>
-							{availableMarkButtonTypes.includes(
-								iconType,
-							) && (
-								<IconButton
-									onClick={(e) => {
-										e.preventDefault();
-										e.stopPropagation();
-										handleMarkAsPlayOrUnMarkAsPlay();
-									}}
-									onFocus={(e) => e.stopPropagation}
-								>
-									<MdiCheck
-										sx={{
-											color: isWatched
-												? green[400]
-												: "white",
+					{!disableOverlay && (
+						<Box
+							className="card-media-overlay"
+							sx={{
+								display: "flex",
+								alignItems: "flex-end",
+								justifyContent: "flex-end",
+								p: 1,
+							}}
+						>
+							<ButtonGroup>
+								{availableMarkButtonTypes.includes(
+									iconType,
+								) && (
+									<IconButton
+										onClick={(e) => {
+											e.preventDefault();
+											e.stopPropagation();
+											handleMarkAsPlayOrUnMarkAsPlay();
 										}}
-									/>
-								</IconButton>
-							)}
-							{allowedLikeButton.includes(iconType) && (
-								<IconButton
-									onClick={(e) => {
-										e.preventDefault();
-										e.stopPropagation();
-										handleLiking();
-									}}
-									onFocus={(e) => e.stopPropagation}
-								>
-									{isFavorite ? (
-										<MdiHeart
-											sx={{ color: pink[700] }}
+										onFocus={(e) =>
+											e.stopPropagation
+										}
+									>
+										<MdiCheck
+											sx={{
+												color: isWatched
+													? green[400]
+													: "white",
+											}}
 										/>
-									) : (
-										<MdiHeartOutline />
-									)}
-								</IconButton>
-							)}
-						</ButtonGroup>
-					</Box>
+									</IconButton>
+								)}
+								{allowedLikeButton.includes(
+									iconType,
+								) && (
+									<IconButton
+										onClick={(e) => {
+											e.preventDefault();
+											e.stopPropagation();
+											handleLiking();
+										}}
+										onFocus={(e) =>
+											e.stopPropagation
+										}
+									>
+										{isFavorite ? (
+											<MdiHeart
+												sx={{
+													color: pink[700],
+												}}
+											/>
+										) : (
+											<MdiHeartOutline />
+										)}
+									</IconButton>
+								)}
+							</ButtonGroup>
+						</Box>
+					)}
 				</Box>
 
 				<CardContent
