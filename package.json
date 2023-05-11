@@ -21,6 +21,7 @@
 		"@tanstack/react-query-devtools": "^4.29.3",
 		"@tauri-apps/api": "^1.2.0",
 		"@videojs/http-streaming": "^3.0.2",
+		"axios": "^1.4.0",
 		"blurhash": "^2.0.5",
 		"events": "^3.3.0",
 		"framer-motion": "^10.12.4",

@@ -7,7 +7,7 @@ import Konami from "react-konami-code";
 const Kon = Konami.default ? Konami.default : Konami;
 
 import { ThemeProvider } from "@mui/material/styles";
-import { SnackbarProvider } from "notistack";
+import { SnackbarProvider, useSnackbar } from "notistack";
 import {
 	Routes,
 	Route,
@@ -59,11 +59,17 @@ import { AppBar } from "./components/appBar/appBar.jsx";
 import "@fontsource/open-sans";
 
 // Jellyfin SDK TypeScript
-import { Jellyfin } from "@jellyfin/sdk";
+import {
+	Jellyfin,
+	VersionOutdatedIssue,
+	VersionUnsupportedIssue,
+} from "@jellyfin/sdk";
 import { version as appVer } from "../package.json";
 import { v4 as uuidv4 } from "uuid";
 import { delServer, getServer } from "./utils/storage/servers.js";
 import { delUser, getUser } from "./utils/storage/user.js";
+import { getSystemApi } from "@jellyfin/sdk/lib/utils/api/system-api.js";
+import { useQuery } from "@tanstack/react-query";
 
 const jellyfin = new Jellyfin({
 	clientInfo: {
@@ -123,7 +129,8 @@ function App() {
 	const navigate = useNavigate();
 
 	const [serverReachable, setServerReachable] = useState(true);
-	const [checkingServer, setChecking] = useState(false);
+
+	const enqueueSnackbar = useSnackbar();
 
 	const createApi = async () => {
 		const server = await getServer();
@@ -158,34 +165,60 @@ function App() {
 		}
 	};
 
-	const pingServer = () => {
-		setChecking(true);
-		let data;
-		fetch(`${window.api.basePath}/System/Ping`, {
-			body: JSON.stringify(data),
-		})
-			.then((res) => res.json())
-			.then((data) => {
-				if (data == "Jellyfin Server") {
-					setServerReachable(true);
-					setChecking(false);
-				} else {
-					enqueueSnackbar(
-						"The server address does not seem be a jellyfin server",
-						{ variant: "error" },
-					);
+	const pingServer = useQuery({
+		queryKey: ["setup", "server"],
+		queryFn: async () => {
+			let serverUrl = window.api.basePath.replace(/\/$/, "").trim();
+			const candidates =
+				await jellyfin.discovery.getRecommendedServerCandidates(
+					serverUrl,
+				);
+			const best = jellyfin.discovery.findBestServer(candidates);
+			if (best) {
+				const issues = candidates.flatMap((s) => s.issues);
+				if (
+					issues.some(
+						(i) =>
+							i instanceof VersionOutdatedIssue ||
+							i instanceof VersionUnsupportedIssue,
+					)
+				) {
 					setServerReachable(false);
-					setChecking(false);
+					enqueueSnackbar(
+						"Please Update your server to latest Jellyfin version to use this client",
+					);
 				}
-			})
-			.catch((error) => {
-				enqueueSnackbar("Unable to reach server", {
-					variant: "error",
-				});
+				try {
+					const api = sdk.createApi(best.address);
+					const { data } = await getSystemApi(
+						api,
+					).getPublicSystemInfo();
+					delete data.LocalAddress;
+					const serv = {
+						...data,
+						PublicAddress: best.address,
+						isDefault: false,
+					};
+					if (serv.StartupWizardCompleted) {
+						setServerReachable(true);
+					} else {
+						setServerReachable(false);
+						enqueueSnackbar(
+							"Server setup not complete. Please complete your server setup.",
+						);
+					}
+				} catch (error) {
+					console.error(error);
+				}
+			} else {
 				setServerReachable(false);
-				setChecking(false);
-			});
-	};
+				enqueueSnackbar("Server not found.", { variant: "error" });
+			}
+			return "";
+		},
+		// enabled: false,
+		refetchOnWindowFocus: false,
+	});
 
 	const userLogin = async () => {
 		const user = await getUser();
@@ -201,7 +234,7 @@ function App() {
 		serverAvailable().then(async (server) => {
 			if (server == true) {
 				createApi().then(() => {
-					pingServer();
+					pingServer.refetch();
 					if (serverReachable == true) {
 						userSaved().then((user_available) => {
 							if (user_available == true) {
@@ -227,7 +260,6 @@ function App() {
 				});
 			} else {
 				navigate("/setup/server");
-				setChecking(false);
 			}
 		});
 	};
@@ -277,7 +309,7 @@ function App() {
 	return (
 		<SnackbarProvider maxSnack={5}>
 			<ThemeProvider theme={theme}>
-				{checkingServer && (
+				{pingServer.isLoading && (
 					<Box
 						sx={{
 							display: "flex",
@@ -408,7 +440,7 @@ function App() {
 						</Routes>
 					</div>
 				</AnimatePresence>
-				{/* <ReactQueryDevtools /> */}
+				<ReactQueryDevtools />
 			</ThemeProvider>
 		</SnackbarProvider>
 	);
