@@ -130,7 +130,7 @@ function App() {
 
 	const [serverReachable, setServerReachable] = useState(true);
 
-	const enqueueSnackbar = useSnackbar();
+	const { enqueueSnackbar } = useSnackbar();
 
 	const createApi = async () => {
 		const server = await getServer();
@@ -165,60 +165,25 @@ function App() {
 		}
 	};
 
-	const pingServer = useQuery({
-		queryKey: ["setup", "server"],
-		queryFn: async () => {
-			let serverUrl = window.api.basePath.replace(/\/$/, "").trim();
-			const candidates =
-				await jellyfin.discovery.getRecommendedServerCandidates(
-					serverUrl,
-				);
-			const best = jellyfin.discovery.findBestServer(candidates);
-			if (best) {
-				const issues = candidates.flatMap((s) => s.issues);
-				if (
-					issues.some(
-						(i) =>
-							i instanceof VersionOutdatedIssue ||
-							i instanceof VersionUnsupportedIssue,
-					)
-				) {
-					setServerReachable(false);
-					enqueueSnackbar(
-						"Please Update your server to latest Jellyfin version to use this client",
-					);
-				}
-				try {
-					const api = jellyfin.createApi(best.address);
-					const { data } = await getSystemApi(
-						api,
-					).getPublicSystemInfo();
-					delete data.LocalAddress;
-					const serv = {
-						...data,
-						PublicAddress: best.address,
-						isDefault: false,
-					};
-					if (serv.StartupWizardCompleted) {
-						setServerReachable(true);
-					} else {
-						setServerReachable(false);
-						enqueueSnackbar(
-							"Server setup not complete. Please complete your server setup.",
-						);
-					}
-				} catch (error) {
-					console.error(error);
-				}
+	const pingServer = async () => {
+		const server = await getServer();
+		try {
+			const result = await axios.get(
+				new URL(`${server.Ip}/System/Ping`).href,
+			);
+			if (result.data == "Jellyfin Server") {
+				event.emit("create-jellyfin-api", server.Ip);
+				setServerReachable(true);
 			} else {
 				setServerReachable(false);
-				enqueueSnackbar("Server not found.", { variant: "error" });
 			}
-			return "";
-		},
-		// enabled: false,
-		refetchOnWindowFocus: false,
-	});
+		} catch (error) {
+			setServerReachable(false);
+			enqueueSnackbar("Unable to verfiy server address.", {
+				variant: "error",
+			});
+		}
+	};
 
 	const userLogin = async () => {
 		const user = await getUser();
@@ -234,7 +199,7 @@ function App() {
 		serverAvailable().then(async (server) => {
 			if (server == true) {
 				createApi().then(() => {
-					pingServer.refetch();
+					pingServer();
 					if (serverReachable == true) {
 						userSaved().then((user_available) => {
 							if (user_available == true) {
@@ -341,7 +306,6 @@ function App() {
 				<Dialog
 					open={!serverReachable}
 					onClose={handleRelaunch}
-					disableBa
 					aria-labelledby="alert-dialog-text"
 					aria-describedby="alert-dialog-desc"
 					maxWidth="md"

@@ -158,77 +158,39 @@ export const ServerSetup = (props) => {
 		sysInfo.Ip = serverIp;
 		setServer(sysInfo);
 	};
-
-	const checkServer = useQuery({
-		queryKey: ["setup", "server"],
-		queryFn: async () => {
-			let serverUrl = serverIp.replace(/\/$/, "").trim();
-			const candidates =
-				await sdk.discovery.getRecommendedServerCandidates(
-					serverUrl,
-				);
-			const best = sdk.discovery.findBestServer(candidates);
-			if (best) {
-				const issues = candidates.flatMap((s) => s.issues);
-				if (
-					issues.some(
-						(i) =>
-							i instanceof VersionOutdatedIssue ||
-							i instanceof VersionUnsupportedIssue,
-					)
-				) {
-					enqueueSnackbar(
-						"Please Update your server to latest Jellyfin version to use this client",
-					);
-				}
-				try {
-					const api = sdk.createApi(best.address);
-					const { data } = await getSystemApi(
-						api,
-					).getPublicSystemInfo();
-					delete data.LocalAddress;
-					const serv = {
-						...data,
-						PublicAddress: best.address,
-						isDefault: false,
-					};
-					if (serv.StartupWizardCompleted) {
-						event.emit("create-jellyfin-api", serverIp);
-						data.Ip = serverIp;
-						setServer(data);
-						const users = await getUserApi(
-							window.api,
-						).getPublicUsers();
-						if (users.data.length >= 1) {
-							navigate("/login/users");
-
-							return true;
-						} else {
-							navigate("/login/manual");
-							return false;
-						}
-					} else {
-						enqueueSnackbar(
-							"Server setup not complete. Please complete your server setup.",
-						);
-					}
-				} catch (error) {
-					enqueueSnackbar("Something went wrong", {
-						variant: "error",
-					});
-					console.error(error);
+	const checkServer = async () => {
+		setServerCheckState(true);
+		try {
+			const result = await axios.get(`${serverIp}/System/Ping`);
+			if (result.data == "Jellyfin Server") {
+				event.emit("create-jellyfin-api", serverIp);
+				let sysInfo = await getSystemApi(
+					window.api,
+				).getPublicSystemInfo();
+				sysInfo = sysInfo.data;
+				sysInfo.Ip = serverIp;
+				setServer(sysInfo);
+				const users = await getUserApi(window.api).getPublicUsers();
+				if (users.data.length >= 1) {
+					navigate("/login/users");
+				} else {
+					navigate("/login/manual");
 				}
 			} else {
 				enqueueSnackbar(
-					"Server not found. Please check you entered address",
+					"The provided ip address doesn't seem point to a Jellyfin server.",
 					{ variant: "error" },
 				);
 			}
-			return "";
-		},
-		enabled: false,
-		refetchOnWindowFocus: false,
-	});
+		} catch (error) {
+			enqueueSnackbar("Unable to verfiy server address.", {
+				variant: "error",
+			});
+		}
+
+		setServerCheckState(false);
+		return "";
+	};
 
 	const handleAddServer = () => {
 		// setLoading(true);
@@ -291,14 +253,14 @@ export const ServerSetup = (props) => {
 							variant="contained"
 							sx={{ width: "100%" }}
 							size="large"
-							loading={checkServer.isFetching}
+							loading={checkingServer}
 							endIcon={
 								<SvgIcon>
 									<path d={mdiChevronRight}></path>
 								</SvgIcon>
 							}
 							loadingPosition="end"
-							onClick={() => checkServer.refetch()}
+							onClick={() => checkServer()}
 						>
 							Add Server
 						</LoadingButton>
