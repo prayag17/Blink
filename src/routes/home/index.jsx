@@ -96,7 +96,13 @@ const Home = () => {
 				{
 					userId: user.data.Id,
 					fields: [ItemFields.Overview, ItemFields.ParentId],
+					includeItemTypes: [
+						BaseItemKind.Series,
+						BaseItemKind.Movie,
+						BaseItemKind.AudioBook,
+					],
 					enableUserData: true,
+					limit: 16,
 				},
 			);
 			return media.data;
@@ -111,7 +117,7 @@ const Home = () => {
 			const resumeItems = await getItemsApi(window.api).getResumeItems(
 				{
 					userId: user.data.Id,
-					limit: 16,
+					limit: 10,
 					mediaTypes: ["Video"],
 					enableUserData: true,
 				},
@@ -128,7 +134,7 @@ const Home = () => {
 			const resumeItems = await getItemsApi(window.api).getResumeItems(
 				{
 					userId: user.data.Id,
-					limit: 16,
+					limit: 10,
 					mediaTypes: ["Audio"],
 					enableUserData: true,
 				},
@@ -144,7 +150,7 @@ const Home = () => {
 		queryFn: async () => {
 			const upNext = await getTvShowsApi(window.api).getNextUp({
 				userId: user.data.Id,
-				limit: 16,
+				limit: 10,
 			});
 			return upNext.data;
 		},
@@ -240,7 +246,7 @@ const Home = () => {
 						<CarouselSkeleton />
 					) : (
 						// <></>
-						latestMedia.data != null &&
+						latestMedia.data.length != 0 &&
 						latestMedia.data.map((item, index) => {
 							return (
 								<Paper
@@ -254,12 +260,8 @@ const Home = () => {
 								>
 									<div className="hero-carousel-background-container">
 										{item.Type ==
-											BaseItemKind.MusicAlbum ||
-										item.Type ==
-											BaseItemKind.Episode ? (
-											item
-												.ParentBackdropImageTags
-												.length != 0 && (
+										BaseItemKind.MusicAlbum ? (
+											!!item.ParentBackdropItemId && (
 												<>
 													<Blurhash
 														hash={
@@ -339,7 +341,7 @@ const Home = () => {
 										<div className="hero-carousel-background-icon-container">
 											{
 												MediaTypeIconCollection[
-													item.MediaType
+													item.Type
 												]
 											}
 										</div>

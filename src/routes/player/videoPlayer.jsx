@@ -25,9 +25,19 @@ import "./videoPlayer.module.scss";
 import { MdiPause } from "../../components/icons/mdiPause";
 import { MdiFastForward } from "../../components/icons/mdiFastForward";
 import { MdiRewind } from "../../components/icons/mdiRewind";
+import { MdiFullscreen } from "../../components/icons/mdiFullscreen";
+import { MdiFullscreenExit } from "../../components/icons/mdiFullscreenExit";
 
 export const VideoPlayer = () => {
 	const navigate = useNavigate();
+	const [url, startPosition, itemDuration, itemId, itemName] =
+		usePlaybackStore((state) => [
+			state.url,
+			state.startPosition,
+			state.duration,
+			state.itemId,
+			state.itemName,
+		]);
 
 	const playerRef = useRef();
 	const [isPlaying, setIsPlaying] = useState(true);
@@ -36,7 +46,9 @@ export const VideoPlayer = () => {
 
 	const [duration, setDuration] = useState(0);
 	const [progress, setProgress] = useState(0);
-	const [currentTime, setCurrentTime] = useState(0);
+	const [currentTime, setCurrentTime] = useState(
+		(startPosition / itemDuration) * 100,
+	);
 
 	const onReady = useCallback(() => {
 		if (!isReady) {
@@ -47,9 +59,8 @@ export const VideoPlayer = () => {
 		}
 	}, [isReady]);
 
-	const startTime = new Date(0);
-
 	const onProgress = async (e) => {
+		setProgress(e.played);
 		await getPlaystateApi(window.api).reportPlaybackProgress({
 			playbackProgressInfo: {
 				ItemId: itemId,
@@ -60,19 +71,48 @@ export const VideoPlayer = () => {
 		});
 	};
 
+	const handleDisplayCurrentTime = () => {
+		let time = ticksToSec(progress * itemDuration);
+		let hr = Math.floor(time / 3600);
+		time -= hr * 3600;
+		let min = Math.floor(time / 60);
+		time -= min * 60;
+		return `${hr.toLocaleString([], {
+			minimumIntegerDigits: 2,
+			maximumFractionDigits: 0,
+		})}:${min.toLocaleString([], {
+			minimumIntegerDigits: 2,
+			maximumFractionDigits: 0,
+		})}:${time.toLocaleString([], {
+			minimumIntegerDigits: 2,
+			maximumFractionDigits: 0,
+		})}`;
+	};
+
+	const handleDisplayItemDuration = () => {
+		let time = ticksToSec(itemDuration);
+		let hr = Math.floor(time / 3600);
+		time -= hr * 3600;
+		let min = Math.floor(time / 60);
+		time -= min * 60;
+		return `${hr.toLocaleString([], {
+			minimumIntegerDigits: 2,
+			maximumFractionDigits: 0,
+		})}:${min.toLocaleString([], {
+			minimumIntegerDigits: 2,
+			maximumFractionDigits: 0,
+		})}:${time.toLocaleString([], {
+			minimumIntegerDigits: 2,
+			maximumFractionDigits: 0,
+		})}`;
+	};
+
 	const handleSeeking = useCallback((time, offset) => {
 		playerRef.current.seekTo(time / 100);
 		setCurrentTime(time / 100);
 	}, []);
 
-	const [url, startPosition, itemId, itemName] = usePlaybackStore(
-		(state) => [
-			state.url,
-			state.startPosition,
-			state.itemId,
-			state.itemName,
-		],
-	);
+	const [appFullscreen, setAppFullScreen] = useState(false);
 
 	let timer;
 	return (
@@ -122,7 +162,16 @@ export const VideoPlayer = () => {
 					</Toolbar>
 				</AppBar>
 				<Stack direction="column" padding={2} width="100%">
-					<Stack width="100%">
+					<Stack
+						width="100%"
+						direction="row"
+						alignItems="center"
+						justifyContent="center"
+						gap={2}
+					>
+						<Typography variant="h6">
+							{handleDisplayCurrentTime()}
+						</Typography>
 						<Slider
 							value={currentTime}
 							step={0.01}
@@ -135,6 +184,9 @@ export const VideoPlayer = () => {
 								setCurrentTime(newVal);
 							}}
 						/>
+						<Typography variant="h6">
+							{handleDisplayItemDuration()}
+						</Typography>
 					</Stack>
 					<Stack direction="row">
 						<IconButton
@@ -161,6 +213,20 @@ export const VideoPlayer = () => {
 							}
 						>
 							<MdiFastForward />
+						</IconButton>
+						<IconButton
+							onClick={async () => {
+								let fstate =
+									await appWindow.isFullscreen();
+								setAppFullScreen(fstate);
+								await appWindow.setFullscreen(!fstate);
+							}}
+						>
+							{appFullscreen ? (
+								<MdiFullscreen />
+							) : (
+								<MdiFullscreenExit />
+							)}
 						</IconButton>
 					</Stack>
 				</Stack>

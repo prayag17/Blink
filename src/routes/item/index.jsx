@@ -511,14 +511,14 @@ const ItemDetail = () => {
 		}
 	}, [item.isSuccess]);
 
-	const [setUrl, setPosition, setItemId, setItemName] = usePlaybackStore(
-		(state) => [
+	const [setUrl, setPosition, setDuration, setItemId, setItemName] =
+		usePlaybackStore((state) => [
 			state.setUrl,
 			state.setPosition,
+			state.setDuration,
 			state.setItemId,
 			state.setItemName,
-		],
-	);
+		]);
 
 	const [directors, setDirectors] = useState([]);
 	const [writers, setWriters] = useState([]);
@@ -1040,6 +1040,11 @@ const ItemDetail = () => {
 															item
 																.data
 																.Id,
+														);
+														setDuration(
+															item
+																.data
+																.RunTimeTicks,
 														);
 													}
 													navigate(
