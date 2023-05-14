@@ -68,8 +68,8 @@ import { version as appVer } from "../package.json";
 import { v4 as uuidv4 } from "uuid";
 import { delServer, getServer } from "./utils/storage/servers.js";
 import { delUser, getUser } from "./utils/storage/user.js";
-import { getSystemApi } from "@jellyfin/sdk/lib/utils/api/system-api.js";
-import { useQuery } from "@tanstack/react-query";
+
+import axios from "axios";
 
 const jellyfin = new Jellyfin({
 	clientInfo: {
@@ -182,6 +182,7 @@ function App() {
 			enqueueSnackbar("Unable to verfiy server address.", {
 				variant: "error",
 			});
+			console.error(error);
 		}
 	};
 
@@ -243,13 +244,13 @@ function App() {
 		if (reason && reason == "backdropClick") {
 			return;
 		}
-		let result = await relaunch();
+		await relaunch();
 	};
 
 	const handleRemoveServer = async () => {
 		await delServer();
 		await delUser();
-		let result = await relaunch();
+		await relaunch();
 	};
 	const location = useLocation();
 
