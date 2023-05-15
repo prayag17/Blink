@@ -18,7 +18,7 @@
 		"@mui/lab": "^5.0.0-alpha.128",
 		"@mui/material": "^5.11.16",
 		"@tanstack/react-query": "^4.26.1",
-		"@tanstack/react-query-devtools": "^4.29.3",
+		"@tanstack/react-query-devtools": "^4.29.7",
 		"@tauri-apps/api": "^1.2.0",
 		"@videojs/http-streaming": "^3.0.2",
 		"axios": "^1.4.0",
