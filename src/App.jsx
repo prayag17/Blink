@@ -275,20 +275,6 @@ function App() {
 	return (
 		<SnackbarProvider maxSnack={5}>
 			<ThemeProvider theme={theme}>
-				{pingServer.isLoading && (
-					<Box
-						sx={{
-							display: "flex",
-							width: "100%",
-							height: "100vh",
-							justifyContent: "center",
-							alignItems: "center",
-						}}
-					>
-						<CircularProgress />
-					</Box>
-				)}
-
 				<Kon resetDelay={1000} action={sixtyNine}></Kon>
 				<Dialog
 					open={easterEgg}
