@@ -10,6 +10,7 @@ import Typography from "@mui/material/Typography";
 import Slider from "@mui/material/Slider";
 import { theme } from "../../theme";
 import Grow from "@mui/material/Grow";
+import Backdrop from "@mui/material/Backdrop";
 
 import ReactPlayer from "react-player";
 
@@ -18,7 +19,7 @@ import { MdiArrowLeft } from "../../components/icons/mdiArrowLeft";
 import { MdiPlay } from "../../components/icons/mdiPlay";
 
 import { useNavigate } from "react-router-dom";
-import { useRef, useState, useCallback } from "react";
+import { useRef, useState, useCallback, useEffect } from "react";
 import { secToTicks, ticksToSec } from "../../utils/date/time";
 
 import { getPlaystateApi } from "@jellyfin/sdk/lib/utils/api/playstate-api";
@@ -33,6 +34,8 @@ import { MdiPictureInPictureBottomRight } from "../../components/icons/mdiPictur
 import { MdiVolumeHigh } from "../../components/icons/mdiVolumeHigh";
 import { MdiVolumeOff } from "../../components/icons/mdiVolumeOff";
 
+import { endsAt } from "../../utils/date/time";
+
 export const VideoPlayer = () => {
 	const navigate = useNavigate();
 	const [url, startPosition, itemDuration, itemId, itemName] =
@@ -43,6 +46,8 @@ export const VideoPlayer = () => {
 			state.itemId,
 			state.itemName,
 		]);
+
+	const [showControls, setShowControls] = useState(false);
 
 	const playerRef = useRef();
 	const [isPlaying, setIsPlaying] = useState(true);
@@ -115,42 +120,36 @@ export const VideoPlayer = () => {
 		})}`;
 	};
 
-	const handleSeeking = useCallback((time, offset) => {
-		playerRef.current.seekTo(time / 100);
-		setCurrentTime(time / 100);
-	}, []);
-
 	const [appFullscreen, setAppFullScreen] = useState(false);
 
-	let timer;
+	useEffect(() => {
+		let timeout = null;
+		if (showControls) {
+			window.clearTimeout(timeout);
+			timeout = setTimeout(() => {
+				setShowControls(false);
+			}, 5000);
+		}
+	}, [showControls]);
+
 	return (
 		<Box
 			className="video"
 			sx={{ background: "black" }}
-			onMouseMove={(e) => {
-				let a = "he";
-				clearTimeout(timer);
-				e.currentTarget.classList.add("video-osd-visible");
-				timer = setTimeout(() => {
-					document
-						.querySelector(".video")
-						.classList.remove("video-osd-visible");
-				}, 3000);
+			onMouseMove={() => {
+				setShowControls(true);
 			}}
 		>
-			<Stack
+			<Backdrop
 				className="video-osd"
 				sx={{
-					position: "fixed",
-					top: 0,
-					left: 0,
-					right: 0,
-					bottom: 0,
+					display: "flex",
+					flexDirection: "column",
+					zIndex: 100000,
+					justifyContent: "space-between",
+					background: "transparent",
 				}}
-				alignItems="center"
-				justifyContent="space-between"
-				direction="column"
-				zIndex="10000000"
+				open={showControls}
 			>
 				<AppBar
 					position="static"
@@ -193,6 +192,9 @@ export const VideoPlayer = () => {
 							step={0.01}
 							max={itemDuration}
 							onChange={(e, newVal) => {
+								setCurrentTime(newVal);
+							}}
+							onChangeCommitted={(e, newVal) => {
 								playerRef.current.seekTo(
 									ticksToSec(newVal),
 								);
@@ -207,7 +209,7 @@ export const VideoPlayer = () => {
 									lineHeight: 1.2,
 									fontSize: 24,
 									background: "rgb(0 0 0 / 0.5)",
-									backdropFilter: "blur(30px)",
+									backdropFilter: "blur(5px)",
 									padding: 1,
 									borderRadius: "10px",
 									transform:
@@ -232,7 +234,12 @@ export const VideoPlayer = () => {
 						justifyContent="space-between"
 						alignItems="center"
 					>
-						<Stack direction="row" gap={1}>
+						<Stack
+							direction="row"
+							gap={1}
+							justifyContent="center"
+							alignItems="center"
+						>
 							<IconButton
 								onClick={() =>
 									playerRef.current.seekTo(
@@ -258,6 +265,9 @@ export const VideoPlayer = () => {
 							>
 								<MdiFastForward />
 							</IconButton>
+							<Typography variant="subtitle1">
+								{endsAt(itemDuration - currentTime)}
+							</Typography>
 						</Stack>
 						<Stack
 							direction="row"
@@ -275,9 +285,8 @@ export const VideoPlayer = () => {
 									transition: "250ms background",
 									borderRadius: 20,
 									"&:hover": {
-										background:
-											theme.palette.background
-												.paper,
+										background: "rgb(0 0 0/0.5)",
+										backdropFilter: "blur(5px)",
 									},
 								}}
 								onMouseOver={() => setShowVolume(true)}
@@ -304,7 +313,7 @@ export const VideoPlayer = () => {
 													background:
 														"rgb(0 0 0 / 0.5)",
 													backdropFilter:
-														"blur(30px)",
+														"blur(5px)",
 													padding: 1,
 													borderRadius:
 														"10px",
@@ -367,7 +376,7 @@ export const VideoPlayer = () => {
 						</Stack>
 					</Stack>
 				</Stack>
-			</Stack>
+			</Backdrop>
 			<ReactPlayer
 				ref={playerRef}
 				width="100vw"
