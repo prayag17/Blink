@@ -8,7 +8,7 @@ import Stack from "@mui/material/Stack";
 import IconButton from "@mui/material/IconButton";
 import Typography from "@mui/material/Typography";
 import Slider from "@mui/material/Slider";
-import { theme } from "../../theme";
+import CircularProgress from "@mui/material/CircularProgress";
 import Grow from "@mui/material/Grow";
 import Backdrop from "@mui/material/Backdrop";
 
@@ -18,7 +18,7 @@ import { usePlaybackStore } from "../../utils/store/playback";
 import { MdiArrowLeft } from "../../components/icons/mdiArrowLeft";
 import { MdiPlay } from "../../components/icons/mdiPlay";
 
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import { useRef, useState, useCallback, useEffect } from "react";
 import { secToTicks, ticksToSec } from "../../utils/date/time";
 
@@ -36,6 +36,8 @@ import { MdiVolumeOff } from "../../components/icons/mdiVolumeOff";
 
 import { endsAt } from "../../utils/date/time";
 
+import useKeyPress from "../../utils/hooks/useKeyPress";
+
 export const VideoPlayer = () => {
 	const navigate = useNavigate();
 	const [url, startPosition, itemDuration, itemId, itemName] =
@@ -50,11 +52,12 @@ export const VideoPlayer = () => {
 	const [showControls, setShowControls] = useState(false);
 
 	const playerRef = useRef();
+	const [isBuffering, setIsBuffering] = useState(true);
 	const [isPlaying, setIsPlaying] = useState(true);
 	const [isMuted, setIsMuted] = useState(false);
 	const [isReady, setIsReady] = useState(false);
 	const [isPIP, setIsPIP] = useState(false);
-	const [volume, setVolume] = useState(0.75);
+	const [volume, setVolume] = useState(0.8);
 
 	const [showVolume, setShowVolume] = useState(false);
 
@@ -73,6 +76,7 @@ export const VideoPlayer = () => {
 
 	const onProgress = async (e) => {
 		setProgress(e.played);
+		setCurrentTime(secToTicks(e.playedSeconds));
 		await getPlaystateApi(window.api).reportPlaybackProgress({
 			playbackProgressInfo: {
 				ItemId: itemId,
@@ -132,6 +136,26 @@ export const VideoPlayer = () => {
 		}
 	}, [showControls]);
 
+	const handleKeyPress = useCallback((event) => {
+		switch (event.key) {
+			case "ArrowRight":
+				playerRef.current.seekTo(
+					playerRef.current.getCurrentTime() + 15,
+				);
+				break;
+			case "ArrowLeft":
+				playerRef.current.seekTo(
+					playerRef.current.getCurrentTime() - 15,
+				);
+				break;
+			case "p":
+				setIsPlaying(!isPlaying);
+			default:
+				console.log(event.key);
+				break;
+		}
+	}, []);
+
 	return (
 		<Box
 			className="video"
@@ -140,6 +164,19 @@ export const VideoPlayer = () => {
 				setShowControls(true);
 			}}
 		>
+			<Box
+				sx={{
+					position: "absolute",
+					inset: 0,
+					display: "flex",
+					alignItems: "center",
+					justifyContent: "center",
+					opacity: isBuffering ? 1 : 0,
+					transition: "opacity 250ms",
+				}}
+			>
+				<CircularProgress />
+			</Box>
 			<Backdrop
 				className="video-osd"
 				sx={{
@@ -212,6 +249,9 @@ export const VideoPlayer = () => {
 									backdropFilter: "blur(5px)",
 									padding: 1,
 									borderRadius: "10px",
+									border: "1px solid rgb(255 255 255 / 0.15)",
+									boxShadow:
+										"0 0 10px rgb(0 0 0 / 0.4) ",
 									transform:
 										"translatey(-120%) scale(0)",
 									"&:before": { display: "none" },
@@ -293,7 +333,13 @@ export const VideoPlayer = () => {
 								onMouseOut={() => setShowVolume(false)}
 								padding="0.25em 1em"
 							>
-								<Grow in={showVolume}>
+								<Grow
+									style={{
+										transformOrigin:
+											" right center",
+									}}
+									in={showVolume}
+								>
 									<Slider
 										value={volume * 100}
 										step={1}
@@ -317,6 +363,9 @@ export const VideoPlayer = () => {
 													padding: 1,
 													borderRadius:
 														"10px",
+													border: "1px solid rgb(255 255 255 / 0.15)",
+													boxShadow:
+														"0 0 10px rgb(0 0 0 / 0.4) ",
 													transform:
 														"translatey(-120%) scale(0)",
 													"&:before": {
@@ -388,6 +437,8 @@ export const VideoPlayer = () => {
 				muted={isMuted}
 				pip={isPIP}
 				volume={volume}
+				onBuffer={() => setIsBuffering(true)}
+				onBufferEnd={() => setIsBuffering(false)}
 			/>
 		</Box>
 	);

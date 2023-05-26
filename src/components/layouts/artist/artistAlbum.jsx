@@ -19,8 +19,11 @@ import { Link } from "react-router-dom";
 
 import { useQuery } from "@tanstack/react-query";
 import { getItemsApi } from "@jellyfin/sdk/lib/utils/api/items-api";
-import { MdiClockOutline } from "../../icons/mdiClockOutline";
+import { getUserLibraryApi } from "@jellyfin/sdk/lib/utils/api/user-library-api";
+
 import { getRuntimeMusic } from "../../../utils/date/time";
+
+import { MdiClockOutline } from "../../icons/mdiClockOutline";
 import { MdiHeart } from "../../icons/mdiHeart";
 import { MdiHeartOutline } from "../../icons/mdiHeartOutline";
 import { MdiAlbum } from "../../icons/mdiAlbum";
@@ -44,12 +47,12 @@ export const ArtistAlbum = ({ user, album, boxProps }) => {
 		let result;
 		if (track.UserData.IsFavorite) {
 			result = await getUserLibraryApi(window.api).unmarkFavoriteItem({
-				userId: user.data.Id,
+				userId: user.Id,
 				itemId: track.Id,
 			});
 		} else if (!track.UserData.IsFavorite) {
 			result = await getUserLibraryApi(window.api).markFavoriteItem({
-				userId: user.data.Id,
+				userId: user.Id,
 				itemId: track.Id,
 			});
 		}

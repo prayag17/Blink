@@ -505,9 +505,9 @@ const ItemDetail = () => {
 			setAudioTracks(audios);
 			setSubtitleTracks(subs);
 
-			setCurrentVideoTrack(videos[0].DisplayTitle);
-			setCurrentAudioTrack(audios[0].DisplayTitle);
-			setCurrentSubTrack(subs[0].DisplayTitle);
+			setCurrentVideoTrack(videos[0]?.DisplayTitle);
+			setCurrentAudioTrack(audios[0]?.DisplayTitle);
+			setCurrentSubTrack(subs[0]?.DisplayTitle);
 		}
 	}, [item.isSuccess]);
 
@@ -1494,7 +1494,8 @@ const ItemDetail = () => {
 									item.data.MediaStreams.length !=
 										0 && (
 										<>
-											{videoTracks != [] && (
+											{videoTracks.length !=
+												0 && (
 												<TableRow
 													sx={{
 														"& td, & th":
@@ -1568,7 +1569,8 @@ const ItemDetail = () => {
 													</TableCell>
 												</TableRow>
 											)}
-											{audioTracks != [] && (
+											{audioTracks.length !=
+												0 && (
 												<TableRow
 													sx={{
 														"& td, & th":
@@ -1638,8 +1640,8 @@ const ItemDetail = () => {
 													</TableCell>
 												</TableRow>
 											)}
-											{subtitleTracks !=
-												[] && (
+											{subtitleTracks.length !=
+												0 && (
 												<TableRow
 													sx={{
 														"& td, & th":

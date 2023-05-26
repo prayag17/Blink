@@ -62,6 +62,7 @@ export const MediaTypeIconCollection = {
 	Photo: <MdiImage className="hero-carousel-background-icon" />,
 	Book: <MdiBook className="hero-carousel-background-icon" />,
 	MusicAlbum: <MdiAlbum className="hero-carousel-background-icon" />,
+	AudioBook: <MdiBookMusic className="hero-carousel-background-icon" />,
 };
 
 export const TypeIconCollectionCard = {

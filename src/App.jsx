@@ -1,6 +1,8 @@
 /** @format */
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
+
+import { appWindow } from "@tauri-apps/api/window";
 
 import Konami from "react-konami-code";
 // @ts-ignore
@@ -271,6 +273,10 @@ function App() {
 	const sixtyNine = () => {
 		setEasterEgg(true);
 	};
+
+	useEffect(() => {
+		appWindow.setFullscreen(false);
+	}, [location]);
 
 	return (
 		<SnackbarProvider maxSnack={5}>
