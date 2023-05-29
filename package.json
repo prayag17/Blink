@@ -16,7 +16,7 @@
 		"@jellyfin/sdk": "^0.8.2",
 		"@mdi/js": "^7.2.96",
 		"@mui/lab": "^5.0.0-alpha.128",
-		"@mui/material": "^5.13.0",
+		"@mui/material": "^5.13.2",
 		"@tanstack/react-query": "^4.26.1",
 		"@tanstack/react-query-devtools": "^4.29.7",
 		"@tauri-apps/api": "^1.2.0",
