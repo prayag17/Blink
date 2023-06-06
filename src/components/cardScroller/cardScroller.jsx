@@ -31,19 +31,19 @@ export const CardScroller = ({
 			slidesToSlide: displayCards + 1,
 		},
 		desktop: {
-			breakpoint: { max: 3000, min: 1025 },
+			breakpoint: { max: 3000, min: 625 },
 			items: displayCards,
 			slidesToSlide: displayCards, // optional, default to 1.
 		},
 		tablet: {
-			breakpoint: { max: 1024, min: 464 },
+			breakpoint: { max: 624, min: 464 },
 			items: displayCards - 2,
 			slidesToSlide: displayCards - 2, // optional, default to 1.
 		},
 		mobile: {
 			breakpoint: { max: 464, min: 0 },
-			items: displayCards - 3,
-			slidesToSlide: displayCards - 3, // optional, default to 1.
+			items: displayCards - 5,
+			slidesToSlide: displayCards - 5, // optional, default to 1.
 		},
 	};
 
