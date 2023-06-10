@@ -12,7 +12,7 @@
 	"dependencies": {
 		"@emotion/react": "^11.10.5",
 		"@emotion/styled": "^11.10.5",
-		"@fontsource/open-sans": "^4.5.13",
+		"@fontsource/open-sans": "^5.0.2",
 		"@jellyfin/sdk": "^0.8.2",
 		"@mdi/js": "^7.2.96",
 		"@mui/lab": "^5.0.0-alpha.128",
@@ -20,7 +20,6 @@
 		"@tanstack/react-query": "^4.26.1",
 		"@tanstack/react-query-devtools": "^4.29.7",
 		"@tauri-apps/api": "^1.2.0",
-		"@videojs/http-streaming": "^3.0.2",
 		"axios": "^1.4.0",
 		"blurhash": "^2.0.5",
 		"events": "^3.3.0",
@@ -45,7 +44,6 @@
 		"@types/react-dom": "^18.2.1",
 		"@vitejs/plugin-react": "^4.0.0",
 		"sass": "^1.62.1",
-		"video.js": "^8.3.0",
 		"vite": "^4.3.1"
 	},
 	"license": "GPL-3.0-only"
