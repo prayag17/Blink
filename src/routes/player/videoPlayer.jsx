@@ -58,6 +58,7 @@ export const VideoPlayer = () => {
 		itemId,
 		itemName,
 		subtitleTracks,
+		selectedSubtitleTrack,
 	] = usePlaybackStore((state) => [
 		state.url,
 		state.startPosition,
@@ -65,6 +66,7 @@ export const VideoPlayer = () => {
 		state.itemId,
 		state.itemName,
 		state.subtitleTracks,
+		state.selectedSubtitleTrack,
 	]);
 
 	var mySubtitle_arr = [];
@@ -510,7 +512,7 @@ export const VideoPlayer = () => {
 						tracks: [
 							{
 								kind: "subtitles",
-								src: `http://localhost:8096/Videos/${itemId}/${itemId}/Subtitles/0/0/Stream.vtt?api_key=${window.api.accessToken}`,
+								src: `http://localhost:8096/Videos/${itemId}/${itemId}/Subtitles/${selectedSubtitleTrack}/Stream.vtt?api_key=${window.api.accessToken}`,
 								srcLang: "en",
 								default: true,
 							},

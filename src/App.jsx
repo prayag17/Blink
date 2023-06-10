@@ -397,7 +397,7 @@ function App() {
 						</Routes>
 					</div>
 				</AnimatePresence>
-				<ReactQueryDevtools />
+				<ReactQueryDevtools position="bottom-right" />
 			</ThemeProvider>
 		</SnackbarProvider>
 	);

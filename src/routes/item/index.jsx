@@ -507,18 +507,25 @@ const ItemDetail = () => {
 
 			setCurrentVideoTrack(videos[0]?.DisplayTitle);
 			setCurrentAudioTrack(audios[0]?.DisplayTitle);
-			setCurrentSubTrack(subs[0]?.DisplayTitle);
+			setCurrentSubTrack(subs[0]?.Index);
 		}
 	}, [item.isSuccess]);
 
-	const [setUrl, setPosition, setDuration, setItemId, setItemName] =
-		usePlaybackStore((state) => [
-			state.setUrl,
-			state.setPosition,
-			state.setDuration,
-			state.setItemId,
-			state.setItemName,
-		]);
+	const [
+		setUrl,
+		setPosition,
+		setDuration,
+		setItemId,
+		setItemName,
+		setSelectedSubtitleTrack,
+	] = usePlaybackStore((state) => [
+		state.setUrl,
+		state.setPosition,
+		state.setDuration,
+		state.setItemId,
+		state.setItemName,
+		state.setSelectedSubtitleTrack,
+	]);
 
 	const [directors, setDirectors] = useState([]);
 	const [writers, setWriters] = useState([]);
@@ -1045,6 +1052,12 @@ const ItemDetail = () => {
 															item
 																.data
 																.RunTimeTicks,
+														);
+														setSubtitleTracks(
+															subtitleTracks,
+														);
+														setSelectedSubtitleTrack(
+															currentSubTrack,
 														);
 													}
 													navigate(
@@ -1697,7 +1710,7 @@ const ItemDetail = () => {
 																				sindex
 																			}
 																			value={
-																				stream.DisplayTitle
+																				stream.Index
 																			}
 																		>
 																			{

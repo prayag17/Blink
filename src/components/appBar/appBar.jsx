@@ -26,6 +26,7 @@ import { MdiHeartOutline } from "../icons/mdiHeartOutline";
 import { MdiArrowLeft } from "../icons/mdiArrowLeft";
 import { MdiCog } from "../icons/mdiCog";
 import { MdiInformation } from "../icons/mdiInformation";
+import { MdiMenu } from "../icons/mdiMenu";
 
 export const AppBar = () => {
 	const navigate = useNavigate();
@@ -87,13 +88,18 @@ export const AppBar = () => {
 		return (
 			<MuiAppBar
 				sx={{
-					width: `calc(100vw - ${theme.spacing(7)})`,
 					backgroundColor: "transparent",
+					paddingRight: "0 !important",
 				}}
 				className={trigger ? "appBar backdropVisible" : "appBar"}
 				elevation={0}
 			>
-				<Toolbar sx={{ justifyContent: "space-between" }}>
+				<Toolbar
+					sx={{
+						justifyContent: "space-between",
+						paddingLeft: "12px !important",
+					}}
+				>
 					<Box
 						sx={{
 							display: "flex",
@@ -102,6 +108,13 @@ export const AppBar = () => {
 						}}
 					>
 						<IconButton
+							color="inherit"
+							aria-label="open drawer"
+							// onClick={handleDrawerOpen}
+						>
+							<MdiMenu />
+						</IconButton>
+						<IconButton
 							onClick={() => navigate(-1)}
 							sx={{
 								transition: "transform 0.2s",
@@ -109,6 +122,7 @@ export const AppBar = () => {
 									? "scale(1)"
 									: "scale(0)",
 								transformOrigin: "left",
+								ml: 2,
 							}}
 						>
 							<MdiArrowLeft />

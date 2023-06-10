@@ -117,6 +117,7 @@ export const SideMenu = ({}) => {
 						border: "none",
 						width: `calc(${theme.spacing(7)} + 10px)`,
 						height: "100vh",
+						zIndex: "1",
 						// display: visible ? "block" : "none",
 					},
 				}}
@@ -137,13 +138,6 @@ export const SideMenu = ({}) => {
 						{user["Name"]}
 						</Typography>
 					</div> */}
-					<IconButton
-						color="inherit"
-						aria-label="open drawer"
-						onClick={handleDrawerOpen}
-					>
-						<MdiMenu />
-					</IconButton>
 				</DrawerHeader>
 				<Divider />
 				{libraries.isLoading ? (

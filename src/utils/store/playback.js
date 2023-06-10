@@ -9,6 +9,7 @@ export const usePlaybackStore = create((set) => ({
 	itemId: "",
 	itemName: "",
 	subtitleTracks: [],
+	selectedSubtitleTrack: 0,
 	setUrl: (aurl) => set((state) => ({ ...state, url: aurl })),
 	setPosition: (apos) => set((state) => ({ ...state, startPosition: apos })),
 	setDuration: (adur) => set((state) => ({ ...state, duration: adur })),
@@ -26,4 +27,6 @@ export const usePlaybackStore = create((set) => ({
 				},
 			],
 		})),
+	setSelectedSubtitleTrack: (asub) =>
+		set((state) => ({ ...state, selectedSubtitleTrack: asub })),
 }));
