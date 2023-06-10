@@ -9,7 +9,11 @@ import IconButton from "@mui/material/IconButton";
 import Typography from "@mui/material/Typography";
 import Slider from "@mui/material/Slider";
 import CircularProgress from "@mui/material/CircularProgress";
-import Grow from "@mui/material/Grow";
+import Menu from "@mui/material/Menu";
+import MenuItem from "@mui/material/MenuItem";
+import List from "@mui/material/List";
+import ListItem from "@mui/material/ListItem";
+import ListItemText from "@mui/material/ListItemText";
 import Backdrop from "@mui/material/Backdrop";
 
 import ReactPlayer from "react-player";
@@ -33,6 +37,7 @@ import { MdiFullscreenExit } from "../../components/icons/mdiFullscreenExit";
 import { MdiPictureInPictureBottomRight } from "../../components/icons/mdiPictureInPictureBottomRight";
 import { MdiVolumeHigh } from "../../components/icons/mdiVolumeHigh";
 import { MdiVolumeOff } from "../../components/icons/mdiVolumeOff";
+import { MdiPlaySpeed } from "../../components/icons/mdiPlaySpeed";
 
 import { endsAt } from "../../utils/date/time";
 
@@ -40,18 +45,34 @@ import useKeyPress from "../../utils/hooks/useKeyPress";
 
 export const VideoPlayer = () => {
 	const navigate = useNavigate();
-	const [url, startPosition, itemDuration, itemId, itemName] =
-		usePlaybackStore((state) => [
-			state.url,
-			state.startPosition,
-			state.duration,
-			state.itemId,
-			state.itemName,
-		]);
+
+	const [speedMenuEl, setSpeedMenuEl] = useState(null);
+	const [speed, setSpeed] = useState(3);
+	const speedMenuState = Boolean(speedMenuEl);
+	const availableSpeeds = [0.25, 0.5, 0.75, 1, 1.25, 1.5, 1.75, 2];
+
+	const [
+		url,
+		startPosition,
+		itemDuration,
+		itemId,
+		itemName,
+		subtitleTracks,
+	] = usePlaybackStore((state) => [
+		state.url,
+		state.startPosition,
+		state.duration,
+		state.itemId,
+		state.itemName,
+		state.subtitleTracks,
+	]);
+
+	var mySubtitle_arr = [];
 
 	const [showControls, setShowControls] = useState(false);
 
 	const playerRef = useRef();
+	const [isSeeking, setIsSeeking] = useState(false);
 	const [isBuffering, setIsBuffering] = useState(true);
 	const [isPlaying, setIsPlaying] = useState(true);
 	const [isMuted, setIsMuted] = useState(false);
@@ -75,8 +96,10 @@ export const VideoPlayer = () => {
 	}, [isReady]);
 
 	const onProgress = async (e) => {
-		setProgress(e.played);
-		setCurrentTime(secToTicks(e.playedSeconds));
+		if (!isSeeking) {
+			setProgress(e.played);
+			setCurrentTime(secToTicks(e.playedSeconds));
+		}
 		await getPlaystateApi(window.api).reportPlaybackProgress({
 			playbackProgressInfo: {
 				ItemId: itemId,
@@ -84,6 +107,7 @@ export const VideoPlayer = () => {
 				PositionTicks: secToTicks(e.playedSeconds),
 				PlaybackStartTimeTicks: startPosition,
 				VolumeLevel: volume * 100,
+				IsPaused: !isPlaying,
 			},
 		});
 	};
@@ -135,6 +159,10 @@ export const VideoPlayer = () => {
 			}, 5000);
 		}
 	}, [showControls]);
+
+	useEffect(() => {
+		console.log(subtitleTracks);
+	}, [mySubtitle_arr]);
 
 	const handleKeyPress = useCallback((event) => {
 		switch (event.key) {
@@ -229,6 +257,7 @@ export const VideoPlayer = () => {
 							step={0.01}
 							max={itemDuration}
 							onChange={(e, newVal) => {
+								setIsSeeking(true);
 								setCurrentTime(newVal);
 							}}
 							onChangeCommitted={(e, newVal) => {
@@ -236,6 +265,7 @@ export const VideoPlayer = () => {
 									ticksToSec(newVal),
 								);
 								setCurrentTime(newVal);
+								setIsSeeking(false);
 							}}
 							valueLabelDisplay="auto"
 							valueLabelFormat={(value) =>
@@ -315,90 +345,123 @@ export const VideoPlayer = () => {
 							alignItems="center"
 							justifyContent="center"
 						>
-							<Stack
-								direction="row"
-								width="15em"
-								alignItems="center"
-								justifyContent="center"
-								gap={1}
-								sx={{
-									transition: "250ms background",
-									borderRadius: 20,
-									"&:hover": {
-										background: "rgb(0 0 0/0.5)",
-										backdropFilter: "blur(5px)",
-									},
-								}}
-								onMouseOver={() => setShowVolume(true)}
-								onMouseOut={() => setShowVolume(false)}
-								padding="0.25em 1em"
-							>
-								<Grow
-									style={{
-										transformOrigin:
-											" right center",
+							<Box>
+								<Menu
+									anchorEl={speedMenuEl}
+									open={speedMenuState}
+									onClose={() =>
+										setSpeedMenuEl(null)
+									}
+									MenuListProps={{
+										"aria-labelledby":
+											"lock-button",
+										role: "listbox",
 									}}
-									in={showVolume}
-								>
-									<Slider
-										value={volume * 100}
-										step={1}
-										max={100}
-										onChange={(e, newVal) =>
-											setVolume(newVal / 100)
-										}
-										valueLabelDisplay="auto"
-										valueLabelFormat={(value) =>
-											Math.floor(value)
-										}
-										sx={{
-											"& .MuiSlider-valueLabel":
-												{
-													lineHeight: 1.2,
-													fontSize: 24,
-													background:
-														"rgb(0 0 0 / 0.5)",
-													backdropFilter:
-														"blur(5px)",
-													padding: 1,
-													borderRadius:
-														"10px",
-													border: "1px solid rgb(255 255 255 / 0.15)",
-													boxShadow:
-														"0 0 10px rgb(0 0 0 / 0.4) ",
-													transform:
-														"translatey(-120%) scale(0)",
-													"&:before": {
-														display: "none",
-													},
-													"&.MuiSlider-valueLabelOpen":
-														{
-															transform:
-																"translateY(-120%) scale(1)",
-														},
-													"& > *": {
-														transform:
-															"rotate(0deg)",
-													},
-												},
-										}}
-									/>
-								</Grow>
-								<IconButton
+									anchorOrigin={{
+										vertical: "bottom",
+										horizontal: "center",
+									}}
+									transformOrigin={{
+										vertical: "bottom",
+										horizontal: "center",
+									}}
 									sx={{
-										ml: 0.1,
+										mb: 20,
 									}}
-									onClick={() =>
-										setIsMuted(!isMuted)
+								>
+									{availableSpeeds.map(
+										(sspeed, index) => {
+											return (
+												<MenuItem
+													key={sspeed}
+													selected={
+														index ===
+														speed
+													}
+													onClick={() => {
+														setSpeed(
+															index,
+														);
+														setSpeedMenuEl(
+															null,
+														);
+													}}
+													sx={{
+														width: 160,
+													}}
+												>
+													{sspeed}x
+												</MenuItem>
+											);
+										},
+									)}
+								</Menu>
+								<IconButton
+									onClick={(e) =>
+										setSpeedMenuEl(
+											e.currentTarget,
+										)
 									}
 								>
-									{isMuted ? (
-										<MdiVolumeOff />
-									) : (
-										<MdiVolumeHigh />
-									)}
+									<MdiPlaySpeed />
 								</IconButton>
-							</Stack>
+							</Box>
+							<IconButton
+								sx={{
+									ml: 0.1,
+								}}
+								onClick={() => setIsMuted(!isMuted)}
+							>
+								{isMuted ? (
+									<MdiVolumeOff />
+								) : (
+									<MdiVolumeHigh />
+								)}
+							</IconButton>
+							<Slider
+								value={isMuted ? 0 : volume * 100}
+								step={1}
+								max={100}
+								onChange={(e, newVal) =>
+									setVolume(newVal / 100)
+								}
+								valueLabelDisplay="auto"
+								valueLabelFormat={(value) =>
+									Math.floor(value)
+								}
+								sx={{
+									mr: 1,
+									ml: 1,
+									width: "10em",
+									"& .MuiSlider-valueLabel": {
+										lineHeight: 1.2,
+										fontSize: 24,
+										background:
+											"rgb(0 0 0 / 0.5)",
+										backdropFilter: "blur(5px)",
+										padding: 1,
+										borderRadius: "10px",
+										border: "1px solid rgb(255 255 255 / 0.15)",
+										boxShadow:
+											"0 0 10px rgb(0 0 0 / 0.4) ",
+										transform:
+											"translatey(-120%) scale(0)",
+										"&:before": {
+											display: "none",
+										},
+										"&.MuiSlider-valueLabelOpen":
+											{
+												transform:
+													"translateY(-120%) scale(1)",
+											},
+										"& > *": {
+											transform:
+												"rotate(0deg)",
+										},
+									},
+								}}
+							/>
+
 							<IconButton
 								onClick={() => {
 									setIsPIP(!isPIP);
@@ -439,6 +502,22 @@ export const VideoPlayer = () => {
 				volume={volume}
 				onBuffer={() => setIsBuffering(true)}
 				onBufferEnd={() => setIsBuffering(false)}
+				config={{
+					file: {
+						attributes: {
+							crossOrigin: "true",
+						},
+						tracks: [
+							{
+								kind: "subtitles",
+								src: `http://localhost:8096/Videos/${itemId}/${itemId}/Subtitles/0/0/Stream.vtt?api_key=${window.api.accessToken}`,
+								srcLang: "en",
+								default: true,
+							},
+						],
+					},
+				}}
+				playbackRate={availableSpeeds[speed]}
 			/>
 		</Box>
 	);
