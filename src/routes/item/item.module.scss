@@ -17,7 +17,7 @@
 		display: flex;
 		gap: 1em;
 		justify-content: flex-start;
-		align-items: flex-start;
+		align-items: flex-end;
 		position: relative;
 		flex-wrap: wrap;
 		&-backdrop {
@@ -30,11 +30,11 @@
 			left: -24px;
 			z-index: -2;
 			filter: brightness(0.6);
-			mask-image: linear-gradient(to bottom, black 75%, transparent);
+			mask-image: linear-gradient(0deg, transparent, black 75%);
 			-webkit-mask-image: linear-gradient(
-				to bottom,
-				black 75%,
-				transparent
+				0deg,
+				transparent,
+				black 75%
 			);
 		}
 	}
@@ -49,7 +49,7 @@
 			z-index: -1;
 		}
 		&-container {
-			width: 20%;
+			width: 15%;
 			flex-shrink: 0;
 			position: relative;
 			border-radius: $border-radius-default;

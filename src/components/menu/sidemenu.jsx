@@ -113,18 +113,39 @@ export const SideMenu = ({}) => {
 				open={false}
 				PaperProps={{
 					sx: {
-						backgroundColor: "transparent",
+						backgroundColor: "inherit",
 						border: "none",
 						width: `calc(${theme.spacing(7)} + 10px)`,
-						height: "100%",
-						position: "inherit",
+						height: "100vh",
+						// display: visible ? "block" : "none",
 					},
 				}}
 				sx={{
 					width: `calc(${theme.spacing(7)} + 10px)`,
-					background: "transparent",
+					background: theme.palette.background.paper,
 				}}
 			>
+				<DrawerHeader
+					className="Mui-DrawerHeader"
+					sx={{
+						justifyContent: "center",
+					}}
+				>
+					{/* <div>
+						<Avatar src={""}/>
+						<Typography variant="h3">
+						{user["Name"]}
+						</Typography>
+					</div> */}
+					<IconButton
+						color="inherit"
+						aria-label="open drawer"
+						onClick={handleDrawerOpen}
+					>
+						<MdiMenu />
+					</IconButton>
+				</DrawerHeader>
+				<Divider />
 				{libraries.isLoading ? (
 					<>
 						<Skeleton

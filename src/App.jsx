@@ -40,7 +40,7 @@ import DialogContentText from "@mui/material/DialogContentText";
 import DialogTitle from "@mui/material/DialogTitle";
 import Button from "@mui/material/Button";
 import Box from "@mui/material/Box";
-import Stack from "@mui/material/Stack";
+import CircularProgress from "@mui/material/CircularProgress";
 
 // Routes
 import { ServerSetup, ServerList } from "./routes/setup/server";
@@ -72,9 +72,6 @@ import { delServer, getServer } from "./utils/storage/servers.js";
 import { delUser, getUser } from "./utils/storage/user.js";
 
 import axios from "axios";
-import { Blurhash } from "react-blurhash";
-import zIndex from "@mui/material/styles/zIndex.js";
-import { useBackdropStore } from "./utils/store/backdrop.js";
 
 const jellyfin = new Jellyfin({
 	clientInfo: {
@@ -123,9 +120,6 @@ const AnimationWrapper = () => {
 			exit="exit"
 			transition={{
 				duration: 0.35,
-			}}
-			style={{
-				width: "100%",
 			}}
 		>
 			<Outlet />
@@ -284,33 +278,9 @@ function App() {
 		appWindow.setFullscreen(false);
 	}, [location]);
 
-	const [hash] = useBackdropStore((state) => [state.hash]);
-
 	return (
 		<SnackbarProvider maxSnack={5}>
 			<ThemeProvider theme={theme}>
-				<Box
-					className="appBackdrop"
-					sx={{
-						position: "fixed",
-						top: 0,
-						left: 0,
-						right: 0,
-						bottom: 0,
-						zIndex: "-1",
-						opacity: 0.25,
-					}}
-				>
-					<Blurhash
-						hash={hash}
-						width={1920}
-						height={1080}
-						style={{
-							width: "100%",
-							height: "100%",
-						}}
-					/>
-				</Box>
 				<Kon resetDelay={1000} action={sixtyNine}></Kon>
 				<Dialog
 					open={easterEgg}
@@ -353,23 +323,11 @@ function App() {
 						</Button>
 					</DialogActions>
 				</Dialog>
-				<CssBaseline />
-				<AppBar />
-				<Box className="scrollContainer">
-					<Stack
-						direction="row"
-						width="100vw"
-						height="100%"
-						sx={{
-							overflow: "hidden",
-							position: "absolute",
-							top: 0,
-							right: 0,
-							bottom: 0,
-							left: 0,
-						}}
-					>
+				<AnimatePresence>
+					<div style={{ display: "flex" }}>
+						<CssBaseline />
 						<SideMenu />
+						<AppBar />
 						<Routes
 							key={location.pathname}
 							location={location}
@@ -437,9 +395,9 @@ function App() {
 								/>
 							</Route>
 						</Routes>
-					</Stack>
-				</Box>
-				<ReactQueryDevtools position="bottom-right" />
+					</div>
+				</AnimatePresence>
+				<ReactQueryDevtools />
 			</ThemeProvider>
 		</SnackbarProvider>
 	);

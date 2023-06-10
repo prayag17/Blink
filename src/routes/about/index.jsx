@@ -38,6 +38,9 @@ const About = () => {
 			className="scrollY"
 			sx={{
 				flexGrow: 1,
+				pt: 11,
+				px: 3,
+				pb: 3,
 				position: "relative",
 			}}
 		>

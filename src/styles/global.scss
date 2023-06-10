@@ -41,18 +41,14 @@ body {
 	overflow-y: overlay;
 }
 
-#root {
-	display: flex;
-	flex-direction: column;
-	height: 100vh;
-	width: 100vw;
-}
-
+#root,
 .root-page {
+	height: fit-content;
+	width: 100%;
+	position: relative;
+	overflow-y: hidden;
 	overflow-x: hidden;
-	height: 100%;
-	margin-bottom: 12vh;
-	overflow-y: auto;
+	min-height: 100vh;
 }
 
 .centered {
@@ -100,17 +96,13 @@ h1 {
 	color: white !important;
 }
 
-.scrollContainer {
-	position: relative;
-	flex-grow: 1;
-}
-
 .scrollY {
 	overflow-x: hidden;
-	overflow-y: auto;
+	overflow-y: visible;
+	height: fit-content;
 	width: inherit;
 	box-sizing: border-box;
-	padding: 1.5em;
+	min-height: 100vh;
 }
 
 .empty {

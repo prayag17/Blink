@@ -66,7 +66,6 @@ import { ErrorNotice } from "../../components/notices/errorNotice/errorNotice";
 import { ArtistAlbum } from "../../components/layouts/artist/artistAlbum";
 import { MdiMusic } from "../../components/icons/mdiMusic";
 import { usePlaybackStore } from "../../utils/store/playback";
-import { useBackdropStore } from "../../utils/store/backdrop";
 function TabPanel(props) {
 	const { children, value, index, ...other } = props;
 
@@ -519,11 +518,7 @@ const ItemDetail = () => {
 			state.setDuration,
 			state.setItemId,
 			state.setItemName,
-			state.setItemName,
-			,
 		]);
-
-	const [setHash] = useBackdropStore((state) => [state.setHash]);
 
 	const [directors, setDirectors] = useState([]);
 	const [writers, setWriters] = useState([]);
@@ -537,30 +532,8 @@ const ItemDetail = () => {
 				(itm) => itm.Type == "Writer",
 			);
 			setWriters(writeTp);
-
-			if (!!item.data.ParentBackdropImageTags) {
-				setHash(
-					item.data.ImageBlurHashes.Backdrop[
-						item.data.ParentBackdropImageTags[0]
-					],
-				);
-			} else if (item.data.BackdropImageTags.length != 0) {
-				setHash(
-					item.data.ImageBlurHashes.Backdrop[
-						item.data.BackdropImageTags[0]
-					],
-				);
-			} else {
-				setHash("LGJCbc|t1s1}1{JU|y,uAo=3,s$Q");
-			}
 		}
 	}, [item.isSuccess]);
-
-	const [crew, setCrew] = useState([]);
-
-	useEffect(() => {
-		setCrew(directors.concat(...writers));
-	}, [writers, directors]);
 
 	if (item.isLoading || similarItems.isLoading) {
 		return (
@@ -580,12 +553,54 @@ const ItemDetail = () => {
 	if (item.isSuccess && similarItems.isSuccess) {
 		return (
 			<>
+				<Box className="item-detail-backdrop">
+					{item.data.BackdropImageTags.length != 0 && (
+						<Blurhash
+							hash={
+								item.data.ImageBlurHashes.Backdrop[
+									item.data.BackdropImageTags[0]
+								]
+							}
+							width="100%"
+							height="100%"
+							resolutionX={14}
+							resolutionY={22}
+							style={{
+								aspectRatio: "0.666",
+							}}
+							punch={1}
+							className="item-detail-image-blurhash"
+						/>
+					)}
+					{!!item.data.ParentBackdropImageTags &&
+						item.data.ParentBackdropImageTags.length != 0 && (
+							<Blurhash
+								hash={
+									item.data.ImageBlurHashes.Backdrop[
+										item.data
+											.ParentBackdropImageTags[0]
+									]
+								}
+								width="100%"
+								height="100%"
+								resolutionX={14}
+								resolutionY={22}
+								style={{
+									aspectRatio: "0.666",
+								}}
+								punch={1}
+								className="item-detail-image-blurhash"
+							/>
+						)}
+				</Box>
 				<Box
 					recomponent="main"
 					className="scrollY"
 					sx={{
 						display: "flex",
-						display: "flex",
+						pt: 11,
+						px: 3,
+						pb: 3,
 						position: "relative",
 						flexFlow: "column",
 					}}
@@ -593,9 +608,15 @@ const ItemDetail = () => {
 					<Box
 						className="item-detail-header"
 						mb={2}
-						paddingTop={5}
+						paddingTop={
+							item.data.Type.includes("Music") ||
+							item.data.Type === BaseItemKind.Episode ||
+							!!item.data.PrimaryImageAspectRatio
+								? 10
+								: 0
+						}
 					>
-						{/* <Box className="item-detail-header-backdrop">
+						<Box className="item-detail-header-backdrop">
 							{item.data.Type != BaseItemKind.MusicAlbum &&
 							item.data.Type != BaseItemKind.Episode
 								? item.data.BackdropImageTags.length !=
@@ -670,7 +691,7 @@ const ItemDetail = () => {
 							>
 								{TypeIconCollectionCard[item.data.Type]}
 							</Box>
-						</Box> */}
+						</Box>
 
 						<Box
 							className="item-detail-info-container"
@@ -682,7 +703,7 @@ const ItemDetail = () => {
 									item.data.Type ===
 									BaseItemKind.Episode
 										? "center !important"
-										: "flex-start",
+										: "flex-end",
 								justifyContent: "flex-start",
 								width: "100%",
 							}}
@@ -767,420 +788,351 @@ const ItemDetail = () => {
 									}
 								</div>
 							</Box>
-							<Stack
-								direction="column"
-								alignItems="flex-start"
-								gap={2}
-								mt={2}
+							<Box
+								sx={{
+									display: "flex",
+									flexDirection: "column",
+								}}
 							>
 								<Box
-									sx={{
-										display: "flex",
-										flexDirection: "column",
-									}}
+									className="item-detail-title-name"
+									sx={{ mb: 1 }}
 								>
-									<Box
-										className="item-detail-title-name"
-										sx={{ mb: 1 }}
-									>
-										{item.data.Type ===
-											BaseItemKind.Episode && (
-											<Link
-												component={
-													RouterLink
-												}
-												to={`/item/${item.data.SeriesId}`}
-												variant="h3"
-												textOverflow="ellipsis"
-												whiteSpace="nowrap"
-												width="100%"
-												color="inherit"
-												underline="hover"
-												mb={1}
-											>
-												{!!item.data
-													.ParentLogoItemId ? (
-													<img
-														className="item-detail-title-logo"
-														src={`${window.api.basePath}/Items/${item.data.SeriesId}/Images/Logo?cropWhitespace=True&quality=80&tag=${item.data.ParentLogoImageTag}`}
-													/>
-												) : (
-													item.data
-														.SeriesName
-												)}
-											</Link>
-										)}
-										{item.data.Type ===
-										BaseItemKind.Episode ? (
-											<Typography
-												variant="h4"
-												textOverflow="ellipsis"
-												whiteSpace="nowrap"
-												width="100%"
-												sx={{
-													opacity: 0.7,
-												}}
-											>
-												{`S${item.data.ParentIndexNumber}:E${item.data.IndexNumber} - ${item.data.Name}`}
-											</Typography>
-										) : (
-											<Typography
-												variant="h3"
-												textOverflow="ellipsis"
-												whiteSpace="nowrap"
-												width="100%"
-											>
-												{!!item.data
-													.ImageTags
-													.Logo ? (
-													<img
-														className="item-detail-title-logo"
-														src={`${window.api.basePath}/Items/${item.data.Id}/Images/Logo?cropWhitespace=True&quality=80&tag=${item.data.ImageTags.Logo}`}
-													/>
-												) : (
-													item.data.Name
-												)}
-											</Typography>
-										)}
-										<Typography
-											variant="h6"
-											sx={{
-												opacity: 0.7,
-											}}
+									{item.data.Type ===
+										BaseItemKind.Episode && (
+										<Link
+											component={RouterLink}
+											to={`/item/${item.data.SeriesId}`}
+											variant="h3"
+											textOverflow="ellipsis"
+											whiteSpace="nowrap"
+											width="100%"
+											color="inherit"
+											underline="hover"
+											mb={1}
 										>
-											{item.data.OriginalTitle}
-										</Typography>
-										{!!item.data.AlbumArtists && (
-											<Stack
-												direction="row"
-												gap={0.5}
-												divider={
-													<Typography variant="h6">
-														,
-													</Typography>
-												}
-											>
-												{item.data.AlbumArtists.map(
-													(
-														artist,
-														aindex,
-													) => {
-														return (
-															<Link
-																component={
-																	RouterLink
-																}
-																variant="h6"
-																sx={{
-																	opacity: 0.7,
-																}}
-																color="inherit"
-																key={
-																	aindex
-																}
-																to={`/item/${artist.Id}`}
-															>
-																{
-																	artist.Name
-																}
-															</Link>
-														);
-													},
-												)}
-											</Stack>
-										)}
-									</Box>
-									<Stack
-										direction="row"
-										gap={2}
-										divider={
-											<Divider
-												variant="middle"
-												flexItem
-												orientation="vertical"
-											/>
-										}
-										sx={{
-											alignItems: "center",
-											width: "100%",
-										}}
-									>
-										{item.data.Type !=
-											"MusicArtist" &&
-											item.data
-												.ProductionYear && (
-												<Typography
-													sx={{
-														flexGrow: 0,
-													}}
-													variant="subtitle1"
-												>
-													{
-														item.data
-															.ProductionYear
-													}
-												</Typography>
+											{!!item.data
+												.ParentLogoItemId ? (
+												<img
+													className="item-detail-title-logo"
+													src={`${window.api.basePath}/Items/${item.data.SeriesId}/Images/Logo?cropWhitespace=True&quality=80&tag=${item.data.ParentLogoImageTag}`}
+												/>
+											) : (
+												item.data.SeriesName
 											)}
-										{item.data.Type !=
-											"MusicArtist" && (
-											<Chip
-												variant="outlined"
-												label={
-													!!item.data
-														.OfficialRating
-														? item
-																.data
-																.OfficialRating
-														: "Not Rated"
-												}
-											/>
-										)}
-										{item.data.Type !=
-											"MusicArtist" && (
-											<Box
-												sx={{
-													display: "flex",
-													gap: "0.25em",
-													alignItems:
-														"center",
-												}}
-												className="item-detail-info-rating"
-											>
-												{!!item.data
-													.CommunityRating ? (
-													<>
-														<MdiStar
-															sx={{
-																color: yellow[700],
-															}}
-														/>
-														<Typography variant="subtitle1">
-															{Math.round(
-																item
-																	.data
-																	.CommunityRating *
-																	10,
-															) /
-																10}
-														</Typography>
-													</>
-												) : (
-													<Typography variant="subtitle1">
-														No
-														Community
-														Rating
-													</Typography>
-												)}
-											</Box>
-										)}
-										{!!item.data.RunTimeTicks && (
-											<Typography variant="subtitle1">
-												{getRuntimeFull(
-													item.data
-														.RunTimeTicks,
-												)}
-											</Typography>
-										)}
-										{!!item.data.RunTimeTicks && (
-											<Typography variant="subtitle1">
-												{endsAt(
-													item.data
-														.RunTimeTicks,
-												)}
-											</Typography>
-										)}
-									</Stack>
-								</Box>
-								<Box
-									className="item-detail-tagline"
-									sx={{ width: "100%" }}
-								>
+										</Link>
+									)}
+									{item.data.Type ===
+									BaseItemKind.Episode ? (
+										<Typography
+											variant="h4"
+											textOverflow="ellipsis"
+											whiteSpace="nowrap"
+											width="100%"
+											sx={{ opacity: 0.7 }}
+										>
+											{`S${item.data.ParentIndexNumber}:E${item.data.IndexNumber} - ${item.data.Name}`}
+										</Typography>
+									) : (
+										<Typography
+											variant="h3"
+											textOverflow="ellipsis"
+											whiteSpace="nowrap"
+											width="100%"
+										>
+											{!!item.data.ImageTags
+												.Logo ? (
+												<img
+													className="item-detail-title-logo"
+													src={`${window.api.basePath}/Items/${item.data.Id}/Images/Logo?cropWhitespace=True&quality=80&tag=${item.data.ImageTags.Logo}`}
+												/>
+											) : (
+												item.data.Name
+											)}
+										</Typography>
+									)}
 									<Typography
-										variant="h5"
-										fontStyle="italic"
+										variant="h6"
 										sx={{ opacity: 0.7 }}
 									>
-										{item.data.Taglines[0]}
+										{item.data.OriginalTitle}
 									</Typography>
-								</Box>
-								{item.data.Genres.length != 0 && (
-									<Stack direction="row" gap={1}>
-										{item.data.Genres.map(
-											(genre, index) => {
-												return (
-													<Chip
-														key={
-															index
-														}
-														variant="filled"
-														label={
-															genre
-														}
-													/>
-												);
-											},
-										)}
-									</Stack>
-								)}
-								{!!item.data.Overview && (
-									<Box>
-										<Typography
-											variant="body1"
-											sx={{
-												opacity: 0.8,
-											}}
-											mb={2}
+									{!!item.data.AlbumArtists && (
+										<Stack
+											direction="row"
+											gap={0.5}
+											divider={
+												<Typography variant="h6">
+													,
+												</Typography>
+											}
 										>
-											{item.data.Overview}
-										</Typography>
-									</Box>
-								)}
+											{item.data.AlbumArtists.map(
+												(
+													artist,
+													aindex,
+												) => {
+													return (
+														<Link
+															component={
+																RouterLink
+															}
+															variant="h6"
+															sx={{
+																opacity: 0.7,
+															}}
+															color="inherit"
+															key={
+																aindex
+															}
+															to={`/item/${artist.Id}`}
+														>
+															{
+																artist.Name
+															}
+														</Link>
+													);
+												},
+											)}
+										</Stack>
+									)}
+								</Box>
 								<Stack
 									direction="row"
-									gap={1}
-									alignItems="center"
-									justifyContent="center"
+									gap={2}
+									divider={
+										<Divider
+											variant="middle"
+											flexItem
+											orientation="vertical"
+										/>
+									}
+									sx={{
+										alignItems: "center",
+										width: "100%",
+									}}
 								>
-									{item.data.Type != "Person" &&
-										!item.data.Type.includes(
-											"Music",
-										) && (
-											<>
-												<Button
-													variant="contained"
-													size="large"
-													startIcon={
-														<MdiPlayOutline />
-													}
-													sx={{
-														position:
-															"relative",
-														overflow:
-															"hidden",
-													}}
-													onClick={() => {
-														if (
-															!!item
-																.data
-																.VideoType
-														) {
-															setUrl(
-																`${window.api.basePath}/Videos/${item.data.Id}/stream.${item.data.MediaSources[0].Container}?Static=true&mediaSourceId=${item.data.Id}&deviceId=${window.api.deviceInfo.id}&api_key=${window.api.accessToken}&Tag=${item.data.MediaSources[0].ETag}`,
-															);
-															setPosition(
-																item
-																	.data
-																	.UserData
-																	.PlaybackPositionTicks,
-															);
-															setItemName(
-																item
-																	.data
-																	.Name,
-															);
-															setItemId(
-																item
-																	.data
-																	.Id,
-															);
-															setDuration(
-																item
-																	.data
-																	.RunTimeTicks,
-															);
-															if (
-																subtitleTracks.length !=
-																0
-															) {
-																// setSubtitleTracks(
-																// 	{
-																// 		kind: "subtitles",
-																// 		src: `http://localhost:8096/Videos/e2d0ae00-f458-d4d4-7e09-1768ca0f485c/e2d0ae00f458d4d47e091768ca0f485c/Subtitles/0/0/Stream.vtt?api_key=${window.api.accessToken}`,
-																// 		srcLang: "en",
-																// 		default: true,
-																// 	},
-																// );
-																setSubtitleTracks();
-															}
-														}
-														navigate(
-															`/player`,
-														);
-													}}
-												>
-													{!!item.data
-														.UserData
-														.PlayedPercentage &&
+									{item.data.Type != "MusicArtist" &&
+										item.data.ProductionYear && (
+											<Typography
+												sx={{ flexGrow: 0 }}
+												variant="subtitle1"
+											>
+												{
 													item.data
-														.UserData
-														.PlayedPercentage >
-														0
-														? "Resume"
-														: "Play"}
-													{!!item.data
-														.UserData
-														.PlayedPercentage && (
-														<LinearProgress
-															variant="determinate"
-															value={
-																item
-																	.data
-																	.UserData
-																	.PlayedPercentage
-															}
-															color="white"
-															sx={{
-																position:
-																	"absolute",
-																height: "100%",
-																width: "100%",
-																background:
-																	"transparent",
-																zIndex: "0",
-																opacity: 0.2,
-															}}
-														/>
-													)}
-												</Button>
-
-												<IconButton
-													onClick={
-														handleMarkPlayedOrunPlayed
-													}
-												>
-													<MdiCheck
+														.ProductionYear
+												}
+											</Typography>
+										)}
+									{item.data.Type !=
+										"MusicArtist" && (
+										<Chip
+											variant="outlined"
+											label={
+												!!item.data
+													.OfficialRating
+													? item.data
+															.OfficialRating
+													: "Not Rated"
+											}
+										/>
+									)}
+									{item.data.Type !=
+										"MusicArtist" && (
+										<Box
+											sx={{
+												display: "flex",
+												gap: "0.25em",
+												alignItems:
+													"center",
+											}}
+											className="item-detail-info-rating"
+										>
+											{!!item.data
+												.CommunityRating ? (
+												<>
+													<MdiStar
 														sx={{
-															color: item
-																.data
-																.UserData
-																.Played
-																? green[400]
-																: "white",
+															color: yellow[700],
 														}}
 													/>
-												</IconButton>
-											</>
-										)}
-									<IconButton onClick={handleLiking}>
-										{item.data.UserData
-											.IsFavorite ? (
-											<MdiHeart
-												sx={{
-													color: pink[700],
-												}}
-											/>
-										) : (
-											<MdiHeartOutline />
-										)}
-									</IconButton>
+													<Typography variant="subtitle1">
+														{Math.round(
+															item
+																.data
+																.CommunityRating *
+																10,
+														) / 10}
+													</Typography>
+												</>
+											) : (
+												<Typography variant="subtitle1">
+													No Community
+													Rating
+												</Typography>
+											)}
+										</Box>
+									)}
+									{!!item.data.RunTimeTicks && (
+										<Typography variant="subtitle1">
+											{getRuntimeFull(
+												item.data
+													.RunTimeTicks,
+											)}
+										</Typography>
+									)}
+									{!!item.data.RunTimeTicks && (
+										<Typography variant="subtitle1">
+											{endsAt(
+												item.data
+													.RunTimeTicks,
+											)}
+										</Typography>
+									)}
 								</Stack>
+							</Box>
+							<Stack
+								direction="row"
+								gap={1}
+								alignItems="center"
+								justifyContent="center"
+								ml="auto"
+								mr={2}
+							>
+								{item.data.Type != "Person" &&
+									!item.data.Type.includes(
+										"Music",
+									) && (
+										<>
+											<Button
+												variant="contained"
+												size="large"
+												startIcon={
+													<MdiPlayOutline />
+												}
+												sx={{
+													position:
+														"relative",
+													overflow:
+														"hidden",
+												}}
+												onClick={() => {
+													if (
+														!!item
+															.data
+															.VideoType
+													) {
+														setUrl(
+															`${window.api.basePath}/Videos/${item.data.Id}/stream.${item.data.MediaSources[0].Container}?Static=true&mediaSourceId=${item.data.Id}&deviceId=${window.api.deviceInfo.id}&api_key=${window.api.accessToken}&Tag=${item.data.MediaSources[0].ETag}`,
+														);
+														setPosition(
+															item
+																.data
+																.UserData
+																.PlaybackPositionTicks,
+														);
+														setItemName(
+															item
+																.data
+																.Name,
+														);
+														setItemId(
+															item
+																.data
+																.Id,
+														);
+														setDuration(
+															item
+																.data
+																.RunTimeTicks,
+														);
+													}
+													navigate(
+														`/player`,
+													);
+												}}
+											>
+												{!!item.data
+													.UserData
+													.PlayedPercentage &&
+												item.data.UserData
+													.PlayedPercentage >
+													0
+													? "Resume"
+													: "Play"}
+												{!!item.data
+													.UserData
+													.PlayedPercentage && (
+													<LinearProgress
+														variant="determinate"
+														value={
+															item
+																.data
+																.UserData
+																.PlayedPercentage
+														}
+														color="white"
+														sx={{
+															position:
+																"absolute",
+															height: "100%",
+															width: "100%",
+															background:
+																"transparent",
+															zIndex: "0",
+															opacity: 0.2,
+														}}
+													/>
+												)}
+											</Button>
+
+											<IconButton
+												onClick={
+													handleMarkPlayedOrunPlayed
+												}
+											>
+												<MdiCheck
+													sx={{
+														color: item
+															.data
+															.UserData
+															.Played
+															? green[400]
+															: "white",
+													}}
+												/>
+											</IconButton>
+										</>
+									)}
+								<IconButton onClick={handleLiking}>
+									{item.data.UserData.IsFavorite ? (
+										<MdiHeart
+											sx={{ color: pink[700] }}
+										/>
+									) : (
+										<MdiHeartOutline />
+									)}
+								</IconButton>
 							</Stack>
+						</Box>
+
+						<Box
+							className="item-detail-tagline"
+							sx={{ width: "100%" }}
+						>
+							<Typography
+								variant="h5"
+								fontStyle="italic"
+								sx={{ opacity: 0.8 }}
+							>
+								{item.data.Taglines[0]}
+							</Typography>
 						</Box>
 					</Box>
 					<TableContainer>
 						<Table>
 							<TableBody>
-								{/* {item.data.Genres != 0 && (
+								{item.data.Genres != 0 && (
 									<TableRow
 										sx={{
 											"& td, & th": {
@@ -1228,7 +1180,7 @@ const ItemDetail = () => {
 											</Stack>
 										</TableCell>
 									</TableRow>
-								)} */}
+								)}
 
 								{item.data.ExternalUrls.length != 0 && (
 									<TableRow
@@ -1764,6 +1716,20 @@ const ItemDetail = () => {
 							</TableBody>
 						</Table>
 					</TableContainer>
+					{!!item.data.Overview && (
+						<Box mt={3}>
+							<Typography variant="h5" mb={1}>
+								Overview
+							</Typography>
+							<Typography
+								variant="body1"
+								sx={{ opacity: 0.8 }}
+								mb={2}
+							>
+								{item.data.Overview}
+							</Typography>
+						</Box>
+					)}
 
 					{item.data.Type == BaseItemKind.MusicAlbum && (
 						<TableContainer
@@ -2718,9 +2684,7 @@ const ItemDetail = () => {
 										label={
 											episodes.isLoading ? (
 												<CircularProgress
-													sx={{
-														p: 1.5,
-													}}
+													sx={{ p: 1.5 }}
 												/>
 											) : (
 												episodes.data
@@ -2789,7 +2753,7 @@ const ItemDetail = () => {
 														duration: 0.35,
 														delay:
 															mindex *
-															0.03,
+															0.1,
 													}}
 												>
 													<EpisodeCard
@@ -3197,7 +3161,7 @@ const ItemDetail = () => {
 								variant: "h5",
 								fontSize: "1.8em",
 							}}
-							displayCards={12}
+							displayCards={8}
 							title="Cast"
 							disableDecoration
 							boxProps={{

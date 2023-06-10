@@ -87,11 +87,11 @@ export const AppBar = () => {
 		return (
 			<MuiAppBar
 				sx={{
+					width: `calc(100vw - ${theme.spacing(7)})`,
 					backgroundColor: "transparent",
 				}}
 				className={trigger ? "appBar backdropVisible" : "appBar"}
 				elevation={0}
-				position="static"
 			>
 				<Toolbar sx={{ justifyContent: "space-between" }}>
 					<Box

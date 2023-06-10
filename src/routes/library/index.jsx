@@ -452,193 +452,144 @@ const LibraryView = () => {
 		<Box
 			sx={{
 				display: "flex",
-				flexDirection: "column",
 			}}
 		>
-			<AppBar
-				position="static"
-				elevation={trigger ? 1 : 0}
+			<Box
+				component="main"
+				className="scrollY"
 				sx={{
-					width: `calc(100vw - ${theme.spacing(7)} - 10px)`,
-					top: `${8 * 8}px !important`,
-					backdropFilter: trigger ? `blur(30px)` : "none",
-					background: "transparent",
-					backgroundColor: trigger
-						? `${clrBackgroundDarkOpacity0_8} !important`
-						: "transparent",
-					transition:
-						"transition: background-color 150ms, box-shadow 150ms, backdrop-filter 150ms !important",
+					flexGrow: 1,
+					pt: 19,
+					px: 3,
+					pb: 3,
+					position: "relative",
 				}}
 			>
-				<Divider
+				<AppBar
+					position="fixed"
+					elevation={trigger ? 1 : 0}
 					sx={{
-						transform: trigger ? "scaleX(1)" : "scaleX(0)",
-						transition: "transform 150ms",
-						transformOrigin: "left",
-						transitionDelay: "50ms",
+						width: `calc(100vw - ${theme.spacing(7)} - 10px)`,
+						top: `${8 * 8}px !important`,
+						backdropFilter: trigger ? `blur(30px)` : "none",
+						background: "transparent",
+						backgroundColor: trigger
+							? `${clrBackgroundDarkOpacity0_8} !important`
+							: "transparent",
+						transition:
+							"transition: background-color 150ms, box-shadow 150ms, backdrop-filter 150ms !important",
 					}}
-				/>
-				<Toolbar sx={{ justifyContent: "space-between" }}>
-					<Stack alignItems="center" direction="row">
-						<Typography
-							variant="h5"
-							sx={{ mr: 2, flexShrink: 0 }}
-							noWrap
-						>
-							{currentLib.isLoading ? (
-								<CircularProgress sx={{ p: 1 }} />
-							) : (
-								currentLib.data.Items[0].Name
-							)}
-						</Typography>
-						<Chip
-							label={
-								items.isLoading ? (
-									<CircularProgress
-										sx={{ p: 1.5 }}
-									/>
+				>
+					<Divider
+						sx={{
+							transform: trigger
+								? "scaleX(1)"
+								: "scaleX(0)",
+							transition: "transform 150ms",
+							transformOrigin: "left",
+							transitionDelay: "50ms",
+						}}
+					/>
+					<Toolbar sx={{ justifyContent: "space-between" }}>
+						<Stack alignItems="center" direction="row">
+							<Typography
+								variant="h5"
+								sx={{ mr: 2, flexShrink: 0 }}
+								noWrap
+							>
+								{currentLib.isLoading ? (
+									<CircularProgress sx={{ p: 1 }} />
 								) : (
-									items.data.TotalRecordCount
-								)
-							}
-						/>
-					</Stack>
+									currentLib.data.Items[0].Name
+								)}
+							</Typography>
+							<Chip
+								label={
+									items.isLoading ? (
+										<CircularProgress
+											sx={{ p: 1.5 }}
+										/>
+									) : (
+										items.data.TotalRecordCount
+									)
+								}
+							/>
+						</Stack>
 
-					{/* <InputLabel id="demo-simple-select-label">
+						{/* <InputLabel id="demo-simple-select-label">
 								Age
 							</InputLabel> */}
-					<Stack
-						direction="row"
-						spacing={2}
-						divider={
-							<Divider
-								orientation="vertical"
-								flexItem
-								variant="inset"
-							/>
-						}
-					>
-						{currentLib.isSuccess &&
-							allowedFilterViews.includes(
-								currentLib.data.Items[0].CollectionType,
-							) && (
-								<>
-									<Button
-										id="basic-button"
-										aria-controls={
-											open
-												? "basic-menu"
-												: undefined
-										}
-										aria-haspopup="true"
-										aria-expanded={
-											open ? "true" : undefined
-										}
-										startIcon={
-											<MdiFilterOutline />
-										}
-										endIcon={<MdiChevronDown />}
-										onClick={openFiltersMenu}
-										color="white"
-										// sx={{ p: 1 }}
-										// size="small"
-									>
-										Filter
-									</Button>
-									<Menu
-										id="basic-menu"
-										anchorEl={
-											filterButtonAnchorEl
-										}
-										open={filterMenuOpen}
-										onClose={closeFiltersMenu}
-										MenuListProps={{
-											"aria-labelledby":
-												"basic-button",
-											sx: { p: 1 },
-										}}
-										anchorOrigin={{
-											vertical: "bottom",
-											horizontal: "center",
-										}}
-										transformOrigin={{
-											vertical: "top",
-											horizontal: "center",
-										}}
-										sx={{
-											maxHeight: "55%",
-										}}
-									>
-										<Accordion>
-											<AccordionSummary
-												expandIcon={
-													<MdiChevronDown />
-												}
-												aria-controls="panel1bh-content"
-												id="panel1bh-header"
-											>
-												<Typography
-													sx={{
-														width: "33%",
-														flexShrink: 0,
-													}}
-												>
-													Status
-												</Typography>
-											</AccordionSummary>
-											<Divider />
-											<AccordionDetails
-												sx={{
-													maxHeight:
-														"15em",
-													overflow:
-														"auto",
-												}}
-											>
-												<Stack>
-													{availableWatchStatus.map(
-														(
-															item,
-															index,
-														) => {
-															return (
-																<MenuItem
-																	sx={{
-																		justifyContent:
-																			"space-between",
-																	}}
-																	key={
-																		index
-																	}
-																>
-																	{
-																		item.title
-																	}
-																	<Checkbox
-																		value={
-																			item.value
-																		}
-																		onChange={(
-																			e,
-																		) =>
-																			item.state(
-																				e
-																					.target
-																					.checked,
-																			)
-																		}
-																	/>
-																</MenuItem>
-															);
-														},
-													)}
-												</Stack>
-											</AccordionDetails>
-										</Accordion>
-										{!onlyStatusFilterViews.includes(
-											currentLib.data.Items[0]
-												.CollectionType,
-										) && (
+						<Stack
+							direction="row"
+							spacing={2}
+							divider={
+								<Divider
+									orientation="vertical"
+									flexItem
+									variant="inset"
+								/>
+							}
+						>
+							{currentLib.isSuccess &&
+								allowedFilterViews.includes(
+									currentLib.data.Items[0]
+										.CollectionType,
+								) && (
+									<>
+										<Button
+											id="basic-button"
+											aria-controls={
+												open
+													? "basic-menu"
+													: undefined
+											}
+											aria-haspopup="true"
+											aria-expanded={
+												open
+													? "true"
+													: undefined
+											}
+											startIcon={
+												<MdiFilterOutline />
+											}
+											endIcon={
+												<MdiChevronDown />
+											}
+											onClick={openFiltersMenu}
+											color="white"
+											// sx={{ p: 1 }}
+											// size="small"
+										>
+											Filter
+										</Button>
+										<Menu
+											id="basic-menu"
+											anchorEl={
+												filterButtonAnchorEl
+											}
+											open={filterMenuOpen}
+											onClose={
+												closeFiltersMenu
+											}
+											MenuListProps={{
+												"aria-labelledby":
+													"basic-button",
+												sx: { p: 1 },
+											}}
+											anchorOrigin={{
+												vertical: "bottom",
+												horizontal:
+													"center",
+											}}
+											transformOrigin={{
+												vertical: "top",
+												horizontal:
+													"center",
+											}}
+											sx={{
+												maxHeight: "55%",
+											}}
+										>
 											<Accordion>
 												<AccordionSummary
 													expandIcon={
@@ -653,7 +604,7 @@ const LibraryView = () => {
 															flexShrink: 0,
 														}}
 													>
-														Features
+														Status
 													</Typography>
 												</AccordionSummary>
 												<Divider />
@@ -666,7 +617,7 @@ const LibraryView = () => {
 													}}
 												>
 													<Stack>
-														{availableFeatureFilters.map(
+														{availableWatchStatus.map(
 															(
 																item,
 																index,
@@ -705,474 +656,528 @@ const LibraryView = () => {
 													</Stack>
 												</AccordionDetails>
 											</Accordion>
-										)}
-										{!onlyStatusFilterViews.includes(
-											currentLib.data.Items[0]
-												.CollectionType,
-										) && (
-											<Accordion>
-												<AccordionSummary
-													expandIcon={
-														<MdiChevronDown />
-													}
-													aria-controls="panel1bh-content"
-													id="panel1bh-header"
-												>
-													<Typography
-														sx={{
-															flexShrink: 0,
-														}}
-														noWrap
+											{!onlyStatusFilterViews.includes(
+												currentLib.data
+													.Items[0]
+													.CollectionType,
+											) && (
+												<Accordion>
+													<AccordionSummary
+														expandIcon={
+															<MdiChevronDown />
+														}
+														aria-controls="panel1bh-content"
+														id="panel1bh-header"
 													>
-														Video Type
-													</Typography>
-												</AccordionSummary>
-												<Divider />
-												<AccordionDetails
+														<Typography
+															sx={{
+																width: "33%",
+																flexShrink: 0,
+															}}
+														>
+															Features
+														</Typography>
+													</AccordionSummary>
+													<Divider />
+													<AccordionDetails
+														sx={{
+															maxHeight:
+																"15em",
+															overflow:
+																"auto",
+														}}
+													>
+														<Stack>
+															{availableFeatureFilters.map(
+																(
+																	item,
+																	index,
+																) => {
+																	return (
+																		<MenuItem
+																			sx={{
+																				justifyContent:
+																					"space-between",
+																			}}
+																			key={
+																				index
+																			}
+																		>
+																			{
+																				item.title
+																			}
+																			<Checkbox
+																				value={
+																					item.value
+																				}
+																				onChange={(
+																					e,
+																				) =>
+																					item.state(
+																						e
+																							.target
+																							.checked,
+																					)
+																				}
+																			/>
+																		</MenuItem>
+																	);
+																},
+															)}
+														</Stack>
+													</AccordionDetails>
+												</Accordion>
+											)}
+											{!onlyStatusFilterViews.includes(
+												currentLib.data
+													.Items[0]
+													.CollectionType,
+											) && (
+												<Accordion>
+													<AccordionSummary
+														expandIcon={
+															<MdiChevronDown />
+														}
+														aria-controls="panel1bh-content"
+														id="panel1bh-header"
+													>
+														<Typography
+															sx={{
+																flexShrink: 0,
+															}}
+															noWrap
+														>
+															Video
+															Type
+														</Typography>
+													</AccordionSummary>
+													<Divider />
+													<AccordionDetails
+														sx={{
+															maxHeight:
+																"15em",
+															overflow:
+																"auto",
+														}}
+													>
+														<Stack>
+															{availableVideoTypeFilters.map(
+																(
+																	item,
+																	index,
+																) => {
+																	return (
+																		<MenuItem
+																			sx={{
+																				justifyContent:
+																					"space-between",
+																			}}
+																			key={
+																				index
+																			}
+																		>
+																			{
+																				item.title
+																			}
+																			<Checkbox
+																				value={
+																					item.value
+																				}
+																				onChange={(
+																					e,
+																				) =>
+																					item.state(
+																						e
+																							.target
+																							.checked,
+																					)
+																				}
+																			/>
+																		</MenuItem>
+																	);
+																},
+															)}
+														</Stack>
+													</AccordionDetails>
+												</Accordion>
+											)}
+										</Menu>
+									</>
+								)}
+							{!disabledSortViews.includes(
+								currentViewType,
+							) && (
+								<>
+									{sortByData != undefined &&
+										sortBy != undefined && (
+											<>
+												<Checkbox
+													icon={
+														<MdiSortDescending />
+													}
+													checkedIcon={
+														<MdiSortAscending />
+													}
 													sx={{
-														maxHeight:
-															"15em",
-														overflow:
-															"auto",
+														color: "white !important",
 													}}
+													color="white"
+													onChange={
+														handleSortChange
+													}
+													checked={
+														sortAscending
+													}
+												/>
+												<TextField
+													select
+													hiddenLabel
+													value={sortBy}
+													size="small"
+													variant="filled"
+													onChange={
+														handleSortBy
+													}
 												>
-													<Stack>
-														{availableVideoTypeFilters.map(
-															(
-																item,
-																index,
-															) => {
-																return (
-																	<MenuItem
-																		sx={{
-																			justifyContent:
-																				"space-between",
-																		}}
-																		key={
-																			index
-																		}
-																	>
-																		{
-																			item.title
-																		}
-																		<Checkbox
-																			value={
-																				item.value
-																			}
-																			onChange={(
-																				e,
-																			) =>
-																				item.state(
-																					e
-																						.target
-																						.checked,
-																				)
-																			}
-																		/>
-																	</MenuItem>
-																);
-															},
-														)}
-													</Stack>
-												</AccordionDetails>
-											</Accordion>
+													{sortByData.map(
+														(
+															item,
+															index,
+														) => {
+															return (
+																<MenuItem
+																	key={
+																		index
+																	}
+																	value={
+																		item.value
+																	}
+																>
+																	{`By ${item.title}`}
+																</MenuItem>
+															);
+														},
+													)}
+												</TextField>
+											</>
 										)}
-									</Menu>
 								</>
 							)}
-						{!disabledSortViews.includes(currentViewType) && (
-							<>
-								{sortByData != undefined &&
-									sortBy != undefined && (
-										<>
-											<Checkbox
-												icon={
-													<MdiSortDescending />
-												}
-												checkedIcon={
-													<MdiSortAscending />
-												}
-												sx={{
-													color: "white !important",
-												}}
-												color="white"
-												onChange={
-													handleSortChange
-												}
-												checked={
-													sortAscending
-												}
-											/>
-											<TextField
-												select
-												hiddenLabel
-												value={sortBy}
-												size="small"
-												variant="filled"
-												onChange={
-													handleSortBy
-												}
-											>
-												{sortByData.map(
-													(
-														item,
-														index,
-													) => {
-														return (
-															<MenuItem
-																key={
-																	index
-																}
-																value={
-																	item.value
-																}
-															>
-																{`By ${item.title}`}
-															</MenuItem>
-														);
-													},
-												)}
-											</TextField>
-										</>
-									)}
-							</>
-						)}
-						{viewType.length != 0 &&
-							currentViewType != undefined && (
-								<TextField
-									select
-									hiddenLabel
-									// value={viewType[0].value}
-									value={currentViewType}
-									size="small"
-									variant="filled"
-									onChange={handleCurrentViewType}
-								>
-									{viewType.map((item, index) => {
-										return (
-											<MenuItem
-												key={item.value}
-												value={item.value}
-											>
-												{item.title}
-											</MenuItem>
-										);
-									})}
-								</TextField>
-							)}
-					</Stack>
-				</Toolbar>
-			</AppBar>
-			<Box
-				sx={{
-					flexGrow: 1,
-					position: "relative",
-					overflowY: "auto",
-				}}
-			>
-				<Box component="main" className="scrollY">
-					{items.isLoading || items.isFetching ? (
-						<Box
+							{viewType.length != 0 &&
+								currentViewType != undefined && (
+									<TextField
+										select
+										hiddenLabel
+										// value={viewType[0].value}
+										value={currentViewType}
+										size="small"
+										variant="filled"
+										onChange={
+											handleCurrentViewType
+										}
+									>
+										{viewType.map(
+											(item, index) => {
+												return (
+													<MenuItem
+														key={
+															item.value
+														}
+														value={
+															item.value
+														}
+													>
+														{
+															item.title
+														}
+													</MenuItem>
+												);
+											},
+										)}
+									</TextField>
+								)}
+						</Stack>
+					</Toolbar>
+				</AppBar>
+				{items.isLoading || items.isFetching ? (
+					<Box
+						sx={{
+							position: "absolute",
+							top: 0,
+							left: 0,
+							height: "100%",
+							width: "100%",
+							display: "flex",
+							justifyContent: "center",
+							alignItems: "center",
+						}}
+					>
+						<CircularProgress
+							variant="indeterminate"
 							sx={{
 								position: "absolute",
-								top: 0,
-								left: 0,
-								height: "100%",
-								width: "100%",
-								display: "flex",
-								justifyContent: "center",
-								alignItems: "center",
+								top: "50%",
+								left: "50%",
+								transform: "translate(-50%,50%)",
+								width: "50%",
 							}}
-						>
-							<CircularProgress
-								variant="indeterminate"
-								sx={{
-									position: "absolute",
-									top: "50%",
-									left: "50%",
-									transform: "translate(-50%,50%)",
-									width: "50%",
-								}}
-							/>
-						</Box>
-					) : items.data.TotalRecordCount == 0 ? (
-						<EmptyNotice />
-					) : currentViewType != BaseItemKind.Audio ? (
-						<Grid2
-							container
-							columns={{ xs: 2, sm: 4, md: 8 }}
-						>
-							{items.data.Items.map((item, index) => {
-								return (
-									<Grid2
-										key={item.Id}
-										xs={1}
-										sm={1}
-										md={1}
-										component={motion.div}
-										initial={{
-											scale: 0.8,
-											opacity: 0,
-										}}
-										animate={{
-											scale: 1,
-											opacity: 1,
-										}}
-										transition={{
-											duration: 0.25,
-											ease: "easeInOut",
-											delay: 0.02 * index,
-										}}
-									>
-										<Card
-											itemName={item.Name}
-											itemId={item.Id}
-											imageTags={
-												!!item.ImageTags
-													.Primary
-											}
-											subText={
-												item.Type.includes(
-													"Music",
-												)
-													? item.AlbumArtist
-													: item.ProductionYear
-											}
-											iconType={item.Type}
-											playedPercent={
-												!!item.UserData
-													? item.UserData
-															.PlayedPercentage
-													: 0
-											}
-											cardOrientation={
-												item.Type ==
-													"MusicArtist" ||
-												item.Type ==
-													"MusicAlbum" ||
-												item.Type ==
-													"MusicGenre" ||
-												item.Type ==
-													"Playlist"
-													? "square"
-													: "portait"
-											}
-											watchedStatus={
-												!!item.UserData
-													? item.UserData
-															.Played
-													: false
-											}
-											watchedCount={
-												item.UserData
-													?.UnplayedItemCount
-											}
-											blurhash={
-												item.ImageBlurHashes ==
-												{}
-													? ""
-													: !!item
-															.ImageTags
-															.Primary
-													? !!item
+						/>
+					</Box>
+				) : items.data.TotalRecordCount == 0 ? (
+					<EmptyNotice />
+				) : currentViewType != BaseItemKind.Audio ? (
+					<Grid2 container columns={{ xs: 2, sm: 4, md: 8 }}>
+						{items.data.Items.map((item, index) => {
+							return (
+								<Grid2
+									key={item.Id}
+									xs={1}
+									sm={1}
+									md={1}
+									component={motion.div}
+									initial={{
+										scale: 0.8,
+										opacity: 0,
+									}}
+									animate={{
+										scale: 1,
+										opacity: 1,
+									}}
+									transition={{
+										duration: 0.25,
+										ease: "easeInOut",
+										delay: 0.02 * index,
+									}}
+								>
+									<Card
+										itemName={item.Name}
+										itemId={item.Id}
+										imageTags={
+											!!item.ImageTags.Primary
+										}
+										subText={
+											item.Type.includes(
+												"Music",
+											)
+												? item.AlbumArtist
+												: item.ProductionYear
+										}
+										iconType={item.Type}
+										playedPercent={
+											!!item.UserData
+												? item.UserData
+														.PlayedPercentage
+												: 0
+										}
+										cardOrientation={
+											item.Type ==
+												"MusicArtist" ||
+											item.Type ==
+												"MusicAlbum" ||
+											item.Type ==
+												"MusicGenre" ||
+											item.Type == "Playlist"
+												? "square"
+												: "portait"
+										}
+										watchedStatus={
+											!!item.UserData
+												? item.UserData
+														.Played
+												: false
+										}
+										watchedCount={
+											item.UserData
+												?.UnplayedItemCount
+										}
+										blurhash={
+											item.ImageBlurHashes ==
+											{}
+												? ""
+												: !!item.ImageTags
+														.Primary
+												? !!item
+														.ImageBlurHashes
+														.Primary
+													? item
 															.ImageBlurHashes
-															.Primary
-														? item
-																.ImageBlurHashes
-																.Primary[
-																item
-																	.ImageTags
-																	.Primary
-														  ]
-														: ""
-													: ""
-											}
-											currentUser={user.data}
-											favourite={
-												item.UserData
-													?.IsFavorite
-											}
-										></Card>
-									</Grid2>
-								);
-							})}
-						</Grid2>
-					) : (
-						<TableContainer>
-							<Table>
-								<TableBody>
-									{items.data.Items.map(
-										(item, index) => {
-											return (
-												<TableRow
-													component={
-														motion.div
-													}
-													key={item.Id}
-													sx={{
-														"& td,& th":
-															{
-																borderBottom:
-																	"1px solid rgb(255 255 255 / 0.1)",
-															},
-														"&:last-child td, &:last-child th":
-															{
-																border: 0,
-															},
-														"&:hover":
-															{
-																background:
-																	"rgb(255 255 255 / 0.05)",
-															},
-													}}
-													initial={{
-														scale: 0.8,
-														opacity: 0,
-													}}
-													animate={{
-														scale: 1,
-														opacity: 1,
-													}}
-													transition={{
-														duration: 0.25,
-														ease: "easeInOut",
-														delay:
-															0.02 *
-															index,
-													}}
-												>
-													<TableCell width="4.5em">
-														<Box className="library-list-image-container">
-															{!!item
+															.Primary[
+															item
 																.ImageTags
-																.Primary && (
-																<img
-																	className="library-list-image"
-																	src={`${window.api.basePath}/Items/${item.Id}/Images/Primary?quality=80&tag=${item.ImageTags.Primary}`}
-																/>
-															)}
-															<Box className="library-list-icon-container">
-																<MdiMusic className="library-list-icon" />
-															</Box>
-														</Box>
-													</TableCell>
-													<TableCell>
-														<Typography variant="h6">
-															{
-																item.Name
-															}
+																.Primary
+													  ]
+													: ""
+												: ""
+										}
+										currentUser={user.data}
+										favourite={
+											item.UserData?.IsFavorite
+										}
+									></Card>
+								</Grid2>
+							);
+						})}
+					</Grid2>
+				) : (
+					<TableContainer>
+						<Table>
+							<TableBody>
+								{items.data.Items.map((item, index) => {
+									return (
+										<TableRow
+											component={motion.div}
+											key={item.Id}
+											sx={{
+												"& td,& th": {
+													borderBottom:
+														"1px solid rgb(255 255 255 / 0.1)",
+												},
+												"&:last-child td, &:last-child th":
+													{ border: 0 },
+												"&:hover": {
+													background:
+														"rgb(255 255 255 / 0.05)",
+												},
+											}}
+											initial={{
+												scale: 0.8,
+												opacity: 0,
+											}}
+											animate={{
+												scale: 1,
+												opacity: 1,
+											}}
+											transition={{
+												duration: 0.25,
+												ease: "easeInOut",
+												delay: 0.02 * index,
+											}}
+										>
+											<TableCell width="4.5em">
+												<Box className="library-list-image-container">
+													{!!item
+														.ImageTags
+														.Primary && (
+														<img
+															className="library-list-image"
+															src={`${window.api.basePath}/Items/${item.Id}/Images/Primary?quality=80&tag=${item.ImageTags.Primary}`}
+														/>
+													)}
+													<Box className="library-list-icon-container">
+														<MdiMusic className="library-list-icon" />
+													</Box>
+												</Box>
+											</TableCell>
+											<TableCell>
+												<Typography variant="h6">
+													{item.Name}
+												</Typography>
+												<Stack
+													direction="row"
+													divider={
+														<Typography
+															variant="subtitle1"
+															sx={{
+																opacity: 0.7,
+															}}
+														>
+															,
 														</Typography>
-														<Stack
-															direction="row"
-															divider={
+													}
+												>
+													{item.Artists.map(
+														(
+															artist,
+															aindex,
+														) => {
+															return (
 																<Typography
 																	variant="subtitle1"
 																	sx={{
 																		opacity: 0.7,
 																	}}
+																	key={
+																		aindex
+																	}
 																>
-																	,
+																	{
+																		artist
+																	}
 																</Typography>
-															}
-														>
-															{item.Artists.map(
-																(
-																	artist,
-																	aindex,
-																) => {
-																	return (
-																		<Typography
-																			variant="subtitle1"
-																			sx={{
-																				opacity: 0.7,
-																			}}
-																			key={
-																				aindex
-																			}
-																		>
-																			{
-																				artist
-																			}
-																		</Typography>
-																	);
-																},
-															)}
-														</Stack>
-													</TableCell>
-													<TableCell>
-														<Typography variant="subtitle1">
-															{getRuntimeMusic(
-																item.RunTimeTicks,
-															)}
-														</Typography>
-													</TableCell>
-													<TableCell width="1em">
-														<IconButton
-															onClick={() => {
-																handleLiking(
-																	item,
-																);
-															}}
-														>
-															{item
-																.UserData
-																.IsFavorite ? (
-																<MdiHeart />
-															) : (
-																<MdiHeartOutline />
-															)}
-														</IconButton>
-													</TableCell>
-												</TableRow>
-											);
-										},
-									)}
-								</TableBody>
-							</Table>
-						</TableContainer>
+															);
+														},
+													)}
+												</Stack>
+											</TableCell>
+											<TableCell>
+												<Typography variant="subtitle1">
+													{getRuntimeMusic(
+														item.RunTimeTicks,
+													)}
+												</Typography>
+											</TableCell>
+											<TableCell width="1em">
+												<IconButton
+													onClick={() => {
+														handleLiking(
+															item,
+														);
+													}}
+												>
+													{item.UserData
+														.IsFavorite ? (
+														<MdiHeart />
+													) : (
+														<MdiHeartOutline />
+													)}
+												</IconButton>
+											</TableCell>
+										</TableRow>
+									);
+								})}
+							</TableBody>
+						</Table>
+					</TableContainer>
+				)}
+
+				{!items.isFetching &&
+					!disablePaginationViews.includes(currentViewType) &&
+					items.isSuccess &&
+					items.data.TotalRecordCount > maxDisplayItems && (
+						<Stack
+							alignItems="center"
+							justifyContent="center"
+							paddingTop={2}
+							direction="row"
+						>
+							<Typography
+								variant="subtitle2"
+								sx={{ opacity: 0.5 }}
+							>
+								{maxDisplayItems * (page - 1)} -{" "}
+								{items.data.TotalRecordCount <=
+								maxDisplayItems * page
+									? items.data.TotalRecordCount
+									: maxDisplayItems * page}{" "}
+								of {items.data.TotalRecordCount}
+							</Typography>
+							<Pagination
+								page={page}
+								onChange={(e, val) => {
+									setPage(val);
+								}}
+								count={Math.ceil(
+									items.data.TotalRecordCount /
+										maxDisplayItems,
+								)}
+								sx={{
+									width: "fit-content",
+								}}
+							/>
+						</Stack>
 					)}
 
-					{!items.isFetching &&
-						!disablePaginationViews.includes(
-							currentViewType,
-						) &&
-						items.isSuccess &&
-						items.data.TotalRecordCount > maxDisplayItems && (
-							<Stack
-								alignItems="center"
-								justifyContent="center"
-								paddingTop={2}
-								direction="row"
-							>
-								<Typography
-									variant="subtitle2"
-									sx={{ opacity: 0.5 }}
-								>
-									{maxDisplayItems * (page - 1)} -{" "}
-									{items.data.TotalRecordCount <=
-									maxDisplayItems * page
-										? items.data.TotalRecordCount
-										: maxDisplayItems * page}{" "}
-									of {items.data.TotalRecordCount}
-								</Typography>
-								<Pagination
-									page={page}
-									onChange={(e, val) => {
-										setPage(val);
-									}}
-									count={Math.ceil(
-										items.data.TotalRecordCount /
-											maxDisplayItems,
-									)}
-									sx={{
-										width: "fit-content",
-									}}
-								/>
-							</Stack>
-						)}
-
-					{items.isError && <ErrorNotice />}
-				</Box>
+				{items.isError && <ErrorNotice />}
 			</Box>
 		</Box>
 	);
