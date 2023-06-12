@@ -10,7 +10,7 @@
 		"tauri": "tauri"
 	},
 	"dependencies": {
-		"@emotion/react": "^11.10.5",
+		"@emotion/react": "^11.11.1",
 		"@emotion/styled": "^11.10.5",
 		"@fontsource/open-sans": "^5.0.3",
 		"@jellyfin/sdk": "^0.8.2",
