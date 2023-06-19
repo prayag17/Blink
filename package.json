@@ -18,7 +18,7 @@
 		"@mui/lab": "^5.0.0-alpha.128",
 		"@mui/material": "^5.13.0",
 		"@tanstack/react-query": "^4.26.1",
-		"@tanstack/react-query-devtools": "^4.29.7",
+		"@tanstack/react-query-devtools": "^4.29.14",
 		"@tauri-apps/api": "^1.2.0",
 		"axios": "^1.4.0",
 		"blurhash": "^2.0.5",
