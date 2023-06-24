@@ -517,6 +517,7 @@ const ItemDetail = () => {
 		setDuration,
 		setItemId,
 		setItemName,
+		setSubtitleTracksStore,
 		setSelectedSubtitleTrack,
 	] = usePlaybackStore((state) => [
 		state.setUrl,
@@ -524,6 +525,7 @@ const ItemDetail = () => {
 		state.setDuration,
 		state.setItemId,
 		state.setItemName,
+		state.setSubtitleTracks,
 		state.setSelectedSubtitleTrack,
 	]);
 
@@ -1041,7 +1043,12 @@ const ItemDetail = () => {
 														setItemName(
 															item
 																.data
-																.Name,
+																.Type ==
+																"Episode"
+																? `${item.data.SeriesName} S${item.data.ParentIndexNumber}:E${item.data.IndexNumber} ${item.data.Name}`
+																: item
+																		.data
+																		.Name,
 														);
 														setItemId(
 															item
@@ -1053,7 +1060,7 @@ const ItemDetail = () => {
 																.data
 																.RunTimeTicks,
 														);
-														setSubtitleTracks(
+														setSubtitleTracksStore(
 															subtitleTracks,
 														);
 														setSelectedSubtitleTrack(

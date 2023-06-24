@@ -11,7 +11,7 @@ import Slider from "@mui/material/Slider";
 import CircularProgress from "@mui/material/CircularProgress";
 import Menu from "@mui/material/Menu";
 import MenuItem from "@mui/material/MenuItem";
-import List from "@mui/material/List";
+import TextField from "@mui/material/TextField";
 import ListItem from "@mui/material/ListItem";
 import ListItemText from "@mui/material/ListItemText";
 import Backdrop from "@mui/material/Backdrop";
@@ -42,9 +42,13 @@ import { MdiPlaySpeed } from "../../components/icons/mdiPlaySpeed";
 import { endsAt } from "../../utils/date/time";
 
 import useKeyPress from "../../utils/hooks/useKeyPress";
+import { MdiCog } from "../../components/icons/mdiCog";
 
 export const VideoPlayer = () => {
 	const navigate = useNavigate();
+
+	const [settingsMenuEl, setSettingsMenuEl] = useState(null);
+	const settingsMenuState = Boolean(settingsMenuEl);
 
 	const [speedMenuEl, setSpeedMenuEl] = useState(null);
 	const [speed, setSpeed] = useState(3);
@@ -57,7 +61,7 @@ export const VideoPlayer = () => {
 		itemDuration,
 		itemId,
 		itemName,
-		subtitleTracks,
+		subtitleTracksStore,
 		selectedSubtitleTrack,
 	] = usePlaybackStore((state) => [
 		state.url,
@@ -68,8 +72,9 @@ export const VideoPlayer = () => {
 		state.subtitleTracks,
 		state.selectedSubtitleTrack,
 	]);
-
-	var mySubtitle_arr = [];
+	const [currentSubtrack, setCurrentSubtrack] = useState(
+		selectedSubtitleTrack,
+	);
 
 	const [showControls, setShowControls] = useState(false);
 
@@ -94,6 +99,8 @@ export const VideoPlayer = () => {
 			playerRef.current.seekTo(timeToStart, "seconds");
 			setDuration(playerRef.current.getDuration());
 			setIsReady(true);
+			const player = playerRef.current.getInternalPlayer();
+			console.log(player.config);
 		}
 	}, [isReady]);
 
@@ -158,13 +165,9 @@ export const VideoPlayer = () => {
 			window.clearTimeout(timeout);
 			timeout = setTimeout(() => {
 				setShowControls(false);
-			}, 5000);
+			}, 6000);
 		}
 	}, [showControls]);
-
-	useEffect(() => {
-		console.log(subtitleTracks);
-	}, [mySubtitle_arr]);
 
 	const handleKeyPress = useCallback((event) => {
 		switch (event.key) {
@@ -185,6 +188,25 @@ export const VideoPlayer = () => {
 				break;
 		}
 	}, []);
+
+	const [subs, setSubs] = useState([]);
+
+	useEffect(() => {
+		setSubs(
+			subtitleTracksStore.map((sub, index) => {
+				return {
+					kind: "subtitles",
+					src: `${window.api.basePath}/Videos/${itemId}/${itemId}/Subtitles/${sub.Index}/Stream.vtt?api_key=${window.api.accessToken}`,
+					srcLang: sub?.Language,
+					default: false,
+					mode:
+						sub.Index == currentSubtrack
+							? "showing"
+							: "hidden",
+				};
+			}),
+		);
+	}, [subtitleTracksStore]);
 
 	return (
 		<Box
@@ -463,7 +485,32 @@ export const VideoPlayer = () => {
 									},
 								}}
 							/>
-
+							<Box>
+								<Menu
+									anchorEl={settingsMenuEl}
+									onClose={() => {
+										setSettingsMenuEl(null);
+									}}
+									open={settingsMenuState}
+									sx={{ padding: 2 }}
+								>
+									<Stack direction="row">
+										<Typography variant="h6">
+											Subtitle
+										</Typography>
+									</Stack>
+								</Menu>
+								<IconButton
+									onClick={(e) =>
+										setSettingsMenuEl(
+											e.currentTarget,
+										)
+									}
+									disabled
+								>
+									<MdiCog />
+								</IconButton>
+							</Box>
 							<IconButton
 								onClick={() => {
 									setIsPIP(!isPIP);
@@ -509,14 +556,19 @@ export const VideoPlayer = () => {
 						attributes: {
 							crossOrigin: "true",
 						},
-						tracks: [
-							{
-								kind: "subtitles",
-								src: `http://localhost:8096/Videos/${itemId}/${itemId}/Subtitles/${selectedSubtitleTrack}/Stream.vtt?api_key=${window.api.accessToken}`,
-								srcLang: "en",
-								default: true,
-							},
-						],
+						tracks: [],
+						// tracks: subtitleTracksStore.map((sub, index) => {
+						// 	return {
+						// 		kind: "subtitles",
+						// 		src: `${window.api.basePath}/Videos/${itemId}/${itemId}/Subtitles/${sub.Index}/Stream.vtt?api_key=${window.api.accessToken}`,
+						// 		srcLang: sub?.Language,
+						// 		default: false,
+						// 		mode:
+						// 			sub.Index == currentSubtrack
+						// 				? "showing"
+						// 				: "hidden",
+						// 	};
+						// }),
 					},
 				}}
 				playbackRate={availableSpeeds[speed]}
