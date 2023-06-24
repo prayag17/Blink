@@ -34,6 +34,7 @@ import { useParams, useNavigate, Link as RouterLink } from "react-router-dom";
 import {
 	BaseItemKind,
 	ItemFields,
+	LocationType,
 	MediaStreamType,
 	SortOrder,
 } from "@jellyfin/sdk/lib/generated-client";
@@ -66,6 +67,7 @@ import { ErrorNotice } from "../../components/notices/errorNotice/errorNotice";
 import { ArtistAlbum } from "../../components/layouts/artist/artistAlbum";
 import { MdiMusic } from "../../components/icons/mdiMusic";
 import { usePlaybackStore } from "../../utils/store/playback";
+import { Tooltip } from "@mui/material";
 function TabPanel(props) {
 	const { children, value, index, ...other } = props;
 
@@ -168,6 +170,7 @@ const ItemDetail = () => {
 		queryFn: async () => {
 			const result = await getTvShowsApi(window.api).getSeasons({
 				seriesId: item.data.Id,
+				isSpecialSeason: false,
 			});
 			return result.data;
 		},
@@ -200,6 +203,7 @@ const ItemDetail = () => {
 				userId: user.data.Id,
 				parentId: seasons.data.Items[currentSeason].Id,
 				fields: [ItemFields.SeasonUserData, "Overview"],
+				excludeLocationTypes: [LocationType.Virtual],
 			});
 			return result.data;
 		},
@@ -1013,98 +1017,121 @@ const ItemDetail = () => {
 										"Music",
 									) && (
 										<>
-											<Button
-												variant="contained"
-												size="large"
-												startIcon={
-													<MdiPlayOutline />
+											<Tooltip
+												title={
+													item.data
+														.Type ==
+													"Series"
+														? "Work in progress, meanwhile you can play individual episodes by clicking on episode card below"
+														: ""
 												}
-												sx={{
-													position:
-														"relative",
-													overflow:
-														"hidden",
-												}}
-												onClick={() => {
-													if (
-														!!item
-															.data
-															.VideoType
-													) {
-														setUrl(
-															`${window.api.basePath}/Videos/${item.data.Id}/stream.${item.data.MediaSources[0].Container}?Static=true&mediaSourceId=${item.data.Id}&deviceId=${window.api.deviceInfo.id}&api_key=${window.api.accessToken}&Tag=${item.data.MediaSources[0].ETag}`,
-														);
-														setPosition(
-															item
-																.data
-																.UserData
-																.PlaybackPositionTicks,
-														);
-														setItemName(
+											>
+												<span>
+													<Button
+														disabled={
 															item
 																.data
 																.Type ==
-																"Episode"
-																? `${item.data.SeriesName} S${item.data.ParentIndexNumber}:E${item.data.IndexNumber} ${item.data.Name}`
-																: item
-																		.data
-																		.Name,
-														);
-														setItemId(
-															item
-																.data
-																.Id,
-														);
-														setDuration(
-															item
-																.data
-																.RunTimeTicks,
-														);
-														setSubtitleTracksStore(
-															subtitleTracks,
-														);
-														setSelectedSubtitleTrack(
-															currentSubTrack,
-														);
-													}
-													navigate(
-														`/player`,
-													);
-												}}
-											>
-												{!!item.data
-													.UserData
-													.PlayedPercentage &&
-												item.data.UserData
-													.PlayedPercentage >
-													0
-													? "Resume"
-													: "Play"}
-												{!!item.data
-													.UserData
-													.PlayedPercentage && (
-													<LinearProgress
-														variant="determinate"
-														value={
-															item
-																.data
-																.UserData
-																.PlayedPercentage
+															"Series"
+																? true
+																: false
 														}
-														color="white"
+														variant="contained"
+														size="large"
+														startIcon={
+															<MdiPlayOutline />
+														}
 														sx={{
 															position:
-																"absolute",
-															height: "100%",
-															width: "100%",
-															background:
-																"transparent",
-															zIndex: "0",
-															opacity: 0.2,
+																"relative",
+															overflow:
+																"hidden",
 														}}
-													/>
-												)}
-											</Button>
+														onClick={() => {
+															if (
+																!!item
+																	.data
+																	.VideoType
+															) {
+																setUrl(
+																	`${window.api.basePath}/Videos/${item.data.Id}/stream.${item.data.MediaSources[0].Container}?Static=true&mediaSourceId=${item.data.Id}&deviceId=${window.api.deviceInfo.id}&api_key=${window.api.accessToken}&Tag=${item.data.MediaSources[0].ETag}`,
+																);
+																setPosition(
+																	item
+																		.data
+																		.UserData
+																		.PlaybackPositionTicks,
+																);
+																setItemName(
+																	item
+																		.data
+																		.Type ==
+																		"Episode"
+																		? `${item.data.SeriesName} S${item.data.ParentIndexNumber}:E${item.data.IndexNumber} ${item.data.Name}`
+																		: item
+																				.data
+																				.Name,
+																);
+																setItemId(
+																	item
+																		.data
+																		.Id,
+																);
+																setDuration(
+																	item
+																		.data
+																		.RunTimeTicks,
+																);
+																setSubtitleTracksStore(
+																	subtitleTracks,
+																);
+																setSelectedSubtitleTrack(
+																	currentSubTrack,
+																);
+															}
+															navigate(
+																`/player`,
+															);
+														}}
+													>
+														{!!item
+															.data
+															.UserData
+															.PlayedPercentage &&
+														item.data
+															.UserData
+															.PlayedPercentage >
+															0
+															? "Resume"
+															: "Play"}
+														{!!item
+															.data
+															.UserData
+															.PlayedPercentage && (
+															<LinearProgress
+																variant="determinate"
+																value={
+																	item
+																		.data
+																		.UserData
+																		.PlayedPercentage
+																}
+																color="white"
+																sx={{
+																	position:
+																		"absolute",
+																	height: "100%",
+																	width: "100%",
+																	background:
+																		"transparent",
+																	zIndex: "0",
+																	opacity: 0.2,
+																}}
+															/>
+														)}
+													</Button>
+												</span>
+											</Tooltip>
 
 											<IconButton
 												onClick={
