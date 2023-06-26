@@ -32,7 +32,7 @@
 		"react-material-ui-carousel": "^3.4.2",
 		"react-multi-carousel": "^2.8.3",
 		"react-player": "^2.12.0",
-		"react-router-dom": "^6.12.1",
+		"react-router-dom": "^6.14.0",
 		"tauri-plugin-store-api": "github:tauri-apps/tauri-plugin-store",
 		"uuid": "^9.0.0",
 		"vite-plugin-svgr": "^3.2.0",
