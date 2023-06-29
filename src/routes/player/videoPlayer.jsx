@@ -165,7 +165,7 @@ export const VideoPlayer = () => {
 			window.clearTimeout(timeout);
 			timeout = setTimeout(() => {
 				setShowControls(false);
-			}, 6000);
+			}, 5000);
 		}
 	}, [showControls]);
 
