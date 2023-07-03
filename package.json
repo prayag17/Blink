@@ -23,7 +23,7 @@
 		"axios": "^1.4.0",
 		"blurhash": "^2.0.5",
 		"events": "^3.3.0",
-		"framer-motion": "^10.12.10",
+		"framer-motion": "^10.12.18",
 		"notistack": "^3.0.1",
 		"react": "^18.2.0",
 		"react-blurhash": "^0.3.0",
