@@ -20,6 +20,7 @@ import ListItemButton from "@mui/material/ListItemButton";
 import IconButton from "@mui/material/IconButton";
 import Divider from "@mui/material/Divider";
 import MuiDrawer from "@mui/material/Drawer";
+import ListItemText from "@mui/material/ListItemText";
 
 import { MdiMenu } from "../icons/mdiMenu";
 import { MdiLogoutVariant } from "../icons/mdiLogoutVariant";
@@ -31,6 +32,7 @@ import { MdiHomeVariantOutline } from "../icons/mdiHomeVariantOutline";
 import { EventEmitter as event } from "../../eventEmitter.js";
 
 import "./sidemenu.module.scss";
+import { useDrawerStore } from "../../utils/store/drawer";
 
 const drawerWidth = 320;
 
@@ -102,171 +104,356 @@ export const SideMenu = ({}) => {
 		}
 	}, [location]);
 
+	const [open, setDrawerOpen] = useDrawerStore((state) => [
+		state.open,
+		state.setOpen,
+	]);
+
 	if (!display) {
 		return <></>;
 	}
 
 	if (display) {
 		return (
-			<MiniDrawer
-				variant="permanent"
-				open={false}
-				PaperProps={{
-					sx: {
-						backgroundColor: "inherit",
-						border: "none",
-						width: `calc(${theme.spacing(7)} + 10px)`,
-						height: "100vh",
-						zIndex: "1",
-						// display: visible ? "block" : "none",
-					},
-				}}
-				sx={{
-					width: `calc(${theme.spacing(7)} + 10px)`,
-					background: theme.palette.background.paper,
-				}}
-			>
-				<DrawerHeader
-					className="Mui-DrawerHeader"
+			<>
+				<MiniDrawer
+					variant="permanent"
+					open={false}
+					PaperProps={{
+						sx: {
+							backgroundColor: "inherit",
+							border: "none",
+							width: `calc(${theme.spacing(7)} + 10px)`,
+							height: "100vh",
+							zIndex: "1",
+							// display: visible ? "block" : "none",
+						},
+					}}
 					sx={{
-						justifyContent: "center",
+						width: `calc(${theme.spacing(7)} + 10px)`,
+						background: theme.palette.background.paper,
 					}}
 				>
-					{/* <div>
+					<DrawerHeader
+						className="Mui-DrawerHeader"
+						sx={{
+							justifyContent: "center",
+						}}
+					>
+						{/* <div>
 						<Avatar src={""}/>
 						<Typography variant="h3">
 						{user["Name"]}
 						</Typography>
 					</div> */}
-				</DrawerHeader>
-				<Divider />
-				{libraries.isLoading ? (
-					<>
-						<Skeleton
-							height="100%"
-							variant="rounded"
-							width="calc(100% - 10px )"
-							sx={{ margin: "5px" }}
-						></Skeleton>
-					</>
-				) : (
-					<>
-						<List sx={{ border: "none" }}>
-							{libraries.data.Items.map(
-								(library, index) => {
-									return (
-										<Tooltip
-											title={library.Name}
-											placement="right"
-											arrow
-											followCursor
-											key={index}
-										>
-											<ListItem
-												className="sidemenu-item-container"
-												disablePadding
+					</DrawerHeader>
+					<Divider />
+					{libraries.isLoading ? (
+						<>
+							<Skeleton
+								height="100%"
+								variant="rounded"
+								width="calc(100% - 10px )"
+								sx={{ margin: "5px" }}
+							></Skeleton>
+						</>
+					) : (
+						<>
+							<List sx={{ border: "none" }}>
+								{libraries.data.Items.map(
+									(library, index) => {
+										return (
+											<Tooltip
+												title={library.Name}
+												placement="right"
+												arrow
+												followCursor
+												key={index}
 											>
-												<ListItemButton
-													component={
-														NavLink
-													}
-													to={
-														"/library/" +
-														library.Id
-													}
-													className="sidemenu-item"
-													sx={{
-														minHeight: 48,
-														justifyContent:
-															"center",
-														px: 2.5,
-													}}
+												<ListItem
+													className="sidemenu-item-container"
+													disablePadding
 												>
-													<ListItemIcon
+													<ListItemButton
+														component={
+															NavLink
+														}
+														to={
+															"/library/" +
+															library.Id
+														}
+														className="sidemenu-item"
 														sx={{
-															minWidth: 0,
+															minHeight: 48,
 															justifyContent:
 																"center",
+															px: 2.5,
+															display: "flex",
+															flexDirection:
+																"column",
 														}}
 													>
-														{
-															MediaCollectionTypeIconCollection[
-																library
-																	.CollectionType
-															]
-														}
-													</ListItemIcon>
-												</ListItemButton>
-											</ListItem>
-										</Tooltip>
-									);
-								},
-							)}
-						</List>
-						<List sx={{ marginTop: "auto" }}>
-							<Tooltip
-								title="Home"
-								placement="right"
-								followCursor
-								arrow
-							>
-								<ListItem
-									className="sidemenu-item-container"
-									disablePadding
+														<ListItemIcon
+															sx={{
+																minWidth: 0,
+																justifyContent:
+																	"center",
+															}}
+														>
+															{
+																MediaCollectionTypeIconCollection[
+																	library
+																		.CollectionType
+																]
+															}
+														</ListItemIcon>
+													</ListItemButton>
+												</ListItem>
+											</Tooltip>
+										);
+									},
+								)}
+							</List>
+							<List sx={{ marginTop: "auto" }}>
+								<Divider />
+								<Tooltip
+									title="Home"
+									placement="right"
+									followCursor
+									arrow
 								>
-									<ListItemButton
-										component={NavLink}
-										to="/home"
-										className="sidemenu-item"
-										sx={{
-											minHeight: 48,
-											justifyContent: "center",
-											px: 2.5,
-										}}
+									<ListItem
+										className="sidemenu-item-container"
+										disablePadding
 									>
-										<ListItemIcon
+										<ListItemButton
+											component={NavLink}
+											to="/home"
+											className="sidemenu-item"
 											sx={{
-												minWidth: 0,
+												minHeight: 48,
 												justifyContent:
 													"center",
+												px: 2.5,
+												display: "flex",
+												flexDirection:
+													"column",
 											}}
 										>
-											<MdiHomeVariantOutline />
-										</ListItemIcon>
-									</ListItemButton>
-								</ListItem>
-							</Tooltip>
-							<Tooltip
-								title="Logout"
-								placement="right"
-								followCursor
-								arrow
-							>
-								<ListItem disablePadding>
-									<ListItemButton
-										sx={{
-											minHeight: 48,
-											justifyContent: "center",
-											px: 2.5,
-										}}
-										onClick={handleLogout}
-									>
-										<ListItemIcon
+											<ListItemIcon
+												sx={{
+													minWidth: 0,
+													justifyContent:
+														"center",
+												}}
+											>
+												<MdiHomeVariantOutline />
+											</ListItemIcon>
+										</ListItemButton>
+									</ListItem>
+								</Tooltip>
+								<Tooltip
+									title="Logout"
+									placement="right"
+									followCursor
+									arrow
+								>
+									<ListItem disablePadding>
+										<ListItemButton
 											sx={{
-												minWidth: 0,
+												minHeight: 48,
 												justifyContent:
 													"center",
+												px: 2.5,
+											}}
+											onClick={handleLogout}
+										>
+											<ListItemIcon
+												sx={{
+													minWidth: 0,
+													justifyContent:
+														"center",
+												}}
+											>
+												<MdiLogoutVariant></MdiLogoutVariant>
+											</ListItemIcon>
+										</ListItemButton>
+									</ListItem>
+								</Tooltip>
+							</List>
+						</>
+					)}
+				</MiniDrawer>
+
+				<MuiDrawer
+					open={open}
+					onClose={() => setDrawerOpen(false)}
+					elevation={0}
+					PaperProps={{
+						sx: {
+							m: 1,
+							height: "auto",
+							minHeight: "-webkit-fill-available",
+							background: "transparent",
+							backdropFilter: "blur(15px)",
+							borderRadius: "15px",
+							boxShadow: "0 0 15px rgb(0 0 0 / 0.2)",
+							width: 260,
+						},
+					}}
+				>
+					<DrawerHeader
+						className="Mui-DrawerHeader"
+						sx={{
+							justifyContent: "center",
+						}}
+					></DrawerHeader>
+					<Divider />
+					{libraries.isLoading ? (
+						<>
+							<Skeleton
+								height="100%"
+								variant="rounded"
+								width="calc(100% - 10px )"
+								sx={{ margin: "5px" }}
+							></Skeleton>
+						</>
+					) : (
+						<>
+							<List sx={{ border: "none" }}>
+								{libraries.data.Items.map(
+									(library, index) => {
+										return (
+											<Tooltip
+												title={library.Name}
+												placement="right"
+												arrow
+												followCursor
+												key={index}
+											>
+												<ListItem
+													className="sidemenu-item-container"
+													disablePadding
+												>
+													<ListItemButton
+														component={
+															NavLink
+														}
+														to={
+															"/library/" +
+															library.Id
+														}
+														className="sidemenu-item"
+														sx={{
+															minHeight: 48,
+															justifyContent:
+																"center",
+															px: 2.5,
+														}}
+													>
+														<ListItemIcon
+															sx={{
+																minWidth: 0,
+																justifyContent:
+																	"center",
+																mr: 2,
+															}}
+														>
+															{
+																MediaCollectionTypeIconCollection[
+																	library
+																		.CollectionType
+																]
+															}
+														</ListItemIcon>
+														<ListItemText>
+															{
+																library.Name
+															}
+														</ListItemText>
+													</ListItemButton>
+												</ListItem>
+											</Tooltip>
+										);
+									},
+								)}
+							</List>
+							<List sx={{ marginTop: "auto" }}>
+								<Divider />
+								<Tooltip
+									title="Home"
+									placement="right"
+									followCursor
+									arrow
+								>
+									<ListItem
+										className="sidemenu-item-container"
+										disablePadding
+									>
+										<ListItemButton
+											component={NavLink}
+											to="/home"
+											className="sidemenu-item"
+											sx={{
+												minHeight: 48,
+												justifyContent:
+													"center",
+												px: 2.5,
 											}}
 										>
-											<MdiLogoutVariant></MdiLogoutVariant>
-										</ListItemIcon>
-									</ListItemButton>
-								</ListItem>
-							</Tooltip>
-						</List>
-					</>
-				)}
-			</MiniDrawer>
+											<ListItemIcon
+												sx={{
+													minWidth: 0,
+													justifyContent:
+														"center",
+													mr: 2,
+												}}
+											>
+												<MdiHomeVariantOutline />
+											</ListItemIcon>
+											<ListItemText>
+												Home
+											</ListItemText>
+										</ListItemButton>
+									</ListItem>
+								</Tooltip>
+								<Tooltip
+									title="Logout"
+									placement="right"
+									followCursor
+									arrow
+								>
+									<ListItem disablePadding>
+										<ListItemButton
+											sx={{
+												minHeight: 48,
+												justifyContent:
+													"center",
+												px: 2.5,
+											}}
+											onClick={handleLogout}
+										>
+											<ListItemIcon
+												sx={{
+													minWidth: 0,
+													justifyContent:
+														"center",
+													mr: 2,
+												}}
+											>
+												<MdiLogoutVariant></MdiLogoutVariant>
+											</ListItemIcon>
+											<ListItemText>
+												Logout
+											</ListItemText>
+										</ListItemButton>
+									</ListItem>
+								</Tooltip>
+							</List>
+						</>
+					)}
+				</MuiDrawer>
+			</>
 		);
 	}
 };

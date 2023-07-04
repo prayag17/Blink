@@ -27,6 +27,7 @@ import { MdiArrowLeft } from "../icons/mdiArrowLeft";
 import { MdiCog } from "../icons/mdiCog";
 import { MdiInformation } from "../icons/mdiInformation";
 import { MdiMenu } from "../icons/mdiMenu";
+import { useDrawerStore } from "../../utils/store/drawer";
 
 export const AppBar = () => {
 	const navigate = useNavigate();
@@ -58,6 +59,12 @@ export const AppBar = () => {
 	};
 	const handleMenuClose = () => {
 		setAnchorEl(null);
+	};
+
+	const [setDrawerOpen] = useDrawerStore((state) => [state.setOpen]);
+
+	const handleDrawerOpen = () => {
+		setDrawerOpen(true);
 	};
 
 	useEffect(() => {
@@ -110,7 +117,7 @@ export const AppBar = () => {
 						<IconButton
 							color="inherit"
 							aria-label="open drawer"
-							// onClick={handleDrawerOpen}
+							onClick={handleDrawerOpen}
 						>
 							<MdiMenu />
 						</IconButton>
