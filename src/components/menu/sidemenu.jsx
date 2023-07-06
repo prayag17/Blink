@@ -22,7 +22,7 @@ import Divider from "@mui/material/Divider";
 import MuiDrawer from "@mui/material/Drawer";
 import ListItemText from "@mui/material/ListItemText";
 
-import { MdiMenu } from "../icons/mdiMenu";
+import { MdiClose } from "../icons/mdiClose";
 import { MdiLogoutVariant } from "../icons/mdiLogoutVariant";
 
 import { MediaCollectionTypeIconCollection } from "../../components/utils/iconsCollection.jsx";
@@ -80,7 +80,6 @@ export const SideMenu = ({}) => {
 		enabled: !!user.data,
 		networkMode: "always",
 	});
-	const handleDrawerOpen = () => {};
 
 	const handleLogout = async () => {
 		console.log("Logging out user...");
@@ -139,14 +138,7 @@ export const SideMenu = ({}) => {
 						sx={{
 							justifyContent: "center",
 						}}
-					>
-						{/* <div>
-						<Avatar src={""}/>
-						<Typography variant="h3">
-						{user["Name"]}
-						</Typography>
-					</div> */}
-					</DrawerHeader>
+					></DrawerHeader>
 					<Divider />
 					{libraries.isLoading ? (
 						<>
@@ -287,27 +279,29 @@ export const SideMenu = ({}) => {
 
 				<MuiDrawer
 					open={open}
+					variant="persistent"
 					onClose={() => setDrawerOpen(false)}
 					elevation={0}
 					PaperProps={{
 						sx: {
-							m: 1,
-							height: "auto",
-							minHeight: "-webkit-fill-available",
-							background: "transparent",
-							backdropFilter: "blur(15px)",
-							borderRadius: "15px",
+							background: "rgb(0 0 0 / 0.5)",
+							backdropFilter: "blur(10px)",
 							boxShadow: "0 0 15px rgb(0 0 0 / 0.2)",
 							width: 260,
 						},
 					}}
+					className="sidemenu-open"
 				>
 					<DrawerHeader
 						className="Mui-DrawerHeader"
 						sx={{
-							justifyContent: "center",
+							justifyContent: "flex-start",
 						}}
-					></DrawerHeader>
+					>
+						<IconButton onClick={() => setDrawerOpen(false)}>
+							<MdiClose />
+						</IconButton>
+					</DrawerHeader>
 					<Divider />
 					{libraries.isLoading ? (
 						<>

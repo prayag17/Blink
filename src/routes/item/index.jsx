@@ -509,8 +509,8 @@ const ItemDetail = () => {
 			setAudioTracks(audios);
 			setSubtitleTracks(subs);
 
-			setCurrentVideoTrack(videos[0]?.DisplayTitle);
-			setCurrentAudioTrack(audios[0]?.DisplayTitle);
+			setCurrentVideoTrack(videos[0]?.Index);
+			setCurrentAudioTrack(audios[0]?.Index);
 			setCurrentSubTrack(subs[0]?.Index);
 		}
 	}, [item.isSuccess]);
@@ -1054,7 +1054,7 @@ const ItemDetail = () => {
 																	.VideoType
 															) {
 																setUrl(
-																	`${window.api.basePath}/Videos/${item.data.Id}/stream.${item.data.MediaSources[0].Container}?Static=true&mediaSourceId=${item.data.Id}&deviceId=${window.api.deviceInfo.id}&api_key=${window.api.accessToken}&Tag=${item.data.MediaSources[0].ETag}`,
+																	`${window.api.basePath}/Videos/${item.data.Id}/stream.${item.data.MediaSources[0].Container}?Static=true&mediaSourceId=${item.data.Id}&deviceId=${window.api.deviceInfo.id}&api_key=${window.api.accessToken}&Tag=${item.data.MediaSources[0].ETag}&videoStreamIndex=${currentVideoTrack}&audioStreamIndex=${currentAudioTrack}`,
 																);
 																setPosition(
 																	item
@@ -1602,7 +1602,7 @@ const ItemDetail = () => {
 																					sindex
 																				}
 																				value={
-																					stream.DisplayTitle
+																					stream.Index
 																				}
 																			>
 																				{
@@ -1673,7 +1673,7 @@ const ItemDetail = () => {
 																				sindex
 																			}
 																			value={
-																				stream.DisplayTitle
+																				stream.Index
 																			}
 																		>
 																			{

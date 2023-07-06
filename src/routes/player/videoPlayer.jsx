@@ -556,19 +556,15 @@ export const VideoPlayer = () => {
 						attributes: {
 							crossOrigin: "true",
 						},
-						tracks: [],
-						// tracks: subtitleTracksStore.map((sub, index) => {
-						// 	return {
-						// 		kind: "subtitles",
-						// 		src: `${window.api.basePath}/Videos/${itemId}/${itemId}/Subtitles/${sub.Index}/Stream.vtt?api_key=${window.api.accessToken}`,
-						// 		srcLang: sub?.Language,
-						// 		default: false,
-						// 		mode:
-						// 			sub.Index == currentSubtrack
-						// 				? "showing"
-						// 				: "hidden",
-						// 	};
-						// }),
+						tracks: [
+							{
+								kind: "subtitles",
+								src: `${window.api.basePath}/Videos/${itemId}/${itemId}/Subtitles/${currentSubtrack}/Stream.vtt?api_key=${window.api.accessToken}`,
+								srcLang: "",
+								default: true,
+								mode: "showing",
+							},
+						],
 					},
 				}}
 				playbackRate={availableSpeeds[speed]}
