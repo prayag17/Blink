@@ -1,6 +1,8 @@
 /** @format */
 import { useEffect, useState } from "react";
 
+import { relaunch } from "@tauri-apps/api/process";
+
 import MuiAppBar from "@mui/material/AppBar";
 import TextField from "@mui/material/TextField";
 import IconButton from "@mui/material/IconButton";
@@ -28,6 +30,9 @@ import { MdiCog } from "../icons/mdiCog";
 import { MdiInformation } from "../icons/mdiInformation";
 import { MdiMenu } from "../icons/mdiMenu";
 import { useDrawerStore } from "../../utils/store/drawer";
+import { delServer } from "../../utils/storage/servers";
+import { delUser } from "../../utils/storage/user";
+import { MdiDelete } from "../icons/mdiDelete";
 
 export const AppBar = () => {
 	const navigate = useNavigate();
@@ -195,6 +200,18 @@ export const AppBar = () => {
 									<MdiInformation />
 								</ListItemIcon>
 								About
+							</MenuItem>
+							<MenuItem
+								onClick={async () => {
+									await delServer();
+									await delUser();
+									await relaunch();
+								}}
+							>
+								<ListItemIcon>
+									<MdiDelete />
+								</ListItemIcon>
+								Remove Server
 							</MenuItem>
 						</Menu>
 					</Box>
