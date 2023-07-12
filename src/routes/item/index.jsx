@@ -767,32 +767,40 @@ const ItemDetail = () => {
 										}
 									/>
 								)}
-								{!!item.data.ImageBlurHashes
-									.Primary && (
-									<Blurhash
-										hash={
-											item.data.ImageBlurHashes
-												.Primary[
-												item.data.ImageTags
-													.Primary
-											]
-										}
-										width="100%"
-										height="100%"
-										resolutionX={12}
-										resolutionY={8}
-										style={{
-											aspectRatio: `${
-												!!item.data
-													.PrimaryImageAspectRatio
-													? item.data
-															.PrimaryImageAspectRatio
-													: 1
-											}`,
-										}}
-										className="item-detail-image-blurhash"
-									/>
-								)}
+								{!!item.data.ImageTags.Primary &&
+									Object.keys(
+										item.data.ImageBlurHashes
+											.Primary,
+									).length != 0 && (
+										<Blurhash
+											hash={
+												item.data
+													.ImageBlurHashes
+													.Primary[
+													Object.keys(
+														item.data
+															.ImageBlurHashes
+															.Primary,
+													)[0]
+												]
+											}
+											width="100%"
+											height="100%"
+											resolutionX={12}
+											resolutionY={8}
+											style={{
+												aspectRatio: `${
+													!!item.data
+														.PrimaryImageAspectRatio
+														? item
+																.data
+																.PrimaryImageAspectRatio
+														: 1
+												}`,
+											}}
+											className="item-detail-image-blurhash"
+										/>
+									)}
 								<div className="item-detail-image-icon-container">
 									{
 										TypeIconCollectionCard[

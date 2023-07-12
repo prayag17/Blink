@@ -49,6 +49,8 @@ import { useNavigate } from "react-router-dom";
 import { endsAt, getRuntime } from "../../utils/date/time";
 import { BaseItemKind, ItemFields } from "@jellyfin/sdk/lib/generated-client";
 
+import { ErrorBoundary } from "react-error-boundary";
+
 const Home = () => {
 	const authUser = useQuery({
 		queryKey: ["home", "authenticateUser"],
@@ -249,267 +251,289 @@ const Home = () => {
 						latestMedia.data.length != 0 &&
 						latestMedia.data.map((item, index) => {
 							return (
-								<Paper
-									className="hero-carousel-slide"
-									sx={{
-										background:
-											theme.palette.primary
-												.background.dark,
-									}}
-									key={index}
+								<ErrorBoundary
+									fallback={
+										<div>
+											Something went wrong in
+											carousel slide for
+											{" --- "}
+											{item.Name}
+										</div>
+									}
 								>
-									<div className="hero-carousel-background-container">
-										{item.Type ==
-										BaseItemKind.MusicAlbum ? (
-											!!item.ParentBackdropItemId && (
-												<>
-													<Blurhash
-														hash={
-															item
-																.ImageBlurHashes
-																.Backdrop[
+									<Paper
+										className="hero-carousel-slide"
+										sx={{
+											background:
+												theme.palette
+													.primary
+													.background
+													.dark,
+										}}
+										key={index}
+									>
+										<div className="hero-carousel-background-container">
+											{item.Type ==
+											BaseItemKind.MusicAlbum ? (
+												!!item.ParentBackdropItemId && (
+													<>
+														<Blurhash
+															hash={
 																item
-																	.ParentBackdropImageTags[0]
-															]
-														}
-														// hash="LEHV6nWB2yk8pyo0adR*.7kCMdnj"
-														width="1080"
-														height="720"
-														resolutionX={
-															64
-														}
-														resolutionY={
-															96
-														}
-														className="hero-carousel-background-blurhash"
-														punch={1}
-													/>
+																	.ImageBlurHashes
+																	.Backdrop[
+																	item
+																		.ParentBackdropImageTags[0]
+																]
+															}
+															// hash="LEHV6nWB2yk8pyo0adR*.7kCMdnj"
+															width="1080"
+															height="720"
+															resolutionX={
+																64
+															}
+															resolutionY={
+																96
+															}
+															className="hero-carousel-background-blurhash"
+															punch={
+																1
+															}
+														/>
+														<div
+															className="hero-carousel-background-image"
+															style={{
+																backgroundImage: `url(${window.api.basePath}/Items/${item.ParentBackdropItemId}/Images/Backdrop)`,
+															}}
+														></div>
+													</>
+												)
+											) : item.ImageBlurHashes
+													.Backdrop ? (
+												<>
+													{item
+														.BackdropImageTags
+														.length !=
+														0 && (
+														<Blurhash
+															hash={
+																item
+																	.ImageBlurHashes
+																	.Backdrop[
+																	item
+																		.BackdropImageTags[2]
+																]
+															}
+															// hash="LEHV6nWB2yk8pyo0adR*.7kCMdnj"
+															width="1080"
+															height="720"
+															resolutionX={
+																64
+															}
+															resolutionY={
+																96
+															}
+															className="hero-carousel-background-blurhash"
+															punch={
+																1
+															}
+														/>
+													)}
 													<div
 														className="hero-carousel-background-image"
 														style={{
-															backgroundImage: `url(${window.api.basePath}/Items/${item.ParentBackdropItemId}/Images/Backdrop)`,
+															backgroundImage: `url(${
+																window
+																	.api
+																	.basePath +
+																"/Items/" +
+																item.Id +
+																"/Images/Backdrop"
+															})`,
 														}}
 													></div>
 												</>
-											)
-										) : item.ImageBlurHashes
-												.Backdrop ? (
-											<>
-												{item
-													.BackdropImageTags
-													.length !=
-													0 && (
-													<Blurhash
-														hash={
-															item
-																.ImageBlurHashes
-																.Backdrop[
-																item
-																	.BackdropImageTags[0]
-															]
-														}
-														// hash="LEHV6nWB2yk8pyo0adR*.7kCMdnj"
-														width="1080"
-														height="720"
-														resolutionX={
-															64
-														}
-														resolutionY={
-															96
-														}
-														className="hero-carousel-background-blurhash"
-														punch={1}
-													/>
-												)}
-												<div
-													className="hero-carousel-background-image"
-													style={{
-														backgroundImage: `url(${
+											) : (
+												<div className="hero-carousel-background-image empty"></div>
+											)}
+											<div className="hero-carousel-background-icon-container">
+												{
+													MediaTypeIconCollection[
+														item.Type
+													]
+												}
+											</div>
+										</div>
+										<Box className="hero-carousel-detail">
+											<Typography
+												variant="h3"
+												className="hero-carousel-text"
+												sx={{
+													mb: 2.5,
+												}}
+											>
+												{!item.ImageTags
+													.Logo ? (
+													item.Name
+												) : (
+													<img
+														className="hero-carousel-text-logo"
+														src={
 															window
 																.api
 																.basePath +
 															"/Items/" +
 															item.Id +
-															"/Images/Backdrop"
-														})`,
-													}}
-												></div>
-											</>
-										) : (
-											<div className="hero-carousel-background-image empty"></div>
-										)}
-										<div className="hero-carousel-background-icon-container">
-											{
-												MediaTypeIconCollection[
-													item.Type
-												]
-											}
-										</div>
-									</div>
-									<Box className="hero-carousel-detail">
-										<Typography
-											variant="h3"
-											className="hero-carousel-text"
-											sx={{
-												mb: 2.5,
-											}}
-										>
-											{!item.ImageTags.Logo ? (
-												item.Name
-											) : (
-												<img
-													className="hero-carousel-text-logo"
-													src={
-														window.api
-															.basePath +
-														"/Items/" +
-														item.Id +
-														"/Images/Logo?quality=80&tag=" +
-														item
-															.ImageTags
-															.Logo
+															"/Images/Logo?quality=80&tag=" +
+															item
+																.ImageTags
+																.Logo
+														}
+													></img>
+												)}
+											</Typography>
+											<Stack
+												// sx={{
+												// 	display: "flex",
+												// 	alignItems:
+												// 		"center",
+												// 	width: "fit-content",
+												// 	gap: "1em",
+												// 	mb: 1.5,
+												// }}
+												direction="row"
+												gap={1}
+												divider={
+													<Divider
+														variant="middle"
+														component="div"
+														orientation="vertical"
+														flexItem
+													/>
+												}
+												className="hero-carousel-info"
+											>
+												<Typography
+													variant="subtitle1"
+													// color="GrayText"
+												>
+													{!!item.ProductionYear
+														? item.ProductionYear
+														: "Unknown"}
+												</Typography>
+												<Chip
+													variant="outlined"
+													label={
+														!!item.OfficialRating
+															? item.OfficialRating
+															: "Not Rated"
 													}
-												></img>
-											)}
-										</Typography>
-										<Stack
-											// sx={{
-											// 	display: "flex",
-											// 	alignItems:
-											// 		"center",
-											// 	width: "fit-content",
-											// 	gap: "1em",
-											// 	mb: 1.5,
-											// }}
-											direction="row"
-											gap={1}
-											divider={
-												<Divider
-													variant="middle"
-													component="div"
-													orientation="vertical"
-													flexItem
 												/>
-											}
-											className="hero-carousel-info"
-										>
+												<Box
+													sx={{
+														display: "flex",
+														gap: "0.25em",
+														alignItems:
+															"center",
+													}}
+													className="hero-carousel-info-rating"
+												>
+													{!!item.CommunityRating ? (
+														<>
+															<MdiStar
+																sx={{
+																	color: yellow[700],
+																}}
+															/>
+															<Typography variant="subtitle1">
+																{Math.round(
+																	item.CommunityRating *
+																		10,
+																) /
+																	10}
+															</Typography>
+														</>
+													) : (
+														<Typography variant="subtitle1">
+															No
+															Community
+															Rating
+														</Typography>
+													)}
+												</Box>
+												{!!item.RunTimeTicks && (
+													<Typography variant="subtitle1">
+														{getRuntime(
+															item.RunTimeTicks,
+														)}
+													</Typography>
+												)}
+												{!!item.RunTimeTicks && (
+													<Typography variant="subtitle1">
+														{endsAt(
+															item.RunTimeTicks,
+														)}
+													</Typography>
+												)}
+											</Stack>
 											<Typography
 												variant="subtitle1"
-												// color="GrayText"
+												className="hero-carousel-text"
+												sx={{
+													display: "-webkit-box",
+													maxWidth:
+														"70%",
+													maxHeight:
+														"30%",
+													textOverflow:
+														"ellipsis",
+													overflow:
+														"hidden",
+													WebkitLineClamp:
+														"3",
+													WebkitBoxOrient:
+														"vertical",
+													opacity: 0.7,
+												}}
 											>
-												{!!item.ProductionYear
-													? item.ProductionYear
-													: "Unknown"}
+												{item.Overview}
 											</Typography>
-											<Chip
-												variant="outlined"
-												label={
-													!!item.OfficialRating
-														? item.OfficialRating
-														: "Not Rated"
-												}
-											/>
+											{/* TODO Link PLay and More info buttons in carousel */}
 											<Box
 												sx={{
 													display: "flex",
-													gap: "0.25em",
-													alignItems:
-														"center",
+													gap: 3,
+													mt: 3,
 												}}
-												className="hero-carousel-info-rating"
+												className="hero-carousel-button-container"
 											>
-												{!!item.CommunityRating ? (
-													<>
-														<MdiStar
-															sx={{
-																color: yellow[700],
-															}}
-														/>
-														<Typography variant="subtitle1">
-															{Math.round(
-																item.CommunityRating *
-																	10,
-															) /
-																10}
-														</Typography>
-													</>
-												) : (
-													<Typography variant="subtitle1">
-														No
-														Community
-														Rating
-													</Typography>
-												)}
+												<Button
+													variant="contained"
+													endIcon={
+														<MdiPlayOutline />
+													}
+													disabled
+												>
+													Play
+												</Button>
+												<Button
+													color="white"
+													variant="outlined"
+													endIcon={
+														<MdiChevronRight />
+													}
+													onClick={() =>
+														navigate(
+															`/item/${item.Id}`,
+														)
+													}
+												>
+													More info
+												</Button>
 											</Box>
-											{!!item.RunTimeTicks && (
-												<Typography variant="subtitle1">
-													{getRuntime(
-														item.RunTimeTicks,
-													)}
-												</Typography>
-											)}
-											{!!item.RunTimeTicks && (
-												<Typography variant="subtitle1">
-													{endsAt(
-														item.RunTimeTicks,
-													)}
-												</Typography>
-											)}
-										</Stack>
-										<Typography
-											variant="subtitle1"
-											className="hero-carousel-text"
-											sx={{
-												display: "-webkit-box",
-												maxWidth: "70%",
-												maxHeight: "30%",
-												textOverflow:
-													"ellipsis",
-												overflow: "hidden",
-												WebkitLineClamp:
-													"3",
-												WebkitBoxOrient:
-													"vertical",
-												opacity: 0.7,
-											}}
-										>
-											{item.Overview}
-										</Typography>
-										{/* TODO Link PLay and More info buttons in carousel */}
-										<Box
-											sx={{
-												display: "flex",
-												gap: 3,
-												mt: 3,
-											}}
-											className="hero-carousel-button-container"
-										>
-											<Button
-												variant="contained"
-												endIcon={
-													<MdiPlayOutline />
-												}
-												disabled
-											>
-												Play
-											</Button>
-											<Button
-												color="white"
-												variant="outlined"
-												endIcon={
-													<MdiChevronRight />
-												}
-												onClick={() =>
-													navigate(
-														`/item/${item.Id}`,
-													)
-												}
-											>
-												More info
-											</Button>
 										</Box>
-									</Box>
-								</Paper>
+									</Paper>
+								</ErrorBoundary>
 							);
 						})
 					)}
