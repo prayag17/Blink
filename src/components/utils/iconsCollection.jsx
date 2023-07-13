@@ -24,6 +24,7 @@ import { MdiDramaMasks } from "../icons/mdiDramaMasks";
 import { MdiMusic } from "../icons/mdiMusic";
 import { MdiAccountTie } from "../icons/mdiAccountTie";
 import { MdiAccount } from "../icons/mdiAccount";
+import { MdiFilmstripBoxMultiple } from "../icons/mdiFilmstripBoxMultiple";
 
 export const MediaCollectionTypeIconCollection = {
 	universal: <MdiMultimedia />,
@@ -31,7 +32,7 @@ export const MediaCollectionTypeIconCollection = {
 	music: <MdiMusicBoxMultipleOutline />,
 	playlists: <MdiPlaylistMusicOutline />,
 	tvshows: <MdiTelevision />,
-	boxsets: <MdiMovieOutline />,
+	boxsets: <MdiFilmstripBoxMultiple />,
 	musicvideos: <MdiFolderMusicOutline />,
 	trailers: <MdiYoutube />,
 	books: <MdiBookMultiple />,
@@ -47,7 +48,7 @@ export const MediaCollectionTypeIconCollectionCard = {
 	music: <MdiMusicBoxMultipleOutline className="card-image-icon" />,
 	playlists: <MdiPlaylistMusicOutline className="card-image-icon" />,
 	tvshows: <MdiTelevision className="card-image-icon" />,
-	boxsets: <MdiMovieOutline className="card-image-icon" />,
+	boxsets: <MdiFilmstripBoxMultiple className="card-image-icon" />,
 	musicvideos: <MdiFolderMusicOutline className="card-image-icon" />,
 	trailers: <MdiYoutube className="card-image-icon" />,
 	books: <MdiBookMultiple className="card-image-icon" />,

@@ -562,7 +562,10 @@ export const VideoPlayer = () => {
 								src: `${window.api.basePath}/Videos/${itemId}/${itemId}/Subtitles/${currentSubtrack}/Stream.vtt?api_key=${window.api.accessToken}`,
 								srcLang: "",
 								default: true,
-								mode: "showing",
+								mode:
+									currentSubtrack == -1
+										? "hidden"
+										: "showing",
 							},
 						],
 					},

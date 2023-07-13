@@ -1741,6 +1741,13 @@ const ItemDetail = () => {
 																);
 															}}
 														>
+															<MenuItem
+																value={
+																	-1
+																}
+															>
+																None
+															</MenuItem>
 															{subtitleTracks.map(
 																(
 																	stream,
