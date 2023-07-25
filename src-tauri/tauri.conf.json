@@ -23,9 +23,6 @@
 			},
 			"shell": {
 				"all": true
-			},
-			"http": {
-				"all": true
 			}
 		},
 		"bundle": {
