@@ -50,6 +50,7 @@ import { endsAt, getRuntime } from "../../utils/date/time";
 import { BaseItemKind, ItemFields } from "@jellyfin/sdk/lib/generated-client";
 
 import { ErrorBoundary } from "react-error-boundary";
+import CarouselSlideError from "../../components/errors/carousel";
 
 const Home = () => {
 	const authUser = useQuery({
@@ -253,12 +254,9 @@ const Home = () => {
 							return (
 								<ErrorBoundary
 									fallback={
-										<div>
-											Something went wrong in
-											carousel slide for
-											{" --- "}
-											{item.Name}
-										</div>
+										<CarouselSlideError
+											itemName={item.Name}
+										/>
 									}
 								>
 									<Paper
@@ -320,8 +318,11 @@ const Home = () => {
 																item
 																	.ImageBlurHashes
 																	.Backdrop[
-																	item
-																		.BackdropImageTags[2]
+																	Object.keys(
+																		item
+																			.ImageBlurHashes
+																			.Backdrop,
+																	)[0]
 																]
 															}
 															// hash="LEHV6nWB2yk8pyo0adR*.7kCMdnj"

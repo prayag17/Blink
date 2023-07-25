@@ -32,5 +32,6 @@ ReactDOM.createRoot(document.getElementById("root")).render(
 document.addEventListener("DOMContentLoaded", () => {
 	// This will wait for the window to load, but you could
 	// run this function on whatever trigger you want
+	console.info("Initial render complete");
 	invoke("close_splashscreen");
 });

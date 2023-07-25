@@ -4,9 +4,7 @@ import React, { useState, useEffect } from "react";
 
 import { appWindow } from "@tauri-apps/api/window";
 
-import Konami from "react-konami-code";
-// @ts-ignore
-const Kon = Konami.default ? Konami.default : Konami;
+import useKonami from "react-use-konami";
 
 import { ThemeProvider } from "@mui/material/styles";
 import { SnackbarProvider, useSnackbar } from "notistack";
@@ -39,7 +37,8 @@ import DialogContent from "@mui/material/DialogContent";
 import DialogContentText from "@mui/material/DialogContentText";
 import DialogTitle from "@mui/material/DialogTitle";
 import Button from "@mui/material/Button";
-import Box from "@mui/material/Box";
+import Slide from "@mui/material/Slide";
+// import Slide from "@mui/material/Slide";
 import CircularProgress from "@mui/material/CircularProgress";
 
 // Routes
@@ -278,23 +277,60 @@ function App() {
 		appWindow.setFullscreen(false);
 	}, [location]);
 
+	useKonami(sixtyNine, {
+		code: [
+			"ArrowUp",
+			"ArrowUp",
+			"ArrowDown",
+			"ArrowDown",
+			"ArrowLeft",
+			"ArrowRight",
+			"ArrowLeft",
+			"ArrowRight",
+			"b",
+			"a",
+		],
+	});
+
 	return (
 		<SnackbarProvider maxSnack={5}>
 			<ThemeProvider theme={theme}>
-				<Kon resetDelay={1000} action={sixtyNine}></Kon>
 				<Dialog
 					open={easterEgg}
 					onClose={() => setEasterEgg(false)}
+					sx={{
+						background: "black",
+					}}
 				>
 					<iframe
 						width="560"
 						height="315"
-						src="https://www.youtube.com/embed/dQw4w9WgXcQ?controls=0&autoplay=1"
+						src="https://www.youtube.com/embed/dQw4w9WgXcQ?autoplay=1&disablekb=1"
 						title="EasterEgg"
 						frameborder="0"
 						allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
 					></iframe>
 				</Dialog>
+				<Slide
+					direction="up"
+					in={easterEgg}
+					mountOnEnter
+					unmountOnExit
+				>
+					<img
+						src="https://i.gifer.com/PYh.gif"
+						width={320}
+						height={320}
+						style={{
+							zIndex: "99999999",
+							position: "fixed",
+							bottom: 0,
+							left: 0,
+							objectFit: "cover",
+						}}
+					/>
+				</Slide>
+
 				{/* Show Dialog if server not reachable */}
 				<Dialog
 					open={!serverReachable}
