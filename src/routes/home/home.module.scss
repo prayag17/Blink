@@ -1,5 +1,22 @@
 /** @format */
 
+.home {
+	&-background {
+		&-container {
+			position: fixed !important;
+			width: 100vw;
+			height: 100vh;
+		}
+	}
+	&-backdrop {
+		width: 100vw;
+		height: 100vh;
+		& > * {
+			all: inherit;
+		}
+	}
+}
+
 .hero-carousel {
 	position: relative;
 	overflow: hidden;

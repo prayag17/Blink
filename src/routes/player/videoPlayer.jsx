@@ -249,7 +249,12 @@ export const VideoPlayer = () => {
 					}}
 				>
 					<Toolbar>
-						<IconButton onClick={() => navigate(-1)}>
+						<IconButton
+							onClick={async () => {
+								await appWindow.setFullscreen(false);
+								navigate(-1);
+							}}
+						>
 							<MdiArrowLeft />
 						</IconButton>
 						<Typography ml={2} variant="h6">

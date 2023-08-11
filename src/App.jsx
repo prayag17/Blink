@@ -273,10 +273,6 @@ function App() {
 		setEasterEgg(true);
 	};
 
-	useEffect(() => {
-		appWindow.setFullscreen(false);
-	}, [location]);
-
 	useKonami(sixtyNine, {
 		code: [
 			"ArrowUp",

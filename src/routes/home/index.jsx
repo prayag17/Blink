@@ -213,6 +213,60 @@ const Home = () => {
 					position: "relative",
 				}}
 			>
+				{/* <Carousel
+					indicators={false}
+					animation="fade"
+					autoPlay={false}
+					className="home-background-container"
+				>
+					{latestMedia.isSuccess &&
+						latestMedia.data.length != 0 &&
+						latestMedia.data.map((item, index) => {
+							return (
+								<ErrorBoundary
+									fallback={() => {
+										console.log(
+											"error with home backdrop",
+											item.Name,
+										);
+									}}
+								>
+									<Paper
+										sx={{
+											background: "red",
+											width: "100vw",
+											height: "100vh",
+										}}
+										key={index}
+										className="home-backdrop-container"
+									>
+										{item.BackdropImageTags
+											.length != 0 && (
+											<Blurhash
+												hash={
+													item
+														.ImageBlurHashes
+														.Backdrop[
+														Object.keys(
+															item
+																.ImageBlurHashes
+																.Backdrop,
+														)[0]
+													]
+												}
+												width="1080"
+												height="720"
+												resolutionX={64}
+												resolutionY={96}
+												punch={1}
+												className="home-backdrop"
+											/>
+										)}
+									</Paper>
+								</ErrorBoundary>
+							);
+						})}
+				</Carousel> */}
 				<Carousel
 					className="hero-carousel"
 					autoPlay={true}
@@ -805,7 +859,6 @@ const Home = () => {
 						/>
 					);
 				})}
-
 				<Button variant="contained" onClick={handleLogout}>
 					Logout
 				</Button>
