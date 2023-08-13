@@ -43,6 +43,12 @@
 			right: 0;
 			bottom: 0;
 			opacity: 0.8;
+			mask-image: linear-gradient(to bottom, black, transparent);
+			-webkit-mask-image: linear-gradient(
+				to bottom,
+				black,
+				transparent
+			);
 		}
 		&-image {
 			position: absolute;
@@ -54,19 +60,6 @@
 			bottom: 0;
 			background-position: center;
 			opacity: 1;
-			&::after {
-				content: "";
-				position: absolute;
-				top: 0;
-				left: 0;
-				right: 0;
-				bottom: 0;
-				background: linear-gradient(
-					to top,
-					rgb(0 0 0 / 0.45),
-					transparent
-				);
-			}
 		}
 		&-icon {
 			position: absolute;
@@ -104,7 +97,7 @@
 		z-index: 0;
 		display: flex;
 		height: 100%;
-		width: 70%;
+		width: 80%;
 		padding: 2em;
 		flex-direction: column;
 		justify-content: flex-end;

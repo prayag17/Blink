@@ -52,6 +52,7 @@ import { BaseItemKind, ItemFields } from "@jellyfin/sdk/lib/generated-client";
 import { ErrorBoundary } from "react-error-boundary";
 import CarouselSlideError from "../../components/errors/carousel";
 
+import { motion } from "framer-motion";
 const Home = () => {
 	const authUser = useQuery({
 		queryKey: ["home", "authenticateUser"],
@@ -298,6 +299,7 @@ const Home = () => {
 					sx={{
 						marginBottom: "1.5em",
 					}}
+					duration={400}
 					interval={10000}
 				>
 					{latestMedia.isLoading ? (
@@ -318,10 +320,7 @@ const Home = () => {
 										className="hero-carousel-slide"
 										sx={{
 											background:
-												theme.palette
-													.primary
-													.background
-													.dark,
+												"transparent",
 										}}
 										key={index}
 									>
@@ -422,10 +421,29 @@ const Home = () => {
 										</div>
 										<Box className="hero-carousel-detail">
 											<Typography
+												component={
+													motion.h2
+												}
+												key={item.Id}
 												variant="h2"
 												className="hero-carousel-text"
 												sx={{
 													mb: 2.5,
+												}}
+												initial={{
+													y: 10,
+													opacity: 0,
+												}}
+												exit={{
+													y: 10,
+													opacity: 0,
+												}}
+												transition={{
+													duration: 0.35,
+												}}
+												whileInView={{
+													y: 0,
+													opacity: 1,
 												}}
 											>
 												{!item.ImageTags
@@ -449,16 +467,27 @@ const Home = () => {
 												)}
 											</Typography>
 											<Stack
-												// sx={{
-												// 	display: "flex",
-												// 	alignItems:
-												// 		"center",
-												// 	width: "fit-content",
-												// 	gap: "1em",
-												// 	mb: 1.5,
-												// }}
+												component={
+													motion.div
+												}
 												direction="row"
 												gap={1}
+												initial={{
+													y: 10,
+													opacity: 0,
+												}}
+												transition={{
+													duration: 0.25,
+													delay: 0.1,
+												}}
+												exit={{
+													y: 10,
+													opacity: 0,
+												}}
+												whileInView={{
+													y: 0,
+													opacity: 1,
+												}}
 												divider={
 													<Box
 														sx={{
@@ -474,13 +503,6 @@ const Home = () => {
 														}}
 													></Box>
 												}
-												// <Divider
-												// 	variant="middle"
-												// 	component="div"
-												// 	orientation="vertical"
-												// 	flexItem
-												// />
-
 												className="hero-carousel-info"
 											>
 												<Typography
@@ -547,6 +569,25 @@ const Home = () => {
 												)}
 											</Stack>
 											<Typography
+												component={
+													motion.div
+												}
+												initial={{
+													y: 10,
+													opacity: 0,
+												}}
+												transition={{
+													duration: 0.25,
+													delay: 0.2,
+												}}
+												whileInView={{
+													y: 0,
+													opacity: 1,
+												}}
+												exit={{
+													y: 10,
+													opacity: 0,
+												}}
 												variant="subtitle1"
 												className="hero-carousel-text"
 												sx={{
@@ -560,7 +601,7 @@ const Home = () => {
 													overflow:
 														"hidden",
 													WebkitLineClamp:
-														"3",
+														"4",
 													WebkitBoxOrient:
 														"vertical",
 													opacity: 0.7,
@@ -572,23 +613,81 @@ const Home = () => {
 											{item.UserData
 												.PlaybackPositionTicks >
 												0 && (
-												<LinearProgress
-													variant="determinate"
-													value={
-														item
-															.UserData
-															.PlayedPercentage
+												<Stack
+													component={
+														motion.div
 													}
-													color="white"
-													sx={{
-														mt: 2,
-														borderRadius: 1,
-														width: "50%",
+													initial={{
+														y: 10,
+														opacity: 0,
 													}}
-												/>
+													transition={{
+														duration: 0.25,
+														delay: 0.3,
+													}}
+													whileInView={{
+														y: 0,
+														opacity: 1,
+													}}
+													exit={{
+														y: 10,
+														opacity: 0,
+													}}
+													direction="row"
+													gap="1em"
+													mt={2}
+													width="50%"
+													alignItems="center"
+													justifyContent="center"
+												>
+													<Typography
+														variant="subtitle1"
+														whiteSpace="nowrap"
+													>
+														{getRuntime(
+															item.RunTimeTicks -
+																item
+																	.UserData
+																	.PlaybackPositionTicks,
+														)}{" "}
+													</Typography>
+													<LinearProgress
+														variant="determinate"
+														value={
+															item
+																.UserData
+																.PlayedPercentage
+														}
+														color="white"
+														sx={{
+															borderRadius: 1,
+															height: "2.5px",
+															width: "100%",
+														}}
+													/>
+												</Stack>
 											)}
 											{/* TODO Link PLay and More info buttons in carousel */}
 											<Box
+												component={
+													motion.div
+												}
+												initial={{
+													y: 10,
+													opacity: 0,
+												}}
+												transition={{
+													duration: 0.25,
+													delay: 0.4,
+												}}
+												whileInView={{
+													y: 0,
+													opacity: 1,
+												}}
+												exit={{
+													y: 10,
+													opacity: 0,
+												}}
 												sx={{
 													display: "flex",
 													gap: 3,
