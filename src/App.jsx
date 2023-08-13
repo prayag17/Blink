@@ -356,7 +356,12 @@ function App() {
 					</DialogActions>
 				</Dialog>
 				<AnimatePresence>
-					<div style={{ display: "flex" }}>
+					<div
+						style={{
+							display: "flex",
+							width: "calc(100vw - 14px)",
+						}}
+					>
 						<CssBaseline />
 						<SideMenu />
 						<AppBar />

@@ -9,7 +9,7 @@ export const CarouselSkeleton = () => {
 		<Paper
 			className="hero-carousel-slide"
 			sx={{
-				background: theme.palette.primary.background.dark,
+				background: theme.palette.primary.background.main,
 			}}
 		>
 			<div className="hero-carousel-background">
@@ -17,6 +17,10 @@ export const CarouselSkeleton = () => {
 					variant="rectangular"
 					height="100%"
 					animation="wave"
+					sx={{
+						width: "100vw",
+						height: "100vh",
+					}}
 				></Skeleton>
 			</div>
 			<Box className="hero-carousel-detail">

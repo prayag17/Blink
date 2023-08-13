@@ -18,7 +18,7 @@ import Button from "@mui/material/Button";
 import Paper from "@mui/material/Paper";
 import Typography from "@mui/material/Typography";
 import Chip from "@mui/material/Chip";
-import Divider from "@mui/material/Divider";
+import LinearProgress from "@mui/material/LinearProgress";
 import Stack from "@mui/material/Stack";
 
 import { yellow } from "@mui/material/colors";
@@ -204,11 +204,9 @@ const Home = () => {
 		<>
 			<Box
 				component="main"
-				className="scrollY"
+				className="scrollY home"
 				sx={{
 					flexGrow: 1,
-					pt: 11,
-					px: 3,
 					pb: 3,
 					position: "relative",
 				}}
@@ -269,9 +267,9 @@ const Home = () => {
 				</Carousel> */}
 				<Carousel
 					className="hero-carousel"
-					autoPlay={true}
+					autoPlay={false}
 					animation="fade"
-					height="70vh"
+					height="100vh"
 					IndicatorIcon={
 						<div className="hero-carousel-indicator"></div>
 					}
@@ -289,9 +287,12 @@ const Home = () => {
 						},
 					}}
 					indicatorContainerProps={{
+						className: "hero-carousel-indicator-container",
 						style: {
+							position: "absolute",
 							display: "flex",
 							gap: "1em",
+							zIndex: 1,
 						},
 					}}
 					sx={{
@@ -421,7 +422,7 @@ const Home = () => {
 										</div>
 										<Box className="hero-carousel-detail">
 											<Typography
-												variant="h3"
+												variant="h2"
 												className="hero-carousel-text"
 												sx={{
 													mb: 2.5,
@@ -459,13 +460,27 @@ const Home = () => {
 												direction="row"
 												gap={1}
 												divider={
-													<Divider
-														variant="middle"
-														component="div"
-														orientation="vertical"
-														flexItem
-													/>
+													<Box
+														sx={{
+															width: "4px",
+															height: "4px",
+															background:
+																"white",
+															alignSelf:
+																"center",
+															aspectRatio: 1,
+															borderRadius:
+																"10px",
+														}}
+													></Box>
 												}
+												// <Divider
+												// 	variant="middle"
+												// 	component="div"
+												// 	orientation="vertical"
+												// 	flexItem
+												// />
+
 												className="hero-carousel-info"
 											>
 												<Typography
@@ -553,6 +568,25 @@ const Home = () => {
 											>
 												{item.Overview}
 											</Typography>
+
+											{item.UserData
+												.PlaybackPositionTicks >
+												0 && (
+												<LinearProgress
+													variant="determinate"
+													value={
+														item
+															.UserData
+															.PlayedPercentage
+													}
+													color="white"
+													sx={{
+														mt: 2,
+														borderRadius: 1,
+														width: "50%",
+													}}
+												/>
+											)}
 											{/* TODO Link PLay and More info buttons in carousel */}
 											<Box
 												sx={{
@@ -593,275 +627,302 @@ const Home = () => {
 						})
 					)}
 				</Carousel>
-				{libraries.isLoading ? (
-					<CardsSkeleton />
-				) : (
-					<CardScroller displayCards={4} title="Libraries">
-						{libraries.status == "success" &&
-							libraries.data.Items.map((item, index) => {
-								return (
-									<Card
-										key={index}
-										itemName={item.Name}
-										itemId={item.Id}
-										// imageTags={false}
-										imageTags={
-											!!item.ImageTags.Primary
-										}
-										cardType="lib"
-										cardOrientation="landscape"
-										iconType={item.CollectionType}
-										onClickEvent={() => {
-											navigate(
-												`/library/${item.Id}`,
-											);
-										}}
-										blurhash={
-											item.ImageBlurHashes ==
-											{}
-												? ""
-												: !!item.ImageTags
+				<Box
+					className="padded-container"
+					sx={{
+						px: 3,
+					}}
+				>
+					{libraries.isLoading ? (
+						<CardsSkeleton />
+					) : (
+						<CardScroller displayCards={4} title="Libraries">
+							{libraries.status == "success" &&
+								libraries.data.Items.map(
+									(item, index) => {
+										return (
+											<Card
+												key={index}
+												itemName={item.Name}
+												itemId={item.Id}
+												// imageTags={false}
+												imageTags={
+													!!item
+														.ImageTags
 														.Primary
-												? !!item
-														.ImageBlurHashes
-														.Primary
-													? item
-															.ImageBlurHashes
-															.Primary[
-															item
+												}
+												cardType="lib"
+												cardOrientation="landscape"
+												iconType={
+													item.CollectionType
+												}
+												onClickEvent={() => {
+													navigate(
+														`/library/${item.Id}`,
+													);
+												}}
+												blurhash={
+													item.ImageBlurHashes ==
+													{}
+														? ""
+														: !!item
 																.ImageTags
 																.Primary
-													  ]
-													: ""
-												: ""
-										}
-										currentUser={user.data}
-									></Card>
-								);
-							})}
-					</CardScroller>
-				)}
-				{upNextItems.isLoading ? (
-					<CardsSkeleton />
-				) : upNextItems.isSuccess &&
-				  upNextItems.data.Items.length == 0 ? (
-					<></>
-				) : (
-					<CardScroller displayCards={4} title="Up Next">
-						{upNextItems.data.Items.map((item, index) => {
-							return (
-								<Card
-									key={index}
-									itemName={
-										!!item.SeriesId
-											? item.SeriesName
-											: item.Name
-									}
-									itemId={
-										!!item.SeriesId
-											? item.SeriesId
-											: item.Id
-									}
-									// imageTags={false}
-									imageTags={
-										!!item.ImageTags.Primary
-									}
-									cardType="thumb"
-									iconType={item.Type}
-									subText={
-										!!item.SeriesId
-											? "S" +
-											  item.ParentIndexNumber +
-											  ":E" +
-											  item.IndexNumber +
-											  " - " +
-											  item.Name
-											: item.ProductionYear
-									}
-									cardOrientation="landscape"
-									blurhash={
-										item.ImageBlurHashes == {}
-											? ""
-											: !!item.ImageTags
+														? !!item
+																.ImageBlurHashes
+																.Primary
+															? item
+																	.ImageBlurHashes
+																	.Primary[
+																	item
+																		.ImageTags
+																		.Primary
+															  ]
+															: ""
+														: ""
+												}
+												currentUser={
+													user.data
+												}
+											></Card>
+										);
+									},
+								)}
+						</CardScroller>
+					)}
+					{upNextItems.isLoading ? (
+						<CardsSkeleton />
+					) : upNextItems.isSuccess &&
+					  upNextItems.data.Items.length == 0 ? (
+						<></>
+					) : (
+						<CardScroller displayCards={4} title="Up Next">
+							{upNextItems.data.Items.map(
+								(item, index) => {
+									return (
+										<Card
+											key={index}
+											itemName={
+												!!item.SeriesId
+													? item.SeriesName
+													: item.Name
+											}
+											itemId={
+												!!item.SeriesId
+													? item.SeriesId
+													: item.Id
+											}
+											// imageTags={false}
+											imageTags={
+												!!item.ImageTags
 													.Primary
-											? !!item.ImageBlurHashes
-													.Primary
-												? item
-														.ImageBlurHashes
-														.Primary[
-														item
+											}
+											cardType="thumb"
+											iconType={item.Type}
+											subText={
+												!!item.SeriesId
+													? "S" +
+													  item.ParentIndexNumber +
+													  ":E" +
+													  item.IndexNumber +
+													  " - " +
+													  item.Name
+													: item.ProductionYear
+											}
+											cardOrientation="landscape"
+											blurhash={
+												item.ImageBlurHashes ==
+												{}
+													? ""
+													: !!item
 															.ImageTags
 															.Primary
-												  ]
-												: ""
-											: ""
-									}
-									currentUser={user.data}
-									favourite={
-										item.UserData.IsFavorite
-									}
-								></Card>
-							);
-						})}
-					</CardScroller>
-				)}
-				{resumeItemsVideo.isLoading ? (
-					<CardsSkeleton />
-				) : resumeItemsVideo.data.Items.length == 0 ? (
-					<></>
-				) : (
-					<CardScroller
-						displayCards={4}
-						title="Continue Watching"
-					>
-						{resumeItemsVideo.data.Items.map(
-							(item, index) => {
-								return (
-									<Card
-										key={index}
-										itemName={
-											!!item.SeriesId
-												? item.SeriesName
-												: item.Name
-										}
-										itemId={
-											!!item.SeriesId
-												? item.SeriesId
-												: item.Id
-										}
-										// imageTags={false}
-										imageTags={
-											!!item.SeriesId
-												? item
-														.ParentBackdropImageTags
-														.length !=
-												  0
-												: item
-														.BackdropImageTags
-														.length !=
-												  0
-										}
-										cardType="thumb"
-										iconType={item.Type}
-										subText={
-											!!item.SeriesId
-												? "S" +
-												  item.ParentIndexNumber +
-												  ":E" +
-												  item.IndexNumber +
-												  " - " +
-												  item.Name
-												: item.ProductionYear
-										}
-										playedPercent={
-											item.UserData
-												.PlayedPercentage
-										}
-										cardOrientation="landscape"
-										blurhash={
-											item.ImageBlurHashes ==
-											{}
-												? ""
-												: !!item.ImageTags
-														.Backdrop
-												? !!item
-														.ImageBlurHashes
-														.Backdrop
-													? item
+													? !!item
 															.ImageBlurHashes
-															.Backdrop[
-															item
-																.ImageTags
-																.Backdrop
-													  ]
+															.Primary
+														? item
+																.ImageBlurHashes
+																.Primary[
+																item
+																	.ImageTags
+																	.Primary
+														  ]
+														: ""
 													: ""
-												: ""
-										}
-										currentUser={user.data}
-										favourite={
-											item.UserData.IsFavorite
-										}
-									></Card>
-								);
-							},
-						)}
-					</CardScroller>
-				)}
-				{resumeItemsAudio.isLoading ? (
-					<CardsSkeleton />
-				) : resumeItemsAudio.data.Items.length == 0 ? (
-					<></>
-				) : (
-					<CardScroller
-						displayCards={4}
-						title="Continue Listening"
-					>
-						{resumeItemsAudio.data.Items.map(
-							(item, index) => {
-								return (
-									<Card
-										key={index}
-										itemName={
-											!!item.SeriesId
-												? item.SeriesName
-												: item.Name
-										}
-										itemId={
-											!!item.SeriesId
-												? item.SeriesId
-												: item.Id
-										}
-										// imageTags={false}
-										imageTags={
-											!!item.ImageTags.Primary
-										}
-										iconType={item.Type}
-										subText={item.ProductionYear}
-										playedPercent={
-											item.UserData
-												.PlayedPercentage
-										}
-										cardOrientation="sqaure"
-										blurhash={
-											item.ImageBlurHashes ==
-											{}
-												? ""
-												: !!item.ImageTags
-														.Primary
-												? !!item
-														.ImageBlurHashes
-														.Primary
+											}
+											currentUser={user.data}
+											favourite={
+												item.UserData
+													.IsFavorite
+											}
+										></Card>
+									);
+								},
+							)}
+						</CardScroller>
+					)}
+					{resumeItemsVideo.isLoading ? (
+						<CardsSkeleton />
+					) : resumeItemsVideo.data.Items.length == 0 ? (
+						<></>
+					) : (
+						<CardScroller
+							displayCards={4}
+							title="Continue Watching"
+						>
+							{resumeItemsVideo.data.Items.map(
+								(item, index) => {
+									return (
+										<Card
+											key={index}
+											itemName={
+												!!item.SeriesId
+													? item.SeriesName
+													: item.Name
+											}
+											itemId={
+												!!item.SeriesId
+													? item.SeriesId
+													: item.Id
+											}
+											// imageTags={false}
+											imageTags={
+												!!item.SeriesId
 													? item
+															.ParentBackdropImageTags
+															.length !=
+													  0
+													: item
+															.BackdropImageTags
+															.length !=
+													  0
+											}
+											cardType="thumb"
+											iconType={item.Type}
+											subText={
+												!!item.SeriesId
+													? "S" +
+													  item.ParentIndexNumber +
+													  ":E" +
+													  item.IndexNumber +
+													  " - " +
+													  item.Name
+													: item.ProductionYear
+											}
+											playedPercent={
+												item.UserData
+													.PlayedPercentage
+											}
+											cardOrientation="landscape"
+											blurhash={
+												item.ImageBlurHashes ==
+												{}
+													? ""
+													: !!item
+															.ImageTags
+															.Backdrop
+													? !!item
 															.ImageBlurHashes
-															.Primary[
-															item
-																.ImageTags
-																.Primary
-													  ]
+															.Backdrop
+														? item
+																.ImageBlurHashes
+																.Backdrop[
+																item
+																	.ImageTags
+																	.Backdrop
+														  ]
+														: ""
 													: ""
-												: ""
-										}
-										currentUser={user.data}
-										favourite={
-											item.UserData.IsFavorite
-										}
-									></Card>
-								);
-							},
-						)}
-					</CardScroller>
-				)}
-				{latestMediaLibs.map((lib, index) => {
-					return (
-						<LatestMediaSection
-							key={lib[0]}
-							latestMediaLib={lib}
-						/>
-					);
-				})}
-				<Button variant="contained" onClick={handleLogout}>
-					Logout
-				</Button>
+											}
+											currentUser={user.data}
+											favourite={
+												item.UserData
+													.IsFavorite
+											}
+										></Card>
+									);
+								},
+							)}
+						</CardScroller>
+					)}
+					{resumeItemsAudio.isLoading ? (
+						<CardsSkeleton />
+					) : resumeItemsAudio.data.Items.length == 0 ? (
+						<></>
+					) : (
+						<CardScroller
+							displayCards={4}
+							title="Continue Listening"
+						>
+							{resumeItemsAudio.data.Items.map(
+								(item, index) => {
+									return (
+										<Card
+											key={index}
+											itemName={
+												!!item.SeriesId
+													? item.SeriesName
+													: item.Name
+											}
+											itemId={
+												!!item.SeriesId
+													? item.SeriesId
+													: item.Id
+											}
+											// imageTags={false}
+											imageTags={
+												!!item.ImageTags
+													.Primary
+											}
+											iconType={item.Type}
+											subText={
+												item.ProductionYear
+											}
+											playedPercent={
+												item.UserData
+													.PlayedPercentage
+											}
+											cardOrientation="sqaure"
+											blurhash={
+												item.ImageBlurHashes ==
+												{}
+													? ""
+													: !!item
+															.ImageTags
+															.Primary
+													? !!item
+															.ImageBlurHashes
+															.Primary
+														? item
+																.ImageBlurHashes
+																.Primary[
+																item
+																	.ImageTags
+																	.Primary
+														  ]
+														: ""
+													: ""
+											}
+											currentUser={user.data}
+											favourite={
+												item.UserData
+													.IsFavorite
+											}
+										></Card>
+									);
+								},
+							)}
+						</CardScroller>
+					)}
+					{latestMediaLibs.map((lib, index) => {
+						return (
+							<LatestMediaSection
+								key={lib[0]}
+								latestMediaLib={lib}
+							/>
+						);
+					})}
+				</Box>
 			</Box>
 		</>
 	);
