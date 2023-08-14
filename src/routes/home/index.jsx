@@ -215,316 +215,277 @@ const Home = () => {
 					position: "relative",
 				}}
 			>
-				<Carousel
-					className="hero-carousel"
-					autoPlay={false}
-					animation="fade"
-					height="100vh"
-					IndicatorIcon={
-						<div className="hero-carousel-indicator"></div>
-					}
-					activeIndicatorIconButtonProps={{
-						style: {
-							background: "rgb(255 255 255)",
-						},
-					}}
-					indicatorIconButtonProps={{
-						style: {
-							background: "rgb(255 255 255 / 0.3)",
-							borderRadius: "2px",
-							width: "100%",
-							flexShrink: "1",
-						},
-					}}
-					indicatorContainerProps={{
-						className: "hero-carousel-indicator-container",
-						style: {
-							position: "absolute",
-							display: "flex",
-							gap: "1em",
-							zIndex: 1,
-						},
-					}}
-					sx={{
-						marginBottom: "1.5em",
-					}}
-					onChange={(now) => {
-						console.log(latestMedia.data[now]);
-						setAppBackdrop(
-							`${window.api.basePath}/Items/${latestMedia.data[now].Id}/Images/Backdrop`,
-							latestMedia.data[now].Id,
-						);
-					}}
-					duration={400}
-					interval={10000}
-				>
-					{latestMedia.isLoading ? (
-						<CarouselSkeleton />
-					) : (
-						// <></>
-						latestMedia.data.length != 0 &&
-						latestMedia.data.map((item, index) => {
-							return (
-								<ErrorBoundary
-									fallback={
-										<CarouselSlideError
-											itemName={item.Name}
-										/>
-									}
-								>
-									<Paper
-										className="hero-carousel-slide"
-										sx={{
-											background:
-												"transparent",
-										}}
-										key={index}
+				{latestMedia.isLoading ? (
+					<CarouselSkeleton />
+				) : (
+					<Carousel
+						className="hero-carousel"
+						autoPlay={false}
+						animation="fade"
+						height="100vh"
+						IndicatorIcon={
+							<div className="hero-carousel-indicator"></div>
+						}
+						activeIndicatorIconButtonProps={{
+							style: {
+								background: "rgb(255 255 255)",
+							},
+						}}
+						indicatorIconButtonProps={{
+							style: {
+								background: "rgb(255 255 255 / 0.3)",
+								borderRadius: "2px",
+								width: "100%",
+								flexShrink: "1",
+							},
+						}}
+						indicatorContainerProps={{
+							className:
+								"hero-carousel-indicator-container",
+							style: {
+								position: "absolute",
+								display: "flex",
+								gap: "1em",
+								zIndex: 1,
+							},
+						}}
+						sx={{
+							marginBottom: "1.5em",
+						}}
+						onChange={(now) => {
+							if (latestMedia.isSuccess) {
+								setAppBackdrop(
+									`${window.api.basePath}/Items/${latestMedia.data[now].Id}/Images/Backdrop`,
+									latestMedia.data[now].Id,
+								);
+							}
+						}}
+						changeOnFirstRender={true}
+						duration={400}
+						interval={10000}
+					>
+						{latestMedia.data.length != 0 &&
+							latestMedia.data.map((item, index) => {
+								return (
+									<ErrorBoundary
+										fallback={
+											<CarouselSlideError
+												itemName={item.Name}
+											/>
+										}
 									>
-										<div className="hero-carousel-background-container">
-											{Object.keys(
-												item.ImageBlurHashes
-													.Backdrop,
-											).length != 0 && (
-												<Blurhash
-													hash={
-														item
-															.ImageBlurHashes
-															.Backdrop[
-															Object.keys(
-																item
-																	.ImageBlurHashes
-																	.Backdrop,
-															)[0]
-														]
-													}
-													// hash="LEHV6nWB2yk8pyo0adR*.7kCMdnj"
-													width="1080"
-													height="720"
-													resolutionX={
-														64
-													}
-													resolutionY={
-														96
-													}
-													className="hero-carousel-background-blurhash"
-													punch={1}
-												/>
-											)}
-											<div
-												className="hero-carousel-background-image"
-												style={{
-													backgroundImage: `url(${
-														window.api
-															.basePath +
-														"/Items/" +
-														item.Id +
-														"/Images/Backdrop"
-													})`,
-												}}
-											></div>
-											<div className="hero-carousel-background-icon-container">
-												{
-													MediaTypeIconCollection[
-														item.Type
-													]
-												}
-											</div>
-										</div>
-										<Box className="hero-carousel-detail">
-											<Typography
-												component={
-													motion.h2
-												}
-												key={item.Id}
-												variant="h2"
-												className="hero-carousel-text"
-												sx={{
-													mb: 2.5,
-												}}
-												initial={{
-													y: 10,
-													opacity: 0,
-												}}
-												exit={{
-													y: 10,
-													opacity: 0,
-												}}
-												transition={{
-													duration: 0.35,
-												}}
-												whileInView={{
-													y: 0,
-													opacity: 1,
-												}}
-											>
-												{!item.ImageTags
-													.Logo ? (
-													item.Name
-												) : (
-													<img
-														className="hero-carousel-text-logo"
-														src={
+										<Paper
+											className="hero-carousel-slide"
+											sx={{
+												background:
+													"transparent",
+											}}
+											key={index}
+										>
+											<div className="hero-carousel-background-container">
+												{Object.keys(
+													item
+														.ImageBlurHashes
+														.Backdrop,
+												).length != 0 && (
+													<Blurhash
+														hash={
+															item
+																.ImageBlurHashes
+																.Backdrop[
+																Object.keys(
+																	item
+																		.ImageBlurHashes
+																		.Backdrop,
+																)[0]
+															]
+														}
+														// hash="LEHV6nWB2yk8pyo0adR*.7kCMdnj"
+														width="1080"
+														height="720"
+														resolutionX={
+															64
+														}
+														resolutionY={
+															96
+														}
+														className="hero-carousel-background-blurhash"
+														punch={1}
+													/>
+												)}
+												<div
+													className="hero-carousel-background-image"
+													style={{
+														backgroundImage: `url(${
 															window
 																.api
 																.basePath +
 															"/Items/" +
 															item.Id +
-															"/Images/Logo?quality=80&tag=" +
+															"/Images/Backdrop"
+														})`,
+													}}
+												></div>
+												<div className="hero-carousel-background-icon-container">
+													{
+														MediaTypeIconCollection[
 															item
-																.ImageTags
-																.Logo
+																.Type
+														]
+													}
+												</div>
+											</div>
+											<Box className="hero-carousel-detail">
+												<Typography
+													component={
+														motion.h2
+													}
+													key={item.Id}
+													variant="h2"
+													className="hero-carousel-text"
+													sx={{
+														mb: 2.5,
+													}}
+													initial={{
+														y: 10,
+														opacity: 0,
+													}}
+													exit={{
+														y: 10,
+														opacity: 0,
+													}}
+													transition={{
+														duration: 0.35,
+													}}
+													whileInView={{
+														y: 0,
+														opacity: 1,
+													}}
+												>
+													{!item
+														.ImageTags
+														.Logo ? (
+														item.Name
+													) : (
+														<img
+															className="hero-carousel-text-logo"
+															src={
+																window
+																	.api
+																	.basePath +
+																"/Items/" +
+																item.Id +
+																"/Images/Logo?quality=80&tag=" +
+																item
+																	.ImageTags
+																	.Logo
+															}
+														></img>
+													)}
+												</Typography>
+												<Stack
+													component={
+														motion.div
+													}
+													direction="row"
+													gap={1}
+													initial={{
+														y: 10,
+														opacity: 0,
+													}}
+													transition={{
+														duration: 0.25,
+														delay: 0.1,
+													}}
+													exit={{
+														y: 10,
+														opacity: 0,
+													}}
+													whileInView={{
+														y: 0,
+														opacity: 1,
+													}}
+													divider={
+														<Box
+															sx={{
+																width: "4px",
+																height: "4px",
+																background:
+																	"white",
+																alignSelf:
+																	"center",
+																aspectRatio: 1,
+																borderRadius:
+																	"10px",
+															}}
+														></Box>
+													}
+													className="hero-carousel-info"
+												>
+													<Typography
+														variant="subtitle1"
+														// color="GrayText"
+													>
+														{!!item.ProductionYear
+															? item.ProductionYear
+															: "Unknown"}
+													</Typography>
+													<Chip
+														variant="outlined"
+														label={
+															!!item.OfficialRating
+																? item.OfficialRating
+																: "Not Rated"
 														}
-													></img>
-												)}
-											</Typography>
-											<Stack
-												component={
-													motion.div
-												}
-												direction="row"
-												gap={1}
-												initial={{
-													y: 10,
-													opacity: 0,
-												}}
-												transition={{
-													duration: 0.25,
-													delay: 0.1,
-												}}
-												exit={{
-													y: 10,
-													opacity: 0,
-												}}
-												whileInView={{
-													y: 0,
-													opacity: 1,
-												}}
-												divider={
+													/>
 													<Box
 														sx={{
-															width: "4px",
-															height: "4px",
-															background:
-																"white",
-															alignSelf:
+															display: "flex",
+															gap: "0.25em",
+															alignItems:
 																"center",
-															aspectRatio: 1,
-															borderRadius:
-																"10px",
 														}}
-													></Box>
-												}
-												className="hero-carousel-info"
-											>
-												<Typography
-													variant="subtitle1"
-													// color="GrayText"
-												>
-													{!!item.ProductionYear
-														? item.ProductionYear
-														: "Unknown"}
-												</Typography>
-												<Chip
-													variant="outlined"
-													label={
-														!!item.OfficialRating
-															? item.OfficialRating
-															: "Not Rated"
-													}
-												/>
-												<Box
-													sx={{
-														display: "flex",
-														gap: "0.25em",
-														alignItems:
-															"center",
-													}}
-													className="hero-carousel-info-rating"
-												>
-													{!!item.CommunityRating ? (
-														<>
-															<MdiStar
-																sx={{
-																	color: yellow[700],
-																}}
-															/>
+														className="hero-carousel-info-rating"
+													>
+														{!!item.CommunityRating ? (
+															<>
+																<MdiStar
+																	sx={{
+																		color: yellow[700],
+																	}}
+																/>
+																<Typography variant="subtitle1">
+																	{Math.round(
+																		item.CommunityRating *
+																			10,
+																	) /
+																		10}
+																</Typography>
+															</>
+														) : (
 															<Typography variant="subtitle1">
-																{Math.round(
-																	item.CommunityRating *
-																		10,
-																) /
-																	10}
+																No
+																Community
+																Rating
 															</Typography>
-														</>
-													) : (
+														)}
+													</Box>
+													{!!item.RunTimeTicks && (
 														<Typography variant="subtitle1">
-															No
-															Community
-															Rating
+															{getRuntime(
+																item.RunTimeTicks,
+															)}
 														</Typography>
 													)}
-												</Box>
-												{!!item.RunTimeTicks && (
-													<Typography variant="subtitle1">
-														{getRuntime(
-															item.RunTimeTicks,
-														)}
-													</Typography>
-												)}
-												{!!item.RunTimeTicks && (
-													<Typography variant="subtitle1">
-														{endsAt(
-															item.RunTimeTicks,
-														)}
-													</Typography>
-												)}
-											</Stack>
-											<Typography
-												component={
-													motion.div
-												}
-												initial={{
-													y: 10,
-													opacity: 0,
-												}}
-												transition={{
-													duration: 0.25,
-													delay: 0.2,
-												}}
-												whileInView={{
-													y: 0,
-													opacity: 1,
-												}}
-												exit={{
-													y: 10,
-													opacity: 0,
-												}}
-												variant="subtitle1"
-												className="hero-carousel-text"
-												sx={{
-													display: "-webkit-box",
-													maxWidth:
-														"70%",
-													maxHeight:
-														"30%",
-													textOverflow:
-														"ellipsis",
-													overflow:
-														"hidden",
-													WebkitLineClamp:
-														"4",
-													WebkitBoxOrient:
-														"vertical",
-													opacity: 0.7,
-												}}
-											>
-												{item.Overview}
-											</Typography>
-
-											{item.UserData
-												.PlaybackPositionTicks >
-												0 && (
-												<Stack
+													{!!item.RunTimeTicks && (
+														<Typography variant="subtitle1">
+															{endsAt(
+																item.RunTimeTicks,
+															)}
+														</Typography>
+													)}
+												</Stack>
+												<Typography
 													component={
 														motion.div
 													}
@@ -534,7 +495,7 @@ const Home = () => {
 													}}
 													transition={{
 														duration: 0.25,
-														delay: 0.3,
+														delay: 0.2,
 													}}
 													whileInView={{
 														y: 0,
@@ -544,99 +505,144 @@ const Home = () => {
 														y: 10,
 														opacity: 0,
 													}}
-													direction="row"
-													gap="1em"
-													mt={2}
-													width="50%"
-													alignItems="center"
-													justifyContent="center"
+													variant="subtitle1"
+													className="hero-carousel-text"
+													sx={{
+														display: "-webkit-box",
+														maxWidth:
+															"70%",
+														maxHeight:
+															"30%",
+														textOverflow:
+															"ellipsis",
+														overflow:
+															"hidden",
+														WebkitLineClamp:
+															"4",
+														WebkitBoxOrient:
+															"vertical",
+														opacity: 0.7,
+													}}
 												>
-													<Typography
-														variant="subtitle1"
-														whiteSpace="nowrap"
+													{item.Overview}
+												</Typography>
+
+												{item.UserData
+													.PlaybackPositionTicks >
+													0 && (
+													<Stack
+														component={
+															motion.div
+														}
+														initial={{
+															y: 10,
+															opacity: 0,
+														}}
+														transition={{
+															duration: 0.25,
+															delay: 0.3,
+														}}
+														whileInView={{
+															y: 0,
+															opacity: 1,
+														}}
+														exit={{
+															y: 10,
+															opacity: 0,
+														}}
+														direction="row"
+														gap="1em"
+														mt={2}
+														width="50%"
+														alignItems="center"
+														justifyContent="center"
 													>
-														{getRuntime(
-															item.RunTimeTicks -
+														<Typography
+															variant="subtitle1"
+															whiteSpace="nowrap"
+														>
+															{getRuntime(
+																item.RunTimeTicks -
+																	item
+																		.UserData
+																		.PlaybackPositionTicks,
+															)}{" "}
+														</Typography>
+														<LinearProgress
+															variant="determinate"
+															value={
 																item
 																	.UserData
-																	.PlaybackPositionTicks,
-														)}{" "}
-													</Typography>
-													<LinearProgress
-														variant="determinate"
-														value={
-															item
-																.UserData
-																.PlayedPercentage
+																	.PlayedPercentage
+															}
+															color="white"
+															sx={{
+																borderRadius: 1,
+																height: "2.5px",
+																width: "100%",
+															}}
+														/>
+													</Stack>
+												)}
+												{/* TODO Link PLay and More info buttons in carousel */}
+												<Box
+													component={
+														motion.div
+													}
+													initial={{
+														y: 10,
+														opacity: 0,
+													}}
+													transition={{
+														duration: 0.25,
+														delay: 0.4,
+													}}
+													whileInView={{
+														y: 0,
+														opacity: 1,
+													}}
+													exit={{
+														y: 10,
+														opacity: 0,
+													}}
+													sx={{
+														display: "flex",
+														gap: 3,
+														mt: 3,
+													}}
+													className="hero-carousel-button-container"
+												>
+													<Button
+														variant="contained"
+														endIcon={
+															<MdiPlayOutline />
 														}
+														disabled
+													>
+														Play
+													</Button>
+													<Button
 														color="white"
-														sx={{
-															borderRadius: 1,
-															height: "2.5px",
-															width: "100%",
-														}}
-													/>
-												</Stack>
-											)}
-											{/* TODO Link PLay and More info buttons in carousel */}
-											<Box
-												component={
-													motion.div
-												}
-												initial={{
-													y: 10,
-													opacity: 0,
-												}}
-												transition={{
-													duration: 0.25,
-													delay: 0.4,
-												}}
-												whileInView={{
-													y: 0,
-													opacity: 1,
-												}}
-												exit={{
-													y: 10,
-													opacity: 0,
-												}}
-												sx={{
-													display: "flex",
-													gap: 3,
-													mt: 3,
-												}}
-												className="hero-carousel-button-container"
-											>
-												<Button
-													variant="contained"
-													endIcon={
-														<MdiPlayOutline />
-													}
-													disabled
-												>
-													Play
-												</Button>
-												<Button
-													color="white"
-													variant="outlined"
-													endIcon={
-														<MdiChevronRight />
-													}
-													onClick={() =>
-														navigate(
-															`/item/${item.Id}`,
-														)
-													}
-												>
-													More info
-												</Button>
+														variant="outlined"
+														endIcon={
+															<MdiChevronRight />
+														}
+														onClick={() =>
+															navigate(
+																`/item/${item.Id}`,
+															)
+														}
+													>
+														More info
+													</Button>
+												</Box>
 											</Box>
-										</Box>
-									</Paper>
-								</ErrorBoundary>
-							);
-						})
-					)}
-				</Carousel>
+										</Paper>
+									</ErrorBoundary>
+								);
+							})}
+					</Carousel>
+				)}
 				<Box
 					className="padded-container"
 					sx={{

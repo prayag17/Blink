@@ -7,9 +7,13 @@ import { theme } from "../../theme";
 export const CarouselSkeleton = () => {
 	return (
 		<Paper
-			className="hero-carousel-slide"
+			className="hero-carousel-skeleton"
+			elevation={0}
 			sx={{
+				height: "100vh",
+				position: "relative",
 				background: theme.palette.primary.background.main,
+				borderRadius: 0,
 			}}
 		>
 			<div className="hero-carousel-background">

@@ -129,8 +129,10 @@ export const SideMenu = ({}) => {
 						},
 					}}
 					sx={{
+						zIndex: 1,
 						width: `calc(${theme.spacing(7)} + 10px)`,
-						background: theme.palette.background.paper,
+						background:
+							"linear-gradient(to right, rgb(0 0 0 /  0.35) , transparent) !important ",
 					}}
 				>
 					<DrawerHeader
@@ -139,7 +141,6 @@ export const SideMenu = ({}) => {
 							justifyContent: "center",
 						}}
 					></DrawerHeader>
-					<Divider />
 					{libraries.isLoading ? (
 						<>
 							<Skeleton
@@ -207,7 +208,6 @@ export const SideMenu = ({}) => {
 								)}
 							</List>
 							<List sx={{ marginTop: "auto" }}>
-								<Divider />
 								<Tooltip
 									title="Home"
 									placement="right"

@@ -359,33 +359,34 @@ function App() {
 						</Button>
 					</DialogActions>
 				</Dialog>
-				<AnimatePresence>
+				<AnimatePresence wait>
+					<Box className="app-backdrop-container">
+						<motion.img
+							key={backdropId}
+							src={backdropUrl}
+							alt=""
+							className="app-backdrop"
+							initial={{
+								opacity: 0,
+							}}
+							animate={{
+								opacity: 0.5,
+							}}
+							exit={{
+								opacity: 0,
+							}}
+							transition={{
+								duration: 1,
+							}}
+							loading="eager"
+						/>
+					</Box>
 					<div
 						style={{
 							display: "flex",
 							width: "calc(100vw - 14px)",
 						}}
 					>
-						<Box className="app-backdrop-container">
-							<motion.img
-								key={backdropId}
-								src={backdropUrl}
-								alt=""
-								className="app-backdrop"
-								initial={{
-									opacity: 0,
-								}}
-								animate={{
-									opacity: 0.5,
-								}}
-								exit={{
-									opacity: 0,
-								}}
-								transition={{
-									duration: 1,
-								}}
-							/>
-						</Box>
 						<CssBaseline />
 						<SideMenu />
 						<AppBar />

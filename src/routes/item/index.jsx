@@ -68,6 +68,7 @@ import { ArtistAlbum } from "../../components/layouts/artist/artistAlbum";
 import { MdiMusic } from "../../components/icons/mdiMusic";
 import { usePlaybackStore } from "../../utils/store/playback";
 import { Tooltip } from "@mui/material";
+import { useBackdropStore } from "../../utils/store/backdrop";
 function TabPanel(props) {
 	const { children, value, index, ...other } = props;
 
@@ -533,10 +534,19 @@ const ItemDetail = () => {
 		state.setSelectedSubtitleTrack,
 	]);
 
+	const [setAppBackdrop] = useBackdropStore((state) => [state.setBackdrop]);
+
 	const [directors, setDirectors] = useState([]);
 	const [writers, setWriters] = useState([]);
 	useEffect(() => {
 		if (item.isSuccess) {
+			setAppBackdrop(
+				item.data.Type === BaseItemKind.MusicAlbum ||
+					item.data.Type === BaseItemKind.Episode
+					? `${window.api.basePath}/Items/${item.data.ParentBackdropItemId}/Images/Backdrop`
+					: `${window.api.basePath}/Items/${item.data.Id}/Images/Backdrop`,
+				item.data.Id,
+			);
 			let direTp = item.data.People.filter(
 				(itm) => itm.Type == "Director",
 			);
@@ -566,46 +576,6 @@ const ItemDetail = () => {
 	if (item.isSuccess && similarItems.isSuccess) {
 		return (
 			<>
-				<Box className="item-detail-backdrop">
-					{item.data.BackdropImageTags.length != 0 && (
-						<Blurhash
-							hash={
-								item.data.ImageBlurHashes.Backdrop[
-									item.data.BackdropImageTags[0]
-								]
-							}
-							width="100%"
-							height="100%"
-							resolutionX={14}
-							resolutionY={22}
-							style={{
-								aspectRatio: "0.666",
-							}}
-							punch={1}
-							className="item-detail-image-blurhash"
-						/>
-					)}
-					{!!item.data.ParentBackdropImageTags &&
-						item.data.ParentBackdropImageTags.length != 0 && (
-							<Blurhash
-								hash={
-									item.data.ImageBlurHashes.Backdrop[
-										item.data
-											.ParentBackdropImageTags[0]
-									]
-								}
-								width="100%"
-								height="100%"
-								resolutionX={14}
-								resolutionY={22}
-								style={{
-									aspectRatio: "0.666",
-								}}
-								punch={1}
-								className="item-detail-image-blurhash"
-							/>
-						)}
-				</Box>
 				<Box
 					recomponent="main"
 					className="scrollY"

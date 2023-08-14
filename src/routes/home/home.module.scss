@@ -43,12 +43,16 @@
 			right: 0;
 			bottom: 0;
 			opacity: 0.8;
-			mask-image: linear-gradient(to bottom, black, transparent);
+			mask-image: linear-gradient(to bottom, black 40%, transparent),
+				linear-gradient(to left, black 40%, transparent);
 			-webkit-mask-image: linear-gradient(
-				to bottom,
-				black,
-				transparent
-			);
+					to bottom,
+					black 40%,
+					transparent
+				),
+				linear-gradient(to left, black 40%, transparent);
+			mask-composite: source-in;
+			-webkit-mask-composite: source-in;
 		}
 		&-image {
 			position: absolute;

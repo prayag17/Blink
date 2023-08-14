@@ -48,8 +48,8 @@ body {
 	position: absolute;
 	top: 0;
 	left: 0;
-	filter: blur(50px);
-
+	z-index: -1;
+	filter: blur(80px);
 	&-container {
 		position: fixed;
 		width: 100vw;
