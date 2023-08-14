@@ -212,60 +212,6 @@ const Home = () => {
 					position: "relative",
 				}}
 			>
-				{/* <Carousel
-					indicators={false}
-					animation="fade"
-					autoPlay={false}
-					className="home-background-container"
-				>
-					{latestMedia.isSuccess &&
-						latestMedia.data.length != 0 &&
-						latestMedia.data.map((item, index) => {
-							return (
-								<ErrorBoundary
-									fallback={() => {
-										console.log(
-											"error with home backdrop",
-											item.Name,
-										);
-									}}
-								>
-									<Paper
-										sx={{
-											background: "red",
-											width: "100vw",
-											height: "100vh",
-										}}
-										key={index}
-										className="home-backdrop-container"
-									>
-										{item.BackdropImageTags
-											.length != 0 && (
-											<Blurhash
-												hash={
-													item
-														.ImageBlurHashes
-														.Backdrop[
-														Object.keys(
-															item
-																.ImageBlurHashes
-																.Backdrop,
-														)[0]
-													]
-												}
-												width="1080"
-												height="720"
-												resolutionX={64}
-												resolutionY={96}
-												punch={1}
-												className="home-backdrop"
-											/>
-										)}
-									</Paper>
-								</ErrorBoundary>
-							);
-						})}
-				</Carousel> */}
 				<Carousel
 					className="hero-carousel"
 					autoPlay={false}
@@ -325,92 +271,47 @@ const Home = () => {
 										key={index}
 									>
 										<div className="hero-carousel-background-container">
-											{item.Type ==
-											BaseItemKind.MusicAlbum ? (
-												!!item.ParentBackdropItemId && (
-													<>
-														<Blurhash
-															hash={
+											{Object.keys(
+												item.ImageBlurHashes
+													.Backdrop,
+											).length != 0 && (
+												<Blurhash
+													hash={
+														item
+															.ImageBlurHashes
+															.Backdrop[
+															Object.keys(
 																item
 																	.ImageBlurHashes
-																	.Backdrop[
-																	item
-																		.ParentBackdropImageTags[0]
-																]
-															}
-															// hash="LEHV6nWB2yk8pyo0adR*.7kCMdnj"
-															width="1080"
-															height="720"
-															resolutionX={
-																64
-															}
-															resolutionY={
-																96
-															}
-															className="hero-carousel-background-blurhash"
-															punch={
-																1
-															}
-														/>
-														<div
-															className="hero-carousel-background-image"
-															style={{
-																backgroundImage: `url(${window.api.basePath}/Items/${item.ParentBackdropItemId}/Images/Backdrop)`,
-															}}
-														></div>
-													</>
-												)
-											) : item.ImageBlurHashes
-													.Backdrop ? (
-												<>
-													{item
-														.BackdropImageTags
-														.length !=
-														0 && (
-														<Blurhash
-															hash={
-																item
-																	.ImageBlurHashes
-																	.Backdrop[
-																	Object.keys(
-																		item
-																			.ImageBlurHashes
-																			.Backdrop,
-																	)[0]
-																]
-															}
-															// hash="LEHV6nWB2yk8pyo0adR*.7kCMdnj"
-															width="1080"
-															height="720"
-															resolutionX={
-																64
-															}
-															resolutionY={
-																96
-															}
-															className="hero-carousel-background-blurhash"
-															punch={
-																1
-															}
-														/>
-													)}
-													<div
-														className="hero-carousel-background-image"
-														style={{
-															backgroundImage: `url(${
-																window
-																	.api
-																	.basePath +
-																"/Items/" +
-																item.Id +
-																"/Images/Backdrop"
-															})`,
-														}}
-													></div>
-												</>
-											) : (
-												<div className="hero-carousel-background-image empty"></div>
+																	.Backdrop,
+															)[0]
+														]
+													}
+													// hash="LEHV6nWB2yk8pyo0adR*.7kCMdnj"
+													width="1080"
+													height="720"
+													resolutionX={
+														64
+													}
+													resolutionY={
+														96
+													}
+													className="hero-carousel-background-blurhash"
+													punch={1}
+												/>
 											)}
+											<div
+												className="hero-carousel-background-image"
+												style={{
+													backgroundImage: `url(${
+														window.api
+															.basePath +
+														"/Items/" +
+														item.Id +
+														"/Images/Backdrop"
+													})`,
+												}}
+											></div>
 											<div className="hero-carousel-background-icon-container">
 												{
 													MediaTypeIconCollection[
