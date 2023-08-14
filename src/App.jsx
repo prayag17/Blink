@@ -378,7 +378,7 @@ function App() {
 								opacity: 0,
 							}}
 							transition={{
-								duration: 1.25,
+								duration: 1.5,
 							}}
 							onLoad={() => setBackdropLoading(false)}
 							loading="eager"
