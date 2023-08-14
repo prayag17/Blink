@@ -272,6 +272,8 @@ function App() {
 		state.backdropId,
 	]);
 
+	const [backdropLoading, setBackdropLoading] = useState(true);
+
 	const [easterEgg, setEasterEgg] = useState(false);
 	const sixtyNine = () => {
 		setEasterEgg(true);
@@ -359,8 +361,8 @@ function App() {
 						</Button>
 					</DialogActions>
 				</Dialog>
-				<AnimatePresence wait>
-					<Box className="app-backdrop-container">
+				<Box className="app-backdrop-container">
+					<AnimatePresence>
 						<motion.img
 							key={backdropId}
 							src={backdropUrl}
@@ -370,95 +372,87 @@ function App() {
 								opacity: 0,
 							}}
 							animate={{
-								opacity: 0.5,
+								opacity: backdropLoading ? 0 : 0.5,
 							}}
 							exit={{
 								opacity: 0,
 							}}
 							transition={{
-								duration: 1,
+								duration: 1.25,
 							}}
+							onLoad={() => setBackdropLoading(false)}
 							loading="eager"
 						/>
-					</Box>
-					<div
-						style={{
-							display: "flex",
-							width: "calc(100vw - 14px)",
-						}}
-					>
-						<CssBaseline />
-						<SideMenu />
-						<AppBar />
-						<Routes
-							key={location.pathname}
-							location={location}
-						>
-							<Route element={<AnimationWrapper />}>
-								<Route
-									path="/"
-									element={<LogicalRoutes />}
-								/>
+					</AnimatePresence>
+				</Box>
+				<div
+					style={{
+						display: "flex",
+						width: "calc(100vw - 14px)",
+					}}
+				>
+					<CssBaseline />
+					<SideMenu />
+					<AppBar />
+					<Routes key={location.pathname} location={location}>
+						<Route element={<AnimationWrapper />}>
+							<Route
+								path="/"
+								element={<LogicalRoutes />}
+							/>
 
-								<Route
-									path="/home"
-									element={<Home />}
-								/>
-								<Route
-									path="/setup/server"
-									element={<ServerSetup />}
-								/>
-								<Route
-									path="/servers/list"
-									element={<ServerList />}
-								/>
-								<Route
-									path="/login/withImg/:userName/:userId/"
-									element={<LoginWithImage />}
-								/>
-								<Route
-									path="/login/users"
-									element={<UserLogin />}
-								/>
-								<Route
-									path="/login/manual"
-									element={<UserLoginManual />}
-								/>
-								<Route
-									exact
-									path="/library/:id"
-									element={<LibraryView />}
-								/>
-								<Route
-									exact
-									path="/item/:id"
-									element={<ItemDetail />}
-								/>
-								<Route
-									path="/favourite"
-									element={<FavouritePage />}
-								/>
-								<Route
-									path="/settings"
-									element={<Settings />}
-								/>
-								<Route
-									path="/about"
-									element={<About />}
-								/>
-								<Route
-									path="/player"
-									element={<VideoPlayer />}
-								/>
+							<Route path="/home" element={<Home />} />
+							<Route
+								path="/setup/server"
+								element={<ServerSetup />}
+							/>
+							<Route
+								path="/servers/list"
+								element={<ServerList />}
+							/>
+							<Route
+								path="/login/withImg/:userName/:userId/"
+								element={<LoginWithImage />}
+							/>
+							<Route
+								path="/login/users"
+								element={<UserLogin />}
+							/>
+							<Route
+								path="/login/manual"
+								element={<UserLoginManual />}
+							/>
+							<Route
+								exact
+								path="/library/:id"
+								element={<LibraryView />}
+							/>
+							<Route
+								exact
+								path="/item/:id"
+								element={<ItemDetail />}
+							/>
+							<Route
+								path="/favourite"
+								element={<FavouritePage />}
+							/>
+							<Route
+								path="/settings"
+								element={<Settings />}
+							/>
+							<Route path="/about" element={<About />} />
+							<Route
+								path="/player"
+								element={<VideoPlayer />}
+							/>
 
-								<Route
-									path="/login"
-									element={<LoginLogicalRoutes />}
-								/>
-							</Route>
-						</Routes>
-					</div>
-				</AnimatePresence>
+							<Route
+								path="/login"
+								element={<LoginLogicalRoutes />}
+							/>
+						</Route>
+					</Routes>
+				</div>
 				<ReactQueryDevtools />
 			</ThemeProvider>
 		</SnackbarProvider>

@@ -63,6 +63,7 @@ import "./library.module.scss";
 import { MdiMusic } from "../../components/icons/mdiMusic";
 import { MdiHeart } from "../../components/icons/mdiHeart";
 import { MdiHeartOutline } from "../../components/icons/mdiHeartOutline";
+import { useBackdropStore } from "../../utils/store/backdrop";
 
 const LibraryView = () => {
 	const navigate = useNavigate();
@@ -447,6 +448,13 @@ const LibraryView = () => {
 		"MusicGenre",
 		"Studio",
 	];
+
+	const [setAppBackdrop] = useBackdropStore((state) => [state.setBackdrop]);
+
+	useState(() => {
+		// Remove App backdrop in library page
+		setAppBackdrop("", "");
+	}, []);
 
 	return (
 		<Box
