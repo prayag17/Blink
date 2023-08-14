@@ -41,6 +41,24 @@ body {
 	overflow-y: overlay;
 }
 
+.app-backdrop {
+	object-fit: cover;
+	width: 100%;
+	height: 100%;
+	position: absolute;
+	top: 0;
+	left: 0;
+	filter: blur(50px);
+
+	&-container {
+		position: fixed;
+		width: 100vw;
+		height: 100vh;
+		left: 0;
+		top: 0;
+	}
+}
+
 #root,
 .root-page {
 	height: fit-content;

@@ -53,6 +53,7 @@ import { ErrorBoundary } from "react-error-boundary";
 import CarouselSlideError from "../../components/errors/carousel";
 
 import { motion } from "framer-motion";
+import { useBackdropStore } from "../../utils/store/backdrop";
 const Home = () => {
 	const authUser = useQuery({
 		queryKey: ["home", "authenticateUser"],
@@ -196,6 +197,8 @@ const Home = () => {
 		});
 	}
 
+	const [setAppBackdrop] = useBackdropStore((state) => [state.setBackdrop]);
+
 	if (user.isPaused) {
 		user.refetch();
 		console.log(user.isError);
@@ -244,6 +247,13 @@ const Home = () => {
 					}}
 					sx={{
 						marginBottom: "1.5em",
+					}}
+					onChange={(now) => {
+						console.log(latestMedia.data[now]);
+						setAppBackdrop(
+							`${window.api.basePath}/Items/${latestMedia.data[now].Id}/Images/Backdrop`,
+							latestMedia.data[now].Id,
+						);
 					}}
 					duration={400}
 					interval={10000}

@@ -2,8 +2,6 @@
 
 import React, { useState, useEffect } from "react";
 
-import { appWindow } from "@tauri-apps/api/window";
-
 import useKonami from "react-use-konami";
 
 import { ThemeProvider } from "@mui/material/styles";
@@ -38,8 +36,7 @@ import DialogContentText from "@mui/material/DialogContentText";
 import DialogTitle from "@mui/material/DialogTitle";
 import Button from "@mui/material/Button";
 import Slide from "@mui/material/Slide";
-// import Slide from "@mui/material/Slide";
-import CircularProgress from "@mui/material/CircularProgress";
+import Box from "@mui/material/Box";
 
 // Routes
 import { ServerSetup, ServerList } from "./routes/setup/server";
@@ -71,6 +68,7 @@ import { delServer, getServer } from "./utils/storage/servers.js";
 import { delUser, getUser } from "./utils/storage/user.js";
 
 import axios from "axios";
+import { useBackdropStore } from "./utils/store/backdrop.js";
 
 const jellyfin = new Jellyfin({
 	clientInfo: {
@@ -268,6 +266,12 @@ function App() {
 			}
 		});
 	}
+
+	const [backdropUrl, backdropId] = useBackdropStore((state) => [
+		state.backdropUrl,
+		state.backdropId,
+	]);
+
 	const [easterEgg, setEasterEgg] = useState(false);
 	const sixtyNine = () => {
 		setEasterEgg(true);
@@ -362,6 +366,26 @@ function App() {
 							width: "calc(100vw - 14px)",
 						}}
 					>
+						<Box className="app-backdrop-container">
+							<motion.img
+								key={backdropId}
+								src={backdropUrl}
+								alt=""
+								className="app-backdrop"
+								initial={{
+									opacity: 0,
+								}}
+								animate={{
+									opacity: 0.5,
+								}}
+								exit={{
+									opacity: 0,
+								}}
+								transition={{
+									duration: 1,
+								}}
+							/>
+						</Box>
 						<CssBaseline />
 						<SideMenu />
 						<AppBar />
