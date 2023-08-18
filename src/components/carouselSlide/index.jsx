@@ -56,25 +56,27 @@ const CarouselSlide = ({ item }) => {
 				}}
 			>
 				<div className="hero-carousel-background-container">
-					{Object.keys(item.ImageBlurHashes.Backdrop).length !=
-						0 && (
-						<Blurhash
-							hash={
-								item.ImageBlurHashes.Backdrop[
-									Object.keys(
-										item.ImageBlurHashes.Backdrop,
-									)[0]
-								]
-							}
-							// hash="LEHV6nWB2yk8pyo0adR*.7kCMdnj"
-							width="1080"
-							height="720"
-							resolutionX={64}
-							resolutionY={96}
-							className="hero-carousel-background-blurhash"
-							punch={1}
-						/>
-					)}
+					{!!item.ImageBlurHashes.Backdrop &&
+						Object.keys(item.ImageBlurHashes.Backdrop)
+							.length != 0 && (
+							<Blurhash
+								hash={
+									item.ImageBlurHashes.Backdrop[
+										Object.keys(
+											item.ImageBlurHashes
+												.Backdrop,
+										)[0]
+									]
+								}
+								// hash="LEHV6nWB2yk8pyo0adR*.7kCMdnj"
+								width="1080"
+								height="720"
+								resolutionX={64}
+								resolutionY={96}
+								className="hero-carousel-background-blurhash"
+								punch={1}
+							/>
+						)}
 					<div
 						className="hero-carousel-background-image"
 						style={{
