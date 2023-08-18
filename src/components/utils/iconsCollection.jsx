@@ -59,6 +59,7 @@ export const MediaCollectionTypeIconCollectionCard = {
 
 export const MediaTypeIconCollection = {
 	Movie: <MdiFilmstrip className="hero-carousel-background-icon" />,
+	Series: <MdiTelevision className="hero-carousel-background-icon" />,
 	Audio: <MdiMicrophone className="hero-carousel-background-icon" />,
 	Photo: <MdiImage className="hero-carousel-background-icon" />,
 	Book: <MdiBook className="hero-carousel-background-icon" />,
