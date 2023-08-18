@@ -125,7 +125,6 @@ export const SideMenu = ({}) => {
 							width: `calc(${theme.spacing(7)} + 10px)`,
 							height: "100vh",
 							zIndex: "1",
-							// display: visible ? "block" : "none",
 						},
 					}}
 					sx={{

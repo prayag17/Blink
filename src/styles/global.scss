@@ -121,6 +121,13 @@ h1 {
 	width: inherit;
 	box-sizing: border-box;
 	min-height: 100vh;
+	padding-left: 1em;
+	padding-right: calc(1em + 14px);
+}
+
+.home {
+	padding-left: 0 !important;
+	padding-right: 0 !important;
 }
 
 .empty {

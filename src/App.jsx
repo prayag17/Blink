@@ -388,7 +388,7 @@ function App() {
 				<div
 					style={{
 						display: "flex",
-						width: "calc(100vw - 14px)",
+						width: "100vw",
 					}}
 				>
 					<CssBaseline />

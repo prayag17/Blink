@@ -468,8 +468,6 @@ const LibraryView = () => {
 				sx={{
 					flexGrow: 1,
 					pt: 19,
-					px: 3,
-					pb: 3,
 					position: "relative",
 				}}
 			>

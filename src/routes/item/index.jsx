@@ -582,8 +582,6 @@ const ItemDetail = () => {
 					sx={{
 						display: "flex",
 						pt: 11,
-						px: 3,
-						pb: 3,
 						position: "relative",
 						flexFlow: "column",
 					}}

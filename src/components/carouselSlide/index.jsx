@@ -30,11 +30,11 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { getUserLibraryApi } from "@jellyfin/sdk/lib/utils/api/user-library-api";
 import { getUserApi } from "@jellyfin/sdk/lib/utils/api/user-api";
 import { useSnackbar } from "notistack";
+import LikeButton from "../buttons/likeButton";
+import MarkPlayedButton from "../buttons/markPlayedButton";
 
 const CarouselSlide = ({ item }) => {
 	const navigate = useNavigate();
-	const queryClient = useQueryClient();
-	const { enqueueSnackbar } = useSnackbar();
 
 	const user = useQuery({
 		queryKey: ["user"],
@@ -45,57 +45,7 @@ const CarouselSlide = ({ item }) => {
 		networkMode: "always",
 	});
 
-	const handleLiking = async () => {
-		let result;
-		console.log(item.UserData.IsFavorite);
-		if (item.UserData.IsFavorite) {
-			result = await getUserLibraryApi(window.api).unmarkFavoriteItem({
-				userId: user.data.Id,
-				itemId: item.Id,
-			});
-		} else if (!item.UserData.IsFavorite) {
-			result = await getUserLibraryApi(window.api).markFavoriteItem({
-				userId: user.data.Id,
-				itemId: item.Id,
-			});
-		}
-	};
-
-	const favouriteButtonMutation = useMutation({
-		mutationFn: handleLiking,
-		onMutate: () => {
-			queryClient.cancelQueries(["home", "latestMedia"]);
-			const currentLatestMedia = queryClient.getQueryData([
-				"home",
-				"latestMedia",
-			]);
-			queryClient.setQueryData(["home", "latestMedia"], (oldMedia) =>
-				oldMedia.map((oitem) => {
-					if (oitem.Id == item.Id) {
-						return {
-							...oitem,
-							UserData: {
-								...oitem.UserData,
-								IsFavorite: true,
-							},
-						};
-					}
-					return oitem;
-				}),
-			);
-			return { currentLatestMedia };
-		},
-		onError: (error) => {
-			enqueueSnackbar(
-				`Error updating item. Please check your connection`,
-				{ variant: "error" },
-			);
-			console.error(error);
-		},
-		onSuccess: () => {
-			queryClient.invalidateQueries(["home", "latestMedia"]);
-		},
-	});
+	// const favouriteButtonMutation =
 
 	return (
 		<ErrorBoundary fallback={<CarouselSlideError itemName={item.Name} />}>
@@ -351,7 +301,7 @@ const CarouselSlide = ({ item }) => {
 						</Stack>
 					)}
 					{/* TODO Link PLay and More info buttons in carousel */}
-					<Box
+					<Stack
 						component={motion.div}
 						initial={{
 							y: 10,
@@ -369,11 +319,9 @@ const CarouselSlide = ({ item }) => {
 							y: 10,
 							opacity: 0,
 						}}
-						sx={{
-							display: "flex",
-							gap: 3,
-							mt: 3,
-						}}
+						mt={3}
+						direction="row"
+						gap={3}
 						className="hero-carousel-button-container"
 					>
 						<Button
@@ -391,21 +339,23 @@ const CarouselSlide = ({ item }) => {
 						>
 							More info
 						</Button>
-						<IconButton
-							sx={{
-								color: item.UserData.IsFavorite
-									? pink[700]
-									: "white",
-							}}
-							onClick={favouriteButtonMutation.mutate}
-						>
-							{item.UserData.IsFavorite ? (
-								<MdiHeart />
-							) : (
-								<MdiHeartOutline />
-							)}
-						</IconButton>
-					</Box>
+						<Stack direction="row" gap={1}>
+							<LikeButton
+								itemId={item.Id}
+								queryKey={["home", "latestMedia"]}
+								userId={user.data.Id}
+								isFavorite={item.UserData.IsFavorite}
+								itemName={item.Name}
+							/>
+							<MarkPlayedButton
+								itemId={item.Id}
+								queryKey={["home", "latestMedia"]}
+								userId={user.data.Id}
+								isPlayed={item.UserData.Played}
+								itemName={item.Name}
+							/>
+						</Stack>
+					</Stack>
 				</Box>
 			</Paper>
 		</ErrorBoundary>
