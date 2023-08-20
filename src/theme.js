@@ -32,7 +32,7 @@ export const theme = createTheme({
 		mode: "dark",
 	},
 	typography: {
-		fontFamily: "Open Sans",
+		fontFamily: "Open Sans Variable",
 	},
 	components: {
 		MuiButton: {

@@ -95,6 +95,18 @@ const Home = () => {
 		networkMode: "always",
 	});
 
+	const latestMediaLibraries = useQuery({
+		queryKey: ["libraries"],
+		queryFn: async () => {
+			let libs = await getUserViewsApi(window.api).getUserViews({
+				userId: user.data.Id,
+			});
+			return libs.data;
+		},
+		enabled: !!user.data,
+		networkMode: "always",
+	});
+
 	const latestMedia = useQuery({
 		queryKey: ["home", "latestMedia"],
 		queryFn: async () => {
@@ -110,7 +122,6 @@ const Home = () => {
 					],
 					enableUserData: true,
 					enableImages: true,
-					limit: 16,
 				},
 			);
 			return media.data;
@@ -172,30 +183,22 @@ const Home = () => {
 
 	const excludeTypes = ["boxsets", "playlists", "livetv", "channels"];
 
-	const handleLogout = async () => {
-		console.log("Logging out user...");
-		await window.api.logout();
-		delUser();
-		sessionStorage.removeItem("accessToken");
-		event.emit("create-jellyfin-api", window.api.basePath);
-		navigate("/login");
-	};
-
 	let tempData = [];
 	if (libraries.status == "success") {
 		libraries.data.Items.map((lib) => {
-			if (!excludeTypes.includes(lib.CollectionType)) {
-				tempData = latestMediaLibs;
-				if (
-					!tempData.some(
-						(el) =>
-							JSON.stringify(el) ==
-							JSON.stringify([lib.Id, lib.Name]),
-					)
-				) {
-					tempData.push([lib.Id, lib.Name]);
-					setLatestMediaLibs(tempData);
-				}
+			if (excludeTypes.includes(lib.CollectionType)) {
+				return;
+			}
+			tempData = latestMediaLibs;
+			if (
+				!tempData.some(
+					(el) =>
+						JSON.stringify(el) ==
+						JSON.stringify([lib.Id, lib.Name]),
+				)
+			) {
+				tempData.push([lib.Id, lib.Name]);
+				setLatestMediaLibs(tempData);
 			}
 		});
 	}
@@ -226,6 +229,7 @@ const Home = () => {
 						autoPlay={false}
 						animation="fade"
 						height="100vh"
+						// navButtonsAlwaysVisible
 						IndicatorIcon={
 							<div className="hero-carousel-indicator"></div>
 						}
@@ -257,10 +261,20 @@ const Home = () => {
 						}}
 						onChange={(now) => {
 							if (latestMedia.isSuccess) {
-								setAppBackdrop(
-									`${window.api.basePath}/Items/${latestMedia.data[now].Id}/Images/Backdrop`,
-									latestMedia.data[now].Id,
-								);
+								if (
+									!!latestMedia.data[now]
+										.ParentBackdropImageTags
+								) {
+									setAppBackdrop(
+										`${window.api.basePath}/Items/${latestMedia.data[now].ParentBackdropItemId}/Images/Backdrop`,
+										latestMedia.data[now].Id,
+									);
+								} else {
+									setAppBackdrop(
+										`${window.api.basePath}/Items/${latestMedia.data[now].Id}/Images/Backdrop`,
+										latestMedia.data[now].Id,
+									);
+								}
 							}
 						}}
 						changeOnFirstRender={true}
@@ -578,71 +592,5 @@ const Home = () => {
 		</>
 	);
 };
-
-/* <MuiDrawer
-					anchor="left"
-					open={drawerState}
-					onClose={handleDrawerClose}
-				>
-					<DrawerHeader
-						className="Mui-DrawerHeader"
-						sx={{ position: "relative", height: "20vh" }}
-					>
-						<div>
-						<Avatar src={""}/>
-						<Typography variant="h3">
-						{user["Name"]}
-						</Typography>
-					</div>
-						<IconButton
-							onClick={handleDrawerClose}
-							sx={{
-								position: "absolute",
-								top: "10%",
-								right: "5%",
-							}}
-						>
-							<Close />
-						</IconButton>
-					</DrawerHeader>
-					<Divider />
-					<List sx={{ border: "none" }}>
-						{userLibraries.map((library, index) => {
-							return (
-								<ListItem disablePadding key={index}>
-									<ListItemButton
-										sx={{
-											minHeight: 48,
-											justifyContent:
-												drawerState
-													? "initial"
-													: "center",
-											px: 2.5,
-										}}
-									>
-										<ListItemIcon
-											sx={{
-												minWidth: 0,
-												mr: 3,
-												justifyContent:
-													"center",
-											}}
-										>
-											{
-												MediaCollectionTypeIconCollection[
-													library
-														.CollectionType
-												]
-											}
-										</ListItemIcon>
-										<ListItemText
-											primary={library.Name}
-										/>
-									</ListItemButton>
-								</ListItem>
-							);
-						})}
-					</List>
-				</MuiDrawer> */
 
 export default Home;

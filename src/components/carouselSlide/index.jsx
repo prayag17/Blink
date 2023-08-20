@@ -1,4 +1,5 @@
 /** @format */
+import { memo } from "react";
 import { Blurhash } from "react-blurhash";
 
 import { motion } from "framer-motion";
@@ -8,11 +9,9 @@ import Box from "@mui/material/Box";
 import Typography from "@mui/material/Typography";
 import Stack from "@mui/material/Stack";
 import Chip from "@mui/material/Chip";
-import LinearProgress from "@mui/material/LinearProgress";
 import Button from "@mui/material/Button";
-import IconButton from "@mui/material/IconButton";
 
-import { pink, yellow } from "@mui/material/colors";
+import { yellow } from "@mui/material/colors";
 
 import { ErrorBoundary } from "react-error-boundary";
 
@@ -32,6 +31,7 @@ import { getUserApi } from "@jellyfin/sdk/lib/utils/api/user-api";
 import { useSnackbar } from "notistack";
 import LikeButton from "../buttons/likeButton";
 import MarkPlayedButton from "../buttons/markPlayedButton";
+import { theme } from "../../theme";
 
 const CarouselSlide = ({ item }) => {
 	const navigate = useNavigate();
@@ -45,6 +45,8 @@ const CarouselSlide = ({ item }) => {
 		networkMode: "always",
 	});
 
+	// consoe;
+
 	// const favouriteButtonMutation =
 
 	return (
@@ -53,6 +55,7 @@ const CarouselSlide = ({ item }) => {
 				className="hero-carousel-slide"
 				sx={{
 					background: "transparent",
+					px: 3,
 				}}
 			>
 				<div className="hero-carousel-background-container">
@@ -80,12 +83,9 @@ const CarouselSlide = ({ item }) => {
 					<div
 						className="hero-carousel-background-image"
 						style={{
-							backgroundImage: `url(${
-								window.api.basePath +
-								"/Items/" +
-								item.Id +
-								"/Images/Backdrop"
-							})`,
+							backgroundImage: !!item.ParentBackdropItemId
+								? `url('${window.api.basePath}/Items/${item.ParentBackdropItemId}/Images/Backdrop')`
+								: `url('${window.api.basePath}/Items/${item.Id}/Images/Backdrop')`,
 						}}
 					></div>
 					<div className="hero-carousel-background-icon-container">
@@ -116,6 +116,7 @@ const CarouselSlide = ({ item }) => {
 							y: 0,
 							opacity: 1,
 						}}
+						overflow="visible"
 					>
 						{!item.ImageTags.Logo ? (
 							item.Name
@@ -166,21 +167,14 @@ const CarouselSlide = ({ item }) => {
 						}
 						className="hero-carousel-info"
 					>
-						<Typography
-							variant="subtitle1"
-							// color="GrayText"
-						>
+						<Typography variant="subtitle1">
 							{!!item.ProductionYear
 								? item.ProductionYear
 								: "Unknown"}
 						</Typography>
 						<Chip
 							variant="filled"
-							label={
-								!!item.OfficialRating
-									? item.OfficialRating
-									: "Not Rated"
-							}
+							label={item.OfficialRating ?? "Not Rated"}
 						/>
 						<Box
 							sx={{
@@ -254,54 +248,6 @@ const CarouselSlide = ({ item }) => {
 						{item.Overview}
 					</Typography>
 
-					{item.UserData.PlaybackPositionTicks > 0 && (
-						<Stack
-							component={motion.div}
-							initial={{
-								y: 10,
-								opacity: 0,
-							}}
-							transition={{
-								duration: 0.25,
-								delay: 0.3,
-							}}
-							whileInView={{
-								y: 0,
-								opacity: 1,
-							}}
-							exit={{
-								y: 10,
-								opacity: 0,
-							}}
-							direction="row"
-							gap="1em"
-							mt={2}
-							width="50%"
-							alignItems="center"
-							justifyContent="center"
-						>
-							<Typography
-								variant="subtitle1"
-								whiteSpace="nowrap"
-							>
-								{getRuntime(
-									item.RunTimeTicks -
-										item.UserData
-											.PlaybackPositionTicks,
-								)}
-							</Typography>
-							<LinearProgress
-								variant="determinate"
-								value={item.UserData.PlayedPercentage}
-								color="white"
-								sx={{
-									borderRadius: 1,
-									height: "2.5px",
-									width: "100%",
-								}}
-							/>
-						</Stack>
-					)}
 					{/* TODO Link PLay and More info buttons in carousel */}
 					<Stack
 						component={motion.div}
@@ -324,16 +270,47 @@ const CarouselSlide = ({ item }) => {
 						mt={3}
 						direction="row"
 						gap={3}
+						width="100%"
 						className="hero-carousel-button-container"
+						alignItems="center"
 					>
-						<Button
-							variant="contained"
-							endIcon={<MdiPlayOutline />}
-							disabled
+						<Stack
+							direction="row"
+							gap="1em"
+							alignItems="center"
+							justifyContent="center"
 						>
-							Play
-						</Button>
+							<Button
+								variant="contained"
+								size="large"
+								disabled
+								startIcon={
+									<MdiPlayOutline
+										sx={{ fontSize: "1.4em" }}
+									/>
+								}
+								sx={{
+									textTransform: "none !important",
+								}}
+							>
+								{item.UserData.PlaybackPositionTicks >
+								0 ? (
+									<Stack
+										direction="column"
+										gap="0.2em"
+										alignItems="flex-start"
+										justifyContent="center"
+									>
+										Resume
+									</Stack>
+								) : (
+									"Play"
+								)}
+							</Button>
+						</Stack>
+
 						<Button
+							size="large"
 							color="white"
 							variant="outlined"
 							endIcon={<MdiChevronRight />}
@@ -364,4 +341,4 @@ const CarouselSlide = ({ item }) => {
 	);
 };
 
-export default CarouselSlide;
+export default memo(CarouselSlide);

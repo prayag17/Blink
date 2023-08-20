@@ -12,7 +12,7 @@
 	"dependencies": {
 		"@emotion/react": "^11.11.1",
 		"@emotion/styled": "^11.10.5",
-		"@fontsource/open-sans": "^5.0.5",
+		"@fontsource-variable/open-sans": "^5.0.9",
 		"@jellyfin/sdk": "^0.8.2",
 		"@mdi/js": "^7.2.96",
 		"@mui/lab": "^5.0.0-alpha.134",

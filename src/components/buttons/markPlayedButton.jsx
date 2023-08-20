@@ -2,11 +2,10 @@
 import PropTypes from "prop-types";
 
 import IconButton from "@mui/material/IconButton";
+import CircularProgress from "@mui/material/CircularProgress";
 
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { green, pink } from "@mui/material/colors";
-import { MdiHeart } from "../icons/mdiHeart";
-import { MdiHeartOutline } from "../icons/mdiHeartOutline";
+import { green } from "@mui/material/colors";
 
 import { getPlaystateApi } from "@jellyfin/sdk/lib/utils/api/playstate-api";
 import { MdiCheck } from "../icons/mdiCheck";

@@ -30,7 +30,7 @@ div::-webkit-scrollbar {
 }
 
 body {
-	font-family: "Open Sans";
+	font-family: "Open Sans Variable";
 	background: $clr-background-default;
 	margin: 0;
 	padding: 0;
@@ -39,6 +39,7 @@ body {
 	height: 100vh;
 	overflow-x: hidden;
 	overflow-y: overlay;
+	overscroll-behavior: none;
 }
 
 .app-backdrop {
@@ -127,7 +128,7 @@ h1 {
 
 .home {
 	padding-left: 0 !important;
-	padding-right: 0 !important;
+	padding-right: 14px !important;
 }
 
 .empty {

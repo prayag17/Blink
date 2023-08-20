@@ -54,7 +54,9 @@ import { SideMenu } from "./components/menu/sidemenu.jsx";
 import { AppBar } from "./components/appBar/appBar.jsx";
 
 // Fonts
-import "@fontsource/open-sans";
+import "@fontsource-variable/open-sans"; // Defaults to wght axis
+import "@fontsource-variable/open-sans/wght.css"; // Specify axis
+import "@fontsource-variable/open-sans/wght-italic.css"; // Specify axis and style
 
 // Jellyfin SDK TypeScript
 import {
@@ -394,7 +396,7 @@ function App() {
 					<CssBaseline />
 					<SideMenu />
 					<AppBar />
-					<Routes key={location.pathname} location={location}>
+					<Routes key={location.key} location={location}>
 						<Route element={<AnimationWrapper />}>
 							<Route
 								path="/"
