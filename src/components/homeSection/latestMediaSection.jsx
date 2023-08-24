@@ -44,54 +44,15 @@ export const LatestMediaSection = ({ latestMediaLib }) => {
 			>
 				{data.data.map((item, index) => {
 					return (
-						<Card
-							key={index}
-							itemName={
-								!!item.SeriesId
-									? item.SeriesName
-									: item.Name
-							}
-							itemId={
-								!!item.SeriesId
-									? item.SeriesId
-									: item.Id
-							}
-							// imageTags={false}
-							imageTags={!!item.ImageTags.Primary}
-							iconType={item.Type}
-							subText={item.ProductionYear}
-							playedPercent={
-								item.UserData.PlayedPercentage
-							}
-							cardOrientation={
-								item.PrimaryImageAspectRatio == 1
-									? "sqaure"
-									: "portait"
-							}
-							watchedStatus={
-								item.Type == BaseItemKind.Audio
-									? false
-									: item.UserData.Played
-							}
-							watchedCount={
-								item.UserData.UnplayedItemCount
-							}
-							blurhash={
-								item.ImageBlurHashes == {}
-									? ""
-									: !!item.ImageTags.Primary
-									? !!item.ImageBlurHashes.Primary
-										? item.ImageBlurHashes
-												.Primary[
-												item.ImageTags
-													.Primary
-										  ]
-										: ""
-									: ""
-							}
-							currentUser={user.data}
-							favourite={item.UserData.IsFavorite}
-						></Card>
+						<></>
+						// <Card
+						// 	key={index}
+						// 	itemName={
+						// 		!!item.SeriesId
+						// 			? item.SeriesName
+						// 			: item.Name
+						// 	}
+						// ></Card>
 					);
 				})}
 			</CardScroller>

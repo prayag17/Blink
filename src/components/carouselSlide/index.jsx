@@ -32,6 +32,7 @@ import { useSnackbar } from "notistack";
 import LikeButton from "../buttons/likeButton";
 import MarkPlayedButton from "../buttons/markPlayedButton";
 import { theme } from "../../theme";
+import { useCarouselStore } from "../../utils/store/carousel";
 
 const CarouselSlide = ({ item }) => {
 	const navigate = useNavigate();
@@ -45,9 +46,9 @@ const CarouselSlide = ({ item }) => {
 		networkMode: "always",
 	});
 
-	// consoe;
-
-	// const favouriteButtonMutation =
+	const [animationDirection] = useCarouselStore((state) => [
+		state.direction,
+	]);
 
 	return (
 		<ErrorBoundary fallback={<CarouselSlideError itemName={item.Name} />}>
@@ -56,65 +57,83 @@ const CarouselSlide = ({ item }) => {
 				sx={{
 					background: "transparent",
 					px: 3,
+					boxShadow: "none !important",
 				}}
 			>
 				<div className="hero-carousel-background-container">
-					{!!item.ImageBlurHashes.Backdrop &&
-						Object.keys(item.ImageBlurHashes.Backdrop)
-							.length != 0 && (
-							<Blurhash
-								hash={
-									item.ImageBlurHashes.Backdrop[
-										Object.keys(
-											item.ImageBlurHashes
-												.Backdrop,
-										)[0]
-									]
+					{!!item.ImageBlurHashes.Backdrop && (
+						<>
+							{Object.keys(item.ImageBlurHashes.Backdrop)
+								.length != 0 && (
+								<Blurhash
+									hash={
+										item.ImageBlurHashes.Backdrop[
+											Object.keys(
+												item.ImageBlurHashes
+													.Backdrop,
+											)[0]
+										]
+									}
+									// hash="LEHV6nWB2yk8pyo0adR*.7kCMdnj"
+									width="1080"
+									height="720"
+									resolutionX={64}
+									resolutionY={96}
+									className="hero-carousel-background-blurhash"
+									punch={1}
+								/>
+							)}
+							<img
+								className="hero-carousel-background-image"
+								src={
+									!!item.ParentBackdropItemId
+										? `${window.api.basePath}/Items/${item.ParentBackdropItemId}/Images/Backdrop`
+										: `${window.api.basePath}/Items/${item.Id}/Images/Backdrop`
 								}
-								// hash="LEHV6nWB2yk8pyo0adR*.7kCMdnj"
-								width="1080"
-								height="720"
-								resolutionX={64}
-								resolutionY={96}
-								className="hero-carousel-background-blurhash"
-								punch={1}
+								onLoad={(e) =>
+									(e.target.style.opacity = 1)
+								}
+								loading="eager"
 							/>
-						)}
-					<div
-						className="hero-carousel-background-image"
-						style={{
-							backgroundImage: !!item.ParentBackdropItemId
-								? `url('${window.api.basePath}/Items/${item.ParentBackdropItemId}/Images/Backdrop')`
-								: `url('${window.api.basePath}/Items/${item.Id}/Images/Backdrop')`,
-						}}
-					></div>
+						</>
+					)}
 					<div className="hero-carousel-background-icon-container">
 						{MediaTypeIconCollection[item.Type]}
 					</div>
 				</div>
-				<Box className="hero-carousel-detail">
+				<Box
+					component={motion.div}
+					// variants={slideAnim}
+					initial={{
+						transform:
+							animationDirection == "right"
+								? "translateX(50px)"
+								: "translateX(-50px)",
+						opacity: 0,
+					}}
+					animate={{
+						transform: "translateX(0px)",
+						opacity: 1,
+					}}
+					exit={{
+						transform:
+							animationDirection == "right"
+								? "translateX(-50px)"
+								: "translateX(50px)",
+
+						opacity: 0,
+					}}
+					transition={{
+						duration: 0.2,
+					}}
+					className="hero-carousel-detail"
+				>
 					<Typography
-						component={motion.h2}
 						key={item.Id}
 						variant="h2"
 						className="hero-carousel-text"
 						sx={{
 							mb: 2.5,
-						}}
-						initial={{
-							y: 10,
-							opacity: 0,
-						}}
-						exit={{
-							y: 10,
-							opacity: 0,
-						}}
-						transition={{
-							duration: 0.35,
-						}}
-						whileInView={{
-							y: 0,
-							opacity: 1,
 						}}
 						overflow="visible"
 					>
@@ -130,29 +149,19 @@ const CarouselSlide = ({ item }) => {
 									"/Images/Logo?quality=80&tag=" +
 									item.ImageTags.Logo
 								}
+								style={{
+									opacity: 0,
+									transition: "opacity 250ms",
+								}}
+								onLoad={(e) =>
+									(e.target.style.opacity = 1)
+								}
 							></img>
 						)}
 					</Typography>
 					<Stack
-						component={motion.div}
 						direction="row"
 						gap={1}
-						initial={{
-							y: 10,
-							opacity: 0,
-						}}
-						transition={{
-							duration: 0.25,
-							delay: 0.1,
-						}}
-						exit={{
-							y: 10,
-							opacity: 0,
-						}}
-						whileInView={{
-							y: 0,
-							opacity: 1,
-						}}
 						divider={
 							<Box
 								sx={{
@@ -216,29 +225,12 @@ const CarouselSlide = ({ item }) => {
 						)}
 					</Stack>
 					<Typography
-						component={motion.div}
-						initial={{
-							y: 10,
-							opacity: 0,
-						}}
-						transition={{
-							duration: 0.25,
-							delay: 0.2,
-						}}
-						whileInView={{
-							y: 0,
-							opacity: 0.7,
-						}}
-						exit={{
-							y: 10,
-							opacity: 0,
-						}}
 						variant="subtitle1"
 						className="hero-carousel-text"
 						sx={{
 							display: "-webkit-box",
 							maxWidth: "70%",
-							maxHeight: "30%",
+							maxHeight: "50%",
 							textOverflow: "ellipsis",
 							overflow: "hidden",
 							WebkitLineClamp: "4",
@@ -250,23 +242,6 @@ const CarouselSlide = ({ item }) => {
 
 					{/* TODO Link PLay and More info buttons in carousel */}
 					<Stack
-						component={motion.div}
-						initial={{
-							y: 10,
-							opacity: 0,
-						}}
-						transition={{
-							duration: 0.25,
-							delay: 0.4,
-						}}
-						whileInView={{
-							y: 0,
-							opacity: 1,
-						}}
-						exit={{
-							y: 10,
-							opacity: 0,
-						}}
 						mt={3}
 						direction="row"
 						gap={3}

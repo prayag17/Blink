@@ -1,0 +1,35 @@
+/** @format */
+
+.carousel {
+	&-button {
+		position: absolute !important;
+		top: 50%;
+		transform: translateY(-50%);
+		z-index: 100;
+		&.right {
+			right: 0.5em;
+		}
+		&.left {
+			left: 0;
+		}
+	}
+	&-indicator {
+		height: 5px;
+		width: 100%;
+		border-radius: 10px;
+		transition: background $transition-time-fast;
+		&:hover {
+			cursor: pointer;
+			background: rgb(255 255 255 / 0.8) !important;
+		}
+		&-container {
+			display: flex;
+			position: absolute;
+			bottom: 1em;
+			width: calc(100vw - 2em);
+			left: 1em;
+			right: 1em;
+			gap: 1em;
+		}
+	}
+}

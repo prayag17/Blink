@@ -2,28 +2,17 @@
 
 import { useState } from "react";
 
-import { Blurhash } from "react-blurhash";
-
 import { useQuery } from "@tanstack/react-query";
 
 import { EventEmitter as event } from "../../eventEmitter";
 import { getServer } from "../../utils/storage/servers";
 import { getUser, delUser } from "../../utils/storage/user";
 
-import { theme } from "../../theme";
 import "./home.module.scss";
 
 import Box from "@mui/material/Box";
-import Button from "@mui/material/Button";
-import Paper from "@mui/material/Paper";
-import Typography from "@mui/material/Typography";
-import Chip from "@mui/material/Chip";
-import LinearProgress from "@mui/material/LinearProgress";
-import Stack from "@mui/material/Stack";
 
-import { yellow } from "@mui/material/colors";
-
-import Carousel from "react-material-ui-carousel";
+import Carousel from "../../components/carousel";
 
 // Custom Components
 import { Card } from "../../components/card/card";
@@ -46,15 +35,10 @@ import { getTvShowsApi } from "@jellyfin/sdk/lib/utils/api/tv-shows-api";
 
 import { useNavigate } from "react-router-dom";
 
-import { endsAt, getRuntime } from "../../utils/date/time";
-import { BaseItemKind, ItemFields } from "@jellyfin/sdk/lib/generated-client";
-
-import CarouselSlideError from "../../components/errors/carousel";
-
-import { motion } from "framer-motion";
 import { useBackdropStore } from "../../utils/store/backdrop";
 
 import CarouselSlide from "../../components/carouselSlide";
+import { ItemFields } from "@jellyfin/sdk/lib/generated-client";
 const Home = () => {
 	const authUser = useQuery({
 		queryKey: ["home", "authenticateUser"],
@@ -169,6 +153,10 @@ const Home = () => {
 		queryFn: async () => {
 			const upNext = await getTvShowsApi(window.api).getNextUp({
 				userId: user.data.Id,
+				fields: [
+					ItemFields.PrimaryImageAspectRatio,
+					ItemFields.ParentId,
+				],
 				limit: 10,
 			});
 			return upNext.data;
@@ -225,40 +213,9 @@ const Home = () => {
 					<CarouselSkeleton />
 				) : (
 					<Carousel
-						className="hero-carousel"
-						autoPlay={false}
-						animation="fade"
-						height="100vh"
-						// navButtonsAlwaysVisible
-						IndicatorIcon={
-							<div className="hero-carousel-indicator"></div>
-						}
-						activeIndicatorIconButtonProps={{
-							style: {
-								background: "rgb(255 255 255)",
-							},
-						}}
-						indicatorIconButtonProps={{
-							style: {
-								background: "rgb(255 255 255 / 0.3)",
-								borderRadius: "2px",
-								width: "100%",
-								flexShrink: "1",
-							},
-						}}
-						indicatorContainerProps={{
-							className:
-								"hero-carousel-indicator-container",
-							style: {
-								position: "absolute",
-								display: "flex",
-								gap: "1em",
-								zIndex: 1,
-							},
-						}}
-						sx={{
-							marginBottom: "1.5em",
-						}}
+						content={latestMedia.data?.map((item, index) => (
+							<CarouselSlide item={item} key={index} />
+						))}
 						onChange={(now) => {
 							if (latestMedia.isSuccess) {
 								if (
@@ -277,20 +234,7 @@ const Home = () => {
 								}
 							}
 						}}
-						changeOnFirstRender={true}
-						duration={400}
-						interval={10000}
-					>
-						{latestMedia.data.length != 0 &&
-							latestMedia.data.map((item, index) => {
-								return (
-									<CarouselSlide
-										item={item}
-										key={index}
-									/>
-								);
-							})}
-					</Carousel>
+					/>
 				)}
 				<Box
 					className="padded-container"
@@ -310,44 +254,8 @@ const Home = () => {
 												key={index}
 												itemName={item.Name}
 												itemId={item.Id}
-												// imageTags={false}
-												imageTags={
-													!!item
-														.ImageTags
-														.Primary
-												}
-												cardType="lib"
-												cardOrientation="landscape"
-												iconType={
-													item.CollectionType
-												}
-												onClickEvent={() => {
-													navigate(
-														`/library/${item.Id}`,
-													);
-												}}
-												blurhash={
-													item.ImageBlurHashes ==
-													{}
-														? ""
-														: !!item
-																.ImageTags
-																.Primary
-														? !!item
-																.ImageBlurHashes
-																.Primary
-															? item
-																	.ImageBlurHashes
-																	.Primary[
-																	item
-																		.ImageTags
-																		.Primary
-															  ]
-															: ""
-														: ""
-												}
-												currentUser={
-													user.data
+												imageAspectRatio={
+													item.PrimaryImageAspectRatio
 												}
 											></Card>
 										);
@@ -367,58 +275,11 @@ const Home = () => {
 									return (
 										<Card
 											key={index}
-											itemName={
-												!!item.SeriesId
-													? item.SeriesName
-													: item.Name
-											}
-											itemId={
-												!!item.SeriesId
-													? item.SeriesId
-													: item.Id
-											}
-											// imageTags={false}
-											imageTags={
-												!!item.ImageTags
-													.Primary
-											}
-											cardType="thumb"
-											iconType={item.Type}
-											subText={
-												!!item.SeriesId
-													? "S" +
-													  item.ParentIndexNumber +
-													  ":E" +
-													  item.IndexNumber +
-													  " - " +
-													  item.Name
-													: item.ProductionYear
-											}
-											cardOrientation="landscape"
-											blurhash={
-												item.ImageBlurHashes ==
-												{}
-													? ""
-													: !!item
-															.ImageTags
-															.Primary
-													? !!item
-															.ImageBlurHashes
-															.Primary
-														? item
-																.ImageBlurHashes
-																.Primary[
-																item
-																	.ImageTags
-																	.Primary
-														  ]
-														: ""
-													: ""
-											}
-											currentUser={user.data}
-											favourite={
-												item.UserData
-													.IsFavorite
+											itemName={item.Name}
+											itemId={item.Id}
+											imageType="Primary"
+											imageAspectRatio={
+												item.PrimaryImageAspectRatio
 											}
 										></Card>
 									);
@@ -440,69 +301,15 @@ const Home = () => {
 									return (
 										<Card
 											key={index}
-											itemName={
-												!!item.SeriesId
-													? item.SeriesName
-													: item.Name
+											itemName={item.Name}
+											itemId={item.Id}
+											imageType={
+												!!item.SeriesName
+													? "Primary"
+													: "Backdrop"
 											}
-											itemId={
-												!!item.SeriesId
-													? item.SeriesId
-													: item.Id
-											}
-											// imageTags={false}
-											imageTags={
-												!!item.SeriesId
-													? item
-															.ParentBackdropImageTags
-															.length !=
-													  0
-													: item
-															.BackdropImageTags
-															.length !=
-													  0
-											}
-											cardType="thumb"
-											iconType={item.Type}
-											subText={
-												!!item.SeriesId
-													? "S" +
-													  item.ParentIndexNumber +
-													  ":E" +
-													  item.IndexNumber +
-													  " - " +
-													  item.Name
-													: item.ProductionYear
-											}
-											playedPercent={
-												item.UserData
-													.PlayedPercentage
-											}
-											cardOrientation="landscape"
-											blurhash={
-												item.ImageBlurHashes ==
-												{}
-													? ""
-													: !!item
-															.ImageTags
-															.Backdrop
-													? !!item
-															.ImageBlurHashes
-															.Backdrop
-														? item
-																.ImageBlurHashes
-																.Backdrop[
-																item
-																	.ImageTags
-																	.Backdrop
-														  ]
-														: ""
-													: ""
-											}
-											currentUser={user.data}
-											favourite={
-												item.UserData
-													.IsFavorite
+											imageAspectRatio={
+												item.PrimaryImageAspectRatio
 											}
 										></Card>
 									);
