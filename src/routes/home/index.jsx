@@ -38,7 +38,7 @@ import { useNavigate } from "react-router-dom";
 import { useBackdropStore } from "../../utils/store/backdrop";
 
 import CarouselSlide from "../../components/carouselSlide";
-import { ItemFields } from "@jellyfin/sdk/lib/generated-client";
+import { BaseItemKind, ItemFields } from "@jellyfin/sdk/lib/generated-client";
 const Home = () => {
 	const authUser = useQuery({
 		queryKey: ["home", "authenticateUser"],
@@ -100,8 +100,8 @@ const Home = () => {
 					fields: [
 						ItemFields.Overview,
 						ItemFields.ParentId,
+						"ParentIndexNumber",
 						ItemFields.SeasonUserData,
-						ItemFields.RecursiveItemCount,
 						ItemFields.IsHd,
 					],
 					enableUserData: true,
@@ -254,9 +254,9 @@ const Home = () => {
 												key={index}
 												itemName={item.Name}
 												itemId={item.Id}
-												imageAspectRatio={
-													item.PrimaryImageAspectRatio
-												}
+												itemType="Library"
+												imageType="Primary"
+												cardType="thumb"
 											></Card>
 										);
 									},
@@ -277,10 +277,9 @@ const Home = () => {
 											key={index}
 											itemName={item.Name}
 											itemId={item.Id}
+											itemType={item.Type}
 											imageType="Primary"
-											imageAspectRatio={
-												item.PrimaryImageAspectRatio
-											}
+											cardType="thumb"
 										></Card>
 									);
 								},
@@ -303,14 +302,20 @@ const Home = () => {
 											key={index}
 											itemName={item.Name}
 											itemId={item.Id}
+											itemType={item.Type}
 											imageType={
-												!!item.SeriesName
+												item.Type ==
+												BaseItemKind.Episode
 													? "Primary"
 													: "Backdrop"
 											}
-											imageAspectRatio={
-												item.PrimaryImageAspectRatio
+											secondaryText={
+												item.Type ==
+												BaseItemKind.Episode
+													? `S${item.ParentIndexNumber}:E${item.IndexNumber} ${item.SeriesName}`
+													: item.ProductionYear
 											}
+											cardType="thumb"
 										></Card>
 									);
 								},
@@ -331,55 +336,19 @@ const Home = () => {
 									return (
 										<Card
 											key={index}
-											itemName={
-												!!item.SeriesId
-													? item.SeriesName
-													: item.Name
+											itemName={item.Name}
+											itemId={item.Id}
+											itemType={item.Type}
+											imageType={
+												item.Type ==
+												BaseItemKind.Episode
+													? "Primary"
+													: "Backdrop"
 											}
-											itemId={
-												!!item.SeriesId
-													? item.SeriesId
-													: item.Id
-											}
-											// imageTags={false}
-											imageTags={
-												!!item.ImageTags
-													.Primary
-											}
-											iconType={item.Type}
-											subText={
+											secondaryText={
 												item.ProductionYear
 											}
-											playedPercent={
-												item.UserData
-													.PlayedPercentage
-											}
-											cardOrientation="sqaure"
-											blurhash={
-												item.ImageBlurHashes ==
-												{}
-													? ""
-													: !!item
-															.ImageTags
-															.Primary
-													? !!item
-															.ImageBlurHashes
-															.Primary
-														? item
-																.ImageBlurHashes
-																.Primary[
-																item
-																	.ImageTags
-																	.Primary
-														  ]
-														: ""
-													: ""
-											}
-											currentUser={user.data}
-											favourite={
-												item.UserData
-													.IsFavorite
-											}
+											cardType="thumb"
 										></Card>
 									);
 								},

@@ -942,11 +942,11 @@ const LibraryView = () => {
 									md={1}
 									component={motion.div}
 									initial={{
-										scale: 0.8,
+										transform: "scale(0.8)",
 										opacity: 0,
 									}}
 									animate={{
-										scale: 1,
+										transform: "scale(1)",
 										opacity: 1,
 									}}
 									transition={{
@@ -956,68 +956,17 @@ const LibraryView = () => {
 									}}
 								>
 									<Card
+										key={index}
 										itemName={item.Name}
 										itemId={item.Id}
-										imageTags={
-											!!item.ImageTags.Primary
-										}
-										subText={
-											item.Type.includes(
-												"Music",
-											)
-												? item.AlbumArtist
-												: item.ProductionYear
-										}
-										iconType={item.Type}
-										playedPercent={
-											!!item.UserData
-												? item.UserData
-														.PlayedPercentage
-												: 0
-										}
-										cardOrientation={
+										imageType="Primary"
+										cardType={
 											item.Type ==
-												"MusicArtist" ||
+												BaseItemKind.MusicAlbum ||
 											item.Type ==
-												"MusicAlbum" ||
-											item.Type ==
-												"MusicGenre" ||
-											item.Type == "Playlist"
+												BaseItemKind.Audio
 												? "square"
-												: "portait"
-										}
-										watchedStatus={
-											!!item.UserData
-												? item.UserData
-														.Played
-												: false
-										}
-										watchedCount={
-											item.UserData
-												?.UnplayedItemCount
-										}
-										blurhash={
-											item.ImageBlurHashes ==
-											{}
-												? ""
-												: !!item.ImageTags
-														.Primary
-												? !!item
-														.ImageBlurHashes
-														.Primary
-													? item
-															.ImageBlurHashes
-															.Primary[
-															item
-																.ImageTags
-																.Primary
-													  ]
-													: ""
-												: ""
-										}
-										currentUser={user.data}
-										favourite={
-											item.UserData?.IsFavorite
+												: "portrait"
 										}
 									></Card>
 								</Grid2>
@@ -1046,11 +995,13 @@ const LibraryView = () => {
 												},
 											}}
 											initial={{
-												scale: 0.8,
+												transform:
+													"scale(0.8)",
 												opacity: 0,
 											}}
 											animate={{
-												scale: 1,
+												transform:
+													"scale(1)",
 												opacity: 1,
 											}}
 											transition={{

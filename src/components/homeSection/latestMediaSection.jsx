@@ -44,15 +44,20 @@ export const LatestMediaSection = ({ latestMediaLib }) => {
 			>
 				{data.data.map((item, index) => {
 					return (
-						<></>
-						// <Card
-						// 	key={index}
-						// 	itemName={
-						// 		!!item.SeriesId
-						// 			? item.SeriesName
-						// 			: item.Name
-						// 	}
-						// ></Card>
+						<Card
+							key={index}
+							itemName={item.Name}
+							itemId={item.Id}
+							itemType={item.Type}
+							imageType="Primary"
+							cardType={
+								item.Type == BaseItemKind.MusicAlbum ||
+								item.Type == BaseItemKind.Audio
+									? "square"
+									: "portrait"
+							}
+							secondaryText={item.ProductionYear}
+						></Card>
 					);
 				})}
 			</CardScroller>

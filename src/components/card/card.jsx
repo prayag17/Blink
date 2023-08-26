@@ -33,19 +33,32 @@ import { MdiHeartOutline } from "../icons/mdiHeartOutline";
 import { MdiHeart } from "../icons/mdiHeart";
 import useIntersecting from "../../utils/hooks/useIntersecting";
 
+const cardImageAspectRatios = {
+	thumb: 1.777,
+	portrait: 0.666,
+	square: 1,
+};
+
 export const Card = ({
 	itemId,
-	itemParentId,
+	itemType,
 	itemName,
-	imageTags,
 	imageType = "Primary",
-	parentImageType,
-	imageAspectRatio,
+	cardType,
+	secondaryText,
 }) => {
 	const ref = useRef();
 	const isVisible = useIntersecting(ref);
 	return (
-		<Box mr={2} ref={ref} sx={{ height: "100%", overflow: "visible" }}>
+		<Box
+			padding={1}
+			ref={ref}
+			sx={{
+				height: "100%",
+				overflow: "visible",
+				alignItems: "flex-start",
+			}}
+		>
 			<Stack
 				className={isVisible ? "card isVisible" : "card"}
 				sx={{
@@ -61,11 +74,15 @@ export const Card = ({
 				<Box
 					className="card-image-container"
 					sx={{
-						aspectRatio: imageAspectRatio,
+						aspectRatio: cardImageAspectRatios[cardType],
 						overflow: "hidden",
+						height: "auto",
+						width: "100%",
 					}}
-					height="85%"
 				>
+					<Box className="card-image-icon-container">
+						{TypeIconCollectionCard[itemType]}
+					</Box>
 					<img
 						src={window.api.getItemImageUrl(
 							itemId,
@@ -78,18 +95,32 @@ export const Card = ({
 						)}
 						style={{
 							height: "100%",
+							width: "100%",
+							opacity: 0,
 						}}
+						loading="lazy"
+						onLoad={(e) => (e.target.style.opacity = 1)}
 						className="card-image"
 					/>
 				</Box>
 				<Box className="card-text-container" height="15%">
 					<Typography
-						variant="h5"
+						variant="h6"
+						fontWeight={400}
+						noWrap
+						textAlign="center"
+						sx={{ opacity: 0.9 }}
+					>
+						{itemName}
+					</Typography>
+					<Typography
+						variant="subtitle1"
 						fontWeight={300}
 						noWrap
 						textAlign="center"
+						sx={{ opacity: 0.6 }}
 					>
-						{itemName}
+						{secondaryText}
 					</Typography>
 				</Box>
 			</Stack>

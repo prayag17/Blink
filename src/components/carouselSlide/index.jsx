@@ -83,7 +83,7 @@ const CarouselSlide = ({ item }) => {
 									punch={1}
 								/>
 							)}
-							<img
+							<motion.img
 								className="hero-carousel-background-image"
 								src={
 									!!item.ParentBackdropItemId
@@ -107,8 +107,8 @@ const CarouselSlide = ({ item }) => {
 					initial={{
 						transform:
 							animationDirection == "right"
-								? "translateX(50px)"
-								: "translateX(-50px)",
+								? "translateX(40px)"
+								: "translateX(-40px)",
 						opacity: 0,
 					}}
 					animate={{
@@ -118,13 +118,13 @@ const CarouselSlide = ({ item }) => {
 					exit={{
 						transform:
 							animationDirection == "right"
-								? "translateX(-50px)"
-								: "translateX(50px)",
+								? "translateX(-40px)"
+								: "translateX(40px)",
 
 						opacity: 0,
 					}}
 					transition={{
-						duration: 0.2,
+						duration: 0.25,
 					}}
 					className="hero-carousel-detail"
 				>
@@ -140,7 +140,7 @@ const CarouselSlide = ({ item }) => {
 						{!item.ImageTags.Logo ? (
 							item.Name
 						) : (
-							<img
+							<motion.img
 								className="hero-carousel-text-logo"
 								src={
 									window.api.basePath +
@@ -156,7 +156,7 @@ const CarouselSlide = ({ item }) => {
 								onLoad={(e) =>
 									(e.target.style.opacity = 1)
 								}
-							></img>
+							/>
 						)}
 					</Typography>
 					<Stack
