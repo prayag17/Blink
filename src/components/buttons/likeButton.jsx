@@ -66,7 +66,7 @@ const LikeButton = ({ itemId, isFavorite, queryKey, userId, itemName }) => {
 		},
 	});
 	return (
-		<IconButton onClick={mutation.mutate}>
+		<IconButton onClick={mutation.mutate} disabled={mutation.isLoading}>
 			{isFavorite ? (
 				<MdiHeart sx={{ color: pink[700] }} />
 			) : (

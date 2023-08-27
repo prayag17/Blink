@@ -6,7 +6,7 @@
 		object-fit: cover;
 		transition: opacity $transition-time-fast;
 		position: absolute;
-		z-index: 1;
+		z-index: 0;
 		top: 0;
 		left: 0;
 		&-container {
@@ -30,6 +30,28 @@
 				position: relative;
 				z-index: 0;
 			}
+		}
+	}
+	&-overlay {
+		position: absolute;
+		width: 100%;
+		height: 100%;
+		left: 0;
+		top: 0;
+		background: rgb(0 0 0 / 0.6);
+		z-index: 10;
+		opacity: 0;
+		transition: opacity $transition-time-default;
+		display: flex;
+		align-items: flex-end;
+		justify-content: flex-end;
+		padding: 0.5em;
+	}
+	&-container:hover,
+	&-container:focus,
+	&-container:focus-within {
+		.card-overlay {
+			opacity: 1;
 		}
 	}
 }

@@ -65,7 +65,7 @@ const MarkPlayedButton = ({ itemId, isPlayed, queryKey, userId, itemName }) => {
 		},
 	});
 	return (
-		<IconButton onClick={mutation.mutate}>
+		<IconButton onClick={mutation.mutate} disabled={mutation.isLoading}>
 			<MdiCheck
 				sx={{
 					color: isPlayed ? green[400] : "white",

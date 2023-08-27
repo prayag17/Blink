@@ -257,6 +257,12 @@ const Home = () => {
 												itemType="Library"
 												imageType="Primary"
 												cardType="thumb"
+												disableOverlay
+												onClick={() =>
+													navigate(
+														`/library/${item.Id}`,
+													)
+												}
 											></Card>
 										);
 									},
@@ -280,6 +286,19 @@ const Home = () => {
 											itemType={item.Type}
 											imageType="Primary"
 											cardType="thumb"
+											isFavorite={
+												item.UserData
+													.IsFavorite
+											}
+											queryKey={[
+												"home",
+												"resume",
+												"video",
+											]}
+											isPlayed={
+												item.UserData.Played
+											}
+											userId={user.data.Id}
 										></Card>
 									);
 								},
@@ -300,7 +319,12 @@ const Home = () => {
 									return (
 										<Card
 											key={index}
-											itemName={item.Name}
+											itemName={
+												item.Type ==
+												BaseItemKind.Episode
+													? item.SeriesName
+													: item.Name
+											}
 											itemId={item.Id}
 											itemType={item.Type}
 											imageType={
@@ -312,10 +336,23 @@ const Home = () => {
 											secondaryText={
 												item.Type ==
 												BaseItemKind.Episode
-													? `S${item.ParentIndexNumber}:E${item.IndexNumber} ${item.SeriesName}`
+													? `S${item.ParentIndexNumber}:E${item.IndexNumber} - ${item.Name}`
 													: item.ProductionYear
 											}
 											cardType="thumb"
+											isFavorite={
+												item.UserData
+													.IsFavorite
+											}
+											queryKey={[
+												"home",
+												"resume",
+												"video",
+											]}
+											isPlayed={
+												item.UserData.Played
+											}
+											userId={user.data.Id}
 										></Card>
 									);
 								},
@@ -349,6 +386,19 @@ const Home = () => {
 												item.ProductionYear
 											}
 											cardType="thumb"
+											isFavorite={
+												item.UserData
+													.IsFavorite
+											}
+											queryKey={[
+												"home",
+												"resume",
+												"video",
+											]}
+											isPlayed={
+												item.UserData.Played
+											}
+											userId={user.data.Id}
 										></Card>
 									);
 								},

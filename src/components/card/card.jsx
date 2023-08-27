@@ -6,7 +6,7 @@ import { useNavigate } from "react-router-dom";
 
 import Box from "@mui/material/Box";
 import Stack from "@mui/material/Stack";
-import CardContent from "@mui/material/CardContent";
+import MuiCard from "@mui/material/Card";
 import CardMedia from "@mui/material/CardMedia";
 import CardActionArea from "@mui/material/CardActionArea";
 import Typography from "@mui/material/Typography";
@@ -32,6 +32,8 @@ import { getUserLibraryApi } from "@jellyfin/sdk/lib/utils/api/user-library-api"
 import { MdiHeartOutline } from "../icons/mdiHeartOutline";
 import { MdiHeart } from "../icons/mdiHeart";
 import useIntersecting from "../../utils/hooks/useIntersecting";
+import LikeButton from "../buttons/likeButton";
+import MarkPlayedButton from "../buttons/markPlayedButton";
 
 const cardImageAspectRatios = {
 	thumb: 1.777,
@@ -43,88 +45,122 @@ export const Card = ({
 	itemId,
 	itemType,
 	itemName,
+	isFavorite,
+	isPlayed,
 	imageType = "Primary",
 	cardType,
 	secondaryText,
+	queryKey,
+	userId,
+
+	onClick,
+	disableOverlay = false,
 }) => {
 	const ref = useRef();
 	const isVisible = useIntersecting(ref);
+	const navigate = useNavigate();
+	const defaultOnClick = () => navigate(`/item/${itemId}`);
 	return (
-		<Box
-			padding={1}
-			ref={ref}
-			sx={{
-				height: "100%",
-				overflow: "visible",
-				alignItems: "flex-start",
-			}}
+		<CardActionArea
+			sx={{ padding: 1, borderRadius: "10px" }}
+			className="card-container"
+			onClick={!!onClick ? onClick : defaultOnClick}
 		>
-			<Stack
-				className={isVisible ? "card isVisible" : "card"}
+			<MuiCard
+				ref={ref}
 				sx={{
-					width: "100%",
 					height: "100%",
-					position: "relative",
 					overflow: "visible",
+					alignItems: "flex-start",
+					background: "transparent",
 				}}
-				direction="column"
-				justifyContent="center"
-				mr={1}
+				elevation={0}
 			>
-				<Box
-					className="card-image-container"
+				<Stack
+					className={isVisible ? "card isVisible" : "card"}
 					sx={{
-						aspectRatio: cardImageAspectRatios[cardType],
-						overflow: "hidden",
-						height: "auto",
 						width: "100%",
+						height: "100%",
+						position: "relative",
+						overflow: "visible",
 					}}
+					direction="column"
+					justifyContent="center"
+					mr={1}
 				>
-					<Box className="card-image-icon-container">
-						{TypeIconCollectionCard[itemType]}
-					</Box>
-					<img
-						src={window.api.getItemImageUrl(
-							itemId,
-							imageType,
-							{
-								quality: 90,
-								fillHeight: 512,
-								fillWidth: 512,
-							},
-						)}
-						style={{
-							height: "100%",
+					<Box
+						className="card-image-container"
+						sx={{
+							aspectRatio: cardImageAspectRatios[cardType],
+							overflow: "hidden",
+							height: "auto",
 							width: "100%",
-							opacity: 0,
 						}}
-						loading="lazy"
-						onLoad={(e) => (e.target.style.opacity = 1)}
-						className="card-image"
-					/>
-				</Box>
-				<Box className="card-text-container" height="15%">
-					<Typography
-						variant="h6"
-						fontWeight={400}
-						noWrap
-						textAlign="center"
-						sx={{ opacity: 0.9 }}
 					>
-						{itemName}
-					</Typography>
-					<Typography
-						variant="subtitle1"
-						fontWeight={300}
-						noWrap
-						textAlign="center"
-						sx={{ opacity: 0.6 }}
-					>
-						{secondaryText}
-					</Typography>
-				</Box>
-			</Stack>
-		</Box>
+						<Box className="card-image-icon-container">
+							{TypeIconCollectionCard[itemType]}
+						</Box>
+						<img
+							src={window.api.getItemImageUrl(
+								itemId,
+								imageType,
+								{
+									quality: 90,
+									fillHeight: 512,
+									fillWidth: 512,
+								},
+							)}
+							style={{
+								height: "100%",
+								width: "100%",
+								opacity: 0,
+							}}
+							loading="lazy"
+							onLoad={(e) => (e.target.style.opacity = 1)}
+							className="card-image"
+						/>
+						{!disableOverlay && (
+							<Box className="card-overlay">
+								<LikeButton
+									itemId={itemId}
+									itemName={itemName}
+									isFavorite={isFavorite}
+									queryKey={queryKey}
+									userId={userId}
+								/>
+								<MarkPlayedButton
+									itemId={itemId}
+									itemName={itemName}
+									isPlayed={isPlayed}
+									queryKey={queryKey}
+									userId={userId}
+								/>
+							</Box>
+						)}
+					</Box>
+					<Box className="card-text-container" height="15%">
+						<Typography
+							variant="h6"
+							fontWeight={400}
+							noWrap
+							textAlign="center"
+							sx={{ opacity: 0.9 }}
+						>
+							{itemName}
+						</Typography>
+						<Typography
+							variant="subtitle1"
+							fontWeight={300}
+							noWrap
+							textAlign="center"
+							sx={{ opacity: 0.6 }}
+						>
+							{secondaryText}
+						</Typography>
+					</Box>
+				</Stack>
+			</MuiCard>
+		</CardActionArea>
 	);
 };
 

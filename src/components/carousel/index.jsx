@@ -99,7 +99,10 @@ const Carousel = ({ content, onChange }) => {
 								? "white"
 								: "rgb(255 255 255 / 0.5)",
 					}}
-					onClick={() => setCurrentSlide(0)}
+					onClick={() => {
+						setDirection("left");
+						setCurrentSlide(0);
+					}}
 				/>
 				{content.map((item, index) => (
 					<Box
@@ -111,7 +114,14 @@ const Carousel = ({ content, onChange }) => {
 									? "white"
 									: "rgb(255 255 255 / 0.5)",
 						}}
-						onClick={() => setCurrentSlide(index + 1)}
+						onClick={() => {
+							if (currentSlide > index) {
+								setDirection("left");
+							} else if (currentSlide <= index) {
+								setDirection("right");
+							}
+							setCurrentSlide(index + 1);
+						}}
 					/>
 				))}
 			</Box>

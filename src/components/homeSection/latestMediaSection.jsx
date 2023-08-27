@@ -11,7 +11,7 @@ import { BaseItemKind } from "@jellyfin/sdk/lib/generated-client";
 
 export const LatestMediaSection = ({ latestMediaLib }) => {
 	const user = useQuery({
-		queryKey: ["home", "user"],
+		queryKey: ["user"],
 		queryFn: async () => {
 			let usr = await getUserApi(window.api).getCurrentUser();
 			return usr.data;
@@ -57,6 +57,10 @@ export const LatestMediaSection = ({ latestMediaLib }) => {
 									: "portrait"
 							}
 							secondaryText={item.ProductionYear}
+							isFavorite={item.UserData.IsFavorite}
+							queryKey={["home", "resume", "video"]}
+							isPlayed={item.UserData.Played}
+							userId={user.data.Id}
 						></Card>
 					);
 				})}
