@@ -1,6 +1,8 @@
 /** @format */
 import { useEffect, useState } from "react";
 
+import { AnimatePresence, motion } from "framer-motion";
+
 import { relaunch } from "@tauri-apps/api/process";
 
 import MuiAppBar from "@mui/material/AppBar";
@@ -12,6 +14,7 @@ import Box from "@mui/material/Box";
 import ListItemIcon from "@mui/material/ListItemIcon";
 import Menu from "@mui/material/Menu";
 import MenuItem from "@mui/material/MenuItem";
+import CircularProgress from "@mui/material/CircularProgress";
 import useScrollTrigger from "@mui/material/useScrollTrigger";
 
 import { MdiMagnify } from "../icons/mdiMagnify";
@@ -33,6 +36,10 @@ import { useDrawerStore } from "../../utils/store/drawer";
 import { delServer } from "../../utils/storage/servers";
 import { delUser } from "../../utils/storage/user";
 import { MdiDelete } from "../icons/mdiDelete";
+import { MdiCogSync } from "../icons/mdiCogSync";
+import { useAppLoadingStore } from "../../utils/store/appLoading";
+import { MdiCheck } from "../icons/mdiCheck";
+import { MdiAlertDecagram } from "../icons/mdiAlertDecagram";
 
 export const AppBar = () => {
 	const navigate = useNavigate();
@@ -71,6 +78,11 @@ export const AppBar = () => {
 	const handleDrawerOpen = () => {
 		setDrawerOpen(true);
 	};
+
+	const [syncLoading, syncSuccess, syncError] = useAppLoadingStore(
+		(state) => [state.isLoading, state.isSuccess, state.isError],
+	);
+	console.log([syncLoading, syncSuccess, syncError]);
 
 	useEffect(() => {
 		if (
@@ -150,6 +162,52 @@ export const AppBar = () => {
 						</IconButton>
 					</Box>
 					<Box sx={{ display: "flex", gap: 2 }}>
+						<AnimatePresence>
+							{syncLoading && (
+								<Box
+									component={motion.div}
+									position="relative"
+									display="inline-flex"
+									initial={{ opacity: 0 }}
+									animate={{ opacity: 1 }}
+									exit={{
+										opacity: 0,
+										transition: {
+											delay: 10,
+											duration: 5,
+										},
+									}}
+								>
+									<CircularProgress
+										sx={{
+											opacity: syncLoading
+												? 1
+												: 0,
+										}}
+									/>
+									<IconButton
+										sx={{
+											position: "absolute",
+											top: 0,
+											left: 0,
+											right: 0,
+											bottom: 0,
+											display: "flex",
+											alignItems: "center",
+											justifyContent: "center",
+										}}
+									>
+										{syncSuccess ? (
+											<MdiCheck />
+										) : syncError ? (
+											<MdiAlertDecagram />
+										) : (
+											<MdiCogSync />
+										)}
+									</IconButton>
+								</Box>
+							)}
+						</AnimatePresence>
 						<IconButton>
 							<MdiHeartOutline />
 						</IconButton>

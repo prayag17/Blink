@@ -968,6 +968,50 @@ const LibraryView = () => {
 												? "square"
 												: "portrait"
 										}
+										isFavorite={
+											item.UserData.IsFavorite
+										}
+										queryKey={[
+											"libraryView",
+											"currentLibItems",
+											id,
+											`page: ${page}`,
+											[
+												currentViewType,
+
+												sortAscending
+													? SortOrder.Ascending
+													: SortOrder.Descending,
+												,
+												sortBy,
+												[
+													isPlayed,
+													isUnPlayed,
+													isResumable,
+													isFavorite,
+													isLiked,
+													isUnliked,
+												],
+												[
+													hasSubtitles,
+													hasTrailer,
+													hasSpecialFeature,
+													hasThemeSong,
+													hasThemeVideo,
+												],
+												[
+													isBluRay,
+													isDVD,
+													isHD,
+													is4K,
+													is3D,
+												],
+											],
+										]}
+										isPlayed={
+											item.UserData.Played
+										}
+										userId={user.data.Id}
 									></Card>
 								</Grid2>
 							);

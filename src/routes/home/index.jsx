@@ -292,8 +292,7 @@ const Home = () => {
 											}
 											queryKey={[
 												"home",
-												"resume",
-												"video",
+												"upNext",
 											]}
 											isPlayed={
 												item.UserData.Played
@@ -393,7 +392,7 @@ const Home = () => {
 											queryKey={[
 												"home",
 												"resume",
-												"video",
+												"audio",
 											]}
 											isPlayed={
 												item.UserData.Played

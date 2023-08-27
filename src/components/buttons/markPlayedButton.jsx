@@ -10,10 +10,15 @@ import { green } from "@mui/material/colors";
 import { getPlaystateApi } from "@jellyfin/sdk/lib/utils/api/playstate-api";
 import { MdiCheck } from "../icons/mdiCheck";
 import { useSnackbar } from "notistack";
+import { useAppLoadingStore } from "../../utils/store/appLoading";
 
 const MarkPlayedButton = ({ itemId, isPlayed, queryKey, userId, itemName }) => {
 	const queryClient = useQueryClient();
 	const { enqueueSnackbar } = useSnackbar();
+
+	const [setIsLoading, setIsSuccess, setIsError] = useAppLoadingStore(
+		(state) => [state.setIsLoading, state.setIsSuccess, state.setIsError],
+	);
 
 	const handleMarking = async () => {
 		if (!isPlayed) {
@@ -31,25 +36,45 @@ const MarkPlayedButton = ({ itemId, isPlayed, queryKey, userId, itemName }) => {
 	const mutation = useMutation({
 		mutationFn: handleMarking,
 		onMutate: () => {
+			setIsLoading(true);
+			setIsError(false);
+			setIsSuccess(false);
 			queryClient.cancelQueries(queryKey);
 			const previousData = queryClient.getQueryData(queryKey);
-			queryClient.setQueryData(queryKey, (oldMedia) =>
-				oldMedia.map((oitem) => {
-					if (oitem.Id == itemId) {
-						return {
-							...oitem,
-							UserData: {
-								...oitem.UserData,
-								Played: !isPlayed,
-							},
-						};
-					}
-					return oitem;
-				}),
-			);
+			queryClient.setQueryData(queryKey, (oldMedia) => {
+				try {
+					oldMedia.Items.map((oitem) => {
+						if (oitem.Id == itemId) {
+							return {
+								...oitem,
+								UserData: {
+									...oitem.UserData,
+									Played: !isPlayed,
+								},
+							};
+						}
+						return oitem;
+					});
+				} catch (error) {
+					oldMedia.map((oitem) => {
+						if (oitem.Id == itemId) {
+							return {
+								...oitem,
+								UserData: {
+									...oitem.UserData,
+									Played: !isPlayed,
+								},
+							};
+						}
+						return oitem;
+					});
+				}
+			});
 			return { previousData };
 		},
 		onError: (error, a, context) => {
+			setIsLoading(false);
+			setIsError(true);
 			enqueueSnackbar(
 				`An error occured while updating "${itemName}"`,
 				{
@@ -60,12 +85,20 @@ const MarkPlayedButton = ({ itemId, isPlayed, queryKey, userId, itemName }) => {
 			console.error(error);
 		},
 		onSuccess: () => {
+			setIsLoading(false);
+			setIsSuccess(true);
 			console.log("Successfully updated", itemId);
 			queryClient.invalidateQueries(queryKey);
 		},
 	});
 	return (
-		<IconButton onClick={mutation.mutate} disabled={mutation.isLoading}>
+		<IconButton
+			onClick={(e) => {
+				e.stopPropagation();
+				mutation.mutate();
+			}}
+			disabled={mutation.isLoading}
+		>
 			<MdiCheck
 				sx={{
 					color: isPlayed ? green[400] : "white",

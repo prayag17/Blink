@@ -284,13 +284,10 @@ export const UserLogin = () => {
 										key={index}
 										itemName={item.Name}
 										itemId={item.Id}
-										imageTags={
-											!!item.PrimaryImageTag
-										}
 										disableOverlay
-										iconType="User"
-										cardOrientation="sqaure"
-										onClickEvent={() =>
+										itemType="User"
+										cardType="square"
+										onClick={() =>
 											navigate(
 												`/login/withImg/${item.Name}/${item.Id}/`,
 											)

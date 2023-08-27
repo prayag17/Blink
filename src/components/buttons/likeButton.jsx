@@ -9,10 +9,15 @@ import { pink } from "@mui/material/colors";
 import { MdiHeart } from "../icons/mdiHeart";
 import { MdiHeartOutline } from "../icons/mdiHeartOutline";
 import { useSnackbar } from "notistack";
+import { useAppLoadingStore } from "../../utils/store/appLoading";
 
 const LikeButton = ({ itemId, isFavorite, queryKey, userId, itemName }) => {
 	const queryClient = useQueryClient();
 	const { enqueueSnackbar } = useSnackbar();
+
+	const [setIsLoading, setIsSuccess, setIsError] = useAppLoadingStore(
+		(state) => [state.setIsLoading, state.setIsSuccess, state.setIsError],
+	);
 
 	const handleLiking = async () => {
 		let result;
@@ -32,25 +37,46 @@ const LikeButton = ({ itemId, isFavorite, queryKey, userId, itemName }) => {
 	const mutation = useMutation({
 		mutationFn: handleLiking,
 		onMutate: () => {
+			setIsLoading(true);
+			setIsError(false);
+			setIsSuccess(false);
+
 			queryClient.cancelQueries(queryKey);
 			const currentLatestMedia = queryClient.getQueryData(queryKey);
-			queryClient.setQueryData(queryKey, (oldMedia) =>
-				oldMedia.map((oitem) => {
-					if (oitem.Id == itemId) {
-						return {
-							...oitem,
-							UserData: {
-								...oitem.UserData,
-								IsFavorite: !isFavorite,
-							},
-						};
-					}
-					return oitem;
-				}),
-			);
+			queryClient.setQueryData(queryKey, (oldMedia) => {
+				try {
+					oldMedia.Items.map((oitem) => {
+						if (oitem.Id == itemId) {
+							return {
+								...oitem,
+								UserData: {
+									...oitem.UserData,
+									IsFavorite: !isFavorite,
+								},
+							};
+						}
+						return oitem;
+					});
+				} catch (error) {
+					oldMedia.map((oitem) => {
+						if (oitem.Id == itemId) {
+							return {
+								...oitem,
+								UserData: {
+									...oitem.UserData,
+									IsFavorite: !isFavorite,
+								},
+							};
+						}
+						return oitem;
+					});
+				}
+			});
 			return { currentLatestMedia };
 		},
 		onError: (error, a, context) => {
+			setIsLoading(false);
+			setIsError(true);
 			enqueueSnackbar(
 				`An error occured while updating "${itemName}"`,
 				{
@@ -61,12 +87,20 @@ const LikeButton = ({ itemId, isFavorite, queryKey, userId, itemName }) => {
 			console.error(error);
 		},
 		onSuccess: () => {
+			setIsLoading(false);
+			setIsSuccess(true);
 			console.log("Successfully updated", itemId);
 			queryClient.invalidateQueries(queryKey);
 		},
 	});
 	return (
-		<IconButton onClick={mutation.mutate} disabled={mutation.isLoading}>
+		<IconButton
+			onClick={(e) => {
+				e.stopPropagation();
+				mutation.mutate();
+			}}
+			disabled={mutation.isLoading}
+		>
 			{isFavorite ? (
 				<MdiHeart sx={{ color: pink[700] }} />
 			) : (
