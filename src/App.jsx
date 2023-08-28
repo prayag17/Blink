@@ -71,6 +71,7 @@ import { delUser, getUser } from "./utils/storage/user.js";
 
 import axios from "axios";
 import { useBackdropStore } from "./utils/store/backdrop.js";
+import { useAppLoadingStore } from "./utils/store/appLoading.js";
 
 const jellyfin = new Jellyfin({
 	clientInfo: {
@@ -130,6 +131,21 @@ function App() {
 	const navigate = useNavigate();
 
 	const [serverReachable, setServerReachable] = useState(true);
+
+	const [setIsAppLoading, setIsAppSuccess, setIsAppError] =
+		useAppLoadingStore((state) => [
+			state.setIsLoading,
+			state.setIsSuccess,
+			state.setIsError,
+		]);
+
+	useEffect(() => {
+		const appLoadingStateTimer = setInterval(() => {
+			setIsAppSuccess(false);
+			setIsAppError(false);
+		}, 8000);
+		return () => clearInterval(appLoadingStateTimer);
+	}, [setIsAppSuccess, setIsAppError]);
 
 	const { enqueueSnackbar } = useSnackbar();
 

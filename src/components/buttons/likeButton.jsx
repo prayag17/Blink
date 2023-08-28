@@ -75,8 +75,6 @@ const LikeButton = ({ itemId, isFavorite, queryKey, userId, itemName }) => {
 			return { currentLatestMedia };
 		},
 		onError: (error, a, context) => {
-			setIsLoading(false);
-			setIsError(true);
 			enqueueSnackbar(
 				`An error occured while updating "${itemName}"`,
 				{
@@ -85,12 +83,14 @@ const LikeButton = ({ itemId, isFavorite, queryKey, userId, itemName }) => {
 			);
 			queryClient.setQueryData(queryKey, context.previousData);
 			console.error(error);
+			setIsError(true);
+			setIsLoading(false);
 		},
 		onSuccess: () => {
-			setIsLoading(false);
-			setIsSuccess(true);
 			console.log("Successfully updated", itemId);
 			queryClient.invalidateQueries(queryKey);
+			setIsSuccess(true);
+			setIsLoading(false);
 		},
 	});
 	return (

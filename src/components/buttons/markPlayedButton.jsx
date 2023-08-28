@@ -73,8 +73,6 @@ const MarkPlayedButton = ({ itemId, isPlayed, queryKey, userId, itemName }) => {
 			return { previousData };
 		},
 		onError: (error, a, context) => {
-			setIsLoading(false);
-			setIsError(true);
 			enqueueSnackbar(
 				`An error occured while updating "${itemName}"`,
 				{
@@ -83,12 +81,14 @@ const MarkPlayedButton = ({ itemId, isPlayed, queryKey, userId, itemName }) => {
 			);
 			queryClient.setQueryData(queryKey, context.previousData);
 			console.error(error);
+			setIsError(true);
+			setIsLoading(false);
 		},
 		onSuccess: () => {
-			setIsLoading(false);
-			setIsSuccess(true);
 			console.log("Successfully updated", itemId);
 			queryClient.invalidateQueries(queryKey);
+			setIsSuccess(true);
+			setIsLoading(false);
 		},
 	});
 	return (

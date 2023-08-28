@@ -905,7 +905,7 @@ const LibraryView = () => {
 						</Stack>
 					</Toolbar>
 				</AppBar>
-				{items.isLoading || items.isFetching ? (
+				{items.isLoading ? (
 					<Box
 						sx={{
 							position: "absolute",

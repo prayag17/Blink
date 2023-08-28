@@ -40,6 +40,7 @@ import { MdiCogSync } from "../icons/mdiCogSync";
 import { useAppLoadingStore } from "../../utils/store/appLoading";
 import { MdiCheck } from "../icons/mdiCheck";
 import { MdiAlertDecagram } from "../icons/mdiAlertDecagram";
+import { green, red } from "@mui/material/colors";
 
 export const AppBar = () => {
 	const navigate = useNavigate();
@@ -61,7 +62,7 @@ export const AppBar = () => {
 
 	const trigger = useScrollTrigger({
 		disableHysteresis: true,
-		threshold: 0,
+		threshold: 20,
 	});
 
 	const [anchorEl, setAnchorEl] = useState(null);
@@ -82,7 +83,6 @@ export const AppBar = () => {
 	const [syncLoading, syncSuccess, syncError] = useAppLoadingStore(
 		(state) => [state.isLoading, state.isSuccess, state.isError],
 	);
-	console.log([syncLoading, syncSuccess, syncError]);
 
 	useEffect(() => {
 		if (
@@ -162,9 +162,10 @@ export const AppBar = () => {
 						</IconButton>
 					</Box>
 					<Box sx={{ display: "flex", gap: 2 }}>
-						<AnimatePresence>
-							{syncLoading && (
+						<AnimatePresence mode="wait">
+							{syncLoading ? (
 								<Box
+									key={`laoding`}
 									component={motion.div}
 									position="relative"
 									display="inline-flex"
@@ -172,10 +173,9 @@ export const AppBar = () => {
 									animate={{ opacity: 1 }}
 									exit={{
 										opacity: 0,
-										transition: {
-											delay: 10,
-											duration: 5,
-										},
+									}}
+									transition={{
+										duration: 0.2,
 									}}
 								>
 									<CircularProgress
@@ -197,17 +197,102 @@ export const AppBar = () => {
 											justifyContent: "center",
 										}}
 									>
-										{syncSuccess ? (
-											<MdiCheck />
-										) : syncError ? (
-											<MdiAlertDecagram />
-										) : (
-											<MdiCogSync />
-										)}
+										<MdiCogSync />
 									</IconButton>
 								</Box>
+							) : syncSuccess ? (
+								<Box
+									key={`success`}
+									component={motion.div}
+									position="relative"
+									display="inline-flex"
+									initial={{ opacity: 0 }}
+									animate={{ opacity: 1 }}
+									exit={{
+										opacity: 0,
+										transition: {
+											delay: 0.4,
+										},
+									}}
+									transition={{
+										duration: 0.2,
+									}}
+									sx={{
+										background: green[500],
+										borderRadius: "1000px",
+									}}
+								>
+									<CircularProgress
+										sx={{
+											opacity: syncLoading
+												? 1
+												: 0,
+										}}
+									/>
+									<IconButton
+										sx={{
+											position: "absolute",
+											top: 0,
+											left: 0,
+											right: 0,
+											bottom: 0,
+											display: "flex",
+											alignItems: "center",
+											justifyContent: "center",
+										}}
+									>
+										<MdiCheck />
+									</IconButton>
+								</Box>
+							) : syncError ? (
+								<Box
+									key={`error`}
+									component={motion.div}
+									position="relative"
+									display="inline-flex"
+									initial={{ opacity: 0 }}
+									animate={{ opacity: 1 }}
+									exit={{
+										opacity: 0,
+										transition: {
+											delay: 0.4,
+										},
+									}}
+									transition={{
+										duration: 0.2,
+									}}
+									sx={{
+										background: red[900],
+										borderRadius: "1000px",
+									}}
+								>
+									<CircularProgress
+										sx={{
+											opacity: syncLoading
+												? 1
+												: 0,
+										}}
+									/>
+									<IconButton
+										sx={{
+											position: "absolute",
+											top: 0,
+											left: 0,
+											right: 0,
+											bottom: 0,
+											display: "flex",
+											alignItems: "center",
+											justifyContent: "center",
+										}}
+									>
+										<MdiAlertDecagram />
+									</IconButton>
+								</Box>
+							) : (
+								<></>
 							)}
 						</AnimatePresence>
+
 						<IconButton>
 							<MdiHeartOutline />
 						</IconButton>
