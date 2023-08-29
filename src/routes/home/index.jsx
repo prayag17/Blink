@@ -263,6 +263,17 @@ const Home = () => {
 														`/library/${item.Id}`,
 													)
 												}
+												imageBlurhash={
+													item
+														.ImageBlurHashes
+														?.Primary[
+														Object.keys(
+															item
+																.ImageBlurHashes
+																.Primary,
+														)[0]
+													]
+												}
 											></Card>
 										);
 									},
@@ -298,6 +309,16 @@ const Home = () => {
 												item.UserData.Played
 											}
 											userId={user.data.Id}
+											imageBlurhash={
+												item.ImageBlurHashes
+													?.Primary[
+													Object.keys(
+														item
+															.ImageBlurHashes
+															.Primary,
+													)[0]
+												]
+											}
 										></Card>
 									);
 								},
@@ -352,6 +373,16 @@ const Home = () => {
 												item.UserData.Played
 											}
 											userId={user.data.Id}
+											imageBlurhash={
+												item.ImageBlurHashes
+													?.Primary[
+													Object.keys(
+														item
+															.ImageBlurHashes
+															.Primary,
+													)[0]
+												]
+											}
 										></Card>
 									);
 								},
@@ -398,6 +429,16 @@ const Home = () => {
 												item.UserData.Played
 											}
 											userId={user.data.Id}
+											imageBlurhash={
+												item.ImageBlurHashes
+													?.Primary[
+													Object.keys(
+														item
+															.ImageBlurHashes
+															.Primary,
+													)[0]
+												]
+											}
 										></Card>
 									);
 								},

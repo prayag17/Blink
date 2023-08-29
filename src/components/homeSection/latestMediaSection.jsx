@@ -61,6 +61,13 @@ export const LatestMediaSection = ({ latestMediaLib }) => {
 							queryKey={["home", "resume", "video"]}
 							isPlayed={item.UserData.Played}
 							userId={user.data.Id}
+							imageBlurhash={
+								item.ImageBlurHashes?.Primary[
+									Object.keys(
+										item.ImageBlurHashes.Primary,
+									)[0]
+								]
+							}
 						></Card>
 					);
 				})}

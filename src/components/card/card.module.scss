@@ -6,7 +6,7 @@
 		object-fit: cover;
 		transition: opacity $transition-time-fast;
 		position: absolute;
-		z-index: 0;
+		z-index: 1;
 		top: 0;
 		left: 0;
 		&-container {
@@ -30,6 +30,14 @@
 				position: relative;
 				z-index: 0;
 			}
+		}
+		&-blurhash {
+			position: absolute;
+			z-index: 1;
+			top: 0;
+			left: 0;
+			width: 100% !important;
+			height: 100% !important;
 		}
 	}
 	&-overlay {

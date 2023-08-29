@@ -48,6 +48,7 @@ export const Card = ({
 	isFavorite,
 	isPlayed,
 	imageType = "Primary",
+	imageBlurhash,
 	cardType,
 	secondaryText,
 	queryKey,
@@ -97,6 +98,16 @@ export const Card = ({
 							width: "100%",
 						}}
 					>
+						{!!imageBlurhash && (
+							<Blurhash
+								hash={imageBlurhash}
+								width={128}
+								height={128}
+								resolutionX={24}
+								resolutionY={24}
+								className="card-image-blurhash"
+							/>
+						)}
 						<Box className="card-image-icon-container">
 							{TypeIconCollectionCard[itemType]}
 						</Box>

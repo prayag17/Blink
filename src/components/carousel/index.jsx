@@ -10,7 +10,7 @@ import { MdiChevronRight } from "../icons/mdiChevronRight";
 import "./carousel.scss";
 import { useCarouselStore } from "../../utils/store/carousel";
 
-const swipeConfidenceThreshold = 10000;
+const swipeConfidenceThreshold = 8000;
 const swipePower = (offset, velocity) => {
 	return Math.abs(offset) * velocity;
 };
@@ -50,18 +50,23 @@ const Carousel = ({ content, onChange }) => {
 					animate={{ opacity: 1 }}
 					exit={{ opacity: 0 }}
 					transition={{
-						duration: 0.5,
+						duration: 0.3,
 					}}
-					drag="x"
+					drag={"x"}
 					dragConstraints={{ left: 0, right: 0 }}
 					dragElastic={1}
 					onDragEnd={(e, { offset, velocity }) => {
 						const swipe = swipePower(offset.x, velocity.x);
-
-						if (swipe < -swipeConfidenceThreshold) {
+						if (
+							currentSlide != content.length - 1 &&
+							swipe < -swipeConfidenceThreshold
+						) {
 							setDirection("right");
 							setCurrentSlide((init) => init + 1);
-						} else if (swipe > swipeConfidenceThreshold) {
+						} else if (
+							currentSlide != 0 &&
+							swipe > swipeConfidenceThreshold
+						) {
 							setDirection("left");
 							setCurrentSlide((init) => init - 1);
 						}
@@ -92,7 +97,11 @@ const Carousel = ({ content, onChange }) => {
 			</IconButton>
 			<Box className="carousel-indicator-container">
 				<Box
-					className="carousel-indicator"
+					className={
+						currentSlide == 0
+							? "carousel-indicator active"
+							: "carousel-indicator"
+					}
 					sx={{
 						background:
 							currentSlide == 0
@@ -106,7 +115,11 @@ const Carousel = ({ content, onChange }) => {
 				/>
 				{content.map((item, index) => (
 					<Box
-						className="carousel-indicator"
+						className={
+							currentSlide == index + 1
+								? "carousel-indicator active"
+								: "carousel-indicator"
+						}
 						key={index}
 						sx={{
 							background:
