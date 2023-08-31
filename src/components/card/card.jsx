@@ -34,6 +34,7 @@ import { MdiHeart } from "../icons/mdiHeart";
 import useIntersecting from "../../utils/hooks/useIntersecting";
 import LikeButton from "../buttons/likeButton";
 import MarkPlayedButton from "../buttons/markPlayedButton";
+import PlayButton from "../buttons/playButton";
 
 const cardImageAspectRatios = {
 	thumb: 1.777,
@@ -54,6 +55,8 @@ export const Card = ({
 	queryKey,
 	userId,
 	availableImagesTypes,
+	playedProgress = 0,
+	seriesId,
 
 	onClick,
 	disableOverlay = false,
@@ -97,8 +100,29 @@ export const Card = ({
 							overflow: "hidden",
 							height: "auto",
 							width: "100%",
+							zIndex: 0,
 						}}
 					>
+						<Box
+							sx={{
+								position: "absolute",
+								top: "0.4em",
+								right: "0.4em",
+								zIndex: 2,
+								background: "rgb(20 20 20 / 0.5)",
+								padding: "0.2em 0.75em",
+								display: "flex",
+								alignItems: "center",
+								justifyContent: "center",
+								borderRadius: "100px",
+								backdropFilter: "blur(5px)",
+								transition: "opacity 250ms",
+								opacity: isPlayed ? 1 : 0,
+								boxShadow: "0 0 5px rgb(0 0 0 / 0.2)",
+							}}
+						>
+							<MdiCheck />
+						</Box>
 						{!!imageBlurhash && (
 							<Blurhash
 								hash={imageBlurhash}
@@ -114,7 +138,7 @@ export const Card = ({
 						</Box>
 						<img
 							src={window.api.getItemImageUrl(
-								itemId,
+								!!seriesId ? seriesId : itemId,
 								imageType,
 								{
 									quality: 90,
@@ -133,6 +157,12 @@ export const Card = ({
 						/>
 						{!disableOverlay && (
 							<Box className="card-overlay">
+								<PlayButton
+									className="card-play-button"
+									iconProps={{
+										sx: { fontSize: "1.5em" },
+									}}
+								/>
 								<LikeButton
 									itemId={itemId}
 									itemName={itemName}
@@ -149,11 +179,29 @@ export const Card = ({
 								/>
 							</Box>
 						)}
+						{playedProgress != 0 && (
+							<LinearProgress
+								variant="determinate"
+								value={playedProgress}
+								sx={{
+									position: "absolute",
+									left: 0,
+									right: 0,
+									bottom: 0,
+									zIndex: 2,
+									height: "6px",
+									background:
+										"rgb(5 5 5 /  0.5) !important",
+									backdropFilter: "blur(5px)",
+								}}
+								color="primary"
+							/>
+						)}
 					</Box>
 					<Box className="card-text-container" height="15%">
 						<Typography
-							variant="h6"
-							fontWeight={400}
+							variant="subtitle1"
+							fontWeight={500}
 							noWrap
 							textAlign="center"
 							sx={{ opacity: 0.9 }}
@@ -161,11 +209,11 @@ export const Card = ({
 							{itemName}
 						</Typography>
 						<Typography
-							variant="subtitle1"
-							fontWeight={300}
+							variant="subtitle2"
 							noWrap
 							textAlign="center"
 							sx={{ opacity: 0.6 }}
+							lineHeight="auto"
 						>
 							{secondaryText}
 						</Typography>

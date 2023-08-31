@@ -29,21 +29,25 @@ export const CardScroller = ({
 			breakpoint: { max: 4000, min: 3000 },
 			items: displayCards + 1,
 			slidesToSlide: displayCards + 1,
+			partialVisibilityGutter: 40,
 		},
 		desktop: {
 			breakpoint: { max: 3000, min: 625 },
 			items: displayCards,
 			slidesToSlide: displayCards, // optional, default to 1.
+			partialVisibilityGutter: 30,
 		},
 		tablet: {
 			breakpoint: { max: 624, min: 464 },
 			items: displayCards - 2,
 			slidesToSlide: displayCards - 2, // optional, default to 1.
+			partialVisibilityGutter: 20,
 		},
 		mobile: {
 			breakpoint: { max: 464, min: 0 },
 			items: displayCards - 5,
 			slidesToSlide: displayCards - 5, // optional, default to 1.
+			partialVisibilityGutter: 10,
 		},
 	};
 
@@ -60,7 +64,7 @@ export const CardScroller = ({
 				}
 			>
 				<Typography
-					variant="h4"
+					variant="h5"
 					color="textPrimary"
 					className="card-scroller-heading"
 					{...headingProps}
@@ -89,8 +93,6 @@ export const CardScroller = ({
 				responsive={responsive}
 				arrows={false}
 				ref={(el) => setCarouselRef(el)}
-				// customButtonGroup={<HomeSectionHeader />}
-				// renderButtonGroupOutside={true}
 				className="card-scroller"
 			>
 				{children}

@@ -50,7 +50,8 @@ const Carousel = ({ content, onChange }) => {
 					animate={{ opacity: 1 }}
 					exit={{ opacity: 0 }}
 					transition={{
-						duration: 0.4,
+						duration: 0.25,
+						ease: "easeInOut",
 					}}
 					drag={"x"}
 					dragConstraints={{ left: 0, right: 0 }}

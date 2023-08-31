@@ -214,7 +214,7 @@ const Home = () => {
 				) : (
 					<Carousel
 						content={latestMedia.data?.map((item, index) => (
-							<CarouselSlide item={item} key={index} />
+							<CarouselSlide item={item} key={item.Id} />
 						))}
 						onChange={(now) => {
 							if (latestMedia.isSuccess) {
@@ -251,7 +251,7 @@ const Home = () => {
 									(item, index) => {
 										return (
 											<Card
-												key={index}
+												key={item.Id}
 												itemName={item.Name}
 												itemId={item.Id}
 												itemType="Library"
@@ -291,54 +291,7 @@ const Home = () => {
 								(item, index) => {
 									return (
 										<Card
-											key={index}
-											itemName={item.Name}
-											itemId={item.Id}
-											itemType={item.Type}
-											imageType="Primary"
-											cardType="thumb"
-											isFavorite={
-												item.UserData
-													.IsFavorite
-											}
-											queryKey={[
-												"home",
-												"upNext",
-											]}
-											isPlayed={
-												item.UserData.Played
-											}
-											userId={user.data.Id}
-											imageBlurhash={
-												item.ImageBlurHashes
-													?.Primary[
-													Object.keys(
-														item
-															.ImageBlurHashes
-															.Primary,
-													)[0]
-												]
-											}
-										></Card>
-									);
-								},
-							)}
-						</CardScroller>
-					)}
-					{resumeItemsVideo.isLoading ? (
-						<CardsSkeleton />
-					) : resumeItemsVideo.data.Items.length == 0 ? (
-						<></>
-					) : (
-						<CardScroller
-							displayCards={4}
-							title="Continue Watching"
-						>
-							{resumeItemsVideo.data.Items.map(
-								(item, index) => {
-									return (
-										<Card
-											key={index}
+											key={item.Id}
 											itemName={
 												item.Type ==
 												BaseItemKind.Episode
@@ -363,6 +316,117 @@ const Home = () => {
 												item.Type ==
 												BaseItemKind.Episode
 													? `S${item.ParentIndexNumber}:E${item.IndexNumber} - ${item.Name}`
+													: item.Type ==
+													  BaseItemKind.Series
+													? `${
+															item.ProductionYear
+													  } - ${
+															!!item.EndDate
+																? new Date(
+																		item.EndDate,
+																  ).toLocaleString(
+																		[],
+																		{
+																			year: "numeric",
+																		},
+																  )
+																: "Present"
+													  }`
+													: item.ProductionYear
+											}
+											cardType="thumb"
+											isFavorite={
+												item.UserData
+													.IsFavorite
+											}
+											queryKey={[
+												"home",
+												"upNext",
+											]}
+											isPlayed={
+												item.UserData.Played
+											}
+											userId={user.data.Id}
+											imageBlurhash={
+												item.ImageBlurHashes
+													?.Primary[
+													Object.keys(
+														item
+															.ImageBlurHashes
+															.Primary,
+													)[0]
+												]
+											}
+											availableImagesTypes={
+												!!item.ImageTags &&
+												Object.keys(
+													item.ImageTags,
+												)
+											}
+											playedProgress={
+												item.UserData
+													.PlayedPercentage
+											}
+										></Card>
+									);
+								},
+							)}
+						</CardScroller>
+					)}
+					{resumeItemsVideo.isLoading ? (
+						<CardsSkeleton />
+					) : resumeItemsVideo.data.Items.length == 0 ? (
+						<></>
+					) : (
+						<CardScroller
+							displayCards={4}
+							title="Continue Watching"
+						>
+							{resumeItemsVideo.data.Items.map(
+								(item, index) => {
+									return (
+										<Card
+											key={item.Id}
+											itemName={
+												item.Type ==
+												BaseItemKind.Episode
+													? item.SeriesName
+													: item.Name
+											}
+											itemId={item.Id}
+											itemType={item.Type}
+											imageType={
+												item.Type ==
+												BaseItemKind.Episode
+													? "Primary"
+													: Object.keys(
+															item.ImageTags,
+													  ).includes(
+															"Thumb",
+													  )
+													? "Thumb"
+													: "Backdrop"
+											}
+											secondaryText={
+												item.Type ==
+												BaseItemKind.Episode
+													? `S${item.ParentIndexNumber}:E${item.IndexNumber} - ${item.Name}`
+													: item.Type ==
+													  BaseItemKind.Series
+													? `${
+															item.ProductionYear
+													  } - ${
+															!!item.EndDate
+																? new Date(
+																		item.EndDate,
+																  ).toLocaleString(
+																		[],
+																		{
+																			year: "numeric",
+																		},
+																  )
+																: "Present"
+													  }`
 													: item.ProductionYear
 											}
 											cardType="thumb"
@@ -395,6 +459,10 @@ const Home = () => {
 													item.ImageTags,
 												)
 											}
+											playedProgress={
+												item.UserData
+													.PlayedPercentage
+											}
 										></Card>
 									);
 								},
@@ -414,7 +482,7 @@ const Home = () => {
 								(item, index) => {
 									return (
 										<Card
-											key={index}
+											key={item.Id}
 											itemName={item.Name}
 											itemId={item.Id}
 											itemType={item.Type}
@@ -422,6 +490,12 @@ const Home = () => {
 												item.Type ==
 												BaseItemKind.Episode
 													? "Primary"
+													: Object.keys(
+															item.ImageTags,
+													  ).includes(
+															"Thumb",
+													  )
+													? "Thumb"
 													: "Backdrop"
 											}
 											secondaryText={
@@ -450,6 +524,10 @@ const Home = () => {
 															.Primary,
 													)[0]
 												]
+											}
+											playedProgress={
+												item.UserData
+													.PlayedPercentage
 											}
 										></Card>
 									);
