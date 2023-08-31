@@ -127,7 +127,7 @@ const CarouselSlide = ({ item }) => {
 						opacity: 0,
 					}}
 					transition={{
-						duration: 0.15,
+						duration: 0.35,
 					}}
 					className="hero-carousel-detail"
 				>

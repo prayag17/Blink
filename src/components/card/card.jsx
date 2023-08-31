@@ -53,6 +53,7 @@ export const Card = ({
 	secondaryText,
 	queryKey,
 	userId,
+	availableImagesTypes,
 
 	onClick,
 	disableOverlay = false,

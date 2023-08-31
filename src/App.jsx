@@ -396,10 +396,13 @@ function App() {
 								opacity: 0,
 							}}
 							transition={{
-								duration: 0.5,
+								duration: 0.6,
 							}}
 							onLoad={() => setBackdropLoading(false)}
 							loading="eager"
+							style={{
+								transition: "opacity 6s",
+							}}
 						/>
 					</AnimatePresence>
 				</Box>

@@ -351,6 +351,12 @@ const Home = () => {
 												item.Type ==
 												BaseItemKind.Episode
 													? "Primary"
+													: Object.keys(
+															item.ImageTags,
+													  ).includes(
+															"Thumb",
+													  )
+													? "Thumb"
 													: "Backdrop"
 											}
 											secondaryText={
@@ -382,6 +388,12 @@ const Home = () => {
 															.Primary,
 													)[0]
 												]
+											}
+											availableImagesTypes={
+												!!item.ImageTags &&
+												Object.keys(
+													item.ImageTags,
+												)
 											}
 										></Card>
 									);

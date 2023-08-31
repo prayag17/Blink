@@ -152,6 +152,45 @@ export const SideMenu = ({}) => {
 					) : (
 						<>
 							<List sx={{ border: "none" }}>
+								<Tooltip
+									title="Home"
+									placement="right"
+									followCursor
+									arrow
+								>
+									<ListItem
+										className="sidemenu-item-container"
+										disablePadding
+										sx={{
+											mb: 1,
+										}}
+									>
+										<ListItemButton
+											component={NavLink}
+											to="/home"
+											className="sidemenu-item"
+											sx={{
+												minHeight: 48,
+												justifyContent:
+													"center",
+												px: 2.5,
+												display: "flex",
+												flexDirection:
+													"column",
+											}}
+										>
+											<ListItemIcon
+												sx={{
+													minWidth: 0,
+													justifyContent:
+														"center",
+												}}
+											>
+												<MdiHomeVariantOutline />
+											</ListItemIcon>
+										</ListItemButton>
+									</ListItem>
+								</Tooltip>
 								{libraries.data.Items.map(
 									(library, index) => {
 										return (
@@ -161,6 +200,9 @@ export const SideMenu = ({}) => {
 												arrow
 												followCursor
 												key={index}
+												sx={{
+													mb: 1,
+												}}
 											>
 												<ListItem
 													className="sidemenu-item-container"
@@ -207,42 +249,6 @@ export const SideMenu = ({}) => {
 								)}
 							</List>
 							<List sx={{ marginTop: "auto" }}>
-								<Tooltip
-									title="Home"
-									placement="right"
-									followCursor
-									arrow
-								>
-									<ListItem
-										className="sidemenu-item-container"
-										disablePadding
-									>
-										<ListItemButton
-											component={NavLink}
-											to="/home"
-											className="sidemenu-item"
-											sx={{
-												minHeight: 48,
-												justifyContent:
-													"center",
-												px: 2.5,
-												display: "flex",
-												flexDirection:
-													"column",
-											}}
-										>
-											<ListItemIcon
-												sx={{
-													minWidth: 0,
-													justifyContent:
-														"center",
-												}}
-											>
-												<MdiHomeVariantOutline />
-											</ListItemIcon>
-										</ListItemButton>
-									</ListItem>
-								</Tooltip>
 								<Tooltip
 									title="Logout"
 									placement="right"
