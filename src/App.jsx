@@ -37,6 +37,7 @@ import DialogTitle from "@mui/material/DialogTitle";
 import Button from "@mui/material/Button";
 import Slide from "@mui/material/Slide";
 import Box from "@mui/material/Box";
+import LinearProgress from "@mui/material/LinearProgress";
 
 // Routes
 import { ServerSetup, ServerList } from "./routes/setup/server";
@@ -72,6 +73,7 @@ import { delUser, getUser } from "./utils/storage/user.js";
 import axios from "axios";
 import { useBackdropStore } from "./utils/store/backdrop.js";
 import { useAppLoadingStore } from "./utils/store/appLoading.js";
+import { usePlaybackDataLoadStore } from "./utils/store/playback.js";
 
 const jellyfin = new Jellyfin({
 	clientInfo: {
@@ -138,6 +140,9 @@ function App() {
 			state.setIsSuccess,
 			state.setIsError,
 		]);
+	const [playbackDataLoading] = usePlaybackDataLoadStore((state) => [
+		state.isLoading,
+	]);
 
 	useEffect(() => {
 		const appLoadingStateTimer = setInterval(() => {
@@ -315,6 +320,18 @@ function App() {
 	return (
 		<SnackbarProvider maxSnack={5}>
 			<ThemeProvider theme={theme}>
+				{playbackDataLoading && (
+					<LinearProgress
+						sx={{
+							position: "fixed",
+							top: 0,
+							left: 0,
+							right: 0,
+							width: "100vw",
+							zIndex: 100000,
+						}}
+					/>
+				)}
 				<Dialog
 					open={easterEgg}
 					onClose={() => setEasterEgg(false)}

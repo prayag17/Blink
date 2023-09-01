@@ -23,3 +23,12 @@ export const usePlaybackStore = create((set) => ({
 	setSelectedSubtitleTrack: (asub) =>
 		set((state) => ({ ...state, selectedSubtitleTrack: asub })),
 }));
+
+export const usePlaybackDataLoadStore = create((set) => ({
+	isLoading: false,
+	setIsLoading: (loading) =>
+		set((state) => ({
+			...state,
+			isLoading: loading,
+		})),
+}));

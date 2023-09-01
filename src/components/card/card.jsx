@@ -198,25 +198,11 @@ export const Card = ({
 							<Box className="card-overlay">
 								<PlayButton
 									itemId={item.Id}
-									mediaSources={item.MediaSources}
+									userId={userId}
+									itemType={item.Type}
 									currentAudioTrack={0}
 									currentSubTrack={0}
 									currentVideoTrack={0}
-									itemName={item.Name}
-									seriesName={item.SeriesName}
-									itemIndex={item.IndexNumber}
-									itemParentIndex={
-										item.ParentIndexNumber
-									}
-									itemRuntimeTicks={
-										!!item.MediaSources &&
-										item.MediaSources[0]
-											.RunTimeTicks
-									}
-									itemPlaybackPositionTicks={
-										item.UserData
-											?.PlaybackPositionTicks
-									}
 									className="card-play-button"
 									iconProps={{
 										sx: { fontSize: "1.5em" },
