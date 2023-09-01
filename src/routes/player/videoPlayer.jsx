@@ -210,7 +210,7 @@ export const VideoPlayer = () => {
 
 	return (
 		<Box
-			className="video"
+			className="video-player-container"
 			sx={{ background: "black" }}
 			onMouseMove={() => {
 				setShowControls(true);

@@ -45,23 +45,16 @@ export const LatestMediaSection = ({ latestMediaLib }) => {
 				{data.data.map((item, index) => {
 					return (
 						<Card
-							key={index}
-							itemName={
+							key={item.Id}
+							item={item}
+							seriesId={item.SeriesId}
+							cardTitle={
 								item.Type == BaseItemKind.Episode
 									? item.SeriesName
 									: item.Name
 							}
-							itemId={item.Id}
-							seriesId={item.SeriesId}
-							itemType={item.Type}
-							imageType="Primary"
-							cardType={
-								item.Type == BaseItemKind.MusicAlbum ||
-								item.Type == BaseItemKind.Audio
-									? "square"
-									: "portrait"
-							}
-							secondaryText={
+							imageType={"Primary"}
+							cardCaption={
 								item.Type == BaseItemKind.Episode
 									? `S${item.ParentIndexNumber}:E${item.IndexNumber} - ${item.Name}`
 									: item.Type == BaseItemKind.Series
@@ -79,12 +72,16 @@ export const LatestMediaSection = ({ latestMediaLib }) => {
 									  }`
 									: item.ProductionYear
 							}
-							isFavorite={item.UserData.IsFavorite}
+							cardType={
+								item.Type == BaseItemKind.MusicAlbum ||
+								item.Type == BaseItemKind.Audio
+									? "square"
+									: "portrait"
+							}
 							queryKey={[
 								"homeSection, latestMedia",
 								latestMediaLib,
 							]}
-							isPlayed={item.UserData.Played}
 							userId={user.data.Id}
 							imageBlurhash={
 								item.ImageBlurHashes?.Primary[
@@ -92,9 +89,6 @@ export const LatestMediaSection = ({ latestMediaLib }) => {
 										item.ImageBlurHashes.Primary,
 									)[0]
 								]
-							}
-							playedProgress={
-								item.UserData.PlayedPercentage
 							}
 						></Card>
 					);

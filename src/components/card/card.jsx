@@ -43,19 +43,15 @@ const cardImageAspectRatios = {
 };
 
 export const Card = ({
-	itemId,
-	itemType,
-	itemName,
-	isFavorite,
-	isPlayed,
+	item,
+	cardTitle,
+	cardCaption,
 	imageType = "Primary",
 	imageBlurhash,
 	cardType,
-	secondaryText,
 	queryKey,
 	userId,
 	availableImagesTypes,
-	playedProgress = 0,
 	seriesId,
 
 	onClick,
@@ -64,7 +60,7 @@ export const Card = ({
 	const ref = useRef();
 	const isVisible = useIntersecting(ref);
 	const navigate = useNavigate();
-	const defaultOnClick = () => navigate(`/item/${itemId}`);
+	const defaultOnClick = () => navigate(`/item/${item.Id}`);
 	return (
 		<CardActionArea
 			sx={{ padding: 1, borderRadius: "10px" }}
@@ -103,26 +99,69 @@ export const Card = ({
 							zIndex: 0,
 						}}
 					>
-						<Box
-							sx={{
-								position: "absolute",
-								top: "0.4em",
-								right: "0.4em",
-								zIndex: 2,
-								background: "rgb(20 20 20 / 0.5)",
-								padding: "0.2em 0.75em",
-								display: "flex",
-								alignItems: "center",
-								justifyContent: "center",
-								borderRadius: "100px",
-								backdropFilter: "blur(5px)",
-								transition: "opacity 250ms",
-								opacity: isPlayed ? 1 : 0,
-								boxShadow: "0 0 5px rgb(0 0 0 / 0.2)",
-							}}
-						>
-							<MdiCheck />
-						</Box>
+						{!!item.UserData && (
+							<>
+								<Box
+									sx={{
+										position: "absolute",
+										top: "0.4em",
+										right: "0.4em",
+										zIndex: 2,
+										background:
+											"rgb(20 20 20 / 0.5)",
+										padding: "0.2em 0.75em",
+										display: "flex",
+										alignItems: "center",
+										justifyContent: "center",
+										borderRadius: "100px",
+										backdropFilter: "blur(5px)",
+										transition: "opacity 250ms",
+										opacity: item.UserData
+											?.IsPlayed
+											? 1
+											: 0,
+										boxShadow:
+											"0 0 5px rgb(0 0 0 / 0.2)",
+									}}
+								>
+									<MdiCheck />
+								</Box>
+								<Box
+									sx={{
+										position: "absolute",
+										top: "0.4em",
+										right: "0.4em",
+										zIndex: 2,
+										background:
+											"rgb(20 20 20 / 0.5)",
+										padding: "0.2em 0.75em",
+										display: "flex",
+										alignItems: "center",
+										justifyContent: "center",
+										borderRadius: "100px",
+										backdropFilter: "blur(5px)",
+										transition: "opacity 250ms",
+										opacity: item.UserData
+											?.UnplayedItemCount
+											? 1
+											: 0,
+										boxShadow:
+											"0 0 5px rgb(0 0 0 / 0.2)",
+									}}
+								>
+									<Typography
+										variant="subtitle2"
+										padding="0.1em 0.4em"
+										fontWeight={400}
+									>
+										{
+											item.UserData
+												?.UnplayedItemCount
+										}
+									</Typography>
+								</Box>
+							</>
+						)}
 						{!!imageBlurhash && (
 							<Blurhash
 								hash={imageBlurhash}
@@ -134,11 +173,11 @@ export const Card = ({
 							/>
 						)}
 						<Box className="card-image-icon-container">
-							{TypeIconCollectionCard[itemType]}
+							{TypeIconCollectionCard[item.Type]}
 						</Box>
 						<img
 							src={window.api.getItemImageUrl(
-								!!seriesId ? seriesId : itemId,
+								!!seriesId ? item.SeriesId : item.Id,
 								imageType,
 								{
 									quality: 90,
@@ -158,31 +197,53 @@ export const Card = ({
 						{!disableOverlay && (
 							<Box className="card-overlay">
 								<PlayButton
+									itemId={item.Id}
+									mediaSources={item.MediaSources}
+									currentAudioTrack={0}
+									currentSubTrack={0}
+									currentVideoTrack={0}
+									itemName={item.Name}
+									seriesName={item.SeriesName}
+									itemIndex={item.IndexNumber}
+									itemParentIndex={
+										item.ParentIndexNumber
+									}
+									itemRuntimeTicks={
+										!!item.MediaSources &&
+										item.MediaSources[0]
+											.RunTimeTicks
+									}
+									itemPlaybackPositionTicks={
+										item.UserData
+											?.PlaybackPositionTicks
+									}
 									className="card-play-button"
 									iconProps={{
 										sx: { fontSize: "1.5em" },
 									}}
 								/>
 								<LikeButton
-									itemId={itemId}
-									itemName={itemName}
-									isFavorite={isFavorite}
+									itemId={item.Id}
+									itemName={item.Name}
+									isFavorite={
+										item.UserData?.IsFavorite
+									}
 									queryKey={queryKey}
 									userId={userId}
 								/>
 								<MarkPlayedButton
-									itemId={itemId}
-									itemName={itemName}
-									isPlayed={isPlayed}
+									itemId={item.Id}
+									itemName={item.Name}
+									isPlayed={item.UserData.IsPlayed}
 									queryKey={queryKey}
 									userId={userId}
 								/>
 							</Box>
 						)}
-						{playedProgress != 0 && (
+						{Boolean(item.UserData?.PlayedPercentage) && (
 							<LinearProgress
 								variant="determinate"
-								value={playedProgress}
+								value={item.UserData.PlayedPercentage}
 								sx={{
 									position: "absolute",
 									left: 0,
@@ -206,7 +267,7 @@ export const Card = ({
 							textAlign="center"
 							sx={{ opacity: 0.9 }}
 						>
-							{itemName}
+							{cardTitle}
 						</Typography>
 						<Typography
 							variant="subtitle2"
@@ -215,7 +276,7 @@ export const Card = ({
 							sx={{ opacity: 0.6 }}
 							lineHeight="auto"
 						>
-							{secondaryText}
+							{cardCaption}
 						</Typography>
 					</Box>
 				</Stack>

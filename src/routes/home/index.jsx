@@ -103,6 +103,8 @@ const Home = () => {
 						"ParentIndexNumber",
 						ItemFields.SeasonUserData,
 						ItemFields.IsHd,
+						ItemFields.MediaStreams,
+						ItemFields.MediaSources,
 					],
 					enableUserData: true,
 					enableImages: true,
@@ -123,6 +125,10 @@ const Home = () => {
 					limit: 10,
 					mediaTypes: ["Video"],
 					enableUserData: true,
+					fields: [
+						ItemFields.MediaStreams,
+						ItemFields.MediaSources,
+					],
 				},
 			);
 			return resumeItems.data;
@@ -140,6 +146,10 @@ const Home = () => {
 					limit: 10,
 					mediaTypes: ["Audio"],
 					enableUserData: true,
+					fields: [
+						ItemFields.MediaStreams,
+						ItemFields.MediaSources,
+					],
 				},
 			);
 			return resumeItems.data;
@@ -155,6 +165,8 @@ const Home = () => {
 				userId: user.data.Id,
 				fields: [
 					ItemFields.PrimaryImageAspectRatio,
+					ItemFields.MediaStreams,
+					ItemFields.MediaSources,
 					ItemFields.ParentId,
 				],
 				limit: 10,
@@ -252,9 +264,10 @@ const Home = () => {
 										return (
 											<Card
 												key={item.Id}
-												itemName={item.Name}
-												itemId={item.Id}
-												itemType="Library"
+												item={item}
+												cardTitle={
+													item.Name
+												}
 												imageType="Primary"
 												cardType="thumb"
 												disableOverlay
@@ -292,14 +305,13 @@ const Home = () => {
 									return (
 										<Card
 											key={item.Id}
-											itemName={
+											item={item}
+											cardTitle={
 												item.Type ==
 												BaseItemKind.Episode
 													? item.SeriesName
 													: item.Name
 											}
-											itemId={item.Id}
-											itemType={item.Type}
 											imageType={
 												item.Type ==
 												BaseItemKind.Episode
@@ -312,7 +324,7 @@ const Home = () => {
 													? "Thumb"
 													: "Backdrop"
 											}
-											secondaryText={
+											cardCaption={
 												item.Type ==
 												BaseItemKind.Episode
 													? `S${item.ParentIndexNumber}:E${item.IndexNumber} - ${item.Name}`
@@ -335,17 +347,10 @@ const Home = () => {
 													: item.ProductionYear
 											}
 											cardType="thumb"
-											isFavorite={
-												item.UserData
-													.IsFavorite
-											}
 											queryKey={[
 												"home",
 												"upNext",
 											]}
-											isPlayed={
-												item.UserData.Played
-											}
 											userId={user.data.Id}
 											imageBlurhash={
 												item.ImageBlurHashes
@@ -356,16 +361,6 @@ const Home = () => {
 															.Primary,
 													)[0]
 												]
-											}
-											availableImagesTypes={
-												!!item.ImageTags &&
-												Object.keys(
-													item.ImageTags,
-												)
-											}
-											playedProgress={
-												item.UserData
-													.PlayedPercentage
 											}
 										></Card>
 									);
@@ -387,14 +382,13 @@ const Home = () => {
 									return (
 										<Card
 											key={item.Id}
-											itemName={
+											item={item}
+											cardTitle={
 												item.Type ==
 												BaseItemKind.Episode
 													? item.SeriesName
 													: item.Name
 											}
-											itemId={item.Id}
-											itemType={item.Type}
 											imageType={
 												item.Type ==
 												BaseItemKind.Episode
@@ -407,7 +401,7 @@ const Home = () => {
 													? "Thumb"
 													: "Backdrop"
 											}
-											secondaryText={
+											cardCaption={
 												item.Type ==
 												BaseItemKind.Episode
 													? `S${item.ParentIndexNumber}:E${item.IndexNumber} - ${item.Name}`
@@ -430,18 +424,11 @@ const Home = () => {
 													: item.ProductionYear
 											}
 											cardType="thumb"
-											isFavorite={
-												item.UserData
-													.IsFavorite
-											}
 											queryKey={[
 												"home",
 												"resume",
 												"video",
 											]}
-											isPlayed={
-												item.UserData.Played
-											}
 											userId={user.data.Id}
 											imageBlurhash={
 												item.ImageBlurHashes
@@ -452,16 +439,6 @@ const Home = () => {
 															.Primary,
 													)[0]
 												]
-											}
-											availableImagesTypes={
-												!!item.ImageTags &&
-												Object.keys(
-													item.ImageTags,
-												)
-											}
-											playedProgress={
-												item.UserData
-													.PlayedPercentage
 											}
 										></Card>
 									);
@@ -483,9 +460,8 @@ const Home = () => {
 									return (
 										<Card
 											key={item.Id}
-											itemName={item.Name}
-											itemId={item.Id}
-											itemType={item.Type}
+											item={item}
+											cardTitle={item.Name}
 											imageType={
 												item.Type ==
 												BaseItemKind.Episode
@@ -498,22 +474,15 @@ const Home = () => {
 													? "Thumb"
 													: "Backdrop"
 											}
-											secondaryText={
+											cardCaption={
 												item.ProductionYear
 											}
 											cardType="thumb"
-											isFavorite={
-												item.UserData
-													.IsFavorite
-											}
 											queryKey={[
 												"home",
 												"resume",
 												"audio",
 											]}
-											isPlayed={
-												item.UserData.Played
-											}
 											userId={user.data.Id}
 											imageBlurhash={
 												item.ImageBlurHashes
@@ -524,10 +493,6 @@ const Home = () => {
 															.Primary,
 													)[0]
 												]
-											}
-											playedProgress={
-												item.UserData
-													.PlayedPercentage
 											}
 										></Card>
 									);
