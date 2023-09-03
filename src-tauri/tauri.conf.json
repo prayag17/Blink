@@ -81,7 +81,8 @@
 				"decorations": false,
 				"resizable": false,
 				"url": "splash.html",
-				"label": "splashscreen"
+				"label": "splashscreen",
+				"title": "JellyPlayer"
 			}
 		]
 	}

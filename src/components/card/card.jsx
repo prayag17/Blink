@@ -207,6 +207,7 @@ export const Card = ({
 									iconProps={{
 										sx: { fontSize: "1.5em" },
 									}}
+									iconOnly
 								/>
 								<LikeButton
 									itemId={item.Id}

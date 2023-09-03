@@ -1,6 +1,9 @@
 /** @format */
+import PropTypes from "prop-types";
 
+import Button from "@mui/material/Button";
 import IconButton from "@mui/material/IconButton";
+import LinearProgress from "@mui/material/LinearProgress";
 import { MdiPlayOutline } from "../icons/mdiPlayOutline";
 import {
 	usePlaybackDataLoadStore,
@@ -12,9 +15,11 @@ import { getUserLibraryApi } from "@jellyfin/sdk/lib/utils/api/user-library-api"
 import { getTvShowsApi } from "@jellyfin/sdk/lib/utils/api/tv-shows-api";
 import { getItemsApi } from "@jellyfin/sdk/lib/utils/api/items-api";
 import { ItemFields } from "@jellyfin/sdk/lib/generated-client";
+import { useSnackbar } from "notistack";
 
 const PlayButton = ({
 	itemId,
+	itemUserData,
 	userId,
 	itemType,
 	currentAudioTrack,
@@ -23,6 +28,8 @@ const PlayButton = ({
 	className,
 	sx,
 	iconProps,
+	buttonProps,
+	iconOnly,
 }) => {
 	const navigate = useNavigate();
 	const [
@@ -45,6 +52,8 @@ const PlayButton = ({
 	const setPlaybackDataLoading = usePlaybackDataLoadStore(
 		(state) => state.setIsLoading,
 	);
+
+	const { enqueueSnackbar } = useSnackbar();
 
 	const item = useMutation({
 		mutationKey: ["playButton", itemId, userId],
@@ -74,7 +83,6 @@ const PlayButton = ({
 			return result.data;
 		},
 		onSuccess: (item) => {
-			console.log(item);
 			setUrl(
 				`${window.api.basePath}/Videos/${item.Items[0].Id}/stream.
 				${item.Items[0].MediaSources[0].Container}
@@ -95,16 +103,79 @@ const PlayButton = ({
 		onSettled: () => {
 			setPlaybackDataLoading(false);
 		},
+		onError: (error) => {
+			enqueueSnackbar(`${error}`, {
+				variant: "error",
+			});
+		},
 	});
 	const handleClick = (e) => {
 		e.stopPropagation();
 		item.mutate();
 	};
-	return (
-		<IconButton className={className} onClick={handleClick} sx={sx}>
-			<MdiPlayOutline {...iconProps} />
-		</IconButton>
-	);
+	if (iconOnly) {
+		return (
+			<IconButton
+				className={className}
+				onClick={handleClick}
+				sx={sx}
+				{...buttonProps}
+			>
+				<MdiPlayOutline {...iconProps} />
+			</IconButton>
+		);
+	} else {
+		return (
+			<Button
+				className={className}
+				variant="contained"
+				onClick={handleClick}
+				startIcon={<MdiPlayOutline />}
+				{...buttonProps}
+				sx={{
+					position: "relative",
+					overflow: "hidden",
+				}}
+			>
+				<LinearProgress
+					variant="determinate"
+					value={
+						!!itemUserData.PlayedPercentage
+							? itemUserData.PlayedPercentage
+							: 0
+					}
+					sx={{
+						position: "absolute",
+						top: 0,
+						left: 0,
+						right: 0,
+						bottom: 0,
+						height: "100%",
+						background: "transparent",
+						opacity: 0.2,
+						zIndex: 0,
+					}}
+					color="white"
+				/>
+				{itemUserData.PlayedPercentage > 0 ? "Resume" : "Play"}
+			</Button>
+		);
+	}
 };
 
 export default PlayButton;
+
+PlayButton.propTypes = {
+	itemId: PropTypes.string.isRequired,
+	itemUserData: PropTypes.object,
+	userId: PropTypes.string.isRequired,
+	itemType: PropTypes.string.isRequired,
+	currentAudioTrack: PropTypes.number.isRequired,
+	currentSubTrack: PropTypes.number.isRequired,
+	currentVideoTrack: PropTypes.number.isRequired,
+	className: PropTypes.string,
+	sx: PropTypes.any,
+	iconProps: PropTypes.any,
+	buttonProps: PropTypes.any,
+	iconOnly: PropTypes.bool,
+};

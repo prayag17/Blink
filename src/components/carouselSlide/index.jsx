@@ -33,6 +33,7 @@ import LikeButton from "../buttons/likeButton";
 import MarkPlayedButton from "../buttons/markPlayedButton";
 import { theme } from "../../theme";
 import { useCarouselStore } from "../../utils/store/carousel";
+import PlayButton from "../buttons/playButton";
 
 const CarouselSlide = ({ item }) => {
 	const navigate = useNavigate();
@@ -253,40 +254,18 @@ const CarouselSlide = ({ item }) => {
 						className="hero-carousel-button-container"
 						alignItems="center"
 					>
-						<Stack
-							direction="row"
-							gap="1em"
-							alignItems="center"
-							justifyContent="center"
-						>
-							<Button
-								variant="contained"
-								size="large"
-								disabled
-								startIcon={
-									<MdiPlayOutline
-										sx={{ fontSize: "1.4em" }}
-									/>
-								}
-								sx={{
-									textTransform: "none !important",
-								}}
-							>
-								{item.UserData.PlaybackPositionTicks >
-								0 ? (
-									<Stack
-										direction="column"
-										gap="0.2em"
-										alignItems="flex-start"
-										justifyContent="center"
-									>
-										Resume
-									</Stack>
-								) : (
-									"Play"
-								)}
-							</Button>
-						</Stack>
+						<PlayButton
+							itemId={item.Id}
+							userId={user.data.Id}
+							itemType={item.Type}
+							currentAudioTrack={0}
+							currentSubTrack={0}
+							currentVideoTrack={0}
+							buttonProps={{
+								size: "large",
+							}}
+							itemUserData={item.UserData}
+						/>
 
 						<Button
 							size="large"
