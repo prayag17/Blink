@@ -348,6 +348,7 @@ const LibraryView = () => {
 				is3D: is3D ? true : undefined,
 				startIndex: maxDisplayItems * (page - 1),
 				limit: maxDisplayItems,
+				fields: ["UserData"],
 			});
 		}
 		return result.data;
@@ -956,10 +957,38 @@ const LibraryView = () => {
 									}}
 								>
 									<Card
-										key={index}
-										itemName={item.Name}
-										itemId={item.Id}
-										imageType="Primary"
+										key={item.Id}
+										item={item}
+										seriesId={item.SeriesId}
+										cardTitle={
+											item.Type ==
+											BaseItemKind.Episode
+												? item.SeriesName
+												: item.Name
+										}
+										imageType={"Primary"}
+										cardCaption={
+											item.Type ==
+											BaseItemKind.Episode
+												? `S${item.ParentIndexNumber}:E${item.IndexNumber} - ${item.Name}`
+												: item.Type ==
+												  BaseItemKind.Series
+												? `${
+														item.ProductionYear
+												  } - ${
+														!!item.EndDate
+															? new Date(
+																	item.EndDate,
+															  ).toLocaleString(
+																	[],
+																	{
+																		year: "numeric",
+																	},
+															  )
+															: "Present"
+												  }`
+												: item.ProductionYear
+										}
 										cardType={
 											item.Type ==
 												BaseItemKind.MusicAlbum ||
@@ -967,9 +996,6 @@ const LibraryView = () => {
 												BaseItemKind.Audio
 												? "square"
 												: "portrait"
-										}
-										isFavorite={
-											item.UserData.IsFavorite
 										}
 										queryKey={[
 											"libraryView",
@@ -1008,10 +1034,17 @@ const LibraryView = () => {
 												],
 											],
 										]}
-										isPlayed={
-											item.UserData.Played
-										}
 										userId={user.data.Id}
+										imageBlurhash={
+											item.ImageBlurHashes
+												?.Primary[
+												Object.keys(
+													item
+														.ImageBlurHashes
+														.Primary,
+												)[0]
+											]
+										}
 									></Card>
 								</Grid2>
 							);

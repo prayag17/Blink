@@ -116,8 +116,7 @@ export const Card = ({
 										borderRadius: "100px",
 										backdropFilter: "blur(5px)",
 										transition: "opacity 250ms",
-										opacity: item.UserData
-											?.IsPlayed
+										opacity: item.UserData?.Played
 											? 1
 											: 0,
 										boxShadow:
@@ -221,7 +220,7 @@ export const Card = ({
 								<MarkPlayedButton
 									itemId={item.Id}
 									itemName={item.Name}
-									isPlayed={item.UserData.IsPlayed}
+									isPlayed={item.UserData.Played}
 									queryKey={queryKey}
 									userId={userId}
 								/>
