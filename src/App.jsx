@@ -471,6 +471,31 @@ function App() {
 								element={<ItemDetail />}
 							/>
 							<Route
+								exact
+								path="/album/:id"
+								element={<ItemDetail />}
+							/>
+							<Route
+								exact
+								path="/artist/:id"
+								element={<ItemDetail />}
+							/>
+							<Route
+								exact
+								path="/collection/:id"
+								element={<ItemDetail />}
+							/>
+							<Route
+								exact
+								path="/person/:id"
+								element={<ItemDetail />}
+							/>
+							<Route
+								exact
+								path="/series/:id"
+								element={<ItemDetail />}
+							/>
+							<Route
 								path="/favourite"
 								element={<FavouritePage />}
 							/>

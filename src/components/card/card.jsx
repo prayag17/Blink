@@ -51,11 +51,11 @@ export const Card = ({
 	cardType,
 	queryKey,
 	userId,
-	availableImagesTypes,
 	seriesId,
-
+	hideText,
 	onClick,
 	disableOverlay = false,
+	disablePadding,
 }) => {
 	const ref = useRef();
 	const isVisible = useIntersecting(ref);
@@ -63,7 +63,7 @@ export const Card = ({
 	const defaultOnClick = () => navigate(`/item/${item.Id}`);
 	return (
 		<CardActionArea
-			sx={{ padding: 1, borderRadius: "10px" }}
+			sx={{ padding: disablePadding ? 0 : 1, borderRadius: "10px" }}
 			className="card-container"
 			onClick={!!onClick ? onClick : defaultOnClick}
 		>
@@ -204,7 +204,7 @@ export const Card = ({
 									currentVideoTrack={0}
 									className="card-play-button"
 									iconProps={{
-										sx: { fontSize: "1.5em" },
+										sx: { fontSize: "2.5em" },
 									}}
 									iconOnly
 								/>
@@ -245,7 +245,11 @@ export const Card = ({
 							/>
 						)}
 					</Box>
-					<Box className="card-text-container" height="15%">
+					<Box
+						className="card-text-container"
+						height="15%"
+						style={{ display: hideText ? "none" : "block" }}
+					>
 						<Typography
 							variant="subtitle1"
 							fontWeight={500}
@@ -271,4 +275,18 @@ export const Card = ({
 	);
 };
 
-Card.propTypes = {};
+Card.propTypes = {
+	item: PropTypes.any.isRequired,
+	cardTitle: PropTypes.string,
+	cardCaption: PropTypes.string,
+	imageType: PropTypes.string,
+	imageBlurhash: PropTypes.string,
+	cardType: PropTypes.string,
+	queryKey: PropTypes.any,
+	userId: PropTypes.string.isRequired,
+	seriesId: PropTypes.string,
+	hideText: PropTypes.bool,
+	onClick: PropTypes.func,
+	disableOverlay: PropTypes.bool,
+	disablePadding: PropTypes.bool,
+};

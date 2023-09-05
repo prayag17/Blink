@@ -84,12 +84,13 @@ const LikeButton = ({ itemId, isFavorite, queryKey, userId, itemName }) => {
 			queryClient.setQueryData(queryKey, context.previousData);
 			console.error(error);
 			setIsError(true);
-			setIsLoading(false);
 		},
 		onSuccess: () => {
 			console.log("Successfully updated", itemId);
 			queryClient.invalidateQueries(queryKey);
 			setIsSuccess(true);
+		},
+		onSettled: () => {
 			setIsLoading(false);
 		},
 	});

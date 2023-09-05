@@ -1,84 +1,13 @@
 /** @format */
 
 .item-detail {
-	&-heading {
-		opacity: 0.85;
-	}
-	&-backdrop {
-		position: fixed;
-		top: 0;
-		left: 0;
-		width: inherit;
-		height: 100%;
-		z-index: -2;
-		opacity: 0.2;
-	}
-	&-header {
+	&-hero {
 		display: flex;
-		gap: 1em;
-		justify-content: flex-start;
-		align-items: flex-end;
-		position: relative;
-		flex-wrap: wrap;
-		&-backdrop {
-			position: absolute;
-			width: 100vw;
-			height: 80vh;
-			top: -88px;
-			width: 100vw;
-			right: 0;
-			left: -24px;
-			z-index: -2;
-			filter: brightness(0.6);
-			mask-image: linear-gradient(0deg, transparent, black 75%);
-			-webkit-mask-image: linear-gradient(
-				0deg,
-				transparent,
-				black 75%
-			);
-		}
-	}
-	&-image {
-		position: absolute;
 		width: 100%;
-		height: 100%;
-		object-fit: cover;
-		object-position: top;
-		transition: opacity $transition-time-default;
-		&-blurhash {
-			z-index: -1;
-		}
-		&-container {
-			width: 15%;
-			flex-shrink: 0;
-			position: relative;
-			border-radius: $border-radius-default;
-			overflow: hidden;
-			box-shadow: 0 0 15px rgb(0 0 0 / 0.4);
-			&.Episode {
-				flex-shrink: 0;
-				flex-grow: 0.25;
-			}
-		}
-		&-icon-container {
-			background: $clr-gradient-dark;
-			position: absolute;
-			top: 0;
-			left: 0;
-			right: 0;
-			bottom: 0;
-			display: flex;
-			align-items: center;
-			justify-content: center;
-			z-index: -2;
-		}
+		gap: 2em;
 	}
-	&-title-logo {
-		filter: drop-shadow(0 0 10px rgb(0 0 0 /0.2));
-		height: 100%;
-		max-height: 5em;
-		width: 45%;
-		object-fit: contain;
-		object-position: bottom;
+	&-primaryImage {
+		width: 26%;
+		flex-shrink: 0;
 	}
 }

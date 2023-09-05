@@ -2,7 +2,7 @@
 import PropTypes from "prop-types";
 
 import Button from "@mui/material/Button";
-import IconButton from "@mui/material/IconButton";
+import Fab from "@mui/material/Fab";
 import LinearProgress from "@mui/material/LinearProgress";
 import { MdiPlayOutline } from "../icons/mdiPlayOutline";
 import {
@@ -115,14 +115,16 @@ const PlayButton = ({
 	};
 	if (iconOnly) {
 		return (
-			<IconButton
+			<Fab
+				color="primary"
+				aria-label="Play"
 				className={className}
 				onClick={handleClick}
 				sx={sx}
 				{...buttonProps}
 			>
 				<MdiPlayOutline {...iconProps} />
-			</IconButton>
+			</Fab>
 		);
 	} else {
 		return (

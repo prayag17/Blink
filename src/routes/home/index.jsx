@@ -17,15 +17,9 @@ import Carousel from "../../components/carousel";
 // Custom Components
 import { Card } from "../../components/card/card";
 import { CardScroller } from "../../components/cardScroller/cardScroller";
-import { LatestMediaSection } from "../../components/homeSection/latestMediaSection";
+import { LatestMediaSection } from "../../components/layouts/homeSection/latestMediaSection";
 import { CarouselSkeleton } from "../../components/skeleton/carousel";
 import { CardsSkeleton } from "../../components/skeleton/cards";
-
-// Icons
-import { MediaTypeIconCollection } from "../../components/utils/iconsCollection.jsx";
-import { MdiStar } from "../../components/icons/mdiStar";
-import { MdiPlayOutline } from "../../components/icons/mdiPlayOutline";
-import { MdiChevronRight } from "../../components/icons/mdiChevronRight";
 
 import { getUserViewsApi } from "@jellyfin/sdk/lib/utils/api/user-views-api";
 import { getUserApi } from "@jellyfin/sdk/lib/utils/api/user-api";
@@ -39,6 +33,7 @@ import { useBackdropStore } from "../../utils/store/backdrop";
 
 import CarouselSlide from "../../components/carouselSlide";
 import { BaseItemKind, ItemFields } from "@jellyfin/sdk/lib/generated-client";
+
 const Home = () => {
 	const authUser = useQuery({
 		queryKey: ["home", "authenticateUser"],

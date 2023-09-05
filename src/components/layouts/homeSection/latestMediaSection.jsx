@@ -1,9 +1,9 @@
 /** @format */
 
 import { useQuery } from "@tanstack/react-query";
-import { CardScroller } from "../../components/cardScroller/cardScroller";
-import { Card } from "../../components/card/card";
-import { CardsSkeleton } from "../skeleton/cards";
+import { CardScroller } from "../../cardScroller/cardScroller";
+import { Card } from "../../card/card";
+import { CardsSkeleton } from "../../skeleton/cards";
 
 import { getUserApi } from "@jellyfin/sdk/lib/utils/api/user-api";
 import { getUserLibraryApi } from "@jellyfin/sdk/lib/utils/api/user-library-api";
