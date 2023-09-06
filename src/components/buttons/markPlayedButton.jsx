@@ -1,6 +1,8 @@
 /** @format */
 import PropTypes from "prop-types";
 
+import { useEffect } from "react";
+
 import IconButton from "@mui/material/IconButton";
 import CircularProgress from "@mui/material/CircularProgress";
 
@@ -10,15 +12,10 @@ import { green } from "@mui/material/colors";
 import { getPlaystateApi } from "@jellyfin/sdk/lib/utils/api/playstate-api";
 import { MdiCheck } from "../icons/mdiCheck";
 import { useSnackbar } from "notistack";
-import { useAppLoadingStore } from "../../utils/store/appLoading";
 
 const MarkPlayedButton = ({ itemId, isPlayed, queryKey, userId, itemName }) => {
 	const queryClient = useQueryClient();
 	const { enqueueSnackbar } = useSnackbar();
-
-	const [setIsLoading, setIsSuccess, setIsError] = useAppLoadingStore(
-		(state) => [state.setIsLoading, state.setIsSuccess, state.setIsError],
-	);
 
 	const handleMarking = async () => {
 		if (!isPlayed) {
@@ -35,79 +32,66 @@ const MarkPlayedButton = ({ itemId, isPlayed, queryKey, userId, itemName }) => {
 	};
 	const mutation = useMutation({
 		mutationFn: handleMarking,
-		onMutate: () => {
-			setIsLoading(true);
-			setIsError(false);
-			setIsSuccess(false);
-			queryClient.cancelQueries(queryKey);
-			const previousData = queryClient.getQueryData(queryKey);
-			queryClient.setQueryData(queryKey, (oldMedia) => {
-				try {
-					oldMedia.Items.map((oitem) => {
-						if (oitem.Id == itemId) {
-							return {
-								...oitem,
-								UserData: {
-									...oitem.UserData,
-									Played: !isPlayed,
-								},
-							};
-						}
-						return oitem;
-					});
-				} catch (error) {
-					oldMedia.map((oitem) => {
-						if (oitem.Id == itemId) {
-							return {
-								...oitem,
-								UserData: {
-									...oitem.UserData,
-									Played: !isPlayed,
-								},
-							};
-						}
-						return oitem;
-					});
-				}
-			});
-			return { previousData };
-		},
 		onError: (error, a, context) => {
+			enqueueSnackbar(`${error}`, {
+				variant: "error",
+			});
 			enqueueSnackbar(
 				`An error occured while updating "${itemName}"`,
 				{
 					variant: "error",
 				},
 			);
-			queryClient.setQueryData(queryKey, context.previousData);
-			setIsLoading(false);
-			setIsError(true);
 			console.error(error);
 		},
-		onSuccess: () => {
-			console.log("Successfully updated", itemId);
-			queryClient.invalidateQueries(queryKey);
-			setIsLoading(false);
-			setIsSuccess(true);
+		onSettled: async () => {
+			return await queryClient.invalidateQueries({
+				queryKey: queryKey,
+			});
 		},
-		onSettled: () => {
-			setIsLoading(false);
-		},
+		mutationKey: ["markPlayedButton", itemId],
 	});
 	return (
-		<IconButton
-			onClick={(e) => {
-				e.stopPropagation();
-				mutation.mutate();
+		<div
+			style={{
+				transition: "opacity 250ms",
+				position: "relative",
+				display: "inline-flex",
 			}}
-			disabled={mutation.isLoading}
 		>
-			<MdiCheck
-				sx={{
-					color: isPlayed ? green[400] : "white",
+			<CircularProgress
+				style={{
+					opacity: mutation.isLoading ? 1 : 0,
+					transition: "opacity 200ms",
 				}}
+				disableShrink
 			/>
-		</IconButton>
+			<IconButton
+				onClick={(e) => {
+					if (!mutation.isLoading) {
+						e.stopPropagation();
+						mutation.mutate();
+					}
+				}}
+				style={{
+					position: "absolute",
+					top: 0,
+					left: 0,
+					right: 0,
+					bottom: 0,
+					display: "flex",
+					alignItems: "center",
+					justifyContent: "center",
+					opacity: mutation.isLoading ? 0.5 : 1,
+				}}
+			>
+				<MdiCheck
+					sx={{
+						color: isPlayed ? green[400] : "white",
+					}}
+				/>
+			</IconButton>
+		</div>
 	);
 };
 

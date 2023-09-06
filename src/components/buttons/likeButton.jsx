@@ -1,6 +1,8 @@
 /** @format */
 import PropTypes from "prop-types";
 
+import { useEffect } from "react";
+
 import IconButton from "@mui/material/IconButton";
 
 import { getUserLibraryApi } from "@jellyfin/sdk/lib/utils/api/user-library-api";
@@ -9,19 +11,14 @@ import { pink } from "@mui/material/colors";
 import { MdiHeart } from "../icons/mdiHeart";
 import { MdiHeartOutline } from "../icons/mdiHeartOutline";
 import { useSnackbar } from "notistack";
-import { useAppLoadingStore } from "../../utils/store/appLoading";
+import CircularProgress from "@mui/material/CircularProgress";
 
 const LikeButton = ({ itemId, isFavorite, queryKey, userId, itemName }) => {
 	const queryClient = useQueryClient();
 	const { enqueueSnackbar } = useSnackbar();
 
-	const [setIsLoading, setIsSuccess, setIsError] = useAppLoadingStore(
-		(state) => [state.setIsLoading, state.setIsSuccess, state.setIsError],
-	);
-
 	const handleLiking = async () => {
 		let result;
-		console.log(isFavorite);
 		if (isFavorite) {
 			result = await getUserLibraryApi(window.api).unmarkFavoriteItem({
 				userId: userId,
@@ -36,44 +33,6 @@ const LikeButton = ({ itemId, isFavorite, queryKey, userId, itemName }) => {
 	};
 	const mutation = useMutation({
 		mutationFn: handleLiking,
-		onMutate: () => {
-			setIsLoading(true);
-			setIsError(false);
-			setIsSuccess(false);
-
-			queryClient.cancelQueries(queryKey);
-			const currentLatestMedia = queryClient.getQueryData(queryKey);
-			queryClient.setQueryData(queryKey, (oldMedia) => {
-				try {
-					oldMedia.Items.map((oitem) => {
-						if (oitem.Id == itemId) {
-							return {
-								...oitem,
-								UserData: {
-									...oitem.UserData,
-									IsFavorite: !isFavorite,
-								},
-							};
-						}
-						return oitem;
-					});
-				} catch (error) {
-					oldMedia.map((oitem) => {
-						if (oitem.Id == itemId) {
-							return {
-								...oitem,
-								UserData: {
-									...oitem.UserData,
-									IsFavorite: !isFavorite,
-								},
-							};
-						}
-						return oitem;
-					});
-				}
-			});
-			return { currentLatestMedia };
-		},
 		onError: (error, a, context) => {
 			enqueueSnackbar(`${error}`, {
 				variant: "error",
@@ -84,39 +43,57 @@ const LikeButton = ({ itemId, isFavorite, queryKey, userId, itemName }) => {
 					variant: "error",
 				},
 			);
-
-			queryClient.setQueryData(queryKey, context.previousData);
-			setIsLoading(false);
-			setIsError(true);
-			console.log("set");
-
 			console.error(error);
 		},
-		onSuccess: () => {
-			console.log("Successfully updated", itemId);
-			queryClient.invalidateQueries(queryKey);
-			setIsLoading(false);
-			setIsSuccess(true);
+		onSettled: async () => {
+			return await queryClient.invalidateQueries({
+				queryKey: queryKey,
+			});
 		},
-		onSettled: () => {
-			console.log("set");
-			setIsLoading(false);
-		},
+		mutationKey: ["likeButton", itemId],
 	});
+
 	return (
-		<IconButton
-			onClick={(e) => {
-				e.stopPropagation();
-				mutation.mutate();
+		<div
+			style={{
+				transition: "opacity 250ms",
+				position: "relative",
+				display: "inline-flex",
 			}}
-			disabled={mutation.isLoading}
 		>
-			{isFavorite ? (
-				<MdiHeart sx={{ color: pink[700] }} />
-			) : (
-				<MdiHeartOutline />
-			)}
-		</IconButton>
+			<CircularProgress
+				style={{
+					opacity: mutation.isLoading ? 1 : 0,
+					transition: "opacity 200ms",
+				}}
+				disableShrink
+			/>
+			<IconButton
+				onClick={(e) => {
+					if (!mutation.isLoading) {
+						e.stopPropagation();
+						mutation.mutate();
+					}
+				}}
+				style={{
+					position: "absolute",
+					top: 0,
+					left: 0,
+					right: 0,
+					bottom: 0,
+					display: "flex",
+					alignItems: "center",
+					justifyContent: "center",
+					opacity: mutation.isLoading ? 0.5 : 1,
+				}}
+			>
+				{isFavorite ? (
+					<MdiHeart sx={{ color: pink[700] }} />
+				) : (
+					<MdiHeartOutline />
+				)}
+			</IconButton>
+		</div>
 	);
 };
 

@@ -18,12 +18,11 @@ import CircularProgress from "@mui/material/CircularProgress";
 import useScrollTrigger from "@mui/material/useScrollTrigger";
 
 import { MdiMagnify } from "../icons/mdiMagnify";
-import { theme } from "../../theme";
 
 import { useLocation, useNavigate } from "react-router-dom";
 
 import { getUserApi } from "@jellyfin/sdk/lib/utils/api/user-api";
-import { useQuery } from "@tanstack/react-query";
+import { useIsMutating, useQuery } from "@tanstack/react-query";
 
 import "./appBar.module.scss";
 import { MdiAccount } from "../icons/mdiAccount";
@@ -36,12 +35,6 @@ import { useDrawerStore } from "../../utils/store/drawer";
 import { delServer } from "../../utils/storage/servers";
 import { delUser } from "../../utils/storage/user";
 import { MdiDelete } from "../icons/mdiDelete";
-import { MdiCogSync } from "../icons/mdiCogSync";
-import { useAppLoadingStore } from "../../utils/store/appLoading";
-import { MdiCheck } from "../icons/mdiCheck";
-import { MdiAlertDecagram } from "../icons/mdiAlertDecagram";
-import { green, red } from "@mui/material/colors";
-
 export const AppBar = () => {
 	const navigate = useNavigate();
 
@@ -79,10 +72,6 @@ export const AppBar = () => {
 	const handleDrawerOpen = () => {
 		setDrawerOpen(true);
 	};
-
-	const [syncLoading, syncSuccess, syncError] = useAppLoadingStore(
-		(state) => [state.isLoading, state.isSuccess, state.isError],
-	);
 
 	useEffect(() => {
 		if (
@@ -162,138 +151,7 @@ export const AppBar = () => {
 						</IconButton>
 					</Box>
 					<Box sx={{ display: "flex", gap: 2 }}>
-						<AnimatePresence mode="wait">
-							{syncLoading ? (
-								<Box
-									key={`laoding`}
-									component={motion.div}
-									position="relative"
-									display="inline-flex"
-									initial={{ opacity: 0 }}
-									animate={{ opacity: 1 }}
-									exit={{
-										opacity: 0,
-									}}
-									transition={{
-										duration: 0.2,
-									}}
-								>
-									<CircularProgress
-										sx={{
-											opacity: syncLoading
-												? 1
-												: 0,
-										}}
-									/>
-									<IconButton
-										sx={{
-											position: "absolute",
-											top: 0,
-											left: 0,
-											right: 0,
-											bottom: 0,
-											display: "flex",
-											alignItems: "center",
-											justifyContent: "center",
-										}}
-									>
-										<MdiCogSync />
-									</IconButton>
-								</Box>
-							) : syncSuccess ? (
-								<Box
-									key={`success`}
-									component={motion.div}
-									position="relative"
-									display="inline-flex"
-									initial={{ opacity: 0 }}
-									animate={{ opacity: 1 }}
-									exit={{
-										opacity: 0,
-										transition: {
-											delay: 0.4,
-										},
-									}}
-									transition={{
-										duration: 0.2,
-									}}
-									sx={{
-										background: green[500],
-										borderRadius: "1000px",
-									}}
-								>
-									<CircularProgress
-										sx={{
-											opacity: syncLoading
-												? 1
-												: 0,
-										}}
-									/>
-									<IconButton
-										sx={{
-											position: "absolute",
-											top: 0,
-											left: 0,
-											right: 0,
-											bottom: 0,
-											display: "flex",
-											alignItems: "center",
-											justifyContent: "center",
-										}}
-									>
-										<MdiCheck />
-									</IconButton>
-								</Box>
-							) : syncError ? (
-								<Box
-									key={`error`}
-									component={motion.div}
-									position="relative"
-									display="inline-flex"
-									initial={{ opacity: 0 }}
-									animate={{ opacity: 1 }}
-									exit={{
-										opacity: 0,
-										transition: {
-											delay: 0.4,
-										},
-									}}
-									transition={{
-										duration: 0.2,
-									}}
-									sx={{
-										background: red[900],
-										borderRadius: "1000px",
-									}}
-								>
-									<CircularProgress
-										sx={{
-											opacity: syncLoading
-												? 1
-												: 0,
-										}}
-									/>
-									<IconButton
-										sx={{
-											position: "absolute",
-											top: 0,
-											left: 0,
-											right: 0,
-											bottom: 0,
-											display: "flex",
-											alignItems: "center",
-											justifyContent: "center",
-										}}
-									>
-										<MdiAlertDecagram />
-									</IconButton>
-								</Box>
-							) : (
-								<></>
-							)}
-						</AnimatePresence>
-
-						<IconButton>
+						<IconButton disabled>
 							<MdiHeartOutline />
 						</IconButton>
 						<IconButton

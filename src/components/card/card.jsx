@@ -287,7 +287,7 @@ export const Card = ({
 Card.propTypes = {
 	item: PropTypes.any.isRequired,
 	cardTitle: PropTypes.string,
-	cardCaption: PropTypes.string,
+	cardCaption: PropTypes.any,
 	imageType: PropTypes.string,
 	imageBlurhash: PropTypes.string,
 	cardType: PropTypes.string,
