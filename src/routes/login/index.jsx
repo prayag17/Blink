@@ -282,8 +282,8 @@ export const UserLogin = () => {
 								>
 									<Card
 										key={index}
-										itemName={item.Name}
-										itemId={item.Id}
+										cardTitle={item.Name}
+										item={item}
 										disableOverlay
 										itemType="User"
 										cardType="square"
@@ -292,6 +292,8 @@ export const UserLogin = () => {
 												`/login/withImg/${item.Name}/${item.Id}/`,
 											)
 										}
+										overrideIcon="User"
+										imageType="Primary"
 									/>
 								</Grid>
 							);

@@ -80,12 +80,14 @@ const MarkPlayedButton = ({ itemId, isPlayed, queryKey, userId, itemName }) => {
 				},
 			);
 			queryClient.setQueryData(queryKey, context.previousData);
-			console.error(error);
+			setIsLoading(false);
 			setIsError(true);
+			console.error(error);
 		},
 		onSuccess: () => {
 			console.log("Successfully updated", itemId);
 			queryClient.invalidateQueries(queryKey);
+			setIsLoading(false);
 			setIsSuccess(true);
 		},
 		onSettled: () => {

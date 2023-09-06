@@ -75,22 +75,31 @@ const LikeButton = ({ itemId, isFavorite, queryKey, userId, itemName }) => {
 			return { currentLatestMedia };
 		},
 		onError: (error, a, context) => {
+			enqueueSnackbar(`${error}`, {
+				variant: "error",
+			});
 			enqueueSnackbar(
 				`An error occured while updating "${itemName}"`,
 				{
 					variant: "error",
 				},
 			);
+
 			queryClient.setQueryData(queryKey, context.previousData);
-			console.error(error);
+			setIsLoading(false);
 			setIsError(true);
+			console.log("set");
+
+			console.error(error);
 		},
 		onSuccess: () => {
 			console.log("Successfully updated", itemId);
 			queryClient.invalidateQueries(queryKey);
+			setIsLoading(false);
 			setIsSuccess(true);
 		},
 		onSettled: () => {
+			console.log("set");
 			setIsLoading(false);
 		},
 	});

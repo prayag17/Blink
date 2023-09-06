@@ -56,6 +56,7 @@ export const Card = ({
 	onClick,
 	disableOverlay = false,
 	disablePadding,
+	overrideIcon,
 }) => {
 	const ref = useRef();
 	const isVisible = useIntersecting(ref);
@@ -172,18 +173,26 @@ export const Card = ({
 							/>
 						)}
 						<Box className="card-image-icon-container">
-							{TypeIconCollectionCard[item.Type]}
+							{!!overrideIcon
+								? TypeIconCollectionCard[overrideIcon]
+								: TypeIconCollectionCard[item.Type]}
 						</Box>
 						<img
-							src={window.api.getItemImageUrl(
-								!!seriesId ? item.SeriesId : item.Id,
-								imageType,
-								{
-									quality: 90,
-									fillHeight: 512,
-									fillWidth: 512,
-								},
-							)}
+							src={
+								overrideIcon == "User"
+									? `${window.api.basePath}/Users/${item.Id}/Images/Primary`
+									: window.api.getItemImageUrl(
+											!!seriesId
+												? item.SeriesId
+												: item.Id,
+											imageType,
+											{
+												quality: 90,
+												fillHeight: 512,
+												fillWidth: 512,
+											},
+									  )
+							}
 							style={{
 								height: "100%",
 								width: "100%",

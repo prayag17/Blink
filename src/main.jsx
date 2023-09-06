@@ -16,6 +16,9 @@ const queryClient = new QueryClient({
 		queries: {
 			networkMode: "always",
 		},
+		mutations: {
+			networkMode: "always",
+		},
 	},
 });
 
