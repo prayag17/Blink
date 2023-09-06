@@ -586,6 +586,8 @@ const ItemDetail = () => {
 					item={item.data}
 					userId={user.data.Id}
 					queryKey={["item", id]}
+					writers={writers}
+					directors={directors}
 				/>
 			</div>
 		);

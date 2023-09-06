@@ -10,8 +10,9 @@ import { yellow } from "@mui/material/colors";
 import { endsAt, getRuntime } from "../../../utils/date/time";
 import LikeButton from "../../buttons/likeButton";
 import MarkPlayedButton from "../../buttons/markPlayedButton";
+import PlayButton from "../../buttons/playButton";
 
-const Hero = ({ item, queryKey, userId }) => {
+const Hero = ({ item, queryKey, userId, writers, directors, artists }) => {
 	return (
 		<div className="item-detail-hero">
 			<div className="item-detail-primaryImage">
@@ -36,9 +37,20 @@ const Hero = ({ item, queryKey, userId }) => {
 					disablePadding
 				/>
 			</div>
-			<div className="item-detail-hero-info-container">
+			<div
+				className="item-detail-hero-info-container"
+				style={{
+					display: "flex",
+					flexDirection: "column",
+				}}
+			>
 				<div>
-					<div className="item-name">
+					<div
+						className="item-name"
+						style={{
+							marginTop: "4em",
+						}}
+					>
 						<Typography
 							variant="h3"
 							noWrap={true}
@@ -66,7 +78,7 @@ const Hero = ({ item, queryKey, userId }) => {
 						mt={1}
 					>
 						<Typography
-							style={{ opacity: "0.7" }}
+							style={{ opacity: "0.8" }}
 							variant="subtitle1"
 						>
 							{!!item.ProductionYear
@@ -93,7 +105,7 @@ const Hero = ({ item, queryKey, userId }) => {
 										}}
 									/>
 									<Typography
-										style={{ opacity: "0.7" }}
+										style={{ opacity: "0.8" }}
 										variant="subtitle1"
 									>
 										{Math.round(
@@ -104,7 +116,7 @@ const Hero = ({ item, queryKey, userId }) => {
 								</>
 							) : (
 								<Typography
-									style={{ opacity: "0.7" }}
+									style={{ opacity: "0.8" }}
 									variant="subtitle1"
 								>
 									No Community Rating
@@ -113,7 +125,7 @@ const Hero = ({ item, queryKey, userId }) => {
 						</div>
 						{!!item.RunTimeTicks && (
 							<Typography
-								style={{ opacity: "0.7" }}
+								style={{ opacity: "0.8" }}
 								variant="subtitle1"
 							>
 								{getRuntime(item.RunTimeTicks)}
@@ -121,7 +133,7 @@ const Hero = ({ item, queryKey, userId }) => {
 						)}
 						{!!item.RunTimeTicks && (
 							<Typography
-								style={{ opacity: "0.7" }}
+								style={{ opacity: "0.8" }}
 								variant="subtitle1"
 							>
 								{endsAt(item.RunTimeTicks)}
@@ -129,7 +141,7 @@ const Hero = ({ item, queryKey, userId }) => {
 						)}
 					</Stack>
 					<Typography
-						style={{ opacity: "0.7" }}
+						style={{ opacity: "0.8" }}
 						variant="subtitle1"
 						mt={1}
 					>
@@ -139,9 +151,24 @@ const Hero = ({ item, queryKey, userId }) => {
 				<div
 					style={{
 						margin: "2em 0",
+						display: "flex",
+						alignItems: "center",
+						gap: "1em",
 					}}
 					className="item-button-container"
 				>
+					<PlayButton
+						itemId={item.Id}
+						userId={userId}
+						itemType={item.Type}
+						currentAudioTrack={0}
+						currentSubTrack={0}
+						currentVideoTrack={0}
+						buttonProps={{
+							size: "large",
+						}}
+						itemUserData={item.UserData}
+					/>
 					<LikeButton
 						queryKey={["item", item.Id]}
 						itemId={item.Id}
@@ -165,6 +192,66 @@ const Hero = ({ item, queryKey, userId }) => {
 					<Typography variant="subtitle1">
 						{item.Overview}
 					</Typography>
+				</div>
+				<div
+					style={{
+						marginTop: "2em",
+						alignSelf: "flex-end",
+					}}
+				>
+					<div
+						style={{
+							display: "flex",
+						}}
+					>
+						<Typography
+							variant="subtitle1"
+							style={{
+								opacity: 0.6,
+								width: "15%",
+							}}
+							noWrap
+						>
+							Written by
+						</Typography>
+						<Typography
+							variant="subtitle1"
+							style={{
+								maxWidth: "85%",
+							}}
+						>
+							{writers
+								.map((writer) => writer.Name)
+								.join(", ")}
+						</Typography>
+					</div>
+					<div
+						style={{
+							display: "flex",
+							marginTop: "0.5em",
+						}}
+					>
+						<Typography
+							variant="subtitle1"
+							style={{
+								opacity: 0.6,
+								width: "15%",
+							}}
+							noWrap
+						>
+							Directed by
+						</Typography>
+						<Typography
+							variant="subtitle1"
+							style={{
+								maxWidth: "85%",
+							}}
+						>
+							{directors
+								.map((director) => director.Name)
+								.join(", ")}
+						</Typography>
+					</div>
 				</div>
 			</div>
 		</div>
