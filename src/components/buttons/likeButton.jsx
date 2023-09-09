@@ -66,7 +66,6 @@ const LikeButton = ({ itemId, isFavorite, queryKey, userId, itemName }) => {
 					opacity: mutation.isLoading ? 1 : 0,
 					transition: "opacity 200ms",
 				}}
-				disableShrink
 			/>
 			<IconButton
 				onClick={(e) => {

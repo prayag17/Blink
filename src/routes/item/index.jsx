@@ -580,6 +580,9 @@ const ItemDetail = () => {
 				className="scrollY"
 				style={{
 					padding: "5em 2em 2em 1em",
+					display: "flex",
+					flexDirection: "column",
+					gap: "0.5em",
 				}}
 			>
 				<Hero
@@ -589,6 +592,90 @@ const ItemDetail = () => {
 					writers={writers}
 					directors={directors}
 				/>
+				<CardScroller
+					title="Cast & Crew"
+					displayCards={8}
+					disableDecoration
+				>
+					{item.data.People.map((person, index) => {
+						return (
+							<Card
+								key={person.Id}
+								item={person}
+								cardTitle={person.Name}
+								cardCaption={person.Role}
+								cardType="square"
+								userId={user.data.Id}
+								imageBlurhash={
+									person.ImageBlurHashes?.Primary[0]
+								}
+								overrideIcon="Person"
+								disableOverlay
+							/>
+						);
+					})}
+				</CardScroller>
+				<CardScroller
+					title="More Like This"
+					displayCards={8}
+					disableDecoration
+				>
+					{similarItems.data.Items.map((similar, index) => {
+						return (
+							<Card
+								key={similar.Id}
+								item={similar}
+								seriesId={similar.SeriesId}
+								cardTitle={
+									similar.Type ==
+									BaseItemKind.Episode
+										? similar.SeriesName
+										: similar.Name
+								}
+								imageType={"Primary"}
+								cardCaption={
+									similar.Type ==
+									BaseItemKind.Episode
+										? `S${similar.ParentIndexNumber}:E${similar.IndexNumber} - ${similar.Name}`
+										: similar.Type ==
+										  BaseItemKind.Series
+										? `${
+												similar.ProductionYear
+										  } - ${
+												!!similar.EndDate
+													? new Date(
+															similar.EndDate,
+													  ).toLocaleString(
+															[],
+															{
+																year: "numeric",
+															},
+													  )
+													: "Present"
+										  }`
+										: similar.ProductionYear
+								}
+								cardType={
+									similar.Type ==
+										BaseItemKind.MusicAlbum ||
+									similar.Type == BaseItemKind.Audio
+										? "square"
+										: "portrait"
+								}
+								queryKey={["item", id, "similarItem"]}
+								userId={user.data.Id}
+								imageBlurhash={
+									similar.ImageBlurHashes?.Primary[
+										Object.keys(
+											similar.ImageBlurHashes
+												.Primary,
+										)[0]
+									]
+								}
+							/>
+						);
+					})}
+				</CardScroller>
 			</div>
 		);
 	}

@@ -42,5 +42,12 @@ export const theme = createTheme({
 				},
 			},
 		},
+		MuiChip: {
+			styleOverrides: {
+				root: {
+					backdropFilter: "blur(5px)",
+				},
+			},
+		},
 	},
 });

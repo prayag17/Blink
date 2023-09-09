@@ -1,0 +1,50 @@
+/** @format */
+$maskPercentage: 40%;
+.hero {
+	position: relative;
+	&-backdrop {
+		position: absolute;
+		width: 100%;
+		height: 100vh;
+		top: 0;
+		left: 0;
+		z-index: -1;
+		filter: brightness(0.5);
+		mask-image: linear-gradient(
+				to bottom,
+				black $maskPercentage,
+				transparent
+			),
+			linear-gradient(to left, black $maskPercentage, transparent);
+		-webkit-mask-image: linear-gradient(
+				to bottom,
+				black $maskPercentage,
+				transparent
+			),
+			linear-gradient(to left, black $maskPercentage, transparent);
+		mask-composite: source-in;
+		-webkit-mask-composite: source-in;
+		& > * {
+			position: absolute;
+			top: 0;
+			left: 0;
+			right: 0;
+			bottom: 0;
+			width: 100%;
+			height: 100%;
+		}
+		&-image {
+			object-fit: cover;
+			z-index: 1;
+		}
+		&-blurhash {
+			z-index: 0;
+		}
+		&-icon {
+			&-container {
+				background: $clr-gradient-dark;
+				z-index: -1;
+			}
+		}
+	}
+}

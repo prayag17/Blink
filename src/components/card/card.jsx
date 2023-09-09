@@ -1,5 +1,4 @@
 /** @format */
-import React, { useRef, useState } from "react";
 import PropTypes from "prop-types";
 
 import { useNavigate } from "react-router-dom";
@@ -7,31 +6,16 @@ import { useNavigate } from "react-router-dom";
 import Box from "@mui/material/Box";
 import Stack from "@mui/material/Stack";
 import MuiCard from "@mui/material/Card";
-import CardMedia from "@mui/material/CardMedia";
 import CardActionArea from "@mui/material/CardActionArea";
 import Typography from "@mui/material/Typography";
 import LinearProgress from "@mui/material/LinearProgress";
-import Chip from "@mui/material/Chip";
-import ButtonGroup from "@mui/material/ButtonGroup";
-import IconButton from "@mui/material/IconButton";
 
 import { Blurhash } from "react-blurhash";
-import { green, pink } from "@mui/material/colors";
 
-import {
-	MediaCollectionTypeIconCollectionCard,
-	TypeIconCollectionCard,
-} from "../utils/iconsCollection";
-
-import { borderRadiusDefault } from "../../palette.module.scss";
+import { TypeIconCollectionCard } from "../utils/iconsCollection";
 import "./card.module.scss";
 import { MdiCheck } from "../icons/mdiCheck";
 
-import { getPlaystateApi } from "@jellyfin/sdk/lib/utils/api/playstate-api";
-import { getUserLibraryApi } from "@jellyfin/sdk/lib/utils/api/user-library-api";
-import { MdiHeartOutline } from "../icons/mdiHeartOutline";
-import { MdiHeart } from "../icons/mdiHeart";
-import useIntersecting from "../../utils/hooks/useIntersecting";
 import LikeButton from "../buttons/likeButton";
 import MarkPlayedButton from "../buttons/markPlayedButton";
 import PlayButton from "../buttons/playButton";
@@ -58,8 +42,6 @@ export const Card = ({
 	disablePadding,
 	overrideIcon,
 }) => {
-	const ref = useRef();
-	const isVisible = useIntersecting(ref);
 	const navigate = useNavigate();
 	const defaultOnClick = () => navigate(`/item/${item.Id}`);
 	return (
@@ -69,7 +51,6 @@ export const Card = ({
 			onClick={!!onClick ? onClick : defaultOnClick}
 		>
 			<MuiCard
-				ref={ref}
 				sx={{
 					height: "100%",
 					overflow: "visible",
@@ -79,7 +60,7 @@ export const Card = ({
 				elevation={0}
 			>
 				<Stack
-					className={isVisible ? "card isVisible" : "card"}
+					className="card"
 					sx={{
 						width: "100%",
 						height: "100%",

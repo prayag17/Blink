@@ -68,6 +68,7 @@ export const MediaTypeIconCollection = {
 };
 
 export const TypeIconCollectionCard = {
+	Actor: <MdiAccountTie className="card-image-icon" />,
 	AggregateFolder: <MdiFolderMultiple className="card-image-icon" />,
 	Audio: <MdiMicrophone className="card-image-icon" />,
 	AudioBook: <MdiBookMusic className="card-image-icon" />,

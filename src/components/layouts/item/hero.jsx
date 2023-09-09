@@ -12,9 +12,67 @@ import LikeButton from "../../buttons/likeButton";
 import MarkPlayedButton from "../../buttons/markPlayedButton";
 import PlayButton from "../../buttons/playButton";
 
-const Hero = ({ item, queryKey, userId, writers, directors, artists }) => {
+import "./hero.module.scss";
+import { Blurhash } from "react-blurhash";
+import { MediaTypeIconCollection } from "../../utils/iconsCollection";
+
+const Hero = ({
+	item,
+	queryKey,
+	userId,
+	writers = [],
+	directors = [],
+	artists = [],
+}) => {
 	return (
-		<div className="item-detail-hero">
+		<div
+			className="item-detail-hero"
+			style={{
+				marginBottom: "2em",
+			}}
+		>
+			<div className="hero-backdrop">
+				{!!item.ImageBlurHashes.Backdrop && (
+					<>
+						{Object.keys(item.ImageBlurHashes.Backdrop)
+							.length != 0 && (
+							<Blurhash
+								hash={
+									item.ImageBlurHashes.Backdrop[
+										Object.keys(
+											item.ImageBlurHashes
+												.Backdrop,
+										)[0]
+									]
+								}
+								// hash="LEHV6nWB2yk8pyo0adR*.7kCMdnj"
+								width="1080"
+								height="720"
+								resolutionX={64}
+								resolutionY={96}
+								className="hero-backdrop-blurhash"
+								punch={1}
+							/>
+						)}
+						<img
+							className="hero-backdrop-image"
+							src={
+								!!item.ParentBackdropItemId
+									? `${window.api.basePath}/Items/${item.ParentBackdropItemId}/Images/Backdrop`
+									: `${window.api.basePath}/Items/${item.Id}/Images/Backdrop`
+							}
+							style={{
+								opacity: 0,
+							}}
+							onLoad={(e) => (e.target.style.opacity = 1)}
+							loading="eager"
+						/>
+					</>
+				)}
+				<div className="hero-backdrop-icon-container">
+					{MediaTypeIconCollection[item.Type]}
+				</div>
+			</div>
 			<div className="item-detail-primaryImage">
 				<Card
 					item={item}
@@ -35,6 +93,8 @@ const Hero = ({ item, queryKey, userId, writers, directors, artists }) => {
 					}
 					hideText
 					disablePadding
+					disableOverlay
+					onClick={() => {}}
 				/>
 			</div>
 			<div
@@ -51,11 +111,7 @@ const Hero = ({ item, queryKey, userId, writers, directors, artists }) => {
 							marginTop: "4em",
 						}}
 					>
-						<Typography
-							variant="h3"
-							noWrap={true}
-							fontWeight={600}
-						>
+						<Typography variant="h3" fontWeight={600}>
 							{item.Name}
 						</Typography>
 					</div>
@@ -150,7 +206,7 @@ const Hero = ({ item, queryKey, userId, writers, directors, artists }) => {
 				</div>
 				<div
 					style={{
-						margin: "2em 0",
+						margin: "1em 0",
 						display: "flex",
 						alignItems: "center",
 						gap: "1em",
@@ -186,9 +242,12 @@ const Hero = ({ item, queryKey, userId, writers, directors, artists }) => {
 				</div>
 				<div
 					style={{
-						marginTop: "1em",
+						marginTop: "0.2em",
 					}}
 				>
+					<Typography fontStyle="italic" variant="h5" mb={1}>
+						{item.Taglines[0]}
+					</Typography>
 					<Typography variant="subtitle1">
 						{item.Overview}
 					</Typography>
@@ -197,61 +256,95 @@ const Hero = ({ item, queryKey, userId, writers, directors, artists }) => {
 					style={{
 						marginTop: "2em",
 						alignSelf: "flex-end",
+						width: "100%",
 					}}
 				>
-					<div
-						style={{
-							display: "flex",
-						}}
-					>
-						<Typography
-							variant="subtitle1"
+					{writers.length > 0 && (
+						<div
 							style={{
-								opacity: 0.6,
-								width: "15%",
-							}}
-							noWrap
-						>
-							Written by
-						</Typography>
-						<Typography
-							variant="subtitle1"
-							style={{
-								maxWidth: "85%",
+								display: "flex",
 							}}
 						>
-							{writers
-								.map((writer) => writer.Name)
-								.join(", ")}
-						</Typography>
-					</div>
-					<div
-						style={{
-							display: "flex",
-							marginTop: "0.5em",
-						}}
-					>
-						<Typography
-							variant="subtitle1"
+							<Typography
+								variant="subtitle1"
+								style={{
+									opacity: 0.6,
+									width: "15%",
+								}}
+								noWrap
+							>
+								Written by
+							</Typography>
+							<Typography
+								variant="subtitle1"
+								style={{
+									width: "85%",
+								}}
+							>
+								{writers
+									.map((writer) => writer.Name)
+									.join(", ")}
+							</Typography>
+						</div>
+					)}
+					{directors.length > 0 && (
+						<div
 							style={{
-								opacity: 0.6,
-								width: "15%",
+								display: "flex",
+								marginTop: "0.5em",
 							}}
-							noWrap
 						>
-							Directed by
-						</Typography>
-						<Typography
-							variant="subtitle1"
+							<Typography
+								variant="subtitle1"
+								style={{
+									opacity: 0.6,
+									width: "15%",
+								}}
+								noWrap
+							>
+								Directed by
+							</Typography>
+							<Typography
+								variant="subtitle1"
+								style={{
+									width: "85%",
+								}}
+							>
+								{directors
+									.map((director) => director.Name)
+									.join(", ")}
+							</Typography>
+						</div>
+					)}
+					{artists.length > 0 && (
+						<div
 							style={{
-								maxWidth: "85%",
+								display: "flex",
+								marginTop: "0.5em",
 							}}
 						>
-							{directors
-								.map((director) => director.Name)
-								.join(", ")}
-						</Typography>
-					</div>
+							<Typography
+								variant="subtitle1"
+								style={{
+									opacity: 0.6,
+									width: "15%",
+								}}
+								noWrap
+							>
+								Artists
+							</Typography>
+							<Typography
+								variant="subtitle1"
+								style={{
+									width: "85%",
+								}}
+							>
+								{artists
+									.map((director) => director.Name)
+									.join(", ")}
+							</Typography>
+						</div>
+					)}
 				</div>
 			</div>
 		</div>
