@@ -486,26 +486,37 @@ const ItemDetail = () => {
 	const [currentAudioTrack, setCurrentAudioTrack] = useState("");
 	const [currentSubTrack, setCurrentSubTrack] = useState("");
 
+	const filterMediaStreamVideo = (source) => {
+		if (source.Type == MediaStreamType.Video) {
+			return true;
+		}
+		return false;
+	};
+	const filterMediaStreamAudio = (source) => {
+		if (source.Type == MediaStreamType.Audio) {
+			return true;
+		}
+		return false;
+	};
+	const filterMediaStreamSubtitle = (source) => {
+		if (source.Type == MediaStreamType.Subtitle) {
+			return true;
+		}
+		return false;
+	};
+
 	useEffect(() => {
 		if (item.isSuccess && !!item.data.MediaStreams) {
-			let videos = [];
-			let audios = [];
-			let subs = [];
-			for (let track of item.data.MediaStreams) {
-				switch (track.Type) {
-					case MediaStreamType.Video:
-						videos.push(track);
-						break;
-					case MediaStreamType.Audio:
-						audios.push(track);
-						break;
-					case MediaStreamType.Subtitle:
-						subs.push(track);
-						break;
-					default:
-						break;
-				}
-			}
+			let videos = item.data.MediaStreams.filter(
+				filterMediaStreamVideo,
+			);
+			console.log(videos);
+			let audios = item.data.MediaStreams.filter(
+				filterMediaStreamAudio,
+			);
+			let subs = item.data.MediaStreams.filter(
+				filterMediaStreamSubtitle,
+			);
 
 			setVideoTracks(videos);
 			setAudioTracks(audios);
@@ -591,6 +602,9 @@ const ItemDetail = () => {
 					queryKey={["item", id]}
 					writers={writers}
 					directors={directors}
+					videoTracks={videoTracks}
+					audioTracks={audioTracks}
+					subtitleTracks={subtitleTracks}
 				/>
 				<CardScroller
 					title="Cast & Crew"

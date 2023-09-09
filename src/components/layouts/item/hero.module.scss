@@ -47,4 +47,9 @@ $maskPercentage: 40%;
 			}
 		}
 	}
+	&-grid {
+		display: grid;
+		width: 100%;
+		grid-template-columns: 1fr 85%;
+	}
 }

@@ -1,13 +1,17 @@
 /** @format */
+import { useEffect, useState } from "react";
+import TextField from "@mui/material/TextField";
+import MenuItem from "@mui/material/MenuItem";
 import Chip from "@mui/material/Chip";
 import Stack from "@mui/material/Stack";
 import Typography from "@mui/material/Typography";
+import LinearProgress from "@mui/material/LinearProgress";
 
 import { BaseItemKind } from "@jellyfin/sdk/lib/generated-client";
 import { Card } from "../../card/card";
 import { MdiStar } from "../../icons/mdiStar";
 import { yellow } from "@mui/material/colors";
-import { endsAt, getRuntime } from "../../../utils/date/time";
+import { endsAt, getRuntime, getRuntimeFull } from "../../../utils/date/time";
 import LikeButton from "../../buttons/likeButton";
 import MarkPlayedButton from "../../buttons/markPlayedButton";
 import PlayButton from "../../buttons/playButton";
@@ -23,7 +27,19 @@ const Hero = ({
 	writers = [],
 	directors = [],
 	artists = [],
+	videoTracks = [],
+	audioTracks = [],
+	subtitleTracks = [],
 }) => {
+	const [currentVideoIndex, setCurrentVideoIndex] = useState("");
+	const [currentAudioIndex, setCurrentAudioIndex] = useState("");
+	const [currentSubtitleIndex, setCurrentSubtitleIndex] = useState("");
+
+	useEffect(() => {
+		setCurrentVideoIndex(videoTracks[0]?.Index);
+		setCurrentAudioIndex(audioTracks[0]?.Index);
+		setCurrentSubtitleIndex(subtitleTracks[0]?.Index);
+	}, [videoTracks, audioTracks, subtitleTracks]);
 	return (
 		<div
 			className="item-detail-hero"
@@ -204,6 +220,34 @@ const Hero = ({
 						{item.Genres.join(", ")}
 					</Typography>
 				</div>
+				{item.UserData?.PlayedPercentage > 0 && (
+					<div
+						style={{
+							display: "flex",
+							alignItems: "center",
+							gap: "0.5em",
+							margin: " 1em 0 0  0",
+						}}
+					>
+						<LinearProgress
+							variant="determinate"
+							value={item.UserData?.PlayedPercentage}
+							style={{
+								width: "50%",
+								borderRadius: "1em",
+							}}
+							color="white"
+						/>
+						<Typography variant="subtitle1" fontWeight={600}>
+							{getRuntimeFull(
+								item.RunTimeTicks -
+									item.UserData
+										.PlaybackPositionTicks,
+							)}{" "}
+							remaining
+						</Typography>
+					</div>
+				)}
 				<div
 					style={{
 						margin: "1em 0",
@@ -217,9 +261,9 @@ const Hero = ({
 						itemId={item.Id}
 						userId={userId}
 						itemType={item.Type}
-						currentAudioTrack={0}
-						currentSubTrack={0}
-						currentVideoTrack={0}
+						currentVideoTrack={currentVideoIndex}
+						currentAudioTrack={currentAudioIndex}
+						currentSubTrack={currentSubtitleIndex}
 						buttonProps={{
 							size: "large",
 						}}
@@ -239,6 +283,122 @@ const Hero = ({
 						isPlayed={item.UserData?.Played}
 						userId={userId}
 					/>
+				</div>
+
+				<div
+					style={{
+						display: "flex",
+						flexDirection: "column",
+						gap: "0.4em",
+						maxWidth: "60%",
+					}}
+				>
+					<div className="hero-grid">
+						<Typography
+							variant="subtitle1"
+							style={{
+								opacity: 0.6,
+							}}
+							noWrap
+						>
+							Video
+						</Typography>
+						<TextField
+							size="small"
+							value={currentVideoIndex}
+							select
+							onChange={(e) =>
+								setCurrentVideoIndex(e.target.value)
+							}
+							SelectProps={{
+								MenuProps: {
+									disableScrollLock: true,
+								},
+							}}
+						>
+							{videoTracks.map((track, index) => {
+								return (
+									<MenuItem
+										key={track.Index}
+										value={track.Index}
+									>
+										{track.DisplayTitle}
+									</MenuItem>
+								);
+							})}
+						</TextField>
+					</div>
+					<div className="hero-grid">
+						<Typography
+							variant="subtitle1"
+							style={{
+								opacity: 0.6,
+							}}
+							noWrap
+						>
+							Audio
+						</Typography>
+						<TextField
+							size="small"
+							value={currentAudioIndex}
+							select
+							onChange={(e) =>
+								setCurrentAudioIndex(e.target.value)
+							}
+							SelectProps={{
+								MenuProps: {
+									disableScrollLock: true,
+								},
+							}}
+						>
+							{audioTracks.map((track, index) => {
+								return (
+									<MenuItem
+										key={track.Index}
+										value={track.Index}
+									>
+										{track.DisplayTitle}
+									</MenuItem>
+								);
+							})}
+						</TextField>
+					</div>
+
+					<div className="hero-grid">
+						<Typography
+							variant="subtitle1"
+							style={{
+								opacity: 0.6,
+							}}
+							noWrap
+						>
+							Subtitle
+						</Typography>
+						<TextField
+							size="small"
+							value={currentSubtitleIndex}
+							select
+							onChange={(e) =>
+								setCurrentSubtitleIndex(e.target.value)
+							}
+							SelectProps={{
+								MenuProps: {
+									disableScrollLock: true,
+								},
+							}}
+						>
+							{subtitleTracks.map((track, index) => {
+								return (
+									<MenuItem
+										key={track.Index}
+										value={track.Index}
+									>
+										{track.DisplayTitle}
+									</MenuItem>
+								);
+							})}
+						</TextField>
+					</div>
 				</div>
 				<div
 					style={{
@@ -260,27 +420,17 @@ const Hero = ({
 					}}
 				>
 					{writers.length > 0 && (
-						<div
-							style={{
-								display: "flex",
-							}}
-						>
+						<div className="hero-grid">
 							<Typography
 								variant="subtitle1"
 								style={{
 									opacity: 0.6,
-									width: "15%",
 								}}
 								noWrap
 							>
 								Written by
 							</Typography>
-							<Typography
-								variant="subtitle1"
-								style={{
-									width: "85%",
-								}}
-							>
+							<Typography variant="subtitle1">
 								{writers
 									.map((writer) => writer.Name)
 									.join(", ")}
@@ -290,26 +440,20 @@ const Hero = ({
 					{directors.length > 0 && (
 						<div
 							style={{
-								display: "flex",
 								marginTop: "0.5em",
 							}}
+							className="hero-grid"
 						>
 							<Typography
 								variant="subtitle1"
 								style={{
 									opacity: 0.6,
-									width: "15%",
 								}}
 								noWrap
 							>
 								Directed by
 							</Typography>
-							<Typography
-								variant="subtitle1"
-								style={{
-									width: "85%",
-								}}
-							>
+							<Typography variant="subtitle1">
 								{directors
 									.map((director) => director.Name)
 									.join(", ")}
@@ -320,25 +464,19 @@ const Hero = ({
 						<div
 							style={{
 								display: "flex",
-								marginTop: "0.5em",
 							}}
+							className="hero-grid"
 						>
 							<Typography
 								variant="subtitle1"
 								style={{
 									opacity: 0.6,
-									width: "15%",
 								}}
 								noWrap
 							>
 								Artists
 							</Typography>
-							<Typography
-								variant="subtitle1"
-								style={{
-									width: "85%",
-								}}
-							>
+							<Typography variant="subtitle1">
 								{artists
 									.map((director) => director.Name)
 									.join(", ")}
