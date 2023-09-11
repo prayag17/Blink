@@ -80,10 +80,6 @@ const Hero = ({
 	const [currentSubtitleIndex, setCurrentSubtitleIndex] = useState("");
 
 	useEffect(() => {
-		console.error(
-			JSON.stringify([videoTracks, audioTracks, subtitleTracks]) +
-				`${new Date()}`,
-		);
 		if (!!videoTracks && !!audioTracks & !!subtitleTracks) {
 			setCurrentVideoIndex(videoTracks[0]?.Index);
 			setCurrentAudioIndex(audioTracks[0]?.Index);

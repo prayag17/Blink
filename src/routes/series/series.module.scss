@@ -1,0 +1,13 @@
+/** @format */
+
+.item-detail {
+	&-hero {
+		display: flex;
+		width: 100%;
+		gap: 2em;
+	}
+	&-primaryImage {
+		width: 26%;
+		flex-shrink: 0;
+	}
+}

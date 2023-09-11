@@ -66,15 +66,6 @@
 		},
 		"windows": [
 			{
-				"fullscreen": false,
-				"height": 600,
-				"width": 800,
-				"resizable": true,
-				"title": "JellyPlayer",
-				"visible": true,
-				"center": true
-			},
-			{
 				"width": 800,
 				"height": 300,
 				"center": true,
@@ -83,6 +74,16 @@
 				"url": "splash.html",
 				"label": "splashscreen",
 				"title": "JellyPlayer"
+			},
+
+			{
+				"fullscreen": false,
+				"height": 600,
+				"width": 800,
+				"resizable": true,
+				"title": "JellyPlayer",
+				"visible": false,
+				"center": true
 			}
 		]
 	}

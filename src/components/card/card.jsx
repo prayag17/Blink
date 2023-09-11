@@ -18,12 +18,39 @@ import { MdiCheck } from "../icons/mdiCheck";
 import LikeButton from "../buttons/likeButton";
 import MarkPlayedButton from "../buttons/markPlayedButton";
 import PlayButton from "../buttons/playButton";
+import { BaseItemKind } from "@jellyfin/sdk/lib/generated-client";
 
 const cardImageAspectRatios = {
 	thumb: 1.777,
 	portrait: 0.666,
 	square: 1,
 };
+
+const availableSpecialRoutes = [BaseItemKind.Series];
+
+/**
+ * @typedef {Object} Props
+ * @property {import("@jellyfin/sdk/lib/generated-client/models").BaseItemDto} item
+ * @property {string}  cardTitle
+ * @property {string | number}  cardCaption
+ * @property {string} imageType
+ * @property {string} imageBlurhash
+ * @property {string} cardType
+ * @property {Array} queryKey
+ * @property {string} userId
+ * @property {string} seriesId
+ * @property {boolean} hideText
+ * @property {() => {}} onClick
+ * @property {boolean} disableOverlay
+ * @property {boolean} disablePadding
+ * @property {any} overrideIcon
+ */
+
+/**
+ * @description Hero section for item pages
+ * @param {Props}
+ * @returns {React.Component}
+ */
 
 export const Card = ({
 	item,
@@ -42,7 +69,13 @@ export const Card = ({
 	overrideIcon,
 }) => {
 	const navigate = useNavigate();
-	const defaultOnClick = () => navigate(`/item/${item.Id}`);
+	const defaultOnClick = () => {
+		if (availableSpecialRoutes.includes(item.Type)) {
+			navigate(`/${item.Type.toLocaleLowerCase()}/${item.Id}`);
+		} else {
+			navigate(`/item/${item.Id}`);
+		}
+	};
 	return (
 		<CardActionArea
 			sx={{ padding: disablePadding ? 0 : 1, borderRadius: "10px" }}
@@ -229,20 +262,4 @@ export const Card = ({
 			</MuiCard>
 		</CardActionArea>
 	);
-};
-
-Card.propTypes = {
-	item: PropTypes.any.isRequired,
-	cardTitle: PropTypes.string,
-	cardCaption: PropTypes.any,
-	imageType: PropTypes.string,
-	imageBlurhash: PropTypes.string,
-	cardType: PropTypes.string,
-	queryKey: PropTypes.any,
-	userId: PropTypes.string.isRequired,
-	seriesId: PropTypes.string,
-	hideText: PropTypes.bool,
-	onClick: PropTypes.func,
-	disableOverlay: PropTypes.bool,
-	disablePadding: PropTypes.bool,
 };
