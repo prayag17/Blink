@@ -510,7 +510,6 @@ const ItemDetail = () => {
 			let videos = item.data.MediaStreams.filter(
 				filterMediaStreamVideo,
 			);
-			console.log(videos);
 			let audios = item.data.MediaStreams.filter(
 				filterMediaStreamAudio,
 			);
@@ -521,10 +520,6 @@ const ItemDetail = () => {
 			setVideoTracks(videos);
 			setAudioTracks(audios);
 			setSubtitleTracks(subs);
-
-			setCurrentVideoTrack(videos[0]?.Index);
-			setCurrentAudioTrack(audios[0]?.Index);
-			setCurrentSubTrack(subs[0]?.Index);
 		}
 	}, [item.isSuccess]);
 

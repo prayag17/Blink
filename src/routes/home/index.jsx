@@ -10,8 +10,6 @@ import { getUser, delUser } from "../../utils/storage/user";
 
 import "./home.module.scss";
 
-import Box from "@mui/material/Box";
-
 import Carousel from "../../components/carousel";
 
 // Custom Components
@@ -207,12 +205,12 @@ const Home = () => {
 
 	return (
 		<>
-			<Box
+			<div
 				component="main"
 				className="scrollY home"
-				sx={{
+				style={{
 					flexGrow: 1,
-					pb: 3,
+					paddingBottom: "3em",
 					position: "relative",
 				}}
 			>
@@ -243,10 +241,10 @@ const Home = () => {
 						}}
 					/>
 				)}
-				<Box
+				<div
 					className="padded-container"
-					sx={{
-						px: 3,
+					style={{
+						padding: "3em",
 					}}
 				>
 					{libraries.isLoading ? (
@@ -503,8 +501,8 @@ const Home = () => {
 							/>
 						);
 					})}
-				</Box>
-			</Box>
+				</div>
+			</div>
 		</>
 	);
 };

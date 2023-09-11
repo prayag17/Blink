@@ -3,7 +3,6 @@ import PropTypes from "prop-types";
 
 import { useNavigate } from "react-router-dom";
 
-import Box from "@mui/material/Box";
 import Stack from "@mui/material/Stack";
 import MuiCard from "@mui/material/Card";
 import CardActionArea from "@mui/material/CardActionArea";
@@ -71,63 +70,31 @@ export const Card = ({
 					justifyContent="center"
 					mr={1}
 				>
-					<Box
+					<div
 						className="card-image-container"
-						sx={{
+						style={{
 							aspectRatio: cardImageAspectRatios[cardType],
-							overflow: "hidden",
-							height: "auto",
-							width: "100%",
-							zIndex: 0,
 						}}
 					>
 						{!!item.UserData && (
 							<>
-								<Box
-									sx={{
-										position: "absolute",
-										top: "0.4em",
-										right: "0.4em",
-										zIndex: 2,
-										background:
-											"rgb(20 20 20 / 0.5)",
-										padding: "0.2em 0.75em",
-										display: "flex",
-										alignItems: "center",
-										justifyContent: "center",
-										borderRadius: "100px",
-										backdropFilter: "blur(5px)",
-										transition: "opacity 250ms",
+								<div
+									className="card-indicator check"
+									style={{
 										opacity: item.UserData?.Played
 											? 1
 											: 0,
-										boxShadow:
-											"0 0 5px rgb(0 0 0 / 0.2)",
 									}}
 								>
 									<MdiCheck />
-								</Box>
-								<Box
-									sx={{
-										position: "absolute",
-										top: "0.4em",
-										right: "0.4em",
-										zIndex: 2,
-										background:
-											"rgb(20 20 20 / 0.5)",
-										padding: "0.2em 0.75em",
-										display: "flex",
-										alignItems: "center",
-										justifyContent: "center",
-										borderRadius: "100px",
-										backdropFilter: "blur(5px)",
-										transition: "opacity 250ms",
-										opacity: item.UserData
+								</div>
+								<div
+									className={`card-indicator text`}
+									style={{
+										opacity: !!item.UserData
 											?.UnplayedItemCount
 											? 1
 											: 0,
-										boxShadow:
-											"0 0 5px rgb(0 0 0 / 0.2)",
 									}}
 								>
 									<Typography
@@ -140,7 +107,7 @@ export const Card = ({
 												?.UnplayedItemCount
 										}
 									</Typography>
-								</Box>
+								</div>
 							</>
 						)}
 						{!!imageBlurhash && (
@@ -153,11 +120,11 @@ export const Card = ({
 								className="card-image-blurhash"
 							/>
 						)}
-						<Box className="card-image-icon-container">
+						<div className="card-image-icon-container">
 							{!!overrideIcon
 								? TypeIconCollectionCard[overrideIcon]
 								: TypeIconCollectionCard[item.Type]}
-						</Box>
+						</div>
 						<img
 							src={
 								overrideIcon == "User"
@@ -184,7 +151,7 @@ export const Card = ({
 							className="card-image"
 						/>
 						{!disableOverlay && (
-							<Box className="card-overlay">
+							<div className="card-overlay">
 								<PlayButton
 									itemId={item.Id}
 									userId={userId}
@@ -214,9 +181,9 @@ export const Card = ({
 									queryKey={queryKey}
 									userId={userId}
 								/>
-							</Box>
+							</div>
 						)}
-						{Boolean(item.UserData?.PlayedPercentage) && (
+						{100 > item.UserData?.PlayedPercentage > 0 && (
 							<LinearProgress
 								variant="determinate"
 								value={item.UserData.PlayedPercentage}
@@ -234,10 +201,9 @@ export const Card = ({
 								color="primary"
 							/>
 						)}
-					</Box>
-					<Box
+					</div>
+					<div
 						className="card-text-container"
-						height="15%"
 						style={{ display: hideText ? "none" : "block" }}
 					>
 						<Typography
@@ -258,7 +224,7 @@ export const Card = ({
 						>
 							{cardCaption}
 						</Typography>
-					</Box>
+					</div>
 				</Stack>
 			</MuiCard>
 		</CardActionArea>

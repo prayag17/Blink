@@ -36,7 +36,6 @@ import DialogContentText from "@mui/material/DialogContentText";
 import DialogTitle from "@mui/material/DialogTitle";
 import Button from "@mui/material/Button";
 import Slide from "@mui/material/Slide";
-import Box from "@mui/material/Box";
 import LinearProgress from "@mui/material/LinearProgress";
 
 // Routes
@@ -381,7 +380,7 @@ function App() {
 						</Button>
 					</DialogActions>
 				</Dialog>
-				<Box className="app-backdrop-container">
+				<div className="app-backdrop-container">
 					<AnimatePresence>
 						<motion.img
 							key={backdropId}
@@ -407,7 +406,7 @@ function App() {
 							}}
 						/>
 					</AnimatePresence>
-				</Box>
+				</div>
 				<div
 					style={{
 						display: "flex",

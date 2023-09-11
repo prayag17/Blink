@@ -1,6 +1,8 @@
 /** @format */
 
 .carousel {
+	position: relative;
+	height: 100vh;
 	&-button {
 		position: absolute !important;
 		top: 50%;

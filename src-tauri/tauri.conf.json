@@ -71,7 +71,7 @@
 				"width": 800,
 				"resizable": true,
 				"title": "JellyPlayer",
-				"visible": false,
+				"visible": true,
 				"center": true
 			},
 			{

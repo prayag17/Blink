@@ -29,7 +29,7 @@ export const CarouselSkeleton = () => {
 					}}
 				></Skeleton>
 			</div>
-			<Box className="hero-carousel-detail">
+			<div className="hero-carousel-detail">
 				<Typography variant="h3" className="hero-carousel-text">
 					<Skeleton
 						variant="text"
@@ -46,7 +46,7 @@ export const CarouselSkeleton = () => {
 						animation="wave"
 					></Skeleton>
 				</Typography>
-			</Box>
+			</div>
 		</Paper>
 	);
 };

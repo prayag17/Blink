@@ -142,7 +142,7 @@ const PlayButton = ({
 				<LinearProgress
 					variant="determinate"
 					value={
-						!!itemUserData.PlayedPercentage
+						100 > itemUserData.PlayedPercentage > 0
 							? itemUserData.PlayedPercentage
 							: 0
 					}
@@ -159,7 +159,9 @@ const PlayButton = ({
 					}}
 					color="white"
 				/>
-				{itemUserData.PlayedPercentage > 0 ? "Resume" : "Play"}
+				{100 > itemUserData.PlayedPercentage > 0
+					? "Resume"
+					: "Play"}
 			</Button>
 		);
 	}

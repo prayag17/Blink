@@ -1,5 +1,7 @@
 /** @format */
-import { useEffect, useState } from "react";
+import PropTypes from "prop-types";
+
+import React, { useEffect, useState } from "react";
 import TextField from "@mui/material/TextField";
 import MenuItem from "@mui/material/MenuItem";
 import Chip from "@mui/material/Chip";
@@ -7,7 +9,11 @@ import Stack from "@mui/material/Stack";
 import Typography from "@mui/material/Typography";
 import LinearProgress from "@mui/material/LinearProgress";
 
-import { BaseItemKind } from "@jellyfin/sdk/lib/generated-client";
+// import { BaseItemDto } from "";
+// import { BaseItemPerson } from "@jellyfin/sdk/lib/generated-client/models/base-item-person";
+import { BaseItemKind } from "@jellyfin/sdk/lib/generated-client/models/base-item-kind";
+import { MediaStreamType } from "@jellyfin/sdk/lib/generated-client/models/media-stream-type";
+
 import { Card } from "../../card/card";
 import { MdiStar } from "../../icons/mdiStar";
 import { yellow } from "@mui/material/colors";
@@ -20,6 +26,22 @@ import "./hero.module.scss";
 import { Blurhash } from "react-blurhash";
 import { MediaTypeIconCollection } from "../../utils/iconsCollection";
 
+/**
+ * @typedef {Object} Props
+ * @property {import("@jellyfin/sdk/lib/generated-client/models").BaseItemDto} item
+ * @property {Array} queryKey
+ * @property {string} userId
+ * @property {import("@jellyfin/sdk/lib/generated-client/models").BaseItemPerson[]} writers
+ * @property {import("@jellyfin/sdk/lib/generated-client/models").BaseItemPerson[]} directors
+ * @property {import("@jellyfin/sdk/lib/generated-client/models").BaseItemPerson[]} artists
+ *
+ */
+
+/**
+ * @description Hero section for item pages
+ * @param {Props}
+ * @returns {React.Component}
+ */
 const Hero = ({
 	item,
 	queryKey,
@@ -27,19 +49,48 @@ const Hero = ({
 	writers = [],
 	directors = [],
 	artists = [],
-	videoTracks = [],
-	audioTracks = [],
-	subtitleTracks = [],
 }) => {
+	const filterMediaStreamVideo = (source) => {
+		if (source.Type == MediaStreamType.Video) {
+			return true;
+		}
+		return false;
+	};
+	const filterMediaStreamAudio = (source) => {
+		if (source.Type == MediaStreamType.Audio) {
+			return true;
+		}
+		return false;
+	};
+	const filterMediaStreamSubtitle = (source) => {
+		if (source.Type == MediaStreamType.Subtitle) {
+			return true;
+		}
+		return false;
+	};
+
+	const videoTracks = item.MediaStreams?.filter(filterMediaStreamVideo);
+	const audioTracks = item.MediaStreams?.filter(filterMediaStreamAudio);
+	const subtitleTracks = item.MediaStreams?.filter(
+		filterMediaStreamSubtitle,
+	);
+
 	const [currentVideoIndex, setCurrentVideoIndex] = useState("");
 	const [currentAudioIndex, setCurrentAudioIndex] = useState("");
 	const [currentSubtitleIndex, setCurrentSubtitleIndex] = useState("");
 
 	useEffect(() => {
-		setCurrentVideoIndex(videoTracks[0]?.Index);
-		setCurrentAudioIndex(audioTracks[0]?.Index);
-		setCurrentSubtitleIndex(subtitleTracks[0]?.Index);
+		console.error(
+			JSON.stringify([videoTracks, audioTracks, subtitleTracks]) +
+				`${new Date()}`,
+		);
+		if (!!videoTracks && !!audioTracks & !!subtitleTracks) {
+			setCurrentVideoIndex(videoTracks[0]?.Index);
+			setCurrentAudioIndex(audioTracks[0]?.Index);
+			setCurrentSubtitleIndex(subtitleTracks[0]?.Index);
+		}
 	}, [videoTracks, audioTracks, subtitleTracks]);
+
 	return (
 		<div
 			className="item-detail-hero"
@@ -220,7 +271,7 @@ const Hero = ({
 						{item.Genres.join(", ")}
 					</Typography>
 				</div>
-				{item.UserData?.PlayedPercentage > 0 && (
+				{100 > item.UserData?.PlayedPercentage > 0 && (
 					<div
 						style={{
 							display: "flex",
@@ -293,112 +344,123 @@ const Hero = ({
 						maxWidth: "60%",
 					}}
 				>
-					<div className="hero-grid">
-						<Typography
-							variant="subtitle1"
-							style={{
-								opacity: 0.6,
-							}}
-							noWrap
-						>
-							Video
-						</Typography>
-						<TextField
-							size="small"
-							value={currentVideoIndex}
-							select
-							onChange={(e) =>
-								setCurrentVideoIndex(e.target.value)
-							}
-							SelectProps={{
-								MenuProps: {
-									disableScrollLock: true,
-								},
-							}}
-						>
-							{videoTracks.map((track, index) => {
-								return (
-									<MenuItem
-										key={track.Index}
-										value={track.Index}
-									>
-										{track.DisplayTitle}
-									</MenuItem>
-								);
-							})}
-						</TextField>
-					</div>
-					<div className="hero-grid">
-						<Typography
-							variant="subtitle1"
-							style={{
-								opacity: 0.6,
-							}}
-							noWrap
-						>
-							Audio
-						</Typography>
-						<TextField
-							size="small"
-							value={currentAudioIndex}
-							select
-							onChange={(e) =>
-								setCurrentAudioIndex(e.target.value)
-							}
-							SelectProps={{
-								MenuProps: {
-									disableScrollLock: true,
-								},
-							}}
-						>
-							{audioTracks.map((track, index) => {
-								return (
-									<MenuItem
-										key={track.Index}
-										value={track.Index}
-									>
-										{track.DisplayTitle}
-									</MenuItem>
-								);
-							})}
-						</TextField>
-					</div>
-
-					<div className="hero-grid">
-						<Typography
-							variant="subtitle1"
-							style={{
-								opacity: 0.6,
-							}}
-							noWrap
-						>
-							Subtitle
-						</Typography>
-						<TextField
-							size="small"
-							value={currentSubtitleIndex}
-							select
-							onChange={(e) =>
-								setCurrentSubtitleIndex(e.target.value)
-							}
-							SelectProps={{
-								MenuProps: {
-									disableScrollLock: true,
-								},
-							}}
-						>
-							{subtitleTracks.map((track, index) => {
-								return (
-									<MenuItem
-										key={track.Index}
-										value={track.Index}
-									>
-										{track.DisplayTitle}
-									</MenuItem>
-								);
-							})}
-						</TextField>
-					</div>
+					{Boolean(videoTracks?.length) && (
+						<div className="hero-grid">
+							<Typography
+								variant="subtitle1"
+								style={{
+									opacity: 0.6,
+								}}
+								noWrap
+							>
+								Video
+							</Typography>
+							<TextField
+								size="small"
+								value={currentVideoIndex}
+								select
+								onChange={(e) =>
+									setCurrentVideoIndex(
+										e.target.value,
+									)
+								}
+								SelectProps={{
+									MenuProps: {
+										disableScrollLock: true,
+									},
+								}}
+							>
+								{videoTracks.map((track, index) => {
+									return (
+										<MenuItem
+											key={track.Index}
+											value={track.Index}
+										>
+											{track.DisplayTitle}
+										</MenuItem>
+									);
+								})}
+							</TextField>
+						</div>
+					)}
+					{Boolean(audioTracks?.length) && (
+						<div className="hero-grid">
+							<Typography
+								variant="subtitle1"
+								style={{
+									opacity: 0.6,
+								}}
+								noWrap
+							>
+								Audio
+							</Typography>
+							<TextField
+								size="small"
+								value={currentAudioIndex}
+								select
+								onChange={(e) =>
+									setCurrentAudioIndex(
+										e.target.value,
+									)
+								}
+								SelectProps={{
+									MenuProps: {
+										disableScrollLock: true,
+									},
+								}}
+							>
+								{audioTracks.map((track, index) => {
+									return (
+										<MenuItem
+											key={track.Index}
+											value={track.Index}
+										>
+											{track.DisplayTitle}
+										</MenuItem>
+									);
+								})}
+							</TextField>
+						</div>
+					)}
+					{Boolean(subtitleTracks?.length) && (
+						<div className="hero-grid">
+							<Typography
+								variant="subtitle1"
+								style={{
+									opacity: 0.6,
+								}}
+								noWrap
+							>
+								Subtitle
+							</Typography>
+							<TextField
+								size="small"
+								value={currentSubtitleIndex}
+								select
+								onChange={(e) =>
+									setCurrentSubtitleIndex(
+										e.target.value,
+									)
+								}
+								SelectProps={{
+									MenuProps: {
+										disableScrollLock: true,
+									},
+								}}
+							>
+								{subtitleTracks.map((track, index) => {
+									return (
+										<MenuItem
+											key={track.Index}
+											value={track.Index}
+										>
+											{track.DisplayTitle}
+										</MenuItem>
+									);
+								})}
+							</TextField>
+						</div>
+					)}
 				</div>
 				<div
 					style={{
@@ -432,7 +494,10 @@ const Hero = ({
 							</Typography>
 							<Typography variant="subtitle1">
 								{writers
-									.map((writer) => writer.Name)
+									.map(
+										(writer, index) =>
+											writer.Name,
+									)
 									.join(", ")}
 							</Typography>
 						</div>

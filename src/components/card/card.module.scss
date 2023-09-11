@@ -14,6 +14,9 @@
 			width: 100%;
 			border-radius: $border-radius-default;
 			box-shadow: 0 4px 8px rgb(0 0 0 / 0.2);
+			overflow: hidden;
+			height: auto;
+			z-index: 0;
 		}
 		&-icon {
 			position: absolute;
@@ -70,5 +73,25 @@
 		left: 50%;
 		transform: translate(-50%, -50%);
 		z-index: 1;
+	}
+	&-indicator {
+		position: absolute;
+		top: 0.4em;
+		right: 0.4em;
+		z-index: 2;
+		padding: 0.2em 0.75em;
+		background: rgb(20 20 20 / 0.5);
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		backdrop-filter: blur(5px);
+		transition: opacity 250ms;
+		border-radius: 100px;
+		box-shadow: 0 0 5px rgb(0 0 0 / 0.2);
+	}
+	&-text {
+		&-container {
+			height: 15%;
+		}
 	}
 }

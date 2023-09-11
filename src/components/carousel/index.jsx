@@ -2,7 +2,6 @@
 import { useEffect, useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 
-import Box from "@mui/material/Box";
 import IconButton from "@mui/material/IconButton";
 import { MdiChevronLeft } from "../icons/mdiChevronLeft";
 import { MdiChevronRight } from "../icons/mdiChevronRight";
@@ -27,7 +26,7 @@ const Carousel = ({ content, onChange }) => {
 	}, [currentSlide]);
 
 	return (
-		<Box className="carousel" position="relative" height="100vh">
+		<div className="carousel">
 			<IconButton
 				className="carousel-button left"
 				onClick={() => {
@@ -96,14 +95,14 @@ const Carousel = ({ content, onChange }) => {
 			>
 				<MdiChevronRight />
 			</IconButton>
-			<Box className="carousel-indicator-container">
-				<Box
+			<div className="carousel-indicator-container">
+				<div
 					className={
 						currentSlide == 0
 							? "carousel-indicator active"
 							: "carousel-indicator"
 					}
-					sx={{
+					style={{
 						background:
 							currentSlide == 0
 								? "white"
@@ -115,14 +114,14 @@ const Carousel = ({ content, onChange }) => {
 					}}
 				/>
 				{content.map((item, index) => (
-					<Box
+					<div
 						className={
 							currentSlide == index + 1
 								? "carousel-indicator active"
 								: "carousel-indicator"
 						}
 						key={index}
-						sx={{
+						style={{
 							background:
 								currentSlide == index + 1
 									? "white"
@@ -138,8 +137,8 @@ const Carousel = ({ content, onChange }) => {
 						}}
 					/>
 				))}
-			</Box>
-		</Box>
+			</div>
+		</div>
 	);
 };
 

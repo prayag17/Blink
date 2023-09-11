@@ -1,11 +1,10 @@
 /** @format */
-import { memo } from "react";
+import React, { memo } from "react";
 import { Blurhash } from "react-blurhash";
 
 import { motion } from "framer-motion";
 
 import Paper from "@mui/material/Paper";
-import Box from "@mui/material/Box";
 import Typography from "@mui/material/Typography";
 import Stack from "@mui/material/Stack";
 import Chip from "@mui/material/Chip";
@@ -20,21 +19,25 @@ import { MdiStar } from "../icons/mdiStar";
 import { endsAt, getRuntime } from "../../utils/date/time";
 import { useNavigate } from "react-router-dom";
 import { MediaTypeIconCollection } from "../utils/iconsCollection";
-import { MdiPlayOutline } from "../icons/mdiPlayOutline";
 import { MdiChevronRight } from "../icons/mdiChevronRight";
-import { MdiHeart } from "../icons/mdiHeart";
-import { MdiHeartOutline } from "../icons/mdiHeartOutline";
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { useQuery } from "@tanstack/react-query";
 
-import { getUserLibraryApi } from "@jellyfin/sdk/lib/utils/api/user-library-api";
 import { getUserApi } from "@jellyfin/sdk/lib/utils/api/user-api";
-import { useSnackbar } from "notistack";
 import LikeButton from "../buttons/likeButton";
 import MarkPlayedButton from "../buttons/markPlayedButton";
-import { theme } from "../../theme";
 import { useCarouselStore } from "../../utils/store/carousel";
 import PlayButton from "../buttons/playButton";
 
+/**
+ * @typedef {Object} Props
+ * @property {import("@jellyfin/sdk/lib/generated-client/models").BaseItemDto} item
+ */
+
+/**
+ * @description Carousel slide component
+ * @param {Props}
+ * @returns {React.Component}
+ */
 const CarouselSlide = ({ item }) => {
 	const navigate = useNavigate();
 
@@ -105,9 +108,7 @@ const CarouselSlide = ({ item }) => {
 						{MediaTypeIconCollection[item.Type]}
 					</div>
 				</div>
-				<Box
-					component={motion.div}
-					// variants={slideAnim}
+				<motion.div
 					initial={{
 						transform:
 							animationDirection == "right"
@@ -168,8 +169,8 @@ const CarouselSlide = ({ item }) => {
 						direction="row"
 						gap={1}
 						divider={
-							<Box
-								sx={{
+							<div
+								style={{
 									width: "4px",
 									height: "4px",
 									background: "white",
@@ -177,7 +178,7 @@ const CarouselSlide = ({ item }) => {
 									aspectRatio: 1,
 									borderRadius: "10px",
 								}}
-							></Box>
+							></div>
 						}
 						className="hero-carousel-info"
 					>
@@ -190,8 +191,8 @@ const CarouselSlide = ({ item }) => {
 							variant="filled"
 							label={item.OfficialRating ?? "Not Rated"}
 						/>
-						<Box
-							sx={{
+						<div
+							style={{
 								display: "flex",
 								gap: "0.25em",
 								alignItems: "center",
@@ -217,7 +218,7 @@ const CarouselSlide = ({ item }) => {
 									No Community Rating
 								</Typography>
 							)}
-						</Box>
+						</div>
 						{!!item.RunTimeTicks && (
 							<Typography variant="subtitle1">
 								{getRuntime(item.RunTimeTicks)}
@@ -293,7 +294,7 @@ const CarouselSlide = ({ item }) => {
 							/>
 						</Stack>
 					</Stack>
-				</Box>
+				</motion.div>
 			</Paper>
 		</ErrorBoundary>
 	);

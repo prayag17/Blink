@@ -113,10 +113,10 @@ export const AppBar = () => {
 						paddingLeft: "12px !important",
 					}}
 				>
-					<Box
-						sx={{
+					<div
+						style={{
 							display: "flex",
-							gap: 1,
+							gap: "1em",
 							alignItems: "center",
 						}}
 					>
@@ -149,8 +149,8 @@ export const AppBar = () => {
 						<IconButton>
 							<MdiMagnify />
 						</IconButton>
-					</Box>
-					<Box sx={{ display: "flex", gap: 2 }}>
+					</div>
+					<div style={{ display: "flex", gap: "2em" }}>
 						<IconButton disabled>
 							<MdiHeartOutline />
 						</IconButton>
@@ -215,7 +215,7 @@ export const AppBar = () => {
 								Remove Server
 							</MenuItem>
 						</Menu>
-					</Box>
+					</div>
 				</Toolbar>
 			</MuiAppBar>
 		);
