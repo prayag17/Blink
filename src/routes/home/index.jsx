@@ -210,7 +210,7 @@ const Home = () => {
 				className="scrollY home"
 				style={{
 					flexGrow: 1,
-					paddingBottom: "3em",
+					// paddingBottom: "3em",
 					position: "relative",
 				}}
 			>
@@ -244,7 +244,7 @@ const Home = () => {
 				<div
 					className="padded-container"
 					style={{
-						padding: "3em",
+						padding: "1em",
 					}}
 				>
 					{libraries.isLoading ? (
