@@ -9,9 +9,9 @@
 
 # ℹ️ Getting started
 
-- Install Nodejs and Rust.
+- Install Nodejs, pnpm and Rust.
   > **Note** : Install Rust from <https://www.rust-lang.org/learn/get-started>
-- install depencies using npm:
+- install depencies using pnpm:
 
   ```shell
   pnpm install
