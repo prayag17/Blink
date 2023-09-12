@@ -25,7 +25,7 @@ const cardImageAspectRatios = {
 	square: 1,
 };
 
-const availableSpecialRoutes = [BaseItemKind.Series, BaseItemKind.BoxSet];
+const availableSpecialRoutes = [BaseItemKind.Series];
 
 /**
  * @typedef {Object} Props

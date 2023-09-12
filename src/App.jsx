@@ -73,6 +73,7 @@ import { delUser, getUser } from "./utils/storage/user.js";
 import axios from "axios";
 import { useBackdropStore } from "./utils/store/backdrop.js";
 import { usePlaybackDataLoadStore } from "./utils/store/playback.js";
+import BoxSetTitlePage from "./routes/boxset/index.jsx";
 
 const jellyfin = new Jellyfin({
 	clientInfo: {
@@ -398,12 +399,13 @@ function App() {
 								opacity: 0,
 							}}
 							transition={{
-								duration: 0.6,
+								duration: 0.5,
+								ease: "easeInOut",
 							}}
 							onLoad={() => setBackdropLoading(false)}
 							loading="eager"
 							style={{
-								transition: "opacity 6s",
+								transition: "opacity 1s",
 							}}
 						/>
 					</AnimatePresence>
@@ -467,8 +469,8 @@ function App() {
 							/>
 							<Route
 								exact
-								path="/collection/:id"
-								element={<ItemDetail />}
+								path="/boxset/:id"
+								element={<BoxSetTitlePage />}
 							/>
 							<Route
 								exact
