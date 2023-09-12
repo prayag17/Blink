@@ -101,6 +101,27 @@ export const getRuntimeFull = (ticks) => {
 /**
  * @format
  * @param {number} ticks - C# ticks of a particular item
+ * @return {number} Converted ticks to Hhr Mmin formate
+ */
+export const getRuntimeCompact = (ticks) => {
+	let time = ticksToMs(ticks);
+	let formatedTime = "";
+	let timeSec = Math.floor(time / 1000);
+	let timeMin = Math.floor(timeSec / 60);
+	timeSec -= timeMin * 60;
+	if (timeMin > 60) {
+		let timeHr = Math.floor(timeMin / 60);
+		timeMin -= timeHr * 60;
+		formatedTime = `${timeHr}h ${timeMin}m`;
+	} else {
+		formatedTime = `${timeMin}m`;
+	}
+	return formatedTime;
+};
+
+/**
+ * @format
+ * @param {number} ticks - C# ticks of a particular item
  * @return {number} End time of an item
  */
 export const endsAt = (ticks) => {

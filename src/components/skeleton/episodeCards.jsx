@@ -53,13 +53,7 @@ export const EpisodeCardsSkeleton = () => {
 										animation="wave"
 									/>
 								</Typography>
-								<Typography variant="subtitle1" mb={1}>
-									<Skeleton
-										variant="text"
-										width="50%"
-										animation="wave"
-									/>
-								</Typography>
+
 								<Typography variant="body2">
 									<Skeleton
 										variant="text"
@@ -69,6 +63,7 @@ export const EpisodeCardsSkeleton = () => {
 										variant="text"
 										animation="wave"
 									/>
+
 									<Skeleton
 										variant="text"
 										animation="wave"

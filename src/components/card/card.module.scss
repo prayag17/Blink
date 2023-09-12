@@ -107,4 +107,9 @@
 			height: 15%;
 		}
 	}
+	&-episode {
+		.card-box {
+			height: unset !important;
+		}
+	}
 }

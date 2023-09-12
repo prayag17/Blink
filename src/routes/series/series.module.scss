@@ -10,4 +10,10 @@
 		width: 26%;
 		flex-shrink: 0;
 	}
+	&-episodes-container {
+		display: grid;
+		grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+		gap: 0.25em;
+		margin-top: 0.5em;
+	}
 }

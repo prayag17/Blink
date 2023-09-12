@@ -392,15 +392,17 @@ const SeriesTitlePage = () => {
 									}
 								</Typography>
 								<Chip
-									style={{
-										display: "flex",
-										alignItems: "center",
-										justifyContent: "center",
-									}}
 									label={
 										episodes.isLoading ? (
 											<CircularProgress
 												size={20}
+												style={{
+													display: "flex",
+													alignItems:
+														"center",
+													justifyContent:
+														"center",
+												}}
 											/>
 										) : (
 											episodes.data
@@ -437,6 +439,70 @@ const SeriesTitlePage = () => {
 							</TextField>
 						</div>
 						<Divider />
+						<div className="item-detail-episodes-container">
+							{episodes.isLoading ? (
+								<EpisodeCardsSkeleton />
+							) : (
+								episodes.data.Items.map(
+									(episode, index) => {
+										return (
+											<motion.div
+												key={episode.Id}
+												initial={{
+													transform:
+														"translateY(10px)",
+													opacity: 0,
+												}}
+												animate={{
+													opacity: 1,
+													transform:
+														"translateY(0px)",
+												}}
+												transition={{
+													delay:
+														index *
+														0.05,
+													duration: 0.2,
+													ease: "backInOut",
+												}}
+											>
+												<EpisodeCard
+													item={episode}
+													cardTitle={`${episode.IndexNumber}. ${episode.Name}`}
+													cardCaption={
+														episode.Overview
+													}
+													imageBlurhash={
+														episode
+															.ImageBlurHashes
+															?.Primary[
+															Object.keys(
+																episode
+																	.ImageBlurHashes
+																	.Primary,
+															)[0]
+														]
+													}
+													queryKey={[
+														"item",
+														id,
+														`season ${
+															currentSeason +
+															1
+														}`,
+														"episodes",
+													]}
+													userId={
+														user.data
+															.Id
+													}
+												/>
+											</motion.div>
+										);
+									},
+								)
+							)}
+						</div>
 					</div>
 				)}
 				{specialFeatures.isSuccess &&
@@ -485,90 +551,102 @@ const SeriesTitlePage = () => {
 							)}
 						</CardScroller>
 					)}
-				<CardScroller
-					title="Cast & Crew"
-					displayCards={8}
-					disableDecoration
-				>
-					{item.data.People.map((person, index) => {
-						return (
-							<Card
-								key={person.Id}
-								item={person}
-								cardTitle={person.Name}
-								cardCaption={person.Role}
-								cardType="square"
-								userId={user.data.Id}
-								imageBlurhash={
-									person.ImageBlurHashes?.Primary[0]
-								}
-								overrideIcon="Person"
-								disableOverlay
-							/>
-						);
-					})}
-				</CardScroller>
-				<CardScroller
-					title="More Like This"
-					displayCards={8}
-					disableDecoration
-				>
-					{similarItems.data.Items.map((similar, index) => {
-						return (
-							<Card
-								key={similar.Id}
-								item={similar}
-								seriesId={similar.SeriesId}
-								cardTitle={
-									similar.Type ==
-									BaseItemKind.Episode
-										? similar.SeriesName
-										: similar.Name
-								}
-								imageType={"Primary"}
-								cardCaption={
-									similar.Type ==
-									BaseItemKind.Episode
-										? `S${similar.ParentIndexNumber}:E${similar.IndexNumber} - ${similar.Name}`
-										: similar.Type ==
-										  BaseItemKind.Series
-										? `${
-												similar.ProductionYear
-										  } - ${
-												!!similar.EndDate
-													? new Date(
-															similar.EndDate,
-													  ).toLocaleString(
-															[],
-															{
-																year: "numeric",
-															},
-													  )
-													: "Present"
-										  }`
-										: similar.ProductionYear
-								}
-								cardType={
-									similar.Type ==
-										BaseItemKind.MusicAlbum ||
-									similar.Type == BaseItemKind.Audio
-										? "square"
-										: "portrait"
-								}
-								queryKey={["item", id, "similarItem"]}
-								userId={user.data.Id}
-								imageBlurhash={
-									similar.ImageBlurHashes?.Primary[
-										Object.keys(
-											similar.ImageBlurHashes
-												.Primary,
-										)[0]
-									]
-								}
-							/>
-						);
-					})}
-				</CardScroller>
+				{item.data.People.length > 0 && (
+					<CardScroller
+						title="Cast & Crew"
+						displayCards={8}
+						disableDecoration
+					>
+						{item.data.People.map((person, index) => {
+							return (
+								<Card
+									key={person.Id}
+									item={person}
+									cardTitle={person.Name}
+									cardCaption={person.Role}
+									cardType="square"
+									userId={user.data.Id}
+									imageBlurhash={
+										person.ImageBlurHashes
+											?.Primary[0]
+									}
+									overrideIcon="Person"
+									disableOverlay
+								/>
+							);
+						})}
+					</CardScroller>
+				)}
+				{similarItems.data.TotalRecordCount > 0 && (
+					<CardScroller
+						title="More Like This"
+						displayCards={8}
+						disableDecoration
+					>
+						{similarItems.data.Items.map((similar, index) => {
+							return (
+								<Card
+									key={similar.Id}
+									item={similar}
+									seriesId={similar.SeriesId}
+									cardTitle={
+										similar.Type ==
+										BaseItemKind.Episode
+											? similar.SeriesName
+											: similar.Name
+									}
+									imageType={"Primary"}
+									cardCaption={
+										similar.Type ==
+										BaseItemKind.Episode
+											? `S${similar.ParentIndexNumber}:E${similar.IndexNumber} - ${similar.Name}`
+											: similar.Type ==
+											  BaseItemKind.Series
+											? `${
+													similar.ProductionYear
+											  } - ${
+													!!similar.EndDate
+														? new Date(
+																similar.EndDate,
+														  ).toLocaleString(
+																[],
+																{
+																	year: "numeric",
+																},
+														  )
+														: "Present"
+											  }`
+											: similar.ProductionYear
+									}
+									cardType={
+										similar.Type ==
+											BaseItemKind.MusicAlbum ||
+										similar.Type ==
+											BaseItemKind.Audio
+											? "square"
+											: "portrait"
+									}
+									queryKey={[
+										"item",
+										id,
+										"similarItem",
+									]}
+									userId={user.data.Id}
+									imageBlurhash={
+										similar.ImageBlurHashes
+											?.Primary[
+											Object.keys(
+												similar
+													.ImageBlurHashes
+													.Primary,
+											)[0]
+										]
+									}
+								/>
+							);
+						})}
+					</CardScroller>
+				)}
 			</div>
 		);
 	}

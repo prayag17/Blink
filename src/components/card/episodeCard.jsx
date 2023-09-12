@@ -1,421 +1,218 @@
 /** @format */
-import React, { useState } from "react";
-import PropTypes from "prop-types";
-
 import { useNavigate } from "react-router-dom";
 
-import Divider from "@mui/material/Divider";
-import Stack from "@mui/material/Stack";
-import Box from "@mui/material/Box";
 import MuiCard from "@mui/material/Card";
-import CardContent from "@mui/material/CardContent";
-import CardMedia from "@mui/material/CardMedia";
 import CardActionArea from "@mui/material/CardActionArea";
 import Typography from "@mui/material/Typography";
 import LinearProgress from "@mui/material/LinearProgress";
-import Chip from "@mui/material/Chip";
-import ButtonGroup from "@mui/material/ButtonGroup";
-import IconButton from "@mui/material/IconButton";
+
 import { Blurhash } from "react-blurhash";
-import { green, pink } from "@mui/material/colors";
 
-import { TypeIconCollectionCard } from "../utils/iconsCollection";
-
-import { borderRadiusDefault } from "../../palette.module.scss";
 import "./card.module.scss";
 import { MdiCheck } from "../icons/mdiCheck";
 
-import { getPlaystateApi } from "@jellyfin/sdk/lib/utils/api/playstate-api";
-import { getUserLibraryApi } from "@jellyfin/sdk/lib/utils/api/user-library-api";
-import { MdiHeartOutline } from "../icons/mdiHeartOutline";
-import { MdiHeart } from "../icons/mdiHeart";
-import { endsAt, getRuntime } from "../../utils/date/time";
-import { MdiStarHalfFull } from "../icons/mdiStarHalfFull";
+import LikeButton from "../buttons/likeButton";
+import MarkPlayedButton from "../buttons/markPlayedButton";
+import PlayButton from "../buttons/playButton";
+import { BaseItemKind } from "@jellyfin/sdk/lib/generated-client";
+import { MdiTelevisionClassic } from "../icons/mdiTelevisionClassic";
+import { getRuntimeCompact } from "../../utils/date/time";
+
+const availableSpecialRoutes = [BaseItemKind.Series];
+
+/**
+ * @typedef {Object} Props
+ * @property {import("@jellyfin/sdk/lib/generated-client/models").BaseItemDto} item
+ * @property {string}  cardTitle
+ * @property {string | number}  cardCaption
+ * @property {string} imageBlurhash
+ * @property {Array} queryKey
+ * @property {string} userId
+ * @property {() => {}} onClick
+ */
+
+/**
+ * @description Hero section for item pages
+ * @param {Props}
+ * @returns {React.Component}
+ */
 
 export const EpisodeCard = ({
-	itemName,
-	itemRating,
-	itemTicks,
-	itemId,
-	imageTags,
-	subText = "",
-	playedPercent,
-	cardProps,
-	onClickEvent,
-	watchedStatus,
-	blurhash,
-	currentUser,
-	favourite,
-	showName,
-	episodeLocation,
-	centerAlignText = false,
-	parentId,
+	item,
+	cardTitle,
+	cardCaption,
+	imageBlurhash,
+	queryKey,
+	userId,
+	onClick,
 }) => {
 	const navigate = useNavigate();
-	const [imgLoaded, setImgLoaded] = useState(false);
-	const [isWatched, setIsWatched] = useState(watchedStatus);
-	const [isFavourite, setIsFavourite] = useState(favourite);
-	const handleMarkAsPlayOrUnMarkAsPlay = async () => {
-		let result;
-		if (!isWatched) {
-			result = await getPlaystateApi(window.api).markPlayedItem({
-				userId: currentUser.Id,
-				itemId: itemId,
-			});
-		} else if (isWatched) {
-			result = await getPlaystateApi(window.api).markUnplayedItem({
-				userId: currentUser.Id,
-				itemId: itemId,
-			});
+	const defaultOnClick = () => {
+		if (availableSpecialRoutes.includes(item.Type)) {
+			navigate(`/${item.Type.toLocaleLowerCase()}/${item.Id}`);
+		} else {
+			navigate(`/item/${item.Id}`);
 		}
-		setIsWatched(result.data.Played);
 	};
-	const handleLiking = async () => {
-		let result;
-		if (isFavourite) {
-			result = await getUserLibraryApi(window.api).unmarkFavoriteItem({
-				userId: currentUser.Id,
-				itemId: itemId,
-			});
-		} else if (!isFavourite) {
-			result = await getUserLibraryApi(window.api).markFavoriteItem({
-				userId: currentUser.Id,
-				itemId: itemId,
-			});
-		}
-		setIsFavourite(result.data.IsFavorite);
-	};
-
 	return (
-		<MuiCard
-			className="card landscape"
-			sx={{
-				background: "transparent",
-				borderRadius: borderRadiusDefault,
-				mr: 1,
-				mb: 0.5,
+		<CardActionArea
+			style={{
+				padding: "0.6em",
+				borderRadius: "calc(0.6em + 6px)",
 			}}
-			elevation={0}
-			{...cardProps}
+			className="card-container"
+			onClick={!!onClick ? onClick : defaultOnClick}
 		>
-			<CardActionArea
-				sx={{ p: "1px" }}
-				component="div"
-				onClick={
-					!!onClickEvent
-						? onClickEvent
-						: () => {
-								navigate(`/item/${itemId}`);
-						  }
-				}
-				className="cardBox"
-			>
-				<Box
-					className="card-media-container"
-					sx={{
-						position: "relative",
-						m: 1,
-						aspectRatio: "1.777",
-					}}
-				>
-					<>
-						<Chip
-							className="card-indicator"
-							label={<MdiCheck />}
-							sx={{
-								transition: "opacity 150ms",
-								opacity: isWatched ? 1 : 0,
-							}}
-						/>
-						<Box
-							className="card-media-image-container"
-							sx={{
-								opacity: imgLoaded ? 1 : 0,
-								transition: "opacity 250ms",
-							}}
-						>
-							{imageTags && (
-								<CardMedia
-									component="img"
-									image={
-										window.api.basePath +
-										"/Items/" +
-										itemId +
-										"/Images/Primary?fillHeight=300&fillWidth=532&quality=96"
-									}
-									alt={itemName}
-									sx={{
-										width: "100%",
-										aspectRatio: "1.777",
-										borderRadius:
-											borderRadiusDefault,
-										overflow: "hidden",
-									}}
-									onLoad={() => setImgLoaded(true)}
-									className="card-image"
-								></CardMedia>
-							)}
-						</Box>
-						{!!blurhash && (
-							<Blurhash
-								hash={blurhash}
-								width="100%"
-								height="100%"
-								resolutionX={12}
-								resolutionY={18}
+			<MuiCard className="card card-episode" elevation={0}>
+				<div className="card-box">
+					<div
+						className="card-image-container"
+						style={{
+							aspectRatio: 1.777,
+						}}
+					>
+						{!!item.UserData && (
+							<div
+								className="card-indicator check"
 								style={{
-									aspectRatio: "1.777",
+									opacity: item.UserData?.Played
+										? 1
+										: 0,
 								}}
+							>
+								<MdiCheck />
+							</div>
+						)}
+						{!!imageBlurhash && (
+							<Blurhash
+								hash={imageBlurhash}
+								width={128}
+								height={128}
+								resolutionX={24}
+								resolutionY={24}
 								className="card-image-blurhash"
 							/>
 						)}
 						<div className="card-image-icon-container">
-							{TypeIconCollectionCard["Episode"]}
+							<MdiTelevisionClassic className="card-image-icon" />
 						</div>
-						{!!playedPercent && (
+						<img
+							src={window.api.getItemImageUrl(
+								item.Id,
+								"Primary",
+								{
+									quality: 90,
+									fillHeight: 512,
+									fillWidth: 512,
+								},
+							)}
+							style={{
+								height: "100%",
+								width: "100%",
+								opacity: 0,
+							}}
+							loading="lazy"
+							onLoad={(e) => (e.target.style.opacity = 1)}
+							className="card-image"
+						/>
+
+						<div className="card-overlay">
+							<PlayButton
+								itemId={item.Id}
+								userId={userId}
+								itemType={item.Type}
+								currentAudioTrack={0}
+								currentSubTrack={0}
+								currentVideoTrack={0}
+								className="card-play-button"
+								iconProps={{
+									style: { fontSize: "2.5em" },
+								}}
+								iconOnly
+							/>
+							<LikeButton
+								itemId={item.Id}
+								itemName={item.Name}
+								isFavorite={item.UserData?.IsFavorite}
+								queryKey={queryKey}
+								userId={userId}
+							/>
+							<MarkPlayedButton
+								itemId={item.Id}
+								itemName={item.Name}
+								isPlayed={item.UserData.Played}
+								queryKey={queryKey}
+								userId={userId}
+							/>
+						</div>
+						{100 > item.UserData?.PlayedPercentage > 0 && (
 							<LinearProgress
 								variant="determinate"
-								value={playedPercent}
-								sx={{
-									width: "90%",
+								value={item.UserData.PlayedPercentage}
+								style={{
 									position: "absolute",
-									left: "5%",
-									bottom: "5%",
-									borderRadius: "100px",
-									height: "5px",
+									left: 0,
+									right: 0,
+									bottom: 0,
+									zIndex: 2,
+									height: "6px",
+									background:
+										"rgb(5 5 5 /  0.5) !important",
+									backdropFilter: "blur(5px)",
 								}}
-								color="white"
+								color="primary"
 							/>
 						)}
-					</>
-					<Box
-						className="card-media-overlay"
-						sx={{
-							display: "flex",
-							alignItems: "flex-end",
-							justifyContent: "flex-end",
-							p: 1,
-						}}
+					</div>
+					<div
+						className="card-text-container"
+						style={{ display: "block", marginTop: "0.5em" }}
 					>
-						<ButtonGroup>
-							<IconButton
-								onMouseDown={(e) => {
-									e.stopPropagation();
-									e.preventDefault();
-									handleMarkAsPlayOrUnMarkAsPlay();
-								}}
-							>
-								<MdiCheck
-									sx={{
-										color: isWatched
-											? green[200]
-											: "white",
-									}}
-								/>
-							</IconButton>
-							<IconButton
-								onMouseDown={(e) => {
-									e.stopPropagation();
-									e.preventDefault();
-									handleLiking();
-								}}
-							>
-								{isFavourite ? (
-									<MdiHeart
-										sx={{ color: pink[700] }}
-									/>
-								) : (
-									<MdiHeartOutline />
-								)}
-							</IconButton>
-						</ButtonGroup>
-					</Box>
-				</Box>
-
-				<CardContent
-					className="card-text-container"
-					sx={{
-						padding: "0 0.5em",
-						alignItems: "flex-start",
-						backgroundColor: "transparent",
-					}}
-				>
-					{!!showName && (
-						<>
-							<Typography
-								gutterBottom={false}
-								variant="h5"
-								component="div"
-								color="white"
-								fontWeight={500}
-								textAlign="left"
-								noWrap
-								width="fit-content"
-								maxWidth="100%"
-								onClick={(e) => {
-									e.stopPropagation();
-									navigate(`/item/${parentId}`);
-								}}
-								sx={{
-									"&:hover": {
-										textDecoration: "underline",
-									},
-								}}
-							>
-								{showName}
-								{" - "}
-								{episodeLocation}
-							</Typography>
-						</>
-					)}
-					<Box
-						sx={{
-							display: "flex",
-							opacity: !!showName ? 0.75 : 1,
-							justifyContent: "space-between",
-							alignItems: "center",
-						}}
-						width="100%"
-						mb={0.5}
-						mt={0.5}
-					>
-						<Typography
-							gutterBottom={false}
-							variant="h6"
-							component="div"
-							color="white"
-							fontWeight={500}
-							textAlign={
-								centerAlignText ? "center" : "left"
-							}
-							noWrap
-							width="fit-content"
-							maxWidth="100%"
+						<div
+							style={{
+								display: "flex",
+								alignItems: "center",
+								justifyContent: "space-between",
+								gap: "1em",
+							}}
 						>
-							{itemName}
-						</Typography>
-						{!!itemTicks && (
 							<Typography
-								gutterBottom={false}
-								variant="h6"
-								component="div"
-								color="white"
-								fontWeight={300}
-								textAlign="left"
-								noWrap
-								width="fit-content"
-								maxWidth="100%"
-								sx={{
-									opacity: 0.65,
-									flexShrink: 0,
-								}}
-							>
-								{getRuntime(itemTicks)}
-							</Typography>
-						)}
-					</Box>
-					<Stack
-						alignItems="flex-start"
-						width="100%"
-						direction="row"
-						gap={1}
-						divider={
-							<Divider
-								flexItem
-								orientation="vertical"
-								variant="middle"
-							/>
-						}
-						mb={1}
-					>
-						{!!itemRating && (
-							<Typography
-								gutterBottom={false}
 								variant="subtitle1"
-								component="div"
-								color="white"
-								fontWeight={300}
-								textAlign="left"
+								fontWeight={500}
 								noWrap
-								width="fit-content"
-								maxWidth="100%"
-								sx={{
-									opacity: 0.65,
-									display: "flex",
-									alignItems: "center",
-									justifyContent: "flex-start",
-								}}
+								textAlign="start"
+								style={{ opacity: 0.9 }}
 							>
-								<MdiStarHalfFull
-									sx={{
-										fontSize: "1.2em",
-										mr: "0.25em",
-									}}
-								/>{" "}
-								{Math.round(itemRating * 10) / 10}
+								{cardTitle}
 							</Typography>
-						)}
-						{!!itemTicks && (
 							<Typography
-								gutterBottom={false}
 								variant="subtitle1"
-								component="div"
-								color="white"
-								fontWeight={300}
-								textAlign="left"
+								fontWeight={500}
 								noWrap
-								width="fit-content"
-								maxWidth="100%"
-								sx={{
-									opacity: 0.65,
-									display: "flex",
-									alignItems: "center",
-									justifyContent: "flex-start",
-								}}
+								textAlign="start"
+								style={{ opacity: 0.8, flexShrink: 0 }}
 							>
-								{endsAt(itemTicks)}
+								{getRuntimeCompact(item.RunTimeTicks)}
 							</Typography>
-						)}
-					</Stack>
-					<Typography
-						gutterBottom
-						variant="body2"
-						component="div"
-						color="white"
-						textAlign="left"
-						width="fit-content"
-						maxWidth="100%"
-						sx={{
-							display: "-webkit-box",
-							overflow: "hidden",
-							WebkitBoxOrient: "vertical",
-							WebkitLineClamp: 3,
-							opacity: 0.45,
-						}}
-					>
-						{subText}
-					</Typography>
-				</CardContent>
-			</CardActionArea>
-		</MuiCard>
-	);
-};
+						</div>
 
-EpisodeCard.propTypes = {
-	itemName: PropTypes.string.isRequired,
-	itemId: PropTypes.string.isRequired,
-	imageTags: PropTypes.bool,
-	subText: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
-	playedPercent: PropTypes.number,
-	onClickEvent: PropTypes.func,
-	watchedStatus: PropTypes.bool,
-	blurhash: PropTypes.string,
-	currentUser: PropTypes.object,
-	favourite: PropTypes.bool,
-	showName: PropTypes.string,
-	episodeLocation: PropTypes.string,
-	itemTicks: PropTypes.number,
-	itemRating: PropTypes.number,
-	centerAlignText: PropTypes.bool,
-	parentId: PropTypes.any,
+						<Typography
+							variant="subtitle2"
+							textAlign="start"
+							style={{
+								opacity: 0.6,
+								display: "-webkit-box",
+								overflow: "hidden",
+								WebkitBoxOrient: "vertical",
+								WebkitLineClamp: 3,
+							}}
+							lineHeight="auto"
+						>
+							{cardCaption}
+						</Typography>
+					</div>
+				</div>
+			</MuiCard>
+		</CardActionArea>
+	);
 };

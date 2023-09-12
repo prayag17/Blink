@@ -177,7 +177,7 @@ export const Card = ({
 									currentVideoTrack={0}
 									className="card-play-button"
 									iconProps={{
-										sx: { fontSize: "2.5em" },
+										style: { fontSize: "2.5em" },
 									}}
 									iconOnly
 								/>
@@ -203,7 +203,7 @@ export const Card = ({
 							<LinearProgress
 								variant="determinate"
 								value={item.UserData.PlayedPercentage}
-								sx={{
+								style={{
 									position: "absolute",
 									left: 0,
 									right: 0,
@@ -227,7 +227,7 @@ export const Card = ({
 							fontWeight={500}
 							noWrap
 							textAlign="center"
-							sx={{ opacity: 0.9 }}
+							style={{ opacity: 0.9 }}
 						>
 							{cardTitle}
 						</Typography>
@@ -235,7 +235,7 @@ export const Card = ({
 							variant="subtitle2"
 							noWrap
 							textAlign="center"
-							sx={{ opacity: 0.6 }}
+							style={{ opacity: 0.6 }}
 							lineHeight="auto"
 						>
 							{cardCaption}
