@@ -188,6 +188,7 @@ const SeriesTitlePage = () => {
 				limit: 1,
 				parentId: item.data.Id,
 				disableFirstEpisode: true,
+				fields: [ItemFields.Overview],
 			});
 			return result.data;
 		},
@@ -301,7 +302,9 @@ const SeriesTitlePage = () => {
 					queryKey={["item", id]}
 					writers={writers}
 					directors={directors}
+					studios={item.data.Studios}
 				/>
+
 				{nextUpEpisode.isSuccess &&
 					nextUpEpisode.data.TotalRecordCount > 0 && (
 						<CardScroller
@@ -312,54 +315,33 @@ const SeriesTitlePage = () => {
 							{nextUpEpisode.data.Items.map(
 								(episode, index) => {
 									return (
-										<Card
-											key={episode.Id}
+										<EpisodeCard
 											item={episode}
-											cardTitle={episode.Name}
+											cardTitle={`${episode.IndexNumber}. ${episode.Name}`}
 											cardCaption={
-												episode.Role
+												episode.Overview
 											}
-											cardType="thumb"
-											userId={user.data.Id}
 											imageBlurhash={
 												episode
 													.ImageBlurHashes
-													?.Primary[0]
+													?.Primary[
+													Object.keys(
+														episode
+															.ImageBlurHashes
+															.Primary,
+													)[0]
+												]
 											}
-											// overrideIcon="Person"
-											// disableOverlay
-										/>
-									);
-								},
-							)}
-						</CardScroller>
-					)}
-				{nextUpEpisode.isSuccess &&
-					nextUpEpisode.data.TotalRecordCount > 0 && (
-						<CardScroller
-							title="Next Up"
-							displayCards={4}
-							disableDecoration
-						>
-							{nextUpEpisode.data.Items.map(
-								(episode, index) => {
-									return (
-										<Card
-											key={episode.Id}
-											item={episode}
-											cardTitle={episode.Name}
-											cardCaption={
-												episode.Role
-											}
-											cardType="thumb"
+											queryKey={[
+												"item",
+												id,
+												`season ${
+													currentSeason +
+													1
+												}`,
+												"episodes",
+											]}
 											userId={user.data.Id}
-											imageBlurhash={
-												episode
-													.ImageBlurHashes
-													?.Primary[0]
-											}
-											// overrideIcon="Person"
-											// disableOverlay
 										/>
 									);
 								},
@@ -514,6 +496,9 @@ const SeriesTitlePage = () => {
 						>
 							{specialFeatures.data.map(
 								(special, index) => {
+									console.log(
+										special.ImageBlurHashes,
+									);
 									return (
 										<Card
 											key={special.Id}
@@ -533,17 +518,6 @@ const SeriesTitlePage = () => {
 												"similarItem",
 											]}
 											userId={user.data.Id}
-											imageBlurhash={
-												special
-													.ImageBlurHashes
-													?.Primary[
-													Object.keys(
-														special
-															.ImageBlurHashes
-															.Primary,
-													)[0]
-												]
-											}
 											onClick={() => {}}
 										/>
 									);

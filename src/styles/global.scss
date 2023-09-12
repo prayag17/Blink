@@ -50,7 +50,7 @@ body {
 	top: 0;
 	left: 0;
 	z-index: -1;
-	filter: blur(100px) saturate(120%) contrast(110%);
+	filter: blur(60px) saturate(110%) contrast(110%);
 	&-container {
 		position: fixed;
 		width: 100vw;

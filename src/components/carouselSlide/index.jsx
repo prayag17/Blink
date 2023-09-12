@@ -112,8 +112,8 @@ const CarouselSlide = ({ item }) => {
 					initial={{
 						transform:
 							animationDirection == "right"
-								? "translateX(10%)"
-								: "translateX(-10%)",
+								? "translateX(40px)"
+								: "translateX(-40px)",
 						opacity: 0,
 					}}
 					animate={{
@@ -123,14 +123,14 @@ const CarouselSlide = ({ item }) => {
 					exit={{
 						transform:
 							animationDirection == "right"
-								? "translateX(-10%)"
-								: "translateX(10%)",
+								? "translateX(-40px)"
+								: "translateX(40px)",
 
 						opacity: 0,
 					}}
 					transition={{
 						duration: 0.25,
-						ease: "easeInOut",
+						ease: "anticipate",
 					}}
 					className="hero-carousel-detail"
 				>

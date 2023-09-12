@@ -44,6 +44,7 @@ import Home from "./routes/home";
 import { UserLogin, LoginWithImage, UserLoginManual } from "./routes/login";
 import LibraryView from "./routes/library";
 import ItemDetail from "./routes/item";
+import SeriesTitlePage from "./routes/series/index.jsx";
 import FavouritePage from "./routes/favourite/index.jsx";
 import Settings from "./routes/settings";
 import About from "./routes/about";
@@ -72,7 +73,6 @@ import { delUser, getUser } from "./utils/storage/user.js";
 import axios from "axios";
 import { useBackdropStore } from "./utils/store/backdrop.js";
 import { usePlaybackDataLoadStore } from "./utils/store/playback.js";
-import SeriesTitlePage from "./routes/series/index.jsx";
 
 const jellyfin = new Jellyfin({
 	clientInfo: {

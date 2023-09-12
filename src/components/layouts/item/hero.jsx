@@ -34,7 +34,7 @@ import { MediaTypeIconCollection } from "../../utils/iconsCollection";
  * @property {import("@jellyfin/sdk/lib/generated-client/models").BaseItemPerson[]} writers
  * @property {import("@jellyfin/sdk/lib/generated-client/models").BaseItemPerson[]} directors
  * @property {import("@jellyfin/sdk/lib/generated-client/models").BaseItemPerson[]} artists
- *
+ * @property {import("@jellyfin/sdk/lib/generated-client/models").NameGuidPair[]} studios
  */
 
 /**
@@ -49,6 +49,7 @@ const Hero = ({
 	writers = [],
 	directors = [],
 	artists = [],
+	studios = [],
 }) => {
 	const filterMediaStreamVideo = (source) => {
 		if (source.Type == MediaStreamType.Video) {
@@ -174,7 +175,7 @@ const Hero = ({
 							marginTop: "4em",
 						}}
 					>
-						<Typography variant="h3" fontWeight={600}>
+						<Typography variant="h2" fontWeight={300}>
 							{item.Name}
 						</Typography>
 					</div>
@@ -267,7 +268,7 @@ const Hero = ({
 						{item.Genres.join(", ")}
 					</Typography>
 				</div>
-				{100 > item.UserData?.PlayedPercentage > 0 && (
+				{item.UserData?.PlaybackPositionTicks > 0 && (
 					<div
 						style={{
 							display: "flex",
@@ -523,10 +524,10 @@ const Hero = ({
 					)}
 					{artists.length > 0 && (
 						<div
-							style={{
-								display: "flex",
-							}}
 							className="hero-grid"
+							style={{
+								marginTop: "0.5em",
+							}}
 						>
 							<Typography
 								variant="subtitle1"
@@ -539,7 +540,30 @@ const Hero = ({
 							</Typography>
 							<Typography variant="subtitle1">
 								{artists
-									.map((director) => director.Name)
+									.map((artist) => artist.Name)
+									.join(", ")}
+							</Typography>
+						</div>
+					)}
+					{studios.length > 0 && (
+						<div
+							className="hero-grid"
+							style={{
+								marginTop: "0.5em",
+							}}
+						>
+							<Typography
+								variant="subtitle1"
+								style={{
+									opacity: 0.6,
+								}}
+								noWrap
+							>
+								Airs On
+							</Typography>
+							<Typography variant="subtitle1">
+								{studios
+									.map((studio) => studio.Name)
 									.join(", ")}
 							</Typography>
 						</div>

@@ -199,7 +199,7 @@ export const Card = ({
 								/>
 							</div>
 						)}
-						{100 > item.UserData?.PlayedPercentage > 0 && (
+						{item.UserData?.PlaybackPositionTicks > 0 && (
 							<LinearProgress
 								variant="determinate"
 								value={item.UserData.PlayedPercentage}
