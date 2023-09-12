@@ -169,12 +169,13 @@ const SeriesTitlePage = () => {
 		queryKey: ["item", id, "seasons"],
 		queryFn: async () => {
 			const result = await getTvShowsApi(window.api).getSeasons({
+				userId: user.data.Id,
 				seriesId: item.data.Id,
 				isSpecialSeason: false,
 			});
 			return result.data;
 		},
-		enabled: item.isSuccess && item.data.Type == "Series",
+		enabled: item.isSuccess,
 		networkMode: "always",
 		refetchOnWindowFocus: true,
 	});
@@ -199,9 +200,10 @@ const SeriesTitlePage = () => {
 	const episodes = useQuery({
 		queryKey: ["item", id, `season ${currentSeason + 1}`, "episodes"],
 		queryFn: async () => {
-			const result = await getItemsApi(window.api).getItems({
+			const result = await getTvShowsApi(window.api).getEpisodes({
 				userId: user.data.Id,
-				parentId: seasons.data.Items[currentSeason].Id,
+				seriesId: item.data.Id,
+				seasonId: seasons.data.Items[currentSeason].Id,
 				fields: [ItemFields.SeasonUserData, "Overview"],
 				excludeLocationTypes: [LocationType.Virtual],
 			});
@@ -212,47 +214,19 @@ const SeriesTitlePage = () => {
 		refetchOnWindowFocus: true,
 	});
 
-	const [videoTracks, setVideoTracks] = useState([]);
-	const [audioTracks, setAudioTracks] = useState([]);
-	const [subtitleTracks, setSubtitleTracks] = useState([]);
-
-	const filterMediaStreamVideo = (source) => {
-		if (source.Type == MediaStreamType.Video) {
-			return true;
-		}
-		return false;
-	};
-	const filterMediaStreamAudio = (source) => {
-		if (source.Type == MediaStreamType.Audio) {
-			return true;
-		}
-		return false;
-	};
-	const filterMediaStreamSubtitle = (source) => {
-		if (source.Type == MediaStreamType.Subtitle) {
-			return true;
-		}
-		return false;
-	};
-
-	useEffect(() => {
-		if (item.isSuccess && !!item.data.MediaStreams) {
-			let videos = item.data.MediaStreams.filter(
-				filterMediaStreamVideo,
-			);
-			let audios = item.data.MediaStreams.filter(
-				filterMediaStreamAudio,
-			);
-			let subs = item.data.MediaStreams.filter(
-				filterMediaStreamSubtitle,
-			);
-
-			setVideoTracks(videos);
-			setAudioTracks(audios);
-			setSubtitleTracks(subs);
-		}
-	}, [item.isSuccess]);
-
+	const specialFeatures = useQuery({
+		queryKey: ["item", id, `specialFeatures`],
+		queryFn: async () => {
+			const result = await getUserLibraryApi(
+				window.api,
+			).getSpecialFeatures({
+				itemId: item.data.Id,
+				userId: user.data.Id,
+			});
+			return result.data;
+		},
+		enabled: item.isSuccess,
+	});
 	const [
 		setUrl,
 		setPosition,
@@ -327,9 +301,6 @@ const SeriesTitlePage = () => {
 					queryKey={["item", id]}
 					writers={writers}
 					directors={directors}
-					videoTracks={videoTracks}
-					audioTracks={audioTracks}
-					subtitleTracks={subtitleTracks}
 				/>
 				{nextUpEpisode.isSuccess &&
 					nextUpEpisode.data.TotalRecordCount > 0 && (
@@ -396,6 +367,124 @@ const SeriesTitlePage = () => {
 						</CardScroller>
 					)}
 
+				{seasons.isSuccess && (
+					<div className="item-series-seasons-container">
+						<div
+							style={{
+								display: "flex",
+								width: "100%",
+								alignItems: "center",
+								justifyContent: "space-between",
+								paddingBottom: " 0.5em",
+							}}
+						>
+							<div
+								style={{
+									display: "flex",
+									gap: "1em",
+								}}
+							>
+								<Typography variant="h5">
+									{
+										seasons.data.Items[
+											currentSeason
+										].Name
+									}
+								</Typography>
+								<Chip
+									style={{
+										display: "flex",
+										alignItems: "center",
+										justifyContent: "center",
+									}}
+									label={
+										episodes.isLoading ? (
+											<CircularProgress
+												size={20}
+											/>
+										) : (
+											episodes.data
+												.TotalRecordCount
+										)
+									}
+								></Chip>
+							</div>
+							<TextField
+								value={currentSeason}
+								onChange={(e) =>
+									setCurrentSeason(e.target.value)
+								}
+								select
+								SelectProps={{
+									MenuProps: {
+										disableScrollLock: true,
+									},
+								}}
+								size="small"
+							>
+								{seasons.data.Items.map(
+									(season, index) => {
+										return (
+											<MenuItem
+												key={season.Id}
+												value={index}
+											>
+												{season.Name}
+											</MenuItem>
+										);
+									},
+								)}
+							</TextField>
+						</div>
+						<Divider />
+					</div>
+				)}
+				{specialFeatures.isSuccess &&
+					specialFeatures.data.length > 0 && (
+						<CardScroller
+							title="Special Features"
+							displayCards={8}
+							disableDecoration
+						>
+							{specialFeatures.data.map(
+								(special, index) => {
+									return (
+										<Card
+											key={special.Id}
+											item={special}
+											seriesId={
+												special.SeriesId
+											}
+											cardTitle={special.Name}
+											imageType="Primary"
+											cardCaption={getRuntimeMusic(
+												special.RunTimeTicks,
+											)}
+											cardType="portrait"
+											queryKey={[
+												"item",
+												id,
+												"similarItem",
+											]}
+											userId={user.data.Id}
+											imageBlurhash={
+												special
+													.ImageBlurHashes
+													?.Primary[
+													Object.keys(
+														special
+															.ImageBlurHashes
+															.Primary,
+													)[0]
+												]
+											}
+											onClick={() => {}}
+										/>
+									);
+								},
+							)}
+						</CardScroller>
+					)}
 				<CardScroller
 					title="Cast & Crew"
 					displayCards={8}

@@ -75,9 +75,9 @@ const Hero = ({
 		filterMediaStreamSubtitle,
 	);
 
-	const [currentVideoIndex, setCurrentVideoIndex] = useState("");
-	const [currentAudioIndex, setCurrentAudioIndex] = useState("");
-	const [currentSubtitleIndex, setCurrentSubtitleIndex] = useState("");
+	const [currentVideoIndex, setCurrentVideoIndex] = useState(0);
+	const [currentAudioIndex, setCurrentAudioIndex] = useState(0);
+	const [currentSubtitleIndex, setCurrentSubtitleIndex] = useState(0);
 
 	useEffect(() => {
 		if (!!videoTracks && !!audioTracks & !!subtitleTracks) {

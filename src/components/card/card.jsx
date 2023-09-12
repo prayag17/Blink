@@ -3,7 +3,6 @@ import PropTypes from "prop-types";
 
 import { useNavigate } from "react-router-dom";
 
-import Stack from "@mui/material/Stack";
 import MuiCard from "@mui/material/Card";
 import CardActionArea from "@mui/material/CardActionArea";
 import Typography from "@mui/material/Typography";
@@ -78,31 +77,15 @@ export const Card = ({
 	};
 	return (
 		<CardActionArea
-			sx={{ padding: disablePadding ? 0 : 1, borderRadius: "10px" }}
+			style={{
+				padding: disablePadding ? 0 : "0.6em",
+				borderRadius: "calc(0.6em + 6px)",
+			}}
 			className="card-container"
 			onClick={!!onClick ? onClick : defaultOnClick}
 		>
-			<MuiCard
-				sx={{
-					height: "100%",
-					overflow: "visible",
-					alignItems: "flex-start",
-					background: "transparent",
-				}}
-				elevation={0}
-			>
-				<Stack
-					className="card"
-					sx={{
-						width: "100%",
-						height: "100%",
-						position: "relative",
-						overflow: "visible",
-					}}
-					direction="column"
-					justifyContent="center"
-					mr={1}
-				>
+			<MuiCard className="card" elevation={0}>
+				<div className="card-box">
 					<div
 						className="card-image-container"
 						style={{
@@ -258,7 +241,7 @@ export const Card = ({
 							{cardCaption}
 						</Typography>
 					</div>
-				</Stack>
+				</div>
 			</MuiCard>
 		</CardActionArea>
 	);
