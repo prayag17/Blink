@@ -53,4 +53,13 @@ $maskPercentage: 40%;
 		width: 100%;
 		grid-template-columns: 1fr 85%;
 	}
+
+	&-name-logo {
+		width: 8.3em;
+		height: 2.3em;
+		object-fit: contain;
+		object-position: left;
+		opacity: 0;
+		transition: opacity $transition-time-fast;
+	}
 }

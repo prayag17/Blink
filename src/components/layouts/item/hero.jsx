@@ -184,7 +184,21 @@ const Hero = ({
 						}}
 					>
 						<Typography variant="h2" fontWeight={300}>
-							{item.Name}
+							{!!item.ImageBlurHashes.Logo ? (
+								<img
+									src={
+										!!item.SeriesId
+											? `${window.api.basePath}/Items/${item.SeriesId}/Images/Logo`
+											: `${window.api.basePath}/Items/${item.Id}/Images/Logo`
+									}
+									className="hero-name-logo"
+									onLoad={(e) => {
+										e.target.style.opacity = 1;
+									}}
+								/>
+							) : (
+								item.Name
+							)}
 						</Typography>
 					</div>
 					{!disableInfoStrip && (
