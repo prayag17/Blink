@@ -559,7 +559,7 @@ const Hero = ({
 								}}
 								noWrap
 							>
-								Airs On
+								Studios
 							</Typography>
 							<Typography variant="subtitle1">
 								{studios

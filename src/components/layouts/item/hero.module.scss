@@ -42,7 +42,8 @@ $maskPercentage: 40%;
 		}
 		&-icon {
 			&-container {
-				background: $clr-gradient-dark;
+				background: url(../../../assets/herobg.png);
+				background-size: cover;
 				z-index: -1;
 			}
 		}

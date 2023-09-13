@@ -23,7 +23,7 @@ const Carousel = ({ content, onChange }) => {
 	]);
 	useEffect(() => {
 		onChange(currentSlide);
-	}, [currentSlide]);
+	}, [content[currentSlide].key]);
 
 	return (
 		<div className="carousel">

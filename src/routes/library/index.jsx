@@ -1035,16 +1035,20 @@ const LibraryView = () => {
 											],
 										]}
 										userId={user.data.Id}
-										// imageBlurhash={
-										// 	item.ImageBlurHashes
-										// 		?.Primary[
-										// 		Object.keys(
-										// 			item
-										// 				.ImageBlurHashes
-										// 				.Primary,
-										// 		)[0]
-										// 	]
-										// }
+										imageBlurhash={
+											Boolean(
+												item.ImageBlurHashes
+													?.Primary,
+											) &&
+											item.ImageBlurHashes
+												?.Primary[
+												Object.keys(
+													item
+														.ImageBlurHashes
+														.Primary,
+												)[0]
+											]
+										}
 									></Card>
 								</Grid2>
 							);

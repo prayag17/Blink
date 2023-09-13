@@ -99,7 +99,7 @@ event.on("set-api-accessToken", (serverAddress) => {
 
 const anim = {
 	initial: {
-		transform: "scale(0.99)",
+		transform: "scale(0.98)",
 		opacity: 0,
 	},
 	animate: {
@@ -107,7 +107,7 @@ const anim = {
 		opacity: 1,
 	},
 	exit: {
-		transform: "scale(0.99)",
+		transform: "sscale(1.02)",
 		opacity: 0,
 	},
 };
@@ -121,7 +121,8 @@ const AnimationWrapper = () => {
 			animate="animate"
 			exit="exit"
 			transition={{
-				duration: 0.35,
+				duration: 0.25,
+				ease: "easeInOut",
 			}}
 		>
 			<Outlet />

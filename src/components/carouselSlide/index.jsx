@@ -130,7 +130,7 @@ const CarouselSlide = ({ item }) => {
 					}}
 					transition={{
 						duration: 0.25,
-						ease: "anticipate",
+						ease: "easeInOut",
 					}}
 					className="hero-carousel-detail"
 				>

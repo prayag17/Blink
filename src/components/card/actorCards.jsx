@@ -51,7 +51,7 @@ const availableSpecialRoutes = [BaseItemKind.Series];
  * @returns {React.Component}
  */
 
-export const Card = ({
+export const ActorCard = ({
 	item,
 	cardTitle,
 	cardCaption,
