@@ -71,6 +71,7 @@ import { usePlaybackStore } from "../../utils/store/playback";
 import { Tooltip } from "@mui/material";
 import { useBackdropStore } from "../../utils/store/backdrop";
 import { ActorCard } from "../../components/card/actorCards";
+import { SeasonSelectorSkeleton } from "../../components/skeleton/seasonSelector";
 function TabPanel(props) {
 	const { children, value, index, ...other } = props;
 
@@ -350,7 +351,9 @@ const SeriesTitlePage = () => {
 						</CardScroller>
 					)}
 
-				{seasons.isSuccess && (
+				{seasons.isLoading ? (
+					<SeasonSelectorSkeleton />
+				) : (
 					<div className="item-series-seasons-container">
 						<div
 							style={{

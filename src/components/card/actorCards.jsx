@@ -99,9 +99,9 @@ export const ActorCard = ({
 								!!seriesId ? item.SeriesId : item.Id,
 								"Primary",
 								{
-									quality: 90,
-									fillHeight: 512,
-									fillWidth: 512,
+									quality: 80,
+									fillHeight: 448,
+									fillWidth: 448,
 								},
 							)}
 							style={{

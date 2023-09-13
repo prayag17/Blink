@@ -180,7 +180,10 @@ export const EpisodeCard = ({
 								variant="subtitle1"
 								fontWeight={500}
 								textAlign="start"
-								style={{ opacity: 0.9 }}
+								noWrap
+								style={{
+									opacity: 0.9,
+								}}
 							>
 								{cardTitle}
 							</Typography>

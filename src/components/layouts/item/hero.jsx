@@ -196,6 +196,8 @@ const Hero = ({
 						}
 						className="hero-carousel-info"
 						mt={1}
+						justifyItems="flex-start"
+						alignItems="center"
 					>
 						<Typography
 							style={{ opacity: "0.8" }}
