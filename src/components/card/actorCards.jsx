@@ -58,11 +58,7 @@ export const ActorCard = ({
 }) => {
 	const navigate = useNavigate();
 	const defaultOnClick = () => {
-		if (availableSpecialRoutes.includes(item.Type)) {
-			navigate(`/${item.Type.toLocaleLowerCase()}/${item.Id}`);
-		} else {
-			navigate(`/item/${item.Id}`);
-		}
+		navigate(`/person/${item.Id}`);
 	};
 	return (
 		<CardActionArea

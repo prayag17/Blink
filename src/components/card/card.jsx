@@ -71,6 +71,8 @@ export const Card = ({
 	const defaultOnClick = () => {
 		if (availableSpecialRoutes.includes(item.Type)) {
 			navigate(`/${item.Type.toLocaleLowerCase()}/${item.Id}`);
+		} else if (!!item.Role) {
+			navigate(`/person/${item.Id}`);
 		} else {
 			navigate(`/item/${item.Id}`);
 		}

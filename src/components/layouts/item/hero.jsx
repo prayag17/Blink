@@ -35,6 +35,10 @@ import { MediaTypeIconCollection } from "../../utils/iconsCollection";
  * @property {import("@jellyfin/sdk/lib/generated-client/models").BaseItemPerson[]} directors
  * @property {import("@jellyfin/sdk/lib/generated-client/models").BaseItemPerson[]} artists
  * @property {import("@jellyfin/sdk/lib/generated-client/models").NameGuidPair[]} studios
+ * @property {bool} disableInfoStrip
+ * @property {bool} disablePlayButton
+ * @property {bool} disableLikeButton
+ * @property {bool} disableMarkAsPlayedButton
  */
 
 /**
@@ -50,6 +54,10 @@ const Hero = ({
 	directors = [],
 	artists = [],
 	studios = [],
+	disableInfoStrip,
+	disablePlayButton,
+	disableLikeButton,
+	disableMarkAsPlayedButton,
 }) => {
 	const filterMediaStreamVideo = (source) => {
 		if (source.Type == MediaStreamType.Video) {
@@ -179,89 +187,95 @@ const Hero = ({
 							{item.Name}
 						</Typography>
 					</div>
-					<Stack
-						direction="row"
-						gap={1}
-						divider={
+					{!disableInfoStrip && (
+						<Stack
+							direction="row"
+							gap={1}
+							divider={
+								<div
+									style={{
+										width: "4px",
+										height: "4px",
+										background: "white",
+										alignSelf: "center",
+										aspectRatio: 1,
+										borderRadius: "10px",
+									}}
+								></div>
+							}
+							className="hero-carousel-info"
+							mt={1}
+							justifyItems="flex-start"
+							alignItems="center"
+						>
+							<Typography
+								style={{ opacity: "0.8" }}
+								variant="subtitle1"
+							>
+								{!!item.ProductionYear
+									? item.ProductionYear
+									: "Unknown"}
+							</Typography>
+							<Chip
+								variant="filled"
+								label={
+									item.OfficialRating ?? "Not Rated"
+								}
+							/>
 							<div
 								style={{
-									width: "4px",
-									height: "4px",
-									background: "white",
-									alignSelf: "center",
-									aspectRatio: 1,
-									borderRadius: "10px",
+									display: "flex",
+									gap: "0.25em",
+									alignItems: "center",
 								}}
-							></div>
-						}
-						className="hero-carousel-info"
-						mt={1}
-						justifyItems="flex-start"
-						alignItems="center"
-					>
-						<Typography
-							style={{ opacity: "0.8" }}
-							variant="subtitle1"
-						>
-							{!!item.ProductionYear
-								? item.ProductionYear
-								: "Unknown"}
-						</Typography>
-						<Chip
-							variant="filled"
-							label={item.OfficialRating ?? "Not Rated"}
-						/>
-						<div
-							style={{
-								display: "flex",
-								gap: "0.25em",
-								alignItems: "center",
-							}}
-							className="hero-carousel-info-rating"
-						>
-							{!!item.CommunityRating ? (
-								<>
-									<MdiStar
-										sx={{
-											color: yellow[700],
-										}}
-									/>
+								className="hero-carousel-info-rating"
+							>
+								{!!item.CommunityRating ? (
+									<>
+										<MdiStar
+											sx={{
+												color: yellow[700],
+											}}
+										/>
+										<Typography
+											style={{
+												opacity: "0.8",
+											}}
+											variant="subtitle1"
+										>
+											{Math.round(
+												item.CommunityRating *
+													10,
+											) / 10}
+										</Typography>
+									</>
+								) : (
 									<Typography
 										style={{ opacity: "0.8" }}
 										variant="subtitle1"
 									>
-										{Math.round(
-											item.CommunityRating *
-												10,
-										) / 10}
+										No Community Rating
 									</Typography>
-								</>
-							) : (
+								)}
+							</div>
+							{!!item.RunTimeTicks && (
 								<Typography
 									style={{ opacity: "0.8" }}
 									variant="subtitle1"
 								>
-									No Community Rating
+									{getRuntime(item.RunTimeTicks)}
 								</Typography>
 							)}
-						</div>
-						{!!item.RunTimeTicks && (
-							<Typography
-								style={{ opacity: "0.8" }}
-								variant="subtitle1"
-							>
-								{getRuntime(item.RunTimeTicks)}
-							</Typography>
-						)}
-						{!!item.RunTimeTicks && (
-							<Typography
-								style={{ opacity: "0.8" }}
-								variant="subtitle1"
-							>
-								{endsAt(item.RunTimeTicks)}
-							</Typography>
-						)}
-					</Stack>
+							{!!item.RunTimeTicks && (
+								<Typography
+									style={{ opacity: "0.8" }}
+									variant="subtitle1"
+								>
+									{endsAt(item.RunTimeTicks)}
+								</Typography>
+							)}
+						</Stack>
+					)}
 					<Typography
 						style={{ opacity: "0.8" }}
 						variant="subtitle1"
@@ -307,32 +321,38 @@ const Hero = ({
 					}}
 					className="item-button-container"
 				>
-					<PlayButton
-						itemId={item.Id}
-						userId={userId}
-						itemType={item.Type}
-						currentVideoTrack={currentVideoIndex}
-						currentAudioTrack={currentAudioIndex}
-						currentSubTrack={currentSubtitleIndex}
-						buttonProps={{
-							size: "large",
-						}}
-						itemUserData={item.UserData}
-					/>
-					<LikeButton
-						queryKey={["item", item.Id]}
-						itemId={item.Id}
-						itemName={item.Name}
-						isFavorite={item.UserData?.IsFavorite}
-						userId={userId}
-					/>
-					<MarkPlayedButton
-						queryKey={["item", item.Id]}
-						itemId={item.Id}
-						itemName={item.Name}
-						isPlayed={item.UserData?.Played}
-						userId={userId}
-					/>
+					{!disablePlayButton && (
+						<PlayButton
+							itemId={item.Id}
+							userId={userId}
+							itemType={item.Type}
+							currentVideoTrack={currentVideoIndex}
+							currentAudioTrack={currentAudioIndex}
+							currentSubTrack={currentSubtitleIndex}
+							buttonProps={{
+								size: "large",
+							}}
+							itemUserData={item.UserData}
+						/>
+					)}
+					{!disableLikeButton && (
+						<LikeButton
+							queryKey={["item", item.Id]}
+							itemId={item.Id}
+							itemName={item.Name}
+							isFavorite={item.UserData?.IsFavorite}
+							userId={userId}
+						/>
+					)}
+					{!disableMarkAsPlayedButton && (
+						<MarkPlayedButton
+							queryKey={["item", item.Id]}
+							itemId={item.Id}
+							itemName={item.Name}
+							isPlayed={item.UserData?.Played}
+							userId={userId}
+						/>
+					)}{" "}
 				</div>
 
 				<div
@@ -577,3 +597,10 @@ const Hero = ({
 };
 
 export default Hero;
+
+Hero.defaultProps = {
+	disableInfoStrip: false,
+	disablePlayButton: false,
+	disableLikeButton: false,
+	disableMarkAsPlayedButton: false,
+};

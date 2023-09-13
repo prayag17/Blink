@@ -74,6 +74,7 @@ import axios from "axios";
 import { useBackdropStore } from "./utils/store/backdrop.js";
 import { usePlaybackDataLoadStore } from "./utils/store/playback.js";
 import BoxSetTitlePage from "./routes/boxset/index.jsx";
+import PersonTitlePage from "./routes/person/index.jsx";
 
 const jellyfin = new Jellyfin({
 	clientInfo: {
@@ -476,7 +477,7 @@ function App() {
 							<Route
 								exact
 								path="/person/:id"
-								element={<ItemDetail />}
+								element={<PersonTitlePage />}
 							/>
 							<Route
 								path="/series/:id"
