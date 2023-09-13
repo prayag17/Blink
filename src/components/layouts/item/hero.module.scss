@@ -61,5 +61,6 @@ $maskPercentage: 40%;
 		object-position: left;
 		opacity: 0;
 		transition: opacity $transition-time-fast;
+		filter: drop-shadow(0px 4px 10px rgb(0 0 0 / 0.5));
 	}
 }
