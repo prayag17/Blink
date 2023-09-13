@@ -112,4 +112,10 @@
 			height: unset !important;
 		}
 	}
+
+	&-actor {
+		.card-image-container {
+			border-radius: 100% !important;
+		}
+	}
 }

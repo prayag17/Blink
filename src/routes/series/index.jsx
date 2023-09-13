@@ -70,6 +70,7 @@ import { MdiMusic } from "../../components/icons/mdiMusic";
 import { usePlaybackStore } from "../../utils/store/playback";
 import { Tooltip } from "@mui/material";
 import { useBackdropStore } from "../../utils/store/backdrop";
+import { ActorCard } from "../../components/card/actorCards";
 function TabPanel(props) {
 	const { children, value, index, ...other } = props;
 
@@ -542,7 +543,7 @@ const SeriesTitlePage = () => {
 					>
 						{item.data.People.map((person, index) => {
 							return (
-								<Card
+								<ActorCard
 									key={person.Id}
 									item={person}
 									cardTitle={person.Name}

@@ -179,7 +179,6 @@ export const EpisodeCard = ({
 							<Typography
 								variant="subtitle1"
 								fontWeight={500}
-								noWrap
 								textAlign="start"
 								style={{ opacity: 0.9 }}
 							>
