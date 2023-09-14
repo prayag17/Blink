@@ -1,4 +1,4 @@
-![Banner](https://github.com/prayag17/JellyPlayer/assets/55829513/2732202a-4976-415b-a351-8fc61f5670a4)
+![Banner](https://github.com/prayag17/JellyPlayer/assets/55829513/ce9c95d3-2e5c-46cc-995d-c9d8dca1ce1a)
 
 # 📝 Prerequisites
 
