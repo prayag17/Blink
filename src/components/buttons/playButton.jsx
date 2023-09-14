@@ -159,9 +159,7 @@ const PlayButton = ({
 					}}
 					color="white"
 				/>
-				{100 > itemUserData.PlayedPercentage > 0
-					? "Resume"
-					: "Play"}
+				{itemUserData.PlaybackPositionTicks > 0 ? "Resume" : "Play"}
 			</Button>
 		);
 	}
