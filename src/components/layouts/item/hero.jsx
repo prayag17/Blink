@@ -184,7 +184,7 @@ const Hero = ({
 						}}
 					>
 						<Typography variant="h2" fontWeight={300}>
-							{!!item.ImageBlurHashes.Logo ? (
+							{!!item.ImageTags.Logo ? (
 								<img
 									src={
 										!!item.SeriesId
