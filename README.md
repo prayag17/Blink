@@ -1,11 +1,11 @@
-![Banner](https://github.com/prayag17/JellyPlayer/assets/55829513/ce9c95d3-2e5c-46cc-995d-c9d8dca1ce1a)
+![Banner](https://github.com/prayag17/JellyPlayer/assets/55829513/a022ae71-5458-4d4e-a9ee-892824fde927)
 
 # 📝 Prerequisites
 
 - Nodejs (≥19.1.0)
 - Rust (≥1.66.1)
 - Visual Studio C++ Build tools
-- pnpm
+- [pnpm](https://pnpm.io/)
 
 # ℹ️ Getting started
 
