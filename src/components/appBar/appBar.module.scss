@@ -5,7 +5,7 @@
 		backdrop-filter $transition-time-fast,
 		box-shadow $transition-time-default !important;
 	&.backdropVisible {
-		background-color: $clr-background-dark-opacity-0_8;
+		background-color: $clr-background-dark-opacity-0_8 !important;
 		backdrop-filter: blur(30px);
 	}
 	&-avatar {
@@ -13,6 +13,9 @@
 		&-icon {
 			fill: url(#clr-gradient-default) !important;
 		}
+	}
+	&-logo {
+		height: 1.8em !important;
 	}
 }
 

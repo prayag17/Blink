@@ -11,8 +11,7 @@ import Chip from "@mui/material/Chip";
 import Button from "@mui/material/Button";
 
 import { yellow } from "@mui/material/colors";
-
-import { ErrorBoundary } from "react-error-boundary";
+import ErrorBoundary from "../errorBoundary";
 
 import CarouselSlideError from "../errors/carousel";
 import { MdiStar } from "../icons/mdiStar";

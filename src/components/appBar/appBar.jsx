@@ -35,6 +35,9 @@ import { useDrawerStore } from "../../utils/store/drawer";
 import { delServer } from "../../utils/storage/servers";
 import { delUser } from "../../utils/storage/user";
 import { MdiDelete } from "../icons/mdiDelete";
+
+import logo from "../../assets/logo.png";
+
 export const AppBar = () => {
 	const navigate = useNavigate();
 
@@ -100,7 +103,7 @@ export const AppBar = () => {
 	if (display) {
 		return (
 			<MuiAppBar
-				sx={{
+				style={{
 					backgroundColor: "transparent",
 					paddingRight: "0 !important",
 				}}
@@ -140,17 +143,11 @@ export const AppBar = () => {
 						>
 							<MdiArrowLeft />
 						</IconButton>
-
-						<TextField
-							variant="outlined"
-							placeholder="Search..."
-							size="small"
-						/>
-						<IconButton>
+					</div>
+					<div style={{ display: "flex", gap: "1.2em" }}>
+						<IconButton disabled>
 							<MdiMagnify />
 						</IconButton>
-					</div>
-					<div style={{ display: "flex", gap: "2em" }}>
 						<IconButton disabled>
 							<MdiHeartOutline />
 						</IconButton>
