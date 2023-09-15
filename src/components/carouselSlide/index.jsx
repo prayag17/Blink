@@ -26,6 +26,9 @@ import LikeButton from "../buttons/likeButton";
 import MarkPlayedButton from "../buttons/markPlayedButton";
 import { useCarouselStore } from "../../utils/store/carousel";
 import PlayButton from "../buttons/playButton";
+import { BaseItemKind } from "@jellyfin/sdk/lib/generated-client";
+
+const availableSpecialRoutes = [BaseItemKind.Series, BaseItemKind.BoxSet];
 
 /**
  * @typedef {Object} Props
@@ -48,6 +51,16 @@ const CarouselSlide = ({ item }) => {
 		},
 		networkMode: "always",
 	});
+
+	const handleMoreInfo = () => {
+		if (availableSpecialRoutes.includes(item.Type)) {
+			navigate(`/${item.Type.toLocaleLowerCase()}/${item.Id}`);
+		} else if (!!item.Role) {
+			navigate(`/person/${item.Id}`);
+		} else {
+			navigate(`/item/${item.Id}`);
+		}
+	};
 
 	const [animationDirection] = useCarouselStore((state) => [
 		state.direction,
@@ -272,7 +285,7 @@ const CarouselSlide = ({ item }) => {
 							color="white"
 							variant="outlined"
 							endIcon={<MdiChevronRight />}
-							onClick={() => navigate(`/item/${item.Id}`)}
+							onClick={handleMoreInfo}
 						>
 							More info
 						</Button>

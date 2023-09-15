@@ -71,6 +71,7 @@ import { usePlaybackStore } from "../../utils/store/playback";
 import { Tooltip } from "@mui/material";
 import { useBackdropStore } from "../../utils/store/backdrop";
 import { ActorCard } from "../../components/card/actorCards";
+
 function TabPanel(props) {
 	const { children, value, index, ...other } = props;
 
@@ -83,7 +84,7 @@ function TabPanel(props) {
 			{...other}
 			style={{ marginTop: "1em" }}
 		>
-			{value === index && <Box>{children}</Box>}
+			{value === index && <div>{children}</div>}
 		</div>
 	);
 }
@@ -103,9 +104,6 @@ function a11yProps(index) {
 
 const PersonTitlePage = () => {
 	const { id } = useParams();
-	const navigate = useNavigate();
-	const [primageImageLoaded, setPrimaryImageLoaded] = useState(false);
-	const [backdropImageLoaded, setBackdropImageLoaded] = useState(false);
 
 	const user = useQuery({
 		queryKey: ["user"],
@@ -131,104 +129,6 @@ const PersonTitlePage = () => {
 		refetchOnWindowFocus: true,
 	});
 
-	const similarItems = useQuery({
-		queryKey: ["item", id, "similarItem"],
-		queryFn: async () => {
-			let result;
-			if (item.data.Type == "Movie") {
-				result = await getLibraryApi(window.api).getSimilarMovies({
-					userId: user.data.Id,
-					itemId: item.data.Id,
-				});
-			} else if (item.data.Type == "Series") {
-				result = await getLibraryApi(window.api).getSimilarShows({
-					userId: user.data.Id,
-					itemId: item.data.Id,
-				});
-			} else if (item.data.Type == "MusicAlbum") {
-				result = await getLibraryApi(window.api).getSimilarAlbums({
-					userId: user.data.Id,
-					itemId: item.data.Id,
-				});
-			} else if (item.data.Type == "MusicArtist") {
-				result = await getLibraryApi(window.api).getSimilarArtists({
-					userId: user.data.Id,
-					itemId: item.data.Id,
-				});
-			} else {
-				result = await getLibraryApi(window.api).getSimilarItems({
-					userId: user.data.Id,
-					itemId: item.data.Id,
-				});
-			}
-			return result.data;
-		},
-		enabled: item.isSuccess,
-		networkMode: "always",
-		refetchOnWindowFocus: true,
-	});
-
-	const seasons = useQuery({
-		queryKey: ["item", id, "seasons"],
-		queryFn: async () => {
-			const result = await getTvShowsApi(window.api).getSeasons({
-				seriesId: item.data.Id,
-				isSpecialSeason: false,
-			});
-			return result.data;
-		},
-		enabled: item.isSuccess && item.data.Type == "Series",
-		networkMode: "always",
-		refetchOnWindowFocus: true,
-	});
-
-	const nextUpEpisode = useQuery({
-		queryKey: ["item", id, "nextUp"],
-		queryFn: async () => {
-			const result = await getTvShowsApi(window.api).getNextUp({
-				userId: user.data.Id,
-				limit: 1,
-				parentId: item.data.Id,
-				disableFirstEpisode: true,
-			});
-			return result.data;
-		},
-		enabled: item.isSuccess && item.data.Type == "Series",
-		networkMode: "always",
-		refetchOnWindowFocus: true,
-	});
-
-	const [currentSeason, setCurrentSeason] = useState(0);
-	const episodes = useQuery({
-		queryKey: ["item", id, `season ${currentSeason + 1}`, "episodes"],
-		queryFn: async () => {
-			const result = await getItemsApi(window.api).getItems({
-				userId: user.data.Id,
-				parentId: seasons.data.Items[currentSeason].Id,
-				fields: [ItemFields.SeasonUserData, "Overview"],
-				excludeLocationTypes: [LocationType.Virtual],
-			});
-			return result.data;
-		},
-		enabled: seasons.isSuccess,
-		networkMode: "always",
-		refetchOnWindowFocus: true,
-	});
-
-	const upcomingEpisodes = useQuery({
-		queryKey: ["item", id, "episode", "upcomingEpisodes"],
-		queryFn: async () => {
-			const result = await getItemsApi(window.api).getItems({
-				userId: user.data.Id,
-				parentId: item.data.ParentId,
-				startIndex: item.data.IndexNumber,
-			});
-			return result.data;
-		},
-		enabled: item.isSuccess && item.data.Type == BaseItemKind.Episode,
-		networkMode: "always",
-	});
-
 	const personMovies = useQuery({
 		queryKey: ["item", id, "personMovies"],
 		queryFn: async () => {
@@ -239,6 +139,7 @@ const PersonTitlePage = () => {
 				recursive: true,
 				sortBy: ["PremiereDate", "ProductionYear", "SortName"],
 				sortOrder: ["Descending"],
+				excludeLocationTypes: [LocationType.Virtual],
 			});
 			return result.data;
 		},
@@ -255,6 +156,7 @@ const PersonTitlePage = () => {
 				recursive: true,
 				sortBy: ["PremiereDate", "ProductionYear", "SortName"],
 				sortOrder: ["Descending"],
+				excludeLocationTypes: [LocationType.Virtual],
 			});
 			return result.data;
 		},
@@ -272,6 +174,7 @@ const PersonTitlePage = () => {
 				recursive: true,
 				sortBy: ["PremiereDate", "ProductionYear", "SortName"],
 				sortOrder: ["Descending"],
+				excludeLocationTypes: [LocationType.Virtual],
 			});
 			return result.data;
 		},
@@ -287,6 +190,7 @@ const PersonTitlePage = () => {
 				includeItemTypes: [BaseItemKind.Photo],
 				recursive: true,
 				sortBy: ["PremiereDate", "ProductionYear", "SortName"],
+				excludeLocationTypes: [LocationType.Virtual],
 			});
 			return result.data;
 		},
@@ -303,6 +207,7 @@ const PersonTitlePage = () => {
 				recursive: true,
 				fields: ["SeasonUserData", "Overview"],
 				sortBy: ["PremiereDate", "ProductionYear", "SortName"],
+				excludeLocationTypes: [LocationType.Virtual],
 			});
 			return result.data;
 		},
@@ -310,123 +215,35 @@ const PersonTitlePage = () => {
 		networkMode: "always",
 	});
 
-	const musicTracks = useQuery({
-		queryKey: ["item", id, "musicTracks"],
-		queryFn: async () => {
-			const result = await getItemsApi(window.api).getItems({
-				userId: user.data.Id,
-				parentId: item.data.Id,
-			});
-			return result.data;
-		},
-		enabled: item.isSuccess && item.data.Type == BaseItemKind.MusicAlbum,
-		networkMode: "always",
-	});
-
-	const artistDiscography = useQuery({
-		queryKey: ["item", id, "artist", "discography"],
-		queryFn: async () => {
-			const result = await getItemsApi(window.api).getItems({
-				albumArtistIds: [item.data.Id],
-				sortBy: ["PremiereDate", "ProductionYear", "SortName"],
-				sortOrder: [SortOrder.Descending],
-				recursive: true,
-				includeItemTypes: [BaseItemKind.MusicAlbum],
-				userId: user.data.Id,
-				fields: [ItemFields.Overview],
-			});
-			return result.data;
-		},
-		enabled: item.isSuccess && item.data.Type == BaseItemKind.MusicArtist,
-		networkMode: "always",
-	});
-
-	const artistSongs = useQuery({
-		queryKey: ["item", id, "artist", "songs"],
-		queryFn: async () => {
-			const result = await getItemsApi(window.api).getItems({
-				artistIds: [item.data.Id],
-				sortBy: ["PremiereDate", "ProductionYear", "SortName"],
-				sortOrder: [SortOrder.Descending],
-				recursive: true,
-				includeItemTypes: [BaseItemKind.Audio],
-				userId: user.data.Id,
-				fields: [ItemFields.Overview],
-			});
-			return result.data;
-		},
-		enabled: item.isSuccess && item.data.Type == BaseItemKind.MusicArtist,
-		networkMode: "always",
-	});
-
-	const artistAppearances = useQuery({
-		queryKey: ["item", id, "artist", "appearences"],
-		queryFn: async () => {
-			const result = await getItemsApi(window.api).getItems({
-				contributingArtistIds: [item.data.Id],
-				excludeItemIds: [item.data.Id],
-				sortBy: ["PremiereDate", "ProductionYear", "SortName"],
-				sortOrder: [SortOrder.Descending],
-				recursive: true,
-				includeItemTypes: [BaseItemKind.MusicAlbum],
-				userId: user.data.Id,
-			});
-			return result.data;
-		},
-		enabled: item.isSuccess && item.data.Type == BaseItemKind.MusicArtist,
-		networkMode: "always",
-	});
-
-	const handleMarkPlayedOrunPlayed = async () => {
-		let result;
-		if (!item.data.UserData.Played) {
-			result = await getPlaystateApi(window.api).markPlayedItem({
-				userId: user.data.Id,
-				itemId: item.data.Id,
-			});
-		} else if (item.data.UserData.Played) {
-			result = await getPlaystateApi(window.api).markUnplayedItem({
-				userId: user.data.Id,
-				itemId: item.data.Id,
-			});
-		}
-		item.refetch();
-	};
-	const handleLiking = async () => {
-		let result;
-		if (item.data.UserData.IsFavorite) {
-			result = await getUserLibraryApi(window.api).unmarkFavoriteItem({
-				userId: user.data.Id,
-				itemId: item.data.Id,
-			});
-		} else if (!item.data.UserData.IsFavorite) {
-			result = await getUserLibraryApi(window.api).markFavoriteItem({
-				userId: user.data.Id,
-				itemId: item.data.Id,
-			});
-		}
-		item.refetch();
-	};
-	const handleLikingTrack = async (track) => {
-		let result;
-		if (track.UserData.IsFavorite) {
-			result = await getUserLibraryApi(window.api).unmarkFavoriteItem({
-				userId: user.data.Id,
-				itemId: track.Id,
-			});
-		} else if (!track.UserData.IsFavorite) {
-			result = await getUserLibraryApi(window.api).markFavoriteItem({
-				userId: user.data.Id,
-				itemId: track.Id,
-			});
-		}
-		item.refetch();
-		musicTracks.refetch();
-	};
-
 	const [activePersonTab, setActivePersonTab] = useState(0);
 
-	const personTabs = ["Movies", "TV Shows", "Books", "Photos", "Episodes"];
+	const personTabs = [
+		{
+			title: "Movies",
+			data: personMovies,
+			queryKey: ["item", id, "personMovies"],
+		},
+		{
+			title: "TV Shows",
+			data: personShows,
+			queryKey: ["item", id, "personShows"],
+		},
+		{
+			title: "Books",
+			data: personBooks,
+			queryKey: ["item", id, "personBooks"],
+		},
+		{
+			title: "Photos",
+			data: personPhotos,
+			queryKey: ["item", id, "personPhotos"],
+		},
+		{
+			title: "Episodes",
+			data: personEpisodes,
+			queryKey: ["item", id, "personEpisodes"],
+		},
+	];
 
 	useEffect(() => {
 		if (
@@ -436,15 +253,15 @@ const PersonTitlePage = () => {
 			personPhotos.isSuccess &&
 			personEpisodes.isSuccess
 		) {
-			if (personMovies.data.Items.length != 0) {
+			if (personMovies.data.TotalRecordCount != 0) {
 				setActivePersonTab(0);
-			} else if (personShows.data.Items.length != 0) {
+			} else if (personShows.data.TotalRecordCount != 0) {
 				setActivePersonTab(1);
-			} else if (personBooks.data.Items.length != 0) {
+			} else if (personBooks.data.TotalRecordCount != 0) {
 				setActivePersonTab(2);
-			} else if (personPhotos.data.Items.length != 0) {
+			} else if (personPhotos.data.TotalRecordCount != 0) {
 				setActivePersonTab(3);
-			} else if (personEpisodes.data.Items.length != 0) {
+			} else if (personEpisodes.data.TotalRecordCount != 0) {
 				setActivePersonTab(4);
 			}
 		}
@@ -455,97 +272,10 @@ const PersonTitlePage = () => {
 		personPhotos.isLoading,
 		personEpisodes.isLoading,
 	]);
-
-	const artistTabs = ["Discography", "Songs", "Appearances"];
-	const [activeArtistTab, setActiveArtistTab] = useState(0);
-
-	useEffect(() => {
-		if (
-			artistDiscography.isSuccess &&
-			artistSongs.isSuccess &&
-			artistAppearances.isSuccess
-		) {
-			if (artistDiscography.data.TotalRecordCount != 0) {
-				setActivePersonTab(0);
-			} else if (artistSongs.data.TotalRecordCount != 0) {
-				setActivePersonTab(1);
-			} else if (artistAppearances.data.TotalRecordCount != 0) {
-				setActivePersonTab(2);
-			}
-		}
-	}, [
-		artistDiscography.isLoading,
-		artistSongs.isLoading,
-		artistAppearances.isLoading,
-	]);
-
-	const [videoTracks, setVideoTracks] = useState([]);
-	const [audioTracks, setAudioTracks] = useState([]);
-	const [subtitleTracks, setSubtitleTracks] = useState([]);
-
-	const [currentVideoTrack, setCurrentVideoTrack] = useState("");
-	const [currentAudioTrack, setCurrentAudioTrack] = useState("");
-	const [currentSubTrack, setCurrentSubTrack] = useState("");
-
-	const filterMediaStreamVideo = (source) => {
-		if (source.Type == MediaStreamType.Video) {
-			return true;
-		}
-		return false;
-	};
-	const filterMediaStreamAudio = (source) => {
-		if (source.Type == MediaStreamType.Audio) {
-			return true;
-		}
-		return false;
-	};
-	const filterMediaStreamSubtitle = (source) => {
-		if (source.Type == MediaStreamType.Subtitle) {
-			return true;
-		}
-		return false;
-	};
-
-	useEffect(() => {
-		if (item.isSuccess && !!item.data.MediaStreams) {
-			let videos = item.data.MediaStreams.filter(
-				filterMediaStreamVideo,
-			);
-			let audios = item.data.MediaStreams.filter(
-				filterMediaStreamAudio,
-			);
-			let subs = item.data.MediaStreams.filter(
-				filterMediaStreamSubtitle,
-			);
-
-			setVideoTracks(videos);
-			setAudioTracks(audios);
-			setSubtitleTracks(subs);
-		}
-	}, [item.isSuccess]);
-
-	const [
-		setUrl,
-		setPosition,
-		setDuration,
-		setItemId,
-		setItemName,
-		setSubtitleTracksStore,
-		setSelectedSubtitleTrack,
-	] = usePlaybackStore((state) => [
-		state.setUrl,
-		state.setPosition,
-		state.setDuration,
-		state.setItemId,
-		state.setItemName,
-		state.setSubtitleTracks,
-		state.setSelectedSubtitleTrack,
-	]);
-
 	const [setAppBackdrop] = useBackdropStore((state) => [state.setBackdrop]);
 
-	const [directors, setDirectors] = useState([]);
-	const [writers, setWriters] = useState([]);
+	const [animationDirection, setAnimationDirection] = useState("forward");
+
 	useEffect(() => {
 		if (item.isSuccess) {
 			setAppBackdrop(
@@ -555,18 +285,10 @@ const PersonTitlePage = () => {
 					: `${window.api.basePath}/Items/${item.data.Id}/Images/Backdrop`,
 				item.data.Id,
 			);
-			let direTp = item.data.People.filter(
-				(itm) => itm.Type == "Director",
-			);
-			setDirectors(direTp);
-			let writeTp = item.data.People.filter(
-				(itm) => itm.Type == "Writer",
-			);
-			setWriters(writeTp);
 		}
 	}, [item.isSuccess]);
 
-	if (item.isLoading || similarItems.isLoading) {
+	if (item.isLoading) {
 		return (
 			<Box
 				sx={{
@@ -581,7 +303,7 @@ const PersonTitlePage = () => {
 			</Box>
 		);
 	}
-	if (item.isSuccess && similarItems.isSuccess) {
+	if (item.isSuccess) {
 		return (
 			<div
 				className="scrollY"
@@ -601,10 +323,156 @@ const PersonTitlePage = () => {
 					disableLikeButton
 					disableMarkAsPlayedButton
 				/>
+				<div className="item-detail-person-container">
+					<div className="item-detail-person-header">
+						<Tabs
+							variant="scrollable"
+							value={activePersonTab}
+							onChange={(e, newVal) => {
+								if (newVal > activePersonTab) {
+									setAnimationDirection("forward");
+								} else if (newVal < activePersonTab) {
+									setAnimationDirection("backwards");
+								}
+								setActivePersonTab(newVal);
+							}}
+						>
+							{personTabs.map((tab, index) => {
+								return (
+									<Tab
+										key={index}
+										label={tab.title}
+										disabled={
+											tab.data.data
+												?.TotalRecordCount ==
+											0
+										}
+									/>
+								);
+							})}
+						</Tabs>
+						<Divider />
+					</div>
+					<AnimatePresence>
+						{personTabs.map((tab, index) => {
+							return (
+								<TabPanel
+									value={activePersonTab}
+									index={index}
+									key={tab.title}
+								>
+									<motion.div
+										className={`item-detail-person-cards ${
+											tab.title == "Movies" ||
+											tab.title ==
+												"TV Shows" ||
+											tab.title == "Books"
+												? `col-8`
+												: `col-4`
+										}`}
+										key={tab.queryKey}
+										initial={{
+											opacity: 0,
+											transform:
+												animationDirection ==
+												"forward"
+													? "translate(30px)"
+													: "translate(-30px)",
+										}}
+										animate={{
+											opacity: 1,
+											transform:
+												"translate(0px)",
+										}}
+										transition={{
+											duration: 0.2,
+											ease: "anticipate",
+										}}
+									>
+										{tab.data.isSuccess &&
+											tab.data.data.Items.map(
+												(
+													tabitem,
+													index,
+												) => {
+													return (
+														<Card
+															key={
+																tabitem.Id
+															}
+															item={
+																tabitem
+															}
+															cardTitle={
+																tabitem.Type ==
+																BaseItemKind.Episode
+																	? tabitem.SeriesName
+																	: tabitem.Name
+															}
+															imageType={
+																"Primary"
+															}
+															cardCaption={
+																tabitem.Type ==
+																BaseItemKind.Episode
+																	? `S${tabitem.ParentIndexNumber}:E${tabitem.IndexNumber} - ${tabitem.Name}`
+																	: tabitem.Type ==
+																	  BaseItemKind.Series
+																	? `${
+																			tabitem.ProductionYear
+																	  } - ${
+																			!!tabitem.EndDate
+																				? new Date(
+																						tabitem.EndDate,
+																				  ).toLocaleString(
+																						[],
+																						{
+																							year: "numeric",
+																						},
+																				  )
+																				: "Present"
+																	  }`
+																	: tabitem.ProductionYear
+															}
+															cardType={
+																tabitem.Type ==
+																BaseItemKind.Episode
+																	? "thumb"
+																	: "portrait"
+															}
+															queryKey={
+																tab.queryKey
+															}
+															userId={
+																user
+																	.data
+																	.Id
+															}
+															imageBlurhash={
+																tabitem
+																	.ImageBlurHashes
+																	?.Primary[
+																	Object.keys(
+																		tabitem
+																			.ImageBlurHashes
+																			.Primary,
+																	)[0]
+																]
+															}
+														/>
+													);
+												},
+											)}
+									</motion.div>
+								</TabPanel>
+							);
+						})}
+					</AnimatePresence>
+				</div>
 			</div>
 		);
 	}
-	if (item.isError || similarItems.isError) {
+	if (item.isError) {
 		return <ErrorNotice />;
 	}
 };

@@ -1,0 +1,22 @@
+/** @format */
+
+.item-detail-person {
+	&-container {
+		position: relative;
+		width: 100%;
+	}
+	&-header {
+		width: 100%;
+	}
+	&-cards {
+		display: grid;
+		align-items: start;
+	}
+}
+
+.col-8 {
+	grid-template-columns: repeat(8, minmax(0, 1fr));
+}
+.col-4 {
+	grid-template-columns: repeat(4, minmax(0, 1fr));
+}
