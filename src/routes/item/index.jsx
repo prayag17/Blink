@@ -684,6 +684,8 @@ const ItemDetail = () => {
 									]}
 									userId={user.data.Id}
 									imageBlurhash={
+										!!similar.ImageBlurHashes
+											?.Primary &&
 										similar.ImageBlurHashes
 											?.Primary[
 											Object.keys(

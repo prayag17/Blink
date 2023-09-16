@@ -449,6 +449,9 @@ const PersonTitlePage = () => {
 																	.Id
 															}
 															imageBlurhash={
+																!!tabitem
+																	.ImageBlurHashes
+																	?.Primary &&
 																tabitem
 																	.ImageBlurHashes
 																	?.Primary[

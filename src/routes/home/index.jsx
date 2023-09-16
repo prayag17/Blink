@@ -270,6 +270,9 @@ const Home = () => {
 													)
 												}
 												imageBlurhash={
+													!!item
+														.ImageBlurHashes
+														?.Primary &&
 													item
 														.ImageBlurHashes
 														?.Primary[
@@ -346,6 +349,9 @@ const Home = () => {
 											]}
 											userId={user.data.Id}
 											imageBlurhash={
+												!!item
+													.ImageBlurHashes
+													?.Primary &&
 												item.ImageBlurHashes
 													?.Primary[
 													Object.keys(
@@ -424,6 +430,9 @@ const Home = () => {
 											]}
 											userId={user.data.Id}
 											imageBlurhash={
+												!!item
+													.ImageBlurHashes
+													?.Primary &&
 												item.ImageBlurHashes
 													?.Primary[
 													Object.keys(
@@ -478,6 +487,8 @@ const Home = () => {
 											]}
 											userId={user.data.Id}
 											imageBlurhash={
+												item.ImageBlurHashes
+													?.Primary &&
 												item.ImageBlurHashes
 													?.Primary[
 													Object.keys(

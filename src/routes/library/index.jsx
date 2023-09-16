@@ -1036,10 +1036,8 @@ const LibraryView = () => {
 										]}
 										userId={user.data.Id}
 										imageBlurhash={
-											Boolean(
-												item.ImageBlurHashes
-													?.Primary,
-											) &&
+											!!item.ImageBlurHashes
+												?.Primary &&
 											item.ImageBlurHashes
 												?.Primary[
 												Object.keys(
