@@ -157,9 +157,9 @@ export const Card = ({
 												: item.Id,
 											imageType,
 											{
-												quality: 95,
-												fillHeight: 640,
-												fillWidth: 640,
+												quality: 85,
+												fillHeight: 462,
+												fillWidth: 462,
 											},
 									  )
 							}
