@@ -165,6 +165,7 @@ const MusicAlbumTitlePage = () => {
 					queryKey={["item", id]}
 					artists={item.data.ArtistItems}
 					albumBy={item.data.AlbumArtist}
+					disableMarkAsPlayedButton
 				/>
 				{musicTracks.isLoading ? (
 					<></>
