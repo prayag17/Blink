@@ -75,6 +75,7 @@ import { useBackdropStore } from "./utils/store/backdrop.js";
 import { usePlaybackDataLoadStore } from "./utils/store/playback.js";
 import BoxSetTitlePage from "./routes/boxset/index.jsx";
 import PersonTitlePage from "./routes/person/index.jsx";
+import MusicAlbumTitlePage from "./routes/album/index.jsx";
 
 const jellyfin = new Jellyfin({
 	clientInfo: {
@@ -461,8 +462,8 @@ function App() {
 							/>
 							<Route
 								exact
-								path="/album/:id"
-								element={<ItemDetail />}
+								path="/musicalbum/:id"
+								element={<MusicAlbumTitlePage />}
 							/>
 							<Route
 								exact

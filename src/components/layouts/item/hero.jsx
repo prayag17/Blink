@@ -39,6 +39,7 @@ import { MediaTypeIconCollection } from "../../utils/iconsCollection";
  * @property {bool} disablePlayButton
  * @property {bool} disableLikeButton
  * @property {bool} disableMarkAsPlayedButton
+ * @property {string} albumBy
  */
 
 /**
@@ -58,6 +59,7 @@ const Hero = ({
 	disablePlayButton,
 	disableLikeButton,
 	disableMarkAsPlayedButton,
+	albumBy,
 }) => {
 	const filterMediaStreamVideo = (source) => {
 		if (source.Type == MediaStreamType.Video) {
@@ -200,6 +202,17 @@ const Hero = ({
 								item.Name
 							)}
 						</Typography>
+						{!!albumBy && (
+							<Typography
+								variant="h6"
+								fontWeight={400}
+								style={{
+									opacity: 0.8,
+								}}
+							>
+								By {albumBy}
+							</Typography>
+						)}
 					</div>
 					{!disableInfoStrip && (
 						<Stack

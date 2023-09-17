@@ -28,7 +28,11 @@ import { useCarouselStore } from "../../utils/store/carousel";
 import PlayButton from "../buttons/playButton";
 import { BaseItemKind } from "@jellyfin/sdk/lib/generated-client";
 
-const availableSpecialRoutes = [BaseItemKind.Series, BaseItemKind.BoxSet];
+const availableSpecialRoutes = [
+	BaseItemKind.Series,
+	BaseItemKind.BoxSet,
+	BaseItemKind.MusicAlbum,
+];
 
 /**
  * @typedef {Object} Props
