@@ -82,7 +82,9 @@
 				"resizable": false,
 				"url": "splash.html",
 				"label": "splashscreen",
-				"title": "JellyPlayer"
+				"title": "JellyPlayer",
+				"visible": true,
+				"transparent": true
 			},
 
 			{

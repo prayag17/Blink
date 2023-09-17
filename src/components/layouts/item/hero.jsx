@@ -25,6 +25,7 @@ import PlayButton from "../../buttons/playButton";
 import "./hero.module.scss";
 import { Blurhash } from "react-blurhash";
 import { MediaTypeIconCollection } from "../../utils/iconsCollection";
+import TextLink from "../../textLink";
 
 /**
  * @typedef {Object} Props
@@ -511,7 +512,12 @@ const Hero = ({
 						marginTop: "0.2em",
 					}}
 				>
-					<Typography fontStyle="italic" variant="h5" mb={1}>
+					<Typography
+						fontStyle="italic"
+						variant="h5"
+						mb={1}
+						mt={1}
+					>
 						{item.Taglines[0]}
 					</Typography>
 					<Typography variant="subtitle1">
@@ -536,14 +542,29 @@ const Hero = ({
 							>
 								Written by
 							</Typography>
-							<Typography variant="subtitle1">
-								{writers
-									.map(
-										(writer, index) =>
-											writer.Name,
-									)
-									.join(", ")}
-							</Typography>
+							<div className="hero-text-container">
+								{writers.map((writer, index) => (
+									<>
+										<TextLink
+											text={
+												index ==
+												writers.length
+													? writer.Name
+													: `${writer.Name}`
+											}
+											variant={"subtitle1"}
+											location={`/person/${writer.Id}`}
+										/>
+										<span
+											style={{
+												whiteSpace: "pre",
+											}}
+										>
+											,{" "}
+										</span>
+									</>
+								))}
+							</div>
 						</div>
 					)}
 					{directors.length > 0 && (
@@ -562,11 +583,24 @@ const Hero = ({
 							>
 								Directed by
 							</Typography>
-							<Typography variant="subtitle1">
-								{directors
-									.map((director) => director.Name)
-									.join(", ")}
-							</Typography>
+							<div className="hero-text-container">
+								{directors.map((director) => (
+									<>
+										<TextLink
+											text={director.Name}
+											variant={"subtitle1"}
+											location={`/person/${director.Id}`}
+										/>
+										<span
+											style={{
+												whiteSpace: "pre",
+											}}
+										>
+											,{" "}
+										</span>
+									</>
+								))}
+							</div>
 						</div>
 					)}
 					{artists.length > 0 && (

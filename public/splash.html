@@ -26,7 +26,7 @@
       width: 100vw;
       margin: 0;
       padding: 0;
-      background: black;
+      background: transparent;
     }
 
     .background {
@@ -35,11 +35,12 @@
       top: 50%;
       left: 50%;
       transform: translate(-50%, -50%);
-      width: calc(100vw + 5em);
-      height: calc(100vh + 5em);
+      width: 100vw;
+      height: 100vh;
       background-image: url("./assetsStatic/splashBg.png");
       background-size: cover;
       background-position: center;
+      border-radius: 7px;
     }
 
     main {
@@ -70,6 +71,7 @@
       height: 8px;
       overflow: hidden;
       backdrop-filter: blur(5px);
+      border-radius: 0 0 7px 7px;
     }
 
     .indicator {

@@ -1,0 +1,11 @@
+/** @format */
+
+.link {
+	text-decoration: underline;
+	text-decoration-color: rgb(255 255 255 / 0.5);
+	white-space: pre-line;
+	&:hover {
+		cursor: pointer;
+		text-decoration-color: rgb(255 255 255 / 1);
+	}
+}
