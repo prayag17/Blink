@@ -143,9 +143,7 @@ const Hero = ({
 						/>
 					</>
 				)}
-				<div className="hero-backdrop-icon-container">
-					{MediaTypeIconCollection[item.Type]}
-				</div>
+				<div className="hero-backdrop-icon-container"></div>
 			</div>
 			<div className="item-detail-primaryImage">
 				<Card
