@@ -76,6 +76,7 @@ import { usePlaybackDataLoadStore } from "./utils/store/playback.js";
 import BoxSetTitlePage from "./routes/boxset/index.jsx";
 import PersonTitlePage from "./routes/person/index.jsx";
 import MusicAlbumTitlePage from "./routes/album/index.jsx";
+import AudioPlayer from "./components/playback/audioPlayer/index.jsx";
 
 const jellyfin = new Jellyfin({
 	clientInfo: {
@@ -422,6 +423,7 @@ function App() {
 					<CssBaseline />
 					<SideMenu />
 					<AppBar />
+					<AudioPlayer />
 					<Routes key={location.key} location={location}>
 						<Route element={<AnimationWrapper />}>
 							<Route

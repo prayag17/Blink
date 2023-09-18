@@ -160,6 +160,7 @@ const Hero = ({
 					queryKey={queryKey}
 					userId={userId}
 					imageBlurhash={
+						!!item.ImageBlurHashes?.Primary &&
 						item.ImageBlurHashes?.Primary[
 							Object.keys(item.ImageBlurHashes.Primary)[0]
 						]

@@ -186,6 +186,14 @@ export const Card = ({
 										style: { fontSize: "2.5em" },
 									}}
 									iconOnly
+									audio={
+										item.Type ==
+											BaseItemKind.MusicAlbum ||
+										item.Type ==
+											BaseItemKind.Audio ||
+										item.Type ==
+											BaseItemKind.AudioBook
+									}
 								/>
 								<LikeButton
 									itemId={item.Id}

@@ -14,8 +14,9 @@ import { useMutation, useQuery } from "@tanstack/react-query";
 import { getUserLibraryApi } from "@jellyfin/sdk/lib/utils/api/user-library-api";
 import { getTvShowsApi } from "@jellyfin/sdk/lib/utils/api/tv-shows-api";
 import { getItemsApi } from "@jellyfin/sdk/lib/utils/api/items-api";
-import { ItemFields } from "@jellyfin/sdk/lib/generated-client";
+import { BaseItemKind, ItemFields } from "@jellyfin/sdk/lib/generated-client";
 import { useSnackbar } from "notistack";
+import { useAudioPlayback } from "../../utils/store/audioPlayback";
 
 const PlayButton = ({
 	itemId,
@@ -30,6 +31,7 @@ const PlayButton = ({
 	iconProps,
 	buttonProps,
 	iconOnly,
+	audio = false,
 }) => {
 	const navigate = useNavigate();
 	const [
@@ -49,6 +51,9 @@ const PlayButton = ({
 		state.setSubtitleTracks,
 		state.setSelectedSubtitleTrack,
 	]);
+	const [setAudioUrl, setAudioDisplay, setAudioItem] = useAudioPlayback(
+		(state) => [state.setUrl, state.setDisplay, state.setItem],
+	);
 	const setPlaybackDataLoading = usePlaybackDataLoadStore(
 		(state) => state.setIsLoading,
 	);
@@ -70,6 +75,15 @@ const PlayButton = ({
 						ItemFields.MediaStreams,
 					],
 				});
+			} else if (itemType == BaseItemKind.MusicAlbum) {
+				result = await getItemsApi(window.api).getItems({
+					parentId: itemId,
+					userId: userId,
+					fields: [
+						ItemFields.MediaSources,
+						ItemFields.MediaStreams,
+					],
+				});
 			} else {
 				result = await getItemsApi(window.api).getItems({
 					ids: [itemId],
@@ -83,22 +97,31 @@ const PlayButton = ({
 			return result.data;
 		},
 		onSuccess: (item) => {
-			setUrl(
-				`${window.api.basePath}/Videos/${item.Items[0].Id}/stream.
-				${item.Items[0].MediaSources[0].Container}
+			if (audio) {
+				console.log(item);
+				setAudioUrl(
+					`${window.api.basePath}/Audio/${item.Items[0].Id}/universal?deviceId=${window.api.deviceInfo.id}&userId=${userId}&api_key=${window.api.accessToken}`,
+				);
+				setAudioItem(item.Items[0]);
+				setAudioDisplay(true);
+			} else {
+				setUrl(
+					`${window.api.basePath}/Videos/${item.Items[0].Id}/stream.
+					${item.Items[0].MediaSources[0].Container}
 				?Static=true&mediaSourceId=${item.Items[0].Id}&deviceId=${window.api.deviceInfo.id}&api_key=${window.api.accessToken}&Tag=${item.Items[0].MediaSources[0].ETag}&videoStreamIndex=${currentVideoTrack}&audioStreamIndex=${currentAudioTrack}`,
-			);
-			setPosition(item.Items[0].UserData?.PlaybackPositionTicks);
-			setItemName(
-				item.Items[0].Type == "Episode"
-					? `${item.Items[0].SeriesName} S${item.Items[0].ParentIndexNumber}:E${item.Items[0].IndexNumber} ${item.Items[0].Name}`
-					: item.Items[0].Name,
-			);
-			setItemId(item.Items[0].Id);
-			setDuration(item.Items[0].RunTimeTicks);
-			// setSubtitleTracksStore(subtitleTracks);
-			setSelectedSubtitleTrack(currentSubTrack);
-			navigate(`/player`);
+				);
+				setPosition(item.Items[0].UserData?.PlaybackPositionTicks);
+				setItemName(
+					item.Items[0].Type == "Episode"
+						? `${item.Items[0].SeriesName} S${item.Items[0].ParentIndexNumber}:E${item.Items[0].IndexNumber} ${item.Items[0].Name}`
+						: item.Items[0].Name,
+				);
+				setItemId(item.Items[0].Id);
+				setDuration(item.Items[0].RunTimeTicks);
+				// setSubtitleTracksStore(subtitleTracks);
+				setSelectedSubtitleTrack(currentSubTrack);
+				navigate(`/player`);
+			}
 		},
 		onSettled: () => {
 			setPlaybackDataLoading(false);
