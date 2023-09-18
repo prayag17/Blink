@@ -14,7 +14,11 @@ import { useMutation, useQuery } from "@tanstack/react-query";
 import { getUserLibraryApi } from "@jellyfin/sdk/lib/utils/api/user-library-api";
 import { getTvShowsApi } from "@jellyfin/sdk/lib/utils/api/tv-shows-api";
 import { getItemsApi } from "@jellyfin/sdk/lib/utils/api/items-api";
-import { BaseItemKind, ItemFields } from "@jellyfin/sdk/lib/generated-client";
+import {
+	BaseItemKind,
+	ItemFields,
+	SortOrder,
+} from "@jellyfin/sdk/lib/generated-client";
 import { useSnackbar } from "notistack";
 import { useAudioPlayback } from "../../utils/store/audioPlayback";
 
@@ -51,9 +55,13 @@ const PlayButton = ({
 		state.setSubtitleTracks,
 		state.setSelectedSubtitleTrack,
 	]);
-	const [setAudioUrl, setAudioDisplay, setAudioItem] = useAudioPlayback(
-		(state) => [state.setUrl, state.setDisplay, state.setItem],
-	);
+	const [setAudioUrl, setAudioDisplay, setAudioItem, setAudioTracks] =
+		useAudioPlayback((state) => [
+			state.setUrl,
+			state.setDisplay,
+			state.setItem,
+			state.setTracks,
+		]);
 	const setPlaybackDataLoading = usePlaybackDataLoadStore(
 		(state) => state.setIsLoading,
 	);
@@ -83,6 +91,8 @@ const PlayButton = ({
 						ItemFields.MediaSources,
 						ItemFields.MediaStreams,
 					],
+					sortOrder: SortOrder.Ascending,
+					sortBy: "IndexNumber",
 				});
 			} else {
 				result = await getItemsApi(window.api).getItems({
@@ -92,13 +102,15 @@ const PlayButton = ({
 						ItemFields.MediaSources,
 						ItemFields.MediaStreams,
 					],
+					sortOrder: SortOrder.Ascending,
+					sortBy: "IndexNumber",
 				});
 			}
 			return result.data;
 		},
 		onSuccess: (item) => {
 			if (audio) {
-				console.log(item);
+				setAudioTracks(item.Items);
 				setAudioUrl(
 					`${window.api.basePath}/Audio/${item.Items[0].Id}/universal?deviceId=${window.api.deviceInfo.id}&userId=${userId}&api_key=${window.api.accessToken}`,
 				);

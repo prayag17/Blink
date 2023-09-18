@@ -77,6 +77,7 @@ import BoxSetTitlePage from "./routes/boxset/index.jsx";
 import PersonTitlePage from "./routes/person/index.jsx";
 import MusicAlbumTitlePage from "./routes/album/index.jsx";
 import AudioPlayer from "./components/playback/audioPlayer/index.jsx";
+import { useAudioPlayback } from "./utils/store/audioPlayback.js";
 
 const jellyfin = new Jellyfin({
 	clientInfo: {
@@ -280,6 +281,8 @@ function App() {
 		});
 	}
 
+	const [audioPlayerVisible] = useAudioPlayback((state) => [state.display]);
+
 	const [backdropUrl, backdropId] = useBackdropStore((state) => [
 		state.backdropUrl,
 		state.backdropId,
@@ -418,6 +421,8 @@ function App() {
 					style={{
 						display: "flex",
 						width: "100vw",
+						paddingBottom: audioPlayerVisible ? "8em" : "0",
+						transition: "padding 250ms",
 					}}
 				>
 					<CssBaseline />

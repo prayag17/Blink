@@ -9,6 +9,9 @@
 		gap: 0.5em;
 		width: 100%;
 		padding: 0.25em 0;
+		background: rgb(255 255 255 / 0);
+		transition: background $transition-time-default;
+
 		&:first-child,
 		&:last-child {
 			border-bottom: none;
@@ -18,6 +21,14 @@
 			border-radius: 10px !important;
 			overflow: hidden !important;
 			background: $clr-background-dark-opacity-0_8 !important;
+		}
+
+		&:hover {
+			background: rgb(255 255 255 / 0.05);
+		}
+
+		&.playing {
+			color: $clr-accent-default;
 		}
 	}
 }

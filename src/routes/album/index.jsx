@@ -6,7 +6,7 @@ import Box from "@mui/material/Box";
 import CircularProgress from "@mui/material/CircularProgress";
 import Typography from "@mui/material/Typography";
 import Paper from "@mui/material/Paper";
-import { useTheme } from "@mui/material";
+import { IconButton, useTheme } from "@mui/material";
 
 import { useParams, useNavigate } from "react-router-dom";
 
@@ -33,6 +33,8 @@ import "./album.module.scss";
 import { ErrorNotice } from "../../components/notices/errorNotice/errorNotice";
 import { useBackdropStore } from "../../utils/store/backdrop";
 import LikeButton from "../../components/buttons/likeButton";
+import { MdiPlayOutline } from "../../components/icons/mdiPlayOutline";
+import { useAudioPlayback } from "../../utils/store/audioPlayback";
 function TabPanel(props) {
 	const { children, value, index, ...other } = props;
 
@@ -119,6 +121,41 @@ const MusicAlbumTitlePage = () => {
 		networkMode: "always",
 	});
 
+	const [
+		url,
+		display,
+		currentTrackItem,
+		tracks,
+		currentTrack,
+		setCurrentAudioTrack,
+		setAudioUrl,
+		setAudioDisplay,
+		setAudioItem,
+		setAudioTracks,
+		resetPlayer,
+	] = useAudioPlayback((state) => [
+		state.url,
+		state.display,
+		state.item,
+		state.tracks,
+		state.currentTrack,
+		state.setCurrentTrack,
+		state.setUrl,
+		state.setDisplay,
+		state.setItem,
+		state.setTracks,
+		state.reset,
+	]);
+	const playTrack = (index) => {
+		setAudioTracks(musicTracks.data.Items);
+		setCurrentAudioTrack(index);
+		setAudioUrl(
+			`${window.api.basePath}/Audio/${musicTracks.data.Items[index].Id}/universal?deviceId=${window.api.deviceInfo.id}&userId=${user.data.Id}&api_key=${window.api.accessToken}`,
+		);
+		setAudioItem(musicTracks.data.Items[index]);
+		setAudioDisplay(true);
+	};
+
 	const [setAppBackdrop] = useBackdropStore((state) => [state.setBackdrop]);
 
 	useEffect(() => {
@@ -166,6 +203,7 @@ const MusicAlbumTitlePage = () => {
 					artists={item.data.ArtistItems}
 					albumBy={item.data.AlbumArtist}
 					disableMarkAsPlayedButton
+					audioPlayButton
 				/>
 				{musicTracks.isLoading ? (
 					<></>
@@ -215,89 +253,102 @@ const MusicAlbumTitlePage = () => {
 							{musicTracks.data.Items.map(
 								(track, index) => {
 									return (
-										<>
+										<div
+											key={track.Id}
+											className={
+												currentTrackItem.Id ==
+													track.Id &&
+												currentTrackItem.ParentId ==
+													track.ParentId
+													? "item-detail-album-track playing"
+													: "item-detail-album-track"
+											}
+											onClick={() =>
+												playTrack(index)
+											}
+										>
+											<Typography
+												variant="subtitle1"
+												style={{
+													justifySelf:
+														"end",
+												}}
+											>
+												{track.IndexNumber}
+											</Typography>
+
+											<LikeButton
+												itemId={track.Id}
+												isFavorite={
+													track.UserData
+														?.IsFavorite
+												}
+												queryKey={[
+													"item",
+													id,
+													"musicTracks",
+												]}
+												userId={
+													user.data.Id
+												}
+												itemName={
+													track.Name
+												}
+												color={
+													currentTrackItem.Id ==
+														track.Id &&
+													currentTrackItem.ParentId ==
+														track.ParentId
+														? "hsl(337, 96%, 56%)"
+														: "white"
+												}
+											/>
+
 											<div
-												key={track.Id}
-												className="item-detail-album-track"
+												style={{
+													display: "flex",
+													flexDirection:
+														"column",
+													width: "100%",
+												}}
 											>
 												<Typography
 													variant="subtitle1"
 													style={{
 														justifySelf:
-															"end",
+															"start",
 													}}
-												>
-													{
-														track.IndexNumber
+													fontWeight={
+														500
 													}
+												>
+													{track.Name}
 												</Typography>
-												<LikeButton
-													itemId={
-														track.Id
-													}
-													isFavorite={
-														track
-															.UserData
-															?.IsFavorite
-													}
-													queryKey={[
-														"item",
-														id,
-														"musicTracks",
-													]}
-													userId={
-														user.data
-															.Id
-													}
-													itemName={
-														track.Name
-													}
-												/>
-												<div
-													style={{
-														display: "flex",
-														flexDirection:
-															"column",
-														width: "100%",
-													}}
-												>
+												{track.AlbumArtist ==
+													"Various Artists" && (
 													<Typography
-														variant="subtitle1"
+														variant="subtitle2"
 														style={{
-															justifySelf:
-																"start",
+															opacity: 0.5,
 														}}
 													>
-														{
-															track.Name
-														}
+														{track.ArtistItems.map(
+															(
+																artist,
+															) =>
+																artist.Name,
+														).join(
+															", ",
+														)}
 													</Typography>
-													{track.AlbumArtist ==
-														"Various Artists" && (
-														<Typography
-															variant="subtitle2"
-															style={{
-																opacity: 0.5,
-															}}
-														>
-															{track.ArtistItems.map(
-																(
-																	artist,
-																) =>
-																	artist.Name,
-															).join(
-																", ",
-															)}
-														</Typography>
-													)}
-												</div>
-												<Typography variant="subtitle1">
-													{getRuntimeMusic(
-														track.RunTimeTicks,
-													)}
-												</Typography>
+												)}
 											</div>
-										</>
+											<Typography variant="subtitle1">
+												{getRuntimeMusic(
+													track.RunTimeTicks,
+												)}
+											</Typography>
+										</div>
 									);
 								},
 							)}

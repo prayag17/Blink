@@ -13,7 +13,14 @@ import { MdiHeartOutline } from "../icons/mdiHeartOutline";
 import { useSnackbar } from "notistack";
 import CircularProgress from "@mui/material/CircularProgress";
 
-const LikeButton = ({ itemId, isFavorite, queryKey, userId, itemName }) => {
+const LikeButton = ({
+	itemId,
+	isFavorite,
+	queryKey,
+	userId,
+	itemName,
+	color = "white",
+}) => {
 	const queryClient = useQueryClient();
 	const { enqueueSnackbar } = useSnackbar();
 
@@ -89,7 +96,7 @@ const LikeButton = ({ itemId, isFavorite, queryKey, userId, itemName }) => {
 				{isFavorite ? (
 					<MdiHeart sx={{ color: pink[700] }} />
 				) : (
-					<MdiHeartOutline />
+					<MdiHeartOutline sx={{ color: color }} />
 				)}
 			</IconButton>
 		</div>

@@ -2,10 +2,16 @@
 
 import { create } from "zustand";
 
-export const useAudioPlayback = create((set) => ({
+const initialState = {
 	url: "",
 	display: false,
 	item: {},
+	tracks: [],
+	currentTrack: 0,
+};
+
+export const useAudioPlayback = create((set) => ({
+	...initialState,
 	setUrl: (aurl) => set((state) => ({ ...state, url: aurl })),
 	setDisplay: (adisplay) =>
 		set((state) => ({
@@ -13,4 +19,8 @@ export const useAudioPlayback = create((set) => ({
 			display: adisplay,
 		})),
 	setItem: (aitem) => set((state) => ({ ...state, item: aitem })),
+	setTracks: (aitem) => set((state) => ({ ...state, tracks: aitem })),
+	setCurrentTrack: (aitem) =>
+		set((state) => ({ ...state, currentTrack: aitem })),
+	reset: () => set(initialState),
 }));

@@ -130,8 +130,7 @@ export const SideMenu = ({}) => {
 					sx={{
 						zIndex: 1,
 						width: `calc(${theme.spacing(7)} + 10px)`,
-						background:
-							"linear-gradient(to right, rgb(0 0 0 /  0.35) , transparent) !important ",
+						background: "transparent !important ",
 					}}
 				>
 					<DrawerHeader

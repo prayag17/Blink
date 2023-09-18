@@ -41,6 +41,7 @@ import TextLink from "../../textLink";
  * @property {bool} disableLikeButton
  * @property {bool} disableMarkAsPlayedButton
  * @property {string} albumBy
+ * @property {bool} audioPlayButton
  */
 
 /**
@@ -61,6 +62,7 @@ const Hero = ({
 	disableLikeButton,
 	disableMarkAsPlayedButton,
 	albumBy,
+	audioPlayButton = false,
 }) => {
 	const filterMediaStreamVideo = (source) => {
 		if (source.Type == MediaStreamType.Video) {
@@ -360,6 +362,7 @@ const Hero = ({
 								size: "large",
 							}}
 							itemUserData={item.UserData}
+							audio={audioPlayButton}
 						/>
 					)}
 					{!disableLikeButton && (
