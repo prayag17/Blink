@@ -18,7 +18,6 @@
 	gap: 1em;
 	#waveform {
 		width: 100%;
-		height: 4em;
 	}
 	&-controls {
 		display: flex;
@@ -26,5 +25,17 @@
 		justify-content: center;
 		gap: 1em;
 		width: 100%;
+		flex-flow: column;
+	}
+	&-info {
+		display: flex;
+		gap: 0.5em;
+		flex-wrap: nowrap;
+		width: fit-content;
+	}
+	&-image {
+		width: 4em;
+		aspect-ratio: 1;
+		border-radius: $border-radius-default;
 	}
 }
