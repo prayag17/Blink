@@ -79,6 +79,7 @@ const AudioPlayer = () => {
 				height: 35,
 				cursorColor: "#fb2376",
 				progressColor: "#fb2376",
+				normalize: true,
 			});
 			waveSurfer.load(url);
 			waveSurfer.on("ready", () => {

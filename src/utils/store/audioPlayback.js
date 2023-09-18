@@ -3,8 +3,8 @@
 import { create } from "zustand";
 
 const initialState = {
-	url: "",
 	display: false,
+	url: "",
 	item: {},
 	tracks: [],
 	currentTrack: 0,
