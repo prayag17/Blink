@@ -122,29 +122,19 @@ const MusicAlbumTitlePage = () => {
 	});
 
 	const [
-		url,
-		display,
 		currentTrackItem,
-		tracks,
-		currentTrack,
 		setCurrentAudioTrack,
 		setAudioUrl,
 		setAudioDisplay,
 		setAudioItem,
 		setAudioTracks,
-		resetPlayer,
 	] = useAudioPlayback((state) => [
-		state.url,
-		state.display,
 		state.item,
-		state.tracks,
-		state.currentTrack,
 		state.setCurrentTrack,
 		state.setUrl,
 		state.setDisplay,
 		state.setItem,
 		state.setTracks,
-		state.reset,
 	]);
 	const playTrack = (index) => {
 		setAudioTracks(musicTracks.data.Items);
@@ -201,7 +191,7 @@ const MusicAlbumTitlePage = () => {
 					userId={user.data.Id}
 					queryKey={["item", id]}
 					artists={item.data.ArtistItems}
-					albumBy={item.data.AlbumArtist}
+					albumBy={item.data.AlbumArtists[0]}
 					disableMarkAsPlayedButton
 					audioPlayButton
 				/>
@@ -274,7 +264,9 @@ const MusicAlbumTitlePage = () => {
 														"end",
 												}}
 											>
-												{track.IndexNumber}
+												{!!track.IndexNumber
+													? track.IndexNumber
+													: "-"}
 											</Typography>
 
 											<LikeButton

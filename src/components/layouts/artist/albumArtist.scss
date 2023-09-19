@@ -1,11 +1,29 @@
 /** @format */
 
 .album {
-	&-image-icon {
-		fill: url(#clr-gradient-default) !important;
+	&-image {
+		aspect-ratio: 1;
+		border-radius: 10px;
+		overflow: hidden;
+		width: 12em;
+		box-shadow: 0 0 10px rgb(0 0 0 /0.2);
+		position: relative;
+		height: 12em;
+		&-icon {
+			fill: url(#clr-gradient-default) !important;
 
-		&-container {
-			background: $clr-gradient-dark;
+			&-container {
+				background: $clr-gradient-dark;
+				position: absolute;
+				width: 100%;
+				height: 100%;
+				top: 0;
+				left: 0;
+				display: flex;
+				align-items: center;
+				justify-content: center;
+				z-index: 1;
+			}
 		}
 	}
 }

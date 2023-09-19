@@ -1,0 +1,40 @@
+/** @format */
+
+.music-track {
+	display: grid;
+	grid-template-columns: 4.5em 80% 1fr 1fr;
+	gap: 0.5em;
+	align-items: center;
+	justify-items: center;
+	&-image {
+		margin: 0.4em;
+		border-radius: $border-radius-default;
+		overflow: hidden;
+		aspect-ratio: 1;
+		position: relative;
+		&-overlay {
+			position: absolute;
+			top: 0;
+			left: 0;
+			backdrop-filter: blur(10px);
+			width: 100%;
+			height: 100%;
+			display: flex;
+			justify-content: center;
+			align-items: center;
+			opacity: 0;
+			transition: opacity $transition-time-fast;
+		}
+		box-shadow: 0 0 10px rgb(0 0 0 / 0.2);
+		transition: opacity $transition-time-fast;
+	}
+	&-info {
+		justify-self: start;
+	}
+
+	&:hover {
+		.music-track-image-overlay {
+			opacity: 1;
+		}
+	}
+}

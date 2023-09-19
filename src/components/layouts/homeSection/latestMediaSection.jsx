@@ -84,6 +84,7 @@ export const LatestMediaSection = ({ latestMediaLib }) => {
 							]}
 							userId={user.data.Id}
 							imageBlurhash={
+								!!item.ImageBlurHashes?.Primary &&
 								item.ImageBlurHashes?.Primary[
 									Object.keys(
 										item.ImageBlurHashes.Primary,

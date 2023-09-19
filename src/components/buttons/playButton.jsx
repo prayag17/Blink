@@ -36,6 +36,7 @@ const PlayButton = ({
 	buttonProps,
 	iconOnly,
 	audio = false,
+	size = "large",
 }) => {
 	const navigate = useNavigate();
 	const [
@@ -94,6 +95,19 @@ const PlayButton = ({
 					sortOrder: SortOrder.Ascending,
 					sortBy: "IndexNumber",
 				});
+			} else if (itemType == BaseItemKind.MusicArtist) {
+				result = await getItemsApi(window.api).getItems({
+					artistIds: [itemId],
+					recursive: true,
+					includeItemTypes: [BaseItemKind.Audio],
+					userId: userId,
+					fields: [
+						ItemFields.MediaSources,
+						ItemFields.MediaStreams,
+					],
+					sortOrder: SortOrder.Ascending,
+					sortBy: ["PremiereDate", "ProductionYear", "SortName"],
+				});
 			} else {
 				result = await getItemsApi(window.api).getItems({
 					ids: [itemId],
@@ -109,6 +123,7 @@ const PlayButton = ({
 			return result.data;
 		},
 		onSuccess: (item) => {
+			console.log(item);
 			if (audio) {
 				setAudioTracks(item.Items);
 				setAudioUrl(
@@ -156,6 +171,7 @@ const PlayButton = ({
 				className={className}
 				onClick={handleClick}
 				sx={sx}
+				size={size}
 				{...buttonProps}
 			>
 				<MdiPlayOutline {...iconProps} />
@@ -173,6 +189,7 @@ const PlayButton = ({
 					position: "relative",
 					overflow: "hidden",
 				}}
+				size={size}
 			>
 				<LinearProgress
 					variant="determinate"

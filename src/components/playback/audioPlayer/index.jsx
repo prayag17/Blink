@@ -6,6 +6,7 @@ import { motion } from "framer-motion";
 import Fab from "@mui/material/Fab";
 import IconButton from "@mui/material/IconButton";
 import Typography from "@mui/material/Typography";
+import CircularProgress from "@mui/material/CircularProgress";
 
 import WaveSurfer from "wavesurfer.js";
 
@@ -21,9 +22,10 @@ import { MdiSkipNext } from "../../icons/mdiSkipNext";
 import { MdiSkipPrevious } from "../../icons/mdiSkipPrevious";
 import { useQuery } from "@tanstack/react-query";
 import { getUserApi } from "@jellyfin/sdk/lib/utils/api/user-api";
-import { Icon } from "@mui/material";
 import { MdiClose } from "../../icons/mdiClose";
 import { MdiMusic } from "../../icons/mdiMusic";
+
+import { theme } from "../../../theme";
 
 const AudioPlayer = () => {
 	const user = useQuery({
@@ -37,7 +39,10 @@ const AudioPlayer = () => {
 
 	const waveSurferRef = useRef(null);
 	const waveSurferContainerRef = useRef(null);
-	const [playing, setPlaying] = useState(false);
+	const [playerReady, setPlayerReady] = useState(false);
+	const [playing, setPlaying] = useState(true);
+
+	const [loading, setLoading] = useState(true);
 
 	const [showWaveform, setShowWaveform] = useState(false);
 
@@ -73,17 +78,22 @@ const AudioPlayer = () => {
 		if (display) {
 			const waveSurfer = WaveSurfer.create({
 				container: waveSurferContainerRef.current,
-				autoplay: true,
 				barHeight: 0.8,
 				dragToSeek: true,
 				height: 35,
 				cursorColor: "#fb2376",
 				progressColor: "#fb2376",
+				waveColor: "#ffffff2f",
 				normalize: true,
 			});
 			waveSurfer.load(url);
+			waveSurfer.on("load", () => {
+				setLoading(true);
+			});
 			waveSurfer.on("ready", () => {
 				waveSurferRef.current = waveSurfer;
+				waveSurfer.play();
+				setLoading(false);
 			});
 			waveSurfer.on("timeupdate", (e) => {
 				setCurrentTime(e);
@@ -114,18 +124,27 @@ const AudioPlayer = () => {
 					setShowWaveform(false);
 				}
 			});
+			waveSurfer.on("destroy", () => {
+				waveSurfer.unAll();
+				setLoading(true);
+			});
 
 			return () => {
 				waveSurfer.destroy();
 			};
 		}
-	}, [url]);
+	}, [url, display, currentTrack]);
+
+	useEffect(() => {
+		if (playerReady) waveSurferRef.current.play();
+	}, [playerReady]);
 
 	const handlePlayPause = () => {
 		waveSurferRef.current.playPause();
 	};
 
 	const handleNext = () => {
+		setPlaying(false);
 		setCurrentTrack(currentTrack + 1);
 		setAudioUrl(
 			`${window.api.basePath}/Audio/${
@@ -139,6 +158,7 @@ const AudioPlayer = () => {
 	};
 
 	const handlePrevious = () => {
+		setPlaying(false);
 		setCurrentTrack(currentTrack - 1);
 		setAudioUrl(
 			`${window.api.basePath}/Audio/${
@@ -159,6 +179,14 @@ const AudioPlayer = () => {
 						transform: "translateY(100%)",
 					}}
 					animate={{ transform: "translateY(0)" }}
+					exit={{
+						transform: "translateY(100%)",
+					}}
+					style={{
+						width: `calc(100vw - ${theme.spacing(
+							13,
+						)} - 10px)`,
+					}}
 					className="audio-player"
 				>
 					<motion.div
@@ -178,7 +206,10 @@ const AudioPlayer = () => {
 							<img
 								className="audio-player-image"
 								src={window.api.getItemImageUrl(
-									item.Id,
+									Object.keys(item.ImageTags)
+										.length == 0
+										? item.AlbumId
+										: item.Id,
 									"Primary",
 									{
 										quality: 85,
@@ -197,7 +228,9 @@ const AudioPlayer = () => {
 								}}
 								fontWeight={500}
 							>
-								{item.IndexNumber}. {item.Name}
+								{!!item.IndexNumber
+									? `${item.IndexNumber}. ${item.Name}`
+									: item.Name}
 							</Typography>
 							<Typography
 								variant="subtitle2"
@@ -222,9 +255,34 @@ const AudioPlayer = () => {
 							>
 								<MdiSkipPrevious />
 							</IconButton>
-							<Fab size="small" onClick={handlePlayPause}>
-								{playing ? <MdiPause /> : <MdiPlay />}
-							</Fab>
+							<div
+								style={{
+									display: "inline-flex",
+									alignItems: "center",
+									justifyContent: "center",
+									position: "relative",
+								}}
+							>
+								<CircularProgress
+									size={48}
+									style={{
+										position: "absolute",
+										zIndex: 1,
+										opacity: loading ? 1 : 0,
+										transition: "opacity 500ms",
+									}}
+								/>
+								<Fab
+									size="small"
+									onClick={handlePlayPause}
+								>
+									{playing ? (
+										<MdiPause />
+									) : (
+										<MdiPlay />
+									)}
+								</Fab>
+							</div>
 							<IconButton
 								onClick={handleNext}
 								disabled={

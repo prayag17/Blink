@@ -78,6 +78,7 @@ import PersonTitlePage from "./routes/person/index.jsx";
 import MusicAlbumTitlePage from "./routes/album/index.jsx";
 import AudioPlayer from "./components/playback/audioPlayer/index.jsx";
 import { useAudioPlayback } from "./utils/store/audioPlayback.js";
+import ArtistTitlePage from "./routes/artist/index.jsx";
 
 const jellyfin = new Jellyfin({
 	clientInfo: {
@@ -281,7 +282,9 @@ function App() {
 		});
 	}
 
-	const [audioPlayerVisible] = useAudioPlayback((state) => [state.display]);
+	const [audioPlayerVisible, currentAudioIndex] = useAudioPlayback(
+		(state) => [state.display, state.currentTrack],
+	);
 
 	const [backdropUrl, backdropId] = useBackdropStore((state) => [
 		state.backdropUrl,
@@ -428,7 +431,7 @@ function App() {
 					<CssBaseline />
 					<SideMenu />
 					<AppBar />
-					<AudioPlayer />
+					<AudioPlayer key={audioPlayerVisible} />
 					<Routes key={location.key} location={location}>
 						<Route element={<AnimationWrapper />}>
 							<Route
@@ -475,7 +478,7 @@ function App() {
 							<Route
 								exact
 								path="/artist/:id"
-								element={<ItemDetail />}
+								element={<ArtistTitlePage />}
 							/>
 							<Route
 								exact

@@ -29,6 +29,9 @@ import { MdiHeartOutline } from "../../icons/mdiHeartOutline";
 import { MdiAlbum } from "../../icons/mdiAlbum";
 
 import "./albumArtist.scss";
+import { useAudioPlayback } from "../../../utils/store/audioPlayback";
+import LikeButton from "../../buttons/likeButton";
+import { SortOrder } from "@jellyfin/sdk/lib/generated-client";
 
 export const ArtistAlbum = ({ user, album, boxProps }) => {
 	const albumTracks = useQuery({
@@ -37,9 +40,12 @@ export const ArtistAlbum = ({ user, album, boxProps }) => {
 			const result = await getItemsApi(window.api).getItems({
 				userId: user.Id,
 				parentId: album.Id,
+				sortOrder: SortOrder.Ascending,
+				sortBy: "IndexNumber",
 			});
 			return result.data;
 		},
+
 		networkMode: "always",
 	});
 
@@ -61,22 +67,43 @@ export const ArtistAlbum = ({ user, album, boxProps }) => {
 
 	const [imgLoaded, setImgLoaded] = useState(false);
 
+	const [
+		currentTrackItem,
+		setCurrentAudioTrack,
+		setAudioUrl,
+		setAudioDisplay,
+		setAudioItem,
+		setAudioTracks,
+	] = useAudioPlayback((state) => [
+		state.item,
+		state.setCurrentTrack,
+		state.setUrl,
+		state.setDisplay,
+		state.setItem,
+		state.setTracks,
+	]);
+	const playTrack = (index) => {
+		setAudioTracks(albumTracks.data.Items);
+		setCurrentAudioTrack(index);
+		setAudioUrl(
+			`${window.api.basePath}/Audio/${albumTracks.data.Items[index].Id}/universal?deviceId=${window.api.deviceInfo.id}&userId=${user.Id}&api_key=${window.api.accessToken}`,
+		);
+		setAudioItem(albumTracks.data.Items[index]);
+		setAudioDisplay(true);
+	};
+
 	return (
-		<Box sx={{ mb: 6 }} {...boxProps}>
-			<Stack direction="row" gap={3} mb={3}>
+		<div style={{ marginBottom: "3em" }} {...boxProps}>
+			<div
+				style={{
+					display: "flex",
+					flexDirection: "row",
+					gap: "1em",
+					marginBottom: "1em",
+				}}
+			>
 				{!!album.ImageTags?.Primary && (
-					<Box
-						className="album-image"
-						sx={{
-							aspectRatio: 1,
-							borderRadius: "10px",
-							overflow: "hidden",
-							width: "12em",
-							boxShadow: "0 0 10px rgb(0 0 0 /0.2)",
-							position: "relative",
-							height: "12em",
-						}}
-					>
+					<div className="album-image">
 						<img
 							src={`${window.api.basePath}/Items/${album.Id}/Images/Primary?fillHeight=532&fillWidth=532&quality=96`}
 							style={{
@@ -90,37 +117,24 @@ export const ArtistAlbum = ({ user, album, boxProps }) => {
 							}}
 							onLoad={() => setImgLoaded(true)}
 						/>
-						<Box
-							className="album-image-icon-container"
-							sx={{
-								position: "absolute",
-								width: "100%",
-								height: "100%",
-								top: 0,
-								left: 0,
-								display: "flex",
-								alignItems: "center",
-								justifyContent: "center",
-								zIndex: 1,
-							}}
-						>
+						<div className="album-image-icon-container">
 							<MdiAlbum
 								className="album-image-icon"
 								sx={{ fontSize: "6em" }}
 							/>
-						</Box>
-					</Box>
+						</div>
+					</div>
 				)}
 				<Stack>
 					<Typography
 						variant="h5"
-						sx={{ opacity: `0.7`, mb: 1 }}
+						style={{ opacity: `0.6`, mb: 1 }}
 					>
 						{album.ProductionYear}
 					</Typography>
 					<MuiLink
 						component={Link}
-						to={`/item/${album.Id}`}
+						to={`/musicalbum/${album.Id}`}
 						variant="h3"
 						color="inherit"
 						underline="hover"
@@ -128,110 +142,135 @@ export const ArtistAlbum = ({ user, album, boxProps }) => {
 						{album.Name}
 					</MuiLink>
 				</Stack>
-			</Stack>
+			</div>
 
-			<TableContainer
-				component={Paper}
-				sx={{ mb: 2, borderRadius: "15px" }}
-			>
-				<Table>
-					<TableHead
-						sx={{
-							mb: 1,
+			{albumTracks.isSuccess && (
+				<Paper
+					className="item-detail-album-tracks"
+					style={{
+						marginBottom: "1.2em",
+					}}
+				>
+					<div
+						key={0}
+						className="item-detail-album-track"
+						style={{
+							padding: "0.75em 0 ",
+							background: "rgb(255 255 255 / 0.1)",
+							boxShadow: "0 0 10px rgb(0 0 0 / 0.5)",
 						}}
 					>
-						<TableRow>
-							<TableCell
-								sx={{
-									maxWidth: 120,
-									width: 20,
-								}}
+						<Typography
+							variant="h6"
+							fontWeight={400}
+							style={{
+								justifySelf: "end",
+							}}
+						>
+							#
+						</Typography>
+						<div></div>
+						<Typography
+							variant="h6"
+							style={{
+								justifySelf: "start",
+							}}
+							fontWeight={400}
+							onClick={() => {
+								console.log("Hvnrjn");
+							}}
+						>
+							Name
+						</Typography>
+						<MdiClockOutline />
+					</div>
+					{albumTracks.data.Items.map((track, index) => {
+						return (
+							<div
+								key={track.Id}
+								className={
+									currentTrackItem.Id == track.Id &&
+									currentTrackItem.ParentId ==
+										track.ParentId
+										? "item-detail-album-track playing"
+										: "item-detail-album-track"
+								}
+								onClick={() => playTrack(index)}
 							>
-								<Typography variant="h6">#</Typography>
-							</TableCell>
-							<TableCell sx={{ width: 20 }}></TableCell>
-							<TableCell>
-								<Typography variant="h6">
-									Name
+								<Typography
+									variant="subtitle1"
+									style={{
+										justifySelf: "end",
+									}}
+								>
+									{!!track.IndexNumber
+										? track.IndexNumber
+										: "-"}
 								</Typography>
-							</TableCell>
-							<TableCell>
-								<Typography variant="h6" align="right">
-									<MdiClockOutline />
-								</Typography>
-							</TableCell>
-						</TableRow>
-					</TableHead>
-					<TableBody>
-						{albumTracks.isSuccess &&
-							albumTracks.data.Items.map(
-								(mitem, mindex) => {
-									return (
-										<TableRow
-											key={mindex}
-											sx={{
-												"&:last-child td, &:last-child th":
-													{
-														border: 0,
-													},
-												"&:hover": {
-													background:
-														"rgb(255 255 255 / 0.05)",
-												},
+
+								<LikeButton
+									itemId={track.Id}
+									isFavorite={
+										track.UserData?.IsFavorite
+									}
+									queryKey={[
+										"artist",
+										"album",
+										album.Id,
+									]}
+									userId={user.Id}
+									itemName={track.Name}
+									color={
+										currentTrackItem.Id ==
+											track.Id &&
+										currentTrackItem.ParentId ==
+											track.ParentId
+											? "hsl(337, 96%, 56%)"
+											: "white"
+									}
+								/>
+
+								<div
+									style={{
+										display: "flex",
+										flexDirection: "column",
+										width: "100%",
+									}}
+								>
+									<Typography
+										variant="subtitle1"
+										style={{
+											justifySelf: "start",
+										}}
+										fontWeight={500}
+									>
+										{track.Name}
+									</Typography>
+									{track.AlbumArtist ==
+										"Various Artists" && (
+										<Typography
+											variant="subtitle2"
+											style={{
+												opacity: 0.5,
 											}}
 										>
-											<TableCell
-												sx={{
-													maxWidth: 120,
-													width: 20,
-												}}
-											>
-												<Typography variant="body1">
-													{
-														mitem.IndexNumber
-													}
-												</Typography>
-											</TableCell>
-											<TableCell
-												sx={{
-													width: 20,
-												}}
-												align="center"
-											>
-												<IconButton
-													onClick={() =>
-														handleLikingTrack(
-															mitem,
-														)
-													}
-												>
-													{mitem.UserData
-														.IsFavorite ? (
-														<MdiHeart />
-													) : (
-														<MdiHeartOutline />
-													)}
-												</IconButton>
-											</TableCell>
-											<TableCell>
-												<Typography variant="body1">
-													{mitem.Name}
-												</Typography>
-											</TableCell>
-											<TableCell align="right">
-												<Typography variant="body1">
-													{getRuntimeMusic(
-														mitem.RunTimeTicks,
-													)}
-												</Typography>
-											</TableCell>
-										</TableRow>
-									);
-								},
-							)}
-					</TableBody>
-				</Table>
-			</TableContainer>
-		</Box>
+											{track.ArtistItems.map(
+												(artist) =>
+													artist.Name,
+											).join(", ")}
+										</Typography>
+									)}
+								</div>
+								<Typography variant="subtitle1">
+									{getRuntimeMusic(
+										track.RunTimeTicks,
+									)}
+								</Typography>
+							</div>
+						);
+					})}
+				</Paper>
+			)}
+		</div>
 	);
 };

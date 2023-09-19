@@ -205,15 +205,19 @@ const Hero = ({
 							)}
 						</Typography>
 						{!!albumBy && (
-							<Typography
+							<TextLink
+								text={`By ${albumBy.Name}`}
 								variant="h6"
-								fontWeight={400}
-								style={{
-									opacity: 0.8,
+								location={`/artist/${albumBy.Id}`}
+								otherProps={{
+									fontWeight: 400,
+									style: {
+										opacity: 0.8,
+									},
 								}}
 							>
 								By {albumBy}
-							</Typography>
+							</TextLink>
 						)}
 					</div>
 					{!disableInfoStrip && (
@@ -550,22 +554,21 @@ const Hero = ({
 								{writers.map((writer, index) => (
 									<>
 										<TextLink
-											text={
-												index ==
-												writers.length
-													? writer.Name
-													: `${writer.Name}`
-											}
+											text={writer.Name}
 											variant={"subtitle1"}
 											location={`/person/${writer.Id}`}
 										/>
-										<span
-											style={{
-												whiteSpace: "pre",
-											}}
-										>
-											,{" "}
-										</span>
+										{index !=
+											writers.length - 1 && (
+											<span
+												style={{
+													whiteSpace:
+														"pre",
+												}}
+											>
+												,{" "}
+											</span>
+										)}
 									</>
 								))}
 							</div>
@@ -595,13 +598,17 @@ const Hero = ({
 											variant={"subtitle1"}
 											location={`/person/${director.Id}`}
 										/>
-										<span
-											style={{
-												whiteSpace: "pre",
-											}}
-										>
-											,{" "}
-										</span>
+										{index !=
+											directors.length - 1 && (
+											<span
+												style={{
+													whiteSpace:
+														"pre",
+												}}
+											>
+												,{" "}
+											</span>
+										)}
 									</>
 								))}
 							</div>
@@ -623,11 +630,28 @@ const Hero = ({
 							>
 								Artists
 							</Typography>
-							<Typography variant="subtitle1">
-								{artists
-									.map((artist) => artist.Name)
-									.join(", ")}
-							</Typography>
+							<div className="hero-text-container">
+								{artists.map((artist, index) => (
+									<>
+										<TextLink
+											text={artist.Name}
+											variant={"subtitle1"}
+											location={`/artist/${artist.Id}`}
+										/>
+										{index !=
+											artists.length - 1 && (
+											<span
+												style={{
+													whiteSpace:
+														"pre",
+												}}
+											>
+												,{" "}
+											</span>
+										)}
+									</>
+								))}
+							</div>
 						</div>
 					)}
 					{studios.length > 0 && (

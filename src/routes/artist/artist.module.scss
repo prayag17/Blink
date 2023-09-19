@@ -1,0 +1,22 @@
+/** @format */
+
+.item-detail-artist {
+	&-container {
+		position: relative;
+		width: 100%;
+	}
+	&-header {
+		width: 100%;
+	}
+	&-cards {
+		display: grid;
+		align-items: start;
+	}
+}
+
+.grid {
+	display: grid;
+	grid-template-columns: repeat(8, minmax(0, 1fr));
+
+	align-items: start;
+}
