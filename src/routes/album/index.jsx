@@ -98,6 +98,7 @@ const MusicAlbumTitlePage = () => {
 			let result = await getLibraryApi(window.api).getSimilarAlbums({
 				userId: user.data.Id,
 				itemId: item.data.Id,
+				limit: 16,
 			});
 			return result.data;
 		},
@@ -232,9 +233,6 @@ const MusicAlbumTitlePage = () => {
 										justifySelf: "start",
 									}}
 									fontWeight={400}
-									onClick={() => {
-										console.log("Hvnrjn");
-									}}
 								>
 									Name
 								</Typography>

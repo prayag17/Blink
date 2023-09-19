@@ -101,33 +101,11 @@ const BoxSetTitlePage = () => {
 	const similarItems = useQuery({
 		queryKey: ["item", id, "similarItem"],
 		queryFn: async () => {
-			let result;
-			if (item.data.Type == "Movie") {
-				result = await getLibraryApi(window.api).getSimilarMovies({
-					userId: user.data.Id,
-					itemId: item.data.Id,
-				});
-			} else if (item.data.Type == "Series") {
-				result = await getLibraryApi(window.api).getSimilarShows({
-					userId: user.data.Id,
-					itemId: item.data.Id,
-				});
-			} else if (item.data.Type == "MusicAlbum") {
-				result = await getLibraryApi(window.api).getSimilarAlbums({
-					userId: user.data.Id,
-					itemId: item.data.Id,
-				});
-			} else if (item.data.Type == "MusicArtist") {
-				result = await getLibraryApi(window.api).getSimilarArtists({
-					userId: user.data.Id,
-					itemId: item.data.Id,
-				});
-			} else {
-				result = await getLibraryApi(window.api).getSimilarItems({
-					userId: user.data.Id,
-					itemId: item.data.Id,
-				});
-			}
+			const result = await getLibraryApi(window.api).getSimilarItems({
+				userId: user.data.Id,
+				itemId: item.data.Id,
+				limit: 16,
+			});
 			return result.data;
 		},
 		enabled: item.isSuccess,
@@ -240,39 +218,13 @@ const BoxSetTitlePage = () => {
 										}
 										imageType={"Primary"}
 										cardCaption={
-											similar.Type ==
-											BaseItemKind.Episode
-												? `S${similar.ParentIndexNumber}:E${similar.IndexNumber} - ${similar.Name}`
-												: similar.Type ==
-												  BaseItemKind.Series
-												? `${
-														similar.ProductionYear
-												  } - ${
-														!!similar.EndDate
-															? new Date(
-																	similar.EndDate,
-															  ).toLocaleString(
-																	[],
-																	{
-																		year: "numeric",
-																	},
-															  )
-															: "Present"
-												  }`
-												: similar.ProductionYear
+											similar.ProductionYear
 										}
-										cardType={
-											similar.Type ==
-												BaseItemKind.MusicAlbum ||
-											similar.Type ==
-												BaseItemKind.Audio
-												? "square"
-												: "portrait"
-										}
+										cardType={"portrait"}
 										queryKey={[
 											"item",
 											id,
-											"similarItem",
+											`collection`,
 										]}
 										userId={user.data.Id}
 										imageBlurhash={

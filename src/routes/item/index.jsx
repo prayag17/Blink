@@ -1,5 +1,5 @@
 /** @format */
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import PropTypes from "prop-types";
 
 import Box from "@mui/material/Box";
@@ -139,6 +139,7 @@ const ItemDetail = () => {
 				result = await getLibraryApi(window.api).getSimilarMovies({
 					userId: user.data.Id,
 					itemId: item.data.Id,
+					limit: 16,
 				});
 			} else if (item.data.Type == "Series") {
 				result = await getLibraryApi(window.api).getSimilarShows({
@@ -566,6 +567,8 @@ const ItemDetail = () => {
 		}
 	}, [item.isSuccess]);
 
+	const backdropRef = useRef(null);
+
 	if (item.isLoading || similarItems.isLoading) {
 		return (
 			<Box
@@ -591,6 +594,7 @@ const ItemDetail = () => {
 					flexDirection: "column",
 					gap: "0.5em",
 				}}
+				ref={backdropRef}
 			>
 				<Hero
 					item={item.data}
@@ -601,6 +605,7 @@ const ItemDetail = () => {
 					videoTracks={videoTracks}
 					audioTracks={audioTracks}
 					subtitleTracks={subtitleTracks}
+					backdropRef={backdropRef}
 				/>
 				{item.data.People.length > 0 && (
 					<CardScroller

@@ -33,9 +33,9 @@ const MusicTrack = ({ item, queryKey, userId }) => {
 							: item.Id,
 						"Primary",
 						{
-							quality: 85,
-							fillHeight: 462,
-							fillWidth: 462,
+							quality: 70,
+							fillHeight: 128,
+							fillWidth: 128,
 						},
 					)}
 					style={{

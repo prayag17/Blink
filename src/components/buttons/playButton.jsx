@@ -123,7 +123,6 @@ const PlayButton = ({
 			return result.data;
 		},
 		onSuccess: (item) => {
-			console.log(item);
 			if (audio) {
 				setAudioTracks(item.Items);
 				setAudioUrl(

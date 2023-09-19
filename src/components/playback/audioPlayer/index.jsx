@@ -172,9 +172,10 @@ const AudioPlayer = () => {
 	};
 
 	return (
-		<AnimatePresence wait>
+		<AnimatePresence>
 			{display && (
 				<motion.div
+					key={display}
 					initial={{
 						transform: "translateY(100%)",
 					}}
@@ -186,6 +187,10 @@ const AudioPlayer = () => {
 						width: `calc(100vw - ${theme.spacing(
 							13,
 						)} - 10px)`,
+					}}
+					transition={{
+						duration: 0.1,
+						ease: "easeInOut",
 					}}
 					className="audio-player"
 				>

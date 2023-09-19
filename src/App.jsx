@@ -266,7 +266,11 @@ function App() {
 		await delUser();
 		await relaunch();
 	};
+
 	const location = useLocation();
+	useEffect(() => {
+		window.scrollTo(0, 0);
+	}, [location.pathname]);
 
 	if (!window.api) {
 		serverAvailable().then((available) => {
@@ -515,7 +519,7 @@ function App() {
 						</Route>
 					</Routes>
 				</div>
-				<ReactQueryDevtools />
+				{/* <ReactQueryDevtools /> */}
 			</ThemeProvider>
 		</SnackbarProvider>
 	);

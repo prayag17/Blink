@@ -1,7 +1,7 @@
 /** @format */
 import PropTypes from "prop-types";
 
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import TextField from "@mui/material/TextField";
 import MenuItem from "@mui/material/MenuItem";
 import Chip from "@mui/material/Chip";
@@ -64,6 +64,8 @@ const Hero = ({
 	albumBy,
 	audioPlayButton = false,
 }) => {
+	const backgroundRef = useRef(null);
+
 	const filterMediaStreamVideo = (source) => {
 		if (source.Type == MediaStreamType.Video) {
 			return true;
@@ -108,7 +110,7 @@ const Hero = ({
 				marginBottom: "2em",
 			}}
 		>
-			<div className="hero-backdrop">
+			<div className="hero-backdrop" ref={backgroundRef}>
 				{!!item.ImageBlurHashes.Backdrop && (
 					<>
 						{Object.keys(item.ImageBlurHashes.Backdrop)
@@ -591,7 +593,7 @@ const Hero = ({
 								Directed by
 							</Typography>
 							<div className="hero-text-container">
-								{directors.map((director) => (
+								{directors.map((director, index) => (
 									<>
 										<TextLink
 											text={director.Name}

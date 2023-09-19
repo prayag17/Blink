@@ -176,9 +176,6 @@ export const ArtistAlbum = ({ user, album, boxProps }) => {
 								justifySelf: "start",
 							}}
 							fontWeight={400}
-							onClick={() => {
-								console.log("Hvnrjn");
-							}}
 						>
 							Name
 						</Typography>

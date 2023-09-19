@@ -132,43 +132,6 @@ const ArtistTitlePage = () => {
 		refetchOnWindowFocus: true,
 	});
 
-	const similarItems = useQuery({
-		queryKey: ["item", id, "similarItem"],
-		queryFn: async () => {
-			let result;
-			if (item.data.Type == "Movie") {
-				result = await getLibraryApi(window.api).getSimilarMovies({
-					userId: user.data.Id,
-					itemId: item.data.Id,
-				});
-			} else if (item.data.Type == "Series") {
-				result = await getLibraryApi(window.api).getSimilarShows({
-					userId: user.data.Id,
-					itemId: item.data.Id,
-				});
-			} else if (item.data.Type == "MusicAlbum") {
-				result = await getLibraryApi(window.api).getSimilarAlbums({
-					userId: user.data.Id,
-					itemId: item.data.Id,
-				});
-			} else if (item.data.Type == "MusicArtist") {
-				result = await getLibraryApi(window.api).getSimilarArtists({
-					userId: user.data.Id,
-					itemId: item.data.Id,
-				});
-			} else {
-				result = await getLibraryApi(window.api).getSimilarItems({
-					userId: user.data.Id,
-					itemId: item.data.Id,
-				});
-			}
-			return result.data;
-		},
-		enabled: item.isSuccess,
-		networkMode: "always",
-		refetchOnWindowFocus: true,
-	});
-
 	const artistDiscography = useQuery({
 		queryKey: ["item", id, "artist", "discography"],
 		queryFn: async () => {
@@ -266,7 +229,7 @@ const ArtistTitlePage = () => {
 		}
 	}, [item.isSuccess]);
 
-	if (item.isLoading || similarItems.isLoading) {
+	if (item.isLoading) {
 		return (
 			<Box
 				sx={{
@@ -281,7 +244,7 @@ const ArtistTitlePage = () => {
 			</Box>
 		);
 	}
-	if (item.isSuccess && similarItems.isSuccess) {
+	if (item.isSuccess) {
 		return (
 			<div
 				className="scrollY"
@@ -489,7 +452,7 @@ const ArtistTitlePage = () => {
 			</div>
 		);
 	}
-	if (item.isError || similarItems.isError) {
+	if (item.isError) {
 		return <ErrorNotice />;
 	}
 };
