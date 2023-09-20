@@ -38,7 +38,7 @@
 		"tauri-plugin-log-api": "github:tauri-apps/tauri-plugin-log#v1",
 		"tauri-plugin-store-api": "github:tauri-apps/tauri-plugin-store",
 		"uuid": "^9.0.0",
-		"vite-plugin-svgr": "^3.2.0",
+		"vite-plugin-svgr": "^4.0.0",
 		"wavesurfer.js": "^7.3.2",
 		"zustand": "^4.3.8"
 	},
