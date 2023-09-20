@@ -244,6 +244,7 @@ const EpisodeTitlePage = () => {
 					subtitleTracks={subtitleTracks}
 					favourParentImg={false}
 					isEpisode
+					cardType="thumb"
 				/>
 				{item.data.People.length > 0 && (
 					<CardScroller

@@ -8,6 +8,7 @@ const initialState = {
 	item: {},
 	tracks: [],
 	currentTrack: 0,
+	playlistItemId: "",
 };
 
 export const useAudioPlayback = create((set) => ({
@@ -19,6 +20,8 @@ export const useAudioPlayback = create((set) => ({
 			display: adisplay,
 		})),
 	setItem: (aitem) => set((state) => ({ ...state, item: aitem })),
+	setPlaylistItemId: (aitem) =>
+		set((state) => ({ ...state, playlistItemId: aitem })),
 	setTracks: (aitem) => set((state) => ({ ...state, tracks: aitem })),
 	setCurrentTrack: (aitem) =>
 		set((state) => ({ ...state, currentTrack: aitem })),

@@ -30,6 +30,7 @@ const availableSpecialRoutes = [
 	BaseItemKind.BoxSet,
 	BaseItemKind.MusicAlbum,
 	BaseItemKind.Episode,
+	BaseItemKind.Playlist,
 ];
 
 /**
@@ -39,7 +40,7 @@ const availableSpecialRoutes = [
  * @property {string | number}  cardCaption
  * @property {string} imageType
  * @property {string} imageBlurhash
- * @property {string} cardType
+ * @property {'thumb' | 'portrait' | 'square'} cardType
  * @property {Array} queryKey
  * @property {string} userId
  * @property {string} seriesId
@@ -193,8 +194,15 @@ export const Card = ({
 										item.Type ==
 											BaseItemKind.Audio ||
 										item.Type ==
-											BaseItemKind.AudioBook
+											BaseItemKind.AudioBook ||
+										item.Type ==
+											BaseItemKind.Playlist
 									}
+									playlistItem={
+										item.Type ==
+										BaseItemKind.Playlist
+									}
+									playlistItemId={item.Id}
 								/>
 								<LikeButton
 									itemId={item.Id}

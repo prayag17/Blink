@@ -42,6 +42,7 @@ import TextLink from "../../textLink";
  * @property {string} albumBy
  * @property {bool} audioPlayButton
  * @property {bool} favourParentImg
+ * @property {"portrait"| "thumb"| 'square'} cardType
  */
 
 /**
@@ -65,6 +66,7 @@ const Hero = ({
 	audioPlayButton = false,
 	favourParentImg = true,
 	isEpisode = false,
+	cardType = "portrait",
 }) => {
 	const filterMediaStreamVideo = (source) => {
 		if (source.Type == MediaStreamType.Video) {
@@ -691,14 +693,7 @@ const Hero = ({
 					item={item}
 					seriesId={favourParentImg && item.SeriesId}
 					imageType={"Primary"}
-					cardType={
-						item.Type == BaseItemKind.MusicAlbum ||
-						item.Type == BaseItemKind.Audio
-							? "square"
-							: item.Type == BaseItemKind.Episode
-							? "thumb"
-							: "portrait"
-					}
+					cardType={cardType}
 					queryKey={queryKey}
 					userId={userId}
 					imageBlurhash={

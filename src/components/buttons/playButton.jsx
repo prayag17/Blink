@@ -21,6 +21,7 @@ import {
 } from "@jellyfin/sdk/lib/generated-client";
 import { useSnackbar } from "notistack";
 import { useAudioPlayback } from "../../utils/store/audioPlayback";
+import { getPlaylistsApi } from "@jellyfin/sdk/lib/utils/api/playlists-api";
 
 const PlayButton = ({
 	itemId,
@@ -37,6 +38,8 @@ const PlayButton = ({
 	iconOnly,
 	audio = false,
 	size = "large",
+	playlistItem,
+	playlistItemId = "",
 }) => {
 	const navigate = useNavigate();
 	const [
@@ -56,13 +59,19 @@ const PlayButton = ({
 		state.setSubtitleTracks,
 		state.setSelectedSubtitleTrack,
 	]);
-	const [setAudioUrl, setAudioDisplay, setAudioItem, setAudioTracks] =
-		useAudioPlayback((state) => [
-			state.setUrl,
-			state.setDisplay,
-			state.setItem,
-			state.setTracks,
-		]);
+	const [
+		setAudioUrl,
+		setAudioDisplay,
+		setAudioItem,
+		setAudioTracks,
+		setPlaylistItemId,
+	] = useAudioPlayback((state) => [
+		state.setUrl,
+		state.setDisplay,
+		state.setItem,
+		state.setTracks,
+		state.setPlaylistItemId,
+	]);
 	const setPlaybackDataLoading = usePlaybackDataLoadStore(
 		(state) => state.setIsLoading,
 	);
@@ -84,6 +93,13 @@ const PlayButton = ({
 						ItemFields.MediaStreams,
 					],
 				});
+			} else if (itemType == BaseItemKind.Playlist || playlistItem) {
+				result = await getPlaylistsApi(window.api).getPlaylistItems(
+					{
+						userId: userId,
+						playlistId: playlistItemId,
+					},
+				);
 			} else if (itemType == BaseItemKind.MusicAlbum) {
 				result = await getItemsApi(window.api).getItems({
 					parentId: itemId,
@@ -129,6 +145,7 @@ const PlayButton = ({
 					`${window.api.basePath}/Audio/${item.Items[0].Id}/universal?deviceId=${window.api.deviceInfo.id}&userId=${userId}&api_key=${window.api.accessToken}`,
 				);
 				setAudioItem(item.Items[0]);
+				setPlaylistItemId(playlistItemId);
 				setAudioDisplay(true);
 			} else {
 				setUrl(
@@ -219,13 +236,13 @@ const PlayButton = ({
 export default PlayButton;
 
 PlayButton.propTypes = {
-	itemId: PropTypes.string.isRequired,
+	itemId: PropTypes.string,
 	itemUserData: PropTypes.object,
-	userId: PropTypes.string.isRequired,
-	itemType: PropTypes.string.isRequired,
-	currentAudioTrack: PropTypes.number.isRequired,
-	currentSubTrack: PropTypes.number.isRequired,
-	currentVideoTrack: PropTypes.number.isRequired,
+	userId: PropTypes.string,
+	itemType: PropTypes.string,
+	currentAudioTrack: PropTypes.number,
+	currentSubTrack: PropTypes.number,
+	currentVideoTrack: PropTypes.number,
 	className: PropTypes.string,
 	sx: PropTypes.any,
 	iconProps: PropTypes.any,

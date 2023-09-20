@@ -12,6 +12,8 @@ import { useAudioPlayback } from "../../utils/store/audioPlayback";
  * @property {import("@jellyfin/sdk/lib/generated-client/models").BaseItemDto} item
  * @property {Array} queryKey
  * @property {string} userId
+ * @property {bool} playlistItem
+ * @property {string | undefined} playlistItemId
  */
 
 /**
@@ -20,7 +22,13 @@ import { useAudioPlayback } from "../../utils/store/audioPlayback";
  * @returns {React.Component}
  */
 
-const MusicTrack = ({ item, queryKey, userId }) => {
+const MusicTrack = ({
+	item,
+	queryKey,
+	userId,
+	playlistItem = false,
+	playlistItemId,
+}) => {
 	const [currentTrackItem] = useAudioPlayback((state) => [state.item]);
 
 	return (
@@ -54,6 +62,8 @@ const MusicTrack = ({ item, queryKey, userId }) => {
 						size="small"
 						iconOnly
 						audio
+						playlistItem={playlistItem}
+						playlistItemId={playlistItemId}
 					/>
 				</div>
 			</div>

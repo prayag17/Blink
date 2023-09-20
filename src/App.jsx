@@ -83,6 +83,7 @@ import AudioPlayer from "./components/playback/audioPlayer/index.jsx";
 import { useAudioPlayback } from "./utils/store/audioPlayback.js";
 import ArtistTitlePage from "./routes/artist/index.jsx";
 import EpisodeTitlePage from "./routes/episode/index.jsx";
+import PlaylistTitlePage from "./routes/playlist/index.jsx";
 
 const jellyfin = new Jellyfin({
 	clientInfo: {
@@ -499,6 +500,11 @@ function App() {
 								exact
 								path="/person/:id"
 								element={<PersonTitlePage />}
+							/>
+							<Route
+								exact
+								path="/playlist/:id"
+								element={<PlaylistTitlePage />}
 							/>
 							<Route
 								path="/series/:id"

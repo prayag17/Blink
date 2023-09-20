@@ -26,6 +26,7 @@ import { MdiClose } from "../../icons/mdiClose";
 import { MdiMusic } from "../../icons/mdiMusic";
 
 import { theme } from "../../../theme";
+import { getPlaystateApi } from "@jellyfin/sdk/lib/utils/api/playstate-api";
 
 const AudioPlayer = () => {
 	const user = useQuery({
@@ -60,6 +61,7 @@ const AudioPlayer = () => {
 		setAudioItem,
 		setAudioTracks,
 		resetPlayer,
+		playlistItemId,
 	] = useAudioPlayback((state) => [
 		state.url,
 		state.display,
@@ -72,6 +74,7 @@ const AudioPlayer = () => {
 		state.setItem,
 		state.setTracks,
 		state.reset,
+		state.playlistItemId,
 	]);
 
 	useEffect(() => {
@@ -95,8 +98,8 @@ const AudioPlayer = () => {
 				waveSurfer.play();
 				setLoading(false);
 			});
-			waveSurfer.on("timeupdate", (e) => {
-				setCurrentTime(e);
+			waveSurfer.on("timeupdate", async (time) => {
+				setCurrentTime(time);
 			});
 			waveSurfer.on("redraw", () => {
 				setShowWaveform(true);

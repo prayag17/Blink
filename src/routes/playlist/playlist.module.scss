@@ -1,0 +1,34 @@
+/** @format */
+
+.item-detail-playlist {
+	&-track {
+		display: grid;
+		grid-template-columns: 4% 1fr 80% 1fr;
+		align-items: center;
+		justify-items: center;
+		gap: 0.5em;
+		width: 100%;
+		padding: 0.25em 0;
+		background: rgb(255 255 255 / 0);
+		transition: background $transition-time-default;
+
+		&:first-child,
+		&:last-child {
+			border-bottom: none;
+		}
+		border-bottom: 1px solid rgb(255 255 255 / 0.05);
+		&s {
+			border-radius: 10px !important;
+			overflow: hidden !important;
+			background: $clr-background-dark-opacity-0_8 !important;
+		}
+
+		&:hover {
+			background: rgb(255 255 255 / 0.05);
+		}
+
+		&.playing {
+			color: $clr-accent-default;
+		}
+	}
+}
