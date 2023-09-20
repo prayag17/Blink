@@ -5,7 +5,7 @@ import { useNavigate } from "react-router-dom";
 
 import "./textLink.module.scss";
 
-const TextLink = ({ text, location, variant, otherProps }) => {
+const TextLink = ({ children, location, variant, otherProps }) => {
 	const navigate = useNavigate();
 
 	return (
@@ -15,7 +15,7 @@ const TextLink = ({ text, location, variant, otherProps }) => {
 			onClick={() => navigate(location)}
 			{...otherProps}
 		>
-			{text}
+			{children}
 		</Typography>
 	);
 };

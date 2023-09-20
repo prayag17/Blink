@@ -261,6 +261,7 @@ const ArtistTitlePage = () => {
 					queryKey={["item", id]}
 					disableMarkAsPlayedButton
 					audioPlayButton
+					disableInfoStrip
 				/>
 
 				<div className="item-detail-artist-container">

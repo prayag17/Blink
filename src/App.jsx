@@ -72,13 +72,17 @@ import { delUser, getUser } from "./utils/storage/user.js";
 
 import axios from "axios";
 import { useBackdropStore } from "./utils/store/backdrop.js";
-import { usePlaybackDataLoadStore } from "./utils/store/playback.js";
+import {
+	usePlaybackDataLoadStore,
+	usePlaybackStore,
+} from "./utils/store/playback.js";
 import BoxSetTitlePage from "./routes/boxset/index.jsx";
 import PersonTitlePage from "./routes/person/index.jsx";
 import MusicAlbumTitlePage from "./routes/album/index.jsx";
 import AudioPlayer from "./components/playback/audioPlayer/index.jsx";
 import { useAudioPlayback } from "./utils/store/audioPlayback.js";
 import ArtistTitlePage from "./routes/artist/index.jsx";
+import EpisodeTitlePage from "./routes/episode/index.jsx";
 
 const jellyfin = new Jellyfin({
 	clientInfo: {
@@ -268,9 +272,6 @@ function App() {
 	};
 
 	const location = useLocation();
-	useEffect(() => {
-		window.scrollTo(0, 0);
-	}, [location.pathname]);
 
 	if (!window.api) {
 		serverAvailable().then((available) => {
@@ -491,6 +492,11 @@ function App() {
 							/>
 							<Route
 								exact
+								path="/episode/:id"
+								element={<EpisodeTitlePage />}
+							/>
+							<Route
+								exact
 								path="/person/:id"
 								element={<PersonTitlePage />}
 							/>
@@ -519,7 +525,7 @@ function App() {
 						</Route>
 					</Routes>
 				</div>
-				{/* <ReactQueryDevtools /> */}
+				<ReactQueryDevtools />
 			</ThemeProvider>
 		</SnackbarProvider>
 	);

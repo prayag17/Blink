@@ -122,7 +122,7 @@ export const SideMenu = ({}) => {
 						sx: {
 							backgroundColor: "inherit",
 							border: "none",
-							width: `calc(${theme.spacing(7)} + 10px)`,
+							width: `4em`,
 							height: "100vh",
 							zIndex: "1",
 						},

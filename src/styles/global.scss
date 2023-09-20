@@ -60,13 +60,16 @@ body {
 	}
 }
 
-#root,
+#root {
+	width: 100%;
+}
+
 .root-page {
 	height: fit-content;
-	width: 100%;
+	width: calc(100% - 5em);
+
 	position: relative;
-	overflow-y: hidden;
-	overflow-x: hidden;
+	overflow: visible;
 	min-height: 100vh;
 }
 
@@ -116,10 +119,9 @@ h1 {
 }
 
 .scrollY {
-	overflow-x: hidden;
-	overflow-y: visible;
+	overflow: visible;
 	height: fit-content;
-	width: inherit;
+	width: 100%;
 	box-sizing: border-box;
 	min-height: 100vh;
 	padding-left: 1em;
@@ -133,4 +135,17 @@ h1 {
 
 .empty {
 	display: none;
+}
+
+.react-multi-carousel {
+	&-list {
+		overflow: visible !important;
+	}
+	&-item {
+		opacity: 0.4;
+		transition: opacity 550ms;
+		&--active {
+			opacity: 1;
+		}
+	}
 }

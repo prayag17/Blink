@@ -1,9 +1,18 @@
 /** @format */
 $maskPercentage: 40%;
 .hero {
-	position: relative;
+	display: flex;
+	width: 100%;
+	gap: 2em;
+	justify-content: space-between;
+	padding-right: 1em;
+	.item-detail-primaryImage {
+		width: 26%;
+		flex-shrink: 0;
+	}
 	&-backdrop {
-		position: absolute;
+		position: fixed;
+		background-attachment: fixed;
 		width: 100%;
 		height: 100vh;
 		top: 0;
@@ -55,8 +64,8 @@ $maskPercentage: 40%;
 	}
 
 	&-name-logo {
-		width: 8.3em;
-		height: 2.3em;
+		width: 10.4em;
+		height: 2.6em;
 		object-fit: contain;
 		object-position: left;
 		opacity: 0;

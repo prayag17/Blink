@@ -1,7 +1,7 @@
 /** @format */
 import PropTypes from "prop-types";
 
-import React, { useEffect, useState, useRef } from "react";
+import React, { useEffect, useState } from "react";
 import TextField from "@mui/material/TextField";
 import MenuItem from "@mui/material/MenuItem";
 import Chip from "@mui/material/Chip";
@@ -24,7 +24,6 @@ import PlayButton from "../../buttons/playButton";
 
 import "./hero.module.scss";
 import { Blurhash } from "react-blurhash";
-import { MediaTypeIconCollection } from "../../utils/iconsCollection";
 import TextLink from "../../textLink";
 
 /**
@@ -42,6 +41,7 @@ import TextLink from "../../textLink";
  * @property {bool} disableMarkAsPlayedButton
  * @property {string} albumBy
  * @property {bool} audioPlayButton
+ * @property {bool} favourParentImg
  */
 
 /**
@@ -63,9 +63,9 @@ const Hero = ({
 	disableMarkAsPlayedButton,
 	albumBy,
 	audioPlayButton = false,
+	favourParentImg = true,
+	isEpisode = false,
 }) => {
-	const backgroundRef = useRef(null);
-
 	const filterMediaStreamVideo = (source) => {
 		if (source.Type == MediaStreamType.Video) {
 			return true;
@@ -105,12 +105,12 @@ const Hero = ({
 
 	return (
 		<div
-			className="item-detail-hero"
+			className="item-detail-hero hero"
 			style={{
 				marginBottom: "2em",
 			}}
 		>
-			<div className="hero-backdrop" ref={backgroundRef}>
+			<div className="hero-backdrop">
 				{!!item.ImageBlurHashes.Backdrop && (
 					<>
 						{Object.keys(item.ImageBlurHashes.Backdrop)
@@ -124,7 +124,6 @@ const Hero = ({
 										)[0]
 									]
 								}
-								// hash="LEHV6nWB2yk8pyo0adR*.7kCMdnj"
 								width="1080"
 								height="720"
 								resolutionX={64}
@@ -150,65 +149,65 @@ const Hero = ({
 				)}
 				<div className="hero-backdrop-icon-container"></div>
 			</div>
-			<div className="item-detail-primaryImage">
-				<Card
-					item={item}
-					seriesId={item.SeriesId}
-					imageType={"Primary"}
-					cardType={
-						item.Type == BaseItemKind.MusicAlbum ||
-						item.Type == BaseItemKind.Audio
-							? "square"
-							: "portrait"
-					}
-					queryKey={queryKey}
-					userId={userId}
-					imageBlurhash={
-						!!item.ImageBlurHashes?.Primary &&
-						item.ImageBlurHashes?.Primary[
-							Object.keys(item.ImageBlurHashes.Primary)[0]
-						]
-					}
-					hideText
-					disablePadding
-					disableOverlay
-					onClick={() => {}}
-				/>
-			</div>
 			<div
 				className="item-detail-hero-info-container"
 				style={{
 					display: "flex",
 					flexDirection: "column",
+					width: "100%",
 				}}
 			>
 				<div>
-					<div
-						className="item-name"
-						style={{
-							marginTop: "4em",
-						}}
-					>
-						<Typography variant="h2" fontWeight={300}>
-							{!!item.ImageTags.Logo ? (
-								<img
-									src={
-										!!item.SeriesId
-											? `${window.api.basePath}/Items/${item.SeriesId}/Images/Logo`
-											: `${window.api.basePath}/Items/${item.Id}/Images/Logo`
-									}
-									className="hero-name-logo"
-									onLoad={(e) => {
-										e.target.style.opacity = 1;
+					<div className="item-name">
+						{isEpisode ? (
+							<>
+								<TextLink
+									variant="h2"
+									location={`/series/${item.SeriesId}`}
+									otherProps={{
+										fontWeight: 300,
 									}}
-								/>
-							) : (
-								item.Name
-							)}
-						</Typography>
+								>
+									{!!item.ParentLogoImageTag ? (
+										<img
+											src={`${window.api.basePath}/Items/${item.SeriesId}/Images/Logo`}
+											className="hero-name-logo"
+											onLoad={(e) => {
+												e.target.style.opacity = 1;
+											}}
+										/>
+									) : (
+										item.SeriesName
+									)}
+								</TextLink>
+								<Typography
+									variant="h3"
+									fontWeight={300}
+								>
+									{`S${item.ParentIndexNumber}:E${item.IndexNumber} ${item.Name}`}
+								</Typography>
+							</>
+						) : (
+							<Typography variant="h2" fontWeight={300}>
+								{!!item.ImageTags.Logo ? (
+									<img
+										src={
+											!!item.SeriesId
+												? `${window.api.basePath}/Items/${item.SeriesId}/Images/Logo`
+												: `${window.api.basePath}/Items/${item.Id}/Images/Logo`
+										}
+										className="hero-name-logo"
+										onLoad={(e) => {
+											e.target.style.opacity = 1;
+										}}
+									/>
+								) : (
+									item.Name
+								)}
+							</Typography>
+						)}
 						{!!albumBy && (
 							<TextLink
-								text={`By ${albumBy.Name}`}
 								variant="h6"
 								location={`/artist/${albumBy.Id}`}
 								otherProps={{
@@ -218,7 +217,7 @@ const Hero = ({
 									},
 								}}
 							>
-								By {albumBy}
+								By {albumBy.Name}
 							</TextLink>
 						)}
 					</div>
@@ -556,10 +555,12 @@ const Hero = ({
 								{writers.map((writer, index) => (
 									<>
 										<TextLink
-											text={writer.Name}
+											key={index}
 											variant={"subtitle1"}
 											location={`/person/${writer.Id}`}
-										/>
+										>
+											{writer.Name}
+										</TextLink>
 										{index !=
 											writers.length - 1 && (
 											<span
@@ -596,10 +597,12 @@ const Hero = ({
 								{directors.map((director, index) => (
 									<>
 										<TextLink
-											text={director.Name}
+											key={index}
 											variant={"subtitle1"}
 											location={`/person/${director.Id}`}
-										/>
+										>
+											{director.Name}
+										</TextLink>
 										{index !=
 											directors.length - 1 && (
 											<span
@@ -636,10 +639,12 @@ const Hero = ({
 								{artists.map((artist, index) => (
 									<>
 										<TextLink
-											text={artist.Name}
+											key={index}
 											variant={"subtitle1"}
 											location={`/artist/${artist.Id}`}
-										/>
+										>
+											{artist.Name}
+										</TextLink>
 										{index !=
 											artists.length - 1 && (
 											<span
@@ -680,6 +685,33 @@ const Hero = ({
 						</div>
 					)}
 				</div>
+			</div>
+			<div className="item-detail-primaryImage">
+				<Card
+					item={item}
+					seriesId={favourParentImg && item.SeriesId}
+					imageType={"Primary"}
+					cardType={
+						item.Type == BaseItemKind.MusicAlbum ||
+						item.Type == BaseItemKind.Audio
+							? "square"
+							: item.Type == BaseItemKind.Episode
+							? "thumb"
+							: "portrait"
+					}
+					queryKey={queryKey}
+					userId={userId}
+					imageBlurhash={
+						!!item.ImageBlurHashes?.Primary &&
+						item.ImageBlurHashes?.Primary[
+							Object.keys(item.ImageBlurHashes.Primary)[0]
+						]
+					}
+					hideText
+					disablePadding
+					disableOverlay
+					onClick={() => {}}
+				/>
 			</div>
 		</div>
 	);

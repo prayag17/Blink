@@ -18,8 +18,6 @@ import { BaseItemKind } from "@jellyfin/sdk/lib/generated-client";
 import { MdiTelevisionClassic } from "../icons/mdiTelevisionClassic";
 import { getRuntimeCompact } from "../../utils/date/time";
 
-const availableSpecialRoutes = [BaseItemKind.Series];
-
 /**
  * @typedef {Object} Props
  * @property {import("@jellyfin/sdk/lib/generated-client/models").BaseItemDto} item
@@ -48,11 +46,7 @@ export const EpisodeCard = ({
 }) => {
 	const navigate = useNavigate();
 	const defaultOnClick = () => {
-		if (availableSpecialRoutes.includes(item.Type)) {
-			navigate(`/${item.Type.toLocaleLowerCase()}/${item.Id}`);
-		} else {
-			navigate(`/item/${item.Id}`);
-		}
+		navigate(`/episode/${item.Id}`);
 	};
 	return (
 		<CardActionArea

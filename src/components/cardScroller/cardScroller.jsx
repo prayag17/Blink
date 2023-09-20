@@ -94,6 +94,8 @@ export const CardScroller = ({
 				arrows={false}
 				ref={(el) => setCarouselRef(el)}
 				className="card-scroller"
+				customTransition="all .6s"
+				transitionDuration={600}
 			>
 				{children}
 			</Carousel>

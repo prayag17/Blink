@@ -29,6 +29,7 @@ const availableSpecialRoutes = [
 	BaseItemKind.Series,
 	BaseItemKind.BoxSet,
 	BaseItemKind.MusicAlbum,
+	BaseItemKind.Episode,
 ];
 
 /**
