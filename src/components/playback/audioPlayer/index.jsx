@@ -7,6 +7,7 @@ import Fab from "@mui/material/Fab";
 import IconButton from "@mui/material/IconButton";
 import Typography from "@mui/material/Typography";
 import CircularProgress from "@mui/material/CircularProgress";
+import Slider from "@mui/material/Slider";
 
 import WaveSurfer from "wavesurfer.js";
 
@@ -27,6 +28,8 @@ import { MdiMusic } from "../../icons/mdiMusic";
 
 import { theme } from "../../../theme";
 import { getPlaystateApi } from "@jellyfin/sdk/lib/utils/api/playstate-api";
+import { MdiVolumeHigh } from "../../icons/mdiVolumeHigh";
+import { MdiVolumeOff } from "../../icons/mdiVolumeOff";
 
 const AudioPlayer = () => {
 	const user = useQuery({
@@ -40,8 +43,11 @@ const AudioPlayer = () => {
 
 	const waveSurferRef = useRef(null);
 	const waveSurferContainerRef = useRef(null);
+
 	const [playerReady, setPlayerReady] = useState(false);
 	const [playing, setPlaying] = useState(true);
+	const [volume, setVolume] = useState(0.8);
+	const [isMuted, setIsMuted] = useState(false);
 
 	const [loading, setLoading] = useState(true);
 
@@ -96,6 +102,9 @@ const AudioPlayer = () => {
 			waveSurfer.on("ready", () => {
 				waveSurferRef.current = waveSurfer;
 				waveSurfer.play();
+				waveSurfer.setVolume(volume);
+				waveSurfer.setMuted(isMuted);
+				setPlayerReady(true);
 				setLoading(false);
 			});
 			waveSurfer.on("timeupdate", async (time) => {
@@ -139,8 +148,12 @@ const AudioPlayer = () => {
 	}, [url, display, currentTrack]);
 
 	useEffect(() => {
-		if (playerReady) waveSurferRef.current.play();
-	}, [playerReady]);
+		console.log(playerReady);
+		if (playerReady) {
+			waveSurferRef.current.setVolume(volume);
+			waveSurferRef.current.setMuted(isMuted);
+		}
+	}, [playerReady, volume, isMuted]);
 
 	const handlePlayPause = () => {
 		waveSurferRef.current.playPause();
@@ -346,6 +359,58 @@ const AudioPlayer = () => {
 							justifyContent: "flex-end",
 						}}
 					>
+						<IconButton
+							onClick={(e) => {
+								setIsMuted(!isMuted);
+							}}
+						>
+							{isMuted ? (
+								<MdiVolumeOff />
+							) : (
+								<MdiVolumeHigh />
+							)}
+						</IconButton>
+						<Slider
+							value={isMuted ? 0 : volume * 100}
+							step={1}
+							max={100}
+							onChange={(e, newVal) =>
+								setVolume(newVal / 100)
+							}
+							valueLabelDisplay="auto"
+							valueLabelFormat={(value) =>
+								Math.floor(value)
+							}
+							size="small"
+							sx={{
+								mr: 1,
+								ml: 1,
+								width: "10em",
+								"& .MuiSlider-valueLabel": {
+									lineHeight: 1.2,
+									fontSize: 24,
+									background: "rgb(0 0 0 / 0.5)",
+									backdropFilter: "blur(5px)",
+									padding: 1,
+									borderRadius: "10px",
+									border: "1px solid rgb(255 255 255 / 0.15)",
+									boxShadow:
+										"0 0 10px rgb(0 0 0 / 0.4) ",
+									transform:
+										"translatey(-120%) scale(0)",
+									"&:before": {
+										display: "none",
+									},
+									"&.MuiSlider-valueLabelOpen": {
+										transform:
+											"translateY(-120%) scale(1)",
+									},
+									"& > *": {
+										transform: "rotate(0deg)",
+									},
+								},
+							}}
+						/>
 						<IconButton onClick={resetPlayer}>
 							<MdiClose />
 						</IconButton>
