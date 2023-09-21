@@ -44,13 +44,13 @@ body {
 
 .app-backdrop {
 	object-fit: cover;
-	width: 100%;
-	height: 100%;
+	width: calc(100% + 100px);
+	height: calc(100% + 100px);
 	position: absolute;
-	top: 0;
-	left: 0;
+	top: -100px;
+	left: -100px;
 	z-index: -1;
-	filter: blur(60px) saturate(110%) contrast(110%);
+	filter: blur(100px) saturate(120%) contrast(90%);
 	&-container {
 		position: fixed;
 		width: 100vw;
@@ -60,16 +60,12 @@ body {
 	}
 }
 
-#root {
-	width: 100%;
-}
-
+#root,
 .root-page {
 	height: fit-content;
-	width: calc(100% - 5em);
-
+	width: 100%;
 	position: relative;
-	overflow: visible;
+	overflow: hidden;
 	min-height: 100vh;
 }
 
@@ -119,7 +115,8 @@ h1 {
 }
 
 .scrollY {
-	overflow: visible;
+	overflow-x: hidden;
+	overflow-y: visible;
 	height: fit-content;
 	width: 100%;
 	box-sizing: border-box;
@@ -135,17 +132,4 @@ h1 {
 
 .empty {
 	display: none;
-}
-
-.react-multi-carousel {
-	&-list {
-		overflow: visible !important;
-	}
-	&-item {
-		opacity: 0.4;
-		transition: opacity 550ms;
-		&--active {
-			opacity: 1;
-		}
-	}
 }
