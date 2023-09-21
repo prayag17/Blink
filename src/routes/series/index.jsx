@@ -154,7 +154,7 @@ const SeriesTitlePage = () => {
 				userId: user.data.Id,
 				seriesId: item.data.Id,
 				seasonId: seasons.data.Items[currentSeason].Id,
-				fields: [ItemFields.SeasonUserData, ItemFields.Overview],
+				fields: [ItemFields.Overview],
 				excludeLocationTypes: [LocationType.Virtual],
 			});
 			return result.data;
