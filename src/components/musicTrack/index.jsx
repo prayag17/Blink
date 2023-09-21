@@ -28,11 +28,12 @@ const MusicTrack = ({
 	userId,
 	playlistItem = false,
 	playlistItemId,
+	className = "",
 }) => {
 	const [currentTrackItem] = useAudioPlayback((state) => [state.item]);
 
 	return (
-		<div className="music-track">
+		<div className={`music-track ${className}`}>
 			<div className="music-track-image">
 				<img
 					src={window.api.getItemImageUrl(

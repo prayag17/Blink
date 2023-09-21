@@ -64,4 +64,7 @@
 			z-index: 0;
 		}
 	}
+	&-track {
+		grid-template-columns: 4.5em 60% 0.5fr 0.5fr !important;
+	}
 }

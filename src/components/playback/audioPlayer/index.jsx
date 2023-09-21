@@ -8,6 +8,8 @@ import IconButton from "@mui/material/IconButton";
 import Typography from "@mui/material/Typography";
 import CircularProgress from "@mui/material/CircularProgress";
 import Slider from "@mui/material/Slider";
+import Popper from "@mui/material/Popper";
+import Paper from "@mui/material/Paper";
 
 import WaveSurfer from "wavesurfer.js";
 
@@ -30,6 +32,8 @@ import { theme } from "../../../theme";
 import { getPlaystateApi } from "@jellyfin/sdk/lib/utils/api/playstate-api";
 import { MdiVolumeHigh } from "../../icons/mdiVolumeHigh";
 import { MdiVolumeOff } from "../../icons/mdiVolumeOff";
+import { MdiPlaylistMusicOutline } from "../../icons/mdiPlaylistMusicOutline";
+import MusicTrack from "../../musicTrack";
 
 const AudioPlayer = () => {
 	const user = useQuery({
@@ -54,6 +58,11 @@ const AudioPlayer = () => {
 	const [showWaveform, setShowWaveform] = useState(false);
 
 	const [currentTime, setCurrentTime] = useState(0);
+
+	const [queueButton, setQueueButton] = useState(null);
+	const handleOpenQueue = (event) => {
+		setQueueButton(queueButton ? null : event.currentTarget);
+	};
 
 	const [
 		url,
@@ -148,7 +157,6 @@ const AudioPlayer = () => {
 	}, [url, display, currentTrack]);
 
 	useEffect(() => {
-		console.log(playerReady);
 		if (playerReady) {
 			waveSurferRef.current.setVolume(volume);
 			waveSurferRef.current.setMuted(isMuted);
@@ -359,6 +367,38 @@ const AudioPlayer = () => {
 							justifyContent: "flex-end",
 						}}
 					>
+						<Popper
+							open={Boolean(queueButton)}
+							anchorEl={queueButton}
+							placement="top"
+							style={{
+								zIndex: 100,
+							}}
+						>
+							<Paper
+								style={{
+									padding: "1em",
+									display: "flex",
+									flexDirection: "column",
+									width: "36em",
+								}}
+							>
+								{tracks.map((track, index) => {
+									return (
+										<MusicTrack
+											item={track}
+											key={track.Id}
+											queryKey={[]}
+											userId={user.data.Id}
+											className="audio-player-track"
+										/>
+									);
+								})}
+							</Paper>
+						</Popper>
+						<IconButton onClick={handleOpenQueue}>
+							<MdiPlaylistMusicOutline />
+						</IconButton>
 						<IconButton
 							onClick={(e) => {
 								setIsMuted(!isMuted);
