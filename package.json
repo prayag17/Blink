@@ -22,6 +22,7 @@
 		"@tanstack/react-query-devtools": "^4.35.3",
 		"@tauri-apps/api": "^1.4.0",
 		"axios": "^1.5.0",
+		"axios-tauri-api-adapter": "^0.2.0",
 		"blurhash": "^2.0.5",
 		"events": "^3.3.0",
 		"framer-motion": "^10.16.4",

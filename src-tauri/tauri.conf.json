@@ -23,6 +23,16 @@
 			},
 			"shell": {
 				"all": true
+			},
+			"http": {
+				"all": true,
+				"request": true,
+				"scope": [
+					"http://**",
+					"http://*",
+					"https://**",
+					"https://*"
+				]
 			}
 		},
 		"bundle": {

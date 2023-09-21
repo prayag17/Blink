@@ -70,7 +70,6 @@ import { v4 as uuidv4 } from "uuid";
 import { delServer, getServer } from "./utils/storage/servers.js";
 import { delUser, getUser } from "./utils/storage/user.js";
 
-import axios from "axios";
 import { useBackdropStore } from "./utils/store/backdrop.js";
 import {
 	usePlaybackDataLoadStore,
@@ -85,6 +84,11 @@ import ArtistTitlePage from "./routes/artist/index.jsx";
 import EpisodeTitlePage from "./routes/episode/index.jsx";
 import PlaylistTitlePage from "./routes/playlist/index.jsx";
 
+// Initial custom axios client to use tauri's http module
+import axios from "axios";
+import axiosTauriApiAdapter from "axios-tauri-api-adapter";
+const axiosClient = axios.create({ adapter: axiosTauriApiAdapter });
+
 const jellyfin = new Jellyfin({
 	clientInfo: {
 		name: "JellyPlayer",
@@ -97,13 +101,14 @@ const jellyfin = new Jellyfin({
 });
 
 event.on("create-jellyfin-api", (serverAddress) => {
-	window.api = jellyfin.createApi(serverAddress);
+	window.api = jellyfin.createApi(serverAddress, null, axiosClient);
 	// window.api = jellyfin.createApi(serverAddress);
 });
 event.on("set-api-accessToken", (serverAddress) => {
 	window.api = jellyfin.createApi(
 		serverAddress,
 		sessionStorage.getItem("accessToken"),
+		axiosClient,
 	);
 });
 
@@ -190,6 +195,7 @@ function App() {
 			const result = await axios.get(
 				new URL(`${server.Ip}/System/Ping`).href,
 			);
+
 			if (result.data == "Jellyfin Server") {
 				event.emit("create-jellyfin-api", server.Ip);
 				setServerReachable(true);
