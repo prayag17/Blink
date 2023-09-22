@@ -387,8 +387,6 @@ const LibraryView = () => {
 		queryFn: () => fetchLibItems(id),
 		enabled: currentLib.isSuccess,
 		networkMode: "always",
-		keepPreviousData: false,
-		cacheTime: 0,
 	});
 
 	const handleCurrentViewType = (e) => {
@@ -458,454 +456,57 @@ const LibraryView = () => {
 	}, []);
 
 	return (
-		<Box
-			sx={{
-				display: "flex",
-			}}
-		>
-			<Box
-				component="main"
-				className="scrollY"
-				sx={{
-					flexGrow: 1,
-					pt: 19,
-					position: "relative",
+		<main className="scrollY library">
+			<div
+				style={{
+					padding: "1em 1em 1em 0.6em",
+					height: "4em",
+					boxShadow: "0 0px 10px 12px hsl(256, 100%, 6%)",
+					zIndex: 10,
+					display: "flex",
+					alignItems: "center",
+					justifyContent: "center",
 				}}
 			>
-				<AppBar
-					position="fixed"
-					elevation={trigger ? 1 : 0}
-					sx={{
-						width: `calc(100vw - ${theme.spacing(7)} - 10px)`,
-						top: `${8 * 8}px !important`,
-						backdropFilter: trigger ? `blur(30px)` : "none",
-						background: "transparent",
-						backgroundColor: trigger
-							? `${clrBackgroundDarkOpacity0_8} !important`
-							: "transparent",
-						transition:
-							"transition: background-color 150ms, box-shadow 150ms, backdrop-filter 150ms !important",
+				<div
+					style={{
+						display: "flex",
+						alignItems: "center",
+						width: "fit-content",
 					}}
 				>
-					<Divider
-						sx={{
-							transform: trigger
-								? "scaleX(1)"
-								: "scaleX(0)",
-							transition: "transform 150ms",
-							transformOrigin: "left",
-							transitionDelay: "50ms",
-						}}
+					<Typography
+						variant="h5"
+						sx={{ mr: 2, flexShrink: 0 }}
+						noWrap
+					>
+						{currentLib.isLoading ? (
+							<CircularProgress sx={{ p: 1 }} />
+						) : (
+							currentLib.data.Items[0].Name
+						)}
+					</Typography>
+					<Chip
+						label={
+							items.isLoading ? (
+								<CircularProgress sx={{ p: 1.5 }} />
+							) : (
+								items.data.TotalRecordCount
+							)
+						}
 					/>
-					<Toolbar sx={{ justifyContent: "space-between" }}>
-						<Stack alignItems="center" direction="row">
-							<Typography
-								variant="h5"
-								sx={{ mr: 2, flexShrink: 0 }}
-								noWrap
-							>
-								{currentLib.isLoading ? (
-									<CircularProgress sx={{ p: 1 }} />
-								) : (
-									currentLib.data.Items[0].Name
-								)}
-							</Typography>
-							<Chip
-								label={
-									items.isLoading ? (
-										<CircularProgress
-											sx={{ p: 1.5 }}
-										/>
-									) : (
-										items.data.TotalRecordCount
-									)
-								}
-							/>
-						</Stack>
-
-						{/* <InputLabel id="demo-simple-select-label">
-								Age
-							</InputLabel> */}
-						<Stack
-							direction="row"
-							spacing={2}
-							divider={
-								<Divider
-									orientation="vertical"
-									flexItem
-									variant="inset"
-								/>
-							}
-						>
-							{currentLib.isSuccess &&
-								allowedFilterViews.includes(
-									currentLib.data.Items[0]
-										.CollectionType,
-								) && (
-									<>
-										<Button
-											id="basic-button"
-											aria-controls={
-												open
-													? "basic-menu"
-													: undefined
-											}
-											aria-haspopup="true"
-											aria-expanded={
-												open
-													? "true"
-													: undefined
-											}
-											startIcon={
-												<MdiFilterOutline />
-											}
-											endIcon={
-												<MdiChevronDown />
-											}
-											onClick={openFiltersMenu}
-											color="white"
-											// sx={{ p: 1 }}
-											// size="small"
-										>
-											Filter
-										</Button>
-										<Menu
-											id="basic-menu"
-											anchorEl={
-												filterButtonAnchorEl
-											}
-											open={filterMenuOpen}
-											onClose={
-												closeFiltersMenu
-											}
-											MenuListProps={{
-												"aria-labelledby":
-													"basic-button",
-												sx: { p: 1 },
-											}}
-											anchorOrigin={{
-												vertical: "bottom",
-												horizontal:
-													"center",
-											}}
-											transformOrigin={{
-												vertical: "top",
-												horizontal:
-													"center",
-											}}
-											sx={{
-												maxHeight: "55%",
-											}}
-										>
-											<Accordion>
-												<AccordionSummary
-													expandIcon={
-														<MdiChevronDown />
-													}
-													aria-controls="panel1bh-content"
-													id="panel1bh-header"
-												>
-													<Typography
-														sx={{
-															width: "33%",
-															flexShrink: 0,
-														}}
-													>
-														Status
-													</Typography>
-												</AccordionSummary>
-												<Divider />
-												<AccordionDetails
-													sx={{
-														maxHeight:
-															"15em",
-														overflow:
-															"auto",
-													}}
-												>
-													<Stack>
-														{availableWatchStatus.map(
-															(
-																item,
-																index,
-															) => {
-																return (
-																	<MenuItem
-																		sx={{
-																			justifyContent:
-																				"space-between",
-																		}}
-																		key={
-																			index
-																		}
-																	>
-																		{
-																			item.title
-																		}
-																		<Checkbox
-																			value={
-																				item.value
-																			}
-																			onChange={(
-																				e,
-																			) =>
-																				item.state(
-																					e
-																						.target
-																						.checked,
-																				)
-																			}
-																		/>
-																	</MenuItem>
-																);
-															},
-														)}
-													</Stack>
-												</AccordionDetails>
-											</Accordion>
-											{!onlyStatusFilterViews.includes(
-												currentLib.data
-													.Items[0]
-													.CollectionType,
-											) && (
-												<Accordion>
-													<AccordionSummary
-														expandIcon={
-															<MdiChevronDown />
-														}
-														aria-controls="panel1bh-content"
-														id="panel1bh-header"
-													>
-														<Typography
-															sx={{
-																width: "33%",
-																flexShrink: 0,
-															}}
-														>
-															Features
-														</Typography>
-													</AccordionSummary>
-													<Divider />
-													<AccordionDetails
-														sx={{
-															maxHeight:
-																"15em",
-															overflow:
-																"auto",
-														}}
-													>
-														<Stack>
-															{availableFeatureFilters.map(
-																(
-																	item,
-																	index,
-																) => {
-																	return (
-																		<MenuItem
-																			sx={{
-																				justifyContent:
-																					"space-between",
-																			}}
-																			key={
-																				index
-																			}
-																		>
-																			{
-																				item.title
-																			}
-																			<Checkbox
-																				value={
-																					item.value
-																				}
-																				onChange={(
-																					e,
-																				) =>
-																					item.state(
-																						e
-																							.target
-																							.checked,
-																					)
-																				}
-																			/>
-																		</MenuItem>
-																	);
-																},
-															)}
-														</Stack>
-													</AccordionDetails>
-												</Accordion>
-											)}
-											{!onlyStatusFilterViews.includes(
-												currentLib.data
-													.Items[0]
-													.CollectionType,
-											) && (
-												<Accordion>
-													<AccordionSummary
-														expandIcon={
-															<MdiChevronDown />
-														}
-														aria-controls="panel1bh-content"
-														id="panel1bh-header"
-													>
-														<Typography
-															sx={{
-																flexShrink: 0,
-															}}
-															noWrap
-														>
-															Video
-															Type
-														</Typography>
-													</AccordionSummary>
-													<Divider />
-													<AccordionDetails
-														sx={{
-															maxHeight:
-																"15em",
-															overflow:
-																"auto",
-														}}
-													>
-														<Stack>
-															{availableVideoTypeFilters.map(
-																(
-																	item,
-																	index,
-																) => {
-																	return (
-																		<MenuItem
-																			sx={{
-																				justifyContent:
-																					"space-between",
-																			}}
-																			key={
-																				index
-																			}
-																		>
-																			{
-																				item.title
-																			}
-																			<Checkbox
-																				value={
-																					item.value
-																				}
-																				onChange={(
-																					e,
-																				) =>
-																					item.state(
-																						e
-																							.target
-																							.checked,
-																					)
-																				}
-																			/>
-																		</MenuItem>
-																	);
-																},
-															)}
-														</Stack>
-													</AccordionDetails>
-												</Accordion>
-											)}
-										</Menu>
-									</>
-								)}
-							{!disabledSortViews.includes(
-								currentViewType,
-							) && (
-								<>
-									{sortByData != undefined &&
-										sortBy != undefined && (
-											<>
-												<Checkbox
-													icon={
-														<MdiSortDescending />
-													}
-													checkedIcon={
-														<MdiSortAscending />
-													}
-													sx={{
-														color: "white !important",
-													}}
-													color="white"
-													onChange={
-														handleSortChange
-													}
-													checked={
-														sortAscending
-													}
-												/>
-												<TextField
-													select
-													hiddenLabel
-													value={sortBy}
-													size="small"
-													variant="filled"
-													onChange={
-														handleSortBy
-													}
-												>
-													{sortByData.map(
-														(
-															item,
-															index,
-														) => {
-															return (
-																<MenuItem
-																	key={
-																		index
-																	}
-																	value={
-																		item.value
-																	}
-																>
-																	{`By ${item.title}`}
-																</MenuItem>
-															);
-														},
-													)}
-												</TextField>
-											</>
-										)}
-								</>
-							)}
-							{viewType.length != 0 &&
-								currentViewType != undefined && (
-									<TextField
-										select
-										hiddenLabel
-										// value={viewType[0].value}
-										value={currentViewType}
-										size="small"
-										variant="filled"
-										onChange={
-											handleCurrentViewType
-										}
-									>
-										{viewType.map(
-											(item, index) => {
-												return (
-													<MenuItem
-														key={
-															item.value
-														}
-														value={
-															item.value
-														}
-													>
-														{
-															item.title
-														}
-													</MenuItem>
-												);
-											},
-										)}
-									</TextField>
-								)}
-						</Stack>
-					</Toolbar>
-				</AppBar>
+				</div>
+			</div>
+			<div
+				style={{
+					height: "calc(100vh - 4em)",
+					overflowY: "auto",
+					overflowX: "hidden",
+					paddingBottom: "1em",
+					paddingRight: "1em",
+					paddingTop: "15px",
+				}}
+			>
 				{items.isLoading ? (
 					<Box
 						sx={{
@@ -933,27 +534,25 @@ const LibraryView = () => {
 				) : items.data.TotalRecordCount == 0 ? (
 					<EmptyNotice />
 				) : currentViewType != BaseItemKind.Audio ? (
-					<Grid2 container columns={{ xs: 2, sm: 4, md: 8 }}>
+					<div className="library-grid">
 						{items.data.Items.map((item, index) => {
 							return (
-								<Grid2
+								<motion.div
+									style={{
+										width: "100%",
+									}}
 									key={item.Id}
-									xs={1}
-									sm={1}
-									md={1}
-									component={motion.div}
 									initial={{
-										transform: "scale(0.8)",
 										opacity: 0,
+										transform: "scale(0.9)",
 									}}
 									animate={{
-										transform: "scale(1)",
 										opacity: 1,
+										transform: "scale(1)",
 									}}
 									transition={{
-										duration: 0.25,
-										ease: "easeInOut",
-										delay: 0.02 * index,
+										duration: 0.2,
+										ease: "anticipate",
 									}}
 								>
 									<Card
@@ -1048,10 +647,10 @@ const LibraryView = () => {
 											]
 										}
 									></Card>
-								</Grid2>
+								</motion.div>
 							);
 						})}
-					</Grid2>
+					</div>
 				) : (
 					<TableContainer>
 						<Table>
@@ -1176,7 +775,7 @@ const LibraryView = () => {
 					</TableContainer>
 				)}
 
-				{!items.isFetching &&
+				{!items.isLoading &&
 					!disablePaginationViews.includes(currentViewType) &&
 					items.isSuccess &&
 					items.data.TotalRecordCount > maxDisplayItems && (
@@ -1212,10 +811,10 @@ const LibraryView = () => {
 							/>
 						</Stack>
 					)}
+			</div>
 
-				{items.isError && <ErrorNotice />}
-			</Box>
-		</Box>
+			{items.isError && <ErrorNotice />}
+		</main>
 	);
 };
 
