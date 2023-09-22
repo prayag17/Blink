@@ -282,6 +282,16 @@ const CarouselSlide = ({ item }) => {
 								size: "large",
 							}}
 							itemUserData={item.UserData}
+							audio={
+								item.Type == BaseItemKind.MusicAlbum ||
+								item.Type == BaseItemKind.Audio ||
+								item.Type == BaseItemKind.AudioBook ||
+								item.Type == BaseItemKind.Playlist
+							}
+							playlistItem={
+								item.Type == BaseItemKind.Playlist
+							}
+							playlistItemId={item.Id}
 						/>
 
 						<Button

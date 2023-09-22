@@ -173,7 +173,7 @@ function App() {
 
 	const usersAvailable = async () => {
 		const users = await getUserApi(window.api).getPublicUsers();
-		if (users.data.length >= 1) {
+		if (users.status == 200 || users.data.length >= 1) {
 			return true;
 		} else {
 			return false;
@@ -279,6 +279,10 @@ function App() {
 	};
 
 	const location = useLocation();
+
+	useEffect(() => {
+		window.scrollTo(0, 0);
+	}, [location.key]);
 
 	if (!window.api) {
 		serverAvailable().then((available) => {
