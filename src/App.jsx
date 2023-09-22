@@ -89,6 +89,12 @@ import axios from "axios";
 import axiosTauriApiAdapter from "axios-tauri-api-adapter";
 const axiosClient = axios.create({ adapter: axiosTauriApiAdapter });
 
+const deviceId = localStorage.getItem("deviceId");
+
+if (!deviceId) {
+	localStorage.setItem("deviceId", uuidv4());
+}
+
 const jellyfin = new Jellyfin({
 	clientInfo: {
 		name: "JellyPlayer",
@@ -96,7 +102,7 @@ const jellyfin = new Jellyfin({
 	},
 	deviceInfo: {
 		name: "JellyPlayer",
-		id: uuidv4(),
+		id: deviceId,
 	},
 });
 
