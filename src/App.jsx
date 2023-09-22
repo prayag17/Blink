@@ -87,7 +87,10 @@ import PlaylistTitlePage from "./routes/playlist/index.jsx";
 // Initial custom axios client to use tauri's http module
 import axios from "axios";
 import axiosTauriApiAdapter from "axios-tauri-api-adapter";
-const axiosClient = axios.create({ adapter: axiosTauriApiAdapter });
+const axiosClient = axios.create({
+	adapter: axiosTauriApiAdapter,
+	headers: { "Access-Control-Allow-Origin": "*" },
+});
 
 const deviceId = localStorage.getItem("deviceId");
 
