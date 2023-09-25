@@ -386,15 +386,15 @@ const SeriesTitlePage = () => {
 														"translateY(10px)",
 													opacity: 0,
 												}}
-												animate={{
+												whileInView={{
 													opacity: 1,
 													transform:
 														"translateY(0px)",
 												}}
+												viewport={{
+													once: true,
+												}}
 												transition={{
-													delay:
-														index *
-														0.05,
 													duration: 0.2,
 													ease: "backInOut",
 												}}

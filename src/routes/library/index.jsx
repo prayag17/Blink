@@ -84,7 +84,7 @@ const LibraryView = () => {
 	});
 
 	const [sortAscending, setSortAscending] = useState(true);
-	const [sortBy, setSortBy] = useState("SortName");
+	const [sortBy, setSortBy] = useState("");
 
 	/**
 	 * @typedef {{title: string, value: string}} SortObject
@@ -199,8 +199,13 @@ const LibraryView = () => {
 		{ title: "3D", value: false, state: (val) => setIs3D(val) },
 	];
 
-	const [currentViewType, setCurrentViewType] = useState(undefined);
+	const [currentViewType, setCurrentViewType] = useState("");
+
+	/**
+	 * @type {[SortObject[], Function]}
+	 */
 	const [viewType, setViewType] = useState([]);
+
 	useEffect(() => {
 		if (currentLib.isSuccess) {
 			if (currentLib.data.Items[0].CollectionType == "movies") {
@@ -306,26 +311,36 @@ const LibraryView = () => {
 			result = await getArtistsApi(window.api).getAlbumArtists({
 				userId: user.data.Id,
 				parentId: libraryId,
+				startIndex: maxDisplayItems * (page - 1),
+				limit: maxDisplayItems,
 			});
 		} else if (currentViewType == "Person") {
 			result = await getPersonsApi(window.api).getPersons({
 				userId: user.data.Id,
 				personTypes: ["Actor"],
+				startIndex: maxDisplayItems * (page - 1),
+				limit: maxDisplayItems,
 			});
 		} else if (currentViewType == "Genre") {
 			result = await getGenresApi(window.api).getGenres({
 				userId: user.data.Id,
 				parentId: libraryId,
+				startIndex: maxDisplayItems * (page - 1),
+				limit: maxDisplayItems,
 			});
 		} else if (currentViewType == "MusicGenre") {
 			result = await getMusicGenresApi(window.api).getMusicGenres({
 				userId: user.data.Id,
 				parentId: libraryId,
+				startIndex: maxDisplayItems * (page - 1),
+				limit: maxDisplayItems,
 			});
 		} else if (currentViewType == "Studio") {
 			result = await getStudiosApi(window.api).getStudios({
 				userId: user.data.Id,
 				parentId: libraryId,
+				startIndex: maxDisplayItems * (page - 1),
+				limit: maxDisplayItems,
 			});
 		} else {
 			result = await getItemsApi(window.api).getItems({
@@ -509,25 +524,55 @@ const LibraryView = () => {
 			<div className="library-items">
 				<div className="library-items-header">
 					<div className="library-items-options">
-						<IconButton
-							onClick={() =>
-								setSortAscending(!sortAscending)
-							}
-						>
-							{sortAscending ? (
-								<MdiSortAscending />
-							) : (
-								<MdiSortDescending />
-							)}
-						</IconButton>
+						{disabledSortViews.includes(currentViewType) ? (
+							<></>
+						) : (
+							<>
+								<IconButton
+									onClick={() =>
+										setSortAscending(
+											!sortAscending,
+										)
+									}
+								>
+									{sortAscending ? (
+										<MdiSortAscending />
+									) : (
+										<MdiSortDescending />
+									)}
+								</IconButton>
+
+								<TextField
+									disabled={!Boolean(sortBy)}
+									select
+									value={sortBy}
+									onChange={handleSortBy}
+									size="small"
+								>
+									{sortByData.map(
+										(option, index) => (
+											<MenuItem
+												key={index}
+												value={option.value}
+											>
+												{option.title}
+											</MenuItem>
+										),
+									)}
+								</TextField>
+							</>
+						)}
 
 						<TextField
+							disabled={!Boolean(currentViewType)}
 							select
-							value={sortBy}
-							onChange={handleSortBy}
+							value={currentViewType}
+							onChange={(e) =>
+								setCurrentViewType(e.target.value)
+							}
 							size="small"
 						>
-							{sortByData.map((option, index) => (
+							{viewType.map((option, index) => (
 								<MenuItem
 									key={index}
 									value={option.value}
@@ -621,11 +666,29 @@ const LibraryView = () => {
 												  }`
 												: item.ProductionYear
 										}
+										disableOverlay={
+											item.Type ==
+												BaseItemKind.Person ||
+											item.Type ==
+												BaseItemKind.MusicAlbum ||
+											item.Type ==
+												BaseItemKind.Genre ||
+											item.Type ==
+												BaseItemKind.MusicGenre ||
+											item.Type ==
+												BaseItemKind.Studio
+										}
 										cardType={
 											item.Type ==
 												BaseItemKind.MusicAlbum ||
 											item.Type ==
-												BaseItemKind.Audio
+												BaseItemKind.Audio ||
+											item.Type ==
+												BaseItemKind.Genre ||
+											item.Type ==
+												BaseItemKind.MusicGenre ||
+											item.Type ==
+												BaseItemKind.Studio
 												? "square"
 												: "portrait"
 										}

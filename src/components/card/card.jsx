@@ -216,7 +216,7 @@ export const Card = ({
 								<MarkPlayedButton
 									itemId={item.Id}
 									itemName={item.Name}
-									isPlayed={item.UserData.Played}
+									isPlayed={item.UserData?.Played}
 									queryKey={queryKey}
 									userId={userId}
 								/>
@@ -225,7 +225,7 @@ export const Card = ({
 						{item.UserData?.PlaybackPositionTicks > 0 && (
 							<LinearProgress
 								variant="determinate"
-								value={item.UserData.PlayedPercentage}
+								value={item.UserData?.PlayedPercentage}
 								style={{
 									position: "absolute",
 									left: 0,
