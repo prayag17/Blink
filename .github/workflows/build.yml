@@ -12,14 +12,14 @@ jobs:
           strategy:
                fail-fast: false
                matrix:
-                    platform: [macos-latest, ubuntu-18.04, windows-latest]
+                    platform: [macos-latest, ubuntu-22.04, windows-latest]
           runs-on: ${{ matrix.platform }}
           steps:
                - name: Checkout repository
                  uses: actions/checkout@v4
 
                - name: Install dependencies (ubuntu only)
-                 if: matrix.platform == 'ubuntu-18.04'
+                 if: matrix.platform == 'ubuntu-22.04'
                  # You can remove libayatana-appindicator3-dev if you don't use the system tray feature.
                  run: |
                       sudo apt-get update
