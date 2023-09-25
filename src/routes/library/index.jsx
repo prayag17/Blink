@@ -64,6 +64,7 @@ import { MdiMusic } from "../../components/icons/mdiMusic";
 import { MdiHeart } from "../../components/icons/mdiHeart";
 import { MdiHeartOutline } from "../../components/icons/mdiHeartOutline";
 import { useBackdropStore } from "../../utils/store/backdrop";
+import { AnimatePresence } from "framer-motion";
 
 const LibraryView = () => {
 	const navigate = useNavigate();
@@ -83,13 +84,17 @@ const LibraryView = () => {
 	});
 
 	const [sortAscending, setSortAscending] = useState(true);
-	const [sortBy, setSortBy] = useState();
-	const [sortByData, setSortByData] = useState();
+	const [sortBy, setSortBy] = useState("SortName");
 
-	const handleSortChange = (e) => {
-		setSortAscending(e.target.checked);
-		console.log(e.target.checked);
-	};
+	/**
+	 * @typedef {{title: string, value: string}} SortObject
+	 */
+
+	/**
+	 * @type {[SortObject[], Function]}
+	 */
+	const [sortByData, setSortByData] = useState([]);
+
 	const handleSortBy = (e) => {
 		setSortBy(e.target.value);
 	};
@@ -236,6 +241,7 @@ const LibraryView = () => {
 					},
 				]);
 			} else {
+				// currentViewType cant be "" or null or undefined since it is converted to Boolean to enable fetchItems query
 				setCurrentViewType("none");
 				setViewType([]);
 			}
@@ -405,10 +411,6 @@ const LibraryView = () => {
 		networkMode: "always",
 	});
 
-	const handleCurrentViewType = (e) => {
-		setCurrentViewType(e.target.value);
-	};
-
 	const disabledSortViews = [
 		"MusicArtist",
 		"Person",
@@ -429,10 +431,7 @@ const LibraryView = () => {
 		setFilterButtonAnchorEl(null);
 	};
 
-	const trigger = useScrollTrigger({
-		disableHysteresis: true,
-		threshold: 1,
-	});
+	console.log(sortBy == "Random");
 
 	const handleLiking = async (item) => {
 		let result;
@@ -507,16 +506,38 @@ const LibraryView = () => {
 					/>
 				</div>
 			</div>
-			<div
-				style={{
-					height: "calc(100vh - 4em)",
-					overflowY: "auto",
-					overflowX: "hidden",
-					paddingBottom: "1em",
-					paddingRight: "1em",
-					paddingTop: "15px",
-				}}
-			>
+			<div className="library-items">
+				<div className="library-items-header">
+					<div className="library-items-options">
+						<IconButton
+							onClick={() =>
+								setSortAscending(!sortAscending)
+							}
+						>
+							{sortAscending ? (
+								<MdiSortAscending />
+							) : (
+								<MdiSortDescending />
+							)}
+						</IconButton>
+
+						<TextField
+							select
+							value={sortBy}
+							onChange={handleSortBy}
+							size="small"
+						>
+							{sortByData.map((option, index) => (
+								<MenuItem
+									key={index}
+									value={option.value}
+								>
+									{option.title}
+								</MenuItem>
+							))}
+						</TextField>
+					</div>
+				</div>
 				{items.isLoading ? (
 					<Box
 						sx={{
@@ -551,23 +572,24 @@ const LibraryView = () => {
 									style={{
 										width: "100%",
 									}}
-									key={item.Id}
+									key={`${item.Id}${page}`}
 									initial={{
 										opacity: 0,
 										transform: "scale(0.9)",
 									}}
-									animate={{
+									whileInView={{
 										opacity: 1,
 										transform: "scale(1)",
 									}}
+									viewport={{
+										once: true,
+									}}
 									transition={{
-										duration: 0.2,
+										duration: 0.25,
 										ease: "anticipate",
-										delay: index * 0.02,
 									}}
 								>
 									<Card
-										key={item.Id}
 										item={item}
 										seriesId={item.SeriesId}
 										cardTitle={
