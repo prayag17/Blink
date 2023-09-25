@@ -199,6 +199,7 @@ const LibraryView = () => {
 	useEffect(() => {
 		if (currentLib.isSuccess) {
 			if (currentLib.data.Items[0].CollectionType == "movies") {
+				setCurrentViewType(BaseItemKind.Movie);
 				setViewType([
 					{ title: "Movies", value: BaseItemKind.Movie },
 					{ title: "Collections", value: BaseItemKind.BoxSet },
@@ -207,6 +208,7 @@ const LibraryView = () => {
 					{ title: "Studios", value: BaseItemKind.Studio },
 				]);
 			} else if (currentLib.data.Items[0].CollectionType == "music") {
+				setCurrentViewType(BaseItemKind.MusicAlbum);
 				setViewType([
 					{ title: "Albums", value: BaseItemKind.MusicAlbum },
 					{ title: "Songs", value: BaseItemKind.Audio },
@@ -216,17 +218,30 @@ const LibraryView = () => {
 			} else if (
 				currentLib.data.Items[0].CollectionType == "tvshows"
 			) {
+				setCurrentViewType(BaseItemKind.Series);
 				setViewType([
 					{ title: "Series", value: BaseItemKind.Series },
 					{ title: "Actors", value: BaseItemKind.Person },
 					{ title: "Genres", value: BaseItemKind.Genre },
 					{ title: "Networks", value: BaseItemKind.Studio },
 				]);
+			} else if (
+				currentLib.data.Items[0].CollectionType == "playlists"
+			) {
+				setCurrentViewType(BaseItemKind.PlaylistsFolder);
+				setViewType([
+					{
+						title: "Playlists",
+						value: BaseItemKind.PlaylistsFolder,
+					},
+				]);
 			} else {
+				setCurrentViewType("none");
 				setViewType([]);
 			}
 
 			if (currentLib.data.Items[0].CollectionType == "movies") {
+				setSortBy("SortName");
 				setSortByData([
 					{ title: "Name", value: "SortName" },
 					{ title: "Critic Rating", value: "CriticRating" },
@@ -240,6 +255,7 @@ const LibraryView = () => {
 			} else if (
 				currentLib.data.Items[0].CollectionType == "tvshows"
 			) {
+				setSortBy("SortName");
 				setSortByData([
 					{ title: "Name", value: "SortName" },
 					{ title: "Critic Rating", value: "CriticRating" },
@@ -250,6 +266,7 @@ const LibraryView = () => {
 					{ title: "Random", value: "Random" },
 				]);
 			} else if (currentLib.data.Items[0].CollectionType == "music") {
+				setSortBy("Name");
 				setSortByData([
 					{ title: "Name", value: "Name" },
 					{ title: "Album Artist", value: "AlbumArtist" },
@@ -262,6 +279,7 @@ const LibraryView = () => {
 					{ title: "Random", value: "Random" },
 				]);
 			} else {
+				setSortBy("SortName");
 				setSortByData([
 					{ title: "Name", value: "SortName" },
 					{ title: "Critic Rating", value: "CriticRating" },
@@ -275,12 +293,6 @@ const LibraryView = () => {
 			}
 		}
 	}, [currentLib.isSuccess]);
-
-	useEffect(() => {
-		if (sortByData != undefined) {
-			setSortBy(sortByData[0].value);
-		}
-	}, [sortByData]);
 
 	const fetchLibItems = async (libraryId) => {
 		let result;
@@ -317,8 +329,8 @@ const LibraryView = () => {
 					currentLib.data.Items[0].CollectionType ===
 						"homevideos" ||
 					currentLib.data.Items[0].Type === "Folder" ||
-					(currentLib.data.Items[0].Type ===
-						"CollectionFolder" &&
+					currentLib.data.Items[0].Type === "CollectionFolder" ||
+					(currentLib.data.Items[0].Type != "boxsets" &&
 						!("CollectionType" in currentLib.data.Items[0]))
 						? undefined
 						: true,
@@ -360,44 +372,42 @@ const LibraryView = () => {
 			"currentLibItems",
 			id,
 			`page: ${page}`,
-			[
-				currentViewType,
-
-				sortAscending ? SortOrder.Ascending : SortOrder.Descending,
-				,
-				sortBy,
-				[
-					isPlayed,
-					isUnPlayed,
-					isResumable,
-					isFavorite,
-					isLiked,
-					isUnliked,
-				],
-				[
-					hasSubtitles,
-					hasTrailer,
-					hasSpecialFeature,
-					hasThemeSong,
-					hasThemeVideo,
-				],
-				[isBluRay, isDVD, isHD, is4K, is3D],
-			],
+			{
+				currentViewType: currentViewType,
+				sortAscending: sortAscending,
+				sortBy: sortBy,
+				playbackFilters: {
+					isPlayed: isPlayed,
+					isUnPlayed: isUnPlayed,
+					isResumable: isResumable,
+					isFavorite: isFavorite,
+					isLiked: isLiked,
+					isUnliked: isUnliked,
+				},
+				extraFilters: {
+					hasSubtitles: hasSubtitles,
+					hasTrailer: hasTrailer,
+					hasSpecialFeature: hasSpecialFeature,
+					hasThemeSong: hasThemeSong,
+					hasThemeVideo: hasThemeVideo,
+				},
+				qualityFIlters: {
+					isBluRay: isBluRay,
+					isDVD: isDVD,
+					isHD: isHD,
+					is4K: is4K,
+					is3D: is3D,
+				},
+			},
 		],
 		queryFn: () => fetchLibItems(id),
-		enabled: currentLib.isSuccess,
+		enabled: Boolean(currentViewType),
 		networkMode: "always",
 	});
 
 	const handleCurrentViewType = (e) => {
 		setCurrentViewType(e.target.value);
 	};
-
-	useEffect(() => {
-		if (viewType.length != 0) {
-			setCurrentViewType(viewType[0].value);
-		}
-	}, [viewType]);
 
 	const disabledSortViews = [
 		"MusicArtist",
@@ -553,6 +563,7 @@ const LibraryView = () => {
 									transition={{
 										duration: 0.2,
 										ease: "anticipate",
+										delay: index * 0.02,
 									}}
 								>
 									<Card
@@ -601,37 +612,46 @@ const LibraryView = () => {
 											"currentLibItems",
 											id,
 											`page: ${page}`,
-											[
-												currentViewType,
-
-												sortAscending
-													? SortOrder.Ascending
-													: SortOrder.Descending,
-												,
-												sortBy,
-												[
-													isPlayed,
-													isUnPlayed,
-													isResumable,
-													isFavorite,
-													isLiked,
-													isUnliked,
-												],
-												[
-													hasSubtitles,
-													hasTrailer,
-													hasSpecialFeature,
-													hasThemeSong,
-													hasThemeVideo,
-												],
-												[
-													isBluRay,
-													isDVD,
-													isHD,
-													is4K,
-													is3D,
-												],
-											],
+											{
+												currentViewType:
+													currentViewType,
+												sortAscending:
+													sortAscending,
+												sortBy: sortBy,
+												playbackFilters: {
+													isPlayed:
+														isPlayed,
+													isUnPlayed:
+														isUnPlayed,
+													isResumable:
+														isResumable,
+													isFavorite:
+														isFavorite,
+													isLiked: isLiked,
+													isUnliked:
+														isUnliked,
+												},
+												extraFilters: {
+													hasSubtitles:
+														hasSubtitles,
+													hasTrailer:
+														hasTrailer,
+													hasSpecialFeature:
+														hasSpecialFeature,
+													hasThemeSong:
+														hasThemeSong,
+													hasThemeVideo:
+														hasThemeVideo,
+												},
+												qualityFIlters: {
+													isBluRay:
+														isBluRay,
+													isDVD: isDVD,
+													isHD: isHD,
+													is4K: is4K,
+													is3D: is3D,
+												},
+											},
 										]}
 										userId={user.data.Id}
 										imageBlurhash={

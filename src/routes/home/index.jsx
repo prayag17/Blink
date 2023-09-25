@@ -32,7 +32,7 @@ import { useBackdropStore } from "../../utils/store/backdrop";
 import CarouselSlide from "../../components/carouselSlide";
 import { BaseItemKind, ItemFields } from "@jellyfin/sdk/lib/generated-client";
 import ErrorBoundary from "../../components/errorBoundary";
-import { Typography } from "@mui/material";
+import Typography from "@mui/material/Typography";
 
 const Home = () => {
 	const authUser = useQuery({

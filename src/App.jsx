@@ -90,6 +90,7 @@ import axiosTauriApiAdapter from "axios-tauri-api-adapter";
 const axiosClient = axios.create({
 	adapter: axiosTauriApiAdapter,
 	headers: { "Access-Control-Allow-Origin": "*" },
+	timeout: 4000,
 });
 
 const deviceId = localStorage.getItem("deviceId");
