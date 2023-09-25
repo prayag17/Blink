@@ -12,14 +12,14 @@ jobs:
           strategy:
                fail-fast: false
                matrix:
-                    platform: [macos-latest, ubuntu-20.04, windows-latest]
+                    platform: [macos-latest, ubuntu-18.04, windows-latest]
           runs-on: ${{ matrix.platform }}
           steps:
                - name: Checkout repository
                  uses: actions/checkout@v4
 
                - name: Install dependencies (ubuntu only)
-                 if: matrix.platform == 'ubuntu-20.04'
+                 if: matrix.platform == 'ubuntu-18.04'
                  # You can remove libayatana-appindicator3-dev if you don't use the system tray feature.
                  run: |
                       sudo apt-get update
@@ -38,6 +38,25 @@ jobs:
                  with:
                       node-version: "lts/*"
                       cache: "pnpm" # Set this to npm, yarn or pnpm.
+                      
+               - uses: pnpm/action-setup@v2
+                 name: Install pnpm
+                 with:
+                      version: 7
+                      run_install: false
+
+               - name: Get pnpm store directory
+                 shell: bash
+                 run: |
+                    echo "STORE_PATH=$(pnpm store path --silent)" >> $GITHUB_ENV
+
+               - uses: actions/cache@v3
+                 name: Setup pnpm cache
+                 with:
+                    path: ${{ env.STORE_PATH }}
+                    key: ${{ runner.os }}-pnpm-store-${{ hashFiles('**/pnpm-lock.yaml') }}
+                    restore-keys: |
+                         ${{ runner.os }}-pnpm-store-
 
                - name: Install app dependencies and build web
                  # Remove `&& yarn build` if you build your frontend in `beforeBuildCommand`
