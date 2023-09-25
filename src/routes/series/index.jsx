@@ -409,6 +409,8 @@ const SeriesTitlePage = () => {
 														episode.ParentIndexNumber ==
 														0
 															? `${episode.SeasonName} - ${episode.Name}`
+															: !!episode.IndexNumberEnd
+															? `${episode.IndexNumber}-${episode.IndexNumberEnd}. ${episode.Name}`
 															: `${episode.IndexNumber}. ${episode.Name}`
 													}
 													cardCaption={
@@ -527,7 +529,7 @@ const SeriesTitlePage = () => {
 				)}
 				{similarItems.data.TotalRecordCount > 0 && (
 					<CardScroller
-						title="More Like This"
+						title="You might also like"
 						displayCards={8}
 						disableDecoration
 					>

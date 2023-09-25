@@ -7,6 +7,7 @@ import CircularProgress from "@mui/material/CircularProgress";
 import Divider from "@mui/material/Divider";
 import Tabs from "@mui/material/Tabs";
 import Tab from "@mui/material/Tab";
+import Typography from "@mui/material/Typography";
 
 import { AnimatePresence, motion } from "framer-motion";
 
@@ -165,6 +166,7 @@ const PersonTitlePage = () => {
 				fields: ["SeasonUserData", "Overview"],
 				sortBy: ["PremiereDate", "ProductionYear", "SortName"],
 				excludeLocationTypes: [LocationType.Virtual],
+				limit: 24,
 			});
 			return result.data;
 		},
@@ -424,6 +426,19 @@ const PersonTitlePage = () => {
 												},
 											)}
 									</motion.div>
+									{tab.data.isSuccess &&
+										tab.data.data
+											.TotalRecordCount >
+											24 && (
+											<Typography
+												variant="h6"
+												style={{
+													opacity: 0.8,
+												}}
+											>
+												And more...
+											</Typography>
+										)}
 								</TabPanel>
 							);
 						})}

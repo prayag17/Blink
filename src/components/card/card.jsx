@@ -77,8 +77,10 @@ export const Card = ({
 	const defaultOnClick = () => {
 		if (availableSpecialRoutes.includes(item.Type)) {
 			navigate(`/${item.Type.toLocaleLowerCase()}/${item.Id}`);
-		} else if (!!item.Role) {
+		} else if (!!item.Role || item.Type == BaseItemKind.Person) {
 			navigate(`/person/${item.Id}`);
+		} else if (item.Type == BaseItemKind.MusicArtist) {
+			navigate(`/artist/${item.Id}`);
 		} else {
 			navigate(`/item/${item.Id}`);
 		}

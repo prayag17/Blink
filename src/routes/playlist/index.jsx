@@ -192,7 +192,7 @@ const PlaylistTitlePage = () => {
 
 				{similarItems.data.TotalRecordCount > 0 && (
 					<CardScroller
-						title="You may also like"
+						title="You might also like"
 						displayCards={8}
 						disableDecoration
 					>

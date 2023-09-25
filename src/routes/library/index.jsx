@@ -446,8 +446,6 @@ const LibraryView = () => {
 		setFilterButtonAnchorEl(null);
 	};
 
-	console.log(sortBy == "Random");
-
 	const handleLiking = async (item) => {
 		let result;
 		if (item.UserData.isFavorite) {

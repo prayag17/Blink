@@ -635,7 +635,7 @@ const ItemDetail = () => {
 				)}
 				{similarItems.data.TotalRecordCount > 0 && (
 					<CardScroller
-						title="More Like This"
+						title="You might also like"
 						displayCards={8}
 						disableDecoration
 					>
