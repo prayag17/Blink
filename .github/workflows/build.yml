@@ -32,12 +32,6 @@ jobs:
                  uses: swatinem/rust-cache@v2
                  with:
                       workspaces: "./src-tauri -> target"
-
-               - name: Sync node version and setup cache
-                 uses: actions/setup-node@v3
-                 with:
-                      node-version: "lts/*"
-                      cache: "pnpm" # Set this to npm, yarn or pnpm.
                       
                - uses: pnpm/action-setup@v2
                  name: Install pnpm
@@ -57,6 +51,12 @@ jobs:
                     key: ${{ runner.os }}-pnpm-store-${{ hashFiles('**/pnpm-lock.yaml') }}
                     restore-keys: |
                          ${{ runner.os }}-pnpm-store-
+                         
+               - name: Sync node version and setup cache
+                 uses: actions/setup-node@v3
+                 with:
+                      node-version: "lts/*"
+                      cache: "pnpm" # Set this to npm, yarn or pnpm.
 
                - name: Install app dependencies and build web
                  # Remove `&& yarn build` if you build your frontend in `beforeBuildCommand`
