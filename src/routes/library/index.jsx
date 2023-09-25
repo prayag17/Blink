@@ -686,7 +686,9 @@ const LibraryView = () => {
 											item.Type ==
 												BaseItemKind.MusicGenre ||
 											item.Type ==
-												BaseItemKind.Studio
+												BaseItemKind.Studio ||
+											item.Type ==
+												BaseItemKind.Playlist
 												? "square"
 												: "portrait"
 										}
