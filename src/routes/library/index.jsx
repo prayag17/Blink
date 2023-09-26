@@ -123,38 +123,6 @@ const LibraryView = () => {
 	const [isFavorite, setisFavorite] = useState(false);
 	const [isLiked, setIsLiked] = useState(false);
 	const [isUnliked, setIsUnliked] = useState(false);
-	const availableWatchStatus = [
-		{
-			title: "Played",
-			value: false,
-			state: (val) => setIsPlayed(val),
-		},
-		{
-			title: "Unplayed",
-			value: false,
-			state: (val) => setIsUnPlayed(val),
-		},
-		{
-			title: "Resumable",
-			value: false,
-			state: (val) => setIsResumable(val),
-		},
-		{
-			title: "Favourite",
-			value: false,
-			state: (val) => setisFavorite(val),
-		},
-		{
-			title: "Liked",
-			value: false,
-			state: (val) => setIsLiked(val),
-		},
-		{
-			title: "UnLiked",
-			value: false,
-			state: (val) => setIsUnliked(val),
-		},
-	];
 
 	const [hasSubtitles, setHasSubtitles] = useState(false);
 	const [hasTrailer, setHasTrailer] = useState(false);
@@ -308,6 +276,8 @@ const LibraryView = () => {
 
 	const [filterArray, setFilterArray] = useState([]);
 
+	const [videoTypes, setVideoTypes] = useState([]);
+
 	const fetchLibItems = async (libraryId) => {
 		let result;
 		if (currentViewType == "MusicArtist") {
@@ -371,7 +341,7 @@ const LibraryView = () => {
 				hasSpecialFeature: hasSpecialFeature ? true : undefined,
 				hasThemeSong: hasThemeSong ? true : undefined,
 				hasThemeVideo: hasThemeVideo ? true : undefined,
-				videoTypes: [isBluRay && "BluRay", isDVD && "Dvd"],
+				videoTypes: videoTypes,
 				isHd: isHD ? true : undefined,
 				is4K: is4K ? true : undefined,
 				is3D: is3D ? true : undefined,
@@ -401,7 +371,7 @@ const LibraryView = () => {
 					hasThemeSong: hasThemeSong,
 					hasThemeVideo: hasThemeVideo,
 				},
-				qualityFIlters: {
+				qualityFilters: {
 					isBluRay: isBluRay,
 					isDVD: isDVD,
 					isHD: isHD,
@@ -450,14 +420,6 @@ const LibraryView = () => {
 		}
 		items.refetch();
 	};
-
-	const disablePaginationViews = [
-		"MusicArtist",
-		"Person",
-		"Genre",
-		"MusicGenre",
-		"Studio",
-	];
 
 	const [setAppBackdrop] = useBackdropStore((state) => [state.setBackdrop]);
 
@@ -949,6 +911,227 @@ const LibraryView = () => {
 												/>
 											</AccordionDetails>
 										</Accordion>
+										{currentLib.data.Items[0]
+											.CollectionType ==
+											"movies" && (
+											<Accordion className="library-filter-accordian">
+												<AccordionSummary
+													expandIcon={
+														<MdiChevronDown />
+													}
+												>
+													<Typography variant="subtitle1">
+														Quality
+													</Typography>
+												</AccordionSummary>
+												<AccordionDetails
+													style={{
+														background:
+															"rgb(0 0 0 / 0.4)",
+														padding: "0 !important",
+													}}
+												>
+													<FormControlLabel
+														className="library-filter"
+														label="BluRay"
+														control={
+															<Checkbox
+																value={
+																	isBluRay
+																}
+																onChange={(
+																	e,
+																) => {
+																	setIsBluRay(
+																		e
+																			.target
+																			.checked,
+																	);
+																	if (
+																		e
+																			.target
+																			.checked
+																	) {
+																		setVideoTypes(
+																			(
+																				state,
+																			) => [
+																				...state,
+																				"BluRay",
+																			],
+																		);
+																	} else {
+																		setVideoTypes(
+																			filterArray.filter(
+																				(
+																					val,
+																				) =>
+																					val !=
+																					"BluRay",
+																			),
+																		);
+																	}
+																}}
+															/>
+														}
+														labelPlacement="start"
+														componentsProps={{
+															typography:
+																{
+																	style: {
+																		justifySelf:
+																			"start",
+																	},
+																},
+														}}
+													/>
+													<FormControlLabel
+														className="library-filter"
+														label="Dvd"
+														control={
+															<Checkbox
+																value={
+																	isDVD
+																}
+																onChange={(
+																	e,
+																) => {
+																	setIsDVD(
+																		e
+																			.target
+																			.checked,
+																	);
+																	if (
+																		e
+																			.target
+																			.checked
+																	) {
+																		setVideoTypes(
+																			(
+																				state,
+																			) => [
+																				...state,
+																				"Dvd",
+																			],
+																		);
+																	} else {
+																		setVideoTypes(
+																			filterArray.filter(
+																				(
+																					val,
+																				) =>
+																					val !=
+																					"Dvd",
+																			),
+																		);
+																	}
+																}}
+															/>
+														}
+														labelPlacement="start"
+														componentsProps={{
+															typography:
+																{
+																	style: {
+																		justifySelf:
+																			"start",
+																	},
+																},
+														}}
+													/>
+													<FormControlLabel
+														className="library-filter"
+														label="Hd"
+														control={
+															<Checkbox
+																value={
+																	isHD
+																}
+																onChange={(
+																	e,
+																) => {
+																	setIsHD(
+																		e
+																			.target
+																			.checked,
+																	);
+																}}
+															/>
+														}
+														labelPlacement="start"
+														componentsProps={{
+															typography:
+																{
+																	style: {
+																		justifySelf:
+																			"start",
+																	},
+																},
+														}}
+													/>
+													<FormControlLabel
+														className="library-filter"
+														label="4k"
+														control={
+															<Checkbox
+																value={
+																	is4K
+																}
+																onChange={(
+																	e,
+																) => {
+																	setIs4K(
+																		e
+																			.target
+																			.checked,
+																	);
+																}}
+															/>
+														}
+														labelPlacement="start"
+														componentsProps={{
+															typography:
+																{
+																	style: {
+																		justifySelf:
+																			"start",
+																	},
+																},
+														}}
+													/>
+													<FormControlLabel
+														className="library-filter"
+														label="3D"
+														control={
+															<Checkbox
+																value={
+																	is3D
+																}
+																onChange={(
+																	e,
+																) => {
+																	setIs3D(
+																		e
+																			.target
+																			.checked,
+																	);
+																}}
+															/>
+														}
+														labelPlacement="start"
+														componentsProps={{
+															typography:
+																{
+																	style: {
+																		justifySelf:
+																			"start",
+																	},
+																},
+														}}
+													/>
+												</AccordionDetails>
+											</Accordion>
+										)}
 									</div>
 								</Grow>
 							)}
@@ -1100,7 +1283,7 @@ const LibraryView = () => {
 													hasThemeVideo:
 														hasThemeVideo,
 												},
-												qualityFIlters: {
+												qualityFilters: {
 													isBluRay:
 														isBluRay,
 													isDVD: isDVD,
@@ -1252,9 +1435,7 @@ const LibraryView = () => {
 					</TableContainer>
 				)}
 
-				{!items.isLoading &&
-					!disablePaginationViews.includes(currentViewType) &&
-					items.isSuccess &&
+				{items.isSuccess &&
 					items.data.TotalRecordCount > maxDisplayItems && (
 						<Stack
 							alignItems="center"
