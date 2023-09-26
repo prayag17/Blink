@@ -183,7 +183,6 @@ const LibraryView = () => {
 				setCurrentViewType(BaseItemKind.Movie);
 				setViewType([
 					{ title: "Movies", value: BaseItemKind.Movie },
-					{ title: "Collections", value: BaseItemKind.BoxSet },
 					{ title: "Genres", value: BaseItemKind.Genre },
 					{ title: "Studios", value: BaseItemKind.Studio },
 				]);
@@ -509,52 +508,67 @@ const LibraryView = () => {
 										),
 									)}
 								</TextField>
+							</>
+						)}
+
+						{viewType.length > 0 && (
+							<>
 								<Divider
 									flexItem
 									orientation="vertical"
 								/>
+								<TextField
+									disabled={
+										!Boolean(currentViewType)
+									}
+									select
+									value={currentViewType}
+									onChange={(e) => {
+										setCurrentViewType(
+											e.target.value,
+										);
+									}}
+									size="small"
+								>
+									{viewType.map((option, index) => (
+										<MenuItem
+											key={index}
+											value={option.value}
+										>
+											{option.title}
+										</MenuItem>
+									))}
+								</TextField>
 							</>
 						)}
 
-						<TextField
-							disabled={!Boolean(currentViewType)}
-							select
-							value={currentViewType}
-							onChange={(e) => {
-								setCurrentViewType(e.target.value);
-							}}
-							size="small"
-						>
-							{viewType.map((option, index) => (
-								<MenuItem
-									key={index}
-									value={option.value}
-								>
-									{option.title}
-								</MenuItem>
-							))}
-						</TextField>
-
-						<Divider flexItem orientation="vertical" />
 						{currentLib.isSuccess &&
 							allowedFilterViews.includes(
 								currentLib.data.Items[0].CollectionType,
 							) && (
-								<Button
-									startIcon={<MdiFilterOutline />}
-									color="white"
-									onClick={(event) => {
-										setFilterButtonAnchorEl(
-											event.currentTarget,
-										);
-										setFilterMenuOpen(
-											!filterMenuOpen,
-										);
-									}}
-									// disabled
-								>
-									Filters
-								</Button>
+								<>
+									<Divider
+										flexItem
+										orientation="vertical"
+									/>
+									<Button
+										startIcon={
+											<MdiFilterOutline />
+										}
+										color="white"
+										onClick={(event) => {
+											setFilterButtonAnchorEl(
+												event.currentTarget,
+											);
+											setFilterMenuOpen(
+												!filterMenuOpen,
+											);
+										}}
+										// disabled
+									>
+										Filters
+									</Button>
+								</>
 							)}
 						<Popper
 							open={filterMenuOpen}
@@ -1168,6 +1182,7 @@ const LibraryView = () => {
 					items.data.Items.map((item, index) => {
 						return (
 							<GenreView
+								key={item.Id}
 								libraryId={currentLib.data.Items[0].Id}
 								genreId={item.Id}
 								genreName={item.Name}
