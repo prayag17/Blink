@@ -9,6 +9,9 @@ import { getUserApi } from "@jellyfin/sdk/lib/utils/api/user-api";
 import { getUserLibraryApi } from "@jellyfin/sdk/lib/utils/api/user-library-api";
 import { BaseItemKind } from "@jellyfin/sdk/lib/generated-client";
 
+/**
+ * @description Latest Media Section
+ */
 export const LatestMediaSection = ({ latestMediaLib }) => {
 	const user = useQuery({
 		queryKey: ["user"],

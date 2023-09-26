@@ -70,10 +70,46 @@
 			background: $clr-background-opacity-0_5;
 			border-radius: 100px;
 			overflow: hidden;
-			backdrop-filter: blur(5px);
+			backdrop-filter: blur(10px);
 			display: flex;
 			align-items: center;
 			justify-content: center;
+		}
+	}
+	&-filter {
+		&-container {
+			margin-top: 0.75em;
+			width: 20em;
+			background: rgb(0 0 0 / 0.65);
+			border-radius: $border-radius-default;
+			box-shadow: 0 0 10px rgb(0 0 0 / 0.4);
+		}
+
+		width: 100%;
+		justify-content: space-between;
+		margin: 0 0.5em !important;
+
+		&-title {
+			justify-self: start;
+		}
+		&-accordian {
+			background: transparent !important;
+			backdrop-filter: blur(10px);
+		}
+	}
+	&-genre {
+		&-header {
+			display: flex;
+			align-items: center;
+			justify-content: flex-start;
+			gap: 0.5em;
+			position: relative;
+			margin-bottom: 0.25em !important;
+			&-decoration {
+				width: 1em;
+				height: 2px;
+				background: white;
+			}
 		}
 	}
 }

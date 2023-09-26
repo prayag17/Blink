@@ -1,5 +1,5 @@
 /** @format */
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { motion } from "framer-motion";
 import { useParams, useNavigate, Link } from "react-router-dom";
 
@@ -7,10 +7,10 @@ import { useQuery } from "@tanstack/react-query";
 
 import useScrollTrigger from "@mui/material/useScrollTrigger";
 import Box from "@mui/material/Box";
-import Grid2 from "@mui/material/Unstable_Grid2";
+import Paper from "@mui/material/Paper";
 import Stack from "@mui/material/Stack";
 import AppBar from "@mui/material/AppBar";
-import Toolbar from "@mui/material/Toolbar";
+import FormControlLabel from "@mui/material/FormControlLabel";
 import Typography from "@mui/material/Typography";
 import CircularProgress from "@mui/material/CircularProgress";
 import Divider from "@mui/material/Divider";
@@ -30,6 +30,8 @@ import TableRow from "@mui/material/TableRow";
 import TableCell from "@mui/material/TableCell";
 import IconButton from "@mui/material/IconButton";
 import Pagination from "@mui/material/Pagination";
+import Popper from "@mui/material/Popper";
+import Grow from "@mui/material/Grow";
 
 import { theme } from "../../theme";
 
@@ -41,6 +43,7 @@ import { getGenresApi } from "@jellyfin/sdk/lib/utils/api/genres-api";
 import { getMusicGenresApi } from "@jellyfin/sdk/lib/utils/api/music-genres-api";
 import { getStudiosApi } from "@jellyfin/sdk/lib/utils/api/studios-api";
 import { getPersonsApi } from "@jellyfin/sdk/lib/utils/api/persons-api";
+import { getFilterApi } from "@jellyfin/sdk/lib/utils/api/filter-api";
 
 import { Card } from "../../components/card/card";
 import { EmptyNotice } from "../../components/notices/emptyNotice/emptyNotice";
@@ -51,6 +54,7 @@ import { MdiChevronDown } from "../../components/icons/mdiChevronDown";
 import { MdiFilterOutline } from "../../components/icons/mdiFilterOutline";
 
 import { clrBackgroundDarkOpacity0_8 } from "../../palette.module.scss";
+import GenreView from "../../components/layouts/library/genreView";
 import { ErrorNotice } from "../../components/notices/errorNotice/errorNotice";
 import {
 	BaseItemKind,
@@ -64,7 +68,6 @@ import { MdiMusic } from "../../components/icons/mdiMusic";
 import { MdiHeart } from "../../components/icons/mdiHeart";
 import { MdiHeartOutline } from "../../components/icons/mdiHeartOutline";
 import { useBackdropStore } from "../../utils/store/backdrop";
-import { AnimatePresence } from "framer-motion";
 
 const LibraryView = () => {
 	const navigate = useNavigate();
@@ -206,14 +209,13 @@ const LibraryView = () => {
 	 */
 	const [viewType, setViewType] = useState([]);
 
-	useEffect(() => {
+	useMemo(() => {
 		if (currentLib.isSuccess) {
 			if (currentLib.data.Items[0].CollectionType == "movies") {
 				setCurrentViewType(BaseItemKind.Movie);
 				setViewType([
 					{ title: "Movies", value: BaseItemKind.Movie },
 					{ title: "Collections", value: BaseItemKind.BoxSet },
-					{ title: "Actors", value: BaseItemKind.Person },
 					{ title: "Genres", value: BaseItemKind.Genre },
 					{ title: "Studios", value: BaseItemKind.Studio },
 				]);
@@ -231,7 +233,6 @@ const LibraryView = () => {
 				setCurrentViewType(BaseItemKind.Series);
 				setViewType([
 					{ title: "Series", value: BaseItemKind.Series },
-					{ title: "Actors", value: BaseItemKind.Person },
 					{ title: "Genres", value: BaseItemKind.Genre },
 					{ title: "Networks", value: BaseItemKind.Studio },
 				]);
@@ -305,6 +306,8 @@ const LibraryView = () => {
 		}
 	}, [currentLib.isSuccess]);
 
+	const [filterArray, setFilterArray] = useState([]);
+
 	const fetchLibItems = async (libraryId) => {
 		let result;
 		if (currentViewType == "MusicArtist") {
@@ -362,14 +365,7 @@ const LibraryView = () => {
 						: SortOrder.Descending,
 				],
 				sortBy: sortBy,
-				filters: [
-					isPlayed && "IsPlayed",
-					isUnPlayed && "IsUnplayed",
-					isResumable && "IsResumable",
-					isFavorite && "IsFavorite",
-					isLiked && "IsFavoriteOrLikes",
-					isUnliked && "Dislikes",
-				],
+				filters: filterArray,
 				hasSubtitles: hasSubtitles ? true : undefined,
 				hasTrailer: hasTrailer ? true : undefined,
 				hasSpecialFeature: hasSpecialFeature ? true : undefined,
@@ -397,14 +393,7 @@ const LibraryView = () => {
 				currentViewType: currentViewType,
 				sortAscending: sortAscending,
 				sortBy: sortBy,
-				playbackFilters: {
-					isPlayed: isPlayed,
-					isUnPlayed: isUnPlayed,
-					isResumable: isResumable,
-					isFavorite: isFavorite,
-					isLiked: isLiked,
-					isUnliked: isUnliked,
-				},
+				playbackFilters: filterArray,
 				extraFilters: {
 					hasSubtitles: hasSubtitles,
 					hasTrailer: hasTrailer,
@@ -431,14 +420,14 @@ const LibraryView = () => {
 		"Person",
 		"Genre",
 		"MusicGenre",
-		"MusicGenre",
 		"Studio",
 	];
 	const allowedFilterViews = ["movies", "tvshows", "music", "books"];
 	const onlyStatusFilterViews = ["books", "music"];
 
 	const [filterButtonAnchorEl, setFilterButtonAnchorEl] = useState(null);
-	const filterMenuOpen = Boolean(filterButtonAnchorEl);
+	const [filterMenuOpen, setFilterMenuOpen] = useState(false);
+
 	const openFiltersMenu = (event) => {
 		setFilterButtonAnchorEl(event.currentTarget);
 	};
@@ -558,6 +547,10 @@ const LibraryView = () => {
 										),
 									)}
 								</TextField>
+								<Divider
+									flexItem
+									orientation="vertical"
+								/>
 							</>
 						)}
 
@@ -565,9 +558,9 @@ const LibraryView = () => {
 							disabled={!Boolean(currentViewType)}
 							select
 							value={currentViewType}
-							onChange={(e) =>
-								setCurrentViewType(e.target.value)
-							}
+							onChange={(e) => {
+								setCurrentViewType(e.target.value);
+							}}
 							size="small"
 						>
 							{viewType.map((option, index) => (
@@ -579,6 +572,387 @@ const LibraryView = () => {
 								</MenuItem>
 							))}
 						</TextField>
+
+						<Divider flexItem orientation="vertical" />
+						{currentLib.isSuccess &&
+							allowedFilterViews.includes(
+								currentLib.data.Items[0].CollectionType,
+							) && (
+								<Button
+									startIcon={<MdiFilterOutline />}
+									color="white"
+									onClick={(event) => {
+										setFilterButtonAnchorEl(
+											event.currentTarget,
+										);
+										setFilterMenuOpen(
+											!filterMenuOpen,
+										);
+									}}
+									// disabled
+								>
+									Filters
+								</Button>
+							)}
+						<Popper
+							open={filterMenuOpen}
+							anchorEl={filterButtonAnchorEl}
+							placement="bottom"
+							transition
+						>
+							{({ TransitionProps }) => (
+								<Grow
+									{...TransitionProps}
+									timeout={200}
+								>
+									<div className="library-filter-container">
+										<Accordion className="library-filter-accordian">
+											<AccordionSummary
+												expandIcon={
+													<MdiChevronDown />
+												}
+											>
+												<Typography variant="subtitle1">
+													Filters
+												</Typography>
+											</AccordionSummary>
+											<AccordionDetails
+												style={{
+													background:
+														"rgb(0 0 0 / 0.4)",
+													padding: "0 !important",
+												}}
+											>
+												<FormControlLabel
+													className="library-filter"
+													label="Played"
+													control={
+														<Checkbox
+															value={
+																isPlayed
+															}
+															onChange={(
+																e,
+															) => {
+																setIsPlayed(
+																	e
+																		.target
+																		.checked,
+																);
+																if (
+																	e
+																		.target
+																		.checked
+																) {
+																	setFilterArray(
+																		(
+																			state,
+																		) => [
+																			...state,
+																			"isPlayed",
+																		],
+																	);
+																} else {
+																	setFilterArray(
+																		filterArray.filter(
+																			(
+																				val,
+																			) =>
+																				val !=
+																				"isPlayed",
+																		),
+																	);
+																}
+															}}
+														/>
+													}
+													labelPlacement="start"
+													componentsProps={{
+														typography:
+															{
+																style: {
+																	justifySelf:
+																		"start",
+																},
+															},
+													}}
+												/>
+												<FormControlLabel
+													className="library-filter"
+													label="Not Played"
+													control={
+														<Checkbox
+															value={
+																isUnPlayed
+															}
+															onChange={(
+																e,
+															) => {
+																setIsUnPlayed(
+																	e
+																		.target
+																		.checked,
+																);
+																if (
+																	e
+																		.target
+																		.checked
+																) {
+																	setFilterArray(
+																		(
+																			state,
+																		) => [
+																			...state,
+																			"IsUnplayed",
+																		],
+																	);
+																} else {
+																	setFilterArray(
+																		filterArray.filter(
+																			(
+																				val,
+																			) =>
+																				val !=
+																				"IsUnplayed",
+																		),
+																	);
+																}
+															}}
+														/>
+													}
+													labelPlacement="start"
+													componentsProps={{
+														typography:
+															{
+																style: {
+																	justifySelf:
+																		"start",
+																},
+															},
+													}}
+												/>
+												<FormControlLabel
+													className="library-filter"
+													label="Resumable"
+													control={
+														<Checkbox
+															value={
+																isResumable
+															}
+															onChange={(
+																e,
+															) => {
+																setIsResumable(
+																	e
+																		.target
+																		.checked,
+																);
+																if (
+																	e
+																		.target
+																		.checked
+																) {
+																	setFilterArray(
+																		(
+																			state,
+																		) => [
+																			...state,
+																			"isResumable",
+																		],
+																	);
+																} else {
+																	setFilterArray(
+																		filterArray.filter(
+																			(
+																				val,
+																			) =>
+																				val !=
+																				"isResumable",
+																		),
+																	);
+																}
+															}}
+														/>
+													}
+													labelPlacement="start"
+													componentsProps={{
+														typography:
+															{
+																style: {
+																	justifySelf:
+																		"start",
+																},
+															},
+													}}
+												/>
+												<FormControlLabel
+													className="library-filter"
+													label="Favorite"
+													control={
+														<Checkbox
+															value={
+																isFavorite
+															}
+															onChange={(
+																e,
+															) => {
+																setisFavorite(
+																	e
+																		.target
+																		.checked,
+																);
+																if (
+																	e
+																		.target
+																		.checked
+																) {
+																	setFilterArray(
+																		(
+																			state,
+																		) => [
+																			...state,
+																			"isFavorite",
+																		],
+																	);
+																} else {
+																	setFilterArray(
+																		filterArray.filter(
+																			(
+																				val,
+																			) =>
+																				val !=
+																				"isFavorite",
+																		),
+																	);
+																}
+															}}
+														/>
+													}
+													labelPlacement="start"
+													componentsProps={{
+														typography:
+															{
+																style: {
+																	justifySelf:
+																		"start",
+																},
+															},
+													}}
+												/>
+												<FormControlLabel
+													className="library-filter"
+													label="Likes"
+													control={
+														<Checkbox
+															value={
+																isLiked
+															}
+															onChange={(
+																e,
+															) => {
+																setIsLiked(
+																	e
+																		.target
+																		.checked,
+																);
+																if (
+																	e
+																		.target
+																		.checked
+																) {
+																	setFilterArray(
+																		(
+																			state,
+																		) => [
+																			...state,
+																			"isLiked",
+																		],
+																	);
+																} else {
+																	setFilterArray(
+																		filterArray.filter(
+																			(
+																				val,
+																			) =>
+																				val !=
+																				"isLiked",
+																		),
+																	);
+																}
+															}}
+														/>
+													}
+													labelPlacement="start"
+													componentsProps={{
+														typography:
+															{
+																style: {
+																	justifySelf:
+																		"start",
+																},
+															},
+													}}
+												/>
+												<FormControlLabel
+													className="library-filter"
+													label="Dislikes"
+													control={
+														<Checkbox
+															value={
+																isUnliked
+															}
+															onChange={(
+																e,
+															) => {
+																setIsUnliked(
+																	e
+																		.target
+																		.checked,
+																);
+																if (
+																	e
+																		.target
+																		.checked
+																) {
+																	setFilterArray(
+																		(
+																			state,
+																		) => [
+																			...state,
+																			"isUnliked",
+																		],
+																	);
+																} else {
+																	setFilterArray(
+																		filterArray.filter(
+																			(
+																				val,
+																			) =>
+																				val !=
+																				"isUnliked",
+																		),
+																	);
+																}
+															}}
+														/>
+													}
+													labelPlacement="start"
+													componentsProps={{
+														typography:
+															{
+																style: {
+																	justifySelf:
+																		"start",
+																},
+															},
+													}}
+												/>
+											</AccordionDetails>
+										</Accordion>
+									</div>
+								</Grow>
+							)}
+						</Popper>
 					</div>
 				</div>
 				{items.isLoading ? (
@@ -607,6 +981,17 @@ const LibraryView = () => {
 					</Box>
 				) : items.data.TotalRecordCount == 0 ? (
 					<EmptyNotice />
+				) : currentViewType == BaseItemKind.Genre ? (
+					items.data.Items.map((item, index) => {
+						return (
+							<GenreView
+								libraryId={currentLib.data.Items[0].Id}
+								genreId={item.Id}
+								genreName={item.Name}
+								userId={user.data.Id}
+							/>
+						);
+					})
 				) : currentViewType != BaseItemKind.Audio ? (
 					<div className="library-grid">
 						{items.data.Items.map((item, index) => {
@@ -668,8 +1053,6 @@ const LibraryView = () => {
 											item.Type ==
 												BaseItemKind.Person ||
 											item.Type ==
-												BaseItemKind.MusicAlbum ||
-											item.Type ==
 												BaseItemKind.Genre ||
 											item.Type ==
 												BaseItemKind.MusicGenre ||
@@ -703,19 +1086,8 @@ const LibraryView = () => {
 												sortAscending:
 													sortAscending,
 												sortBy: sortBy,
-												playbackFilters: {
-													isPlayed:
-														isPlayed,
-													isUnPlayed:
-														isUnPlayed,
-													isResumable:
-														isResumable,
-													isFavorite:
-														isFavorite,
-													isLiked: isLiked,
-													isUnliked:
-														isUnliked,
-												},
+												playbackFilters:
+													filterArray,
 												extraFilters: {
 													hasSubtitles:
 														hasSubtitles,
