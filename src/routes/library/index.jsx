@@ -1146,6 +1146,180 @@ const LibraryView = () => {
 												</AccordionDetails>
 											</Accordion>
 										)}
+										{!onlyStatusFilterViews.includes(
+											currentLib.data.Items[0]
+												.CollectionType,
+										) && (
+											<Accordion className="library-filter-accordian">
+												<AccordionSummary
+													expandIcon={
+														<MdiChevronDown />
+													}
+												>
+													<Typography variant="subtitle1">
+														Features
+													</Typography>
+												</AccordionSummary>
+												<AccordionDetails
+													style={{
+														background:
+															"rgb(0 0 0 / 0.4)",
+														padding: "0 !important",
+													}}
+												>
+													<FormControlLabel
+														className="library-filter"
+														label="Subtitles"
+														control={
+															<Checkbox
+																value={
+																	hasSubtitles
+																}
+																onChange={(
+																	e,
+																) => {
+																	setHasSubtitles(
+																		e
+																			.target
+																			.checked,
+																	);
+																}}
+															/>
+														}
+														labelPlacement="start"
+														componentsProps={{
+															typography:
+																{
+																	style: {
+																		justifySelf:
+																			"start",
+																	},
+																},
+														}}
+													/>
+													<FormControlLabel
+														className="library-filter"
+														label="Trailer"
+														control={
+															<Checkbox
+																value={
+																	hasTrailer
+																}
+																onChange={(
+																	e,
+																) => {
+																	setHasTrailer(
+																		e
+																			.target
+																			.checked,
+																	);
+																}}
+															/>
+														}
+														labelPlacement="start"
+														componentsProps={{
+															typography:
+																{
+																	style: {
+																		justifySelf:
+																			"start",
+																	},
+																},
+														}}
+													/>
+													<FormControlLabel
+														className="library-filter"
+														label="Special Features"
+														control={
+															<Checkbox
+																value={
+																	hasSpecialFeature
+																}
+																onChange={(
+																	e,
+																) => {
+																	setHasSpecialFeature(
+																		e
+																			.target
+																			.checked,
+																	);
+																}}
+															/>
+														}
+														labelPlacement="start"
+														componentsProps={{
+															typography:
+																{
+																	style: {
+																		justifySelf:
+																			"start",
+																	},
+																},
+														}}
+													/>
+													<FormControlLabel
+														className="library-filter"
+														label="Theme Song"
+														control={
+															<Checkbox
+																value={
+																	hasThemeSong
+																}
+																onChange={(
+																	e,
+																) => {
+																	setHasThemeSong(
+																		e
+																			.target
+																			.checked,
+																	);
+																}}
+															/>
+														}
+														labelPlacement="start"
+														componentsProps={{
+															typography:
+																{
+																	style: {
+																		justifySelf:
+																			"start",
+																	},
+																},
+														}}
+													/>
+													<FormControlLabel
+														className="library-filter"
+														label="Theme Video"
+														control={
+															<Checkbox
+																value={
+																	hasThemeVideo
+																}
+																onChange={(
+																	e,
+																) => {
+																	setHasThemeVideo(
+																		e
+																			.target
+																			.checked,
+																	);
+																}}
+															/>
+														}
+														labelPlacement="start"
+														componentsProps={{
+															typography:
+																{
+																	style: {
+																		justifySelf:
+																			"start",
+																	},
+																},
+														}}
+													/>
+												</AccordionDetails>
+											</Accordion>
+										)}
 									</div>
 								</Grow>
 							)}

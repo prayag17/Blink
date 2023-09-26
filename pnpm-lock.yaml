@@ -11,9 +11,9 @@ dependencies:
   '@emotion/styled':
     specifier: ^11.11.0
     version: 11.11.0(@emotion/react@11.11.1)(react@18.2.0)
-  '@fontsource-variable/open-sans':
-    specifier: ^5.0.13
-    version: 5.0.13
+  '@fontsource/noto-sans':
+    specifier: ^5.0.12
+    version: 5.0.12
   '@jellyfin/sdk':
     specifier: ^0.8.2
     version: 0.8.2(axios@1.5.0)
@@ -659,8 +659,8 @@ packages:
     resolution: {integrity: sha512-qprfWkn82Iw821mcKofJ5Pk9wgioHicxcQMxx+5zt5GSKoqdWvgG5AxVmpmUUjzTLPVSH5auBrhI93Deayn/DA==}
     dev: false
 
-  /@fontsource-variable/open-sans@5.0.13:
-    resolution: {integrity: sha512-G/lTR5vVBcwRU0vkeYqFfX1UEqHfCG52ccdVgcjwSOcDvi5jQEL3ta212qA2rKwSdhmdei600yNburmYoT1wsg==}
+  /@fontsource/noto-sans@5.0.12:
+    resolution: {integrity: sha512-6qMnrAeCsjqI4tT2zWb1EQ/AeWr42iacn+QOV74pY1Ytm/0OY9jzSXlh4nK4mc9CbTmEZn1Iofa/SzvvKNMcpA==}
     dev: false
 
   /@jellyfin/sdk@0.8.2(axios@1.5.0):

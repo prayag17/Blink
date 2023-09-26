@@ -41,6 +41,7 @@ import { usePlaybackStore } from "../../utils/store/playback";
 import { useBackdropStore } from "../../utils/store/backdrop";
 import { ActorCard } from "../../components/card/actorCards";
 import { SeasonSelectorSkeleton } from "../../components/skeleton/seasonSelector";
+import { stagger } from "framer-motion";
 function TabPanel(props) {
 	const { children, value, index, ...other } = props;
 
