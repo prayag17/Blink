@@ -45,9 +45,10 @@ import { UserLogin, LoginWithImage, UserLoginManual } from "./routes/login";
 import LibraryView from "./routes/library";
 import ItemDetail from "./routes/item";
 import SeriesTitlePage from "./routes/series/index.jsx";
-import FavouritePage from "./routes/favourite/index.jsx";
+import FavoritePage from "./routes/favorite/index.jsx";
 import Settings from "./routes/settings";
 import About from "./routes/about";
+import SearchPage from "./routes/search";
 
 import { VideoPlayer } from "./routes/player/videoPlayer.jsx";
 
@@ -546,8 +547,12 @@ function App() {
 								element={<SeriesTitlePage />}
 							/>
 							<Route
-								path="/favourite"
-								element={<FavouritePage />}
+								path="/search"
+								element={<SearchPage />}
+							/>
+							<Route
+								path="/favorite"
+								element={<FavoritePage />}
 							/>
 							<Route
 								path="/settings"

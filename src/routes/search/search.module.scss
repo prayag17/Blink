@@ -1,0 +1,24 @@
+/** @format */
+
+.search {
+	&-header {
+		width: 100%;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		gap: 1em;
+		height: 4em;
+	}
+	&-searchbar {
+		border-radius: 100px !important;
+		background: rgb(255 255 255 / 0.09);
+		border: none !important;
+		.MuiInputBase-root.MuiOutlinedInput-root.MuiInputBase-colorPrimary.MuiInputBase-formControl.MuiInputBase-hiddenLabel.css-187yyed-MuiInputBase-root-MuiOutlinedInput-root {
+			border-radius: 100px !important;
+		}
+		&-input {
+			text-align: center;
+			padding: 0.75em 1.5em !important;
+		}
+	}
+}

@@ -145,7 +145,7 @@ export const AppBar = () => {
 						</IconButton>
 					</div>
 					<div style={{ display: "flex", gap: "1.2em" }}>
-						<IconButton disabled>
+						<IconButton onClick={() => navigate("/search")}>
 							<MdiMagnify />
 						</IconButton>
 						<IconButton disabled>
