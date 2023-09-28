@@ -2,7 +2,8 @@
 import { useEffect, useState } from "react";
 
 import TextField from "@mui/material/TextField";
-import LinearProgress from "@mui/material/LinearProgress";
+import CircularProgress from "@mui/material/CircularProgress";
+import InputAdornment from "@mui/material/InputAdornment";
 
 import { useBackdropStore } from "../../utils/store/backdrop";
 
@@ -169,6 +170,46 @@ const SearchPage = () => {
 					className="search-searchbar"
 					inputProps={{
 						className: "search-searchbar-input",
+					}}
+					InputProps={{
+						style: {
+							border: "100px !important",
+						},
+						startAdornment: (
+							<InputAdornment position="start">
+								<div
+									style={{
+										position: "relative",
+										display: "inline-flex",
+										alignItems: "center",
+										justifyContent: "center",
+									}}
+								>
+									<CircularProgress
+										style={{
+											position: "absolute",
+											transition:
+												"opacity 250ms",
+											opacity:
+												Boolean(
+													searchTerm,
+												) &&
+												(movies.isLoading ||
+													series.isLoading ||
+													audio.isLoading ||
+													musicAlbum.isLoading ||
+													musicArtists.isLoading ||
+													person.isLoading ||
+													book.isLoading)
+													? 1
+													: 0,
+										}}
+										size={35}
+									/>
+									<MdiMagnify />
+								</div>
+							</InputAdornment>
+						),
 					}}
 					value={searchTerm}
 					onChange={(e) => setSearchTerm(e.target.value)}
