@@ -158,6 +158,8 @@ export const Card = ({
 									: window.api.getItemImageUrl(
 											!!seriesId
 												? item.SeriesId
+												: item.AlbumId
+												? item.AlbumId
 												: item.Id,
 											imageType,
 											{
