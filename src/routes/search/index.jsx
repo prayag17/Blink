@@ -17,6 +17,7 @@ import useDebounce from "../../utils/hooks/useDebounce";
 
 import "./search.module.scss";
 import { getItemsApi } from "@jellyfin/sdk/lib/utils/api/items-api";
+import { getPersonsApi } from "@jellyfin/sdk/lib/utils/api/persons-api";
 import { BaseItemKind } from "@jellyfin/sdk/lib/generated-client";
 import { CardScroller } from "../../components/cardScroller/cardScroller";
 import { Card } from "../../components/card/card";
@@ -112,7 +113,7 @@ const SearchPage = () => {
 		cacheTime: 0,
 	});
 	const musicArtists = useQuery({
-		queryKey: ["search", "items", "MusicArtist", searchParam],
+		queryKey: ["search", "items", "MusicArtists", searchParam],
 		queryFn: async () => {
 			const result = await getItemsApi(window.api).getItemsByUserId({
 				userId: user.data.Id,
@@ -129,11 +130,9 @@ const SearchPage = () => {
 	const person = useQuery({
 		queryKey: ["search", "items", "Person", searchParam],
 		queryFn: async () => {
-			const result = await getItemsApi(window.api).getItemsByUserId({
+			const result = await getPersonsApi(window.api).getPersons({
 				userId: user.data.Id,
 				searchTerm,
-				includeItemTypes: [BaseItemKind.Person],
-				recursive: true,
 				limit: itemLimit,
 			});
 			return result.data;
@@ -141,58 +140,6 @@ const SearchPage = () => {
 		enabled: user.isSuccess && Boolean(searchParam),
 		cacheTime: 0,
 	});
-
-	/**
-	 * @typedef {import("@jellyfin/sdk/lib/generated-client/models").BaseItemDto} BaseItemDto
-	 * @type {[BaseItemDto[], Function]}
-	 */
-	// const [movies, setMovies] = useState([]);
-	// const [series, setSeries] = useState([]);
-	// const [audios, setAudios] = useState([]);
-	// const [musicAlbum, setMusicAlbum] = useState([]);
-	// const [books, setBooks] = useState([]);
-	// const [musicArtists, setMusicArtists] = useState([]);
-	// const [persons, setPersons] = useState([]);
-
-	// useEffect(() => {
-	// 	if (items.isSuccess) {
-	// 		setMovies(
-	// 			items.data.Items.filter(
-	// 				(item) => item.Type == BaseItemKind.Movie,
-	// 			).slice(0, itemLimit),
-	// 		);
-	// 		setSeries(
-	// 			items.data.Items.filter(
-	// 				(item) => item.Type == BaseItemKind.Series,
-	// 			).slice(0, itemLimit),
-	// 		);
-	// 		setAudios(
-	// 			items.data.Items.filter(
-	// 				(item) => item.Type == BaseItemKind.Audio,
-	// 			).slice(0, itemLimit),
-	// 		);
-	// 		setMusicAlbum(
-	// 			items.data.Items.filter(
-	// 				(item) => item.Type == BaseItemKind.MusicAlbum,
-	// 			).slice(0, itemLimit),
-	// 		);
-	// 		setBooks(
-	// 			items.data.Items.filter(
-	// 				(item) => item.Type == BaseItemKind.Book,
-	// 			).slice(0, itemLimit),
-	// 		);
-	// 		setMusicArtists(
-	// 			items.data.Items.filter(
-	// 				(item) => item.Type == BaseItemKind.MusicArtist,
-	// 			).slice(0, itemLimit),
-	// 		);
-	// 		setPersons(
-	// 			items.data.Items.filter(
-	// 				(item) => item.Type == BaseItemKind.Person,
-	// 			).slice(0, itemLimit),
-	// 		);
-	// 	}
-	// }, [items.isSuccess]);
 
 	const [setBackdrop] = useBackdropStore((state) => [state.setBackdrop]);
 
@@ -208,6 +155,7 @@ const SearchPage = () => {
 				display: "flex",
 				flexDirection: "column",
 				gap: "0.5em",
+				paddingBottom: "2em",
 			}}
 		>
 			<div className="search-header">
@@ -240,52 +188,16 @@ const SearchPage = () => {
 						{movies.data.Items.map((item, index) => (
 							<Card
 								item={item}
-								seriesId={item.SeriesId}
-								cardTitle={
-									item.Type == BaseItemKind.Episode
-										? item.SeriesName
-										: item.Name
-								}
+								cardTitle={item.Name}
 								imageType={"Primary"}
-								cardCaption={
-									item.Type == BaseItemKind.Episode
-										? `S${item.ParentIndexNumber}:E${item.IndexNumber} - ${item.Name}`
-										: item.Type ==
-										  BaseItemKind.Series
-										? `${item.ProductionYear} - ${
-												!!item.EndDate
-													? new Date(
-															item.EndDate,
-													  ).toLocaleString(
-															[],
-															{
-																year: "numeric",
-															},
-													  )
-													: "Present"
-										  }`
-										: item.ProductionYear
-								}
-								disableOverlay={
-									item.Type == BaseItemKind.Person ||
-									item.Type == BaseItemKind.Genre ||
-									item.Type ==
-										BaseItemKind.MusicGenre ||
-									item.Type == BaseItemKind.Studio
-								}
-								cardType={
-									item.Type ==
-										BaseItemKind.MusicAlbum ||
-									item.Type == BaseItemKind.Audio ||
-									item.Type == BaseItemKind.Genre ||
-									item.Type ==
-										BaseItemKind.MusicGenre ||
-									item.Type == BaseItemKind.Studio ||
-									item.Type == BaseItemKind.Playlist
-										? "square"
-										: "portrait"
-								}
-								queryKey={[]}
+								cardCaption={item.ProductionYear}
+								cardType="portrait"
+								queryKey={[
+									"search",
+									"items",
+									"Movie",
+									searchParam,
+								]}
 								userId={user.data.Id}
 								imageBlurhash={
 									!!item.ImageBlurHashes?.Primary &&
@@ -309,52 +221,26 @@ const SearchPage = () => {
 						{series.data.Items.map((item, index) => (
 							<Card
 								item={item}
-								seriesId={item.SeriesId}
-								cardTitle={
-									item.Type == BaseItemKind.Episode
-										? item.SeriesName
-										: item.Name
-								}
+								cardTitle={item.Name}
 								imageType={"Primary"}
-								cardCaption={
-									item.Type == BaseItemKind.Episode
-										? `S${item.ParentIndexNumber}:E${item.IndexNumber} - ${item.Name}`
-										: item.Type ==
-										  BaseItemKind.Series
-										? `${item.ProductionYear} - ${
-												!!item.EndDate
-													? new Date(
-															item.EndDate,
-													  ).toLocaleString(
-															[],
-															{
-																year: "numeric",
-															},
-													  )
-													: "Present"
-										  }`
-										: item.ProductionYear
-								}
-								disableOverlay={
-									item.Type == BaseItemKind.Person ||
-									item.Type == BaseItemKind.Genre ||
-									item.Type ==
-										BaseItemKind.MusicGenre ||
-									item.Type == BaseItemKind.Studio
-								}
-								cardType={
-									item.Type ==
-										BaseItemKind.MusicAlbum ||
-									item.Type == BaseItemKind.Audio ||
-									item.Type == BaseItemKind.Genre ||
-									item.Type ==
-										BaseItemKind.MusicGenre ||
-									item.Type == BaseItemKind.Studio ||
-									item.Type == BaseItemKind.Playlist
-										? "square"
-										: "portrait"
-								}
-								queryKey={[]}
+								cardCaption={`${
+									item.ProductionYear
+								} - ${
+									!!item.EndDate
+										? new Date(
+												item.EndDate,
+										  ).toLocaleString([], {
+												year: "numeric",
+										  })
+										: "Present"
+								}`}
+								cardType="portrait"
+								queryKey={[
+									"search",
+									"items",
+									"Series",
+									searchParam,
+								]}
 								userId={user.data.Id}
 								imageBlurhash={
 									!!item.ImageBlurHashes?.Primary &&
@@ -378,52 +264,16 @@ const SearchPage = () => {
 						{audio.data.Items.map((item, index) => (
 							<Card
 								item={item}
-								seriesId={item.SeriesId}
-								cardTitle={
-									item.Type == BaseItemKind.Episode
-										? item.SeriesName
-										: item.Name
-								}
+								cardTitle={item.Name}
 								imageType={"Primary"}
-								cardCaption={
-									item.Type == BaseItemKind.Episode
-										? `S${item.ParentIndexNumber}:E${item.IndexNumber} - ${item.Name}`
-										: item.Type ==
-										  BaseItemKind.Series
-										? `${item.ProductionYear} - ${
-												!!item.EndDate
-													? new Date(
-															item.EndDate,
-													  ).toLocaleString(
-															[],
-															{
-																year: "numeric",
-															},
-													  )
-													: "Present"
-										  }`
-										: item.ProductionYear
-								}
-								disableOverlay={
-									item.Type == BaseItemKind.Person ||
-									item.Type == BaseItemKind.Genre ||
-									item.Type ==
-										BaseItemKind.MusicGenre ||
-									item.Type == BaseItemKind.Studio
-								}
-								cardType={
-									item.Type ==
-										BaseItemKind.MusicAlbum ||
-									item.Type == BaseItemKind.Audio ||
-									item.Type == BaseItemKind.Genre ||
-									item.Type ==
-										BaseItemKind.MusicGenre ||
-									item.Type == BaseItemKind.Studio ||
-									item.Type == BaseItemKind.Playlist
-										? "square"
-										: "portrait"
-								}
-								queryKey={[]}
+								cardCaption={item.ProductionYear}
+								cardType="square"
+								queryKey={[
+									"search",
+									"items",
+									"Audio",
+									searchParam,
+								]}
 								userId={user.data.Id}
 								imageBlurhash={
 									!!item.ImageBlurHashes?.Primary &&
@@ -449,62 +299,16 @@ const SearchPage = () => {
 								<Card
 									item={item}
 									seriesId={item.SeriesId}
-									cardTitle={
-										item.Type ==
-										BaseItemKind.Episode
-											? item.SeriesName
-											: item.Name
-									}
+									cardTitle={item.Name}
 									imageType={"Primary"}
-									cardCaption={
-										item.Type ==
-										BaseItemKind.Episode
-											? `S${item.ParentIndexNumber}:E${item.IndexNumber} - ${item.Name}`
-											: item.Type ==
-											  BaseItemKind.Series
-											? `${
-													item.ProductionYear
-											  } - ${
-													!!item.EndDate
-														? new Date(
-																item.EndDate,
-														  ).toLocaleString(
-																[],
-																{
-																	year: "numeric",
-																},
-														  )
-														: "Present"
-											  }`
-											: item.ProductionYear
-									}
-									disableOverlay={
-										item.Type ==
-											BaseItemKind.Person ||
-										item.Type ==
-											BaseItemKind.Genre ||
-										item.Type ==
-											BaseItemKind.MusicGenre ||
-										item.Type ==
-											BaseItemKind.Studio
-									}
-									cardType={
-										item.Type ==
-											BaseItemKind.MusicAlbum ||
-										item.Type ==
-											BaseItemKind.Audio ||
-										item.Type ==
-											BaseItemKind.Genre ||
-										item.Type ==
-											BaseItemKind.MusicGenre ||
-										item.Type ==
-											BaseItemKind.Studio ||
-										item.Type ==
-											BaseItemKind.Playlist
-											? "square"
-											: "portrait"
-									}
-									queryKey={[]}
+									cardCaption={item.AlbumArtist}
+									cardType={"square"}
+									queryKey={[
+										"search",
+										"items",
+										"MusicAlbum",
+										searchParam,
+									]}
 									userId={user.data.Id}
 									imageBlurhash={
 										!!item.ImageBlurHashes
@@ -529,52 +333,17 @@ const SearchPage = () => {
 						{book.data.Items.map((item, index) => (
 							<Card
 								item={item}
-								seriesId={item.SeriesId}
-								cardTitle={
-									item.Type == BaseItemKind.Episode
-										? item.SeriesName
-										: item.Name
-								}
+								cardTitle={item.Name}
 								imageType={"Primary"}
-								cardCaption={
-									item.Type == BaseItemKind.Episode
-										? `S${item.ParentIndexNumber}:E${item.IndexNumber} - ${item.Name}`
-										: item.Type ==
-										  BaseItemKind.Series
-										? `${item.ProductionYear} - ${
-												!!item.EndDate
-													? new Date(
-															item.EndDate,
-													  ).toLocaleString(
-															[],
-															{
-																year: "numeric",
-															},
-													  )
-													: "Present"
-										  }`
-										: item.ProductionYear
-								}
-								disableOverlay={
-									item.Type == BaseItemKind.Person ||
-									item.Type == BaseItemKind.Genre ||
-									item.Type ==
-										BaseItemKind.MusicGenre ||
-									item.Type == BaseItemKind.Studio
-								}
-								cardType={
-									item.Type ==
-										BaseItemKind.MusicAlbum ||
-									item.Type == BaseItemKind.Audio ||
-									item.Type == BaseItemKind.Genre ||
-									item.Type ==
-										BaseItemKind.MusicGenre ||
-									item.Type == BaseItemKind.Studio ||
-									item.Type == BaseItemKind.Playlist
-										? "square"
-										: "portrait"
-								}
-								queryKey={[]}
+								cardCaption={item.ProductionYear}
+								disableOverlay
+								cardType={"portrait"}
+								queryKey={[
+									"search",
+									"items",
+									"Book",
+									searchParam,
+								]}
 								userId={user.data.Id}
 								imageBlurhash={
 									!!item.ImageBlurHashes?.Primary &&
@@ -600,63 +369,16 @@ const SearchPage = () => {
 								(item, index) => (
 									<Card
 										item={item}
-										seriesId={item.SeriesId}
-										cardTitle={
-											item.Type ==
-											BaseItemKind.Episode
-												? item.SeriesName
-												: item.Name
-										}
+										cardTitle={item.Name}
 										imageType={"Primary"}
-										cardCaption={
-											item.Type ==
-											BaseItemKind.Episode
-												? `S${item.ParentIndexNumber}:E${item.IndexNumber} - ${item.Name}`
-												: item.Type ==
-												  BaseItemKind.Series
-												? `${
-														item.ProductionYear
-												  } - ${
-														!!item.EndDate
-															? new Date(
-																	item.EndDate,
-															  ).toLocaleString(
-																	[],
-																	{
-																		year: "numeric",
-																	},
-															  )
-															: "Present"
-												  }`
-												: item.ProductionYear
-										}
-										disableOverlay={
-											item.Type ==
-												BaseItemKind.Person ||
-											item.Type ==
-												BaseItemKind.Genre ||
-											item.Type ==
-												BaseItemKind.MusicGenre ||
-											item.Type ==
-												BaseItemKind.Studio
-										}
-										cardType={
-											item.Type ==
-												BaseItemKind.MusicAlbum ||
-											item.Type ==
-												BaseItemKind.Audio ||
-											item.Type ==
-												BaseItemKind.Genre ||
-											item.Type ==
-												BaseItemKind.MusicGenre ||
-											item.Type ==
-												BaseItemKind.Studio ||
-											item.Type ==
-												BaseItemKind.Playlist
-												? "square"
-												: "portrait"
-										}
-										queryKey={[]}
+										disableOverlay
+										cardType={"square"}
+										queryKey={[
+											"search",
+											"items",
+											"MusicArtists",
+											searchParam,
+										]}
 										userId={user.data.Id}
 										imageBlurhash={
 											!!item.ImageBlurHashes
@@ -684,52 +406,16 @@ const SearchPage = () => {
 						{person.data.Items.map((item, index) => (
 							<Card
 								item={item}
-								seriesId={item.SeriesId}
-								cardTitle={
-									item.Type == BaseItemKind.Episode
-										? item.SeriesName
-										: item.Name
-								}
+								cardTitle={item.Name}
 								imageType={"Primary"}
-								cardCaption={
-									item.Type == BaseItemKind.Episode
-										? `S${item.ParentIndexNumber}:E${item.IndexNumber} - ${item.Name}`
-										: item.Type ==
-										  BaseItemKind.Series
-										? `${item.ProductionYear} - ${
-												!!item.EndDate
-													? new Date(
-															item.EndDate,
-													  ).toLocaleString(
-															[],
-															{
-																year: "numeric",
-															},
-													  )
-													: "Present"
-										  }`
-										: item.ProductionYear
-								}
-								disableOverlay={
-									item.Type == BaseItemKind.Person ||
-									item.Type == BaseItemKind.Genre ||
-									item.Type ==
-										BaseItemKind.MusicGenre ||
-									item.Type == BaseItemKind.Studio
-								}
-								cardType={
-									item.Type ==
-										BaseItemKind.MusicAlbum ||
-									item.Type == BaseItemKind.Audio ||
-									item.Type == BaseItemKind.Genre ||
-									item.Type ==
-										BaseItemKind.MusicGenre ||
-									item.Type == BaseItemKind.Studio ||
-									item.Type == BaseItemKind.Playlist
-										? "square"
-										: "portrait"
-								}
-								queryKey={[]}
+								disableOverlay
+								cardType={"square"}
+								queryKey={[
+									"search",
+									"items",
+									"Person",
+									searchParam,
+								]}
 								userId={user.data.Id}
 								imageBlurhash={
 									!!item.ImageBlurHashes?.Primary &&
