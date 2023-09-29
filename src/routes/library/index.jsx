@@ -1,15 +1,12 @@
 /** @format */
-import { useState, useEffect, useMemo } from "react";
+import { useState, useMemo } from "react";
 import { motion } from "framer-motion";
-import { useParams, useNavigate, Link } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
 
 import { useQuery } from "@tanstack/react-query";
 
-import useScrollTrigger from "@mui/material/useScrollTrigger";
 import Box from "@mui/material/Box";
-import Paper from "@mui/material/Paper";
 import Stack from "@mui/material/Stack";
-import AppBar from "@mui/material/AppBar";
 import FormControlLabel from "@mui/material/FormControlLabel";
 import Typography from "@mui/material/Typography";
 import CircularProgress from "@mui/material/CircularProgress";
@@ -17,7 +14,6 @@ import Divider from "@mui/material/Divider";
 import Chip from "@mui/material/Chip";
 import TextField from "@mui/material/TextField";
 import Checkbox from "@mui/material/Checkbox";
-import Menu from "@mui/material/Menu";
 import MenuItem from "@mui/material/MenuItem";
 import Accordion from "@mui/material/Accordion";
 import AccordionSummary from "@mui/material/AccordionSummary";
@@ -33,8 +29,6 @@ import Pagination from "@mui/material/Pagination";
 import Popper from "@mui/material/Popper";
 import Grow from "@mui/material/Grow";
 
-import { theme } from "../../theme";
-
 import { getUserApi } from "@jellyfin/sdk/lib/utils/api/user-api";
 import { getUserLibraryApi } from "@jellyfin/sdk/lib/utils/api/user-library-api";
 import { getItemsApi } from "@jellyfin/sdk/lib/utils/api/items-api";
@@ -43,7 +37,6 @@ import { getGenresApi } from "@jellyfin/sdk/lib/utils/api/genres-api";
 import { getMusicGenresApi } from "@jellyfin/sdk/lib/utils/api/music-genres-api";
 import { getStudiosApi } from "@jellyfin/sdk/lib/utils/api/studios-api";
 import { getPersonsApi } from "@jellyfin/sdk/lib/utils/api/persons-api";
-import { getFilterApi } from "@jellyfin/sdk/lib/utils/api/filter-api";
 
 import { Card } from "../../components/card/card";
 import { EmptyNotice } from "../../components/notices/emptyNotice/emptyNotice";
@@ -53,7 +46,6 @@ import { MdiSortAscending } from "../../components/icons/mdiSortAscending";
 import { MdiChevronDown } from "../../components/icons/mdiChevronDown";
 import { MdiFilterOutline } from "../../components/icons/mdiFilterOutline";
 
-import { clrBackgroundDarkOpacity0_8 } from "../../palette.module.scss";
 import GenreView from "../../components/layouts/library/genreView";
 import { ErrorNotice } from "../../components/notices/errorNotice/errorNotice";
 import {

@@ -40,6 +40,7 @@ const PlayButton = ({
 	size = "large",
 	playlistItem,
 	playlistItemId = "",
+	trackIndex,
 }) => {
 	const navigate = useNavigate();
 	const [
@@ -64,12 +65,14 @@ const PlayButton = ({
 		setAudioDisplay,
 		setAudioItem,
 		setAudioTracks,
+		setCurrentTrack,
 		setPlaylistItemId,
 	] = useAudioPlayback((state) => [
 		state.setUrl,
 		state.setDisplay,
 		state.setItem,
 		state.setTracks,
+		state.setCurrentTrack,
 		state.setPlaylistItemId,
 	]);
 	const setPlaybackDataLoading = usePlaybackDataLoadStore(
@@ -140,11 +143,12 @@ const PlayButton = ({
 		},
 		onSuccess: (item) => {
 			if (audio) {
+				setCurrentTrack(trackIndex);
 				setAudioTracks(item.Items);
 				setAudioUrl(
-					`${window.api.basePath}/Audio/${item.Items[0].Id}/universal?deviceId=${window.api.deviceInfo.id}&userId=${userId}&api_key=${window.api.accessToken}`,
+					`${window.api.basePath}/Audio/${item.Items[trackIndex].Id}/universal?deviceId=${window.api.deviceInfo.id}&userId=${userId}&api_key=${window.api.accessToken}`,
 				);
-				setAudioItem(item.Items[0]);
+				setAudioItem(item.Items[trackIndex]);
 				setPlaylistItemId(playlistItemId);
 				setAudioDisplay(true);
 			} else {

@@ -4,7 +4,7 @@ import PropTypes from "prop-types";
 
 import Box from "@mui/material/Box";
 import CircularProgress from "@mui/material/CircularProgress";
-import { useParams, useNavigate, Link as RouterLink } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
 
 import {
 	BaseItemKind,

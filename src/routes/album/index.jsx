@@ -1,14 +1,13 @@
 /** @format */
-import { useState, useEffect } from "react";
+import { useEffect } from "react";
 import PropTypes from "prop-types";
 
 import Box from "@mui/material/Box";
 import CircularProgress from "@mui/material/CircularProgress";
 import Typography from "@mui/material/Typography";
 import Paper from "@mui/material/Paper";
-import { IconButton, useTheme } from "@mui/material";
 
-import { useParams, useNavigate } from "react-router-dom";
+import { useParams } from "react-router-dom";
 
 import {
 	BaseItemKind,
@@ -23,7 +22,7 @@ import { getItemsApi } from "@jellyfin/sdk/lib/utils/api/items-api";
 import { useQuery } from "@tanstack/react-query";
 import { MdiClockOutline } from "../../components/icons/mdiClockOutline";
 
-import { getRuntimeMusic, getRuntimeFull, endsAt } from "../../utils/date/time";
+import { getRuntimeMusic } from "../../utils/date/time";
 
 import Hero from "../../components/layouts/item/hero";
 import { Card } from "../../components/card/card";
@@ -33,7 +32,6 @@ import "./album.module.scss";
 import { ErrorNotice } from "../../components/notices/errorNotice/errorNotice";
 import { useBackdropStore } from "../../utils/store/backdrop";
 import LikeButton from "../../components/buttons/likeButton";
-import { MdiPlayOutline } from "../../components/icons/mdiPlayOutline";
 import { useAudioPlayback } from "../../utils/store/audioPlayback";
 function TabPanel(props) {
 	const { children, value, index, ...other } = props;

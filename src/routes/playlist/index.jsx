@@ -4,11 +4,8 @@ import PropTypes from "prop-types";
 
 import Box from "@mui/material/Box";
 import CircularProgress from "@mui/material/CircularProgress";
-import Typography from "@mui/material/Typography";
-import Paper from "@mui/material/Paper";
-import { IconButton, useTheme } from "@mui/material";
 
-import { useParams, useNavigate } from "react-router-dom";
+import { useParams } from "react-router-dom";
 
 import {
 	BaseItemKind,
@@ -185,6 +182,7 @@ const PlaylistTitlePage = () => {
 								userId={user.data.Id}
 								playlistItem
 								playlistItemId={item.data.Id}
+								trackIndex={index}
 							/>
 						);
 					})

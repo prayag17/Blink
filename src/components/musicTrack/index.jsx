@@ -13,6 +13,7 @@ import { useAudioPlayback } from "../../utils/store/audioPlayback";
  * @property {Array} queryKey
  * @property {string} userId
  * @property {bool} playlistItem
+ * @property {number} trackIndex
  * @property {string | undefined} playlistItemId
  */
 
@@ -28,6 +29,7 @@ const MusicTrack = ({
 	userId,
 	playlistItem = false,
 	playlistItemId,
+	trackIndex,
 	className = "",
 }) => {
 	const [currentTrackItem] = useAudioPlayback((state) => [state.item]);
@@ -65,6 +67,7 @@ const MusicTrack = ({
 						audio
 						playlistItem={playlistItem}
 						playlistItemId={playlistItemId}
+						trackIndex={trackIndex}
 					/>
 				</div>
 			</div>

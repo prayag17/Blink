@@ -4,73 +4,32 @@ import PropTypes from "prop-types";
 
 import Box from "@mui/material/Box";
 import CircularProgress from "@mui/material/CircularProgress";
-import Typography from "@mui/material/Typography";
-import Stack from "@mui/material/Stack";
-import Chip from "@mui/material/Chip";
 import Divider from "@mui/material/Divider";
-import LinearProgress from "@mui/material/LinearProgress";
 import Tabs from "@mui/material/Tabs";
 import Tab from "@mui/material/Tab";
-import Grid2 from "@mui/material/Unstable_Grid2";
-import Button from "@mui/material/Button";
-import IconButton from "@mui/material/IconButton";
-import Paper from "@mui/material/Paper";
-import TableContainer from "@mui/material/TableContainer";
-import Table from "@mui/material/Table";
-import TableHead from "@mui/material/TableHead";
-import TableRow from "@mui/material/TableRow";
-import TableBody from "@mui/material/TableBody";
-import TableCell from "@mui/material/TableCell";
-import TextField from "@mui/material/TextField";
-import MenuItem from "@mui/material/MenuItem";
-import Link from "@mui/material/Link";
-import { green, pink, yellow } from "@mui/material/colors";
 
 import { AnimatePresence, motion } from "framer-motion";
 
-import { Blurhash } from "react-blurhash";
-import { useParams, useNavigate, Link as RouterLink } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
 
 import {
 	BaseItemKind,
 	ItemFields,
-	LocationType,
-	MediaStreamType,
 	SortOrder,
 } from "@jellyfin/sdk/lib/generated-client";
 import { getUserApi } from "@jellyfin/sdk/lib/utils/api/user-api";
 import { getUserLibraryApi } from "@jellyfin/sdk/lib/utils/api/user-library-api";
-import { getLibraryApi } from "@jellyfin/sdk/lib/utils/api/library-api";
-import { getTvShowsApi } from "@jellyfin/sdk/lib/utils/api/tv-shows-api";
 import { getItemsApi } from "@jellyfin/sdk/lib/utils/api/items-api";
-import { getPlaystateApi } from "@jellyfin/sdk/lib/utils/api/playstate-api";
 
 import { useQuery } from "@tanstack/react-query";
 
-import { MdiPlayOutline } from "../../components/icons/mdiPlayOutline";
-import { MdiStar } from "../../components/icons/mdiStar";
-import { MdiCheck } from "../../components/icons/mdiCheck";
-import { MdiHeartOutline } from "../../components/icons/mdiHeartOutline";
-import { MdiHeart } from "../../components/icons/mdiHeart";
-import { MdiClockOutline } from "../../components/icons/mdiClockOutline";
-
-import { getRuntimeMusic, getRuntimeFull, endsAt } from "../../utils/date/time";
-import { TypeIconCollectionCard } from "../../components/utils/iconsCollection";
-
 import Hero from "../../components/layouts/item/hero";
 import { Card } from "../../components/card/card";
-import { EpisodeCard } from "../../components/card/episodeCard";
-import { CardScroller } from "../../components/cardScroller/cardScroller";
 
 import "./artist.module.scss";
-import { EpisodeCardsSkeleton } from "../../components/skeleton/episodeCards";
 import { ErrorNotice } from "../../components/notices/errorNotice/errorNotice";
 import { ArtistAlbum } from "../../components/layouts/artist/artistAlbum";
-import { MdiMusic } from "../../components/icons/mdiMusic";
-import { usePlaybackStore } from "../../utils/store/playback";
-import { Tooltip } from "@mui/material";
 import { useBackdropStore } from "../../utils/store/backdrop";
-import { ActorCard } from "../../components/card/actorCards";
 import MusicTrack from "../../components/musicTrack";
 function TabPanel(props) {
 	const { children, value, index, ...other } = props;
