@@ -21,6 +21,7 @@ import IconButton from "@mui/material/IconButton";
 import Divider from "@mui/material/Divider";
 import MuiDrawer from "@mui/material/Drawer";
 import ListItemText from "@mui/material/ListItemText";
+import Typography from "@mui/material/Typography";
 
 import { MdiClose } from "../icons/mdiClose";
 import { MdiLogoutVariant } from "../icons/mdiLogoutVariant";
@@ -33,8 +34,7 @@ import { EventEmitter as event } from "../../eventEmitter.js";
 
 import "./sidemenu.module.scss";
 import { useDrawerStore } from "../../utils/store/drawer";
-
-const drawerWidth = 320;
+import { MdiHomeVariant } from "../icons/mdiHomeVariant";
 
 const DrawerHeader = styled("div")(({ theme }) => ({
 	display: "flex",
@@ -122,14 +122,14 @@ export const SideMenu = ({}) => {
 						sx: {
 							backgroundColor: "inherit",
 							border: "none",
-							width: `4em`,
+							width: `5em`,
 							height: "100vh",
 							zIndex: "1",
 						},
 					}}
 					sx={{
 						zIndex: 1,
-						width: `calc(${theme.spacing(7)} + 10px)`,
+						width: `5em`,
 						background: "transparent !important ",
 					}}
 				>
@@ -139,146 +139,69 @@ export const SideMenu = ({}) => {
 							justifyContent: "center",
 						}}
 					></DrawerHeader>
-					{libraries.isLoading ? (
-						<>
-							<Skeleton
-								height="100%"
-								variant="rounded"
-								width="calc(100% - 10px )"
-								sx={{ margin: "5px" }}
-							></Skeleton>
-						</>
-					) : (
-						<>
-							<List sx={{ border: "none" }}>
-								<Tooltip
-									title="Home"
-									placement="right"
-									followCursor
-									arrow
+					<div className="sidemenu-item-container">
+						{libraries.isLoading ? (
+							<></>
+						) : (
+							<>
+								<NavLink
+									to="/home"
+									className="sidemenu-item small"
 								>
-									<ListItem
-										className="sidemenu-item-container"
-										disablePadding
-										sx={{
-											mb: 1,
+									<div className="sidemenu-item-icon">
+										<MdiHomeVariantOutline />
+									</div>
+									<Typography
+										className="sidemenu-item-text"
+										variant="caption"
+										fontWeight={500}
+										style={{
+											width: "80%",
 										}}
+										overflow="hidden"
+										textOverflow="ellipsis"
+										textAlign="center"
 									>
-										<ListItemButton
-											component={NavLink}
-											to="/home"
-											className="sidemenu-item"
-											sx={{
-												minHeight: 48,
-												justifyContent:
-													"center",
-												px: 2.5,
-												display: "flex",
-												flexDirection:
-													"column",
-											}}
-										>
-											<ListItemIcon
-												sx={{
-													minWidth: 0,
-													justifyContent:
-														"center",
-												}}
-											>
-												<MdiHomeVariantOutline />
-											</ListItemIcon>
-										</ListItemButton>
-									</ListItem>
-								</Tooltip>
+										Home
+									</Typography>
+								</NavLink>
 								{libraries.data.Items.map(
-									(library, index) => {
+									(lib, index) => {
 										return (
-											<Tooltip
-												title={library.Name}
-												placement="right"
-												arrow
-												followCursor
-												key={index}
-												sx={{
-													mb: 1,
-												}}
+											<NavLink
+												to={`/library/${lib.Id}`}
+												className="sidemenu-item"
 											>
-												<ListItem
-													className="sidemenu-item-container"
-													disablePadding
+												<div className="sidemenu-item-icon">
+													{
+														MediaCollectionTypeIconCollection[
+															lib
+																.CollectionType
+														]
+													}
+												</div>
+												<Typography
+													className="sidemenu-item-text"
+													variant="caption"
+													fontWeight={
+														500
+													}
+													style={{
+														width: "80%",
+													}}
+													overflow="hidden"
+													textOverflow="ellipsis"
+													textAlign="center"
 												>
-													<ListItemButton
-														component={
-															NavLink
-														}
-														to={
-															"/library/" +
-															library.Id
-														}
-														className="sidemenu-item"
-														sx={{
-															minHeight: 48,
-															justifyContent:
-																"center",
-															px: 2.5,
-															display: "flex",
-															flexDirection:
-																"column",
-														}}
-													>
-														<ListItemIcon
-															sx={{
-																minWidth: 0,
-																justifyContent:
-																	"center",
-															}}
-														>
-															{
-																MediaCollectionTypeIconCollection[
-																	library
-																		.CollectionType
-																]
-															}
-														</ListItemIcon>
-													</ListItemButton>
-												</ListItem>
-											</Tooltip>
+													{lib.Name}
+												</Typography>
+											</NavLink>
 										);
 									},
 								)}
-							</List>
-							<List sx={{ marginTop: "auto" }}>
-								<Tooltip
-									title="Logout"
-									placement="right"
-									followCursor
-									arrow
-								>
-									<ListItem disablePadding>
-										<ListItemButton
-											sx={{
-												minHeight: 48,
-												justifyContent:
-													"center",
-												px: 2.5,
-											}}
-											onClick={handleLogout}
-										>
-											<ListItemIcon
-												sx={{
-													minWidth: 0,
-													justifyContent:
-														"center",
-												}}
-											>
-												<MdiLogoutVariant></MdiLogoutVariant>
-											</ListItemIcon>
-										</ListItemButton>
-									</ListItem>
-								</Tooltip>
-							</List>
-						</>
-					)}
+							</>
+						)}
+					</div>
 				</MiniDrawer>
 
 				<MuiDrawer

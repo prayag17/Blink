@@ -113,7 +113,7 @@ export const AppBar = () => {
 				<Toolbar
 					sx={{
 						justifyContent: "space-between",
-						paddingLeft: "12px !important",
+						paddingLeft: "20px !important",
 					}}
 				>
 					<div
