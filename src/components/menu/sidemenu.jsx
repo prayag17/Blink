@@ -168,34 +168,42 @@ export const SideMenu = ({}) => {
 								{libraries.data.Items.map(
 									(lib, index) => {
 										return (
-											<NavLink
-												to={`/library/${lib.Id}`}
-												className="sidemenu-item"
+											<Tooltip
+												title={lib.Name}
+												placement="right"
+												arrow
+												followCursor
+												key={index}
 											>
-												<div className="sidemenu-item-icon">
-													{
-														MediaCollectionTypeIconCollection[
-															lib
-																.CollectionType
-														]
-													}
-												</div>
-												<Typography
-													className="sidemenu-item-text"
-													variant="caption"
-													fontWeight={
-														500
-													}
-													style={{
-														width: "80%",
-													}}
-													overflow="hidden"
-													textOverflow="ellipsis"
-													textAlign="center"
+												<NavLink
+													to={`/library/${lib.Id}`}
+													className="sidemenu-item"
 												>
-													{lib.Name}
-												</Typography>
-											</NavLink>
+													<div className="sidemenu-item-icon">
+														{
+															MediaCollectionTypeIconCollection[
+																lib
+																	.CollectionType
+															]
+														}
+													</div>
+													<Typography
+														className="sidemenu-item-text"
+														variant="caption"
+														fontWeight={
+															500
+														}
+														style={{
+															width: "80%",
+														}}
+														overflow="hidden"
+														textOverflow="ellipsis"
+														textAlign="center"
+													>
+														{lib.Name}
+													</Typography>
+												</NavLink>
+											</Tooltip>
 										);
 									},
 								)}
@@ -270,6 +278,8 @@ export const SideMenu = ({}) => {
 															justifyContent:
 																"center",
 															px: 2.5,
+															flexDirection:
+																"row",
 														}}
 													>
 														<ListItemIcon

@@ -396,7 +396,7 @@ const AudioPlayer = () => {
 								})}
 							</Paper>
 						</Popper>
-						<IconButton onClick={handleOpenQueue}>
+						<IconButton onClick={handleOpenQueue} disabled>
 							<MdiPlaylistMusicOutline />
 						</IconButton>
 						<IconButton

@@ -187,13 +187,17 @@ export const AppBar = () => {
 						>
 							<MenuItem
 								onClick={() => navigate("/settings")}
+								disabled
 							>
 								<ListItemIcon>
 									<MdiCog />
 								</ListItemIcon>
 								Settings
 							</MenuItem>
-							<MenuItem onClick={() => navigate("/about")}>
+							<MenuItem
+								onClick={() => navigate("/about")}
+								disabled
+							>
 								<ListItemIcon>
 									<MdiInformation />
 								</ListItemIcon>
