@@ -1,6 +1,6 @@
 /** @format */
 
-import { useState } from "react";
+import React, { useState } from "react";
 
 import { useQuery } from "@tanstack/react-query";
 
@@ -33,6 +33,7 @@ import CarouselSlide from "../../components/carouselSlide";
 import { BaseItemKind, ItemFields } from "@jellyfin/sdk/lib/generated-client";
 import ErrorBoundary from "../../components/errorBoundary";
 import Typography from "@mui/material/Typography";
+import CarouselSlideError from "../../components/errors/carousel";
 
 const Home = () => {
 	const authUser = useQuery({
@@ -216,13 +217,7 @@ const Home = () => {
 					position: "relative",
 				}}
 			>
-				<ErrorBoundary
-					fallback={
-						<div className="error">
-							<Typography>Error with Carousel</Typography>
-						</div>
-					}
-				>
+				<ErrorBoundary fallback={<CarouselSlideError />}>
 					{latestMedia.isLoading ? (
 						<CarouselSkeleton />
 					) : (

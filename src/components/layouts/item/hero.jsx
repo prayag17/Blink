@@ -370,6 +370,10 @@ const Hero = ({
 							}}
 							itemUserData={item.UserData}
 							audio={audioPlayButton}
+							playlistItemId={
+								item.Type == BaseItemKind.Playlist &&
+								item.Id
+							}
 						/>
 					)}
 					{!disableLikeButton && (

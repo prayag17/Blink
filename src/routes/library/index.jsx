@@ -1,7 +1,7 @@
 /** @format */
-import { useState, useMemo } from "react";
+import React, { useState, useEffect } from "react";
 import { motion } from "framer-motion";
-import { useParams, useNavigate } from "react-router-dom";
+import { useParams } from "react-router-dom";
 
 import { useQuery } from "@tanstack/react-query";
 
@@ -19,18 +19,12 @@ import Accordion from "@mui/material/Accordion";
 import AccordionSummary from "@mui/material/AccordionSummary";
 import AccordionDetails from "@mui/material/AccordionDetails";
 import Button from "@mui/material/Button";
-import Table from "@mui/material/Table";
-import TableBody from "@mui/material/TableBody";
-import TableContainer from "@mui/material/TableContainer";
-import TableRow from "@mui/material/TableRow";
-import TableCell from "@mui/material/TableCell";
 import IconButton from "@mui/material/IconButton";
 import Pagination from "@mui/material/Pagination";
 import Popper from "@mui/material/Popper";
 import Grow from "@mui/material/Grow";
 
 import { getUserApi } from "@jellyfin/sdk/lib/utils/api/user-api";
-import { getUserLibraryApi } from "@jellyfin/sdk/lib/utils/api/user-library-api";
 import { getItemsApi } from "@jellyfin/sdk/lib/utils/api/items-api";
 import { getArtistsApi } from "@jellyfin/sdk/lib/utils/api/artists-api";
 import { getGenresApi } from "@jellyfin/sdk/lib/utils/api/genres-api";
@@ -53,19 +47,14 @@ import {
 	ItemFields,
 	SortOrder,
 } from "@jellyfin/sdk/lib/generated-client";
-import { getRuntimeMusic } from "../../utils/date/time";
-
-import "./library.module.scss";
-import { MdiMusic } from "../../components/icons/mdiMusic";
-import { MdiHeart } from "../../components/icons/mdiHeart";
-import { MdiHeartOutline } from "../../components/icons/mdiHeartOutline";
+import MusicTrack from "../../components/musicTrack";
 import { useBackdropStore } from "../../utils/store/backdrop";
 
-const LibraryView = () => {
-	const navigate = useNavigate();
+import "./library.module.scss";
 
+const LibraryView = () => {
 	const [page, setPage] = useState(1);
-	const maxDisplayItems = 50;
+	const maxDisplayItems = 100;
 
 	const { id } = useParams();
 
@@ -121,46 +110,12 @@ const LibraryView = () => {
 	const [hasSpecialFeature, setHasSpecialFeature] = useState(false);
 	const [hasThemeSong, setHasThemeSong] = useState(false);
 	const [hasThemeVideo, setHasThemeVideo] = useState(false);
-	const availableFeatureFilters = [
-		{
-			title: "Subtitles",
-			value: false,
-			state: (val) => setHasSubtitles(val),
-		},
-		{
-			title: "Trailer",
-			value: false,
-			state: (val) => setHasTrailer(val),
-		},
-		{
-			title: "Special Feature",
-			value: false,
-			state: (val) => setHasSpecialFeature(val),
-		},
-		{
-			title: "Theme Song",
-			value: false,
-			state: (val) => setHasThemeSong(val),
-		},
-		{
-			title: "Theme Video",
-			vslue: false,
-			state: (val) => setHasThemeVideo(val),
-		},
-	];
 
 	const [isBluRay, setIsBluRay] = useState(false);
 	const [isDVD, setIsDVD] = useState(false);
 	const [isHD, setIsHD] = useState(false);
 	const [is4K, setIs4K] = useState(false);
 	const [is3D, setIs3D] = useState(false);
-	const availableVideoTypeFilters = [
-		{ title: "Blu-Ray", value: false, state: (val) => setIsBluRay(val) },
-		{ title: "DVD", value: false, state: (val) => setIsDVD(val) },
-		{ title: "HD", value: false, state: (val) => setIsHD(val) },
-		{ title: "4K", value: false, state: (val) => setIs4K(val) },
-		{ title: "3D", value: false, state: (val) => setIs3D(val) },
-	];
 
 	const [currentViewType, setCurrentViewType] = useState("");
 
@@ -169,7 +124,7 @@ const LibraryView = () => {
 	 */
 	const [viewType, setViewType] = useState([]);
 
-	useMemo(() => {
+	useEffect(() => {
 		if (currentLib.isSuccess) {
 			if (currentLib.data.Items[0].CollectionType == "movies") {
 				setCurrentViewType(BaseItemKind.Movie);
@@ -269,81 +224,6 @@ const LibraryView = () => {
 
 	const [videoTypes, setVideoTypes] = useState([]);
 
-	const fetchLibItems = async (libraryId) => {
-		let result;
-		if (currentViewType == "MusicArtist") {
-			result = await getArtistsApi(window.api).getAlbumArtists({
-				userId: user.data.Id,
-				parentId: libraryId,
-				startIndex: maxDisplayItems * (page - 1),
-				limit: maxDisplayItems,
-			});
-		} else if (currentViewType == "Person") {
-			result = await getPersonsApi(window.api).getPersons({
-				userId: user.data.Id,
-				personTypes: ["Actor"],
-				startIndex: maxDisplayItems * (page - 1),
-				limit: maxDisplayItems,
-			});
-		} else if (currentViewType == "Genre") {
-			result = await getGenresApi(window.api).getGenres({
-				userId: user.data.Id,
-				parentId: libraryId,
-				startIndex: maxDisplayItems * (page - 1),
-				limit: maxDisplayItems,
-			});
-		} else if (currentViewType == "MusicGenre") {
-			result = await getMusicGenresApi(window.api).getMusicGenres({
-				userId: user.data.Id,
-				parentId: libraryId,
-				startIndex: maxDisplayItems * (page - 1),
-				limit: maxDisplayItems,
-			});
-		} else if (currentViewType == "Studio") {
-			result = await getStudiosApi(window.api).getStudios({
-				userId: user.data.Id,
-				parentId: libraryId,
-				startIndex: maxDisplayItems * (page - 1),
-				limit: maxDisplayItems,
-			});
-		} else {
-			result = await getItemsApi(window.api).getItems({
-				userId: user.data.Id,
-				parentId: libraryId,
-				recursive:
-					currentLib.data.Items[0].CollectionType ===
-						"homevideos" ||
-					currentLib.data.Items[0].Type === "Folder" ||
-					currentLib.data.Items[0].Type === "CollectionFolder" ||
-					(currentLib.data.Items[0].Type != "boxsets" &&
-						!("CollectionType" in currentLib.data.Items[0]))
-						? undefined
-						: true,
-				includeItemTypes: [currentViewType],
-				sortOrder: [
-					sortAscending
-						? SortOrder.Ascending
-						: SortOrder.Descending,
-				],
-				sortBy: sortBy,
-				filters: filterArray,
-				hasSubtitles: hasSubtitles ? true : undefined,
-				hasTrailer: hasTrailer ? true : undefined,
-				hasSpecialFeature: hasSpecialFeature ? true : undefined,
-				hasThemeSong: hasThemeSong ? true : undefined,
-				hasThemeVideo: hasThemeVideo ? true : undefined,
-				videoTypes: videoTypes,
-				isHd: isHD ? true : undefined,
-				is4K: is4K ? true : undefined,
-				is3D: is3D ? true : undefined,
-				startIndex: maxDisplayItems * (page - 1),
-				limit: maxDisplayItems,
-				fields: ["UserData"],
-			});
-		}
-		return result.data;
-	};
-
 	const items = useQuery({
 		queryKey: [
 			"libraryView",
@@ -371,8 +251,81 @@ const LibraryView = () => {
 				},
 			},
 		],
-		queryFn: () => fetchLibItems(id),
-		enabled: Boolean(currentViewType),
+		queryFn: async () => {
+			let result;
+			if (currentViewType == "MusicArtist") {
+				result = await getArtistsApi(window.api).getAlbumArtists({
+					userId: user.data.Id,
+					parentId: id,
+					startIndex: maxDisplayItems * (page - 1),
+					limit: maxDisplayItems,
+				});
+			} else if (currentViewType == "Person") {
+				result = await getPersonsApi(window.api).getPersons({
+					userId: user.data.Id,
+					personTypes: ["Actor"],
+					startIndex: maxDisplayItems * (page - 1),
+					limit: maxDisplayItems,
+				});
+			} else if (currentViewType == "Genre") {
+				result = await getGenresApi(window.api).getGenres({
+					userId: user.data.Id,
+					parentId: id,
+					startIndex: maxDisplayItems * (page - 1),
+					limit: maxDisplayItems,
+				});
+			} else if (currentViewType == "MusicGenre") {
+				result = await getMusicGenresApi(window.api).getMusicGenres(
+					{
+						userId: user.data.Id,
+						parentId: id,
+						startIndex: maxDisplayItems * (page - 1),
+						limit: maxDisplayItems,
+					},
+				);
+			} else if (currentViewType == "Studio") {
+				result = await getStudiosApi(window.api).getStudios({
+					userId: user.data.Id,
+					parentId: id,
+					startIndex: maxDisplayItems * (page - 1),
+					limit: maxDisplayItems,
+				});
+			} else {
+				result = await getItemsApi(window.api).getItems({
+					userId: user.data.Id,
+					parentId: currentLib.data.Items[0].Id,
+					recursive:
+						currentLib.data.Items[0].CollectionType ==
+						"boxsets"
+							? undefined
+							: true,
+					includeItemTypes: [currentViewType],
+					sortOrder: [
+						sortAscending
+							? SortOrder.Ascending
+							: SortOrder.Descending,
+					],
+					sortBy: sortBy,
+					filters: filterArray,
+					hasSubtitles: hasSubtitles ? true : undefined,
+					hasTrailer: hasTrailer ? true : undefined,
+					hasSpecialFeature: hasSpecialFeature
+						? true
+						: undefined,
+					hasThemeSong: hasThemeSong ? true : undefined,
+					hasThemeVideo: hasThemeVideo ? true : undefined,
+					videoTypes: videoTypes,
+					isHd: isHD || undefined,
+					is4K: is4K || undefined,
+					is3D: is3D || undefined,
+					startIndex: maxDisplayItems * (page - 1),
+					limit: maxDisplayItems,
+					enableUserData: true,
+				});
+			}
+			return result.data;
+		},
+		enabled: user.isSuccess && Boolean(currentViewType),
 		networkMode: "always",
 	});
 
@@ -388,29 +341,6 @@ const LibraryView = () => {
 
 	const [filterButtonAnchorEl, setFilterButtonAnchorEl] = useState(null);
 	const [filterMenuOpen, setFilterMenuOpen] = useState(false);
-
-	const openFiltersMenu = (event) => {
-		setFilterButtonAnchorEl(event.currentTarget);
-	};
-	const closeFiltersMenu = () => {
-		setFilterButtonAnchorEl(null);
-	};
-
-	const handleLiking = async (item) => {
-		let result;
-		if (item.UserData.isFavorite) {
-			result = await getUserLibraryApi(window.api).unmarkFavoriteItem({
-				userId: user.data.Id,
-				itemId: item.Id,
-			});
-		} else if (!item.UserData.isFavorite) {
-			result = await getUserLibraryApi(window.api).markFavoriteItem({
-				userId: user.data.Id,
-				itemId: item.Id,
-			});
-		}
-		items.refetch();
-	};
 
 	const [setAppBackdrop] = useBackdropStore((state) => [state.setBackdrop]);
 
@@ -483,7 +413,7 @@ const LibraryView = () => {
 								</IconButton>
 
 								<TextField
-									disabled={!Boolean(sortBy)}
+									disabled={!sortBy}
 									select
 									value={sortBy}
 									onChange={handleSortBy}
@@ -510,9 +440,7 @@ const LibraryView = () => {
 									orientation="vertical"
 								/>
 								<TextField
-									disabled={
-										!Boolean(currentViewType)
-									}
+									disabled={!currentViewType}
 									select
 									value={currentViewType}
 									onChange={(e) => {
@@ -1345,7 +1273,7 @@ const LibraryView = () => {
 				) : items.data.TotalRecordCount == 0 ? (
 					<EmptyNotice />
 				) : currentViewType == BaseItemKind.Genre ? (
-					items.data.Items.map((item, index) => {
+					items.data.Items.map((item) => {
 						return (
 							<GenreView
 								key={item.Id}
@@ -1358,7 +1286,7 @@ const LibraryView = () => {
 					})
 				) : currentViewType != BaseItemKind.Audio ? (
 					<div className="library-grid">
-						{items.data.Items.map((item, index) => {
+						{items.data.Items.map((item) => {
 							return (
 								<motion.div
 									style={{
@@ -1400,7 +1328,7 @@ const LibraryView = () => {
 												? `${
 														item.ProductionYear
 												  } - ${
-														!!item.EndDate
+														item.EndDate
 															? new Date(
 																	item.EndDate,
 															  ).toLocaleString(
@@ -1493,127 +1421,51 @@ const LibraryView = () => {
 						})}
 					</div>
 				) : (
-					<TableContainer>
-						<Table>
-							<TableBody>
-								{items.data.Items.map((item, index) => {
-									return (
-										<TableRow
-											component={motion.div}
-											key={item.Id}
-											sx={{
-												"& td,& th": {
-													borderBottom:
-														"1px solid rgb(255 255 255 / 0.1)",
-												},
-												"&:last-child td, &:last-child th":
-													{ border: 0 },
-												"&:hover": {
-													background:
-														"rgb(255 255 255 / 0.05)",
-												},
-											}}
-											initial={{
-												transform:
-													"scale(0.8)",
-												opacity: 0,
-											}}
-											animate={{
-												transform:
-													"scale(1)",
-												opacity: 1,
-											}}
-											transition={{
-												duration: 0.25,
-												ease: "easeInOut",
-												delay: 0.02 * index,
-											}}
-										>
-											<TableCell width="4.5em">
-												<Box className="library-list-image-container">
-													{!!item
-														.ImageTags
-														.Primary && (
-														<img
-															className="library-list-image"
-															src={`${window.api.basePath}/Items/${item.Id}/Images/Primary?quality=80&tag=${item.ImageTags.Primary}`}
-														/>
-													)}
-													<Box className="library-list-icon-container">
-														<MdiMusic className="library-list-icon" />
-													</Box>
-												</Box>
-											</TableCell>
-											<TableCell>
-												<Typography variant="h6">
-													{item.Name}
-												</Typography>
-												<Stack
-													direction="row"
-													divider={
-														<Typography
-															variant="subtitle1"
-															sx={{
-																opacity: 0.7,
-															}}
-														>
-															,
-														</Typography>
-													}
-												>
-													{item.Artists.map(
-														(
-															artist,
-															aindex,
-														) => {
-															return (
-																<Typography
-																	variant="subtitle1"
-																	sx={{
-																		opacity: 0.7,
-																	}}
-																	key={
-																		aindex
-																	}
-																>
-																	{
-																		artist
-																	}
-																</Typography>
-															);
-														},
-													)}
-												</Stack>
-											</TableCell>
-											<TableCell>
-												<Typography variant="subtitle1">
-													{getRuntimeMusic(
-														item.RunTimeTicks,
-													)}
-												</Typography>
-											</TableCell>
-											<TableCell width="1em">
-												<IconButton
-													onClick={() => {
-														handleLiking(
-															item,
-														);
-													}}
-												>
-													{item.UserData
-														.IsFavorite ? (
-														<MdiHeart />
-													) : (
-														<MdiHeartOutline />
-													)}
-												</IconButton>
-											</TableCell>
-										</TableRow>
-									);
-								})}
-							</TableBody>
-						</Table>
-					</TableContainer>
+					<div
+						style={{
+							display: "flex",
+							flexDirection: "column",
+						}}
+					>
+						{items.data.Items.map((item) => (
+							<MusicTrack
+								item={item}
+								key={item.Id}
+								queryKey={[
+									"libraryView",
+									"currentLibItems",
+									id,
+									`page: ${page}`,
+									{
+										currentViewType:
+											currentViewType,
+										sortAscending: sortAscending,
+										sortBy: sortBy,
+										playbackFilters: filterArray,
+										extraFilters: {
+											hasSubtitles:
+												hasSubtitles,
+											hasTrailer: hasTrailer,
+											hasSpecialFeature:
+												hasSpecialFeature,
+											hasThemeSong:
+												hasThemeSong,
+											hasThemeVideo:
+												hasThemeVideo,
+										},
+										qualityFilters: {
+											isBluRay: isBluRay,
+											isDVD: isDVD,
+											isHD: isHD,
+											is4K: is4K,
+											is3D: is3D,
+										},
+									},
+								]}
+								userId={user.data.Id}
+							/>
+						))}
+					</div>
 				)}
 
 				{items.isSuccess &&

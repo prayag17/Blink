@@ -1,5 +1,5 @@
 /** @format */
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 
 import TextField from "@mui/material/TextField";
 import CircularProgress from "@mui/material/CircularProgress";
@@ -226,8 +226,9 @@ const SearchPage = () => {
 						displayCards={8}
 						disableDecoration
 					>
-						{movies.data.Items.map((item, index) => (
+						{movies.data.Items.map((item) => (
 							<Card
+								key={item.Id}
 								item={item}
 								cardTitle={item.Name}
 								imageType={"Primary"}
@@ -261,6 +262,7 @@ const SearchPage = () => {
 					>
 						{series.data.Items.map((item, index) => (
 							<Card
+								key={item.Id}
 								item={item}
 								cardTitle={item.Name}
 								imageType={"Primary"}
@@ -304,6 +306,7 @@ const SearchPage = () => {
 					>
 						{audio.data.Items.map((item, index) => (
 							<Card
+								key={item.Id}
 								item={item}
 								cardTitle={item.Name}
 								imageType={"Primary"}
@@ -338,6 +341,7 @@ const SearchPage = () => {
 						>
 							{musicAlbum.data.Items.map((item, index) => (
 								<Card
+									key={item.Id}
 									item={item}
 									seriesId={item.SeriesId}
 									cardTitle={item.Name}
@@ -373,6 +377,7 @@ const SearchPage = () => {
 					>
 						{book.data.Items.map((item, index) => (
 							<Card
+								key={item.Id}
 								item={item}
 								cardTitle={item.Name}
 								imageType={"Primary"}
@@ -406,36 +411,33 @@ const SearchPage = () => {
 							displayCards={8}
 							disableDecoration
 						>
-							{musicArtists.data.Items.map(
-								(item, index) => (
-									<Card
-										item={item}
-										cardTitle={item.Name}
-										imageType={"Primary"}
-										disableOverlay
-										cardType={"square"}
-										queryKey={[
-											"search",
-											"items",
-											"MusicArtists",
-											searchParam,
-										]}
-										userId={user.data.Id}
-										imageBlurhash={
-											!!item.ImageBlurHashes
-												?.Primary &&
-											item.ImageBlurHashes
-												?.Primary[
-												Object.keys(
-													item
-														.ImageBlurHashes
-														.Primary,
-												)[0]
-											]
-										}
-									/>
-								),
-							)}
+							{musicArtists.data.Items.map((item) => (
+								<Card
+									key={item.Id}
+									item={item}
+									cardTitle={item.Name}
+									imageType={"Primary"}
+									disableOverlay
+									cardType={"square"}
+									queryKey={[
+										"search",
+										"items",
+										"MusicArtists",
+										searchParam,
+									]}
+									userId={user.data.Id}
+									imageBlurhash={
+										!!item.ImageBlurHashes
+											?.Primary &&
+										item.ImageBlurHashes?.Primary[
+											Object.keys(
+												item.ImageBlurHashes
+													.Primary,
+											)[0]
+										]
+									}
+								/>
+							))}
 						</CardScroller>
 					)}
 				{person.isSuccess && person.data.Items.length > 0 && (
@@ -444,8 +446,9 @@ const SearchPage = () => {
 						displayCards={8}
 						disableDecoration
 					>
-						{person.data.Items.map((item, index) => (
+						{person.data.Items.map((item) => (
 							<Card
+								key={item.Id}
 								item={item}
 								cardTitle={item.Name}
 								imageType={"Primary"}

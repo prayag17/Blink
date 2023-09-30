@@ -76,21 +76,14 @@ import "@fontsource/noto-sans/900.css";
 import "@fontsource/noto-sans/900-italic.css";
 
 // Jellyfin SDK TypeScript
-import {
-	Jellyfin,
-	VersionOutdatedIssue,
-	VersionUnsupportedIssue,
-} from "@jellyfin/sdk";
+import { Jellyfin } from "@jellyfin/sdk";
 import { version as appVer } from "../package.json";
 import { v4 as uuidv4 } from "uuid";
 import { delServer, getServer } from "./utils/storage/servers.js";
 import { delUser, getUser } from "./utils/storage/user.js";
 
 import { useBackdropStore } from "./utils/store/backdrop.js";
-import {
-	usePlaybackDataLoadStore,
-	usePlaybackStore,
-} from "./utils/store/playback.js";
+import { usePlaybackDataLoadStore } from "./utils/store/playback.js";
 import BoxSetTitlePage from "./routes/boxset/index.jsx";
 import PersonTitlePage from "./routes/person/index.jsx";
 import MusicAlbumTitlePage from "./routes/album/index.jsx";
@@ -239,7 +232,7 @@ function App() {
 
 	const userLogin = async () => {
 		const user = await getUser();
-		const auth = await api.authenticateUserByName(
+		const auth = await window.api.authenticateUserByName(
 			user.Name,
 			user.Password,
 		);
@@ -382,7 +375,6 @@ function App() {
 						height="315"
 						src="https://www.youtube.com/embed/dQw4w9WgXcQ?autoplay=1&disablekb=1"
 						title="EasterEgg"
-						frameborder="0"
 						allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
 					></iframe>
 				</Dialog>

@@ -142,7 +142,7 @@ const PlayButton = ({
 			return result.data;
 		},
 		onSuccess: (item) => {
-			if (audio) {
+			if (!!trackIndex) {
 				setCurrentTrack(trackIndex);
 				setAudioTracks(item.Items);
 				setAudioUrl(
@@ -150,6 +150,13 @@ const PlayButton = ({
 				);
 				setAudioItem(item.Items[trackIndex]);
 				setPlaylistItemId(playlistItemId);
+				setAudioDisplay(true);
+			} else if (audio) {
+				setAudioTracks(item.Items);
+				setAudioUrl(
+					`${window.api.basePath}/Audio/${item.Items[0].Id}/universal?deviceId=${window.api.deviceInfo.id}&userId=${userId}&api_key=${window.api.accessToken}`,
+				);
+				setAudioItem(item.Items[0]);
 				setAudioDisplay(true);
 			} else {
 				setUrl(

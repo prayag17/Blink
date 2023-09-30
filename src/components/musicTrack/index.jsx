@@ -1,4 +1,5 @@
 /** @format */
+import React from "react";
 import Typography from "@mui/material/Typography";
 import "./musicTrack.module.scss";
 import { getRuntimeMusic } from "../../utils/date/time";
@@ -6,6 +7,7 @@ import LikeButton from "../buttons/likeButton";
 import TextLink from "../textLink";
 import PlayButton from "../buttons/playButton";
 import { useAudioPlayback } from "../../utils/store/audioPlayback";
+import { MdiMusic } from "../icons/mdiMusic";
 
 /**
  * @typedef {Object} Props
@@ -37,6 +39,14 @@ const MusicTrack = ({
 	return (
 		<div className={`music-track ${className}`}>
 			<div className="music-track-image">
+				<div className="music-track-icon">
+					<MdiMusic
+						sx={{
+							fontSize: "2em !important",
+							fill: "url(#clr-gradient-default) !important",
+						}}
+					/>
+				</div>
 				<img
 					src={window.api.getItemImageUrl(
 						Object.keys(item.ImageTags).length == 0
@@ -93,13 +103,14 @@ const MusicTrack = ({
 					{item.ArtistItems.map((artist, index) => (
 						<>
 							<TextLink
-								text={artist.Name}
 								variant={"subtitle2"}
 								location={`/artist/${artist.Id}`}
 								otherProps={{
 									fontWeight: 400,
 								}}
-							/>
+							>
+								{artist.Name}
+							</TextLink>
 							{index != item.ArtistItems.length - 1 && (
 								<span
 									style={{

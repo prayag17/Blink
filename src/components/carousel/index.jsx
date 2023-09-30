@@ -1,5 +1,5 @@
 /** @format */
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 
 import IconButton from "@mui/material/IconButton";
@@ -96,34 +96,17 @@ const Carousel = ({ content, onChange }) => {
 				<MdiChevronRight />
 			</IconButton>
 			<div className="carousel-indicator-container">
-				<div
-					className={
-						currentSlide == 0
-							? "carousel-indicator active"
-							: "carousel-indicator"
-					}
-					style={{
-						background:
-							currentSlide == 0
-								? "white"
-								: "rgb(255 255 255 / 0.5)",
-					}}
-					onClick={() => {
-						setDirection("left");
-						setCurrentSlide(0);
-					}}
-				/>
 				{content.map((item, index) => (
 					<div
 						className={
-							currentSlide == index + 1
+							currentSlide == index
 								? "carousel-indicator active"
 								: "carousel-indicator"
 						}
 						key={index}
 						style={{
 							background:
-								currentSlide == index + 1
+								currentSlide == index
 									? "white"
 									: "rgb(255 255 255 / 0.5)",
 						}}
@@ -133,7 +116,7 @@ const Carousel = ({ content, onChange }) => {
 							} else if (currentSlide <= index) {
 								setDirection("right");
 							}
-							setCurrentSlide(index + 1);
+							setCurrentSlide(index);
 						}}
 					/>
 				))}

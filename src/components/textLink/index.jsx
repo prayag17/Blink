@@ -1,5 +1,4 @@
 /** @format */
-
 import Typography from "@mui/material/Typography";
 import { useNavigate } from "react-router-dom";
 

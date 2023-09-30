@@ -1,5 +1,5 @@
 /** @format */
-import { useState, useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import PropTypes from "prop-types";
 
 import Box from "@mui/material/Box";
@@ -358,7 +358,7 @@ const ArtistTitlePage = () => {
 							>
 								{artistAppearances.isSuccess &&
 									artistAppearances.data.Items.map(
-										(tabitem, aindex) => {
+										(tabitem) => {
 											return (
 												<Card
 													key={
