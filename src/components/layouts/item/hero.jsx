@@ -191,10 +191,10 @@ const Hero = ({
 							</>
 						) : (
 							<Typography variant="h2" fontWeight={300}>
-								{!!item.ImageTags.Logo ? (
+								{item.ImageTags.Logo ? (
 									<img
 										src={
-											!!item.SeriesId
+											item.SeriesId
 												? `${window.api.basePath}/Items/${item.SeriesId}/Images/Logo`
 												: `${window.api.basePath}/Items/${item.Id}/Images/Logo`
 										}

@@ -5,7 +5,10 @@ import PropTypes from "prop-types";
 import Button from "@mui/material/Button";
 import Fab from "@mui/material/Fab";
 import LinearProgress from "@mui/material/LinearProgress";
+import Typography from "@mui/material/Typography";
+
 import { MdiPlayOutline } from "../icons/mdiPlayOutline";
+
 import {
 	usePlaybackDataLoadStore,
 	usePlaybackStore,
@@ -94,58 +97,69 @@ const PlayButton = ({
 		mutationFn: async () => {
 			setPlaybackDataLoading(true);
 			let result;
-			if (itemType == "Series") {
-				result = await getTvShowsApi(window.api).getEpisodes({
-					seriesId: itemId,
-					limit: 1,
-					startIndex: 0,
-					fields: [
-						ItemFields.MediaSources,
-						ItemFields.MediaStreams,
-					],
-				});
-			} else if (itemType == BaseItemKind.Playlist || playlistItem) {
-				result = await getPlaylistsApi(window.api).getPlaylistItems(
-					{
+			switch (itemType) {
+				case BaseItemKind.Series:
+					result = await getTvShowsApi(window.api).getEpisodes({
+						seriesId: itemId,
+						limit: 1,
+						startIndex: 0,
+						fields: [
+							ItemFields.MediaSources,
+							ItemFields.MediaStreams,
+						],
+					});
+					break;
+				case BaseItemKind.Playlist:
+				case playlistItem:
+					result = await getPlaylistsApi(
+						window.api,
+					).getPlaylistItems({
 						userId: userId,
 						playlistId: playlistItemId,
-					},
-				);
-			} else if (itemType == BaseItemKind.MusicAlbum) {
-				result = await getItemsApi(window.api).getItems({
-					parentId: itemId,
-					userId: userId,
-					fields: [
-						ItemFields.MediaSources,
-						ItemFields.MediaStreams,
-					],
-					sortOrder: SortOrder.Ascending,
-					sortBy: "IndexNumber",
-				});
-			} else if (itemType == BaseItemKind.MusicArtist) {
-				result = await getItemsApi(window.api).getItems({
-					artistIds: [itemId],
-					recursive: true,
-					includeItemTypes: [BaseItemKind.Audio],
-					userId: userId,
-					fields: [
-						ItemFields.MediaSources,
-						ItemFields.MediaStreams,
-					],
-					sortOrder: SortOrder.Ascending,
-					sortBy: ["PremiereDate", "ProductionYear", "SortName"],
-				});
-			} else {
-				result = await getItemsApi(window.api).getItems({
-					ids: [itemId],
-					userId: userId,
-					fields: [
-						ItemFields.MediaSources,
-						ItemFields.MediaStreams,
-					],
-					sortOrder: SortOrder.Ascending,
-					sortBy: "IndexNumber",
-				});
+					});
+					break;
+				case BaseItemKind.MusicAlbum:
+					result = await getItemsApi(window.api).getItems({
+						parentId: itemId,
+						userId: userId,
+						fields: [
+							ItemFields.MediaSources,
+							ItemFields.MediaStreams,
+						],
+						sortOrder: SortOrder.Ascending,
+						sortBy: "IndexNumber",
+					});
+					break;
+				case BaseItemKind.MusicArtist:
+					result = await getItemsApi(window.api).getItems({
+						artistIds: [itemId],
+						recursive: true,
+						includeItemTypes: [BaseItemKind.Audio],
+						userId: userId,
+						fields: [
+							ItemFields.MediaSources,
+							ItemFields.MediaStreams,
+						],
+						sortOrder: SortOrder.Ascending,
+						sortBy: [
+							"PremiereDate",
+							"ProductionYear",
+							"SortName",
+						],
+					});
+					break;
+				default:
+					result = await getItemsApi(window.api).getItems({
+						ids: [itemId],
+						userId: userId,
+						fields: [
+							ItemFields.MediaSources,
+							ItemFields.MediaStreams,
+						],
+						sortOrder: SortOrder.Ascending,
+						sortBy: "IndexNumber",
+					});
+					break;
 			}
 			return result.data;
 		},
@@ -182,11 +196,82 @@ const PlayButton = ({
 				?Static=true&mediaSourceId=${item.Items[0].Id}&deviceId=${window.api.deviceInfo.id}&api_key=${window.api.accessToken}&Tag=${item.Items[0].MediaSources[0].ETag}&videoStreamIndex=${currentVideoTrack}&audioStreamIndex=${currentAudioTrack}`,
 				);
 				setPosition(item.Items[0].UserData?.PlaybackPositionTicks);
-				setItemName(
-					item.Items[0].Type == "Episode"
-						? `${item.Items[0].SeriesName} S${item.Items[0].ParentIndexNumber}:E${item.Items[0].IndexNumber} ${item.Items[0].Name}`
-						: item.Items[0].Name,
-				);
+
+				switch (item.Items[0].Type) {
+					case BaseItemKind.Movie:
+						if (item.Items[0].ImageBlurHashes.Logo) {
+							setItemName(
+								<div className="video-osd-name">
+									<img
+										src={`${window.api.basePath}/Items/${item.Items[0].Id}/Images/Logo`}
+										className="video-osd-name-logo"
+										onLoad={(e) => {
+											e.target.style.opacity = 1;
+										}}
+									/>
+								</div>,
+							);
+						} else {
+							setItemName(
+								<div className="video-osd-name">
+									<Typography variant="h6">
+										{item.Items[0].Name}
+									</Typography>
+								</div>,
+							);
+						}
+						break;
+					case BaseItemKind.Episode:
+						if (item.Items[0].ImageBlurHashes.Logo) {
+							setItemName(
+								<div className="video-osd-name">
+									<img
+										src={`${window.api.basePath}/Items/${item.Items[0].SeriesId}/Images/Logo`}
+										className="video-osd-name-logo"
+										onLoad={(e) => {
+											e.target.style.opacity = 1;
+										}}
+									/>
+									<Typography variant="subtitle1">
+										S
+										{
+											item.Items[0]
+												.ParentIndexNumber
+										}
+										:E
+										{
+											item.Items[0].IndexNumber
+										}{" "}
+										{item.Items[0].Name}
+									</Typography>
+								</div>,
+							);
+						} else {
+							setItemName(
+								<div className="video-osd-name">
+									<Typography variant="h6">
+										{item.Items[0].SeriesName}
+									</Typography>
+									<Typography variant="subtitle1">
+										S
+										{
+											item.Items[0]
+												.ParentIndexNumber
+										}
+										:E
+										{
+											item.Items[0].IndexNumber
+										}{" "}
+										{item.Items[0].Name}
+									</Typography>
+								</div>,
+							);
+						}
+
+						break;
+					default:
+						break;
+				}
 				setItemId(item.Items[0].Id);
 				setDuration(item.Items[0].RunTimeTicks);
 				navigate(`/player`);

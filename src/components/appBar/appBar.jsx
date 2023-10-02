@@ -1,5 +1,5 @@
 /** @format */
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 
 import { AnimatePresence, motion } from "framer-motion";
 
@@ -37,6 +37,8 @@ import { delUser } from "../../utils/storage/user";
 import { MdiDelete } from "../icons/mdiDelete";
 
 import logo from "../../assets/logo.png";
+import { MdiLogoutVariant } from "../icons/mdiLogoutVariant";
+import { EventEmitter as event } from "../../eventEmitter";
 
 export const AppBar = () => {
 	const navigate = useNavigate();
@@ -74,6 +76,14 @@ export const AppBar = () => {
 
 	const handleDrawerOpen = () => {
 		setDrawerOpen(true);
+	};
+	const handleLogout = async () => {
+		console.log("Logging out user...");
+		await window.api.logout();
+		delUser();
+		sessionStorage.removeItem("accessToken");
+		event.emit("create-jellyfin-api", window.api.basePath);
+		navigate("/login");
 	};
 
 	useEffect(() => {
@@ -202,6 +212,12 @@ export const AppBar = () => {
 									<MdiInformation />
 								</ListItemIcon>
 								About
+							</MenuItem>
+							<MenuItem onClick={handleLogout}>
+								<ListItemIcon>
+									<MdiLogoutVariant />
+								</ListItemIcon>
+								Logout
 							</MenuItem>
 							<MenuItem
 								onClick={async () => {

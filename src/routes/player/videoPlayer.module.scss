@@ -6,6 +6,19 @@
 		transition: opacity 0.1s linear;
 		width: 100vw;
 		cursor: none;
+		&-name {
+			display: flex;
+			flex-direction: column;
+			margin-left: 1.2em;
+			&-logo {
+				width: 16em;
+				max-height: 6em;
+				object-fit: contain;
+				object-position: left top;
+				filter: drop-shadow(0 0 10px black);
+			}
+			gap: 0.5em;
+		}
 	}
 	&-osd-visible {
 		cursor: default;

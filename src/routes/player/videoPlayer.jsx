@@ -235,27 +235,21 @@ export const VideoPlayer = () => {
 				setIsPlaying((state) => !state);
 				break;
 			case "ArrowUp":
-				setVolume((state) => (state != 1 ? state + 0.1 : state));
+				setVolume((state) => (state <= 0.9 ? state + 0.1 : state));
 				break;
 			case "ArrowDown":
-				setVolume((state) => (state != 0 ? state - 0.1 : state));
+				setVolume((state) => (state >= 0.1 ? state - 0.1 : state));
 				break;
+			case "F":
 			case "f":
 				setAppFullScreen((state) => !state);
 				break;
-			case "F":
-				setAppFullScreen((state) => !state);
-				break;
+			case "P":
 			case "p":
 				setIsPIP((state) => !state);
 				break;
-			case "P":
-				setIsPIP((state) => !state);
-				break;
-			case "m":
-				setIsMuted((state) => !state);
-				break;
 			case "M":
+			case "m":
 				setIsMuted((state) => !state);
 				break;
 			default:
@@ -382,28 +376,30 @@ export const VideoPlayer = () => {
 				}}
 				open={showControls}
 			>
-				<AppBar
-					position="static"
-					elevation={0}
-					sx={{
+				<div
+					style={{
 						background:
 							"linear-gradient(to bottom, rgb(0 0 0 / 0.75), transparent)",
+						width: "100vw",
+						display: "flex",
+						alignItems: "flex-start",
+						padding: "0.85em 1.2em",
 					}}
 				>
-					<Toolbar>
-						<IconButton
-							onClick={async () => {
-								await appWindow.setFullscreen(false);
-								navigate(-1);
-							}}
-						>
-							<MdiArrowLeft />
-						</IconButton>
-						<Typography ml={2} variant="h6">
-							{itemName}
-						</Typography>
-					</Toolbar>
-				</AppBar>
+					<IconButton
+						onClick={async () => {
+							await appWindow.setFullscreen(false);
+							navigate(-1);
+						}}
+						style={{
+							marginTop: "0.2em",
+						}}
+					>
+						<MdiArrowLeft />
+					</IconButton>
+
+					{itemName}
+				</div>
 				<Stack
 					direction="column"
 					padding={2}

@@ -164,6 +164,8 @@ const Home = () => {
 					ItemFields.MediaStreams,
 					ItemFields.MediaSources,
 					ItemFields.ParentId,
+					"IndexNumber",
+					"ParentIndexNumber",
 				],
 				limit: 10,
 			});
@@ -359,7 +361,12 @@ const Home = () => {
 												cardCaption={
 													item.Type ==
 													BaseItemKind.Episode
-														? `S${item.ParentIndexNumber}:E${item.IndexNumber} - ${item.Name}`
+														? item.ParentIndexNumber ==
+														  0
+															? `${item.SeasonName} - ${item.Name}`
+															: item.IndexNumberEnd
+															? `${item.IndexNumber}-${item.IndexNumberEnd}. ${item.Name}`
+															: `${item.IndexNumber}. ${item.Name}`
 														: item.Type ==
 														  BaseItemKind.Series
 														? `${

@@ -447,11 +447,9 @@ function App() {
 								ease: "easeInOut",
 							}}
 							onLoadCapture={() => {
-								console.log(`loading ${backdropId}`);
 								setBackdropLoading(true);
 							}}
 							onLoad={() => {
-								console.log(`loaded ${backdropId}`);
 								setBackdropLoading(false);
 							}}
 							loading="eager"
