@@ -1,7 +1,7 @@
 /** @format */
 import PropTypes from "prop-types";
 
-import { useEffect } from "react";
+import React from "react";
 
 import IconButton from "@mui/material/IconButton";
 
@@ -25,14 +25,13 @@ const LikeButton = ({
 	const { enqueueSnackbar } = useSnackbar();
 
 	const handleLiking = async () => {
-		let result;
 		if (isFavorite) {
-			result = await getUserLibraryApi(window.api).unmarkFavoriteItem({
+			await getUserLibraryApi(window.api).unmarkFavoriteItem({
 				userId: userId,
 				itemId: itemId,
 			});
 		} else if (!isFavorite) {
-			result = await getUserLibraryApi(window.api).markFavoriteItem({
+			await getUserLibraryApi(window.api).markFavoriteItem({
 				userId: userId,
 				itemId: itemId,
 			});
@@ -40,7 +39,7 @@ const LikeButton = ({
 	};
 	const mutation = useMutation({
 		mutationFn: handleLiking,
-		onError: (error, a, context) => {
+		onError: (error) => {
 			enqueueSnackbar(`${error}`, {
 				variant: "error",
 			});

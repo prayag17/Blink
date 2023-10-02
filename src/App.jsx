@@ -437,19 +437,26 @@ function App() {
 								opacity: 0,
 							}}
 							animate={{
-								opacity: backdropLoading ? 0 : 0.5,
+								opacity: backdropLoading ? 0 : 0.6,
 							}}
 							exit={{
 								opacity: 0,
 							}}
 							transition={{
-								duration: 0.5,
+								duration: 0.8,
 								ease: "easeInOut",
 							}}
-							onLoad={() => setBackdropLoading(false)}
+							onLoadCapture={() => {
+								console.log(`loading ${backdropId}`);
+								setBackdropLoading(true);
+							}}
+							onLoad={() => {
+								console.log(`loaded ${backdropId}`);
+								setBackdropLoading(false);
+							}}
 							loading="eager"
 							style={{
-								transition: "opacity 1s",
+								transition: "opacity 0.8s",
 							}}
 						/>
 					</AnimatePresence>

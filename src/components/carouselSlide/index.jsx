@@ -59,7 +59,7 @@ const CarouselSlide = ({ item }) => {
 	const handleMoreInfo = () => {
 		if (availableSpecialRoutes.includes(item.Type)) {
 			navigate(`/${item.Type.toLocaleLowerCase()}/${item.Id}`);
-		} else if (!!item.Role) {
+		} else if (item.Role) {
 			navigate(`/person/${item.Id}`);
 		} else {
 			navigate(`/item/${item.Id}`);
@@ -106,7 +106,7 @@ const CarouselSlide = ({ item }) => {
 							<img
 								className="hero-carousel-background-image"
 								src={
-									!!item.ParentBackdropItemId
+									item.ParentBackdropItemId
 										? `${window.api.basePath}/Items/${item.ParentBackdropItemId}/Images/Backdrop`
 										: `${window.api.basePath}/Items/${item.Id}/Images/Backdrop`
 								}
@@ -128,8 +128,8 @@ const CarouselSlide = ({ item }) => {
 					initial={{
 						transform:
 							animationDirection == "right"
-								? "translateX(40px)"
-								: "translateX(-40px)",
+								? "translateX(60px)"
+								: "translateX(-60px)",
 						opacity: 0,
 					}}
 					animate={{
@@ -139,8 +139,8 @@ const CarouselSlide = ({ item }) => {
 					exit={{
 						transform:
 							animationDirection == "right"
-								? "translateX(-40px)"
-								: "translateX(40px)",
+								? "translateX(-60px)"
+								: "translateX(60px)",
 
 						opacity: 0,
 					}}
@@ -199,7 +199,7 @@ const CarouselSlide = ({ item }) => {
 						className="hero-carousel-info"
 					>
 						<Typography variant="subtitle1">
-							{!!item.ProductionYear
+							{item.ProductionYear
 								? item.ProductionYear
 								: "Unknown"}
 						</Typography>
@@ -215,7 +215,7 @@ const CarouselSlide = ({ item }) => {
 							}}
 							className="hero-carousel-info-rating"
 						>
-							{!!item.CommunityRating ? (
+							{item.CommunityRating ? (
 								<>
 									<MdiStar
 										sx={{

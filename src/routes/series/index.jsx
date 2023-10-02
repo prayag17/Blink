@@ -1,5 +1,5 @@
 /** @format */
-import { useState, useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import PropTypes from "prop-types";
 
 import Box from "@mui/material/Box";
@@ -12,7 +12,7 @@ import MenuItem from "@mui/material/MenuItem";
 
 import { motion } from "framer-motion";
 
-import { useParams, useNavigate, Link as RouterLink } from "react-router-dom";
+import { useParams } from "react-router-dom";
 
 import {
 	BaseItemKind,
@@ -26,7 +26,7 @@ import { getTvShowsApi } from "@jellyfin/sdk/lib/utils/api/tv-shows-api";
 
 import { useQuery } from "@tanstack/react-query";
 
-import { getRuntimeMusic, getRuntimeFull, endsAt } from "../../utils/date/time";
+import { getRuntimeMusic } from "../../utils/date/time";
 
 import Hero from "../../components/layouts/item/hero";
 import { Card } from "../../components/card/card";
@@ -36,12 +36,12 @@ import { CardScroller } from "../../components/cardScroller/cardScroller";
 import "./series.module.scss";
 import { EpisodeCardsSkeleton } from "../../components/skeleton/episodeCards";
 import { ErrorNotice } from "../../components/notices/errorNotice/errorNotice";
-import { usePlaybackStore } from "../../utils/store/playback";
 
 import { useBackdropStore } from "../../utils/store/backdrop";
 import { ActorCard } from "../../components/card/actorCards";
 import { SeasonSelectorSkeleton } from "../../components/skeleton/seasonSelector";
-import { stagger } from "framer-motion";
+import LikeButton from "../../components/buttons/likeButton";
+import MarkPlayedButton from "../../components/buttons/markPlayedButton";
 function TabPanel(props) {
 	const { children, value, index, ...other } = props;
 
@@ -65,16 +65,8 @@ TabPanel.propTypes = {
 	value: PropTypes.number.isRequired,
 };
 
-function a11yProps(index) {
-	return {
-		id: `full-width-tab-${index}`,
-		"aria-controls": `full-width-tabpanel-${index}`,
-	};
-}
-
 const SeriesTitlePage = () => {
 	const { id } = useParams();
-	const navigate = useNavigate();
 
 	const user = useQuery({
 		queryKey: ["user"],
@@ -148,6 +140,21 @@ const SeriesTitlePage = () => {
 	});
 
 	const [currentSeason, setCurrentSeason] = useState(0);
+
+	const currentSeasonItem = useQuery({
+		queryKey: ["item", id, "season", currentSeason],
+		queryFn: async () => {
+			const result = await getUserLibraryApi(window.api).getItem({
+				userId: user.data.Id,
+				itemId: seasons.data.Items[currentSeason].Id,
+			});
+			return result.data;
+		},
+		enabled: seasons.isSuccess,
+		networkMode: "always",
+		refetchOnWindowFocus: true,
+	});
+
 	const episodes = useQuery({
 		queryKey: ["item", id, `season ${currentSeason + 1}`, "episodes"],
 		queryFn: async () => {
@@ -178,24 +185,6 @@ const SeriesTitlePage = () => {
 		},
 		enabled: item.isSuccess,
 	});
-	const [
-		setUrl,
-		setPosition,
-		setDuration,
-		setItemId,
-		setItemName,
-		setSubtitleTracksStore,
-		setSelectedSubtitleTrack,
-	] = usePlaybackStore((state) => [
-		state.setUrl,
-		state.setPosition,
-		state.setDuration,
-		state.setItemId,
-		state.setItemName,
-		state.setSubtitleTracks,
-		state.setSelectedSubtitleTrack,
-	]);
-
 	const [setAppBackdrop] = useBackdropStore((state) => [state.setBackdrop]);
 
 	const [directors, setDirectors] = useState([]);
@@ -262,40 +251,35 @@ const SeriesTitlePage = () => {
 							displayCards={4}
 							disableDecoration
 						>
-							{nextUpEpisode.data.Items.map(
-								(episode, index) => {
-									return (
-										<EpisodeCard
-											item={episode}
-											cardTitle={`S${episode.ParentIndexNumber}:E${episode.IndexNumber} - ${episode.Name}`}
-											cardCaption={
-												episode.Overview
-											}
-											imageBlurhash={
-												episode
-													.ImageBlurHashes
-													?.Primary[
-													Object.keys(
-														episode
-															.ImageBlurHashes
-															.Primary,
-													)[0]
-												]
-											}
-											queryKey={[
-												"item",
-												id,
-												`season ${
-													currentSeason +
-													1
-												}`,
-												"episodes",
-											]}
-											userId={user.data.Id}
-										/>
-									);
-								},
-							)}
+							{nextUpEpisode.data.Items.map((episode) => {
+								return (
+									<EpisodeCard
+										key={episode.Id}
+										item={episode}
+										cardTitle={`S${episode.ParentIndexNumber}:E${episode.IndexNumber} - ${episode.Name}`}
+										cardCaption={episode.Overview}
+										imageBlurhash={
+											episode.ImageBlurHashes
+												?.Primary[
+												Object.keys(
+													episode
+														.ImageBlurHashes
+														.Primary,
+												)[0]
+											]
+										}
+										queryKey={[
+											"item",
+											id,
+											`season ${
+												currentSeason + 1
+											}`,
+											"episodes",
+										]}
+										userId={user.data.Id}
+									/>
+								);
+							})}
 						</CardScroller>
 					)}
 
@@ -345,110 +329,163 @@ const SeriesTitlePage = () => {
 									}
 								></Chip>
 							</div>
-							<TextField
-								value={currentSeason}
-								onChange={(e) =>
-									setCurrentSeason(e.target.value)
-								}
-								select
-								SelectProps={{
-									MenuProps: {
-										disableScrollLock: true,
-									},
+							<div
+								style={{
+									display: "flex",
+									gap: "0.75em",
 								}}
-								size="small"
 							>
-								{seasons.data.Items.map(
-									(season, index) => {
-										return (
-											<MenuItem
-												key={season.Id}
-												value={index}
-											>
-												{season.Name}
-											</MenuItem>
-										);
-									},
+								{currentSeasonItem.isSuccess && (
+									<LikeButton
+										itemId={
+											currentSeasonItem.data.Id
+										}
+										isFavorite={
+											currentSeasonItem.data
+												.UserData.IsFavorite
+										}
+										queryKey={[
+											"item",
+											id,
+											"season",
+											currentSeason,
+										]}
+										userId={user.data.Id}
+										itemName={
+											currentSeasonItem.data
+												.Name
+										}
+									/>
 								)}
-							</TextField>
+								{currentSeasonItem.isSuccess && (
+									<>
+										<MarkPlayedButton
+											itemId={
+												currentSeasonItem
+													.data.Id
+											}
+											isPlayed={
+												currentSeasonItem
+													.data.UserData
+													.Played
+											}
+											queryKey={[
+												"item",
+												id,
+												"season",
+												currentSeason,
+											]}
+											userId={user.data.Id}
+											itemName={
+												currentSeasonItem
+													.data.Name
+											}
+										/>
+									</>
+								)}
+								<TextField
+									value={currentSeason}
+									onChange={(e) =>
+										setCurrentSeason(
+											e.target.value,
+										)
+									}
+									select
+									SelectProps={{
+										MenuProps: {
+											disableScrollLock: true,
+										},
+									}}
+									size="small"
+								>
+									{seasons.data.Items.map(
+										(season, index) => {
+											return (
+												<MenuItem
+													key={season.Id}
+													value={index}
+												>
+													{season.Name}
+												</MenuItem>
+											);
+										},
+									)}
+								</TextField>
+							</div>
 						</div>
 						<Divider />
 						<div className="item-detail-episodes-container">
 							{episodes.isLoading ? (
 								<EpisodeCardsSkeleton />
 							) : (
-								episodes.data.Items.map(
-									(episode, index) => {
-										return (
-											<motion.div
-												key={episode.Id}
-												initial={{
-													transform:
-														"translateY(10px)",
-													opacity: 0,
-												}}
-												whileInView={{
-													opacity: 1,
-													transform:
-														"translateY(0px)",
-												}}
-												viewport={{
-													once: true,
-												}}
-												transition={{
-													duration: 0.2,
-													ease: "backInOut",
-												}}
-												style={{
-													maxWidth:
-														"23.3vw",
-												}}
-											>
-												<EpisodeCard
-													item={episode}
-													cardTitle={
-														episode.ParentIndexNumber ==
-														0
-															? `${episode.SeasonName} - ${episode.Name}`
-															: !!episode.IndexNumberEnd
-															? `${episode.IndexNumber}-${episode.IndexNumberEnd}. ${episode.Name}`
-															: `${episode.IndexNumber}. ${episode.Name}`
-													}
-													cardCaption={
-														episode.Overview
-													}
-													imageBlurhash={
-														!!episode
-															.ImageBlurHashes
-															?.Primary &&
-														episode
-															.ImageBlurHashes
-															?.Primary[
-															Object.keys(
-																episode
-																	.ImageBlurHashes
-																	.Primary,
-															)[0]
-														]
-													}
-													queryKey={[
-														"item",
-														id,
-														`season ${
-															currentSeason +
-															1
-														}`,
-														"episodes",
-													]}
-													userId={
-														user.data
-															.Id
-													}
-												/>
-											</motion.div>
-										);
-									},
-								)
+								episodes.data.Items.map((episode) => {
+									return (
+										<motion.div
+											key={episode.Id}
+											initial={{
+												transform:
+													"translateY(10px)",
+												opacity: 0,
+											}}
+											whileInView={{
+												opacity: 1,
+												transform:
+													"translateY(0px)",
+											}}
+											viewport={{
+												once: true,
+											}}
+											transition={{
+												duration: 0.2,
+												ease: "backInOut",
+											}}
+											style={{
+												maxWidth: "23.3vw",
+											}}
+										>
+											<EpisodeCard
+												item={episode}
+												cardTitle={
+													episode.ParentIndexNumber ==
+													0
+														? `${episode.SeasonName} - ${episode.Name}`
+														: episode.IndexNumberEnd
+														? `${episode.IndexNumber}-${episode.IndexNumberEnd}. ${episode.Name}`
+														: `${episode.IndexNumber}. ${episode.Name}`
+												}
+												cardCaption={
+													episode.Overview
+												}
+												imageBlurhash={
+													!!episode
+														.ImageBlurHashes
+														?.Primary &&
+													episode
+														.ImageBlurHashes
+														?.Primary[
+														Object.keys(
+															episode
+																.ImageBlurHashes
+																.Primary,
+														)[0]
+													]
+												}
+												queryKey={[
+													"item",
+													id,
+													`season ${
+														currentSeason +
+														1
+													}`,
+													"episodes",
+												]}
+												userId={
+													user.data.Id
+												}
+											/>
+										</motion.div>
+									);
+								})
 							)}
 						</div>
 					</div>
@@ -460,46 +497,40 @@ const SeriesTitlePage = () => {
 							displayCards={8}
 							disableDecoration
 						>
-							{specialFeatures.data.map(
-								(special, index) => {
-									return (
-										<Card
-											key={special.Id}
-											item={special}
-											seriesId={
-												special.SeriesId
-											}
-											cardTitle={special.Name}
-											imageType="Primary"
-											cardCaption={getRuntimeMusic(
-												special.RunTimeTicks,
-											)}
-											cardType="portrait"
-											queryKey={[
-												"item",
-												id,
-												"similarItem",
-											]}
-											imageBlurhash={
-												!!special
-													.ImageBlurHashes
-													?.Primary &&
-												special
-													.ImageBlurHashes
-													.Primary[
-													Object.keys(
-														special
-															.ImageBlurHashes
-															.Primary,
-													)[0]
-												]
-											}
-											userId={user.data.Id}
-											onClick={() => {}}
-										/>
-									);
-								},
-							)}
+							{specialFeatures.data.map((special) => {
+								return (
+									<Card
+										key={special.Id}
+										item={special}
+										seriesId={special.SeriesId}
+										cardTitle={special.Name}
+										imageType="Primary"
+										cardCaption={getRuntimeMusic(
+											special.RunTimeTicks,
+										)}
+										cardType="portrait"
+										queryKey={[
+											"item",
+											id,
+											"similarItem",
+										]}
+										imageBlurhash={
+											!!special.ImageBlurHashes
+												?.Primary &&
+											special.ImageBlurHashes
+												.Primary[
+												Object.keys(
+													special
+														.ImageBlurHashes
+														.Primary,
+												)[0]
+											]
+										}
+										userId={user.data.Id}
+										onClick={() => {}}
+									/>
+								);
+							})}
 						</CardScroller>
 					)}
 				{item.data.People.length > 0 && (
@@ -508,7 +539,7 @@ const SeriesTitlePage = () => {
 						displayCards={8}
 						disableDecoration
 					>
-						{item.data.People.map((person, index) => {
+						{item.data.People.map((person) => {
 							return (
 								<ActorCard
 									key={person.Id}
@@ -534,7 +565,7 @@ const SeriesTitlePage = () => {
 						displayCards={8}
 						disableDecoration
 					>
-						{similarItems.data.Items.map((similar, index) => {
+						{similarItems.data.Items.map((similar) => {
 							return (
 								<Card
 									key={similar.Id}
@@ -556,7 +587,7 @@ const SeriesTitlePage = () => {
 											? `${
 													similar.ProductionYear
 											  } - ${
-													!!similar.EndDate
+													similar.EndDate
 														? new Date(
 																similar.EndDate,
 														  ).toLocaleString(

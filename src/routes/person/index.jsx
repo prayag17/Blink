@@ -1,5 +1,5 @@
 /** @format */
-import { useState, useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import PropTypes from "prop-types";
 
 import Box from "@mui/material/Box";
@@ -279,7 +279,6 @@ const PersonTitlePage = () => {
 					queryKey={["item", id]}
 					disableInfoStrip
 					disablePlayButton
-					disableLikeButton
 					disableMarkAsPlayedButton
 				/>
 				<div className="item-detail-person-container">
