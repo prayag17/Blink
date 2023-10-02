@@ -1,5 +1,5 @@
 /** @format */
-import PropTypes from "prop-types";
+import React from "react";
 
 import { useNavigate } from "react-router-dom";
 
@@ -92,7 +92,7 @@ export const Card = ({
 				borderRadius: "calc(0.6em + 6px)",
 			}}
 			className="card-container"
-			onClick={!!onClick ? onClick : defaultOnClick}
+			onClick={onClick ? onClick : defaultOnClick}
 		>
 			<MuiCard className="card" elevation={0}>
 				<div className="card-box">
@@ -117,7 +117,7 @@ export const Card = ({
 								<div
 									className={`card-indicator text`}
 									style={{
-										opacity: !!item.UserData
+										opacity: item.UserData
 											?.UnplayedItemCount
 											? 1
 											: 0,
@@ -147,7 +147,7 @@ export const Card = ({
 							/>
 						)}
 						<div className="card-image-icon-container">
-							{!!overrideIcon
+							{overrideIcon
 								? TypeIconCollectionCard[overrideIcon]
 								: TypeIconCollectionCard[item.Type]}
 						</div>
@@ -156,7 +156,7 @@ export const Card = ({
 								overrideIcon == "User"
 									? `${window.api.basePath}/Users/${item.Id}/Images/Primary`
 									: window.api.getItemImageUrl(
-											!!seriesId
+											seriesId
 												? item.SeriesId
 												: item.AlbumId
 												? item.AlbumId

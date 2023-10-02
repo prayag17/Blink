@@ -5,9 +5,10 @@
 		opacity: 0;
 		transition: opacity 0.1s linear;
 		width: 100vw;
+		cursor: none;
 	}
-	&-osd-visible &-osd {
-		opacity: 1;
+	&-osd-visible {
+		cursor: default;
 	}
 	&-player-container {
 		position: fixed;

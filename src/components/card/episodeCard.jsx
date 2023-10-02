@@ -1,4 +1,5 @@
 /** @format */
+import React from "react";
 import { useNavigate } from "react-router-dom";
 
 import MuiCard from "@mui/material/Card";
@@ -14,7 +15,6 @@ import { MdiCheck } from "../icons/mdiCheck";
 import LikeButton from "../buttons/likeButton";
 import MarkPlayedButton from "../buttons/markPlayedButton";
 import PlayButton from "../buttons/playButton";
-import { BaseItemKind } from "@jellyfin/sdk/lib/generated-client";
 import { MdiTelevisionClassic } from "../icons/mdiTelevisionClassic";
 import { getRuntimeCompact } from "../../utils/date/time";
 
@@ -55,7 +55,7 @@ export const EpisodeCard = ({
 				borderRadius: "calc(0.6em + 6px)",
 			}}
 			className="card-container"
-			onClick={!!onClick ? onClick : defaultOnClick}
+			onClick={onClick ? onClick : defaultOnClick}
 		>
 			<MuiCard className="card card-episode" elevation={0}>
 				<div className="card-box">

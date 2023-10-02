@@ -1,4 +1,5 @@
 /** @format */
+import React from "react";
 import PropTypes from "prop-types";
 
 import Button from "@mui/material/Button";
@@ -10,8 +11,7 @@ import {
 	usePlaybackStore,
 } from "../../utils/store/playback";
 import { useNavigate } from "react-router-dom";
-import { useMutation, useQuery } from "@tanstack/react-query";
-import { getUserLibraryApi } from "@jellyfin/sdk/lib/utils/api/user-library-api";
+import { useMutation } from "@tanstack/react-query";
 import { getTvShowsApi } from "@jellyfin/sdk/lib/utils/api/tv-shows-api";
 import { getItemsApi } from "@jellyfin/sdk/lib/utils/api/items-api";
 import {
@@ -49,16 +49,24 @@ const PlayButton = ({
 		setDuration,
 		setItemId,
 		setItemName,
-		setSubtitleTracksStore,
-		setSelectedSubtitleTrack,
+		setAudioStreamIndex,
+		setVideoStreamIndex,
+		setSubtitleStreamIndex,
+		setMediaSourceId,
+		setUserId,
+		setMediaContainer,
 	] = usePlaybackStore((state) => [
 		state.setUrl,
 		state.setPosition,
 		state.setDuration,
 		state.setItemId,
 		state.setItemName,
-		state.setSubtitleTracks,
-		state.setSelectedSubtitleTrack,
+		state.setAudioStreamIndex,
+		state.setVideoStreamIndex,
+		state.setSubtitleStreamIndex,
+		state.setMediaSourceId,
+		state.setUserId,
+		state.setMediaContainer,
 	]);
 	const [
 		setAudioUrl,
@@ -142,7 +150,7 @@ const PlayButton = ({
 			return result.data;
 		},
 		onSuccess: (item) => {
-			if (!!trackIndex) {
+			if (trackIndex) {
 				setCurrentTrack(trackIndex);
 				setAudioTracks(item.Items);
 				setAudioUrl(
@@ -159,6 +167,15 @@ const PlayButton = ({
 				setAudioItem(item.Items[0]);
 				setAudioDisplay(true);
 			} else {
+				setUserId(userId);
+				setMediaContainer(item.Items[0].MediaSources[0].Container);
+				// Set all required stream index
+				setAudioStreamIndex(currentAudioTrack);
+				setVideoStreamIndex(currentVideoTrack);
+				setSubtitleStreamIndex(currentSubTrack);
+
+				setMediaSourceId(item.Items[0].Id);
+
 				setUrl(
 					`${window.api.basePath}/Videos/${item.Items[0].Id}/stream.
 					${item.Items[0].MediaSources[0].Container}
@@ -172,8 +189,6 @@ const PlayButton = ({
 				);
 				setItemId(item.Items[0].Id);
 				setDuration(item.Items[0].RunTimeTicks);
-				// setSubtitleTracksStore(subtitleTracks);
-				setSelectedSubtitleTrack(currentSubTrack);
 				navigate(`/player`);
 			}
 		},

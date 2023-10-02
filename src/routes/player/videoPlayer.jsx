@@ -1,5 +1,7 @@
 /** @format */
+import React from "react";
 import { appWindow } from "@tauri-apps/api/window";
+import { v4 as uuidv4 } from "uuid";
 
 import AppBar from "@mui/material/AppBar";
 import Toolbar from "@mui/material/Toolbar";
@@ -11,10 +13,8 @@ import Slider from "@mui/material/Slider";
 import CircularProgress from "@mui/material/CircularProgress";
 import Menu from "@mui/material/Menu";
 import MenuItem from "@mui/material/MenuItem";
-import TextField from "@mui/material/TextField";
-import ListItem from "@mui/material/ListItem";
-import ListItemText from "@mui/material/ListItemText";
 import Backdrop from "@mui/material/Backdrop";
+import LinearProgress from "@mui/material/LinearProgress";
 
 import ReactPlayer from "react-player";
 
@@ -22,11 +22,12 @@ import { usePlaybackStore } from "../../utils/store/playback";
 import { MdiArrowLeft } from "../../components/icons/mdiArrowLeft";
 import { MdiPlay } from "../../components/icons/mdiPlay";
 
-import { useLocation, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { useRef, useState, useCallback, useEffect } from "react";
 import { secToTicks, ticksToSec } from "../../utils/date/time";
 
 import { getPlaystateApi } from "@jellyfin/sdk/lib/utils/api/playstate-api";
+import { getMediaInfoApi } from "@jellyfin/sdk/lib/utils/api/media-info-api";
 
 import "./videoPlayer.module.scss";
 import { MdiPause } from "../../components/icons/mdiPause";
@@ -41,8 +42,10 @@ import { MdiPlaySpeed } from "../../components/icons/mdiPlaySpeed";
 
 import { endsAt } from "../../utils/date/time";
 
-import useKeyPress from "../../utils/hooks/useKeyPress";
 import { MdiCog } from "../../components/icons/mdiCog";
+import { useQuery } from "@tanstack/react-query";
+
+import { motion, AnimatePresence } from "framer-motion";
 
 export const VideoPlayer = () => {
 	const navigate = useNavigate();
@@ -62,7 +65,11 @@ export const VideoPlayer = () => {
 		itemId,
 		itemName,
 		subtitleTracksStore,
-		selectedSubtitleTrack,
+		audioStreamIndex,
+		videoStreamIndex,
+		subtitleStreamIndex,
+		userId,
+		mediaContainer,
 	] = usePlaybackStore((state) => [
 		state.url,
 		state.startPosition,
@@ -70,11 +77,27 @@ export const VideoPlayer = () => {
 		state.itemId,
 		state.itemName,
 		state.subtitleTracks,
-		state.selectedSubtitleTrack,
+		state.audioStreamIndex,
+		state.videoStreamIndex,
+		state.subtitleStreamIndex,
+		state.userId,
+		state.mediaContainer,
 	]);
-	const [currentSubtrack, setCurrentSubtrack] = useState(
-		selectedSubtitleTrack,
-	);
+
+	const mediaInfo = useQuery({
+		queryKey: ["videoPlayer", itemId, "mediaInfo"],
+		queryFn: async () => {
+			const result = await getMediaInfoApi(window.api).getPlaybackInfo(
+				{
+					itemId: itemId,
+					userId: userId,
+				},
+			);
+			return result.data;
+		},
+	});
+
+	const [currentSubtrack] = useState(subtitleStreamIndex);
 
 	const [showControls, setShowControls] = useState(false);
 
@@ -87,20 +110,34 @@ export const VideoPlayer = () => {
 	const [isPIP, setIsPIP] = useState(false);
 	const [volume, setVolume] = useState(0.8);
 
-	const [showVolume, setShowVolume] = useState(false);
-
 	const [duration, setDuration] = useState(0);
 	const [progress, setProgress] = useState(0);
 	const [currentTime, setCurrentTime] = useState(startPosition);
 
-	const onReady = useCallback(() => {
+	const onReady = useCallback(async () => {
 		if (!isReady) {
 			const timeToStart = ticksToSec(startPosition);
+			await getPlaystateApi(window.api).reportPlaybackStart({
+				playbackStartInfo: {
+					PlayMethod: mediaInfo.data?.MediaSources[0]
+						.SupportsDirectPlay
+						? "DirectPlay"
+						: mediaInfo.data?.MediaSources[0]
+								.SupportsDirectStream
+						? "DirectStream"
+						: "Transcode",
+					AudioStreamIndex: audioStreamIndex,
+					SubtitleStreamIndex: subtitleStreamIndex,
+					userId: userId,
+					CanSeek: true,
+					ItemId: itemId,
+					MediaSourceId: mediaInfo.data?.MediaSources[0].Id,
+					PlaySessionId: mediaInfo.data?.PlaySessionId,
+				},
+			});
 			playerRef.current.seekTo(timeToStart, "seconds");
 			setDuration(playerRef.current.getDuration());
 			setIsReady(true);
-			const player = playerRef.current.getInternalPlayer();
-			console.log(player.config);
 		}
 	}, [isReady]);
 
@@ -111,12 +148,24 @@ export const VideoPlayer = () => {
 		}
 		await getPlaystateApi(window.api).reportPlaybackProgress({
 			playbackProgressInfo: {
+				PlayMethod: mediaInfo.data?.MediaSources[0]
+					.SupportsDirectPlay
+					? "DirectPlay"
+					: mediaInfo.data?.MediaSources[0].SupportsDirectStream
+					? "DirectStream"
+					: "Transcode",
 				ItemId: itemId,
 				IsMuted: isMuted,
 				PositionTicks: secToTicks(e.playedSeconds),
 				PlaybackStartTimeTicks: startPosition,
 				VolumeLevel: volume * 100,
 				IsPaused: !isPlaying,
+				AudioStreamIndex: audioStreamIndex,
+				Brightness: 100,
+				CanSeek: true,
+				MediaSourceId: mediaInfo.data?.MediaSources[0].Id,
+				SubtitleStreamIndex: subtitleStreamIndex,
+				PlaySessionId: mediaInfo.data?.PlaySessionId,
 			},
 		});
 	};
@@ -181,13 +230,66 @@ export const VideoPlayer = () => {
 					playerRef.current.getCurrentTime() - 15,
 				);
 				break;
+			case " ":
+				console.log(isPlaying);
+				setIsPlaying((state) => !state);
+				break;
+			case "ArrowUp":
+				setVolume((state) => (state != 1 ? state + 0.1 : state));
+				break;
+			case "ArrowDown":
+				setVolume((state) => (state != 0 ? state - 0.1 : state));
+				break;
+			case "f":
+				setAppFullScreen((state) => !state);
+				break;
+			case "F":
+				setAppFullScreen((state) => !state);
+				break;
 			case "p":
-				setIsPlaying(!isPlaying);
+				setIsPIP((state) => !state);
+				break;
+			case "P":
+				setIsPIP((state) => !state);
+				break;
+			case "m":
+				setIsMuted((state) => !state);
+				break;
+			case "M":
+				setIsMuted((state) => !state);
+				break;
 			default:
 				console.log(event.key);
 				break;
 		}
 	}, []);
+
+	useEffect(() => {
+		appWindow.setFullscreen(appFullscreen);
+	}, [appFullscreen]);
+
+	useEffect(() => {
+		// attach the event listener
+		document.addEventListener("keydown", handleKeyPress);
+
+		// remove the event listener
+		return () => {
+			document.removeEventListener("keydown", handleKeyPress);
+		};
+	}, [handleKeyPress]);
+
+	const [showVolume, setShowVolume] = useState(false);
+
+	// Show/Hide volume Indicator
+	useEffect(() => {
+		setShowVolume(true);
+		const timeout = setTimeout(() => {
+			setShowVolume(false);
+		}, 5000);
+		return () => {
+			clearTimeout(timeout);
+		};
+	}, [volume]);
 
 	const [subs, setSubs] = useState([]);
 
@@ -209,13 +311,49 @@ export const VideoPlayer = () => {
 	}, [subtitleTracksStore]);
 
 	return (
-		<Box
+		<div
 			className="video-player-container"
-			sx={{ background: "black" }}
+			style={{ background: "black" }}
 			onMouseMove={() => {
 				setShowControls(true);
 			}}
 		>
+			<AnimatePresence>
+				{showVolume && (
+					<motion.div
+						initial={{ opacity: 0 }}
+						animate={{ opacity: 1 }}
+						exit={{ opacity: 0 }}
+						style={{
+							position: "absolute",
+							top: "4em",
+							right: "4em",
+							background: "rgb(0 0 0/ 0.5)",
+							backdropFilter: "blur(10px)",
+							width: "10em",
+							height: "10em",
+							padding: "1em",
+							display: "flex",
+							alignItems: "center",
+							justifyContent: "center",
+							flexDirection: "column",
+							borderRadius: "10px",
+							border: "2px solid rgb(255 255 255 / 0.2)",
+							gap: "2em",
+						}}
+					>
+						<MdiVolumeHigh style={{ fontSize: "3em" }} />
+						<LinearProgress
+							variant="determinate"
+							value={volume * 100}
+							style={{
+								width: "8em",
+								margin: "0 1em",
+							}}
+						/>
+					</motion.div>
+				)}
+			</AnimatePresence>
 			<Box
 				sx={{
 					position: "absolute",
@@ -230,7 +368,11 @@ export const VideoPlayer = () => {
 				<CircularProgress />
 			</Box>
 			<Backdrop
-				className="video-osd"
+				className={
+					showControls
+						? "video-osd video-osd-visible"
+						: "video-osd"
+				}
 				sx={{
 					display: "flex",
 					flexDirection: "column",
@@ -300,6 +442,7 @@ export const VideoPlayer = () => {
 							valueLabelFormat={(value) =>
 								handleDisplayTime(value)
 							}
+							// size="medium"
 							sx={{
 								"& .MuiSlider-valueLabel": {
 									lineHeight: 1.2,
@@ -458,10 +601,11 @@ export const VideoPlayer = () => {
 								valueLabelFormat={(value) =>
 									Math.floor(value)
 								}
+								size="small"
 								sx={{
 									mr: 1,
 									ml: 1,
-									width: "10em",
+									width: "8em",
 									"& .MuiSlider-valueLabel": {
 										lineHeight: 1.2,
 										fontSize: 24,
@@ -528,9 +672,6 @@ export const VideoPlayer = () => {
 									let fstate =
 										await appWindow.isFullscreen();
 									setAppFullScreen(!fstate);
-									await appWindow.setFullscreen(
-										!fstate,
-									);
 								}}
 							>
 								{appFullscreen ? (
@@ -577,6 +718,6 @@ export const VideoPlayer = () => {
 				}}
 				playbackRate={availableSpeeds[speed]}
 			/>
-		</Box>
+		</div>
 	);
 };
