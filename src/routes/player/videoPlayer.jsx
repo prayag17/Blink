@@ -1,10 +1,7 @@
 /** @format */
 import React from "react";
 import { appWindow } from "@tauri-apps/api/window";
-import { v4 as uuidv4 } from "uuid";
 
-import AppBar from "@mui/material/AppBar";
-import Toolbar from "@mui/material/Toolbar";
 import Box from "@mui/material/Box";
 import Stack from "@mui/material/Stack";
 import IconButton from "@mui/material/IconButton";
@@ -28,6 +25,7 @@ import { secToTicks, ticksToSec } from "../../utils/date/time";
 
 import { getPlaystateApi } from "@jellyfin/sdk/lib/utils/api/playstate-api";
 import { getMediaInfoApi } from "@jellyfin/sdk/lib/utils/api/media-info-api";
+import { getTvShowsApi } from "@jellyfin/sdk/lib/utils/api/tv-shows-api";
 
 import "./videoPlayer.module.scss";
 import { MdiPause } from "../../components/icons/mdiPause";
@@ -43,9 +41,17 @@ import { MdiPlaySpeed } from "../../components/icons/mdiPlaySpeed";
 import { endsAt } from "../../utils/date/time";
 
 import { MdiCog } from "../../components/icons/mdiCog";
+import { MdiSkipNext } from "../../components/icons/mdiSkipNext";
 import { useQuery } from "@tanstack/react-query";
 
 import { motion, AnimatePresence } from "framer-motion";
+import {
+	BaseItemKind,
+	ItemFields,
+	LocationType,
+} from "@jellyfin/sdk/lib/generated-client";
+import { getItemsApi } from "@jellyfin/sdk/lib/utils/api/items-api";
+import { MdiSkipPrevious } from "../../components/icons/mdiSkipPrevious";
 
 export const VideoPlayer = () => {
 	const navigate = useNavigate();
@@ -70,6 +76,20 @@ export const VideoPlayer = () => {
 		subtitleStreamIndex,
 		userId,
 		mediaContainer,
+		seriesId,
+		setUrl,
+		setPosition,
+		setDurationStore,
+		setItemId,
+		setItemName,
+		setAudioStreamIndex,
+		setVideoStreamIndex,
+		setSubtitleStreamIndex,
+		setMediaSourceId,
+		setUserId,
+		setMediaContainer,
+		setSeriesId,
+		episodeIndex,
 	] = usePlaybackStore((state) => [
 		state.url,
 		state.startPosition,
@@ -82,6 +102,20 @@ export const VideoPlayer = () => {
 		state.subtitleStreamIndex,
 		state.userId,
 		state.mediaContainer,
+		state.seriesId,
+		state.setUrl,
+		state.setPosition,
+		state.setDuration,
+		state.setItemId,
+		state.setItemName,
+		state.setAudioStreamIndex,
+		state.setVideoStreamIndex,
+		state.setSubtitleStreamIndex,
+		state.setMediaSourceId,
+		state.setUserId,
+		state.setMediaContainer,
+		state.setSeriesId,
+		state.episodeIndex,
 	]);
 
 	const mediaInfo = useQuery({
@@ -96,6 +130,23 @@ export const VideoPlayer = () => {
 			return result.data;
 		},
 	});
+
+	const episodes = useQuery({
+		queryKey: ["videoPlayer", itemId, "episodes"],
+		queryFn: async () => {
+			const result = await getTvShowsApi(window.api).getEpisodes({
+				userId: userId,
+				seriesId: seriesId,
+				fields: [ItemFields.MediaSources],
+				excludeLocationTypes: [LocationType.Virtual],
+			});
+			return result.data;
+		},
+	});
+
+	const currentEpisodeIndex = episodes.data?.Items?.findIndex(
+		(item) => item.Id == itemId,
+	);
 
 	const [currentSubtrack] = useState(subtitleStreamIndex);
 
@@ -136,7 +187,6 @@ export const VideoPlayer = () => {
 				},
 			});
 			playerRef.current.seekTo(timeToStart, "seconds");
-			setDuration(playerRef.current.getDuration());
 			setIsReady(true);
 		}
 	}, [isReady]);
@@ -204,6 +254,209 @@ export const VideoPlayer = () => {
 			minimumIntegerDigits: 2,
 			maximumFractionDigits: 0,
 		})}`;
+	};
+
+	const handlePlayNextEpisode = () => {
+		setUserId(userId);
+
+		// Set all required stream index
+		setAudioStreamIndex(0);
+		setVideoStreamIndex(0);
+		setSubtitleStreamIndex(0);
+
+		setMediaSourceId(episodes.data.Items[currentEpisodeIndex + 1].Id);
+
+		setUrl(
+			`${window.api.basePath}/Videos/${
+				episodes.data.Items[currentEpisodeIndex + 1].Id
+			}/stream.
+					${episodes.data.Items[currentEpisodeIndex + 1].MediaSources[0].Container}
+				?Static=true&mediaSourceId=${
+					episodes.data.Items[currentEpisodeIndex + 1].Id
+				}&deviceId=${window.api.deviceInfo.id}&api_key=${
+				window.api.accessToken
+			}&Tag=${
+				episodes.data.Items[currentEpisodeIndex + 1].MediaSources[0]
+					.ETag
+			}&videoStreamIndex=${0}&audioStreamIndex=${0}`,
+		);
+		setPosition(
+			episodes.data.Items[currentEpisodeIndex + 1].UserData
+				?.PlaybackPositionTicks,
+		);
+
+		setSeriesId(episodes.data.Items[currentEpisodeIndex + 1].SeriesId);
+		if (
+			episodes.data.Items[currentEpisodeIndex + 1].ImageBlurHashes.Logo
+		) {
+			setItemName(
+				<div className="video-osd-name">
+					<img
+						src={`${window.api.basePath}/Items/${
+							episodes.data.Items[currentEpisodeIndex + 1]
+								.SeriesId
+						}/Images/Logo`}
+						className="video-osd-name-logo"
+						onLoad={(e) => {
+							e.target.style.opacity = 1;
+						}}
+					/>
+					<Typography variant="subtitle1">
+						S
+						{
+							episodes.data.Items[currentEpisodeIndex + 1]
+								.ParentIndexNumber
+						}
+						:E
+						{
+							episodes.data.Items[currentEpisodeIndex + 1]
+								.IndexNumber
+						}{" "}
+						{
+							episodes.data.Items[currentEpisodeIndex + 1]
+								.Name
+						}
+					</Typography>
+				</div>,
+			);
+		} else {
+			setItemName(
+				<div className="video-osd-name">
+					<Typography variant="h6">
+						{
+							episodes.data.Items[currentEpisodeIndex + 1]
+								.SeriesName
+						}
+					</Typography>
+					<Typography variant="subtitle1">
+						S
+						{
+							episodes.data.Items[currentEpisodeIndex + 1]
+								.ParentIndexNumber
+						}
+						:E
+						{
+							episodes.data.Items[currentEpisodeIndex + 1]
+								.IndexNumber
+						}{" "}
+						{
+							episodes.data.Items[currentEpisodeIndex + 1]
+								.Name
+						}
+					</Typography>
+				</div>,
+			);
+		}
+
+		setItemId(episodes.data.Items[currentEpisodeIndex + 1].Id);
+		setDurationStore(
+			episodes.data.Items[currentEpisodeIndex + 1].RunTimeTicks,
+		);
+		// Reset Player time state
+		setProgress(0);
+		setCurrentTime(0);
+		// navigate("player");
+	};
+	const handlePlayPrevEpisode = () => {
+		setUserId(userId);
+
+		// Set all required stream index
+		setAudioStreamIndex(0);
+		setVideoStreamIndex(0);
+		setSubtitleStreamIndex(0);
+
+		setMediaSourceId(episodes.data.Items[currentEpisodeIndex - 1].Id);
+
+		setUrl(
+			`${window.api.basePath}/Videos/${
+				episodes.data.Items[currentEpisodeIndex - 1].Id
+			}/stream.
+					${episodes.data.Items[currentEpisodeIndex - 1].MediaSources[0].Container}
+				?Static=true&mediaSourceId=${
+					episodes.data.Items[currentEpisodeIndex - 1].Id
+				}&deviceId=${window.api.deviceInfo.id}&api_key=${
+				window.api.accessToken
+			}&Tag=${
+				episodes.data.Items[currentEpisodeIndex - 1].MediaSources[0]
+					.ETag
+			}&videoStreamIndex=${0}&audioStreamIndex=${0}`,
+		);
+		setPosition(
+			episodes.data.Items[currentEpisodeIndex - 1].UserData
+				?.PlaybackPositionTicks,
+		);
+
+		setSeriesId(episodes.data.Items[currentEpisodeIndex - 1].SeriesId);
+		if (
+			episodes.data.Items[currentEpisodeIndex - 1].ImageBlurHashes.Logo
+		) {
+			setItemName(
+				<div className="video-osd-name">
+					<img
+						src={`${window.api.basePath}/Items/${
+							episodes.data.Items[currentEpisodeIndex - 1]
+								.SeriesId
+						}/Images/Logo`}
+						className="video-osd-name-logo"
+						onLoad={(e) => {
+							e.target.style.opacity = 1;
+						}}
+					/>
+					<Typography variant="subtitle1">
+						S
+						{
+							episodes.data.Items[currentEpisodeIndex - 1]
+								.ParentIndexNumber
+						}
+						:E
+						{
+							episodes.data.Items[currentEpisodeIndex - 1]
+								.IndexNumber
+						}{" "}
+						{
+							episodes.data.Items[currentEpisodeIndex - 1]
+								.Name
+						}
+					</Typography>
+				</div>,
+			);
+		} else {
+			setItemName(
+				<div className="video-osd-name">
+					<Typography variant="h6">
+						{
+							episodes.data.Items[currentEpisodeIndex - 1]
+								.SeriesName
+						}
+					</Typography>
+					<Typography variant="subtitle1">
+						S
+						{
+							episodes.data.Items[currentEpisodeIndex - 1]
+								.ParentIndexNumber
+						}
+						:E
+						{
+							episodes.data.Items[currentEpisodeIndex - 1]
+								.IndexNumber
+						}{" "}
+						{
+							episodes.data.Items[currentEpisodeIndex - 1]
+								.Name
+						}
+					</Typography>
+				</div>,
+			);
+		}
+
+		setItemId(episodes.data.Items[currentEpisodeIndex - 1].Id);
+		setDurationStore(
+			episodes.data.Items[currentEpisodeIndex - 1].RunTimeTicks,
+		);
+		// Reset Player time state
+		setProgress(0);
+		setCurrentTime(0);
+		// navigate("player");
 	};
 
 	const [appFullscreen, setAppFullScreen] = useState(false);
@@ -285,25 +538,6 @@ export const VideoPlayer = () => {
 		};
 	}, [volume]);
 
-	const [subs, setSubs] = useState([]);
-
-	useEffect(() => {
-		setSubs(
-			subtitleTracksStore.map((sub, index) => {
-				return {
-					kind: "subtitles",
-					src: `${window.api.basePath}/Videos/${itemId}/${itemId}/Subtitles/${sub.Index}/Stream.vtt?api_key=${window.api.accessToken}`,
-					srcLang: sub?.Language,
-					default: false,
-					mode:
-						sub.Index == currentSubtrack
-							? "showing"
-							: "hidden",
-				};
-			}),
-		);
-	}, [subtitleTracksStore]);
-
 	return (
 		<div
 			className="video-player-container"
@@ -311,6 +545,7 @@ export const VideoPlayer = () => {
 			onMouseMove={() => {
 				setShowControls(true);
 			}}
+			key={itemId}
 		>
 			<AnimatePresence>
 				{showVolume && (
@@ -348,8 +583,8 @@ export const VideoPlayer = () => {
 					</motion.div>
 				)}
 			</AnimatePresence>
-			<Box
-				sx={{
+			<div
+				style={{
 					position: "absolute",
 					inset: 0,
 					display: "flex",
@@ -360,7 +595,7 @@ export const VideoPlayer = () => {
 				}}
 			>
 				<CircularProgress />
-			</Box>
+			</div>
 			<Backdrop
 				className={
 					showControls
@@ -370,7 +605,7 @@ export const VideoPlayer = () => {
 				sx={{
 					display: "flex",
 					flexDirection: "column",
-					zIndex: 100000,
+					zIndex: 1000,
 					justifyContent: "space-between",
 					background: "transparent",
 				}}
@@ -382,7 +617,7 @@ export const VideoPlayer = () => {
 							"linear-gradient(to bottom, rgb(0 0 0 / 0.75), transparent)",
 						width: "100vw",
 						display: "flex",
-						alignItems: "flex-start",
+						alignItems: "center",
 						padding: "0.85em 1.2em",
 					}}
 				>
@@ -479,6 +714,15 @@ export const VideoPlayer = () => {
 							alignItems="center"
 						>
 							<IconButton
+								onClick={handlePlayPrevEpisode}
+								disabled={
+									episodes.isLoading ||
+									currentEpisodeIndex == 0
+								}
+							>
+								<MdiSkipPrevious />
+							</IconButton>
+							<IconButton
 								onClick={() =>
 									playerRef.current.seekTo(
 										playerRef.current.getCurrentTime() -
@@ -502,6 +746,16 @@ export const VideoPlayer = () => {
 								}
 							>
 								<MdiFastForward />
+							</IconButton>
+							<IconButton
+								onClick={handlePlayNextEpisode}
+								disabled={
+									episodes.isLoading ||
+									episodes.data?.TotalRecordCount ==
+										currentEpisodeIndex + 1
+								}
+							>
+								<MdiSkipNext />
 							</IconButton>
 							<Typography variant="subtitle1">
 								{endsAt(itemDuration - currentTime)}
@@ -688,6 +942,10 @@ export const VideoPlayer = () => {
 				url={url}
 				onProgress={onProgress}
 				onReady={onReady}
+				onEnded={
+					episodes.data?.TotalRecordCount > 0 &&
+					handlePlayNextEpisode
+				}
 				muted={isMuted}
 				pip={isPIP}
 				volume={volume}
@@ -704,10 +962,7 @@ export const VideoPlayer = () => {
 								src: `${window.api.basePath}/Videos/${itemId}/${itemId}/Subtitles/${currentSubtrack}/Stream.vtt?api_key=${window.api.accessToken}`,
 								srcLang: "",
 								default: true,
-								mode:
-									currentSubtrack == -1
-										? "hidden"
-										: "showing",
+								mode: "showing",
 							},
 						],
 					},

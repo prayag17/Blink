@@ -58,6 +58,8 @@ const PlayButton = ({
 		setMediaSourceId,
 		setUserId,
 		setMediaContainer,
+		setSeriesId,
+		setEpisodeIndex,
 	] = usePlaybackStore((state) => [
 		state.setUrl,
 		state.setPosition,
@@ -70,6 +72,8 @@ const PlayButton = ({
 		state.setMediaSourceId,
 		state.setUserId,
 		state.setMediaContainer,
+		state.setSeriesId,
+		state.setEpisodeIndex,
 	]);
 	const [
 		setAudioUrl,
@@ -197,6 +201,11 @@ const PlayButton = ({
 				);
 				setPosition(item.Items[0].UserData?.PlaybackPositionTicks);
 
+				if (item.Items[0].Type == BaseItemKind.Episode) {
+					setSeriesId(item.Items[0].SeriesId);
+					// setEpisodeIndex(item.Ite)
+				}
+
 				switch (item.Items[0].Type) {
 					case BaseItemKind.Movie:
 						if (item.Items[0].ImageBlurHashes.Logo) {
@@ -270,6 +279,13 @@ const PlayButton = ({
 
 						break;
 					default:
+						setItemName(
+							<div className="video-osd-name">
+								<Typography variant="h6">
+									{item.Items[0].Name}
+								</Typography>
+							</div>,
+						);
 						break;
 				}
 				setItemId(item.Items[0].Id);
