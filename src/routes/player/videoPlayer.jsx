@@ -462,12 +462,13 @@ export const VideoPlayer = () => {
 	const [appFullscreen, setAppFullScreen] = useState(false);
 
 	useEffect(() => {
-		let timeout = null;
 		if (showControls) {
-			window.clearTimeout(timeout);
-			timeout = setTimeout(() => {
+			let timeout = setTimeout(() => {
 				setShowControls(false);
 			}, 5000);
+			return () => {
+				clearTimeout(timeout);
+			};
 		}
 	}, [showControls]);
 
@@ -716,8 +717,10 @@ export const VideoPlayer = () => {
 							<IconButton
 								onClick={handlePlayPrevEpisode}
 								disabled={
-									episodes.isLoading ||
-									currentEpisodeIndex == 0
+									seriesId
+										? episodes.isLoading ||
+										  currentEpisodeIndex == 0
+										: true
 								}
 							>
 								<MdiSkipPrevious />
@@ -750,9 +753,13 @@ export const VideoPlayer = () => {
 							<IconButton
 								onClick={handlePlayNextEpisode}
 								disabled={
-									episodes.isLoading ||
-									episodes.data?.TotalRecordCount ==
-										currentEpisodeIndex + 1
+									seriesId
+										? episodes.isLoading ||
+										  episodes.data
+												?.TotalRecordCount ==
+												currentEpisodeIndex +
+													1
+										: true
 								}
 							>
 								<MdiSkipNext />
@@ -780,7 +787,7 @@ export const VideoPlayer = () => {
 										role: "listbox",
 									}}
 									anchorOrigin={{
-										vertical: "bottom",
+										vertical: "top",
 										horizontal: "center",
 									}}
 									transformOrigin={{
