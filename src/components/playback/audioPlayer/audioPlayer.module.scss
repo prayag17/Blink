@@ -19,6 +19,11 @@
 
 	#waveform {
 		width: 100%;
+		transform: scaleY(0);
+		transition: transform $transition-time-default;
+		&[data-show="true"] {
+			transform: scaleY(1) !important;
+		}
 	}
 	&-controls {
 		display: flex;

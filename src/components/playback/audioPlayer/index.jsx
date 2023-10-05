@@ -1,5 +1,5 @@
 /** @format */
-import { useEffect, useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 
 import { motion } from "framer-motion";
 
@@ -96,13 +96,13 @@ const AudioPlayer = () => {
 		if (display) {
 			const waveSurfer = WaveSurfer.create({
 				container: waveSurferContainerRef.current,
-				barHeight: 0.8,
 				dragToSeek: true,
 				height: 35,
 				cursorColor: "#fb2376",
 				progressColor: "#fb2376",
 				waveColor: "#ffffff2f",
 				normalize: true,
+				barHeight: 0.6,
 			});
 			waveSurfer.load(url);
 			waveSurfer.on("load", () => {
@@ -196,7 +196,7 @@ const AudioPlayer = () => {
 	};
 
 	return (
-		<AnimatePresence>
+		<AnimatePresence mode="sync">
 			{display && (
 				<motion.div
 					key={display}
@@ -213,7 +213,7 @@ const AudioPlayer = () => {
 						)} - 10px)`,
 					}}
 					transition={{
-						duration: 0.1,
+						duration: 0.2,
 						ease: "easeInOut",
 					}}
 					className="audio-player"
@@ -343,11 +343,8 @@ const AudioPlayer = () => {
 							</Typography>
 							<div
 								id="waveform"
-								style={{
-									opacity: showWaveform ? 1 : 0,
-									transition: "opacity 250ms",
-								}}
 								ref={waveSurferContainerRef}
+								data-show={Boolean(showWaveform)}
 							></div>
 							<Typography
 								variant="subtitle2"
