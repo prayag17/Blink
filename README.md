@@ -42,7 +42,7 @@
 # 📃 Roadmap
 
 - Checkout [GitHub Project](https://github.com/users/prayag17/projects/3)
-  > **Note** : There is no current due date for alpha 1 release
+  
 
 # 🎊 Special thanks to
 
