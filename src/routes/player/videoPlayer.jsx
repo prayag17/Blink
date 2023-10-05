@@ -45,12 +45,7 @@ import { MdiSkipNext } from "../../components/icons/mdiSkipNext";
 import { useQuery } from "@tanstack/react-query";
 
 import { motion, AnimatePresence } from "framer-motion";
-import {
-	BaseItemKind,
-	ItemFields,
-	LocationType,
-} from "@jellyfin/sdk/lib/generated-client";
-import { getItemsApi } from "@jellyfin/sdk/lib/utils/api/items-api";
+import { ItemFields, LocationType } from "@jellyfin/sdk/lib/generated-client";
 import { MdiSkipPrevious } from "../../components/icons/mdiSkipPrevious";
 
 export const VideoPlayer = () => {
@@ -70,12 +65,9 @@ export const VideoPlayer = () => {
 		itemDuration,
 		itemId,
 		itemName,
-		subtitleTracksStore,
 		audioStreamIndex,
-		videoStreamIndex,
 		subtitleStreamIndex,
 		userId,
-		mediaContainer,
 		seriesId,
 		setUrl,
 		setPosition,
@@ -87,21 +79,16 @@ export const VideoPlayer = () => {
 		setSubtitleStreamIndex,
 		setMediaSourceId,
 		setUserId,
-		setMediaContainer,
 		setSeriesId,
-		episodeIndex,
 	] = usePlaybackStore((state) => [
 		state.url,
 		state.startPosition,
 		state.duration,
 		state.itemId,
 		state.itemName,
-		state.subtitleTracks,
 		state.audioStreamIndex,
-		state.videoStreamIndex,
 		state.subtitleStreamIndex,
 		state.userId,
-		state.mediaContainer,
 		state.seriesId,
 		state.setUrl,
 		state.setPosition,
@@ -113,9 +100,7 @@ export const VideoPlayer = () => {
 		state.setSubtitleStreamIndex,
 		state.setMediaSourceId,
 		state.setUserId,
-		state.setMediaContainer,
 		state.setSeriesId,
-		state.episodeIndex,
 	]);
 
 	const mediaInfo = useQuery({
@@ -161,7 +146,6 @@ export const VideoPlayer = () => {
 	const [isPIP, setIsPIP] = useState(false);
 	const [volume, setVolume] = useState(0.8);
 
-	const [duration, setDuration] = useState(0);
 	const [progress, setProgress] = useState(0);
 	const [currentTime, setCurrentTime] = useState(startPosition);
 
@@ -186,39 +170,11 @@ export const VideoPlayer = () => {
 					PlaySessionId: mediaInfo.data?.PlaySessionId,
 				},
 			});
+			console.log(startPosition);
 			playerRef.current.seekTo(timeToStart, "seconds");
 			setIsReady(true);
 		}
 	}, [isReady]);
-
-	const onProgress = async (e) => {
-		if (!isSeeking) {
-			setProgress(e.played);
-			setCurrentTime(secToTicks(e.playedSeconds));
-		}
-		await getPlaystateApi(window.api).reportPlaybackProgress({
-			playbackProgressInfo: {
-				PlayMethod: mediaInfo.data?.MediaSources[0]
-					.SupportsDirectPlay
-					? "DirectPlay"
-					: mediaInfo.data?.MediaSources[0].SupportsDirectStream
-					? "DirectStream"
-					: "Transcode",
-				ItemId: itemId,
-				IsMuted: isMuted,
-				PositionTicks: secToTicks(e.playedSeconds),
-				PlaybackStartTimeTicks: startPosition,
-				VolumeLevel: volume * 100,
-				IsPaused: !isPlaying,
-				AudioStreamIndex: audioStreamIndex,
-				Brightness: 100,
-				CanSeek: true,
-				MediaSourceId: mediaInfo.data?.MediaSources[0].Id,
-				SubtitleStreamIndex: subtitleStreamIndex,
-				PlaySessionId: mediaInfo.data?.PlaySessionId,
-			},
-		});
-	};
 
 	const handleDisplayCurrentTime = () => {
 		let time = ticksToSec(progress * itemDuration);
@@ -257,6 +213,11 @@ export const VideoPlayer = () => {
 	};
 
 	const handlePlayNextEpisode = () => {
+		// Reset Player time state
+		setProgress(0);
+		setCurrentTime(0);
+		setIsPlaying(true);
+
 		setUserId(userId);
 
 		// Set all required stream index
@@ -352,12 +313,15 @@ export const VideoPlayer = () => {
 		setDurationStore(
 			episodes.data.Items[currentEpisodeIndex + 1].RunTimeTicks,
 		);
-		// Reset Player time state
-		setProgress(0);
-		setCurrentTime(0);
+
 		// navigate("player");
 	};
 	const handlePlayPrevEpisode = () => {
+		// Reset video player state
+		setProgress(0);
+		setCurrentTime(0);
+		setIsPlaying(true);
+
 		setUserId(userId);
 
 		// Set all required stream index
@@ -453,9 +417,7 @@ export const VideoPlayer = () => {
 		setDurationStore(
 			episodes.data.Items[currentEpisodeIndex - 1].RunTimeTicks,
 		);
-		// Reset Player time state
-		setProgress(0);
-		setCurrentTime(0);
+
 		// navigate("player");
 	};
 
@@ -485,7 +447,6 @@ export const VideoPlayer = () => {
 				);
 				break;
 			case " ":
-				console.log(isPlaying);
 				setIsPlaying((state) => !state);
 				break;
 			case "ArrowUp":
@@ -538,6 +499,68 @@ export const VideoPlayer = () => {
 			clearTimeout(timeout);
 		};
 	}, [volume]);
+
+	const handleExit = async () => {
+		// Remove app from fullscreen
+		await appWindow.setFullscreen(false);
+		navigate(-1);
+
+		// Reset playback store
+		setUrl("");
+		setPosition(0);
+		setDurationStore(0);
+		setItemId("");
+		setItemName("");
+		setAudioStreamIndex(0);
+		setVideoStreamIndex(0);
+		setSubtitleStreamIndex(0);
+		setMediaSourceId("");
+		setUserId("");
+		setSeriesId("");
+	};
+
+	const handleOnEnd = () => {
+		console.log("Playback ended");
+		if (seriesId) {
+			if (episodes.isSuccess && episodes.data.TotalRecordCount > 0) {
+				handlePlayNextEpisode();
+			}
+		} else {
+			handleExit();
+		}
+	};
+
+	const onProgress = async (e) => {
+		if (!isSeeking) {
+			setProgress(e.played);
+			setCurrentTime(secToTicks(e.playedSeconds));
+		}
+		await getPlaystateApi(window.api).reportPlaybackProgress({
+			playbackProgressInfo: {
+				PlayMethod: mediaInfo.data?.MediaSources[0]
+					.SupportsDirectPlay
+					? "DirectPlay"
+					: mediaInfo.data?.MediaSources[0].SupportsDirectStream
+					? "DirectStream"
+					: "Transcode",
+				ItemId: itemId,
+				IsMuted: isMuted,
+				PositionTicks: secToTicks(e.playedSeconds),
+				PlaybackStartTimeTicks: startPosition,
+				VolumeLevel: volume * 100,
+				IsPaused: !isPlaying,
+				AudioStreamIndex: audioStreamIndex,
+				Brightness: 100,
+				CanSeek: true,
+				MediaSourceId: mediaInfo.data?.MediaSources[0].Id,
+				SubtitleStreamIndex: subtitleStreamIndex,
+				PlaySessionId: mediaInfo.data?.PlaySessionId,
+			},
+		});
+		if (Math.round(e.playedSeconds) == ticksToSec(itemDuration)) {
+			handleOnEnd();
+		}
+	};
 
 	return (
 		<div
@@ -622,15 +645,7 @@ export const VideoPlayer = () => {
 						padding: "0.85em 1.2em",
 					}}
 				>
-					<IconButton
-						onClick={async () => {
-							await appWindow.setFullscreen(false);
-							navigate(-1);
-						}}
-						style={{
-							marginTop: "0.2em",
-						}}
-					>
+					<IconButton onClick={handleExit}>
 						<MdiArrowLeft />
 					</IconButton>
 
@@ -656,7 +671,7 @@ export const VideoPlayer = () => {
 							{handleDisplayCurrentTime()}
 						</Typography>
 						<Slider
-							value={currentTime}
+							value={currentTime ? currentTime : 0}
 							step={0.01}
 							max={itemDuration}
 							onChange={(e, newVal) => {
@@ -949,10 +964,6 @@ export const VideoPlayer = () => {
 				url={url}
 				onProgress={onProgress}
 				onReady={onReady}
-				onEnded={
-					episodes.data?.TotalRecordCount > 0 &&
-					handlePlayNextEpisode
-				}
 				muted={isMuted}
 				pip={isPIP}
 				volume={volume}

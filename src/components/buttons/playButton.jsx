@@ -108,6 +108,7 @@ const PlayButton = ({
 						limit: 1,
 						startIndex: 0,
 						fields: [
+							"UserData",
 							ItemFields.MediaSources,
 							ItemFields.MediaStreams,
 						],
@@ -199,6 +200,7 @@ const PlayButton = ({
 					${item.Items[0].MediaSources[0].Container}
 				?Static=true&mediaSourceId=${item.Items[0].Id}&deviceId=${window.api.deviceInfo.id}&api_key=${window.api.accessToken}&Tag=${item.Items[0].MediaSources[0].ETag}&videoStreamIndex=${currentVideoTrack}&audioStreamIndex=${currentAudioTrack}`,
 				);
+				console.log(item.Items[0]);
 				setPosition(item.Items[0].UserData?.PlaybackPositionTicks);
 
 				if (item.Items[0].Type == BaseItemKind.Episode) {
