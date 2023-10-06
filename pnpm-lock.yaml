@@ -79,10 +79,10 @@ dependencies:
     version: 1.1.0(react-dom@18.2.0)(react@18.2.0)
   tauri-plugin-log-api:
     specifier: github:tauri-apps/tauri-plugin-log#v1
-    version: github.com/tauri-apps/tauri-plugin-log/f7142fcf10841cdabab2fbe8650e9adc3f0bb212
+    version: git@github.com+tauri-apps/tauri-plugin-log/1a369766cf90f3aed9c2b7c68b70bf39081538b3
   tauri-plugin-store-api:
     specifier: github:tauri-apps/tauri-plugin-store
-    version: github.com/tauri-apps/tauri-plugin-store/1a741b721ed1eae0de0d811ecfe86fc6ad54fb73
+    version: git@github.com+tauri-apps/tauri-plugin-store/1a741b721ed1eae0de0d811ecfe86fc6ad54fb73
   uuid:
     specifier: ^9.0.1
     version: 9.0.1
@@ -2983,8 +2983,8 @@ packages:
     resolution: {integrity: sha512-JU3teHTNjmE2VCGFzuY8EXzCDVwEqB2a8fsIvwaStHhAWJEeVd1o1QD80CU6+ZdEXXSLbSsuLwJjkCBWqRQUVA==}
     engines: {node: '>=8.6'}
 
-  /postcss@8.4.30:
-    resolution: {integrity: sha512-7ZEao1g4kd68l97aWG/etQKPKq07us0ieSZ2TnFDk11i0ZfDW2AwKHYU8qv4MZKqN2fdBfg+7q0ES06UA73C1g==}
+  /postcss@8.4.31:
+    resolution: {integrity: sha512-PS08Iboia9mts/2ygV3eLpY5ghnUcfLV/EXTOW1E2qYxJKGGBUtNjN76FYHnMs36RmARn41bC0AZmn+rR0OVpQ==}
     engines: {node: ^10 || ^12 || >=14}
     dependencies:
       nanoid: 3.3.6
@@ -3563,7 +3563,7 @@ packages:
         optional: true
     dependencies:
       esbuild: 0.18.20
-      postcss: 8.4.30
+      postcss: 8.4.31
       rollup: 3.29.3
       sass: 1.68.0
     optionalDependencies:
@@ -3665,16 +3665,16 @@ packages:
       use-sync-external-store: 1.2.0(react@18.2.0)
     dev: false
 
-  github.com/tauri-apps/tauri-plugin-log/f7142fcf10841cdabab2fbe8650e9adc3f0bb212:
-    resolution: {tarball: https://codeload.github.com/tauri-apps/tauri-plugin-log/tar.gz/f7142fcf10841cdabab2fbe8650e9adc3f0bb212}
+  git@github.com+tauri-apps/tauri-plugin-log/1a369766cf90f3aed9c2b7c68b70bf39081538b3:
+    resolution: {commit: 1a369766cf90f3aed9c2b7c68b70bf39081538b3, repo: git@github.com:tauri-apps/tauri-plugin-log.git, type: git}
     name: tauri-plugin-log-api
     version: 0.0.0
     dependencies:
       '@tauri-apps/api': 1.5.0
     dev: false
 
-  github.com/tauri-apps/tauri-plugin-store/1a741b721ed1eae0de0d811ecfe86fc6ad54fb73:
-    resolution: {tarball: https://codeload.github.com/tauri-apps/tauri-plugin-store/tar.gz/1a741b721ed1eae0de0d811ecfe86fc6ad54fb73}
+  git@github.com+tauri-apps/tauri-plugin-store/1a741b721ed1eae0de0d811ecfe86fc6ad54fb73:
+    resolution: {commit: 1a741b721ed1eae0de0d811ecfe86fc6ad54fb73, repo: git@github.com:tauri-apps/tauri-plugin-store.git, type: git}
     name: tauri-plugin-store-api
     version: 0.0.0
     dependencies:
