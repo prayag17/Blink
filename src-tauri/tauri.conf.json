@@ -78,7 +78,19 @@
 			}
 		},
 		"security": {
-			"csp": null
+			"csp": null,
+			"dangerousRemoteDomainIpcAccess": [
+				{
+					"domain": "**",
+					"windows": ["main"],
+					"enableTauriAPI": true
+				},
+				{
+					"domain": "*",
+					"windows": ["main"],
+					"enableTauriAPI": true
+				}
+			]
 		},
 		"updater": {
 			"active": false
@@ -104,7 +116,8 @@
 				"resizable": true,
 				"title": "JellyPlayer",
 				"visible": false,
-				"center": true
+				"center": true,
+				"label": "main"
 			}
 		]
 	}
