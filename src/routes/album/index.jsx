@@ -1,5 +1,5 @@
 /** @format */
-import { useEffect } from "react";
+import React, { useEffect } from "react";
 import PropTypes from "prop-types";
 
 import Box from "@mui/material/Box";
@@ -211,9 +211,7 @@ const MusicAlbumTitlePage = () => {
 								style={{
 									padding: "0.75em 0 ",
 									background:
-										"rgb(255 255 255 / 0.1)",
-									boxShadow:
-										"0 0 10px rgb(0 0 0 / 0.5)",
+										"hsl(256, 100%, 4%, 60%)",
 								}}
 							>
 								<Typography

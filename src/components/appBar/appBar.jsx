@@ -158,7 +158,7 @@ export const AppBar = () => {
 						<IconButton onClick={() => navigate("/search")}>
 							<MdiMagnify />
 						</IconButton>
-						<IconButton disabled>
+						<IconButton onClick={() => navigate("/favorite")}>
 							<MdiHeartOutline />
 						</IconButton>
 						<IconButton

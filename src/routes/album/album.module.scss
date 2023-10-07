@@ -1,5 +1,7 @@
 /** @format */
 
+$border-radius: 20px;
+
 .item-detail-album {
 	&-track {
 		display: grid;
@@ -9,22 +11,30 @@
 		gap: 0.5em;
 		width: 100%;
 		padding: 0.25em 0;
-		background: rgb(255 255 255 / 0);
+		background: hsl(256, 100%, 4%, 40%);
 		transition: background $transition-time-default;
 
-		&:first-child,
-		&:last-child {
-			border-bottom: none;
+		&:first-child {
+			border-radius: $border-radius $border-radius 8px 8px;
+			cursor: default !important;
 		}
-		border-bottom: 1px solid rgb(255 255 255 / 0.05);
+
+		&:last-child {
+			border-radius: 8px 8px $border-radius $border-radius;
+		}
+		border-radius: 8px;
+
 		&s {
-			border-radius: 10px !important;
-			overflow: hidden !important;
-			background: $clr-background-dark-opacity-0_8 !important;
+			background: transparent !important;
+			box-shadow: none !important;
+			display: flex;
+			flex-direction: column;
+			gap: 5px;
 		}
 
 		&:hover {
-			background: rgb(255 255 255 / 0.05);
+			background: hsl(256, 100%, 4%, 50%);
+			cursor: pointer;
 		}
 
 		&.playing {
