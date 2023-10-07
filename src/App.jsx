@@ -167,6 +167,12 @@ const AnimationWrapper = () => {
 function App() {
 	const navigate = useNavigate();
 
+	useEffect(() => {
+		document
+			.querySelector(".app-loading")
+			.setAttribute("style", "display:none");
+	}, []);
+
 	const [serverReachable, setServerReachable] = useState(true);
 
 	const [playbackDataLoading] = usePlaybackDataLoadStore((state) => [

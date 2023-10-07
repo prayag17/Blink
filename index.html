@@ -6,9 +6,32 @@
   <link rel="icon" type="image/svg+xml" href="/icon.svg" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Jellyplayer</title>
+
+  <style>
+    .app-loading {
+      position: fixed;
+      top: 0;
+      left: 0;
+      bottom: 0;
+      right: 0;
+      background: hsl(256, 100%, 4%);
+      z-index: 100000;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-direction: column;
+    }
+
+    .app-loading-logo {
+      width: 65vw;
+    }
+  </style>
 </head>
 
 <body>
+  <div class="app-loading">
+    <img src="./public/assetsStatic/LogoBig.svg" class="app-loading-logo" />
+  </div>
   <div id="root"></div>
   <svg style="width:0;height:0;position:absolute;" aria-hidden="true" focusable="false">
     <linearGradient id="clr-gradient-default" x2="1" y2="1">

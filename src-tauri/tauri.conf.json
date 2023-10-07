@@ -97,25 +97,12 @@
 		},
 		"windows": [
 			{
-				"width": 800,
-				"height": 300,
-				"center": true,
-				"decorations": false,
-				"resizable": false,
-				"url": "splash.html",
-				"label": "splashscreen",
-				"title": "JellyPlayer",
-				"visible": true,
-				"transparent": true
-			},
-
-			{
 				"fullscreen": false,
 				"height": 600,
 				"width": 800,
 				"resizable": true,
 				"title": "JellyPlayer",
-				"visible": false,
+				"visible": true,
 				"center": true,
 				"label": "main"
 			}

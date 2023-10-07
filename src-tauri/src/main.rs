@@ -1,20 +1,7 @@
 #![cfg_attr(not(debug_assertions), windows_subsystem = "windows")]
 
-use tauri::Manager;
 use tauri::{utils::config::AppUrl, WindowUrl};
 use tauri_plugin_log::{fern::colors::ColoredLevelConfig, LogTarget};
-// Create the command:
-// This command must be async so that it doesn't run on the main thread.
-#[tauri::command]
-async fn close_splashscreen(window: tauri::Window) {
-    // Close splashscreen
-    if let Some(splashscreen) = window.get_window("splashscreen") {
-        splashscreen.close().unwrap();
-    }
-    // Show main window
-    window.get_window("main").unwrap().show().unwrap();
-}
-
 // Tauri by default uses HTTPS, so use the localhost plugin to downgrade back to
 // HTTP. However, when running tauri dev, we already have a localhost server
 // provided by vite, so don't enable it
@@ -52,10 +39,7 @@ fn main() {
                 .build(),
         )
         .plugin(tauri_plugin_store::Builder::default().build())
-        .invoke_handler(tauri::generate_handler![close_splashscreen])
+        .plugin(tauri_plugin_window_state::Builder::default().build())
         .run(context)
         .expect("error while running JellyPlayer");
-    // tauri::Builder::default()
-    //     .run(tauri::generate_context!())
-    //     .expect("error while running tauri application");
 }
