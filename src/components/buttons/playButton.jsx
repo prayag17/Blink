@@ -296,14 +296,13 @@ const PlayButton = ({
 						);
 						break;
 				}
+				setPosition(item.Items[0].UserData?.PlaybackPositionTicks);
 
 				setUrl(
 					`${window.api.basePath}/Videos/${item.Items[0].Id}/stream.
-					${item.Items[0].MediaSources[0].Container}
-				?Static=true&mediaSourceId=${item.Items[0].Id}&deviceId=${window.api.deviceInfo.id}&api_key=${window.api.accessToken}&Tag=${item.Items[0].MediaSources[0].ETag}&videoStreamIndex=${currentVideoTrack}&audioStreamIndex=${currentAudioTrack}`,
+									${item.Items[0].MediaSources[0].Container}
+								?Static=true&mediaSourceId=${item.Items[0].Id}&deviceId=${window.api.deviceInfo.id}&api_key=${window.api.accessToken}&Tag=${item.Items[0].MediaSources[0].ETag}&videoStreamIndex=${currentVideoTrack}&audioStreamIndex=${currentAudioTrack}`,
 				);
-				console.log(item.Items[0]);
-				setPosition(item.Items[0].UserData?.PlaybackPositionTicks);
 
 				navigate(`/player`);
 			}
