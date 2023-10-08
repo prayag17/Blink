@@ -469,10 +469,10 @@ function App() {
 					</AnimatePresence>
 				</div>
 				<div
+					className={audioPlayerVisible ? "audio-playing" : ""}
 					style={{
 						display: "flex",
 						width: "100vw",
-						paddingBottom: audioPlayerVisible ? "8em" : "0",
 						transition: "padding 250ms",
 					}}
 				>

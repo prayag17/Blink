@@ -149,7 +149,7 @@ const Hero = ({
 		} else if (audioTracks[0].DisplayTitle.includes("5.1")) {
 			return "5.1";
 		} else {
-			return "";
+			return "2.0";
 		}
 	};
 

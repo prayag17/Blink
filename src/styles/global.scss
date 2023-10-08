@@ -144,3 +144,20 @@ h1 {
 	font-variation-settings: "FILL" 0, "wght" 200, "GRAD" 25, "opsz" 32;
 	font-size: 1em !important;
 }
+
+.audio-playing .scrollY {
+	padding-bottom: 9em !important;
+}
+
+.audio-playing .scrollY.library {
+	padding-bottom: 0 !important;
+}
+
+.audio-playing .library-items {
+	padding-bottom: 9em !important;
+}
+
+.library-items,
+.scrollY {
+	transition: all $transition-time-default !important;
+}
