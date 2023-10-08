@@ -74,6 +74,8 @@ import "@fontsource/noto-sans/800.css";
 import "@fontsource/noto-sans/800-italic.css";
 import "@fontsource/noto-sans/900.css";
 import "@fontsource/noto-sans/900-italic.css";
+import "material-symbols";
+import "@fontsource-variable/jetbrains-mono";
 
 // Jellyfin SDK TypeScript
 import { Jellyfin } from "@jellyfin/sdk";

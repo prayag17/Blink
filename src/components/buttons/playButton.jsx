@@ -101,74 +101,85 @@ const PlayButton = ({
 		mutationFn: async () => {
 			setPlaybackDataLoading(true);
 			let result;
-			switch (itemType) {
-				case BaseItemKind.Series:
-					result = await getTvShowsApi(window.api).getEpisodes({
-						seriesId: itemId,
-						limit: 1,
-						startIndex: 0,
-						fields: [
-							"UserData",
-							ItemFields.MediaSources,
-							ItemFields.MediaStreams,
-						],
-					});
-					break;
-				case BaseItemKind.Playlist:
-				case playlistItem:
-					result = await getPlaylistsApi(
-						window.api,
-					).getPlaylistItems({
+			if (playlistItem) {
+				result = await getPlaylistsApi(window.api).getPlaylistItems(
+					{
 						userId: userId,
 						playlistId: playlistItemId,
-					});
-					break;
-				case BaseItemKind.MusicAlbum:
-					result = await getItemsApi(window.api).getItems({
-						parentId: itemId,
-						userId: userId,
-						fields: [
-							ItemFields.MediaSources,
-							ItemFields.MediaStreams,
-						],
-						sortOrder: SortOrder.Ascending,
-						sortBy: "IndexNumber",
-					});
-					break;
-				case BaseItemKind.MusicArtist:
-					result = await getItemsApi(window.api).getItems({
-						artistIds: [itemId],
-						recursive: true,
-						includeItemTypes: [BaseItemKind.Audio],
-						userId: userId,
-						fields: [
-							ItemFields.MediaSources,
-							ItemFields.MediaStreams,
-						],
-						sortOrder: SortOrder.Ascending,
-						sortBy: [
-							"PremiereDate",
-							"ProductionYear",
-							"SortName",
-						],
-					});
-					break;
-				default:
-					result = await getItemsApi(window.api).getItems({
-						ids: [itemId],
-						userId: userId,
-						fields: [
-							ItemFields.MediaSources,
-							ItemFields.MediaStreams,
-						],
-						sortOrder: SortOrder.Ascending,
-						sortBy: "IndexNumber",
-					});
-					break;
+					},
+				);
+			} else {
+				switch (itemType) {
+					case BaseItemKind.Series:
+						result = await getTvShowsApi(
+							window.api,
+						).getEpisodes({
+							seriesId: itemId,
+							limit: 1,
+							startIndex: 0,
+							fields: [
+								"UserData",
+								ItemFields.MediaSources,
+								ItemFields.MediaStreams,
+							],
+						});
+						break;
+					case BaseItemKind.Playlist:
+						result = await getPlaylistsApi(
+							window.api,
+						).getPlaylistItems({
+							userId: userId,
+							playlistId: playlistItemId,
+						});
+						break;
+					case BaseItemKind.MusicAlbum:
+						result = await getItemsApi(window.api).getItems({
+							parentId: itemId,
+							userId: userId,
+							fields: [
+								ItemFields.MediaSources,
+								ItemFields.MediaStreams,
+							],
+							sortOrder: SortOrder.Ascending,
+							sortBy: "IndexNumber",
+						});
+						break;
+					case BaseItemKind.MusicArtist:
+						result = await getItemsApi(window.api).getItems({
+							artistIds: [itemId],
+							recursive: true,
+							includeItemTypes: [BaseItemKind.Audio],
+							userId: userId,
+							fields: [
+								ItemFields.MediaSources,
+								ItemFields.MediaStreams,
+							],
+							sortOrder: SortOrder.Ascending,
+							sortBy: [
+								"PremiereDate",
+								"ProductionYear",
+								"SortName",
+							],
+						});
+						break;
+					default:
+						result = await getItemsApi(window.api).getItems({
+							ids: [itemId],
+							userId: userId,
+							fields: [
+								ItemFields.MediaSources,
+								ItemFields.MediaStreams,
+							],
+							sortOrder: SortOrder.Ascending,
+							sortBy: "IndexNumber",
+						});
+						break;
+				}
 			}
 			return result.data;
 		},
 		onSuccess: (item) => {
+			console.log(item);
 			if (trackIndex) {
 				setPlaylistItemId(playlistItemId);
 				setCurrentTrack(trackIndex);

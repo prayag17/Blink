@@ -123,14 +123,6 @@ const MusicTrack = ({
 						</>
 					))}
 				</div>
-				{/* <Typography
-					variant="subtitle2"
-					style={{
-						opacity: 0.5,
-					}}
-				>
-					{item.Name}
-				</Typography> */}
 			</div>
 			<Typography variant="subtitl1">
 				{getRuntimeMusic(item.RunTimeTicks)}

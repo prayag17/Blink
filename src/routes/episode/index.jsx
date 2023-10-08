@@ -1,5 +1,5 @@
 /** @format */
-import { useState, useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import PropTypes from "prop-types";
 
 import Box from "@mui/material/Box";
@@ -48,13 +48,6 @@ TabPanel.propTypes = {
 	index: PropTypes.number.isRequired,
 	value: PropTypes.number.isRequired,
 };
-
-function a11yProps(index) {
-	return {
-		id: `full-width-tab-${index}`,
-		"aria-controls": `full-width-tabpanel-${index}`,
-	};
-}
 
 const EpisodeTitlePage = () => {
 	const { id } = useParams();
@@ -200,6 +193,7 @@ const EpisodeTitlePage = () => {
 					favourParentImg={false}
 					isEpisode
 					cardType="thumb"
+					enableVideoInfoStrip
 				/>
 				{item.data.People.length > 0 && (
 					<CardScroller
@@ -207,7 +201,7 @@ const EpisodeTitlePage = () => {
 						displayCards={8}
 						disableDecoration
 					>
-						{item.data.People.map((person, index) => {
+						{item.data.People.map((person) => {
 							return (
 								<ActorCard
 									key={person.Id}
@@ -235,7 +229,7 @@ const EpisodeTitlePage = () => {
 							disableDecoration
 						>
 							{upcomingEpisodes.data.Items.map(
-								(episode, index) => {
+								(episode) => {
 									return (
 										<Card
 											key={episode.Id}

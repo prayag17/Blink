@@ -133,3 +133,14 @@ h1 {
 .empty {
 	display: none;
 }
+
+.MuiChip-label {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+}
+
+.material-symbols-rounded {
+	font-variation-settings: "FILL" 0, "wght" 200, "GRAD" 25, "opsz" 32;
+	font-size: 1em !important;
+}

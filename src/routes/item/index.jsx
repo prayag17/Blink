@@ -5,7 +5,7 @@ import PropTypes from "prop-types";
 import Box from "@mui/material/Box";
 import CircularProgress from "@mui/material/CircularProgress";
 
-import { useParams, useNavigate } from "react-router-dom";
+import { useParams } from "react-router-dom";
 
 import {
 	BaseItemKind,
@@ -51,18 +51,8 @@ TabPanel.propTypes = {
 	value: PropTypes.number.isRequired,
 };
 
-function a11yProps(index) {
-	return {
-		id: `full-width-tab-${index}`,
-		"aria-controls": `full-width-tabpanel-${index}`,
-	};
-}
-
 const ItemDetail = () => {
 	const { id } = useParams();
-	const navigate = useNavigate();
-	const [primageImageLoaded, setPrimaryImageLoaded] = useState(false);
-	const [backdropImageLoaded, setBackdropImageLoaded] = useState(false);
 
 	const user = useQuery({
 		queryKey: ["user"],
@@ -79,7 +69,7 @@ const ItemDetail = () => {
 			const result = await getUserLibraryApi(window.api).getItem({
 				userId: user.data.Id,
 				itemId: id,
-				fields: [ItemFields.Crew],
+				fields: Object.values(ItemFields),
 			});
 			return result.data;
 		},
@@ -226,6 +216,7 @@ const ItemDetail = () => {
 					videoTracks={videoTracks}
 					audioTracks={audioTracks}
 					subtitleTracks={subtitleTracks}
+					enableVideoInfoStrip
 				/>
 				{item.data.People.length > 0 && (
 					<CardScroller
@@ -233,7 +224,7 @@ const ItemDetail = () => {
 						displayCards={8}
 						disableDecoration
 					>
-						{item.data.People.map((person, index) => {
+						{item.data.People.map((person) => {
 							return (
 								<ActorCard
 									key={person.Id}
@@ -259,7 +250,7 @@ const ItemDetail = () => {
 						displayCards={8}
 						disableDecoration
 					>
-						{similarItems.data.Items.map((similar, index) => {
+						{similarItems.data.Items.map((similar) => {
 							return (
 								<Card
 									key={similar.Id}
@@ -281,7 +272,7 @@ const ItemDetail = () => {
 											? `${
 													similar.ProductionYear
 											  } - ${
-													!!similar.EndDate
+													similar.EndDate
 														? new Date(
 																similar.EndDate,
 														  ).toLocaleString(

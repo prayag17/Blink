@@ -11,6 +11,9 @@ dependencies:
   '@emotion/styled':
     specifier: ^11.11.0
     version: 11.11.0(@emotion/react@11.11.1)(react@18.2.0)
+  '@fontsource-variable/jetbrains-mono':
+    specifier: ^5.0.16
+    version: 5.0.16
   '@fontsource/noto-sans':
     specifier: ^5.0.14
     version: 5.0.14
@@ -50,6 +53,9 @@ dependencies:
   framer-motion:
     specifier: ^10.16.4
     version: 10.16.4(react-dom@18.2.0)(react@18.2.0)
+  material-symbols:
+    specifier: ^0.13.0
+    version: 0.13.0
   notistack:
     specifier: ^3.0.1
     version: 3.0.1(csstype@3.1.2)(react-dom@18.2.0)(react@18.2.0)
@@ -705,6 +711,10 @@ packages:
 
   /@floating-ui/utils@0.1.6:
     resolution: {integrity: sha512-OfX7E2oUDYxtBvsuS4e/jSn4Q9Qb6DzgeYtsAdkPZ47znpoNsMgZw0+tVijiv3uGNR6dgNlty6r9rzIzHjtd/A==}
+    dev: false
+
+  /@fontsource-variable/jetbrains-mono@5.0.16:
+    resolution: {integrity: sha512-KTQ+QFW/5OALFDg4dgR5CrzsLncDK1FfNEDCkatWRwrsjS4BLkt3AzTcNBcND1MN3Yae63zSgVoy7ihYdCVi+A==}
     dev: false
 
   /@fontsource/noto-sans@5.0.14:
@@ -2668,6 +2678,10 @@ packages:
     resolution: {integrity: sha512-KpNARQA3Iwv+jTA0utUVVbrh+Jlrr1Fv0e56GGzAFOXN7dk/FviaDW8LHmK52DlcH4WP2n6gI8vN1aesBFgo9w==}
     dependencies:
       yallist: 3.1.1
+
+  /material-symbols@0.13.0:
+    resolution: {integrity: sha512-NZZBJjY3NqIlGWYns+YkkTdBUAXZQEjaIRH8T0x0Ycnt+J4Q90IOuLTVgQWjGVYxG87CgOEB73BSAlSoGFh4fA==}
+    dev: false
 
   /memoize-one@5.2.1:
     resolution: {integrity: sha512-zYiwtZUcYyXKo/np96AGZAckk+FWWsUdJ3cHGGmld7+AhvcWmQyGCYUh1hc4Q/pkOhb65dQR/pqCyK0cOaHz4Q==}

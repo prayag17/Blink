@@ -13,6 +13,7 @@
 	"dependencies": {
 		"@emotion/react": "^11.11.1",
 		"@emotion/styled": "^11.11.0",
+		"@fontsource-variable/jetbrains-mono": "^5.0.16",
 		"@fontsource/noto-sans": "^5.0.14",
 		"@jellyfin/sdk": "0.8.2",
 		"@mdi/js": "^7.2.96",
@@ -26,6 +27,7 @@
 		"blurhash": "^2.0.5",
 		"events": "^3.3.0",
 		"framer-motion": "^10.16.4",
+		"material-symbols": "^0.13.0",
 		"notistack": "^3.0.1",
 		"react": "^18.2.0",
 		"react-blurhash": "^0.3.0",

@@ -22,7 +22,7 @@ import { MdiMagnify } from "../icons/mdiMagnify";
 import { useLocation, useNavigate } from "react-router-dom";
 
 import { getUserApi } from "@jellyfin/sdk/lib/utils/api/user-api";
-import { useIsMutating, useQuery } from "@tanstack/react-query";
+import { useIsMutating, useQuery, useQueryClient } from "@tanstack/react-query";
 
 import "./appBar.module.scss";
 import { MdiAccount } from "../icons/mdiAccount";
@@ -72,6 +72,8 @@ export const AppBar = () => {
 		setAnchorEl(null);
 	};
 
+	const queryClient = useQueryClient();
+
 	const [setDrawerOpen] = useDrawerStore((state) => [state.setOpen]);
 
 	const handleDrawerOpen = () => {
@@ -83,6 +85,8 @@ export const AppBar = () => {
 		delUser();
 		sessionStorage.removeItem("accessToken");
 		event.emit("create-jellyfin-api", window.api.basePath);
+		queryClient.clear();
+		setAnchorEl(null);
 		navigate("/login");
 	};
 
@@ -194,6 +198,7 @@ export const AppBar = () => {
 							open={openMenu}
 							onClose={handleMenuClose}
 							sx={{ mt: 1 }}
+							disableScrollLock
 						>
 							<MenuItem
 								onClick={() => navigate("/settings")}

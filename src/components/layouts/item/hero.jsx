@@ -1,6 +1,4 @@
 /** @format */
-import PropTypes from "prop-types";
-
 import React, { useEffect, useState } from "react";
 import TextField from "@mui/material/TextField";
 import MenuItem from "@mui/material/MenuItem";
@@ -16,7 +14,7 @@ import { MediaStreamType } from "@jellyfin/sdk/lib/generated-client/models/media
 
 import { Card } from "../../card/card";
 import { MdiStar } from "../../icons/mdiStar";
-import { yellow } from "@mui/material/colors";
+import { green, red, yellow } from "@mui/material/colors";
 import { endsAt, getRuntime, getRuntimeFull } from "../../../utils/date/time";
 import LikeButton from "../../buttons/likeButton";
 import MarkPlayedButton from "../../buttons/markPlayedButton";
@@ -26,6 +24,9 @@ import "./hero.module.scss";
 import { Blurhash } from "react-blurhash";
 import TextLink from "../../textLink";
 
+import { MdiHdr } from "../../../components/icons/mdiHdr";
+import { MdiCheck } from "../../icons/mdiCheck";
+import { MdiClose } from "../../icons/mdiClose";
 /**
  * @typedef {Object} Props
  * @property {import("@jellyfin/sdk/lib/generated-client/models").BaseItemDto} item
@@ -43,6 +44,7 @@ import TextLink from "../../textLink";
  * @property {bool} audioPlayButton
  * @property {bool} favourParentImg
  * @property {"portrait"| "thumb"| 'square'} cardType
+ * @property {bool} enableVideoInfoStrip
  */
 
 /**
@@ -67,6 +69,7 @@ const Hero = ({
 	favourParentImg = true,
 	isEpisode = false,
 	cardType = "portrait",
+	enableVideoInfoStrip = false,
 }) => {
 	const filterMediaStreamVideo = (source) => {
 		if (source.Type == MediaStreamType.Video) {
@@ -105,6 +108,51 @@ const Hero = ({
 		}
 	}, [videoTracks, audioTracks, subtitleTracks]);
 
+	const qualityLabel = () => {
+		if (
+			videoTracks[0]?.DisplayTitle.toLocaleLowerCase().includes(
+				"2160p",
+			) ||
+			videoTracks[0]?.DisplayTitle.toLocaleLowerCase().includes("4k")
+		) {
+			return "4K";
+		} else if (
+			videoTracks[0]?.DisplayTitle.toLocaleLowerCase().includes(
+				"1080p",
+			) ||
+			videoTracks[0]?.DisplayTitle.toLocaleLowerCase().includes("hd")
+		) {
+			return "HD";
+		} else {
+			return "SD";
+		}
+	};
+
+	const atmosLabel = () => {
+		if (
+			audioTracks[0]?.DisplayTitle.includes("Atmos") &&
+			audioTracks[0]?.DisplayTitle.includes("TrueHD")
+		) {
+			return "TrueHD | Atmos";
+		} else if (audioTracks[0]?.DisplayTitle.includes("Atmos")) {
+			return "Atmos";
+		} else if (audioTracks[0]?.DisplayTitle.includes("TrueHD")) {
+			return "TrueHD";
+		} else {
+			return "";
+		}
+	};
+
+	const surroundSoundLabel = () => {
+		if (audioTracks[0]?.DisplayTitle.includes("7.1")) {
+			return "7.1";
+		} else if (audioTracks[0].DisplayTitle.includes("5.1")) {
+			return "5.1";
+		} else {
+			return "";
+		}
+	};
+
 	return (
 		<div
 			className="item-detail-hero hero"
@@ -137,7 +185,7 @@ const Hero = ({
 						<img
 							className="hero-backdrop-image"
 							src={
-								!!item.ParentBackdropItemId
+								item.ParentBackdropItemId
 									? `${window.api.basePath}/Items/${item.ParentBackdropItemId}/Images/Backdrop`
 									: `${window.api.basePath}/Items/${item.Id}/Images/Backdrop`
 							}
@@ -170,7 +218,7 @@ const Hero = ({
 										fontWeight: 300,
 									}}
 								>
-									{!!item.ParentLogoImageTag ? (
+									{item.ParentLogoImageTag ? (
 										<img
 											src={`${window.api.basePath}/Items/${item.SeriesId}/Images/Logo`}
 											className="hero-name-logo"
@@ -223,22 +271,122 @@ const Hero = ({
 							</TextLink>
 						)}
 					</div>
+					{enableVideoInfoStrip && (
+						<Stack direction="row" gap={1} mb={2} mt={2}>
+							{!!qualityLabel() && (
+								<Chip
+									variant="filled"
+									label={
+										<Typography
+											variant="caption"
+											fontWeight={600}
+											// fontFamily="JetBrains Mono Variable"
+										>
+											{qualityLabel()}
+										</Typography>
+									}
+									sx={{
+										borderRadius:
+											"8px !important",
+										"& .MuiChip-label": {
+											fontSize: "2.2em",
+										},
+									}}
+								/>
+							)}
+							{!!surroundSoundLabel() && (
+								<Chip
+									variant="filled"
+									label={
+										<Typography
+											variant="caption"
+											fontWeight={600}
+											fontFamily="JetBrains Mono Variable"
+										>
+											{surroundSoundLabel()}
+										</Typography>
+									}
+									sx={{
+										borderRadius:
+											"8px !important",
+										"& .MuiChip-label": {
+											fontSize: "2.2em",
+										},
+									}}
+								/>
+							)}
+							{!!videoTracks[0].VideoRangeType && (
+								<Chip
+									variant="filled"
+									label={
+										<Typography
+											variant="caption"
+											fontWeight={600}
+											fontFamily="JetBrains Mono Variable"
+										>
+											{
+												videoTracks[0]
+													.VideoRangeType
+											}
+										</Typography>
+									}
+									sx={{
+										borderRadius:
+											"8px !important",
+										"& .MuiChip-label": {
+											fontSize: "2.2em",
+										},
+									}}
+								/>
+							)}
+							{!!atmosLabel() && (
+								<Chip
+									variant="filled"
+									label={
+										<Typography
+											variant="caption"
+											fontWeight={600}
+											fontFamily="JetBrains Mono Variable"
+										>
+											{atmosLabel()}
+										</Typography>
+									}
+									sx={{
+										borderRadius:
+											"8px !important",
+										"& .MuiChip-label": {
+											fontSize: "2.2em",
+										},
+									}}
+								/>
+							)}
+							{!!subtitleTracks.length > 0 && (
+								<Chip
+									variant="filled"
+									label={
+										<Typography
+											variant="caption"
+											fontWeight={600}
+											fontFamily="JetBrains Mono Variable"
+										>
+											CC
+										</Typography>
+									}
+									sx={{
+										borderRadius:
+											"8px !important",
+										"& .MuiChip-label": {
+											fontSize: "2.2em",
+										},
+									}}
+								/>
+							)}
+						</Stack>
+					)}
 					{!disableInfoStrip && (
 						<Stack
 							direction="row"
-							gap={1}
-							divider={
-								<div
-									style={{
-										width: "4px",
-										height: "4px",
-										background: "white",
-										alignSelf: "center",
-										aspectRatio: 1,
-										borderRadius: "10px",
-									}}
-								></div>
-							}
+							gap={2}
 							className="hero-carousel-info"
 							mt={1}
 							justifyItems="flex-start"
@@ -248,7 +396,7 @@ const Hero = ({
 								style={{ opacity: "0.8" }}
 								variant="subtitle1"
 							>
-								{!!item.ProductionYear
+								{item.ProductionYear
 									? item.ProductionYear
 									: "Unknown"}
 							</Typography>
@@ -266,7 +414,7 @@ const Hero = ({
 								}}
 								className="hero-carousel-info-rating"
 							>
-								{!!item.CommunityRating ? (
+								{item.CommunityRating ? (
 									<>
 										<MdiStar
 											sx={{
@@ -430,7 +578,7 @@ const Hero = ({
 									},
 								}}
 							>
-								{videoTracks.map((track, index) => {
+								{videoTracks.map((track) => {
 									return (
 										<MenuItem
 											key={track.Index}
@@ -469,7 +617,7 @@ const Hero = ({
 									},
 								}}
 							>
-								{audioTracks.map((track, index) => {
+								{audioTracks.map((track) => {
 									return (
 										<MenuItem
 											key={track.Index}
@@ -508,7 +656,7 @@ const Hero = ({
 									},
 								}}
 							>
-								{subtitleTracks.map((track, index) => {
+								{subtitleTracks.map((track) => {
 									return (
 										<MenuItem
 											key={track.Index}

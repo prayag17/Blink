@@ -1,5 +1,5 @@
 /** @format */
-import { useState, useEffect } from "react";
+import React, { useEffect } from "react";
 import PropTypes from "prop-types";
 
 import Box from "@mui/material/Box";
@@ -7,20 +7,13 @@ import CircularProgress from "@mui/material/CircularProgress";
 
 import { useParams } from "react-router-dom";
 
-import {
-	BaseItemKind,
-	ItemFields,
-	SortOrder,
-} from "@jellyfin/sdk/lib/generated-client";
+import { BaseItemKind, ItemFields } from "@jellyfin/sdk/lib/generated-client";
 import { getUserApi } from "@jellyfin/sdk/lib/utils/api/user-api";
 import { getUserLibraryApi } from "@jellyfin/sdk/lib/utils/api/user-library-api";
 import { getLibraryApi } from "@jellyfin/sdk/lib/utils/api/library-api";
 import { getPlaylistsApi } from "@jellyfin/sdk/lib/utils/api/playlists-api";
 
 import { useQuery } from "@tanstack/react-query";
-import { MdiClockOutline } from "../../components/icons/mdiClockOutline";
-
-import { getRuntimeMusic, getRuntimeFull, endsAt } from "../../utils/date/time";
 
 import Hero from "../../components/layouts/item/hero";
 import { Card } from "../../components/card/card";
@@ -29,9 +22,6 @@ import { CardScroller } from "../../components/cardScroller/cardScroller";
 import "./playlist.module.scss";
 import { ErrorNotice } from "../../components/notices/errorNotice/errorNotice";
 import { useBackdropStore } from "../../utils/store/backdrop";
-import LikeButton from "../../components/buttons/likeButton";
-import { MdiPlayOutline } from "../../components/icons/mdiPlayOutline";
-import { useAudioPlayback } from "../../utils/store/audioPlayback";
 import MusicTrack from "../../components/musicTrack";
 function TabPanel(props) {
 	const { children, value, index, ...other } = props;
@@ -216,7 +206,7 @@ const PlaylistTitlePage = () => {
 											? `${
 													similar.ProductionYear
 											  } - ${
-													!!similar.EndDate
+													similar.EndDate
 														? new Date(
 																similar.EndDate,
 														  ).toLocaleString(

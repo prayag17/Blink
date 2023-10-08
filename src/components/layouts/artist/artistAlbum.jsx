@@ -1,17 +1,9 @@
 /** @format */
-import { useState } from "react";
+import React, { useState } from "react";
 import PropTypes from "prop-types";
 
-import Box from "@mui/material/Box";
 import Paper from "@mui/material/Paper";
-import TableContainer from "@mui/material/TableContainer";
-import Table from "@mui/material/Table";
-import TableBody from "@mui/material/TableBody";
-import TableHead from "@mui/material/TableHead";
-import TableRow from "@mui/material/TableRow";
-import TableCell from "@mui/material/TableCell";
 import Typography from "@mui/material/Typography";
-import IconButton from "@mui/material/IconButton";
 import Stack from "@mui/material/Stack";
 import MuiLink from "@mui/material/Link";
 
@@ -24,8 +16,6 @@ import { getUserLibraryApi } from "@jellyfin/sdk/lib/utils/api/user-library-api"
 import { getRuntimeMusic } from "../../../utils/date/time";
 
 import { MdiClockOutline } from "../../icons/mdiClockOutline";
-import { MdiHeart } from "../../icons/mdiHeart";
-import { MdiHeartOutline } from "../../icons/mdiHeartOutline";
 import { MdiAlbum } from "../../icons/mdiAlbum";
 
 import "./albumArtist.scss";
@@ -48,22 +38,6 @@ export const ArtistAlbum = ({ user, album, boxProps }) => {
 
 		networkMode: "always",
 	});
-
-	const handleLikingTrack = async (track) => {
-		let result;
-		if (track.UserData.IsFavorite) {
-			result = await getUserLibraryApi(window.api).unmarkFavoriteItem({
-				userId: user.Id,
-				itemId: track.Id,
-			});
-		} else if (!track.UserData.IsFavorite) {
-			result = await getUserLibraryApi(window.api).markFavoriteItem({
-				userId: user.Id,
-				itemId: track.Id,
-			});
-		}
-		albumTracks.refetch();
-	};
 
 	const [imgLoaded, setImgLoaded] = useState(false);
 
@@ -156,8 +130,7 @@ export const ArtistAlbum = ({ user, album, boxProps }) => {
 						className="item-detail-album-track"
 						style={{
 							padding: "0.75em 0 ",
-							background: "rgb(255 255 255 / 0.1)",
-							boxShadow: "0 0 10px rgb(0 0 0 / 0.5)",
+							background: "hsl(256, 100%, 4%, 60%)",
 						}}
 					>
 						<Typography
