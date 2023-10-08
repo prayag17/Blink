@@ -130,13 +130,25 @@ const Hero = ({
 
 	const atmosLabel = () => {
 		if (
-			audioTracks[0]?.DisplayTitle.includes("Atmos") &&
-			audioTracks[0]?.DisplayTitle.includes("TrueHD")
+			audioTracks[0]?.DisplayTitle.toLocaleLowerCase().includes(
+				"atmos",
+			) &&
+			audioTracks[0]?.DisplayTitle.toLocaleLowerCase().includes(
+				"truehd",
+			)
 		) {
 			return "TrueHD | Atmos";
-		} else if (audioTracks[0]?.DisplayTitle.includes("Atmos")) {
+		} else if (
+			audioTracks[0]?.DisplayTitle.toLocaleLowerCase().includes(
+				"atmos",
+			)
+		) {
 			return "Atmos";
-		} else if (audioTracks[0]?.DisplayTitle.includes("TrueHD")) {
+		} else if (
+			audioTracks[0]?.DisplayTitle.toLocaleLowerCase().includes(
+				"truehd",
+			)
+		) {
 			return "TrueHD";
 		} else {
 			return "";
