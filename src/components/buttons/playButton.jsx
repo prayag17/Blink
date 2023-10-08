@@ -118,10 +118,10 @@ const PlayButton = ({
 							limit: 1,
 							startIndex: 0,
 							fields: [
-								"UserData",
 								ItemFields.MediaSources,
 								ItemFields.MediaStreams,
 							],
+							enableUserData: true,
 						});
 						break;
 					case BaseItemKind.Playlist:
@@ -179,7 +179,7 @@ const PlayButton = ({
 			return result.data;
 		},
 		onSuccess: (item) => {
-			console.log(item);
+			console.log(item.Items[0].MediaSources);
 			if (trackIndex) {
 				setPlaylistItemId(playlistItemId);
 				setCurrentTrack(trackIndex);
