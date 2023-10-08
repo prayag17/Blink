@@ -1,8 +1,7 @@
 /** @format */
 
-import { useState, useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import axios from "axios";
 
 import { EventEmitter as event } from "../../../eventEmitter.js";
 import { setServer } from "../../../utils/storage/servers.js";
@@ -32,6 +31,8 @@ import { v4 as uuidv4 } from "uuid";
 // SCSS
 import "./server.module.scss";
 import { useQuery } from "@tanstack/react-query";
+import { axiosClient } from "../../../App.jsx";
+import axios from "axios";
 
 export const ServerList = () => {
 	const [renderServerList, setRenderServerList] = useState(false);
@@ -161,7 +162,7 @@ export const ServerSetup = (props) => {
 	const checkServer = async () => {
 		setServerCheckState(true);
 		try {
-			const result = await axios.get(`${serverIp}/System/Ping`);
+			const result = await axiosClient.get(`${serverIp}/System/Ping`);
 			if (result.data == "Jellyfin Server") {
 				event.emit("create-jellyfin-api", serverIp);
 				let sysInfo = await getSystemApi(
@@ -183,6 +184,7 @@ export const ServerSetup = (props) => {
 				);
 			}
 		} catch (error) {
+			console.log(error);
 			enqueueSnackbar("Unable to verfiy server address.", {
 				variant: "error",
 			});

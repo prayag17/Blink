@@ -170,23 +170,31 @@ const PlayButton = ({
 		},
 		onSuccess: (item) => {
 			if (trackIndex) {
+				setPlaylistItemId(playlistItemId);
 				setCurrentTrack(trackIndex);
 				setAudioTracks(item.Items);
 				setAudioUrl(
 					`${window.api.basePath}/Audio/${item.Items[trackIndex].Id}/universal?deviceId=${window.api.deviceInfo.id}&userId=${userId}&api_key=${window.api.accessToken}`,
 				);
 				setAudioItem(item.Items[trackIndex]);
-				setPlaylistItemId(playlistItemId);
 				setAudioDisplay(true);
 			} else if (audio) {
+				setAudioItem(item.Items[0]);
 				setAudioTracks(item.Items);
 				setAudioUrl(
 					`${window.api.basePath}/Audio/${item.Items[0].Id}/universal?deviceId=${window.api.deviceInfo.id}&userId=${userId}&api_key=${window.api.accessToken}`,
 				);
-				setAudioItem(item.Items[0]);
 				setAudioDisplay(true);
 			} else {
 				setUserId(userId);
+				setItemId(item.Items[0].Id);
+				setDuration(item.Items[0].RunTimeTicks);
+
+				if (item.Items[0].Type == BaseItemKind.Episode) {
+					setSeriesId(item.Items[0].SeriesId);
+					// setEpisodeIndex(item.Ite)
+				}
+
 				setMediaContainer(item.Items[0].MediaSources[0].Container);
 				// Set all required stream index
 				setAudioStreamIndex(currentAudioTrack);
@@ -194,19 +202,6 @@ const PlayButton = ({
 				setSubtitleStreamIndex(currentSubTrack);
 
 				setMediaSourceId(item.Items[0].Id);
-
-				setUrl(
-					`${window.api.basePath}/Videos/${item.Items[0].Id}/stream.
-					${item.Items[0].MediaSources[0].Container}
-				?Static=true&mediaSourceId=${item.Items[0].Id}&deviceId=${window.api.deviceInfo.id}&api_key=${window.api.accessToken}&Tag=${item.Items[0].MediaSources[0].ETag}&videoStreamIndex=${currentVideoTrack}&audioStreamIndex=${currentAudioTrack}`,
-				);
-				console.log(item.Items[0]);
-				setPosition(item.Items[0].UserData?.PlaybackPositionTicks);
-
-				if (item.Items[0].Type == BaseItemKind.Episode) {
-					setSeriesId(item.Items[0].SeriesId);
-					// setEpisodeIndex(item.Ite)
-				}
 
 				switch (item.Items[0].Type) {
 					case BaseItemKind.Movie:
@@ -290,8 +285,15 @@ const PlayButton = ({
 						);
 						break;
 				}
-				setItemId(item.Items[0].Id);
-				setDuration(item.Items[0].RunTimeTicks);
+
+				setUrl(
+					`${window.api.basePath}/Videos/${item.Items[0].Id}/stream.
+					${item.Items[0].MediaSources[0].Container}
+				?Static=true&mediaSourceId=${item.Items[0].Id}&deviceId=${window.api.deviceInfo.id}&api_key=${window.api.accessToken}&Tag=${item.Items[0].MediaSources[0].ETag}&videoStreamIndex=${currentVideoTrack}&audioStreamIndex=${currentAudioTrack}`,
+				);
+				console.log(item.Items[0]);
+				setPosition(item.Items[0].UserData?.PlaybackPositionTicks);
+
 				navigate(`/player`);
 			}
 		},

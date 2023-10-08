@@ -36,34 +36,6 @@ import { MdiPlaylistMusicOutline } from "../../icons/mdiPlaylistMusicOutline";
 import MusicTrack from "../../musicTrack";
 
 const AudioPlayer = () => {
-	const user = useQuery({
-		queryKey: ["user"],
-		queryFn: async () => {
-			let usr = await getUserApi(window.api).getCurrentUser();
-			return usr.data;
-		},
-		networkMode: "always",
-	});
-
-	const waveSurferRef = useRef(null);
-	const waveSurferContainerRef = useRef(null);
-
-	const [playerReady, setPlayerReady] = useState(false);
-	const [playing, setPlaying] = useState(true);
-	const [volume, setVolume] = useState(0.8);
-	const [isMuted, setIsMuted] = useState(false);
-
-	const [loading, setLoading] = useState(true);
-
-	const [showWaveform, setShowWaveform] = useState(false);
-
-	const [currentTime, setCurrentTime] = useState(0);
-
-	const [queueButton, setQueueButton] = useState(null);
-	const handleOpenQueue = (event) => {
-		setQueueButton(queueButton ? null : event.currentTarget);
-	};
-
 	const [
 		url,
 		display,
@@ -92,6 +64,35 @@ const AudioPlayer = () => {
 		state.playlistItemId,
 	]);
 
+	const user = useQuery({
+		queryKey: ["user"],
+		queryFn: async () => {
+			let usr = await getUserApi(window.api).getCurrentUser();
+			return usr.data;
+		},
+		networkMode: "always",
+		enabled: Boolean(display),
+	});
+
+	const waveSurferRef = useRef(null);
+	const waveSurferContainerRef = useRef(null);
+
+	const [playerReady, setPlayerReady] = useState(false);
+	const [playing, setPlaying] = useState(true);
+	const [volume, setVolume] = useState(0.8);
+	const [isMuted, setIsMuted] = useState(false);
+
+	const [loading, setLoading] = useState(true);
+
+	const [showWaveform, setShowWaveform] = useState(false);
+
+	const [currentTime, setCurrentTime] = useState(0);
+
+	const [queueButton, setQueueButton] = useState(null);
+	const handleOpenQueue = (event) => {
+		setQueueButton(queueButton ? null : event.currentTarget);
+	};
+
 	useEffect(() => {
 		if (display) {
 			const waveSurfer = WaveSurfer.create({
@@ -103,6 +104,7 @@ const AudioPlayer = () => {
 				waveColor: "#ffffff2f",
 				normalize: true,
 				barHeight: 0.6,
+				backend: "MediaElementWebAudio",
 			});
 			waveSurfer.load(url);
 			waveSurfer.on("load", () => {

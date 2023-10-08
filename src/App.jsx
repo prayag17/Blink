@@ -96,7 +96,8 @@ import PlaylistTitlePage from "./routes/playlist/index.jsx";
 // Initial custom axios client to use tauri's http module
 import axios from "axios";
 import axiosTauriApiAdapter from "axios-tauri-api-adapter";
-const axiosClient = axios.create({
+
+export const axiosClient = axios.create({
 	adapter: axiosTauriApiAdapter,
 	headers: { "Access-Control-Allow-Origin": "*" },
 	timeout: 60000,
@@ -217,7 +218,7 @@ function App() {
 	const pingServer = async () => {
 		const server = await getServer();
 		try {
-			const result = await axios.get(
+			const result = await axiosClient.get(
 				new URL(`${server.Ip}/System/Ping`).href,
 			);
 
