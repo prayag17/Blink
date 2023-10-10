@@ -98,6 +98,7 @@ import PlaylistTitlePage from "./routes/playlist/index.jsx";
 // Initial custom axios client to use tauri's http module
 import axios from "axios";
 import axiosTauriApiAdapter from "axios-tauri-api-adapter";
+import { useApi } from "./utils/store/api.js";
 
 export const axiosClient = axios.create({
 	adapter: axiosTauriApiAdapter,
@@ -169,12 +170,6 @@ const AnimationWrapper = () => {
 
 function App() {
 	const navigate = useNavigate();
-
-	useEffect(() => {
-		document
-			.querySelector(".app-loading")
-			.setAttribute("style", "display:none");
-	}, []);
 
 	const [serverReachable, setServerReachable] = useState(true);
 
@@ -486,6 +481,10 @@ function App() {
 								path="/"
 								element={<LogicalRoutes />}
 							/>
+							<Route
+								path="/login"
+								element={<LoginLogicalRoutes />}
+							/>
 
 							<Route path="/home" element={<Home />} />
 							<Route
@@ -568,11 +567,6 @@ function App() {
 							<Route
 								path="/player"
 								element={<VideoPlayer />}
-							/>
-
-							<Route
-								path="/login"
-								element={<LoginLogicalRoutes />}
 							/>
 						</Route>
 					</Routes>

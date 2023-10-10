@@ -15,6 +15,7 @@ import Grid from "@mui/material/Grid";
 import LoadingButton from "@mui/lab/LoadingButton";
 import SvgIcon from "@mui/material/SvgIcon";
 import Container from "@mui/material/Container";
+import LinearProgress from "@mui/material/LinearProgress";
 
 import { mdiChevronRight } from "@mdi/js";
 
@@ -30,9 +31,13 @@ import { v4 as uuidv4 } from "uuid";
 
 // SCSS
 import "./server.module.scss";
-import { useQuery } from "@tanstack/react-query";
+import { useMutation, useQuery } from "@tanstack/react-query";
 import { axiosClient } from "../../../App.jsx";
 import axios from "axios";
+import { useApi } from "../../../utils/store/api.js";
+import { RecommendedServerDiscovery } from "@jellyfin/sdk/lib/discovery/recommended-server-discovery.js";
+import { MdiInformation } from "../../../components/icons/mdiInformation.jsx";
+import { yellow } from "@mui/material/colors";
 
 export const ServerList = () => {
 	const [renderServerList, setRenderServerList] = useState(false);
@@ -62,7 +67,7 @@ export const ServerList = () => {
 		// localStorage.setItem("servers", serverList);
 	};
 
-	const ServerList = (props) => {
+	const ServerLists = (props) => {
 		const startRender = props.startRender;
 		if (startRender) {
 			return serverList.map((item, index) => {
@@ -128,106 +133,79 @@ export const ServerList = () => {
 	);
 };
 
-export const ServerSetup = (props) => {
-	const sdk = new Jellyfin({
-		clientInfo: {
-			name: "JellyPlayer",
-			version: appVer,
-		},
-		deviceInfo: {
-			name: "JellyPlayer",
-			id: uuidv4(),
-		},
-	});
+export const ServerSetup = () => {
+	/**
+	 * @type {[import("@jellyfin/sdk").Api, function, Jellyfin]}
+	 */
+	const [api, createApi, jellyfin] = useApi((state) => [
+		state.api,
+		state.createApi,
+		state.jellyfin,
+	]);
 
 	const [serverIp, setServerIp] = useState("");
-	const [checkingServer, setServerCheckState] = useState(false);
 
 	const { enqueueSnackbar } = useSnackbar();
 
 	const navigate = useNavigate();
 
-	const [loading, setLoading] = useState(false);
-
-	const usersAvailable = async () => {};
-	const addServer = async () => {
-		event.emit("create-jellyfin-api", serverIp);
-		let sysInfo = await getSystemApi(window.api).getPublicSystemInfo();
-		sysInfo = sysInfo.data;
-
-		// Set Server Config to Tauri store
-		sysInfo.Ip = serverIp;
-		setServer(sysInfo);
-	};
-	const checkServer = async () => {
-		setServerCheckState(true);
-		try {
-			const result = await axiosClient.get(`${serverIp}/System/Ping`);
-			if (result.data == "Jellyfin Server") {
-				event.emit("create-jellyfin-api", serverIp);
-				let sysInfo = await getSystemApi(
-					window.api,
-				).getPublicSystemInfo();
-				sysInfo = sysInfo.data;
-				sysInfo.Ip = serverIp;
-				setServer(sysInfo);
-				const users = await getUserApi(window.api).getPublicUsers();
-				if (users.data.length >= 1) {
-					navigate("/login/users");
-				} else {
-					navigate("/login/manual");
-				}
-			} else {
+	const checkServer = useMutation({
+		mutationFn: async () => {
+			const servers =
+				await jellyfin.discovery.getRecommendedServerCandidates(
+					serverIp,
+				);
+			const bestServer = jellyfin.discovery.findBestServer(servers);
+			return bestServer;
+		},
+		onSuccess: (bestServer) => {
+			if (bestServer) {
+				console.info(bestServer);
+				enqueueSnackbar("Client added successfully", {
+					variant: "success",
+				});
+				createApi(bestServer.address, null);
+				navigate("/login");
+			}
+		},
+		onError: (err) => {
+			console.error(err);
+			enqueueSnackbar(`${err}`, { variant: "error" });
+			enqueueSnackbar("Something went wrong", { variant: "error" });
+		},
+		onSettled: (bestServer) => {
+			console.log(bestServer);
+			if (!bestServer) {
 				enqueueSnackbar(
-					"The provided ip address doesn't seem point to a Jellyfin server.",
-					{ variant: "error" },
+					`Provided server address is not a Jellyfin server.`,
+					{
+						variant: "error",
+					},
 				);
 			}
-		} catch (error) {
-			console.log(error);
-			enqueueSnackbar("Unable to verfiy server address.", {
-				variant: "error",
-			});
-		}
-
-		setServerCheckState(false);
-		return "";
-	};
-
-	const handleAddServer = () => {
-		// setLoading(true);
-		// let data;
-		// fetch(`${serverIp}/System/Ping`, {
-		// 	body: JSON.stringify(data),
-		// })
-		// 	.then((res) => res.json())
-		// 	.then((data) => {
-		// 		if (data == "Jellyfin Server") {
-		// 			addServer();
-		// 			setLoading(false);
-		// 			return true;
-		// 		} else {
-		// 			enqueueSnackbar(
-		// 				"The server address does not seem be a jellyfin server",
-		// 				{ variant: "error" },
-		// 			);
-		// 			setLoading(false);
-		// 			return false;
-		// 		}
-		// 	})
-		// 	.catch((error) => {
-		// 		setLoading(false);
-		// 		enqueueSnackbar(
-		// 			"Unable to verify whether the give address is a valid Jellyfin server",
-		// 			{ variant: "error" },
-		// 		);
-		// 		console.error(error);
-		// 	});
-	};
+		},
+	});
 
 	return (
 		<>
-			<Container maxWidth="sm" className={"centered serverContainer"}>
+			<LinearProgress
+				sx={{
+					position: "fixed",
+					top: 0,
+					left: 0,
+					right: 0,
+					opacity: checkServer.isLoading ? 1 : 0,
+					transition: "opacity 350ms",
+				}}
+			/>
+			<Container
+				maxWidth="sm"
+				className={"centered serverContainer"}
+				style={{
+					opacity: checkServer.isLoading ? "0.5" : "1",
+					transition: "opacity 350ms",
+				}}
+			>
 				<Grid
 					container
 					spacing={2}
@@ -247,7 +225,6 @@ export const ServerSetup = (props) => {
 							onChange={(event) => {
 								setServerIp(event.target.value);
 							}}
-							helperText="Add your server adddress with https:// or http://. Eg: https://demo.jellyfin.org"
 						></TextField>
 					</Grid>
 					<Grid item xl={5} md={6} sx={{ width: "100%" }}>
@@ -255,17 +232,38 @@ export const ServerSetup = (props) => {
 							variant="contained"
 							sx={{ width: "100%" }}
 							size="large"
-							loading={checkingServer}
+							loading={checkServer.isLoading}
 							endIcon={
 								<SvgIcon>
 									<path d={mdiChevronRight}></path>
 								</SvgIcon>
 							}
 							loadingPosition="end"
-							onClick={() => checkServer()}
+							onClick={checkServer.mutate}
 						>
 							Add Server
 						</LoadingButton>
+					</Grid>
+					<Grid
+						item
+						xl={5}
+						md={6}
+						sx={{
+							width: "100%",
+							display: "flex",
+							alignItems: "center",
+							gap: 1,
+							opacity: 0.6,
+						}}
+					>
+						<MdiInformation
+							sx={{
+								color: yellow[700],
+							}}
+						/>
+						<Typography variant="subtitle1">
+							Example: https://demo.jellyfin.org/stable
+						</Typography>
 					</Grid>
 				</Grid>
 			</Container>

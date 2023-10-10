@@ -5,8 +5,6 @@ import ReactDOM from "react-dom/client";
 
 import { BrowserRouter as Router } from "react-router-dom";
 
-import { invoke } from "@tauri-apps/api/tauri";
-
 import App from "./App";
 
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
@@ -37,5 +35,7 @@ document.addEventListener("DOMContentLoaded", () => {
 	// This will wait for the window to load, but you could
 	// run this function on whatever trigger you want
 	console.info("Initial render complete");
-	invoke("close_splashscreen");
+	document
+		.querySelector(".app-loading")
+		.setAttribute("style", "display:none");
 });
