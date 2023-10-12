@@ -20,18 +20,6 @@ if (!deviceId) {
 	localStorage.setItem("deviceId", uuidv4());
 }
 
-// event.on("create-jellyfin-api", (serverAddress) => {
-// 	window.api = ;
-// 	// window.api = jellyfin.createApi(serverAddress);
-// });
-// event.on("set-api-accessToken", (serverAddress) => {
-// 	window.api = jellyfin.createApi(
-// 		serverAddress,
-// 		sessionStorage.getItem("accessToken"),
-// 		axiosClient,
-// 	);
-// // });
-
 const jellyfin = new Jellyfin({
 	clientInfo: {
 		name: "JellyPlayer",

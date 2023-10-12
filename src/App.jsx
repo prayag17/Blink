@@ -77,10 +77,6 @@ import "@fontsource/noto-sans/900-italic.css";
 import "material-symbols";
 import "@fontsource-variable/jetbrains-mono";
 
-// Jellyfin SDK TypeScript
-import { Jellyfin } from "@jellyfin/sdk";
-import { version as appVer } from "../package.json";
-import { v4 as uuidv4 } from "uuid";
 import {
 	delServer,
 	getDefaultServer,
@@ -103,7 +99,6 @@ import PlaylistTitlePage from "./routes/playlist/index.jsx";
 import axios from "axios";
 import axiosTauriApiAdapter from "axios-tauri-api-adapter";
 import { useApi } from "./utils/store/api.js";
-import { useMutation, useQuery } from "@tanstack/react-query";
 import { getSystemApi } from "@jellyfin/sdk/lib/utils/api/system-api.js";
 
 export const axiosClient = axios.create({
@@ -167,7 +162,6 @@ function App() {
 
 	const serverSaved = async () => {
 		const defaultServer = await getDefaultServer();
-		// console.log(defaultServer);
 		if (defaultServer) {
 			return defaultServer;
 		} else {
@@ -178,17 +172,14 @@ function App() {
 	const LogicalRoutes = () => {
 		serverSaved()
 			.then(async (server) => {
-				console.log(server);
 				if (server) {
 					const savedServer = await getServer(server);
-					console.log(savedServer);
 					createApi(savedServer.address);
 					try {
 						const ping = await getSystemApi(
 							api,
 						).getPingSystem();
 						if (ping.status == 200) {
-							console.info(api);
 							const userSaved = await getUser();
 							if (userSaved) {
 								try {
@@ -267,48 +258,50 @@ function App() {
 		await relaunch();
 	};
 
+	// Create api if not created
 	if (!api) {
 		serverSaved()
 			.then(async (server) => {
 				if (server) {
 					const savedServer = await getServer(server);
 					createApi(savedServer.address);
-					try {
-						const ping = await getSystemApi(
-							api,
-						).getPingSystem();
-						if (ping.status == 200) {
-							console.info(api);
-							const userSaved = await getUser();
-							if (userSaved) {
-								try {
-									const authenticate =
-										await api.authenticateUserByName(
-											userSaved.Name,
-											userSaved.Password,
-										);
-									if (authenticate.status == 200) {
-										createApi(
-											savedServer,
-											authenticate.data
-												.AccessToken,
-										);
-									}
-								} catch (error) {
-									console.error("Unable to login");
-									enqueueSnackbar("Unable to login");
-								}
-							}
-						}
-					} catch (error) {
-						console.error(error);
-					}
 				}
 			})
 			.catch((error) => {
 				console.error(error);
 				enqueueSnackbar(String(error), { variant: "error" });
 			});
+	}
+
+	// set accessToken in api if used saved
+	const createLoggedInApi = async () => {
+		try {
+			const defaultServer = await getDefaultServer();
+			const savedServer = await getServer(defaultServer);
+			const userSaved = await getUser();
+			if (userSaved) {
+				try {
+					const authenticate = await api.authenticateUserByName(
+						userSaved.Name,
+						userSaved.Password,
+					);
+					if (authenticate.status == 200) {
+						createApi(
+							savedServer.address,
+							authenticate.data.AccessToken,
+						);
+					}
+				} catch (error) {
+					console.error(error);
+					enqueueSnackbar("Unable to login.");
+				}
+			}
+		} catch (error) {
+			console.error(error);
+		}
+	};
+	if (api) {
+		createLoggedInApi();
 	}
 
 	const location = useLocation();
@@ -477,11 +470,6 @@ function App() {
 								path="/"
 								exact
 								element={<LogicalRoutes />}
-								loader={async () => {
-									const defaultServer =
-										await getDefaultServer();
-									console.log(defaultServer);
-								}}
 							/>
 							<Route
 								path="/login"

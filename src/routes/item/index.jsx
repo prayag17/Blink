@@ -56,6 +56,7 @@ const ItemDetail = () => {
 	const { id } = useParams();
 
 	const [api] = useApi((state) => [state.api]);
+
 	const user = useQuery({
 		queryKey: ["user"],
 		queryFn: async () => {
