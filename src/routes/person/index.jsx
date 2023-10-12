@@ -29,6 +29,7 @@ import { Card } from "../../components/card/card";
 import "./person.module.scss";
 import { ErrorNotice } from "../../components/notices/errorNotice/errorNotice";
 import { useBackdropStore } from "../../utils/store/backdrop";
+import { useApi } from "../../utils/store/api";
 
 function TabPanel(props) {
 	const { children, value, index, ...other } = props;
@@ -62,20 +63,22 @@ function a11yProps(index) {
 
 const PersonTitlePage = () => {
 	const { id } = useParams();
+	const [api] = useApi((state) => [state.api]);
 
 	const user = useQuery({
 		queryKey: ["user"],
 		queryFn: async () => {
-			let usr = await getUserApi(window.api).getCurrentUser();
+			let usr = await getUserApi(api).getCurrentUser();
 			return usr.data;
 		},
 		networkMode: "always",
+		enabled: Boolean(api),
 	});
 
 	const item = useQuery({
 		queryKey: ["item", id],
 		queryFn: async () => {
-			const result = await getUserLibraryApi(window.api).getItem({
+			const result = await getUserLibraryApi(api).getItem({
 				userId: user.data.Id,
 				itemId: id,
 				fields: [ItemFields.Crew],
@@ -90,7 +93,7 @@ const PersonTitlePage = () => {
 	const personMovies = useQuery({
 		queryKey: ["item", id, "personMovies"],
 		queryFn: async () => {
-			const result = await getItemsApi(window.api).getItems({
+			const result = await getItemsApi(api).getItems({
 				userId: user.data.Id,
 				personIds: [id],
 				includeItemTypes: [BaseItemKind.Movie],
@@ -107,7 +110,7 @@ const PersonTitlePage = () => {
 	const personShows = useQuery({
 		queryKey: ["item", id, "personShows"],
 		queryFn: async () => {
-			const result = await getItemsApi(window.api).getItems({
+			const result = await getItemsApi(api).getItems({
 				userId: user.data.Id,
 				personIds: [id],
 				includeItemTypes: [BaseItemKind.Series],
@@ -125,7 +128,7 @@ const PersonTitlePage = () => {
 	const personBooks = useQuery({
 		queryKey: ["item", id, "personBooks"],
 		queryFn: async () => {
-			const result = await getItemsApi(window.api).getItems({
+			const result = await getItemsApi(api).getItems({
 				userId: user.data.Id,
 				personIds: [id],
 				includeItemTypes: [BaseItemKind.Book],
@@ -142,7 +145,7 @@ const PersonTitlePage = () => {
 	const personPhotos = useQuery({
 		queryKey: ["item", id, "personPhotos"],
 		queryFn: async () => {
-			const result = await getItemsApi(window.api).getItems({
+			const result = await getItemsApi(api).getItems({
 				userId: user.data.Id,
 				personIds: [id],
 				includeItemTypes: [BaseItemKind.Photo],
@@ -158,7 +161,7 @@ const PersonTitlePage = () => {
 	const personEpisodes = useQuery({
 		queryKey: ["item", id, "personEpisodes"],
 		queryFn: async () => {
-			const result = await getItemsApi(window.api).getItems({
+			const result = await getItemsApi(api).getItems({
 				userId: user.data.Id,
 				personIds: [id],
 				includeItemTypes: [BaseItemKind.Episode],
@@ -240,8 +243,8 @@ const PersonTitlePage = () => {
 			setAppBackdrop(
 				item.data.Type === BaseItemKind.MusicAlbum ||
 					item.data.Type === BaseItemKind.Episode
-					? `${window.api.basePath}/Items/${item.data.ParentBackdropItemId}/Images/Backdrop`
-					: `${window.api.basePath}/Items/${item.data.Id}/Images/Backdrop`,
+					? `${api.basePath}/Items/${item.data.ParentBackdropItemId}/Images/Backdrop`
+					: `${api.basePath}/Items/${item.data.Id}/Images/Backdrop`,
 				item.data.Id,
 			);
 		}

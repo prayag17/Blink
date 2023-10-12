@@ -42,6 +42,7 @@ import { ActorCard } from "../../components/card/actorCards";
 import { SeasonSelectorSkeleton } from "../../components/skeleton/seasonSelector";
 import LikeButton from "../../components/buttons/likeButton";
 import MarkPlayedButton from "../../components/buttons/markPlayedButton";
+import { useApi } from "../../utils/store/api";
 function TabPanel(props) {
 	const { children, value, index, ...other } = props;
 
@@ -68,19 +69,22 @@ TabPanel.propTypes = {
 const SeriesTitlePage = () => {
 	const { id } = useParams();
 
+	const [api] = useApi((state) => [state.api]);
+
 	const user = useQuery({
 		queryKey: ["user"],
 		queryFn: async () => {
-			let usr = await getUserApi(window.api).getCurrentUser();
+			let usr = await getUserApi(api).getCurrentUser();
 			return usr.data;
 		},
 		networkMode: "always",
+		enabled: Boolean(api),
 	});
 
 	const item = useQuery({
 		queryKey: ["item", id],
 		queryFn: async () => {
-			const result = await getUserLibraryApi(window.api).getItem({
+			const result = await getUserLibraryApi(api).getItem({
 				userId: user.data.Id,
 				itemId: id,
 				fields: [ItemFields.Crew],
@@ -95,7 +99,7 @@ const SeriesTitlePage = () => {
 	const similarItems = useQuery({
 		queryKey: ["item", id, "similarItem"],
 		queryFn: async () => {
-			const result = await getLibraryApi(window.api).getSimilarShows({
+			const result = await getLibraryApi(api).getSimilarShows({
 				userId: user.data.Id,
 				itemId: item.data.Id,
 				limit: 16,
@@ -110,7 +114,7 @@ const SeriesTitlePage = () => {
 	const seasons = useQuery({
 		queryKey: ["item", id, "seasons"],
 		queryFn: async () => {
-			const result = await getTvShowsApi(window.api).getSeasons({
+			const result = await getTvShowsApi(api).getSeasons({
 				userId: user.data.Id,
 				seriesId: item.data.Id,
 				isSpecialSeason: false,
@@ -125,7 +129,7 @@ const SeriesTitlePage = () => {
 	const nextUpEpisode = useQuery({
 		queryKey: ["item", id, "nextUp"],
 		queryFn: async () => {
-			const result = await getTvShowsApi(window.api).getNextUp({
+			const result = await getTvShowsApi(api).getNextUp({
 				userId: user.data.Id,
 				limit: 1,
 				parentId: item.data.Id,
@@ -144,7 +148,7 @@ const SeriesTitlePage = () => {
 	const currentSeasonItem = useQuery({
 		queryKey: ["item", id, "season", currentSeason],
 		queryFn: async () => {
-			const result = await getUserLibraryApi(window.api).getItem({
+			const result = await getUserLibraryApi(api).getItem({
 				userId: user.data.Id,
 				itemId: seasons.data.Items[currentSeason].Id,
 			});
@@ -158,7 +162,7 @@ const SeriesTitlePage = () => {
 	const episodes = useQuery({
 		queryKey: ["item", id, `season ${currentSeason + 1}`, "episodes"],
 		queryFn: async () => {
-			const result = await getTvShowsApi(window.api).getEpisodes({
+			const result = await getTvShowsApi(api).getEpisodes({
 				userId: user.data.Id,
 				seriesId: item.data.Id,
 				seasonId: seasons.data.Items[currentSeason].Id,
@@ -175,9 +179,7 @@ const SeriesTitlePage = () => {
 	const specialFeatures = useQuery({
 		queryKey: ["item", id, `specialFeatures`],
 		queryFn: async () => {
-			const result = await getUserLibraryApi(
-				window.api,
-			).getSpecialFeatures({
+			const result = await getUserLibraryApi(api).getSpecialFeatures({
 				itemId: item.data.Id,
 				userId: user.data.Id,
 			});
@@ -194,8 +196,8 @@ const SeriesTitlePage = () => {
 			setAppBackdrop(
 				item.data.Type === BaseItemKind.MusicAlbum ||
 					item.data.Type === BaseItemKind.Episode
-					? `${window.api.basePath}/Items/${item.data.ParentBackdropItemId}/Images/Backdrop`
-					: `${window.api.basePath}/Items/${item.data.Id}/Images/Backdrop`,
+					? `${api.basePath}/Items/${item.data.ParentBackdropItemId}/Images/Backdrop`
+					: `${api.basePath}/Items/${item.data.Id}/Images/Backdrop`,
 				item.data.Id,
 			);
 			let direTp = item.data.People.filter(

@@ -51,8 +51,10 @@ import MusicTrack from "../../components/musicTrack";
 import { useBackdropStore } from "../../utils/store/backdrop";
 
 import "./library.module.scss";
+import { useApi } from "../../utils/store/api";
 
 const LibraryView = () => {
+	const [api] = useApi((state) => [state.api]);
 	const [page, setPage] = useState(1);
 	const maxDisplayItems = 100;
 
@@ -61,10 +63,11 @@ const LibraryView = () => {
 	const user = useQuery({
 		queryKey: ["user"],
 		queryFn: async () => {
-			let usr = await getUserApi(window.api).getCurrentUser();
+			let usr = await getUserApi(api).getCurrentUser();
 			return usr.data;
 		},
 		networkMode: "always",
+		enabled: Boolean(api),
 	});
 
 	const [sortAscending, setSortAscending] = useState(true);
@@ -84,7 +87,7 @@ const LibraryView = () => {
 	};
 
 	const fetchLib = async (libraryId) => {
-		const result = await getItemsApi(window.api).getItems({
+		const result = await getItemsApi(api).getItems({
 			userId: user.data.Id,
 			ids: [libraryId],
 			fields: [ItemFields.RecursiveItemCount],
@@ -254,44 +257,42 @@ const LibraryView = () => {
 		queryFn: async () => {
 			let result;
 			if (currentViewType == "MusicArtist") {
-				result = await getArtistsApi(window.api).getAlbumArtists({
+				result = await getArtistsApi(api).getAlbumArtists({
 					userId: user.data.Id,
 					parentId: id,
 					startIndex: maxDisplayItems * (page - 1),
 					limit: maxDisplayItems,
 				});
 			} else if (currentViewType == "Person") {
-				result = await getPersonsApi(window.api).getPersons({
+				result = await getPersonsApi(api).getPersons({
 					userId: user.data.Id,
 					personTypes: ["Actor"],
 					startIndex: maxDisplayItems * (page - 1),
 					limit: maxDisplayItems,
 				});
 			} else if (currentViewType == "Genre") {
-				result = await getGenresApi(window.api).getGenres({
+				result = await getGenresApi(api).getGenres({
 					userId: user.data.Id,
 					parentId: id,
 					startIndex: maxDisplayItems * (page - 1),
 					limit: maxDisplayItems,
 				});
 			} else if (currentViewType == "MusicGenre") {
-				result = await getMusicGenresApi(window.api).getMusicGenres(
-					{
-						userId: user.data.Id,
-						parentId: id,
-						startIndex: maxDisplayItems * (page - 1),
-						limit: maxDisplayItems,
-					},
-				);
+				result = await getMusicGenresApi(api).getMusicGenres({
+					userId: user.data.Id,
+					parentId: id,
+					startIndex: maxDisplayItems * (page - 1),
+					limit: maxDisplayItems,
+				});
 			} else if (currentViewType == "Studio") {
-				result = await getStudiosApi(window.api).getStudios({
+				result = await getStudiosApi(api).getStudios({
 					userId: user.data.Id,
 					parentId: id,
 					startIndex: maxDisplayItems * (page - 1),
 					limit: maxDisplayItems,
 				});
 			} else {
-				result = await getItemsApi(window.api).getItems({
+				result = await getItemsApi(api).getItems({
 					userId: user.data.Id,
 					parentId: currentLib.data.Items[0].Id,
 					recursive:

@@ -26,6 +26,7 @@ import "./episode.module.scss";
 import { ErrorNotice } from "../../components/notices/errorNotice/errorNotice";
 import { useBackdropStore } from "../../utils/store/backdrop";
 import { ActorCard } from "../../components/card/actorCards";
+import { useApi } from "../../utils/store/api";
 function TabPanel(props) {
 	const { children, value, index, ...other } = props;
 
@@ -51,20 +52,22 @@ TabPanel.propTypes = {
 
 const EpisodeTitlePage = () => {
 	const { id } = useParams();
+	const [api] = useApi((state) => [state.api]);
 
 	const user = useQuery({
 		queryKey: ["user"],
 		queryFn: async () => {
-			let usr = await getUserApi(window.api).getCurrentUser();
+			let usr = await getUserApi(api).getCurrentUser();
 			return usr.data;
 		},
 		networkMode: "always",
+		enabled: Boolean(api),
 	});
 
 	const item = useQuery({
 		queryKey: ["item", id],
 		queryFn: async () => {
-			const result = await getUserLibraryApi(window.api).getItem({
+			const result = await getUserLibraryApi(api).getItem({
 				userId: user.data.Id,
 				itemId: id,
 				fields: [ItemFields.Crew],
@@ -120,7 +123,7 @@ const EpisodeTitlePage = () => {
 	const upcomingEpisodes = useQuery({
 		queryKey: ["item", id, "episode", "upcomingEpisodes"],
 		queryFn: async () => {
-			const result = await getItemsApi(window.api).getItems({
+			const result = await getItemsApi(api).getItems({
 				userId: user.data.Id,
 				parentId: item.data.ParentId,
 				startIndex: item.data.IndexNumber,
@@ -140,8 +143,8 @@ const EpisodeTitlePage = () => {
 			setAppBackdrop(
 				item.data.Type === BaseItemKind.MusicAlbum ||
 					item.data.Type === BaseItemKind.Episode
-					? `${window.api.basePath}/Items/${item.data.ParentBackdropItemId}/Images/Backdrop`
-					: `${window.api.basePath}/Items/${item.data.Id}/Images/Backdrop`,
+					? `${api.basePath}/Items/${item.data.ParentBackdropItemId}/Images/Backdrop`
+					: `${api.basePath}/Items/${item.data.Id}/Images/Backdrop`,
 				item.data.Id,
 			);
 			let direTp = item.data.People.filter(

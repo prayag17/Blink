@@ -12,23 +12,26 @@ import { getUserApi } from "@jellyfin/sdk/lib/utils/api/user-api";
 import { BaseItemKind } from "@jellyfin/sdk/lib/generated-client";
 import { CardScroller } from "../../components/cardScroller/cardScroller";
 import { Card } from "../../components/card/card";
+import { useApi } from "../../utils/store/api";
 
 const FavoritePage = () => {
+	const [api] = useApi((state) => [state.api]);
 	const [setBackdrop] = useBackdropStore((state) => [state.setBackdrop]);
 
 	const user = useQuery({
 		queryKey: ["user"],
 		queryFn: async () => {
-			let usr = await getUserApi(window.api).getCurrentUser();
+			let usr = await getUserApi(api).getCurrentUser();
 			return usr.data;
 		},
 		networkMode: "always",
+		enabled: Boolean(api),
 	});
 
 	const movies = useQuery({
 		queryKey: ["favorite", "movies"],
 		queryFn: async () => {
-			const result = await getItemsApi(window.api).getItems({
+			const result = await getItemsApi(api).getItems({
 				userId: user.data.Id,
 				isFavorite: true,
 				includeItemTypes: [BaseItemKind.Movie],
@@ -41,7 +44,7 @@ const FavoritePage = () => {
 	const series = useQuery({
 		queryKey: ["favorite", "series"],
 		queryFn: async () => {
-			const result = await getItemsApi(window.api).getItems({
+			const result = await getItemsApi(api).getItems({
 				userId: user.data.Id,
 				isFavorite: true,
 				includeItemTypes: [BaseItemKind.Series],
@@ -54,7 +57,7 @@ const FavoritePage = () => {
 	const musicAlbum = useQuery({
 		queryKey: ["favorite", "musicAlbum"],
 		queryFn: async () => {
-			const result = await getItemsApi(window.api).getItems({
+			const result = await getItemsApi(api).getItems({
 				userId: user.data.Id,
 				isFavorite: true,
 				includeItemTypes: [BaseItemKind.MusicAlbum],
@@ -67,7 +70,7 @@ const FavoritePage = () => {
 	const audio = useQuery({
 		queryKey: ["favorite", "audio"],
 		queryFn: async () => {
-			const result = await getItemsApi(window.api).getItems({
+			const result = await getItemsApi(api).getItems({
 				userId: user.data.Id,
 				isFavorite: true,
 				includeItemTypes: [BaseItemKind.Audio],
@@ -80,7 +83,7 @@ const FavoritePage = () => {
 	const book = useQuery({
 		queryKey: ["favorite", "book"],
 		queryFn: async () => {
-			const result = await getItemsApi(window.api).getItems({
+			const result = await getItemsApi(api).getItems({
 				userId: user.data.Id,
 				isFavorite: true,
 				includeItemTypes: [BaseItemKind.Book],
@@ -93,7 +96,7 @@ const FavoritePage = () => {
 	const musicArtists = useQuery({
 		queryKey: ["favorite", "musicArtist"],
 		queryFn: async () => {
-			const result = await getItemsApi(window.api).getItems({
+			const result = await getItemsApi(api).getItems({
 				userId: user.data.Id,
 				isFavorite: true,
 				includeItemTypes: [BaseItemKind.MusicArtist],
@@ -106,7 +109,7 @@ const FavoritePage = () => {
 	const person = useQuery({
 		queryKey: ["favorite", "person"],
 		queryFn: async () => {
-			const result = await getItemsApi(window.api).getItems({
+			const result = await getItemsApi(api).getItems({
 				userId: user.data.Id,
 				isFavorite: true,
 				includeItemTypes: [BaseItemKind.Person],

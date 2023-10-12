@@ -22,18 +22,22 @@ import { getPersonsApi } from "@jellyfin/sdk/lib/utils/api/persons-api";
 import { BaseItemKind } from "@jellyfin/sdk/lib/generated-client";
 import { CardScroller } from "../../components/cardScroller/cardScroller";
 import { Card } from "../../components/card/card";
+import { useApi } from "../../utils/store/api";
 
 const SearchPage = () => {
+	const [api] = useApi((state) => [state.api]);
+
 	const [searchTerm, setSearchTerm] = useState("");
 	const searchParam = useDebounce(searchTerm, 500);
 
 	const user = useQuery({
 		queryKey: ["user"],
 		queryFn: async () => {
-			let usr = await getUserApi(window.api).getCurrentUser();
+			let usr = await getUserApi(api).getCurrentUser();
 			return usr.data;
 		},
 		networkMode: "always",
+		enabled: Boolean(api),
 	});
 
 	const itemLimit = 12;
@@ -41,7 +45,7 @@ const SearchPage = () => {
 	const movies = useQuery({
 		queryKey: ["search", "items", "Movie", searchParam],
 		queryFn: async () => {
-			const result = await getItemsApi(window.api).getItemsByUserId({
+			const result = await getItemsApi(api).getItemsByUserId({
 				userId: user.data.Id,
 				searchTerm,
 				includeItemTypes: [BaseItemKind.Movie],
@@ -56,7 +60,7 @@ const SearchPage = () => {
 	const series = useQuery({
 		queryKey: ["search", "items", "Series", searchParam],
 		queryFn: async () => {
-			const result = await getItemsApi(window.api).getItemsByUserId({
+			const result = await getItemsApi(api).getItemsByUserId({
 				userId: user.data.Id,
 				searchTerm,
 				includeItemTypes: [BaseItemKind.Series],
@@ -71,7 +75,7 @@ const SearchPage = () => {
 	const musicAlbum = useQuery({
 		queryKey: ["search", "items", "MusicAlbum", searchParam],
 		queryFn: async () => {
-			const result = await getItemsApi(window.api).getItemsByUserId({
+			const result = await getItemsApi(api).getItemsByUserId({
 				userId: user.data.Id,
 				searchTerm,
 				includeItemTypes: [BaseItemKind.MusicAlbum],
@@ -86,7 +90,7 @@ const SearchPage = () => {
 	const audio = useQuery({
 		queryKey: ["search", "items", "Audio", searchParam],
 		queryFn: async () => {
-			const result = await getItemsApi(window.api).getItemsByUserId({
+			const result = await getItemsApi(api).getItemsByUserId({
 				userId: user.data.Id,
 				searchTerm,
 				includeItemTypes: [BaseItemKind.Audio],
@@ -101,7 +105,7 @@ const SearchPage = () => {
 	const book = useQuery({
 		queryKey: ["search", "items", "Book", searchParam],
 		queryFn: async () => {
-			const result = await getItemsApi(window.api).getItemsByUserId({
+			const result = await getItemsApi(api).getItemsByUserId({
 				userId: user.data.Id,
 				searchTerm,
 				includeItemTypes: [BaseItemKind.Book],
@@ -116,7 +120,7 @@ const SearchPage = () => {
 	const musicArtists = useQuery({
 		queryKey: ["search", "items", "MusicArtists", searchParam],
 		queryFn: async () => {
-			const result = await getItemsApi(window.api).getItemsByUserId({
+			const result = await getItemsApi(api).getItemsByUserId({
 				userId: user.data.Id,
 				searchTerm,
 				includeItemTypes: [BaseItemKind.MusicArtist],
@@ -131,7 +135,7 @@ const SearchPage = () => {
 	const person = useQuery({
 		queryKey: ["search", "items", "Person", searchParam],
 		queryFn: async () => {
-			const result = await getPersonsApi(window.api).getPersons({
+			const result = await getPersonsApi(api).getPersons({
 				userId: user.data.Id,
 				searchTerm,
 				limit: itemLimit,

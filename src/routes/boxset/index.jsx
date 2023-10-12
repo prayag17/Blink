@@ -1,5 +1,5 @@
 /** @format */
-import { useState, useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import PropTypes from "prop-types";
 
 import Box from "@mui/material/Box";
@@ -24,6 +24,7 @@ import { CardScroller } from "../../components/cardScroller/cardScroller";
 import "./boxset.module.scss";
 import { ErrorNotice } from "../../components/notices/errorNotice/errorNotice";
 import { useBackdropStore } from "../../utils/store/backdrop";
+import { useApi } from "../../utils/store/api";
 function TabPanel(props) {
 	const { children, value, index, ...other } = props;
 
@@ -47,30 +48,24 @@ TabPanel.propTypes = {
 	value: PropTypes.number.isRequired,
 };
 
-function a11yProps(index) {
-	return {
-		id: `full-width-tab-${index}`,
-		"aria-controls": `full-width-tabpanel-${index}`,
-	};
-}
-
 const BoxSetTitlePage = () => {
 	const { id } = useParams();
-	const navigate = useNavigate();
+	const [api] = useApi((state) => [state.api]);
 
 	const user = useQuery({
 		queryKey: ["user"],
 		queryFn: async () => {
-			let usr = await getUserApi(window.api).getCurrentUser();
+			let usr = await getUserApi(api).getCurrentUser();
 			return usr.data;
 		},
 		networkMode: "always",
+		enabled: Boolean(api),
 	});
 
 	const item = useQuery({
 		queryKey: ["item", id],
 		queryFn: async () => {
-			const result = await getUserLibraryApi(window.api).getItem({
+			const result = await getUserLibraryApi(api).getItem({
 				userId: user.data.Id,
 				itemId: id,
 				fields: [ItemFields.Crew],
@@ -85,7 +80,7 @@ const BoxSetTitlePage = () => {
 	const collectionItems = useQuery({
 		queryKey: ["item", id, `collection`],
 		queryFn: async () => {
-			const result = await getItemsApi(window.api).getItems({
+			const result = await getItemsApi(api).getItems({
 				userId: user.data.Id,
 				parentId: item.data.Id,
 				fields: [ItemFields.SeasonUserData, ItemFields.Overview],
@@ -101,7 +96,7 @@ const BoxSetTitlePage = () => {
 	const similarItems = useQuery({
 		queryKey: ["item", id, "similarItem"],
 		queryFn: async () => {
-			const result = await getLibraryApi(window.api).getSimilarItems({
+			const result = await getLibraryApi(api).getSimilarItems({
 				userId: user.data.Id,
 				itemId: item.data.Id,
 				limit: 16,
@@ -122,8 +117,8 @@ const BoxSetTitlePage = () => {
 			setAppBackdrop(
 				item.data.Type === BaseItemKind.MusicAlbum ||
 					item.data.Type === BaseItemKind.Episode
-					? `${window.api.basePath}/Items/${item.data.ParentBackdropItemId}/Images/Backdrop`
-					: `${window.api.basePath}/Items/${item.data.Id}/Images/Backdrop`,
+					? `${api.basePath}/Items/${item.data.ParentBackdropItemId}/Images/Backdrop`
+					: `${api.basePath}/Items/${item.data.Id}/Images/Backdrop`,
 				item.data.Id,
 			);
 			let direTp = item.data.People.filter(

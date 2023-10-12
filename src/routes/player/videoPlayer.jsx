@@ -48,8 +48,11 @@ import { motion, AnimatePresence } from "framer-motion";
 import { ItemFields, LocationType } from "@jellyfin/sdk/lib/generated-client";
 import { MdiSkipPrevious } from "../../components/icons/mdiSkipPrevious";
 
+import { useApi } from "../../utils/store/api";
+
 export const VideoPlayer = () => {
 	const navigate = useNavigate();
+	const [api] = useApi((state) => [state.api]);
 
 	const [settingsMenuEl, setSettingsMenuEl] = useState(null);
 	const settingsMenuState = Boolean(settingsMenuEl);
@@ -106,12 +109,10 @@ export const VideoPlayer = () => {
 	const mediaInfo = useQuery({
 		queryKey: ["videoPlayer", itemId, "mediaInfo"],
 		queryFn: async () => {
-			const result = await getMediaInfoApi(window.api).getPlaybackInfo(
-				{
-					itemId: itemId,
-					userId: userId,
-				},
-			);
+			const result = await getMediaInfoApi(api).getPlaybackInfo({
+				itemId: itemId,
+				userId: userId,
+			});
 			return result.data;
 		},
 	});
@@ -119,7 +120,7 @@ export const VideoPlayer = () => {
 	const episodes = useQuery({
 		queryKey: ["videoPlayer", itemId, "episodes"],
 		queryFn: async () => {
-			const result = await getTvShowsApi(window.api).getEpisodes({
+			const result = await getTvShowsApi(api).getEpisodes({
 				userId: userId,
 				seriesId: seriesId,
 				fields: [ItemFields.MediaSources],
@@ -152,7 +153,7 @@ export const VideoPlayer = () => {
 	const onReady = useCallback(async () => {
 		if (!isReady) {
 			const timeToStart = ticksToSec(startPosition);
-			await getPlaystateApi(window.api).reportPlaybackStart({
+			await getPlaystateApi(api).reportPlaybackStart({
 				playbackStartInfo: {
 					PlayMethod: mediaInfo.data?.MediaSources[0]
 						.SupportsDirectPlay
@@ -228,14 +229,14 @@ export const VideoPlayer = () => {
 		setMediaSourceId(episodes.data.Items[currentEpisodeIndex + 1].Id);
 
 		setUrl(
-			`${window.api.basePath}/Videos/${
+			`${api.basePath}/Videos/${
 				episodes.data.Items[currentEpisodeIndex + 1].Id
 			}/stream.
 					${episodes.data.Items[currentEpisodeIndex + 1].MediaSources[0].Container}
 				?Static=true&mediaSourceId=${
 					episodes.data.Items[currentEpisodeIndex + 1].Id
-				}&deviceId=${window.api.deviceInfo.id}&api_key=${
-				window.api.accessToken
+				}&deviceId=${api.deviceInfo.id}&api_key=${
+				api.accessToken
 			}&Tag=${
 				episodes.data.Items[currentEpisodeIndex + 1].MediaSources[0]
 					.ETag
@@ -253,7 +254,7 @@ export const VideoPlayer = () => {
 			setItemName(
 				<div className="video-osd-name">
 					<img
-						src={`${window.api.basePath}/Items/${
+						src={`${api.basePath}/Items/${
 							episodes.data.Items[currentEpisodeIndex + 1]
 								.SeriesId
 						}/Images/Logo`}
@@ -332,14 +333,14 @@ export const VideoPlayer = () => {
 		setMediaSourceId(episodes.data.Items[currentEpisodeIndex - 1].Id);
 
 		setUrl(
-			`${window.api.basePath}/Videos/${
+			`${api.basePath}/Videos/${
 				episodes.data.Items[currentEpisodeIndex - 1].Id
 			}/stream.
 					${episodes.data.Items[currentEpisodeIndex - 1].MediaSources[0].Container}
 				?Static=true&mediaSourceId=${
 					episodes.data.Items[currentEpisodeIndex - 1].Id
-				}&deviceId=${window.api.deviceInfo.id}&api_key=${
-				window.api.accessToken
+				}&deviceId=${api.deviceInfo.id}&api_key=${
+				api.accessToken
 			}&Tag=${
 				episodes.data.Items[currentEpisodeIndex - 1].MediaSources[0]
 					.ETag
@@ -357,7 +358,7 @@ export const VideoPlayer = () => {
 			setItemName(
 				<div className="video-osd-name">
 					<img
-						src={`${window.api.basePath}/Items/${
+						src={`${api.basePath}/Items/${
 							episodes.data.Items[currentEpisodeIndex - 1]
 								.SeriesId
 						}/Images/Logo`}
@@ -535,7 +536,7 @@ export const VideoPlayer = () => {
 			setProgress(e.played);
 			setCurrentTime(secToTicks(e.playedSeconds));
 		}
-		await getPlaystateApi(window.api).reportPlaybackProgress({
+		await getPlaystateApi(api).reportPlaybackProgress({
 			playbackProgressInfo: {
 				PlayMethod: mediaInfo.data?.MediaSources[0]
 					.SupportsDirectPlay
@@ -977,7 +978,7 @@ export const VideoPlayer = () => {
 						tracks: [
 							{
 								kind: "subtitles",
-								src: `${window.api.basePath}/Videos/${itemId}/${itemId}/Subtitles/${currentSubtrack}/Stream.vtt?api_key=${window.api.accessToken}`,
+								src: `${api.basePath}/Videos/${itemId}/${itemId}/Subtitles/${currentSubtrack}/Stream.vtt?api_key=${api.accessToken}`,
 								srcLang: "",
 								default: true,
 								mode: "showing",

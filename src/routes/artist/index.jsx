@@ -10,7 +10,7 @@ import Tab from "@mui/material/Tab";
 
 import { AnimatePresence, motion } from "framer-motion";
 
-import { useParams, useNavigate } from "react-router-dom";
+import { useParams } from "react-router-dom";
 
 import {
 	BaseItemKind,
@@ -31,6 +31,7 @@ import { ErrorNotice } from "../../components/notices/errorNotice/errorNotice";
 import { ArtistAlbum } from "../../components/layouts/artist/artistAlbum";
 import { useBackdropStore } from "../../utils/store/backdrop";
 import MusicTrack from "../../components/musicTrack";
+import { useApi } from "../../utils/store/api";
 function TabPanel(props) {
 	const { children, value, index, ...other } = props;
 
@@ -54,23 +55,14 @@ TabPanel.propTypes = {
 	value: PropTypes.number.isRequired,
 };
 
-function a11yProps(index) {
-	return {
-		id: `full-width-tab-${index}`,
-		"aria-controls": `full-width-tabpanel-${index}`,
-	};
-}
-
 const ArtistTitlePage = () => {
 	const { id } = useParams();
-	const navigate = useNavigate();
-	const [primageImageLoaded, setPrimaryImageLoaded] = useState(false);
-	const [backdropImageLoaded, setBackdropImageLoaded] = useState(false);
+	const [api] = useApi((state) => [state.api]);
 
 	const user = useQuery({
 		queryKey: ["user"],
 		queryFn: async () => {
-			let usr = await getUserApi(window.api).getCurrentUser();
+			let usr = await getUserApi(api).getCurrentUser();
 			return usr.data;
 		},
 		networkMode: "always",
@@ -79,7 +71,7 @@ const ArtistTitlePage = () => {
 	const item = useQuery({
 		queryKey: ["item", id],
 		queryFn: async () => {
-			const result = await getUserLibraryApi(window.api).getItem({
+			const result = await getUserLibraryApi(api).getItem({
 				userId: user.data.Id,
 				itemId: id,
 				fields: [ItemFields.Crew],
@@ -94,7 +86,7 @@ const ArtistTitlePage = () => {
 	const artistDiscography = useQuery({
 		queryKey: ["item", id, "artist", "discography"],
 		queryFn: async () => {
-			const result = await getItemsApi(window.api).getItems({
+			const result = await getItemsApi(api).getItems({
 				albumArtistIds: [item.data.Id],
 				sortBy: ["PremiereDate", "ProductionYear", "SortName"],
 				sortOrder: [SortOrder.Descending],
@@ -112,7 +104,7 @@ const ArtistTitlePage = () => {
 	const artistSongs = useQuery({
 		queryKey: ["item", id, "artist", "songs"],
 		queryFn: async () => {
-			const result = await getItemsApi(window.api).getItems({
+			const result = await getItemsApi(api).getItems({
 				artistIds: [item.data.Id],
 				sortBy: ["PremiereDate", "ProductionYear", "SortName"],
 				sortOrder: [SortOrder.Ascending],
@@ -130,7 +122,7 @@ const ArtistTitlePage = () => {
 	const artistAppearances = useQuery({
 		queryKey: ["item", id, "artist", "appearences"],
 		queryFn: async () => {
-			const result = await getItemsApi(window.api).getItems({
+			const result = await getItemsApi(api).getItems({
 				contributingArtistIds: [item.data.Id],
 				excludeItemIds: [item.data.Id],
 				sortBy: ["PremiereDate", "ProductionYear", "SortName"],
@@ -181,8 +173,8 @@ const ArtistTitlePage = () => {
 			setAppBackdrop(
 				item.data.Type === BaseItemKind.MusicAlbum ||
 					item.data.Type === BaseItemKind.Episode
-					? `${window.api.basePath}/Items/${item.data.ParentBackdropItemId}/Images/Backdrop`
-					: `${window.api.basePath}/Items/${item.data.Id}/Images/Backdrop`,
+					? `${api.basePath}/Items/${item.data.ParentBackdropItemId}/Images/Backdrop`
+					: `${api.basePath}/Items/${item.data.Id}/Images/Backdrop`,
 				item.data.Id,
 			);
 		}
@@ -312,7 +304,7 @@ const ArtistTitlePage = () => {
 							>
 								{artistSongs.isSuccess &&
 									artistSongs.data.Items.map(
-										(tabitem, aindex) => {
+										(tabitem) => {
 											return (
 												<MusicTrack
 													item={tabitem}

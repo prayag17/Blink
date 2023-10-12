@@ -23,6 +23,7 @@ import "./playlist.module.scss";
 import { ErrorNotice } from "../../components/notices/errorNotice/errorNotice";
 import { useBackdropStore } from "../../utils/store/backdrop";
 import MusicTrack from "../../components/musicTrack";
+import { useApi } from "../../utils/store/api";
 function TabPanel(props) {
 	const { children, value, index, ...other } = props;
 
@@ -55,20 +56,22 @@ function a11yProps(index) {
 
 const PlaylistTitlePage = () => {
 	const { id } = useParams();
+	const [api] = useApi((state) => [state.api]);
 
 	const user = useQuery({
 		queryKey: ["user"],
 		queryFn: async () => {
-			let usr = await getUserApi(window.api).getCurrentUser();
+			let usr = await getUserApi(api).getCurrentUser();
 			return usr.data;
 		},
 		networkMode: "always",
+		enabled: Boolean(api),
 	});
 
 	const item = useQuery({
 		queryKey: ["item", id],
 		queryFn: async () => {
-			const result = await getUserLibraryApi(window.api).getItem({
+			const result = await getUserLibraryApi(api).getItem({
 				userId: user.data.Id,
 				itemId: id,
 				fields: [ItemFields.Crew],
@@ -83,7 +86,7 @@ const PlaylistTitlePage = () => {
 	const similarItems = useQuery({
 		queryKey: ["item", id, "similarItem"],
 		queryFn: async () => {
-			let result = await getLibraryApi(window.api).getSimilarAlbums({
+			let result = await getLibraryApi(api).getSimilarAlbums({
 				userId: user.data.Id,
 				itemId: item.data.Id,
 				limit: 16,
@@ -98,9 +101,7 @@ const PlaylistTitlePage = () => {
 	const musicTracks = useQuery({
 		queryKey: ["item", id, "musicTracks"],
 		queryFn: async () => {
-			const result = await getPlaylistsApi(
-				window.api,
-			).getPlaylistItems({
+			const result = await getPlaylistsApi(api).getPlaylistItems({
 				userId: user.data.Id,
 				playlistId: item.data.Id,
 			});
@@ -117,8 +118,8 @@ const PlaylistTitlePage = () => {
 			setAppBackdrop(
 				item.data.Type === BaseItemKind.MusicAlbum ||
 					item.data.Type === BaseItemKind.Episode
-					? `${window.api.basePath}/Items/${item.data.ParentBackdropItemId}/Images/Backdrop`
-					: `${window.api.basePath}/Items/${item.data.Id}/Images/Backdrop`,
+					? `${api.basePath}/Items/${item.data.ParentBackdropItemId}/Images/Backdrop`
+					: `${api.basePath}/Items/${item.data.Id}/Images/Backdrop`,
 				item.data.Id,
 			);
 		}

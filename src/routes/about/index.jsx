@@ -1,5 +1,5 @@
 /** @format */
-
+import React from "react";
 import Box from "@mui/material/Box";
 import Typography from "@mui/material/Typography";
 import Stack from "@mui/material/Stack";
@@ -22,14 +22,17 @@ import { getSystemApi } from "@jellyfin/sdk/lib/utils/api/system-api";
 import { version } from "../../../package.json";
 
 import "./about.module.scss";
+import { useApi } from "../../utils/store/api";
 
 const About = () => {
+	const [api] = useApi((state) => [state.api]);
 	const systemInfo = useQuery({
 		queryKey: ["about", "systemInfo"],
 		queryFn: async () => {
-			const result = await getSystemApi(window.api).getSystemInfo();
+			const result = await getSystemApi(api).getSystemInfo();
 			return result.data;
 		},
+		enabled: Boolean(api),
 	});
 
 	return (

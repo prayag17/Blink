@@ -28,6 +28,7 @@ import { ErrorNotice } from "../../components/notices/errorNotice/errorNotice";
 
 import { useBackdropStore } from "../../utils/store/backdrop";
 import { ActorCard } from "../../components/card/actorCards";
+import { useApi } from "../../utils/store/api";
 function TabPanel(props) {
 	const { children, value, index, ...other } = props;
 
@@ -54,19 +55,21 @@ TabPanel.propTypes = {
 const ItemDetail = () => {
 	const { id } = useParams();
 
+	const [api] = useApi((state) => [state.api]);
 	const user = useQuery({
 		queryKey: ["user"],
 		queryFn: async () => {
-			let usr = await getUserApi(window.api).getCurrentUser();
+			let usr = await getUserApi(api).getCurrentUser();
 			return usr.data;
 		},
 		networkMode: "always",
+		enabled: Boolean(api),
 	});
 
 	const item = useQuery({
 		queryKey: ["item", id],
 		queryFn: async () => {
-			const result = await getUserLibraryApi(window.api).getItem({
+			const result = await getUserLibraryApi(api).getItem({
 				userId: user.data.Id,
 				itemId: id,
 				fields: Object.values(ItemFields),
@@ -83,28 +86,28 @@ const ItemDetail = () => {
 		queryFn: async () => {
 			let result;
 			if (item.data.Type == "Movie") {
-				result = await getLibraryApi(window.api).getSimilarMovies({
+				result = await getLibraryApi(api).getSimilarMovies({
 					userId: user.data.Id,
 					itemId: item.data.Id,
 					limit: 16,
 				});
 			} else if (item.data.Type == "Series") {
-				result = await getLibraryApi(window.api).getSimilarShows({
+				result = await getLibraryApi(api).getSimilarShows({
 					userId: user.data.Id,
 					itemId: item.data.Id,
 				});
 			} else if (item.data.Type == "MusicAlbum") {
-				result = await getLibraryApi(window.api).getSimilarAlbums({
+				result = await getLibraryApi(api).getSimilarAlbums({
 					userId: user.data.Id,
 					itemId: item.data.Id,
 				});
 			} else if (item.data.Type == "MusicArtist") {
-				result = await getLibraryApi(window.api).getSimilarArtists({
+				result = await getLibraryApi(api).getSimilarArtists({
 					userId: user.data.Id,
 					itemId: item.data.Id,
 				});
 			} else {
-				result = await getLibraryApi(window.api).getSimilarItems({
+				result = await getLibraryApi(api).getSimilarItems({
 					userId: user.data.Id,
 					itemId: item.data.Id,
 				});
@@ -166,8 +169,8 @@ const ItemDetail = () => {
 			setAppBackdrop(
 				item.data.Type === BaseItemKind.MusicAlbum ||
 					item.data.Type === BaseItemKind.Episode
-					? `${window.api.basePath}/Items/${item.data.ParentBackdropItemId}/Images/Backdrop`
-					: `${window.api.basePath}/Items/${item.data.Id}/Images/Backdrop`,
+					? `${api.basePath}/Items/${item.data.ParentBackdropItemId}/Images/Backdrop`
+					: `${api.basePath}/Items/${item.data.Id}/Images/Backdrop`,
 				item.data.Id,
 			);
 			let direTp = item.data.People.filter(
