@@ -1,20 +1,15 @@
 /** @format */
 import React, { useEffect, useState } from "react";
 
-import { AnimatePresence, motion } from "framer-motion";
-
 import { relaunch } from "@tauri-apps/api/process";
 
 import MuiAppBar from "@mui/material/AppBar";
-import TextField from "@mui/material/TextField";
 import IconButton from "@mui/material/IconButton";
 import Toolbar from "@mui/material/Toolbar";
 import Avatar from "@mui/material/Avatar";
-import Box from "@mui/material/Box";
 import ListItemIcon from "@mui/material/ListItemIcon";
 import Menu from "@mui/material/Menu";
 import MenuItem from "@mui/material/MenuItem";
-import CircularProgress from "@mui/material/CircularProgress";
 import useScrollTrigger from "@mui/material/useScrollTrigger";
 
 import { MdiMagnify } from "../icons/mdiMagnify";
@@ -22,7 +17,7 @@ import { MdiMagnify } from "../icons/mdiMagnify";
 import { useLocation, useNavigate } from "react-router-dom";
 
 import { getUserApi } from "@jellyfin/sdk/lib/utils/api/user-api";
-import { useIsMutating, useQuery, useQueryClient } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 
 import "./appBar.module.scss";
 import { MdiAccount } from "../icons/mdiAccount";
@@ -36,11 +31,12 @@ import { delServer } from "../../utils/storage/servers";
 import { delUser } from "../../utils/storage/user";
 import { MdiDelete } from "../icons/mdiDelete";
 
-import logo from "../../assets/logo.png";
 import { MdiLogoutVariant } from "../icons/mdiLogoutVariant";
 import { EventEmitter as event } from "../../eventEmitter";
+import { useApi } from "../../utils/store/api";
 
 export const AppBar = () => {
+	const [api] = useApi((state) => [state.api]);
 	const navigate = useNavigate();
 
 	const [display, setDisplay] = useState(false);
@@ -51,7 +47,7 @@ export const AppBar = () => {
 	const user = useQuery({
 		queryKey: ["user"],
 		queryFn: async () => {
-			let usr = await getUserApi(window.api).getCurrentUser();
+			let usr = await getUserApi(api).getCurrentUser();
 			return usr.data;
 		},
 		enabled: display,
@@ -81,10 +77,10 @@ export const AppBar = () => {
 	};
 	const handleLogout = async () => {
 		console.log("Logging out user...");
-		await window.api.logout();
+		await api.logout();
 		delUser();
 		sessionStorage.removeItem("accessToken");
-		event.emit("create-jellyfin-api", window.api.basePath);
+		event.emit("create-jellyfin-api", api.basePath);
 		queryClient.clear();
 		setAnchorEl(null);
 		navigate("/login");
@@ -182,7 +178,7 @@ export const AppBar = () => {
 									<Avatar
 										className="appBar-avatar"
 										src={
-											window.api.basePath +
+											api.basePath +
 											"/Users/" +
 											user.data.Id +
 											"/Images/Primary"

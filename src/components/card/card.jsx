@@ -18,6 +18,7 @@ import LikeButton from "../buttons/likeButton";
 import MarkPlayedButton from "../buttons/markPlayedButton";
 import PlayButton from "../buttons/playButton";
 import { BaseItemKind } from "@jellyfin/sdk/lib/generated-client";
+import { useApi } from "../../utils/store/api";
 
 const cardImageAspectRatios = {
 	thumb: 1.777,
@@ -73,6 +74,7 @@ export const Card = ({
 	disablePadding,
 	overrideIcon,
 }) => {
+	const [api] = useApi((state) => [state.api]);
 	const navigate = useNavigate();
 	const defaultOnClick = () => {
 		if (availableSpecialRoutes.includes(item.Type)) {
@@ -154,8 +156,8 @@ export const Card = ({
 						<img
 							src={
 								overrideIcon == "User"
-									? `${window.api.basePath}/Users/${item.Id}/Images/Primary`
-									: window.api.getItemImageUrl(
+									? `${api.basePath}/Users/${item.Id}/Images/Primary`
+									: api.getItemImageUrl(
 											seriesId
 												? item.SeriesId
 												: item.AlbumId

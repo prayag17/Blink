@@ -6,28 +6,65 @@ const servers = new Store(".servers.dat");
 
 /**
  * Set server in .servers.dat
- * @param {object} data - Server info
+ * @param {string} serverId
+ * @param {object} serverInfo
  */
-const setServer = async (data) => {
-	let server = servers.set("server", data);
+export const setServer = async (serverId, serverInfo) => {
+	servers.set(serverId, serverInfo);
 	await servers.save();
 };
 
 /**
- * Get Server list
+ * Set default server
+ * @param {string} serverId
+ */
+export const setDefaultServer = async (serverId) => {
+	servers.set("defaultServer", serverId);
+	await servers.save();
+};
+
+/**
+ * Get a Server
  * @returns {object} server
  */
-const getServer = async () => {
-	let server = await servers.get("server");
+export const getServer = async (serverId) => {
+	let server = await servers.get(serverId);
+	return server;
+};
+
+/**
+ * Get all Servers
+ */
+export const getAllServer = async () => {
+	let server = await servers.entries();
+	return server;
+};
+
+/**
+ * Get default server
+ */
+export const getDefaultServer = async () => {
+	let server = await servers.get("defaultServer");
 	return server;
 };
 
 /**
  * Delete the given server from client storage
+ * @param {string} serverId
  */
-const delServer = async () => {
-	await servers.delete("server");
+export const delServer = async (serverId) => {
+	await servers.delete(serverId);
+	// remove the default server
+	await setDefaultServer(null);
 	await servers.save();
 };
 
-export { setServer, getServer, delServer };
+/**
+ * Delete the all servers from client storage
+ */
+export const delAllServer = async () => {
+	await servers.clear();
+	// remove the default server
+	await setDefaultServer(null);
+	await servers.save();
+};

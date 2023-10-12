@@ -17,6 +17,7 @@ import MarkPlayedButton from "../buttons/markPlayedButton";
 import PlayButton from "../buttons/playButton";
 import { MdiTelevisionClassic } from "../icons/mdiTelevisionClassic";
 import { getRuntimeCompact } from "../../utils/date/time";
+import { useApi } from "../../utils/store/api";
 
 /**
  * @typedef {Object} Props
@@ -44,6 +45,7 @@ export const EpisodeCard = ({
 	userId,
 	onClick,
 }) => {
+	const [api] = useApi((state) => [state.api]);
 	const navigate = useNavigate();
 	const defaultOnClick = () => {
 		navigate(`/episode/${item.Id}`);
@@ -91,7 +93,7 @@ export const EpisodeCard = ({
 							<MdiTelevisionClassic className="card-image-icon" />
 						</div>
 						<img
-							src={window.api.getItemImageUrl(
+							src={api.getItemImageUrl(
 								item.Id,
 								"Primary",
 								{

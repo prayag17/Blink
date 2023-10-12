@@ -1,7 +1,7 @@
 /** @format */
 import PropTypes from "prop-types";
 
-import { useEffect } from "react";
+import React from "react";
 
 import IconButton from "@mui/material/IconButton";
 import CircularProgress from "@mui/material/CircularProgress";
@@ -12,19 +12,22 @@ import { green } from "@mui/material/colors";
 import { getPlaystateApi } from "@jellyfin/sdk/lib/utils/api/playstate-api";
 import { MdiCheck } from "../icons/mdiCheck";
 import { useSnackbar } from "notistack";
+import { useApi } from "../../utils/store/api";
 
 const MarkPlayedButton = ({ itemId, isPlayed, queryKey, userId, itemName }) => {
+	const [api] = useApi((state) => [state.api]);
+
 	const queryClient = useQueryClient();
 	const { enqueueSnackbar } = useSnackbar();
 
 	const handleMarking = async () => {
 		if (!isPlayed) {
-			await getPlaystateApi(window.api).markPlayedItem({
+			await getPlaystateApi(api).markPlayedItem({
 				userId: userId,
 				itemId: itemId,
 			});
 		} else if (isPlayed) {
-			await getPlaystateApi(window.api).markUnplayedItem({
+			await getPlaystateApi(api).markUnplayedItem({
 				userId: userId,
 				itemId: itemId,
 			});

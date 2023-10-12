@@ -1,4 +1,5 @@
 /** @format */
+import React from "react";
 import { useEffect, useState } from "react";
 import { delUser } from "../../utils/storage/user";
 
@@ -7,8 +8,6 @@ import { getUserViewsApi } from "@jellyfin/sdk/lib/utils/api/user-views-api";
 import { getUserApi } from "@jellyfin/sdk/lib/utils/api/user-api";
 
 import { useNavigate, NavLink, useLocation } from "react-router-dom";
-
-import { theme } from "../../theme";
 
 import { styled } from "@mui/material/styles";
 import Skeleton from "@mui/material/Skeleton";
@@ -34,7 +33,7 @@ import { EventEmitter as event } from "../../eventEmitter.js";
 
 import "./sidemenu.module.scss";
 import { useDrawerStore } from "../../utils/store/drawer";
-import { MdiHomeVariant } from "../icons/mdiHomeVariant";
+import { useApi } from "../../utils/store/api";
 
 const DrawerHeader = styled("div")(({ theme }) => ({
 	display: "flex",
@@ -54,7 +53,8 @@ const MiniDrawer = styled(MuiDrawer, {
 	overflowX: "hidden",
 }));
 
-export const SideMenu = ({}) => {
+export const SideMenu = () => {
+	const [api] = useApi((state) => [state.api]);
 	const location = useLocation();
 
 	const [display, setDisplay] = useState(false);
@@ -63,7 +63,7 @@ export const SideMenu = ({}) => {
 	const user = useQuery({
 		queryKey: ["user"],
 		queryFn: async () => {
-			let usr = await getUserApi(window.api).getCurrentUser();
+			let usr = await getUserApi(api).getCurrentUser();
 			return usr.data;
 		},
 		enabled: display,
@@ -72,7 +72,7 @@ export const SideMenu = ({}) => {
 	let libraries = useQuery({
 		queryKey: ["libraries"],
 		queryFn: async () => {
-			let libs = await getUserViewsApi(window.api).getUserViews({
+			let libs = await getUserViewsApi(api).getUserViews({
 				userId: user.data.Id,
 			});
 			return libs.data;
@@ -83,10 +83,10 @@ export const SideMenu = ({}) => {
 
 	const handleLogout = async () => {
 		console.log("Logging out user...");
-		await window.api.logout();
+		await api.logout();
 		delUser();
 		sessionStorage.removeItem("accessToken");
-		event.emit("create-jellyfin-api", window.api.basePath);
+		event.emit("create-jellyfin-api", api.basePath);
 		navigate("/login");
 	};
 

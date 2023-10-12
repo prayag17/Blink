@@ -1,16 +1,18 @@
 /** @format */
-
+import React from "react";
 import { getItemsApi } from "@jellyfin/sdk/lib/utils/api/items-api";
 import Typography from "@mui/material/Typography";
 import { useQuery } from "@tanstack/react-query";
 import { Card } from "../../../card/card";
 import { BaseItemKind } from "@jellyfin/sdk/lib/generated-client";
+import { useApi } from "../../../../utils/store/api";
 
 const GenreView = ({ libraryId, genreId, genreName, userId }) => {
+	const [api] = useApi((state) => [state.api]);
 	const items = useQuery({
 		queryKey: ["library", "genreItem", genreId],
 		queryFn: async () => {
-			const result = await getItemsApi(window.api).getItems({
+			const result = await getItemsApi(api).getItems({
 				genreIds: [genreId],
 				parentId: libraryId,
 				userId: userId,

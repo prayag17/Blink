@@ -13,6 +13,8 @@ import { MdiHeartOutline } from "../icons/mdiHeartOutline";
 import { useSnackbar } from "notistack";
 import CircularProgress from "@mui/material/CircularProgress";
 
+import { useApi } from "../../utils/store/api";
+
 const LikeButton = ({
 	itemId,
 	isFavorite,
@@ -21,17 +23,18 @@ const LikeButton = ({
 	itemName,
 	color = "white",
 }) => {
+	const [api] = useApi((state) => [state.api]);
 	const queryClient = useQueryClient();
 	const { enqueueSnackbar } = useSnackbar();
 
 	const handleLiking = async () => {
 		if (isFavorite) {
-			await getUserLibraryApi(window.api).unmarkFavoriteItem({
+			await getUserLibraryApi(api).unmarkFavoriteItem({
 				userId: userId,
 				itemId: itemId,
 			});
 		} else if (!isFavorite) {
-			await getUserLibraryApi(window.api).markFavoriteItem({
+			await getUserLibraryApi(api).markFavoriteItem({
 				userId: userId,
 				itemId: itemId,
 			});

@@ -1,12 +1,9 @@
 /** @format */
-
+import React from "react";
 import Paper from "@mui/material/Paper";
 import Stack from "@mui/material/Stack";
 import Typography from "@mui/material/Typography";
 import { MdiEmoticonDead } from "../icons/mdiEmoticonDead";
-import Divider from "@mui/material/Divider";
-
-import { red } from "@mui/material/colors";
 
 import slideBackground from "../../assets/errorbg.png";
 

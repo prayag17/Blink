@@ -25,6 +25,7 @@ import {
 import { useSnackbar } from "notistack";
 import { useAudioPlayback } from "../../utils/store/audioPlayback";
 import { getPlaylistsApi } from "@jellyfin/sdk/lib/utils/api/playlists-api";
+import { useApi } from "../../utils/store/api";
 
 const PlayButton = ({
 	itemId,
@@ -45,6 +46,8 @@ const PlayButton = ({
 	playlistItemId = "",
 	trackIndex,
 }) => {
+	const [api] = useApi((state) => [state.api]);
+
 	const navigate = useNavigate();
 	const [
 		setUrl,
@@ -102,18 +105,14 @@ const PlayButton = ({
 			setPlaybackDataLoading(true);
 			let result;
 			if (playlistItem) {
-				result = await getPlaylistsApi(window.api).getPlaylistItems(
-					{
-						userId: userId,
-						playlistId: playlistItemId,
-					},
-				);
+				result = await getPlaylistsApi(api).getPlaylistItems({
+					userId: userId,
+					playlistId: playlistItemId,
+				});
 			} else {
 				switch (itemType) {
 					case BaseItemKind.Series:
-						result = await getTvShowsApi(
-							window.api,
-						).getEpisodes({
+						result = await getTvShowsApi(api).getEpisodes({
 							seriesId: itemId,
 							limit: 1,
 							startIndex: 0,
@@ -126,14 +125,14 @@ const PlayButton = ({
 						break;
 					case BaseItemKind.Playlist:
 						result = await getPlaylistsApi(
-							window.api,
+							api,
 						).getPlaylistItems({
 							userId: userId,
 							playlistId: playlistItemId,
 						});
 						break;
 					case BaseItemKind.MusicAlbum:
-						result = await getItemsApi(window.api).getItems({
+						result = await getItemsApi(api).getItems({
 							parentId: itemId,
 							userId: userId,
 							fields: [
@@ -145,7 +144,7 @@ const PlayButton = ({
 						});
 						break;
 					case BaseItemKind.MusicArtist:
-						result = await getItemsApi(window.api).getItems({
+						result = await getItemsApi(api).getItems({
 							artistIds: [itemId],
 							recursive: true,
 							includeItemTypes: [BaseItemKind.Audio],
@@ -163,7 +162,7 @@ const PlayButton = ({
 						});
 						break;
 					default:
-						result = await getItemsApi(window.api).getItems({
+						result = await getItemsApi(api).getItems({
 							ids: [itemId],
 							userId: userId,
 							fields: [
@@ -185,7 +184,7 @@ const PlayButton = ({
 				setCurrentTrack(trackIndex);
 				setAudioTracks(item.Items);
 				setAudioUrl(
-					`${window.api.basePath}/Audio/${item.Items[trackIndex].Id}/universal?deviceId=${window.api.deviceInfo.id}&userId=${userId}&api_key=${window.api.accessToken}`,
+					`${api.basePath}/Audio/${item.Items[trackIndex].Id}/universal?deviceId=${api.deviceInfo.id}&userId=${userId}&api_key=${api.accessToken}`,
 				);
 				setAudioItem(item.Items[trackIndex]);
 				setAudioDisplay(true);
@@ -193,7 +192,7 @@ const PlayButton = ({
 				setAudioItem(item.Items[0]);
 				setAudioTracks(item.Items);
 				setAudioUrl(
-					`${window.api.basePath}/Audio/${item.Items[0].Id}/universal?deviceId=${window.api.deviceInfo.id}&userId=${userId}&api_key=${window.api.accessToken}`,
+					`${api.basePath}/Audio/${item.Items[0].Id}/universal?deviceId=${api.deviceInfo.id}&userId=${userId}&api_key=${api.accessToken}`,
 				);
 				setAudioDisplay(true);
 			} else {
@@ -220,7 +219,7 @@ const PlayButton = ({
 							setItemName(
 								<div className="video-osd-name">
 									<img
-										src={`${window.api.basePath}/Items/${item.Items[0].Id}/Images/Logo`}
+										src={`${api.basePath}/Items/${item.Items[0].Id}/Images/Logo`}
 										className="video-osd-name-logo"
 										onLoad={(e) => {
 											e.target.style.opacity = 1;
@@ -243,7 +242,7 @@ const PlayButton = ({
 							setItemName(
 								<div className="video-osd-name">
 									<img
-										src={`${window.api.basePath}/Items/${item.Items[0].SeriesId}/Images/Logo`}
+										src={`${api.basePath}/Items/${item.Items[0].SeriesId}/Images/Logo`}
 										className="video-osd-name-logo"
 										onLoad={(e) => {
 											e.target.style.opacity = 1;
@@ -299,9 +298,9 @@ const PlayButton = ({
 				setPosition(item.Items[0].UserData?.PlaybackPositionTicks);
 
 				setUrl(
-					`${window.api.basePath}/Videos/${item.Items[0].Id}/stream.
+					`${api.basePath}/Videos/${item.Items[0].Id}/stream.
 									${item.Items[0].MediaSources[0].Container}
-								?Static=true&mediaSourceId=${item.Items[0].Id}&deviceId=${window.api.deviceInfo.id}&api_key=${window.api.accessToken}&Tag=${item.Items[0].MediaSources[0].ETag}&videoStreamIndex=${currentVideoTrack}&audioStreamIndex=${currentAudioTrack}`,
+								?Static=true&mediaSourceId=${item.Items[0].Id}&deviceId=${api.deviceInfo.id}&api_key=${api.accessToken}&Tag=${item.Items[0].MediaSources[0].ETag}&videoStreamIndex=${currentVideoTrack}&audioStreamIndex=${currentAudioTrack}`,
 				);
 
 				navigate(`/player`);

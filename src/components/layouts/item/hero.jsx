@@ -14,7 +14,7 @@ import { MediaStreamType } from "@jellyfin/sdk/lib/generated-client/models/media
 
 import { Card } from "../../card/card";
 import { MdiStar } from "../../icons/mdiStar";
-import { green, red, yellow } from "@mui/material/colors";
+import { yellow } from "@mui/material/colors";
 import { endsAt, getRuntime, getRuntimeFull } from "../../../utils/date/time";
 import LikeButton from "../../buttons/likeButton";
 import MarkPlayedButton from "../../buttons/markPlayedButton";
@@ -24,9 +24,7 @@ import "./hero.module.scss";
 import { Blurhash } from "react-blurhash";
 import TextLink from "../../textLink";
 
-import { MdiHdr } from "../../../components/icons/mdiHdr";
-import { MdiCheck } from "../../icons/mdiCheck";
-import { MdiClose } from "../../icons/mdiClose";
+import { useApi } from "../../../utils/store/api";
 /**
  * @typedef {Object} Props
  * @property {import("@jellyfin/sdk/lib/generated-client/models").BaseItemDto} item
@@ -71,6 +69,8 @@ const Hero = ({
 	cardType = "portrait",
 	enableVideoInfoStrip = false,
 }) => {
+	const [api] = useApi((state) => [state.api]);
+
 	const filterMediaStreamVideo = (source) => {
 		if (source.Type == MediaStreamType.Video) {
 			return true;
@@ -198,8 +198,8 @@ const Hero = ({
 							className="hero-backdrop-image"
 							src={
 								item.ParentBackdropItemId
-									? `${window.api.basePath}/Items/${item.ParentBackdropItemId}/Images/Backdrop`
-									: `${window.api.basePath}/Items/${item.Id}/Images/Backdrop`
+									? `${api.basePath}/Items/${item.ParentBackdropItemId}/Images/Backdrop`
+									: `${api.basePath}/Items/${item.Id}/Images/Backdrop`
 							}
 							style={{
 								opacity: 0,
@@ -232,7 +232,7 @@ const Hero = ({
 								>
 									{item.ParentLogoImageTag ? (
 										<img
-											src={`${window.api.basePath}/Items/${item.SeriesId}/Images/Logo`}
+											src={`${api.basePath}/Items/${item.SeriesId}/Images/Logo`}
 											className="hero-name-logo"
 											onLoad={(e) => {
 												e.target.style.opacity = 1;
@@ -255,8 +255,8 @@ const Hero = ({
 									<img
 										src={
 											item.SeriesId
-												? `${window.api.basePath}/Items/${item.SeriesId}/Images/Logo`
-												: `${window.api.basePath}/Items/${item.Id}/Images/Logo`
+												? `${api.basePath}/Items/${item.SeriesId}/Images/Logo`
+												: `${api.basePath}/Items/${item.Id}/Images/Logo`
 										}
 										className="hero-name-logo"
 										onLoad={(e) => {

@@ -34,8 +34,10 @@ import { MdiVolumeHigh } from "../../icons/mdiVolumeHigh";
 import { MdiVolumeOff } from "../../icons/mdiVolumeOff";
 import { MdiPlaylistMusicOutline } from "../../icons/mdiPlaylistMusicOutline";
 import MusicTrack from "../../musicTrack";
+import { useApi } from "../../../utils/store/api";
 
 const AudioPlayer = () => {
+	const [api] = useApi((state) => [state.api]);
 	const [
 		url,
 		display,
@@ -67,7 +69,7 @@ const AudioPlayer = () => {
 	const user = useQuery({
 		queryKey: ["user"],
 		queryFn: async () => {
-			let usr = await getUserApi(window.api).getCurrentUser();
+			let usr = await getUserApi(api).getCurrentUser();
 			return usr.data;
 		},
 		networkMode: "always",
@@ -135,12 +137,12 @@ const AudioPlayer = () => {
 				if (currentTrack != tracks.length - 1) {
 					setCurrentTrack(currentTrack + 1);
 					setAudioUrl(
-						`${window.api.basePath}/Audio/${
+						`${api.basePath}/Audio/${
 							tracks[currentTrack + 1].Id
 						}/universal?deviceId=${
-							window.api.deviceInfo.id
+							api.deviceInfo.id
 						}&userId=${user.data.Id}&api_key=${
-							window.api.accessToken
+							api.accessToken
 						}`,
 					);
 					setAudioItem(tracks[currentTrack + 1]);
@@ -173,11 +175,11 @@ const AudioPlayer = () => {
 		setPlaying(false);
 		setCurrentTrack(currentTrack + 1);
 		setAudioUrl(
-			`${window.api.basePath}/Audio/${
+			`${api.basePath}/Audio/${
 				tracks[currentTrack + 1].Id
-			}/universal?deviceId=${window.api.deviceInfo.id}&userId=${
+			}/universal?deviceId=${api.deviceInfo.id}&userId=${
 				user.data.Id
-			}&api_key=${window.api.accessToken}`,
+			}&api_key=${api.accessToken}`,
 		);
 		setAudioItem(tracks[currentTrack + 1]);
 		setShowWaveform(false);
@@ -187,11 +189,11 @@ const AudioPlayer = () => {
 		setPlaying(false);
 		setCurrentTrack(currentTrack - 1);
 		setAudioUrl(
-			`${window.api.basePath}/Audio/${
+			`${api.basePath}/Audio/${
 				tracks[currentTrack - 1].Id
-			}/universal?deviceId=${window.api.deviceInfo.id}&userId=${
+			}/universal?deviceId=${api.deviceInfo.id}&userId=${
 				user.data.Id
-			}&api_key=${window.api.accessToken}`,
+			}&api_key=${api.accessToken}`,
 		);
 		setAudioItem(tracks[currentTrack - 1]);
 		setShowWaveform(false);
@@ -236,7 +238,7 @@ const AudioPlayer = () => {
 						<div className="audio-player-image-container">
 							<img
 								className="audio-player-image"
-								src={window.api.getItemImageUrl(
+								src={api.getItemImageUrl(
 									Object.keys(item.ImageTags)
 										.length == 0
 										? item.AlbumId

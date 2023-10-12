@@ -1,4 +1,5 @@
 /** @format */
+import React from "react";
 import PropTypes from "prop-types";
 
 import Box from "@mui/material/Box";
@@ -7,7 +8,10 @@ import { MdiAccount } from "../icons/mdiAccount";
 
 import "./avatar.module.scss";
 
-export const AvatarImage = ({ userId, userImageTags }) => {
+import { useApi } from "../../utils/store/api";
+
+export const AvatarImage = ({ userId }) => {
+	const [api] = useApi((state) => [state.api]);
 	return (
 		<Box className="avatar-image-container">
 			<div
@@ -15,7 +19,7 @@ export const AvatarImage = ({ userId, userImageTags }) => {
 				style={{
 					backgroundImage:
 						"url('" +
-						window.api.basePath +
+						api.basePath +
 						"/Users/" +
 						userId +
 						"/Images/Primary')",

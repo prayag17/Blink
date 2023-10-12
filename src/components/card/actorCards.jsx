@@ -1,32 +1,17 @@
 /** @format */
-import PropTypes from "prop-types";
-
+import React from "react";
 import { useNavigate } from "react-router-dom";
 
 import MuiCard from "@mui/material/Card";
 import CardActionArea from "@mui/material/CardActionArea";
 import Typography from "@mui/material/Typography";
-import LinearProgress from "@mui/material/LinearProgress";
 
 import { Blurhash } from "react-blurhash";
 
-import { TypeIconCollectionCard } from "../utils/iconsCollection";
-import "./card.module.scss";
-import { MdiCheck } from "../icons/mdiCheck";
-
-import LikeButton from "../buttons/likeButton";
-import MarkPlayedButton from "../buttons/markPlayedButton";
-import PlayButton from "../buttons/playButton";
-import { BaseItemKind } from "@jellyfin/sdk/lib/generated-client";
 import { MdiAccountTie } from "../icons/mdiAccountTie";
 
-const cardImageAspectRatios = {
-	thumb: 1.777,
-	portrait: 0.666,
-	square: 1,
-};
-
-const availableSpecialRoutes = [BaseItemKind.Series];
+import "./card.module.scss";
+import { useApi } from "../../utils/store/api";
 
 /**
  * @typedef {Object} Props
@@ -56,6 +41,7 @@ export const ActorCard = ({
 	onClick,
 	disablePadding,
 }) => {
+	const [api] = useApi((state) => [state.api]);
 	const navigate = useNavigate();
 	const defaultOnClick = () => {
 		navigate(`/person/${item.Id}`);
@@ -67,7 +53,7 @@ export const ActorCard = ({
 				borderRadius: "calc(0.6em + 6px)",
 			}}
 			className="card-container"
-			onClick={!!onClick ? onClick : defaultOnClick}
+			onClick={onClick ? onClick : defaultOnClick}
 		>
 			<MuiCard className="card card-actor" elevation={0}>
 				<div className="card-box">
@@ -91,8 +77,8 @@ export const ActorCard = ({
 							<MdiAccountTie className="card-image-icon" />
 						</div>
 						<img
-							src={window.api.getItemImageUrl(
-								!!seriesId ? item.SeriesId : item.Id,
+							src={api.getItemImageUrl(
+								seriesId ? item.SeriesId : item.Id,
 								"Primary",
 								{
 									quality: 80,

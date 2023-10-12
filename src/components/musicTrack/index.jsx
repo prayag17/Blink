@@ -8,6 +8,7 @@ import TextLink from "../textLink";
 import PlayButton from "../buttons/playButton";
 import { useAudioPlayback } from "../../utils/store/audioPlayback";
 import { MdiMusic } from "../icons/mdiMusic";
+import { useApi } from "../../utils/store/api";
 
 /**
  * @typedef {Object} Props
@@ -34,6 +35,7 @@ const MusicTrack = ({
 	trackIndex,
 	className = "",
 }) => {
+	const [api] = useApi((state) => [state.api]);
 	const [currentTrackItem] = useAudioPlayback((state) => [state.item]);
 
 	return (
@@ -48,7 +50,7 @@ const MusicTrack = ({
 					/>
 				</div>
 				<img
-					src={window.api.getItemImageUrl(
+					src={api.getItemImageUrl(
 						Object.keys(item.ImageTags).length == 0
 							? item.AlbumId
 							: item.Id,

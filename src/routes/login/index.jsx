@@ -1,8 +1,8 @@
 /** @format */
 
-import { useState } from "react";
+import React, { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
-import { useNavigate, useParams, Link } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { EventEmitter as event } from "../../eventEmitter.js";
 
 import { saveUser } from "../../utils/storage/user.js";
@@ -37,9 +37,12 @@ import { getBrandingApi } from "@jellyfin/sdk/lib/utils/api/branding-api";
 
 import "./login.module.scss";
 import { ErrorNotice } from "../../components/notices/errorNotice/errorNotice.jsx";
+import { useApi } from "../../utils/store/api.js";
 
 export const LoginWithImage = () => {
 	const { userName, userId } = useParams();
+
+	const [api] = useApi((state) => [state.api]);
 
 	const [password, setPassword] = useState({
 		showpass: false,
@@ -67,7 +70,7 @@ export const LoginWithImage = () => {
 
 	const authUser = async () => {
 		try {
-			const auth = await window.api.authenticateUserByName(
+			const auth = await api.authenticateUserByName(
 				userName,
 				password.password,
 			);
@@ -86,7 +89,7 @@ export const LoginWithImage = () => {
 		if (rememberMe == true) {
 			saveUser(userName, password.password);
 		}
-		event.emit("set-api-accessToken", window.api.basePath);
+		event.emit("set-api-accessToken", api.basePath);
 		setLoading(false);
 		navigate(`/home`);
 	};
@@ -216,8 +219,10 @@ export const LoginWithImage = () => {
 };
 
 export const UserLogin = () => {
-	const [userList, setUsers] = useState([]);
 	const navigate = useNavigate();
+
+	const [api] = useApi((state) => [state.api]);
+	console.log(api);
 
 	const handleChangeServer = () => {
 		navigate("/servers/list");
@@ -228,10 +233,10 @@ export const UserLogin = () => {
 	const users = useQuery({
 		queryKey: ["login", "users"],
 		queryFn: async () => {
-			const users = await getUserApi(window.api).getPublicUsers();
+			const users = await getUserApi(api).getPublicUsers();
 			return users.data;
 		},
-		networkMode: "always",
+		enabled: Boolean(api),
 	});
 
 	if (users.isLoading) {
@@ -329,6 +334,7 @@ export const UserLogin = () => {
 export const UserLoginManual = () => {
 	const [loading, setLoading] = useState(false);
 	const [rememberMe, setRememberMe] = useState(true);
+	const [api] = useApi((state) => [state.api]);
 
 	const navigate = useNavigate();
 	const { enqueueSnackbar } = useSnackbar();
@@ -341,12 +347,10 @@ export const UserLoginManual = () => {
 	const server = useQuery({
 		queryKey: ["login, manual", "serverInfo"],
 		queryFn: async () => {
-			const result = await getBrandingApi(
-				window.api,
-			).getBrandingOptions();
+			const result = await getBrandingApi(api).getBrandingOptions();
 			return result.data;
 		},
-		enabled: !!window.api,
+		enabled: !!api,
 		networkMode: "always",
 	});
 
@@ -370,7 +374,7 @@ export const UserLoginManual = () => {
 
 	const authUser = async () => {
 		try {
-			const auth = await window.api.authenticateUserByName(
+			const auth = await api.authenticateUserByName(
 				userName,
 				password.password,
 			);
@@ -391,7 +395,7 @@ export const UserLoginManual = () => {
 		if (rememberMe == true) {
 			saveUser(userName, password.password);
 		}
-		event.emit("set-api-accessToken", window.api.basePath);
+		event.emit("set-api-accessToken", api.basePath);
 		// setAccessToken(user.data.AccessToken)
 		setLoading(false);
 		navigate(`/home`);

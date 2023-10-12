@@ -8,21 +8,23 @@ import { CardsSkeleton } from "../../skeleton/cards";
 import { getUserApi } from "@jellyfin/sdk/lib/utils/api/user-api";
 import { getUserLibraryApi } from "@jellyfin/sdk/lib/utils/api/user-library-api";
 import { BaseItemKind } from "@jellyfin/sdk/lib/generated-client";
+import { useApi } from "../../../utils/store/api";
 
 /**
  * @description Latest Media Section
  */
 export const LatestMediaSection = ({ latestMediaLib }) => {
+	const [api] = useApi((state) => [state.api]);
 	const user = useQuery({
 		queryKey: ["user"],
 		queryFn: async () => {
-			let usr = await getUserApi(window.api).getCurrentUser();
+			let usr = await getUserApi(api).getCurrentUser();
 			return usr.data;
 		},
 		networkMode: "always",
 	});
 	const fetchLatestMedia = async (library) => {
-		const media = await getUserLibraryApi(window.api).getLatestMedia({
+		const media = await getUserLibraryApi(api).getLatestMedia({
 			userId: user.data.Id,
 			parentId: library,
 			limit: 16,

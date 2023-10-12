@@ -1,6 +1,5 @@
 /** @format */
 import React, { useState } from "react";
-import PropTypes from "prop-types";
 
 import Paper from "@mui/material/Paper";
 import Typography from "@mui/material/Typography";
@@ -11,7 +10,6 @@ import { Link } from "react-router-dom";
 
 import { useQuery } from "@tanstack/react-query";
 import { getItemsApi } from "@jellyfin/sdk/lib/utils/api/items-api";
-import { getUserLibraryApi } from "@jellyfin/sdk/lib/utils/api/user-library-api";
 
 import { getRuntimeMusic } from "../../../utils/date/time";
 
@@ -22,12 +20,14 @@ import "./albumArtist.scss";
 import { useAudioPlayback } from "../../../utils/store/audioPlayback";
 import LikeButton from "../../buttons/likeButton";
 import { SortOrder } from "@jellyfin/sdk/lib/generated-client";
+import { useApi } from "../../../utils/store/api";
 
 export const ArtistAlbum = ({ user, album, boxProps }) => {
+	const [api] = useApi((state) => [state.api]);
 	const albumTracks = useQuery({
 		queryKey: ["artist", "album", album.Id],
 		queryFn: async () => {
-			const result = await getItemsApi(window.api).getItems({
+			const result = await getItemsApi(api).getItems({
 				userId: user.Id,
 				parentId: album.Id,
 				sortOrder: SortOrder.Ascending,
@@ -60,7 +60,7 @@ export const ArtistAlbum = ({ user, album, boxProps }) => {
 		setAudioTracks(albumTracks.data.Items);
 		setCurrentAudioTrack(index);
 		setAudioUrl(
-			`${window.api.basePath}/Audio/${albumTracks.data.Items[index].Id}/universal?deviceId=${window.api.deviceInfo.id}&userId=${user.Id}&api_key=${window.api.accessToken}`,
+			`${api.basePath}/Audio/${albumTracks.data.Items[index].Id}/universal?deviceId=${api.deviceInfo.id}&userId=${user.Id}&api_key=${api.accessToken}`,
 		);
 		setAudioItem(albumTracks.data.Items[index]);
 		setAudioDisplay(true);
@@ -79,7 +79,7 @@ export const ArtistAlbum = ({ user, album, boxProps }) => {
 				{!!album.ImageTags?.Primary && (
 					<div className="album-image">
 						<img
-							src={`${window.api.basePath}/Items/${album.Id}/Images/Primary?fillHeight=532&fillWidth=532&quality=96`}
+							src={`${api.basePath}/Items/${album.Id}/Images/Primary?fillHeight=532&fillWidth=532&quality=96`}
 							style={{
 								width: "100%",
 								height: "100%",
@@ -173,7 +173,7 @@ export const ArtistAlbum = ({ user, album, boxProps }) => {
 										justifySelf: "end",
 									}}
 								>
-									{!!track.IndexNumber
+									{track.IndexNumber
 										? track.IndexNumber
 										: "-"}
 								</Typography>

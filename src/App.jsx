@@ -81,7 +81,11 @@ import "@fontsource-variable/jetbrains-mono";
 import { Jellyfin } from "@jellyfin/sdk";
 import { version as appVer } from "../package.json";
 import { v4 as uuidv4 } from "uuid";
-import { delServer, getServer } from "./utils/storage/servers.js";
+import {
+	delServer,
+	getDefaultServer,
+	getServer,
+} from "./utils/storage/servers.js";
 import { delUser, getUser } from "./utils/storage/user.js";
 
 import { useBackdropStore } from "./utils/store/backdrop.js";
@@ -99,40 +103,13 @@ import PlaylistTitlePage from "./routes/playlist/index.jsx";
 import axios from "axios";
 import axiosTauriApiAdapter from "axios-tauri-api-adapter";
 import { useApi } from "./utils/store/api.js";
+import { useMutation, useQuery } from "@tanstack/react-query";
+import { getSystemApi } from "@jellyfin/sdk/lib/utils/api/system-api.js";
 
 export const axiosClient = axios.create({
 	adapter: axiosTauriApiAdapter,
 	headers: { "Access-Control-Allow-Origin": "*" },
 	timeout: 60000,
-});
-
-const deviceId = localStorage.getItem("deviceId");
-
-if (!deviceId) {
-	localStorage.setItem("deviceId", uuidv4());
-}
-
-const jellyfin = new Jellyfin({
-	clientInfo: {
-		name: "JellyPlayer",
-		version: appVer,
-	},
-	deviceInfo: {
-		name: "JellyPlayer",
-		id: deviceId,
-	},
-});
-
-event.on("create-jellyfin-api", (serverAddress) => {
-	window.api = jellyfin.createApi(serverAddress, null, axiosClient);
-	// window.api = jellyfin.createApi(serverAddress);
-});
-event.on("set-api-accessToken", (serverAddress) => {
-	window.api = jellyfin.createApi(
-		serverAddress,
-		sessionStorage.getItem("accessToken"),
-		axiosClient,
-	);
 });
 
 const anim = {
@@ -171,6 +148,15 @@ const AnimationWrapper = () => {
 function App() {
 	const navigate = useNavigate();
 
+	/**
+	 * @type {[import("@jellyfin/sdk").Api, function, Jellyfin]}
+	 */
+	const [api, createApi, jellyfin] = useApi((state) => [
+		state.api,
+		state.createApi,
+		state.jellyfin,
+	]);
+
 	const [serverReachable, setServerReachable] = useState(true);
 
 	const [playbackDataLoading] = usePlaybackDataLoadStore((state) => [
@@ -179,113 +165,93 @@ function App() {
 
 	const { enqueueSnackbar } = useSnackbar();
 
-	const createApi = async () => {
-		const server = await getServer();
-		event.emit("create-jellyfin-api", server.Ip);
-	};
-
-	const serverAvailable = async () => {
-		const server = await getServer();
-
-		if (server == null) {
-			return false;
-		} else {
-			return true;
-		}
-	};
-
-	const usersAvailable = async () => {
-		const users = await getUserApi(window.api).getPublicUsers();
-		if (users.status == 200 || users.data.length >= 1) {
-			return true;
+	const serverSaved = async () => {
+		const defaultServer = await getDefaultServer();
+		// console.log(defaultServer);
+		if (defaultServer) {
+			return defaultServer;
 		} else {
 			return false;
 		}
-	};
-
-	const userSaved = async () => {
-		const user = await getUser();
-		if (user == null) {
-			return false;
-		} else {
-			return true;
-		}
-	};
-
-	const pingServer = async () => {
-		const server = await getServer();
-		try {
-			const result = await axiosClient.get(
-				new URL(`${server.Ip}/System/Ping`).href,
-			);
-
-			if (result.data == "Jellyfin Server") {
-				event.emit("create-jellyfin-api", server.Ip);
-				setServerReachable(true);
-			} else {
-				setServerReachable(false);
-			}
-		} catch (error) {
-			setServerReachable(false);
-			enqueueSnackbar("Unable to verfiy server address.", {
-				variant: "error",
-			});
-			console.error(error);
-		}
-	};
-
-	const userLogin = async () => {
-		const user = await getUser();
-		const auth = await window.api.authenticateUserByName(
-			user.Name,
-			user.Password,
-		);
-		sessionStorage.setItem("accessToken", auth.data.AccessToken);
-		event.emit("set-api-accessToken", window.api.basePath);
 	};
 
 	const LogicalRoutes = () => {
-		serverAvailable().then(async (server) => {
-			if (server == true) {
-				createApi().then(() => {
-					pingServer();
-					if (serverReachable == true) {
-						userSaved().then((user_available) => {
-							if (user_available == true) {
-								navigate("/home");
+		serverSaved()
+			.then(async (server) => {
+				console.log(server);
+				if (server) {
+					const savedServer = await getServer(server);
+					console.log(savedServer);
+					createApi(savedServer.address);
+					try {
+						const ping = await getSystemApi(
+							api,
+						).getPingSystem();
+						if (ping.status == 200) {
+							console.info(api);
+							const userSaved = await getUser();
+							if (userSaved) {
+								try {
+									const authenticate =
+										await api.authenticateUserByName(
+											userSaved.Name,
+											userSaved.Password,
+										);
+									if (authenticate.status == 200) {
+										createApi(
+											savedServer,
+											authenticate.data
+												.AccessToken,
+										);
+										navigate("/home");
+									}
+								} catch (error) {
+									console.error("Unable to login");
+									enqueueSnackbar("Unable to login");
+								}
 							} else {
-								usersAvailable().then(
-									(users_list_available) => {
-										if (
-											users_list_available ==
-											true
-										) {
-											navigate("/login/users");
-										} else {
-											navigate(
-												"/login/manual",
-											);
-										}
-									},
-								);
+								try {
+									const usersList = await getUserApi(
+										api,
+									).getPublicUsers();
+									if (usersList.data.length > 0) {
+										navigate("/login/users");
+									} else {
+										navigate("/login/manual");
+									}
+								} catch (error1) {
+									console.error(error1);
+								}
 							}
-						});
+						}
+					} catch (error) {
+						console.error(error);
 					}
-				});
-			} else {
-				navigate("/setup/server");
-			}
-		});
+				} else {
+					navigate("/setup/server");
+				}
+			})
+			.catch((error) => {
+				console.error(error);
+				enqueueSnackbar(String(error), { variant: "error" });
+			});
 	};
 
-	const LoginLogicalRoutes = () => {
-		usersAvailable().then((users_list_available) => {
-			if (users_list_available == true) {
+	const usersAvailable = async () => {
+		try {
+			const usersList = await getUserApi(api).getPublicUsers();
+			if (usersList.data.length > 0) {
 				navigate("/login/users");
 			} else {
 				navigate("/login/manual");
 			}
-		});
+		} catch (error1) {
+			console.error(error1);
+		}
+	};
+
+	const LoginLogicalRoutes = () => {
+		usersAvailable();
 	};
 
 	const handleRelaunch = async (event, reason) => {
@@ -301,25 +267,55 @@ function App() {
 		await relaunch();
 	};
 
+	if (!api) {
+		serverSaved()
+			.then(async (server) => {
+				if (server) {
+					const savedServer = await getServer(server);
+					createApi(savedServer.address);
+					try {
+						const ping = await getSystemApi(
+							api,
+						).getPingSystem();
+						if (ping.status == 200) {
+							console.info(api);
+							const userSaved = await getUser();
+							if (userSaved) {
+								try {
+									const authenticate =
+										await api.authenticateUserByName(
+											userSaved.Name,
+											userSaved.Password,
+										);
+									if (authenticate.status == 200) {
+										createApi(
+											savedServer,
+											authenticate.data
+												.AccessToken,
+										);
+									}
+								} catch (error) {
+									console.error("Unable to login");
+									enqueueSnackbar("Unable to login");
+								}
+							}
+						}
+					} catch (error) {
+						console.error(error);
+					}
+				}
+			})
+			.catch((error) => {
+				console.error(error);
+				enqueueSnackbar(String(error), { variant: "error" });
+			});
+	}
+
 	const location = useLocation();
 
 	useEffect(() => {
 		window.scrollTo(0, 0);
 	}, [location.key]);
-
-	if (!window.api) {
-		serverAvailable().then((available) => {
-			if (available) {
-				createApi().then(
-					userSaved().then((userSavedBool) => {
-						if (userSavedBool) {
-							userLogin();
-						}
-					}),
-				);
-			}
-		});
-	}
 
 	const [audioPlayerVisible, currentAudioIndex] = useAudioPlayback(
 		(state) => [state.display, state.currentTrack],
@@ -479,7 +475,13 @@ function App() {
 						<Route element={<AnimationWrapper />}>
 							<Route
 								path="/"
+								exact
 								element={<LogicalRoutes />}
+								loader={async () => {
+									const defaultServer =
+										await getDefaultServer();
+									console.log(defaultServer);
+								}}
 							/>
 							<Route
 								path="/login"

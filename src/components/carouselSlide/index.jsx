@@ -27,6 +27,7 @@ import MarkPlayedButton from "../buttons/markPlayedButton";
 import { useCarouselStore } from "../../utils/store/carousel";
 import PlayButton from "../buttons/playButton";
 import { BaseItemKind } from "@jellyfin/sdk/lib/generated-client";
+import { useApi } from "../../utils/store/api";
 
 const availableSpecialRoutes = [
 	BaseItemKind.Series,
@@ -45,12 +46,13 @@ const availableSpecialRoutes = [
  * @returns {React.Component}
  */
 const CarouselSlide = ({ item }) => {
+	const [api] = useApi((state) => [state.api]);
 	const navigate = useNavigate();
 
 	const user = useQuery({
 		queryKey: ["user"],
 		queryFn: async () => {
-			let usr = await getUserApi(window.api).getCurrentUser();
+			let usr = await getUserApi(api).getCurrentUser();
 			return usr.data;
 		},
 		networkMode: "always",
@@ -107,8 +109,8 @@ const CarouselSlide = ({ item }) => {
 								className="hero-carousel-background-image"
 								src={
 									item.ParentBackdropItemId
-										? `${window.api.basePath}/Items/${item.ParentBackdropItemId}/Images/Backdrop`
-										: `${window.api.basePath}/Items/${item.Id}/Images/Backdrop`
+										? `${api.basePath}/Items/${item.ParentBackdropItemId}/Images/Backdrop`
+										: `${api.basePath}/Items/${item.Id}/Images/Backdrop`
 								}
 								style={{
 									opacity: 0,
@@ -165,7 +167,7 @@ const CarouselSlide = ({ item }) => {
 							<img
 								className="hero-carousel-text-logo"
 								src={
-									window.api.basePath +
+									api.basePath +
 									"/Items/" +
 									item.Id +
 									"/Images/Logo?quality=80&tag=" +

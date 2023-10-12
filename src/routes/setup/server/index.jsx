@@ -4,7 +4,7 @@ import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 
 import { EventEmitter as event } from "../../../eventEmitter.js";
-import { setServer } from "../../../utils/storage/servers.js";
+import { setDefaultServer, setServer } from "../../../utils/storage/servers.js";
 import { getSystemApi } from "@jellyfin/sdk/lib/utils/api/system-api";
 import { getUserApi } from "@jellyfin/sdk/lib/utils/api/user-api";
 
@@ -161,10 +161,12 @@ export const ServerSetup = () => {
 		onSuccess: (bestServer) => {
 			if (bestServer) {
 				console.info(bestServer);
+				createApi(bestServer.address, null);
+				setDefaultServer(bestServer.systemInfo.Id);
+				setServer(bestServer.systemInfo.Id, bestServer);
 				enqueueSnackbar("Client added successfully", {
 					variant: "success",
 				});
-				createApi(bestServer.address, null);
 				navigate("/login");
 			}
 		},
