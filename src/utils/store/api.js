@@ -48,3 +48,15 @@ export const useApi = create((set) => ({
 			api: jellyfin.createApi(serverAddress, accessToken, axiosClient),
 		})),
 }));
+
+/**
+ * Create api
+ * @param {string} serverAddress
+ * @param {string} accessToken
+ * @returns
+ */
+export const createApi = (serverAddress, accessToken) =>
+	useApi.setState((state) => ({
+		...state,
+		api: jellyfin.createApi(serverAddress, accessToken, axiosClient),
+	}));

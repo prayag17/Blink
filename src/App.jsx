@@ -39,7 +39,8 @@ import Slide from "@mui/material/Slide";
 import LinearProgress from "@mui/material/LinearProgress";
 
 // Routes
-import { ServerSetup, ServerList } from "./routes/setup/server";
+import { ServerSetup } from "./routes/setup/server";
+import ServerList from "./routes/setup/serverList/index.jsx";
 import Home from "./routes/home";
 import { UserLogin, LoginWithImage, UserLoginManual } from "./routes/login";
 import LibraryView from "./routes/library";
@@ -98,8 +99,10 @@ import PlaylistTitlePage from "./routes/playlist/index.jsx";
 // Initial custom axios client to use tauri's http module
 import axios from "axios";
 import axiosTauriApiAdapter from "axios-tauri-api-adapter";
-import { useApi } from "./utils/store/api.js";
+import { createApi, useApi } from "./utils/store/api.js";
 import { getSystemApi } from "@jellyfin/sdk/lib/utils/api/system-api.js";
+import { Navigate } from "react-router-dom";
+import { useMutation, useQuery } from "@tanstack/react-query";
 
 export const axiosClient = axios.create({
 	adapter: axiosTauriApiAdapter,
@@ -120,6 +123,132 @@ const anim = {
 		transform: "sscale(1.02)",
 		opacity: 0,
 	},
+};
+
+// const serverSaved = async () => {
+// 	const defaultServer = await getDefaultServer();
+// 	if (defaultServer) {
+// 		return defaultServer;
+// 	} else {
+// 		return false;
+// 	}
+// };
+
+// const usersAvailable = async () => {
+// 	try {
+// 		const usersList = await getUserApi(api).getPublicUsers();
+// 		if (usersList.data.length > 0) {
+// 			navigate("/login/users");
+// 		} else {
+// 			navigate("/login/manual");
+// 		}
+// 	} catch (error1) {
+// 		console.error(error1);
+// 	}
+// };
+
+// // set accessToken in api if used saved
+// const createLoggedInApi = async () => {
+// 	try {
+// 		const defaultServer = await getDefaultServer();
+// 		const savedServer = await getServer(defaultServer);
+// 		const userSaved = await getUser();
+// 		if (userSaved) {
+// 			try {
+// 				const authenticate = await api.authenticateUserByName(
+// 					userSaved.Name,
+// 					userSaved.Password,
+// 				);
+// 				if (authenticate.status == 200) {
+// 					createApi(
+// 						savedServer.address,
+// 						authenticate.data.AccessToken,
+// 					);
+// 				}
+// 			} catch (error) {
+// 				console.error(error);
+// 			}
+// 		}
+// 	} catch (error) {
+// 		console.error(error);
+// 	}
+// };
+
+const LogicalRoute = () => {
+	const [renderCount, setRenderCount] = useState(0);
+	useEffect(() => {
+		console.log(renderCount);
+		setRenderCount((state) => state + 1);
+	}, []);
+	const [api] = useApi((state) => [state.api]);
+	const navigate = useNavigate();
+	const defaultServer = useQuery({
+		queryKey: ["routing", "defaultServer"],
+		queryFn: async () => {
+			return await getDefaultServer();
+		},
+	});
+	const server = useQuery({
+		queryKey: ["routing", "server"],
+		queryFn: async () => {
+			const result = await getServer(defaultServer.data);
+			return result;
+		},
+		enabled: defaultServer.isSuccess && Boolean(defaultServer.data),
+	});
+	const userSaved = useQuery({
+		queryKey: ["routing", "savedUser"],
+		queryFn: async () => await getUser(),
+	});
+	const [accessToken, setAccessToken] = useState(null);
+	const authenticateUser = async () => {
+		console.log("fjrii ");
+		const res = await api.authenticateUserByName(
+			userSaved.data.Name,
+			userSaved.data.Password,
+		);
+		return res;
+	};
+	if (defaultServer.isSuccess && server.isSuccess && userSaved.isSuccess) {
+		if (defaultServer.data) {
+			if (userSaved.data.Name) {
+				console.log(Boolean(userSaved.data));
+				authenticateUser();
+				return <Navigate replace to={"/home"} />;
+			} else {
+				createApi(server.data.address);
+				return <Navigate replace to={`/login`} />;
+			}
+		} else {
+			return <Navigate replace to={`/setup/server`} />;
+		}
+	}
+	return <></>;
+};
+
+const LoginRoute = () => {
+	const [api] = useApi((state) => [state.api]);
+	const navigate = useNavigate();
+	const usersList = useQuery({
+		queryKey: ["public-users", "j"],
+		queryFn: async () => {
+			const result = await getUserApi(api).getPublicUsers();
+			return result.data;
+		},
+		enabled: Boolean(api),
+	});
+
+	if (usersList.isLoading) {
+		return <h1>Loading...</h1>;
+	} else if (usersList.isSuccess) {
+		if (usersList.data.length > 0) {
+			navigate("/login/users");
+			// return <Navigate to="/login/users" />;
+		} else {
+			navigate("/login/manual");
+			// return <Navigate tp="/login/manual" />;
+		}
+	}
 };
 
 const AnimationWrapper = () => {
@@ -144,9 +273,9 @@ function App() {
 	const navigate = useNavigate();
 
 	/**
-	 * @type {[import("@jellyfin/sdk").Api, function, Jellyfin]}
+	 * @type {[import("@jellyfin/sdk").Api, import("@jellyfin/sdk").Jellyfin]}
 	 */
-	const [api, createApi, jellyfin] = useApi((state) => [
+	const [api, jellyfin] = useApi((state) => [
 		state.api,
 		state.createApi,
 		state.jellyfin,
@@ -169,80 +298,9 @@ function App() {
 		}
 	};
 
-	const LogicalRoutes = () => {
-		serverSaved()
-			.then(async (server) => {
-				if (server) {
-					const savedServer = await getServer(server);
-					createApi(savedServer.address);
-					try {
-						const ping = await getSystemApi(
-							api,
-						).getPingSystem();
-						if (ping.status == 200) {
-							const userSaved = await getUser();
-							if (userSaved) {
-								try {
-									const authenticate =
-										await api.authenticateUserByName(
-											userSaved.Name,
-											userSaved.Password,
-										);
-									if (authenticate.status == 200) {
-										createApi(
-											savedServer,
-											authenticate.data
-												.AccessToken,
-										);
-										navigate("/home");
-									}
-								} catch (error) {
-									console.error("Unable to login");
-									enqueueSnackbar("Unable to login");
-								}
-							} else {
-								try {
-									const usersList = await getUserApi(
-										api,
-									).getPublicUsers();
-									if (usersList.data.length > 0) {
-										navigate("/login/users");
-									} else {
-										navigate("/login/manual");
-									}
-								} catch (error1) {
-									console.error(error1);
-								}
-							}
-						}
-					} catch (error) {
-						console.error(error);
-					}
-				} else {
-					navigate("/setup/server");
-				}
-			})
-			.catch((error) => {
-				console.error(error);
-				enqueueSnackbar(String(error), { variant: "error" });
-			});
-	};
-
-	const usersAvailable = async () => {
-		try {
-			const usersList = await getUserApi(api).getPublicUsers();
-			if (usersList.data.length > 0) {
-				navigate("/login/users");
-			} else {
-				navigate("/login/manual");
-			}
-		} catch (error1) {
-			console.error(error1);
-		}
-	};
-
 	const LoginLogicalRoutes = () => {
-		usersAvailable();
+		// usersAvailable();
+		return <h1>/Login</h1>;
 	};
 
 	const handleRelaunch = async (event, reason) => {
@@ -259,55 +317,27 @@ function App() {
 	};
 
 	// Create api if not created
-	if (!api) {
-		serverSaved()
-			.then(async (server) => {
-				if (server) {
-					const savedServer = await getServer(server);
-					createApi(savedServer.address);
-				}
-			})
-			.catch((error) => {
-				console.error(error);
-				enqueueSnackbar(String(error), { variant: "error" });
-			});
-	}
-
-	// set accessToken in api if used saved
-	const createLoggedInApi = async () => {
-		try {
-			const defaultServer = await getDefaultServer();
-			const savedServer = await getServer(defaultServer);
-			const userSaved = await getUser();
-			if (userSaved) {
-				try {
-					const authenticate = await api.authenticateUserByName(
-						userSaved.Name,
-						userSaved.Password,
-					);
-					if (authenticate.status == 200) {
-						createApi(
-							savedServer.address,
-							authenticate.data.AccessToken,
-						);
+	useEffect(() => {
+		if (!api) {
+			serverSaved()
+				.then(async (server) => {
+					if (server) {
+						const savedServer = await getServer(server);
+						createApi(savedServer.address);
 					}
-				} catch (error) {
+				})
+				.catch((error) => {
 					console.error(error);
-					enqueueSnackbar("Unable to login.");
-				}
-			}
-		} catch (error) {
-			console.error(error);
+					enqueueSnackbar(String(error), { variant: "error" });
+				});
 		}
-	};
-	if (api) {
-		createLoggedInApi();
-	}
+	}, [api]);
 
 	const location = useLocation();
 
 	useEffect(() => {
 		window.scrollTo(0, 0);
+		console.log(location);
 	}, [location.key]);
 
 	const [audioPlayerVisible, currentAudioIndex] = useAudioPlayback(
@@ -464,16 +494,20 @@ function App() {
 					<SideMenu />
 					<AppBar />
 					<AudioPlayer key={audioPlayerVisible} />
-					<Routes key={location.key} location={location}>
-						<Route element={<AnimationWrapper />}>
+					<Routes location={location}>
+						<Route
+							// key={location.key}
+							element={<AnimationWrapper />}
+						>
 							<Route
 								path="/"
 								exact
-								element={<LogicalRoutes />}
+								element={<LogicalRoute />}
+								// element={<></>}
 							/>
 							<Route
 								path="/login"
-								element={<LoginLogicalRoutes />}
+								element={<LoginRoute />}
 							/>
 
 							<Route path="/home" element={<Home />} />
