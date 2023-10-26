@@ -49,10 +49,10 @@ export const usePlaybackStore = create((set) => ({
 }));
 
 export const usePlaybackDataLoadStore = create((set) => ({
-	isLoading: false,
-	setIsLoading: (loading) =>
+	isPending: false,
+	setisPending: (loading) =>
 		set((state) => ({
 			...state,
-			isLoading: loading,
+			isPending: loading,
 		})),
 }));

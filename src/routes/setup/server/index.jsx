@@ -88,7 +88,7 @@ export const ServerSetup = () => {
 					top: 0,
 					left: 0,
 					right: 0,
-					opacity: checkServer.isLoading ? 1 : 0,
+					opacity: checkServer.isPending ? 1 : 0,
 					transition: "opacity 350ms",
 				}}
 			/>
@@ -96,7 +96,7 @@ export const ServerSetup = () => {
 				maxWidth="sm"
 				className={"centered serverContainer"}
 				style={{
-					opacity: checkServer.isLoading ? "0.5" : "1",
+					opacity: checkServer.isPending ? "0.5" : "1",
 					transition: "opacity 350ms",
 				}}
 			>
@@ -126,7 +126,7 @@ export const ServerSetup = () => {
 							variant="contained"
 							sx={{ width: "100%" }}
 							size="large"
-							loading={checkServer.isLoading}
+							loading={checkServer.isPending}
 							endIcon={
 								<SvgIcon>
 									<path d={mdiChevronRight}></path>

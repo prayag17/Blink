@@ -159,9 +159,9 @@ const ArtistTitlePage = () => {
 			}
 		}
 	}, [
-		artistDiscography.isLoading,
-		artistSongs.isLoading,
-		artistAppearances.isLoading,
+		artistDiscography.isPending,
+		artistSongs.isPending,
+		artistAppearances.isPending,
 	]);
 
 	const [animationDirection, setAnimationDirection] = useState("forward");
@@ -180,7 +180,7 @@ const ArtistTitlePage = () => {
 		}
 	}, [item.isSuccess]);
 
-	if (item.isLoading) {
+	if (item.isPending) {
 		return (
 			<Box
 				sx={{

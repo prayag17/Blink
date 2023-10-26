@@ -15,8 +15,6 @@ import {
 } from "react-router-dom";
 import { AnimatePresence, motion } from "framer-motion";
 
-import { EventEmitter as event } from "./eventEmitter.js";
-
 import { relaunch } from "@tauri-apps/api/process";
 
 import { getUserApi } from "@jellyfin/sdk/lib/utils/api/user-api";
@@ -96,13 +94,8 @@ import ArtistTitlePage from "./routes/artist/index.jsx";
 import EpisodeTitlePage from "./routes/episode/index.jsx";
 import PlaylistTitlePage from "./routes/playlist/index.jsx";
 
-// Initial custom axios client to use tauri's http module
-import axios from "axios";
-import axiosTauriApiAdapter from "axios-tauri-api-adapter";
 import { createApi, useApi } from "./utils/store/api.js";
-import { getSystemApi } from "@jellyfin/sdk/lib/utils/api/system-api.js";
-import { Navigate } from "react-router-dom";
-import { useMutation, useQuery } from "@tanstack/react-query";
+import { useQuery } from "@tanstack/react-query";
 import { CircularProgress } from "@mui/material";
 
 const anim = {
@@ -149,9 +142,9 @@ const LogicalRoute = () => {
 		return res;
 	};
 	if (
-		!defaultServer.isLoading &&
-		!server.isLoading &&
-		!userSaved.isLoading
+		!defaultServer.isPending &&
+		!server.isPending &&
+		!userSaved.isPending
 	) {
 		if (defaultServer.data) {
 			if (userSaved.data) {
@@ -237,21 +230,15 @@ const AnimationWrapper = () => {
 };
 
 function App() {
-	const navigate = useNavigate();
-
 	/**
-	 * @type {[import("@jellyfin/sdk").Api, import("@jellyfin/sdk").Jellyfin]}
+	 * @type {[import("@jellyfin/sdk").Api]}
 	 */
-	const [api, jellyfin] = useApi((state) => [
-		state.api,
-		state.createApi,
-		state.jellyfin,
-	]);
+	const [api] = useApi((state) => [state.api]);
 
-	const [serverReachable, setServerReachable] = useState(true);
+	const [serverReachable] = useState(true);
 
 	const [playbackDataLoading] = usePlaybackDataLoadStore((state) => [
-		state.isLoading,
+		state.isPending,
 	]);
 
 	const { enqueueSnackbar } = useSnackbar();
@@ -263,11 +250,6 @@ function App() {
 		} else {
 			return false;
 		}
-	};
-
-	const LoginLogicalRoutes = () => {
-		// usersAvailable();
-		return <h1>/Login</h1>;
 	};
 
 	const handleRelaunch = async (event, reason) => {
@@ -307,9 +289,7 @@ function App() {
 		console.log(location);
 	}, [location.key]);
 
-	const [audioPlayerVisible, currentAudioIndex] = useAudioPlayback(
-		(state) => [state.display, state.currentTrack],
-	);
+	const [audioPlayerVisible] = useAudioPlayback((state) => [state.display]);
 
 	const [backdropUrl, backdropId] = useBackdropStore((state) => [
 		state.backdropUrl,

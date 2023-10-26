@@ -64,13 +64,13 @@ const MarkPlayedButton = ({ itemId, isPlayed, queryKey, userId, itemName }) => {
 		>
 			<CircularProgress
 				style={{
-					opacity: mutation.isLoading ? 1 : 0,
+					opacity: mutation.isPending ? 1 : 0,
 					transition: "opacity 200ms",
 				}}
 			/>
 			<IconButton
 				onClick={(e) => {
-					if (!mutation.isLoading) {
+					if (!mutation.isPending) {
 						e.stopPropagation();
 						mutation.mutate();
 					}
@@ -84,7 +84,7 @@ const MarkPlayedButton = ({ itemId, isPlayed, queryKey, userId, itemName }) => {
 					display: "flex",
 					alignItems: "center",
 					justifyContent: "center",
-					opacity: mutation.isLoading ? 0.5 : 1,
+					opacity: mutation.isPending ? 0.5 : 1,
 				}}
 			>
 				<MdiCheck

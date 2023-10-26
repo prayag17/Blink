@@ -211,7 +211,7 @@ const SeriesTitlePage = () => {
 		}
 	}, [item.isSuccess]);
 
-	if (item.isLoading || similarItems.isLoading) {
+	if (item.isPending || similarItems.isPending) {
 		return (
 			<Box
 				sx={{
@@ -285,7 +285,7 @@ const SeriesTitlePage = () => {
 						</CardScroller>
 					)}
 
-				{seasons.isLoading ? (
+				{seasons.isPending ? (
 					<SeasonSelectorSkeleton />
 				) : (
 					<div className="item-series-seasons-container">
@@ -313,7 +313,7 @@ const SeriesTitlePage = () => {
 								</Typography>
 								<Chip
 									label={
-										episodes.isLoading ? (
+										episodes.isPending ? (
 											<CircularProgress
 												size={20}
 												style={{
@@ -417,7 +417,7 @@ const SeriesTitlePage = () => {
 						</div>
 						<Divider />
 						<div className="item-detail-episodes-container">
-							{episodes.isLoading ? (
+							{episodes.isPending ? (
 								<EpisodeCardsSkeleton />
 							) : (
 								episodes.data.Items.map((episode) => {

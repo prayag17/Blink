@@ -198,13 +198,13 @@ const SearchPage = () => {
 												Boolean(
 													searchTerm,
 												) &&
-												(movies.isLoading ||
-													series.isLoading ||
-													audio.isLoading ||
-													musicAlbum.isLoading ||
-													musicArtists.isLoading ||
-													person.isLoading ||
-													book.isLoading)
+												(movies.isPending ||
+													series.isPending ||
+													audio.isPending ||
+													musicAlbum.isPending ||
+													musicArtists.isPending ||
+													person.isPending ||
+													book.isPending)
 													? 1
 													: 0,
 										}}

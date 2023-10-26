@@ -132,7 +132,7 @@ const BoxSetTitlePage = () => {
 		}
 	}, [item.isSuccess]);
 
-	if (item.isLoading || similarItems.isLoading) {
+	if (item.isPending || similarItems.isPending) {
 		return (
 			<Box
 				sx={{

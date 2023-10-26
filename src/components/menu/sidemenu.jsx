@@ -140,7 +140,7 @@ export const SideMenu = () => {
 						}}
 					></DrawerHeader>
 					<div className="sidemenu-item-container">
-						{libraries.isLoading ? (
+						{libraries.isPending ? (
 							<></>
 						) : (
 							<>
@@ -238,7 +238,7 @@ export const SideMenu = () => {
 						</IconButton>
 					</DrawerHeader>
 					<Divider />
-					{libraries.isLoading ? (
+					{libraries.isPending ? (
 						<>
 							<Skeleton
 								height="100%"

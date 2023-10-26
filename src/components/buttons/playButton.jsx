@@ -94,7 +94,7 @@ const PlayButton = ({
 		state.setPlaylistItemId,
 	]);
 	const setPlaybackDataLoading = usePlaybackDataLoadStore(
-		(state) => state.setIsLoading,
+		(state) => state.setisPending,
 	);
 
 	const { enqueueSnackbar } = useSnackbar();

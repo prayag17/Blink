@@ -158,7 +158,7 @@ const EpisodeTitlePage = () => {
 		}
 	}, [item.isSuccess]);
 
-	if (item.isLoading) {
+	if (item.isPending) {
 		return (
 			<Box
 				sx={{

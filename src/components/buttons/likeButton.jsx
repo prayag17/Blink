@@ -72,13 +72,13 @@ const LikeButton = ({
 		>
 			<CircularProgress
 				style={{
-					opacity: mutation.isLoading ? 1 : 0,
+					opacity: mutation.isPending ? 1 : 0,
 					transition: "opacity 200ms",
 				}}
 			/>
 			<IconButton
 				onClick={(e) => {
-					if (!mutation.isLoading) {
+					if (!mutation.isPending) {
 						e.stopPropagation();
 						mutation.mutate();
 					}
@@ -92,7 +92,7 @@ const LikeButton = ({
 					display: "flex",
 					alignItems: "center",
 					justifyContent: "center",
-					opacity: mutation.isLoading ? 0.5 : 1,
+					opacity: mutation.isPending ? 0.5 : 1,
 				}}
 			>
 				{isFavorite ? (

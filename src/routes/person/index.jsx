@@ -228,11 +228,11 @@ const PersonTitlePage = () => {
 			}
 		}
 	}, [
-		personMovies.isLoading,
-		personShows.isLoading,
-		personBooks.isLoading,
-		personPhotos.isLoading,
-		personEpisodes.isLoading,
+		personMovies.isPending,
+		personShows.isPending,
+		personBooks.isPending,
+		personPhotos.isPending,
+		personEpisodes.isPending,
 	]);
 	const [setAppBackdrop] = useBackdropStore((state) => [state.setBackdrop]);
 
@@ -250,7 +250,7 @@ const PersonTitlePage = () => {
 		}
 	}, [item.isSuccess]);
 
-	if (item.isLoading) {
+	if (item.isPending) {
 		return (
 			<Box
 				sx={{

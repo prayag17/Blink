@@ -125,7 +125,7 @@ const PlaylistTitlePage = () => {
 		}
 	}, [item.isSuccess]);
 
-	if (item.isLoading || similarItems.isLoading) {
+	if (item.isPending || similarItems.isPending) {
 		return (
 			<Box
 				sx={{
@@ -160,7 +160,7 @@ const PlaylistTitlePage = () => {
 					audioPlayButton
 					cardType="square"
 				/>
-				{musicTracks.isLoading ? (
+				{musicTracks.isPending ? (
 					<></>
 				) : (
 					musicTracks.data.TotalRecordCount > 0 &&

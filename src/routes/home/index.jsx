@@ -177,7 +177,7 @@ const Home = () => {
 				}}
 			>
 				<ErrorBoundary fallback={<CarouselSlideError />}>
-					{latestMedia.isLoading ? (
+					{latestMedia.isPending ? (
 						<CarouselSkeleton />
 					) : (
 						<Carousel
@@ -224,7 +224,7 @@ const Home = () => {
 							</div>
 						}
 					>
-						{libraries.isLoading ? (
+						{libraries.isPending ? (
 							<CardsSkeleton />
 						) : (
 							<CardScroller
@@ -279,7 +279,7 @@ const Home = () => {
 							</div>
 						}
 					>
-						{upNextItems.isLoading ? (
+						{upNextItems.isPending ? (
 							<CardsSkeleton />
 						) : upNextItems.isSuccess &&
 						  upNextItems.data.Items.length == 0 ? (
@@ -373,7 +373,7 @@ const Home = () => {
 							</div>
 						}
 					>
-						{resumeItemsVideo.isLoading ? (
+						{resumeItemsVideo.isPending ? (
 							<CardsSkeleton />
 						) : resumeItemsVideo.isSuccess &&
 						  resumeItemsVideo.data.Items.length == 0 ? (
@@ -468,7 +468,7 @@ const Home = () => {
 							</div>
 						}
 					>
-						{resumeItemsAudio.isLoading ? (
+						{resumeItemsAudio.isPending ? (
 							<CardsSkeleton />
 						) : resumeItemsAudio.isSuccess &&
 						  resumeItemsAudio.data.Items.length == 0 ? (

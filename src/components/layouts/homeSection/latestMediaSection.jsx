@@ -38,7 +38,7 @@ export const LatestMediaSection = ({ latestMediaLib }) => {
 		enabled: !!user.data,
 		networkMode: "always",
 	});
-	if (data.isLoading) {
+	if (data.isPending) {
 		return <CardsSkeleton />;
 	}
 	if (data.isSuccess && data.data.length >= 1) {

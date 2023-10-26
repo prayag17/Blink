@@ -734,7 +734,7 @@ export const VideoPlayer = () => {
 								onClick={handlePlayPrevEpisode}
 								disabled={
 									seriesId
-										? episodes.isLoading ||
+										? episodes.isPending ||
 										  currentEpisodeIndex == 0
 										: true
 								}
@@ -770,7 +770,7 @@ export const VideoPlayer = () => {
 								onClick={handlePlayNextEpisode}
 								disabled={
 									seriesId
-										? episodes.isLoading ||
+										? episodes.isPending ||
 										  episodes.data
 												?.TotalRecordCount ==
 												currentEpisodeIndex +

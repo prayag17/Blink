@@ -375,7 +375,7 @@ const LibraryView = () => {
 						sx={{ mr: 2, flexShrink: 0 }}
 						noWrap
 					>
-						{currentLib.isLoading ? (
+						{currentLib.isPending ? (
 							<CircularProgress sx={{ p: 1 }} />
 						) : (
 							currentLib.data.Items[0].Name
@@ -383,7 +383,7 @@ const LibraryView = () => {
 					</Typography>
 					<Chip
 						label={
-							items.isLoading ? (
+							items.isPending ? (
 								<CircularProgress sx={{ p: 1.5 }} />
 							) : (
 								items.data.TotalRecordCount
@@ -1247,7 +1247,7 @@ const LibraryView = () => {
 						</Popper>
 					</div>
 				</div>
-				{items.isLoading ? (
+				{items.isPending ? (
 					<Box
 						sx={{
 							position: "absolute",

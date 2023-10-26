@@ -239,7 +239,7 @@ export const UserLogin = () => {
 		enabled: Boolean(api),
 	});
 
-	if (users.isLoading) {
+	if (users.isPending) {
 		return <LinearProgress />;
 	}
 	if (users.isSuccess) {
@@ -407,7 +407,7 @@ export const UserLoginManual = () => {
 
 	return (
 		<>
-			{server.isLoading && <LinearProgress />}
+			{server.isPending && <LinearProgress />}
 			<AppBarBackOnly />
 			<Container
 				maxWidth="xs"
@@ -425,7 +425,7 @@ export const UserLoginManual = () => {
 					justifyContent="center"
 					alignItems="center"
 					sx={{
-						opacity: server.isLoading ? 0 : 1,
+						opacity: server.isPending ? 0 : 1,
 						transition: "opacity 200ms",
 						width: "100%",
 					}}
