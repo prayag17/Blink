@@ -12,10 +12,12 @@
         "sourceType": "module"
     },
     "plugins": [
-        "react"
+        "react",
+        "react-refresh"
     ],
     "rules": {
         "no-mixed-spaces-and-tabs": "off",
-        "react/prop-types": "off"
+        "react/prop-types": "off",
+        "react-refresh/only-export-components": "warn"
     }
 }

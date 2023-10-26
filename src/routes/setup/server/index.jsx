@@ -1,12 +1,9 @@
 /** @format */
 
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 
-import { EventEmitter as event } from "../../../eventEmitter.js";
 import { setDefaultServer, setServer } from "../../../utils/storage/servers.js";
-import { getSystemApi } from "@jellyfin/sdk/lib/utils/api/system-api";
-import { getUserApi } from "@jellyfin/sdk/lib/utils/api/user-api";
 
 // MUI
 import TextField from "@mui/material/TextField";
@@ -21,21 +18,10 @@ import { mdiChevronRight } from "@mdi/js";
 
 import { useSnackbar } from "notistack";
 
-import {
-	Jellyfin,
-	VersionOutdatedIssue,
-	VersionUnsupportedIssue,
-} from "@jellyfin/sdk";
-import { version as appVer } from "../../../../package.json";
-import { v4 as uuidv4 } from "uuid";
-
 // SCSS
 import "./server.module.scss";
 import { useMutation, useQuery } from "@tanstack/react-query";
-import { axiosClient } from "../../../App.jsx";
-import axios from "axios";
 import { useApi } from "../../../utils/store/api.js";
-import { RecommendedServerDiscovery } from "@jellyfin/sdk/lib/discovery/recommended-server-discovery.js";
 import { MdiInformation } from "../../../components/icons/mdiInformation.jsx";
 import { yellow } from "@mui/material/colors";
 
@@ -73,7 +59,7 @@ export const ServerSetup = () => {
 				enqueueSnackbar("Client added successfully", {
 					variant: "success",
 				});
-				navigate("/login");
+				navigate("/login/index");
 			}
 		},
 		onError: (err) => {

@@ -103,12 +103,7 @@ import { createApi, useApi } from "./utils/store/api.js";
 import { getSystemApi } from "@jellyfin/sdk/lib/utils/api/system-api.js";
 import { Navigate } from "react-router-dom";
 import { useMutation, useQuery } from "@tanstack/react-query";
-
-export const axiosClient = axios.create({
-	adapter: axiosTauriApiAdapter,
-	headers: { "Access-Control-Allow-Origin": "*" },
-	timeout: 60000,
-});
+import { CircularProgress } from "@mui/material";
 
 const anim = {
 	initial: {
@@ -125,61 +120,7 @@ const anim = {
 	},
 };
 
-// const serverSaved = async () => {
-// 	const defaultServer = await getDefaultServer();
-// 	if (defaultServer) {
-// 		return defaultServer;
-// 	} else {
-// 		return false;
-// 	}
-// };
-
-// const usersAvailable = async () => {
-// 	try {
-// 		const usersList = await getUserApi(api).getPublicUsers();
-// 		if (usersList.data.length > 0) {
-// 			navigate("/login/users");
-// 		} else {
-// 			navigate("/login/manual");
-// 		}
-// 	} catch (error1) {
-// 		console.error(error1);
-// 	}
-// };
-
-// // set accessToken in api if used saved
-// const createLoggedInApi = async () => {
-// 	try {
-// 		const defaultServer = await getDefaultServer();
-// 		const savedServer = await getServer(defaultServer);
-// 		const userSaved = await getUser();
-// 		if (userSaved) {
-// 			try {
-// 				const authenticate = await api.authenticateUserByName(
-// 					userSaved.Name,
-// 					userSaved.Password,
-// 				);
-// 				if (authenticate.status == 200) {
-// 					createApi(
-// 						savedServer.address,
-// 						authenticate.data.AccessToken,
-// 					);
-// 				}
-// 			} catch (error) {
-// 				console.error(error);
-// 			}
-// 		}
-// 	} catch (error) {
-// 		console.error(error);
-// 	}
-// };
-
 const LogicalRoute = () => {
-	const [renderCount, setRenderCount] = useState(0);
-	useEffect(() => {
-		console.log(renderCount);
-		setRenderCount((state) => state + 1);
-	}, []);
 	const [api] = useApi((state) => [state.api]);
 	const navigate = useNavigate();
 	const defaultServer = useQuery({
@@ -194,43 +135,59 @@ const LogicalRoute = () => {
 			const result = await getServer(defaultServer.data);
 			return result;
 		},
-		enabled: defaultServer.isSuccess && Boolean(defaultServer.data),
+		enabled: defaultServer.isSuccess,
 	});
 	const userSaved = useQuery({
 		queryKey: ["routing", "savedUser"],
 		queryFn: async () => await getUser(),
 	});
-	const [accessToken, setAccessToken] = useState(null);
 	const authenticateUser = async () => {
-		console.log("fjrii ");
 		const res = await api.authenticateUserByName(
 			userSaved.data.Name,
 			userSaved.data.Password,
 		);
 		return res;
 	};
-	if (defaultServer.isSuccess && server.isSuccess && userSaved.isSuccess) {
+	if (
+		!defaultServer.isLoading &&
+		!server.isLoading &&
+		!userSaved.isLoading
+	) {
 		if (defaultServer.data) {
-			if (userSaved.data.Name) {
-				console.log(Boolean(userSaved.data));
+			if (userSaved.data) {
 				authenticateUser();
-				return <Navigate replace to={"/home"} />;
+				navigate("/home");
+				// return <Navigate replace to={} />;
 			} else {
 				createApi(server.data.address);
-				return <Navigate replace to={`/login`} />;
+				navigate("/login/index");
+				// return <Navigate replace to={`/login/index`} />;
 			}
 		} else {
-			return <Navigate replace to={`/setup/server`} />;
+			navigate("/setup/server");
+			// return <Navigate replace to={`/setup/server`} />;
 		}
 	}
-	return <></>;
+	return (
+		<div
+			style={{
+				position: "fixed",
+				top: "50%",
+				left: "50%",
+				transform: "translate(-50%, -50%)",
+			}}
+		>
+			<CircularProgress size={84} thickness={1} />
+		</div>
+	);
 };
 
 const LoginRoute = () => {
-	const [api] = useApi((state) => [state.api]);
 	const navigate = useNavigate();
+	// <Navigate replace to="/login/users" />;
+	const [api] = useApi((state) => [state.api]);
 	const usersList = useQuery({
-		queryKey: ["public-users", "j"],
+		queryKey: ["public-users"],
 		queryFn: async () => {
 			const result = await getUserApi(api).getPublicUsers();
 			return result.data;
@@ -238,17 +195,27 @@ const LoginRoute = () => {
 		enabled: Boolean(api),
 	});
 
-	if (usersList.isLoading) {
-		return <h1>Loading...</h1>;
-	} else if (usersList.isSuccess) {
+	if (usersList.isSuccess) {
 		if (usersList.data.length > 0) {
 			navigate("/login/users");
-			// return <Navigate to="/login/users" />;
+			// <Navigate replace to="/login/users" />;
 		} else {
 			navigate("/login/manual");
-			// return <Navigate tp="/login/manual" />;
+			// <Navigate replace to="/login/manual" />;
 		}
 	}
+	return (
+		<div
+			style={{
+				position: "fixed",
+				top: "50%",
+				left: "50%",
+				transform: "translate(-50%, -50%)",
+			}}
+		>
+			<CircularProgress size={84} thickness={1} />
+		</div>
+	);
 };
 
 const AnimationWrapper = () => {
@@ -506,7 +473,8 @@ function App() {
 								// element={<></>}
 							/>
 							<Route
-								path="/login"
+								path="/login/index"
+								exact
 								element={<LoginRoute />}
 							/>
 
