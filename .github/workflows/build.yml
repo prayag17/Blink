@@ -53,7 +53,7 @@ jobs:
                          ${{ runner.os }}-pnpm-store-
                          
                - name: Sync node version and setup cache
-                 uses: actions/setup-node@v3
+                 uses: actions/setup-node@v4
                  with:
                       node-version: "lts/*"
                       cache: "pnpm" # Set this to npm, yarn or pnpm.
