@@ -56,8 +56,6 @@ export const getDefaultServer = async () => {
  */
 export const delServer = async (serverId) => {
 	await servers.delete(serverId);
-	// remove the default server
-	await setDefaultServer(null);
 	await servers.save();
 };
 

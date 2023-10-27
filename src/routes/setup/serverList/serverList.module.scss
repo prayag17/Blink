@@ -15,6 +15,9 @@
 		width: 40vw;
 		padding: 1.2em;
 		border-radius: 20px !important;
+		max-height: 46vh;
+		overflow-y: auto;
+		overflow-x: hidden;
 	}
 	&-item {
 		display: grid;

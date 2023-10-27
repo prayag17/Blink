@@ -13,7 +13,7 @@ const queryClient = new QueryClient({
 	defaultOptions: {
 		queries: {
 			networkMode: "always",
-			cacheTime: 120000,
+			gcTime: 120000,
 		},
 		mutations: {
 			networkMode: "always",

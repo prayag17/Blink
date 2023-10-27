@@ -10,13 +10,16 @@ import { red } from "@mui/material/colors";
 import "./serverList.module.scss";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import {
+	delServer,
 	getAllServer,
 	getDefaultServer,
+	getServer,
 	setDefaultServer,
 } from "../../../utils/storage/servers";
 import { AppBarBackOnly } from "../../../components/appBar/backOnly";
 import { useNavigate } from "react-router-dom";
 import { useSnackbar } from "notistack";
+import { createApi } from "../../../utils/store/api";
 
 const ServerList = () => {
 	const navigate = useNavigate();
@@ -34,19 +37,46 @@ const ServerList = () => {
 		mutationFn: () => {
 			setDefaultServer(serverState);
 		},
-		onSuccess: () => {
+		onSuccess: async () => {
 			defaultServer.refetch();
+			// get default server again since query not uptodate always
+			// let defServer = await getDefaultServer();
+			let server = await getServer(serverState);
+			createApi(server.address);
+
 			enqueueSnackbar("Successfully changed server!", {
 				variant: "success",
 			});
-			navigate("/");
+			if (!defaultServer.isFetching) {
+				navigate("/");
+			}
 		},
-		onError: () => {
+		onError: (error) => {
+			console.error(error);
 			enqueueSnackbar("Error changing the server", {
 				variant: "error",
 			});
 		},
 	});
+
+	const handleDelete = (serverId) => {
+		let tempList = servers.data.filter(
+			(item) => item[0] != defaultServer.data && item[0] != serverId,
+		);
+		delServer(serverId).then(() => {
+			// console.log(serverId);
+			if (serverId == defaultServer.data) {
+				if (tempList.length > 0) {
+					setDefaultServer(tempList[0][0]);
+				} else {
+					console.log();
+				}
+			}
+			servers.refetch();
+			defaultServer.refetch();
+		});
+	};
+
 	return (
 		<div className="server-list">
 			<AppBarBackOnly />
@@ -68,16 +98,16 @@ const ServerList = () => {
 					}}
 					onClick={() => navigate("/setup/server")}
 				>
-					<span className="material-symbols-rounded">add</span>
+					<div className="material-symbols-rounded">add</div>
 				</IconButton>
 			</div>
 			<Paper className="server-list-container">
 				{servers.isSuccess &&
 					servers.data.map((server, index) => (
 						<div key={index} className="server-list-item">
-							<span className="material-symbols-rounded server-list-item-icon">
+							<div className="material-symbols-rounded server-list-item-icon">
 								dns
-							</span>
+							</div>
 							<div className="server-list-item-info">
 								<Typography
 									variant="h6"
@@ -144,9 +174,9 @@ const ServerList = () => {
 										handleServerChange.isPending
 									}
 								>
-									<span className="material-symbols-rounded">
+									<div className="material-symbols-rounded">
 										start
-									</span>
+									</div>
 								</IconButton>
 								<IconButton
 									style={{
@@ -157,10 +187,13 @@ const ServerList = () => {
 									disabled={
 										handleServerChange.isPending
 									}
+									onClick={() => {
+										handleDelete(server[0]);
+									}}
 								>
-									<span className="material-symbols-rounded">
+									<div className="material-symbols-rounded">
 										delete_forever
-									</span>
+									</div>
 								</IconButton>
 							</div>
 						</div>

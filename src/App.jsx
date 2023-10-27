@@ -130,7 +130,7 @@ const LogicalRoute = () => {
 			const result = await getServer(defaultServer.data);
 			return result;
 		},
-		enabled: defaultServer.isSuccess,
+		enabled: !defaultServer.isFetching,
 	});
 	const pingServer = useQuery({
 		queryKey: ["routing", "pingServer"],
@@ -151,31 +151,39 @@ const LogicalRoute = () => {
 		);
 		return res;
 	};
-	if (
-		!defaultServer.isPending &&
-		!server.isPending &&
-		!userSaved.isPending &&
-		!pingServer.isPending
-	) {
-		if (defaultServer.data) {
-			if (pingServer.data == "Jellyfin Server") {
-				if (userSaved.data) {
-					authenticateUser();
-					navigate("/home");
-					// return <Navigate replace to={} />;
+	useEffect(() => {
+		if (
+			!defaultServer.isFetching &&
+			!server.isFetching &&
+			!userSaved.isFetching &&
+			!pingServer.isFetching
+		) {
+			if (defaultServer.data) {
+				if (pingServer.data == "Jellyfin Server") {
+					if (userSaved.data) {
+						authenticateUser();
+						navigate("/home");
+						// return <Navigate replace to={} />;
+					} else {
+						console.log(server.data.address);
+						createApi(server.data.address);
+						navigate("/login/index");
+						// return <Navigate replace to={`/login/index`} />;
+					}
 				} else {
-					createApi(server.data.address);
-					navigate("/login/index");
-					// return <Navigate replace to={`/login/index`} />;
+					navigate("/error");
 				}
 			} else {
-				navigate("/error");
+				navigate("/setup/server");
+				// return <Navigate replace to={`/setup/server`} />;
 			}
-		} else {
-			navigate("/setup/server");
-			// return <Navigate replace to={`/setup/server`} />;
 		}
-	}
+	}, [
+		defaultServer.isFetching,
+		server.isFetching,
+		userSaved.isFetching,
+		pingServer.isFetching,
+	]);
 	return (
 		<div
 			style={{
@@ -192,8 +200,8 @@ const LogicalRoute = () => {
 
 const LoginRoute = () => {
 	const navigate = useNavigate();
-	// <Navigate replace to="/login/users" />;
 	const [api] = useApi((state) => [state.api]);
+	console.log(api);
 	const usersList = useQuery({
 		queryKey: ["public-users"],
 		queryFn: async () => {
@@ -202,8 +210,7 @@ const LoginRoute = () => {
 		},
 		enabled: Boolean(api),
 	});
-
-	if (usersList.isSuccess) {
+	if (usersList.isSuccess && !usersList.isFetching) {
 		if (usersList.data.length > 0) {
 			navigate("/login/users");
 			// <Navigate replace to="/login/users" />;

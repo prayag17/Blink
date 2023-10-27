@@ -222,7 +222,6 @@ export const UserLogin = () => {
 	const navigate = useNavigate();
 
 	const [api] = useApi((state) => [state.api]);
-	console.log(api);
 
 	const handleChangeServer = () => {
 		navigate("/servers/list");
@@ -237,6 +236,7 @@ export const UserLogin = () => {
 			return users.data;
 		},
 		enabled: Boolean(api),
+		gcTime: 0,
 	});
 
 	if (users.isPending) {
