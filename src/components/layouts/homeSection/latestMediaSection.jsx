@@ -1,5 +1,5 @@
 /** @format */
-
+import React from "react";
 import { useQuery } from "@tanstack/react-query";
 import { CardScroller } from "../../cardScroller/cardScroller";
 import { Card } from "../../card/card";
@@ -47,7 +47,7 @@ export const LatestMediaSection = ({ latestMediaLib }) => {
 				displayCards={8}
 				title={"Latest " + latestMediaLib[1]}
 			>
-				{data.data.map((item, index) => {
+				{data.data.map((item) => {
 					return (
 						<Card
 							key={item.Id}
@@ -64,7 +64,7 @@ export const LatestMediaSection = ({ latestMediaLib }) => {
 									? `S${item.ParentIndexNumber}:E${item.IndexNumber} - ${item.Name}`
 									: item.Type == BaseItemKind.Series
 									? `${item.ProductionYear} - ${
-											!!item.EndDate
+											item.EndDate
 												? new Date(
 														item.EndDate,
 												  ).toLocaleString(

@@ -1,0 +1,53 @@
+/** @format */
+
+.server-list {
+	position: absolute;
+	width: 100vw;
+	height: 100vh;
+	overflow: hidden;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	flex-direction: column;
+	&-container {
+		display: flex;
+		flex-direction: column;
+		width: 40vw;
+		padding: 1.2em;
+		border-radius: 20px !important;
+	}
+	&-item {
+		display: grid;
+		grid-template-columns: 3.4em 1fr auto;
+		justify-items: start;
+		align-items: center;
+		gap: 0.8em;
+		&-icon {
+			font-size: 3.4em !important;
+		}
+		&-info {
+			display: flex;
+			flex-direction: column;
+			// width: 100%;
+		}
+		&-buttons {
+			display: flex;
+			flex-direction: row;
+			gap: 0.5em;
+			width: 100%;
+			overflow: hidden;
+		}
+		border-bottom: 1.2px solid rgb(255 255 255 / 0.1);
+
+		$spacing: 0.75em;
+
+		padding-bottom: $spacing;
+		margin-bottom: $spacing;
+
+		&:last-child {
+			border: none;
+			margin: 0;
+			padding: 0;
+		}
+	}
+}

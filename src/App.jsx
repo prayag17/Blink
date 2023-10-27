@@ -19,8 +19,6 @@ import { relaunch } from "@tauri-apps/api/process";
 
 import { getUserApi } from "@jellyfin/sdk/lib/utils/api/user-api";
 
-import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
-
 // Theming
 import CssBaseline from "@mui/material/CssBaseline";
 import { theme } from "./theme";
@@ -97,6 +95,7 @@ import PlaylistTitlePage from "./routes/playlist/index.jsx";
 import { createApi, useApi } from "./utils/store/api.js";
 import { useQuery } from "@tanstack/react-query";
 import { CircularProgress } from "@mui/material";
+import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 
 const anim = {
 	initial: {
@@ -141,26 +140,28 @@ const LogicalRoute = () => {
 		);
 		return res;
 	};
-	if (
-		!defaultServer.isPending &&
-		!server.isPending &&
-		!userSaved.isPending
-	) {
-		if (defaultServer.data) {
-			if (userSaved.data) {
-				authenticateUser();
-				navigate("/home");
-				// return <Navigate replace to={} />;
+	useEffect(() => {
+		if (
+			!defaultServer.isPending &&
+			!server.isPending &&
+			!userSaved.isPending
+		) {
+			if (defaultServer.data) {
+				if (userSaved.data) {
+					authenticateUser();
+					navigate("/home");
+					// return <Navigate replace to={} />;
+				} else {
+					createApi(server.data.address);
+					navigate("/login/index");
+					// return <Navigate replace to={`/login/index`} />;
+				}
 			} else {
-				createApi(server.data.address);
-				navigate("/login/index");
-				// return <Navigate replace to={`/login/index`} />;
+				navigate("/setup/server");
+				// return <Navigate replace to={`/setup/server`} />;
 			}
-		} else {
-			navigate("/setup/server");
-			// return <Navigate replace to={`/setup/server`} />;
 		}
-	}
+	}, []);
 	return (
 		<div
 			style={{
@@ -188,15 +189,17 @@ const LoginRoute = () => {
 		enabled: Boolean(api),
 	});
 
-	if (usersList.isSuccess) {
-		if (usersList.data.length > 0) {
-			navigate("/login/users");
-			// <Navigate replace to="/login/users" />;
-		} else {
-			navigate("/login/manual");
-			// <Navigate replace to="/login/manual" />;
+	useEffect(() => {
+		if (usersList.isSuccess) {
+			if (usersList.data.length > 0) {
+				navigate("/login/users");
+				// <Navigate replace to="/login/users" />;
+			} else {
+				navigate("/login/manual");
+				// <Navigate replace to="/login/manual" />;
+			}
 		}
-	}
+	}, []);
 	return (
 		<div
 			style={{
@@ -286,7 +289,6 @@ function App() {
 
 	useEffect(() => {
 		window.scrollTo(0, 0);
-		console.log(location);
 	}, [location.key]);
 
 	const [audioPlayerVisible] = useAudioPlayback((state) => [state.display]);
@@ -543,7 +545,7 @@ function App() {
 						</Route>
 					</Routes>
 				</div>
-				<ReactQueryDevtools position="top-right" />
+				<ReactQueryDevtools />
 			</ThemeProvider>
 		</SnackbarProvider>
 	);

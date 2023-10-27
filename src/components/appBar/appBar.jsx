@@ -90,6 +90,7 @@ export const AppBar = () => {
 		if (
 			location.pathname.includes("login") ||
 			location.pathname.includes("setup") ||
+			location.pathname.includes("server") ||
 			location.pathname.includes("player") ||
 			location.pathname === "/"
 		) {

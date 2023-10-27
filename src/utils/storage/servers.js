@@ -37,6 +37,8 @@ export const getServer = async (serverId) => {
  */
 export const getAllServer = async () => {
 	let server = await servers.entries();
+	// remove default server field from this result
+	server = server.filter((item) => item[0] != "defaultServer");
 	return server;
 };
 

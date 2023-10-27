@@ -514,10 +514,20 @@ export const UserLoginManual = () => {
 							loading={loading}
 							loadingPosition="end"
 							size="large"
-							sx={{ width: "100%" }}
+							sx={{ width: "100%", mb: 1 }}
 						>
 							Login
 						</LoadingButton>
+						<Button
+							color="secondary"
+							variant="contained"
+							className="userEventButton"
+							size="large"
+							sx={{ width: "100%" }}
+							onClick={() => navigate("/servers/list")}
+						>
+							Change Server
+						</Button>
 					</Grid>
 					<Grid sx={{ width: "100%" }}>
 						<Typography variant="subtitle2">
