@@ -92,6 +92,7 @@ export const AppBar = () => {
 			location.pathname.includes("setup") ||
 			location.pathname.includes("server") ||
 			location.pathname.includes("player") ||
+			location.pathname.includes("error") ||
 			location.pathname === "/"
 		) {
 			setDisplay(false);

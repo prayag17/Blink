@@ -96,6 +96,8 @@ import { createApi, useApi } from "./utils/store/api.js";
 import { useQuery } from "@tanstack/react-query";
 import { CircularProgress } from "@mui/material";
 import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
+import { getSystemApi } from "@jellyfin/sdk/lib/utils/api/system-api";
+import { setServerReachability, useServerStore } from "./utils/store/server";
 
 const anim = {
 	initial: {
@@ -115,6 +117,7 @@ const anim = {
 const LogicalRoute = () => {
 	const [api] = useApi((state) => [state.api]);
 	const navigate = useNavigate();
+	const { enqueueSnackbar } = useSnackbar();
 	const defaultServer = useQuery({
 		queryKey: ["routing", "defaultServer"],
 		queryFn: async () => {
@@ -129,6 +132,14 @@ const LogicalRoute = () => {
 		},
 		enabled: defaultServer.isSuccess,
 	});
+	const pingServer = useQuery({
+		queryKey: ["routing", "pingServer"],
+		queryFn: async () => {
+			const result = await getSystemApi(api).getPingSystem();
+			return result.data;
+		},
+		enabled: Boolean(api) && server.isSuccess,
+	});
 	const userSaved = useQuery({
 		queryKey: ["routing", "savedUser"],
 		queryFn: async () => await getUser(),
@@ -140,13 +151,14 @@ const LogicalRoute = () => {
 		);
 		return res;
 	};
-	useEffect(() => {
-		if (
-			!defaultServer.isPending &&
-			!server.isPending &&
-			!userSaved.isPending
-		) {
-			if (defaultServer.data) {
+	if (
+		!defaultServer.isPending &&
+		!server.isPending &&
+		!userSaved.isPending &&
+		!pingServer.isPending
+	) {
+		if (defaultServer.data) {
+			if (pingServer.data == "Jellyfin Server") {
 				if (userSaved.data) {
 					authenticateUser();
 					navigate("/home");
@@ -157,11 +169,13 @@ const LogicalRoute = () => {
 					// return <Navigate replace to={`/login/index`} />;
 				}
 			} else {
-				navigate("/setup/server");
-				// return <Navigate replace to={`/setup/server`} />;
+				navigate("/error");
 			}
+		} else {
+			navigate("/setup/server");
+			// return <Navigate replace to={`/setup/server`} />;
 		}
-	}, []);
+	}
 	return (
 		<div
 			style={{
@@ -189,17 +203,15 @@ const LoginRoute = () => {
 		enabled: Boolean(api),
 	});
 
-	useEffect(() => {
-		if (usersList.isSuccess) {
-			if (usersList.data.length > 0) {
-				navigate("/login/users");
-				// <Navigate replace to="/login/users" />;
-			} else {
-				navigate("/login/manual");
-				// <Navigate replace to="/login/manual" />;
-			}
+	if (usersList.isSuccess) {
+		if (usersList.data.length > 0) {
+			navigate("/login/users");
+			// <Navigate replace to="/login/users" />;
+		} else {
+			navigate("/login/manual");
+			// <Navigate replace to="/login/manual" />;
 		}
-	}, []);
+	}
 	return (
 		<div
 			style={{
@@ -238,11 +250,11 @@ function App() {
 	 */
 	const [api] = useApi((state) => [state.api]);
 
-	const [serverReachable] = useState(true);
-
 	const [playbackDataLoading] = usePlaybackDataLoadStore((state) => [
 		state.isPending,
 	]);
+
+	const [serverReachable] = useServerStore((state) => [state.reachable]);
 
 	const { enqueueSnackbar } = useSnackbar();
 
@@ -320,6 +332,8 @@ function App() {
 		],
 	});
 
+	const navigate = useNavigate();
+
 	return (
 		<SnackbarProvider maxSnack={5}>
 			<ThemeProvider theme={theme}>
@@ -371,33 +385,7 @@ function App() {
 				</Slide>
 
 				{/* Show Dialog if server not reachable */}
-				<Dialog
-					open={!serverReachable}
-					onClose={handleRelaunch}
-					aria-labelledby="alert-dialog-text"
-					aria-describedby="alert-dialog-desc"
-					maxWidth="md"
-					sx={{
-						padding: "1em",
-					}}
-				>
-					<DialogTitle id="alert-dialog-text">
-						Unable to reach server
-					</DialogTitle>
-					<DialogContent>
-						<DialogContentText id="alert-dialog-desc">
-							Unable to connect to the jellyfin server.
-						</DialogContentText>
-					</DialogContent>
-					<DialogActions>
-						<Button onClick={handleRemoveServer}>
-							Remove Server
-						</Button>
-						<Button onClick={handleRelaunch}>
-							Restart JellyPlayer
-						</Button>
-					</DialogActions>
-				</Dialog>
+
 				<div className="app-backdrop-container">
 					<AnimatePresence>
 						<motion.img
@@ -453,6 +441,47 @@ function App() {
 								exact
 								element={<LogicalRoute />}
 								// element={<></>}
+							/>
+							<Route
+								path="/error"
+								element={
+									<Dialog
+										open
+										onClose={handleRelaunch}
+										aria-labelledby="alert-dialog-text"
+										aria-describedby="alert-dialog-desc"
+										maxWidth="md"
+									>
+										<DialogTitle id="alert-dialog-text">
+											Unable to reach server
+										</DialogTitle>
+										<DialogContent>
+											<DialogContentText id="alert-dialog-desc">
+												Unable to connect to
+												the jellyfin server.
+											</DialogContentText>
+										</DialogContent>
+										<DialogActions>
+											<Button
+												onClick={() =>
+													navigate(
+														"/servers/list",
+													)
+												}
+											>
+												Change Server
+											</Button>
+											<Button
+												variant="outlined"
+												onClick={
+													handleRelaunch
+												}
+											>
+												Restart JellyPlayer
+											</Button>
+										</DialogActions>
+									</Dialog>
+								}
 							/>
 							<Route
 								path="/login/index"

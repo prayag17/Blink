@@ -5,8 +5,7 @@ import Typography from "@mui/material/Typography";
 import Paper from "@mui/material/Paper";
 import IconButton from "@mui/material/IconButton";
 import Chip from "@mui/material/Chip";
-import Divider from "@mui/material/Divider";
-import { green, red } from "@mui/material/colors";
+import { red } from "@mui/material/colors";
 
 import "./serverList.module.scss";
 import { useMutation, useQuery } from "@tanstack/react-query";
