@@ -20,6 +20,7 @@ import { AppBarBackOnly } from "../../../components/appBar/backOnly";
 import { useNavigate } from "react-router-dom";
 import { useSnackbar } from "notistack";
 import { createApi } from "../../../utils/store/api";
+import { delUser } from "../../../utils/storage/user";
 
 const ServerList = () => {
 	const navigate = useNavigate();
@@ -36,6 +37,7 @@ const ServerList = () => {
 	const handleServerChange = useMutation({
 		mutationFn: () => {
 			setDefaultServer(serverState);
+			delUser();
 		},
 		onSuccess: async () => {
 			defaultServer.refetch();

@@ -97,7 +97,7 @@ import { useQuery } from "@tanstack/react-query";
 import { CircularProgress } from "@mui/material";
 import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 import { getSystemApi } from "@jellyfin/sdk/lib/utils/api/system-api";
-import { setServerReachability, useServerStore } from "./utils/store/server";
+import { useServerStore } from "./utils/store/server";
 
 const anim = {
 	initial: {
@@ -260,8 +260,6 @@ function App() {
 	const [playbackDataLoading] = usePlaybackDataLoadStore((state) => [
 		state.isPending,
 	]);
-
-	const [serverReachable] = useServerStore((state) => [state.reachable]);
 
 	const { enqueueSnackbar } = useSnackbar();
 
