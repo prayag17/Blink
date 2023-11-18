@@ -54,8 +54,8 @@ dependencies:
     specifier: ^10.16.4
     version: 10.16.4(react-dom@18.2.0)(react@18.2.0)
   material-symbols:
-    specifier: ^0.13.2
-    version: 0.13.2
+    specifier: ^0.14.0
+    version: 0.14.0
   notistack:
     specifier: ^3.0.1
     version: 3.0.1(csstype@3.1.2)(react-dom@18.2.0)(react@18.2.0)
@@ -2878,8 +2878,8 @@ packages:
     dependencies:
       yallist: 3.1.1
 
-  /material-symbols@0.13.2:
-    resolution: {integrity: sha512-O8p2pguTZ/3EXym606wFxwI7DPS+cPM5jlS2mcO3EIcqhnHcKQbTD9lVkd0JK4Ygq/vuuiLl44T2xZYMJmpwLw==}
+  /material-symbols@0.14.0:
+    resolution: {integrity: sha512-b7jNKNvsUn5fjJFVPb0iKuORkmIzRZfAOA2p6p1+YufKYy3NE0u3aZ2w5rQ7/2IFnm66o8W51vfuEK2wVmMJ/A==}
     dev: false
 
   /memoize-one@5.2.1:
