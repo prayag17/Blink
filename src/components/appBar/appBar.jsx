@@ -50,9 +50,15 @@ export const AppBar = () => {
 			let usr = await getUserApi(api).getCurrentUser();
 			return usr.data;
 		},
-		enabled: display,
+		enabled: display && Boolean(api),
 		networkMode: "always",
 	});
+	useEffect(() => {
+		if (user.isError) {
+			console.log(api);
+			console.error(user.error);
+		}
+	}, [user]);
 
 	const trigger = useScrollTrigger({
 		disableHysteresis: true,
@@ -83,7 +89,7 @@ export const AppBar = () => {
 		event.emit("create-jellyfin-api", api.basePath);
 		queryClient.clear();
 		setAnchorEl(null);
-		navigate("/login");
+		navigate("/login/index");
 	};
 
 	useEffect(() => {

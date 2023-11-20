@@ -1,7 +1,7 @@
 /** @format */
 
 import React, { useState } from "react";
-import { useQuery } from "@tanstack/react-query";
+import { useMutation, useQuery } from "@tanstack/react-query";
 import { useNavigate, useParams } from "react-router-dom";
 import { EventEmitter as event } from "../../eventEmitter.js";
 
@@ -34,6 +34,7 @@ import { AppBarBackOnly } from "../../components/appBar/backOnly.jsx";
 
 import { getUserApi } from "@jellyfin/sdk/lib/utils/api/user-api";
 import { getBrandingApi } from "@jellyfin/sdk/lib/utils/api/branding-api";
+import { getQuickConnectApi } from "@jellyfin/sdk/lib/utils/api/quick-connect-api";
 
 import "./login.module.scss";
 import { ErrorNotice } from "../../components/notices/errorNotice/errorNotice.jsx";
@@ -221,6 +222,8 @@ export const LoginWithImage = () => {
 export const UserLogin = () => {
 	const navigate = useNavigate();
 
+	const { enqueueSnackbar } = useSnackbar();
+
 	const [api] = useApi((state) => [state.api]);
 
 	const handleChangeServer = () => {
@@ -237,6 +240,24 @@ export const UserLogin = () => {
 		},
 		enabled: Boolean(api),
 		gcTime: 0,
+	});
+
+	const handleInitiateQuickConnect = useMutation({
+		mutationKey: ["quick-connect"],
+		mutationFn: async () => {
+			console.log(api);
+			const result = await getQuickConnectApi(api).initiate();
+			return result.data;
+		},
+		onSuccess: (data) => {
+			console.info(data);
+		},
+		onError: (error) => {
+			console.error(error);
+			enqueueSnackbar("Unable to use Quick Connect", {
+				variant: "error",
+			});
+		},
 	});
 
 	if (users.isPending) {
@@ -313,6 +334,14 @@ export const UserLogin = () => {
 							onClick={handleChangeServer}
 						>
 							Change Server
+						</Button>
+						<Button
+							variant="contained"
+							className="userEventButton"
+							onClick={handleInitiateQuickConnect.mutate}
+							disabled
+						>
+							Quick Connect
 						</Button>
 						<Button
 							variant="contained"

@@ -12,6 +12,7 @@ import {
 	useNavigate,
 	useLocation,
 	Outlet,
+	Navigate,
 } from "react-router-dom";
 import { AnimatePresence, motion } from "framer-motion";
 
@@ -98,6 +99,7 @@ import { CircularProgress } from "@mui/material";
 import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 import { getSystemApi } from "@jellyfin/sdk/lib/utils/api/system-api";
 import { useServerStore } from "./utils/store/server";
+import { useCentralStore } from "./utils/store/central.js";
 
 const anim = {
 	initial: {
@@ -114,76 +116,21 @@ const anim = {
 	},
 };
 
+// const init = async () => {
+// 	const defaultServer = await getDefaultServer()
+// 	if (defaultServer) {
+// 		const server = await getServer(defaultServer)
+// 		const savedUser = await getUser();
+// 		createApi(server.address)
+// 		if (savedUser) {
+// 			let auth = await api.authenticateUserByName(savedUser.Name, savedUser.Password);
+
+// 		}
+// 	}
+
+// }
+
 const LogicalRoute = () => {
-	const [api] = useApi((state) => [state.api]);
-	const navigate = useNavigate();
-	const { enqueueSnackbar } = useSnackbar();
-	const defaultServer = useQuery({
-		queryKey: ["routing", "defaultServer"],
-		queryFn: async () => {
-			return await getDefaultServer();
-		},
-	});
-	const server = useQuery({
-		queryKey: ["routing", "server"],
-		queryFn: async () => {
-			const result = await getServer(defaultServer.data);
-			return result;
-		},
-		enabled: !defaultServer.isFetching,
-	});
-	const pingServer = useQuery({
-		queryKey: ["routing", "pingServer"],
-		queryFn: async () => {
-			const result = await getSystemApi(api).getPingSystem();
-			return result.data;
-		},
-		enabled: Boolean(api) && server.isSuccess,
-	});
-	const userSaved = useQuery({
-		queryKey: ["routing", "savedUser"],
-		queryFn: async () => await getUser(),
-	});
-	const authenticateUser = async () => {
-		const res = await api.authenticateUserByName(
-			userSaved.data.Name,
-			userSaved.data.Password,
-		);
-		return res;
-	};
-	useEffect(() => {
-		if (
-			!defaultServer.isFetching &&
-			!server.isFetching &&
-			!userSaved.isFetching &&
-			!pingServer.isFetching
-		) {
-			if (defaultServer.data) {
-				if (pingServer.data == "Jellyfin Server") {
-					if (userSaved.data) {
-						authenticateUser();
-						navigate("/home");
-						// return <Navigate replace to={} />;
-					} else {
-						console.log(server.data.address);
-						createApi(server.data.address);
-						navigate("/login/index");
-						// return <Navigate replace to={`/login/index`} />;
-					}
-				} else {
-					navigate("/error");
-				}
-			} else {
-				navigate("/setup/server");
-				// return <Navigate replace to={`/setup/server`} />;
-			}
-		}
-	}, [
-		defaultServer.isFetching,
-		server.isFetching,
-		userSaved.isFetching,
-		pingServer.isFetching,
-	]);
 	return (
 		<div
 			style={{
@@ -263,15 +210,6 @@ function App() {
 
 	const { enqueueSnackbar } = useSnackbar();
 
-	const serverSaved = async () => {
-		const defaultServer = await getDefaultServer();
-		if (defaultServer) {
-			return defaultServer;
-		} else {
-			return false;
-		}
-	};
-
 	const handleRelaunch = async (event, reason) => {
 		if (reason && reason == "backdropClick") {
 			return;
@@ -284,23 +222,6 @@ function App() {
 		await delUser();
 		await relaunch();
 	};
-
-	// Create api if not created
-	useEffect(() => {
-		if (!api) {
-			serverSaved()
-				.then(async (server) => {
-					if (server) {
-						const savedServer = await getServer(server);
-						createApi(savedServer.address);
-					}
-				})
-				.catch((error) => {
-					console.error(error);
-					enqueueSnackbar(String(error), { variant: "error" });
-				});
-		}
-	}, [api]);
 
 	const location = useLocation();
 
@@ -337,252 +258,271 @@ function App() {
 		],
 	});
 
+	const [initialRoute] = useCentralStore((state) => [state.initialRoute]);
+
 	const navigate = useNavigate();
-
-	return (
-		<SnackbarProvider maxSnack={5}>
-			<ThemeProvider theme={theme}>
-				{playbackDataLoading && (
-					<LinearProgress
-						sx={{
-							position: "fixed",
-							top: 0,
-							left: 0,
-							right: 0,
-							width: "100vw",
-							zIndex: 100000,
-						}}
-					/>
-				)}
-				<Dialog
-					open={easterEgg}
-					onClose={() => setEasterEgg(false)}
-					sx={{
-						background: "black",
-					}}
-				>
-					<iframe
-						width="560"
-						height="315"
-						src="https://www.youtube.com/embed/dQw4w9WgXcQ?autoplay=1&disablekb=1"
-						title="EasterEgg"
-						allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-					></iframe>
-				</Dialog>
-				<Slide
-					direction="up"
-					in={easterEgg}
-					mountOnEnter
-					unmountOnExit
-				>
-					<img
-						src="https://i.gifer.com/PYh.gif"
-						width={320}
-						height={320}
-						style={{
-							zIndex: "99999999",
-							position: "fixed",
-							bottom: 0,
-							left: 0,
-							objectFit: "cover",
-						}}
-					/>
-				</Slide>
-
-				{/* Show Dialog if server not reachable */}
-
-				<div className="app-backdrop-container">
-					<AnimatePresence>
-						<motion.img
-							key={backdropId}
-							src={backdropUrl}
-							alt=""
-							className="app-backdrop"
-							initial={{
-								opacity: 0,
-							}}
-							animate={{
-								opacity: backdropLoading ? 0 : 0.6,
-							}}
-							exit={{
-								opacity: 0,
-							}}
-							transition={{
-								duration: 0.8,
-								ease: "easeInOut",
-							}}
-							onLoadCapture={() => {
-								setBackdropLoading(true);
-							}}
-							onLoad={() => {
-								setBackdropLoading(false);
-							}}
-							loading="eager"
-							style={{
-								transition: "opacity 0.8s",
+	if (!initialRoute) {
+		return <>Loading...</>;
+	} else if (initialRoute) {
+		return (
+			<SnackbarProvider maxSnack={5}>
+				<ThemeProvider theme={theme}>
+					{playbackDataLoading && (
+						<LinearProgress
+							sx={{
+								position: "fixed",
+								top: 0,
+								left: 0,
+								right: 0,
+								width: "100vw",
+								zIndex: 100000,
 							}}
 						/>
-					</AnimatePresence>
-				</div>
-				<div
-					className={audioPlayerVisible ? "audio-playing" : ""}
-					style={{
-						display: "flex",
-						width: "100vw",
-						transition: "padding 250ms",
-					}}
-				>
-					<CssBaseline />
-					<SideMenu />
-					<AppBar />
-					<AudioPlayer key={audioPlayerVisible} />
-					<Routes location={location}>
-						<Route
-							// key={location.key}
-							element={<AnimationWrapper />}
-						>
-							<Route
-								path="/"
-								exact
-								element={<LogicalRoute />}
-								// element={<></>}
-							/>
-							<Route
-								path="/error"
-								element={
-									<Dialog
-										open
-										onClose={handleRelaunch}
-										aria-labelledby="alert-dialog-text"
-										aria-describedby="alert-dialog-desc"
-										maxWidth="md"
-									>
-										<DialogTitle id="alert-dialog-text">
-											Unable to reach server
-										</DialogTitle>
-										<DialogContent>
-											<DialogContentText id="alert-dialog-desc">
-												Unable to connect to
-												the jellyfin server.
-											</DialogContentText>
-										</DialogContent>
-										<DialogActions>
-											<Button
-												onClick={() =>
-													navigate(
-														"/servers/list",
-													)
-												}
-											>
-												Change Server
-											</Button>
-											<Button
-												variant="outlined"
-												onClick={
-													handleRelaunch
-												}
-											>
-												Restart JellyPlayer
-											</Button>
-										</DialogActions>
-									</Dialog>
-								}
-							/>
-							<Route
-								path="/login/index"
-								exact
-								element={<LoginRoute />}
-							/>
+					)}
+					<Dialog
+						open={easterEgg}
+						onClose={() => setEasterEgg(false)}
+						sx={{
+							background: "black",
+						}}
+					>
+						<iframe
+							width="560"
+							height="315"
+							src="https://www.youtube.com/embed/dQw4w9WgXcQ?autoplay=1&disablekb=1"
+							title="EasterEgg"
+							allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+						></iframe>
+					</Dialog>
+					<Slide
+						direction="up"
+						in={easterEgg}
+						mountOnEnter
+						unmountOnExit
+					>
+						<img
+							src="https://i.gifer.com/PYh.gif"
+							width={320}
+							height={320}
+							style={{
+								zIndex: "99999999",
+								position: "fixed",
+								bottom: 0,
+								left: 0,
+								objectFit: "cover",
+							}}
+						/>
+					</Slide>
 
-							<Route path="/home" element={<Home />} />
-							<Route
-								path="/setup/server"
-								element={<ServerSetup />}
+					{/* Show Dialog if server not reachable */}
+
+					<div className="app-backdrop-container">
+						<AnimatePresence>
+							<motion.img
+								key={backdropId}
+								src={backdropUrl}
+								alt=""
+								className="app-backdrop"
+								initial={{
+									opacity: 0,
+								}}
+								animate={{
+									opacity: backdropLoading ? 0 : 0.6,
+								}}
+								exit={{
+									opacity: 0,
+								}}
+								transition={{
+									duration: 0.8,
+									ease: "easeInOut",
+								}}
+								onLoadCapture={() => {
+									setBackdropLoading(true);
+								}}
+								onLoad={() => {
+									setBackdropLoading(false);
+								}}
+								loading="eager"
+								style={{
+									transition: "opacity 0.8s",
+								}}
 							/>
+						</AnimatePresence>
+					</div>
+					<div
+						className={
+							audioPlayerVisible ? "audio-playing" : ""
+						}
+						style={{
+							display: "flex",
+							width: "100vw",
+							transition: "padding 250ms",
+						}}
+					>
+						<CssBaseline />
+						<SideMenu />
+						<AppBar />
+						<AudioPlayer key={audioPlayerVisible} />
+						<Routes location={location}>
 							<Route
-								path="/servers/list"
-								element={<ServerList />}
-							/>
-							<Route
-								path="/login/withImg/:userName/:userId/"
-								element={<LoginWithImage />}
-							/>
-							<Route
-								path="/login/users"
-								element={<UserLogin />}
-							/>
-							<Route
-								path="/login/manual"
-								element={<UserLoginManual />}
-							/>
-							<Route
-								exact
-								path="/library/:id"
-								element={<LibraryView />}
-							/>
-							<Route
-								exact
-								path="/item/:id"
-								element={<ItemDetail />}
-							/>
-							<Route
-								exact
-								path="/musicalbum/:id"
-								element={<MusicAlbumTitlePage />}
-							/>
-							<Route
-								exact
-								path="/artist/:id"
-								element={<ArtistTitlePage />}
-							/>
-							<Route
-								exact
-								path="/boxset/:id"
-								element={<BoxSetTitlePage />}
-							/>
-							<Route
-								exact
-								path="/episode/:id"
-								element={<EpisodeTitlePage />}
-							/>
-							<Route
-								exact
-								path="/person/:id"
-								element={<PersonTitlePage />}
-							/>
-							<Route
-								exact
-								path="/playlist/:id"
-								element={<PlaylistTitlePage />}
-							/>
-							<Route
-								path="/series/:id"
-								element={<SeriesTitlePage />}
-							/>
-							<Route
-								path="/search"
-								element={<SearchPage />}
-							/>
-							<Route
-								path="/favorite"
-								element={<FavoritePage />}
-							/>
-							<Route
-								path="/settings"
-								element={<Settings />}
-							/>
-							<Route path="/about" element={<About />} />
-							<Route
-								path="/player"
-								element={<VideoPlayer />}
-							/>
-						</Route>
-					</Routes>
-				</div>
-				<ReactQueryDevtools />
-			</ThemeProvider>
-		</SnackbarProvider>
-	);
+								// key={location.key}
+								element={<AnimationWrapper />}
+							>
+								<Route
+									path="/"
+									exact
+									element={
+										<Navigate to={initialRoute} />
+									}
+									// element={<></>}
+								/>
+								<Route
+									path="/error"
+									element={
+										<Dialog
+											open
+											onClose={handleRelaunch}
+											aria-labelledby="alert-dialog-text"
+											aria-describedby="alert-dialog-desc"
+											maxWidth="md"
+										>
+											<DialogTitle id="alert-dialog-text">
+												Unable to reach
+												server
+											</DialogTitle>
+											<DialogContent>
+												<DialogContentText id="alert-dialog-desc">
+													Unable to
+													connect to the
+													jellyfin
+													server.
+												</DialogContentText>
+											</DialogContent>
+											<DialogActions>
+												<Button
+													onClick={() =>
+														navigate(
+															"/servers/list",
+														)
+													}
+												>
+													Change Server
+												</Button>
+												<Button
+													variant="outlined"
+													onClick={
+														handleRelaunch
+													}
+												>
+													Restart
+													JellyPlayer
+												</Button>
+											</DialogActions>
+										</Dialog>
+									}
+								/>
+								<Route
+									path="/login/index"
+									exact
+									element={<LoginRoute />}
+								/>
+
+								<Route
+									path="/home"
+									element={<Home />}
+								/>
+								<Route
+									path="/setup/server"
+									element={<ServerSetup />}
+								/>
+								<Route
+									path="/servers/list"
+									element={<ServerList />}
+								/>
+								<Route
+									path="/login/withImg/:userName/:userId/"
+									element={<LoginWithImage />}
+								/>
+								<Route
+									path="/login/users"
+									element={<UserLogin />}
+								/>
+								<Route
+									path="/login/manual"
+									element={<UserLoginManual />}
+								/>
+								<Route
+									exact
+									path="/library/:id"
+									element={<LibraryView />}
+								/>
+								<Route
+									exact
+									path="/item/:id"
+									element={<ItemDetail />}
+								/>
+								<Route
+									exact
+									path="/musicalbum/:id"
+									element={<MusicAlbumTitlePage />}
+								/>
+								<Route
+									exact
+									path="/artist/:id"
+									element={<ArtistTitlePage />}
+								/>
+								<Route
+									exact
+									path="/boxset/:id"
+									element={<BoxSetTitlePage />}
+								/>
+								<Route
+									exact
+									path="/episode/:id"
+									element={<EpisodeTitlePage />}
+								/>
+								<Route
+									exact
+									path="/person/:id"
+									element={<PersonTitlePage />}
+								/>
+								<Route
+									exact
+									path="/playlist/:id"
+									element={<PlaylistTitlePage />}
+								/>
+								<Route
+									path="/series/:id"
+									element={<SeriesTitlePage />}
+								/>
+								<Route
+									path="/search"
+									element={<SearchPage />}
+								/>
+								<Route
+									path="/favorite"
+									element={<FavoritePage />}
+								/>
+								<Route
+									path="/settings"
+									element={<Settings />}
+								/>
+								<Route
+									path="/about"
+									element={<About />}
+								/>
+								<Route
+									path="/player"
+									element={<VideoPlayer />}
+								/>
+							</Route>
+						</Routes>
+					</div>
+					<ReactQueryDevtools />
+				</ThemeProvider>
+			</SnackbarProvider>
+		);
+	}
 }
 
 export default App;

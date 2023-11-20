@@ -8,6 +8,10 @@ import { BrowserRouter as Router } from "react-router-dom";
 import App from "./App";
 
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { getDefaultServer, getServer } from "./utils/storage/servers";
+import { getUser } from "./utils/storage/user";
+import { createApi, useApi } from "./utils/store/api";
+import { setInitialRoute, useCentralStore } from "./utils/store/central";
 
 const queryClient = new QueryClient({
 	defaultOptions: {
@@ -20,6 +24,38 @@ const queryClient = new QueryClient({
 		},
 	},
 });
+
+const init = async () => {
+	const defaultServerOnDisk = await getDefaultServer();
+	if (defaultServerOnDisk) {
+		const defaultServerInfo = await getServer(defaultServerOnDisk);
+		createApi(defaultServerInfo.address);
+		const userOnDisk = await getUser();
+		if (userOnDisk) {
+			try {
+				const auth = await useApi
+					.getState()
+					.api.authenticateUserByName(
+						userOnDisk.Name,
+						userOnDisk.Password,
+					);
+				createApi(defaultServerInfo.address, auth.AccessToken);
+				setInitialRoute("/home");
+				// window.startingRoute("/home");
+			} catch (error) {
+				console.error(error);
+				setInitialRoute("/error");
+			}
+		} else {
+			setInitialRoute("/login/index");
+			// window.startingRoute = "/login/index";
+		}
+	} else {
+		setInitialRoute("/setup/server");
+		// window.startingRoute = "/setup/server";
+	}
+};
+init();
 
 ReactDOM.createRoot(document.getElementById("root")).render(
 	<React.StrictMode>
