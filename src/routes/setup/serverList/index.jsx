@@ -13,13 +13,11 @@ import {
 	delServer,
 	getAllServer,
 	getDefaultServer,
-	getServer,
 	setDefaultServer,
 } from "../../../utils/storage/servers";
 import { AppBarBackOnly } from "../../../components/appBar/backOnly";
 import { useNavigate } from "react-router-dom";
 import { useSnackbar } from "notistack";
-import { createApi } from "../../../utils/store/api";
 import { delUser } from "../../../utils/storage/user";
 
 import { relaunch } from "@tauri-apps/api/process";

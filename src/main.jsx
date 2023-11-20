@@ -11,7 +11,7 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { getDefaultServer, getServer } from "./utils/storage/servers";
 import { getUser } from "./utils/storage/user";
 import { createApi, useApi } from "./utils/store/api";
-import { setInitialRoute, useCentralStore } from "./utils/store/central";
+import { setInitialRoute } from "./utils/store/central";
 
 const queryClient = new QueryClient({
 	defaultOptions: {
@@ -41,18 +41,15 @@ const init = async () => {
 					);
 				createApi(defaultServerInfo.address, auth.data.AccessToken);
 				setInitialRoute("/home");
-				// window.startingRoute("/home");
 			} catch (error) {
 				console.error(error);
 				setInitialRoute("/error");
 			}
 		} else {
 			setInitialRoute("/login/index");
-			// window.startingRoute = "/login/index";
 		}
 	} else {
 		setInitialRoute("/setup/server");
-		// window.startingRoute = "/setup/server";
 	}
 };
 init();

@@ -5,7 +5,7 @@ import React, { useState, useEffect } from "react";
 import useKonami from "react-use-konami";
 
 import { ThemeProvider } from "@mui/material/styles";
-import { SnackbarProvider, useSnackbar } from "notistack";
+import { SnackbarProvider } from "notistack";
 import {
 	Routes,
 	Route,
@@ -75,13 +75,6 @@ import "@fontsource/noto-sans/900-italic.css";
 import "material-symbols";
 import "@fontsource-variable/jetbrains-mono";
 
-import {
-	delServer,
-	getDefaultServer,
-	getServer,
-} from "./utils/storage/servers.js";
-import { delUser, getUser } from "./utils/storage/user.js";
-
 import { useBackdropStore } from "./utils/store/backdrop.js";
 import { usePlaybackDataLoadStore } from "./utils/store/playback.js";
 import BoxSetTitlePage from "./routes/boxset/index.jsx";
@@ -93,12 +86,10 @@ import ArtistTitlePage from "./routes/artist/index.jsx";
 import EpisodeTitlePage from "./routes/episode/index.jsx";
 import PlaylistTitlePage from "./routes/playlist/index.jsx";
 
-import { createApi, useApi } from "./utils/store/api.js";
+import { useApi } from "./utils/store/api.js";
 import { useQuery } from "@tanstack/react-query";
 import { CircularProgress } from "@mui/material";
 import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
-import { getSystemApi } from "@jellyfin/sdk/lib/utils/api/system-api";
-import { useServerStore } from "./utils/store/server";
 import { useCentralStore } from "./utils/store/central.js";
 
 const anim = {
@@ -114,35 +105,6 @@ const anim = {
 		transform: "sscale(1.02)",
 		opacity: 0,
 	},
-};
-
-// const init = async () => {
-// 	const defaultServer = await getDefaultServer()
-// 	if (defaultServer) {
-// 		const server = await getServer(defaultServer)
-// 		const savedUser = await getUser();
-// 		createApi(server.address)
-// 		if (savedUser) {
-// 			let auth = await api.authenticateUserByName(savedUser.Name, savedUser.Password);
-
-// 		}
-// 	}
-
-// }
-
-const LogicalRoute = () => {
-	return (
-		<div
-			style={{
-				position: "fixed",
-				top: "50%",
-				left: "50%",
-				transform: "translate(-50%, -50%)",
-			}}
-		>
-			<CircularProgress size={84} thickness={1} />
-		</div>
-	);
 };
 
 const LoginRoute = () => {
@@ -197,27 +159,14 @@ const AnimationWrapper = () => {
 };
 
 function App() {
-	/**
-	 * @type {[import("@jellyfin/sdk").Api]}
-	 */
-	const [api] = useApi((state) => [state.api]);
-
 	const [playbackDataLoading] = usePlaybackDataLoadStore((state) => [
 		state.isPending,
 	]);
-
-	const { enqueueSnackbar } = useSnackbar();
 
 	const handleRelaunch = async (event, reason) => {
 		if (reason && reason == "backdropClick") {
 			return;
 		}
-		await relaunch();
-	};
-
-	const handleRemoveServer = async () => {
-		await delServer();
-		await delUser();
 		await relaunch();
 	};
 
