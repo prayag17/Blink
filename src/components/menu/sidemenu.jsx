@@ -25,7 +25,10 @@ import Typography from "@mui/material/Typography";
 import { MdiClose } from "../icons/mdiClose";
 import { MdiLogoutVariant } from "../icons/mdiLogoutVariant";
 
-import { MediaCollectionTypeIconCollection } from "../../components/utils/iconsCollection.jsx";
+import {
+	MediaCollectionTypeIconCollection,
+	getTypeIcon,
+} from "../../components/utils/iconsCollection.jsx";
 
 import { MdiHomeVariantOutline } from "../icons/mdiHomeVariantOutline";
 
@@ -151,7 +154,7 @@ export const SideMenu = () => {
 									className="sidemenu-item small"
 								>
 									<div className="sidemenu-item-icon">
-										<MdiHomeVariantOutline />
+										{getTypeIcon("Home")}
 									</div>
 									<Typography
 										className="sidemenu-item-text"
@@ -182,12 +185,9 @@ export const SideMenu = () => {
 													className="sidemenu-item"
 												>
 													<div className="sidemenu-item-icon">
-														{
-															MediaCollectionTypeIconCollection[
-																lib
-																	.CollectionType
-															]
-														}
+														{getTypeIcon(
+															lib.CollectionType,
+														)}
 													</div>
 													<Typography
 														className="sidemenu-item-text"

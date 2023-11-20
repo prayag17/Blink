@@ -87,11 +87,14 @@ const MarkPlayedButton = ({ itemId, isPlayed, queryKey, userId, itemName }) => {
 					opacity: mutation.isPending ? 0.5 : 1,
 				}}
 			>
-				<MdiCheck
-					sx={{
+				<div
+					className="material-symbols-rounded"
+					style={{
 						color: isPlayed ? green[400] : "white",
 					}}
-				/>
+				>
+					done
+				</div>
 			</IconButton>
 		</div>
 	);

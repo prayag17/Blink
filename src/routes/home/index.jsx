@@ -263,6 +263,9 @@ const Home = () => {
 															)[0]
 														]
 													}
+													overrideIcon={
+														item.CollectionType
+													}
 												></Card>
 											);
 										},

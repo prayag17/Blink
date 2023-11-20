@@ -68,22 +68,22 @@
 			height: 100%;
 			transition: opacity 0.5s;
 		}
-		&-icon {
+
+		&-icon-container {
 			position: absolute;
-			font-size: 15em !important;
-			left: 70%;
-			top: 50%;
-			transform: translate(-50%, -50%);
-			fill: url(#clr-gradient-default) !important;
-			&-container {
+			background: $clr-gradient-dark;
+			// background: url("/public/assetsStatic//meshbackground.png");
+			z-index: 0;
+			top: 0;
+			left: 0;
+			right: 0;
+			bottom: 0;
+			.material-symbols-rounded {
 				position: absolute;
-				background: $clr-gradient-dark;
-				// background: url("/public/assetsStatic//meshbackground.png");
-				z-index: 0;
-				top: 0;
-				left: 0;
-				right: 0;
-				bottom: 0;
+				font-size: 15em !important;
+				left: 70%;
+				top: 50%;
+				transform: translate(-50%, -50%);
 			}
 		}
 	}

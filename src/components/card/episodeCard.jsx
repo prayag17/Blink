@@ -76,7 +76,9 @@ export const EpisodeCard = ({
 										: 0,
 								}}
 							>
-								<MdiCheck />
+								<div className="material-symbols-rounded">
+									done
+								</div>
 							</div>
 						)}
 						{!!imageBlurhash && (
@@ -90,7 +92,9 @@ export const EpisodeCard = ({
 							/>
 						)}
 						<div className="card-image-icon-container">
-							<MdiTelevisionClassic className="card-image-icon" />
+							<div className="material-symbols-rounded">
+								tv_gen
+							</div>
 						</div>
 						<img
 							src={api.getItemImageUrl(

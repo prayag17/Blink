@@ -77,13 +77,17 @@ export const CardScroller = ({
 						className="card-scroller-button"
 						onClick={() => carouselRef.previous()}
 					>
-						<MdiChevronLeft />
+						<div className="material-symbols-rounded">
+							chevron_left
+						</div>
 					</IconButton>
 					<IconButton
 						className="card-scroller-button"
 						onClick={() => carouselRef.next()}
 					>
-						<MdiChevronRight />
+						<div className="material-symbols-rounded">
+							chevron_right
+						</div>
 					</IconButton>
 				</ButtonGroup>
 			</Box>

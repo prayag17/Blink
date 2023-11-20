@@ -10,7 +10,7 @@ import LinearProgress from "@mui/material/LinearProgress";
 
 import { Blurhash } from "react-blurhash";
 
-import { TypeIconCollectionCard } from "../utils/iconsCollection";
+import { getTypeIcon } from "../utils/iconsCollection";
 import "./card.module.scss";
 import { MdiCheck } from "../icons/mdiCheck";
 
@@ -114,7 +114,9 @@ export const Card = ({
 											: 0,
 									}}
 								>
-									<MdiCheck />
+									<div className="material-symbols-rounded">
+										done
+									</div>
 								</div>
 								<div
 									className={`card-indicator text`}
@@ -150,8 +152,8 @@ export const Card = ({
 						)}
 						<div className="card-image-icon-container">
 							{overrideIcon
-								? TypeIconCollectionCard[overrideIcon]
-								: TypeIconCollectionCard[item.Type]}
+								? getTypeIcon(overrideIcon)
+								: getTypeIcon(item.Type)}
 						</div>
 						<img
 							src={

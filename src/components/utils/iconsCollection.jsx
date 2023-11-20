@@ -1,5 +1,5 @@
 /** @format */
-
+import React from "react";
 import { MdiMovieOutline } from "../icons/mdiMovieOutline";
 import { MdiMusicBoxMultipleOutline } from "../icons/mdiMusicBoxMultipleOutline";
 import { MdiPlaylistMusicOutline } from "../icons/mdiPlaylistMusicOutline";
@@ -25,6 +25,7 @@ import { MdiMusic } from "../icons/mdiMusic";
 import { MdiAccountTie } from "../icons/mdiAccountTie";
 import { MdiAccount } from "../icons/mdiAccount";
 import { MdiFilmstripBoxMultiple } from "../icons/mdiFilmstripBoxMultiple";
+import { BaseItemKind } from "@jellyfin/sdk/lib/generated-client";
 
 export const MediaCollectionTypeIconCollection = {
 	universal: <MdiMultimedia />,
@@ -43,15 +44,6 @@ export const MediaCollectionTypeIconCollection = {
 };
 
 export const MediaCollectionTypeIconCollectionCard = {
-	universal: <MdiMultimedia className="card-image-icon" />,
-	movies: <MdiMovieOutline className="card-image-icon" />,
-	music: <MdiMusicBoxMultipleOutline className="card-image-icon" />,
-	playlists: <MdiPlaylistMusicOutline className="card-image-icon" />,
-	tvshows: <MdiTelevision className="card-image-icon" />,
-	boxsets: <MdiFilmstripBoxMultiple className="card-image-icon" />,
-	musicvideos: <MdiFolderMusicOutline className="card-image-icon" />,
-	trailers: <MdiYoutube className="card-image-icon" />,
-	books: <MdiBookMultiple className="card-image-icon" />,
 	photos: <MdiImageMultiple className="card-image-icon" />,
 	livetv: <MdiTelevisionClassic className="card-image-icon" />,
 	folder: <MdiFolderOutline className="card-image-icon" />,
@@ -67,47 +59,109 @@ export const MediaTypeIconCollection = {
 	AudioBook: <MdiBookMusic className="hero-carousel-background-icon" />,
 };
 
-export const TypeIconCollectionCard = {
-	Actor: <MdiAccountTie className="card-image-icon" />,
-	AggregateFolder: <MdiFolderMultiple className="card-image-icon" />,
-	Audio: <MdiMicrophone className="card-image-icon" />,
-	AudioBook: <MdiBookMusic className="card-image-icon" />,
-	BasePluginFolder: <MdiFolderOutline className="card-image-icon" />,
-	Book: <MdiBook className="card-image-icon" />,
-	BoxSet: <MdiPlayBoxMultiple className="card-image-icon" />,
-	Channel: <MdiTelevisionClassic className="card-image-icon" />,
-	ChannelFolderItem: <MdiTelevisionClassic className="card-image-icon" />,
-	CollectionFolder: <MdiFolderOutline className="card-image-icon" />,
-	Episode: <MdiTelevisionClassic className="card-image-icon" />,
-	Folder: <MdiFolderOutline className="card-image-icon" />,
-	LiveTvChannel: <MdiTelevisionClassic className="card-image-icon" />,
-	LiveTvProgram: <MdiTelevisionClassic className="card-image-icon" />,
-	ManualPlaylistsFolder: (
-		<MdiPlaylistMusicOutline className="card-image-icon" />
-	),
-	Movie: <MdiFilmstrip className="card-image-icon" />,
-	MusicAlbum: <MdiAlbum className="card-image-icon" />,
-	MusicArtist: <MdiAccountMusic className="card-image-icon" />,
-	MusicGenre: <MdiDramaMasks className="card-image-icon" />,
-	MusicVideo: <MdiMusic className="card-image-icon" />,
-	Person: <MdiAccountTie className="card-image-icon" />,
-	Photo: <MdiImage className="card-image-icon" />,
-	PhotoAlbum: <MdiImageMultiple className="card-image-icon" />,
-	Playlist: <MdiPlaylistMusicOutline className="card-image-icon" />,
-	PlaylistsFolder: <MdiPlaylistMusicOutline className="card-image-icon" />,
-	Program: <MdiTelevisionClassic className="card-image-icon" />,
-	Recording: <MdiTelevisionClassic className="card-image-icon" />,
-	Season: <MdiTelevisionClassic className="card-image-icon" />,
-	Series: <MdiTelevisionClassic className="card-image-icon" />,
-	Studio: <MdiMultimedia className="card-image-icon" />,
-	Trailer: <MdiYoutube className="card-image-icon" />,
-	TvChannel: <MdiTelevisionClassic className="card-image-icon" />,
-	TvProgram: <MdiTelevisionClassic className="card-image-icon" />,
-	User: <MdiAccount className="card-image-icon" />,
-	UserRootFolder: <MdiFolderOutline className="card-image-icon" />,
-	UserView: <MdiMultimedia className="card-image-icon" />,
-	Video: <MdiFilmstrip className="card-image-icon" />,
-	Year: <MdiMultimedia className="card-image-icon" />,
-	Genre: <MdiDramaMasks className="card-image-icon" />,
-	Library: <MdiMultimedia className="card-image-icon" />,
+export const getTypeIcon = (icon) => {
+	switch (icon) {
+		case "Home":
+			return <div className="material-symbols-rounded">home</div>;
+		case BaseItemKind.Audio:
+			return <div className="material-symbols-rounded">mic</div>;
+		case BaseItemKind.AudioBook:
+			return (
+				<div className="material-symbols-rounded">library_book</div>
+			);
+		case BaseItemKind.Book:
+			return <div className="material-symbols-rounded">book</div>;
+		case "boxsets":
+		case BaseItemKind.BoxSet:
+			return (
+				<div className="material-symbols-rounded">
+					video_library
+				</div>
+			);
+		case "livetv":
+		case BaseItemKind.TvProgram:
+		case BaseItemKind.TvChannel:
+		case BaseItemKind.Program:
+		case BaseItemKind.Recording:
+		case BaseItemKind.LiveTvChannel:
+		case BaseItemKind.LiveTvProgram:
+		case BaseItemKind.ChannelFolderItem:
+		case BaseItemKind.Channel:
+			return (
+				<div className="material-symbols-rounded">
+					settings_input_antenna
+				</div>
+			);
+		case "tvshows":
+		case BaseItemKind.Season:
+		case BaseItemKind.Series:
+		case BaseItemKind.Episode:
+			return <div className="material-symbols-rounded">tv_gen</div>;
+		case "playlists":
+		case BaseItemKind.Playlist:
+		case BaseItemKind.PlaylistsFolder:
+		case BaseItemKind.ManualPlaylistsFolder:
+			return (
+				<div className="material-symbols-rounded">queue_music</div>
+			);
+		case "movies":
+		case BaseItemKind.Movie:
+			return <div className="material-symbols-rounded">movie</div>;
+		case BaseItemKind.MusicAlbum:
+			return <div className="material-symbols-rounded">album</div>;
+		case BaseItemKind.MusicArtist:
+			return <div className="material-symbols-rounded">artist</div>;
+		case BaseItemKind.Genre:
+		case BaseItemKind.MusicGenre:
+			return (
+				<div className="material-symbols-rounded">domino_mask</div>
+			);
+		case "musicvideos":
+		case BaseItemKind.MusicVideo:
+			return (
+				<div className="material-symbols-rounded">music_video</div>
+			);
+		case "User":
+		case BaseItemKind.Person:
+			return <div className="material-symbols-rounded">person</div>;
+		case BaseItemKind.Photo:
+			return <div className="material-symbols-rounded">image</div>;
+		case "photos":
+		case BaseItemKind.PhotoAlbum:
+			return (
+				<div className="material-symbols-rounded">
+					photo_library
+				</div>
+			);
+		case "universal":
+		case BaseItemKind.Studio:
+			return <div className="material-symbols-rounded">category</div>;
+		case "trailers":
+		case BaseItemKind.Trailer:
+			return (
+				<div className="material-symbols-rounded">
+					smart_display
+				</div>
+			);
+		case BaseItemKind.Video:
+			return <div className="material-symbols-rounded">theaters</div>;
+		case "music":
+			return (
+				<div className="material-symbols-rounded">
+					library_music
+				</div>
+			);
+		case "books":
+			return (
+				<div className="material-symbols-rounded">
+					library_books
+				</div>
+			);
+		case "folders":
+			return <div className="material-symbols-rounded">folder</div>;
+		default:
+			return (
+				<div className="material-symbols-rounded">description</div>
+			);
+	}
 };

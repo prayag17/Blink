@@ -67,7 +67,6 @@ const LibraryView = () => {
 			return usr.data;
 		},
 		networkMode: "always",
-		enabled: Boolean(api),
 	});
 
 	const [sortAscending, setSortAscending] = useState(true);
@@ -348,6 +347,7 @@ const LibraryView = () => {
 	useState(() => {
 		// Remove App backdrop in library page
 		setAppBackdrop("", "");
+		console.log(items);
 	}, []);
 
 	return (

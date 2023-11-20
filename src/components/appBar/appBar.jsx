@@ -50,12 +50,11 @@ export const AppBar = () => {
 			let usr = await getUserApi(api).getCurrentUser();
 			return usr.data;
 		},
-		enabled: display && Boolean(api),
+		enabled: display,
 		networkMode: "always",
 	});
 	useEffect(() => {
 		if (user.isError) {
-			console.log(api);
 			console.error(user.error);
 		}
 	}, [user]);
@@ -146,7 +145,9 @@ export const AppBar = () => {
 							aria-label="open drawer"
 							onClick={handleDrawerOpen}
 						>
-							<MdiMenu />
+							<div className="material-symbols-rounded">
+								menu
+							</div>
 						</IconButton>
 						<IconButton
 							onClick={() => navigate(-1)}
@@ -159,15 +160,21 @@ export const AppBar = () => {
 								ml: 2,
 							}}
 						>
-							<MdiArrowLeft />
+							<div className="material-symbols-rounded">
+								arrow_back
+							</div>
 						</IconButton>
 					</div>
 					<div style={{ display: "flex", gap: "1.2em" }}>
 						<IconButton onClick={() => navigate("/search")}>
-							<MdiMagnify />
+							<div className="material-symbols-rounded">
+								search
+							</div>
 						</IconButton>
 						<IconButton onClick={() => navigate("/favorite")}>
-							<MdiHeartOutline />
+							<div className="material-symbols-rounded">
+								favorite
+							</div>
 						</IconButton>
 						<IconButton
 							sx={{ p: 0 }}
@@ -209,7 +216,9 @@ export const AppBar = () => {
 								disabled
 							>
 								<ListItemIcon>
-									<MdiCog />
+									<div className="material-symbols-rounded">
+										settings
+									</div>
 								</ListItemIcon>
 								Settings
 							</MenuItem>
@@ -218,13 +227,17 @@ export const AppBar = () => {
 								disabled
 							>
 								<ListItemIcon>
-									<MdiInformation />
+									<div className="material-symbols-rounded">
+										info
+									</div>
 								</ListItemIcon>
 								About
 							</MenuItem>
 							<MenuItem onClick={handleLogout}>
 								<ListItemIcon>
-									<MdiLogoutVariant />
+									<div className="material-symbols-rounded">
+										logout
+									</div>
 								</ListItemIcon>
 								Logout
 							</MenuItem>
@@ -236,7 +249,9 @@ export const AppBar = () => {
 								}}
 							>
 								<ListItemIcon>
-									<MdiDelete />
+									<div className="material-symbols-rounded appBar-icon">
+										delete
+									</div>
 								</ListItemIcon>
 								Remove Server
 							</MenuItem>

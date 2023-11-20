@@ -95,11 +95,24 @@ const LikeButton = ({
 					opacity: mutation.isPending ? 0.5 : 1,
 				}}
 			>
-				{isFavorite ? (
-					<MdiHeart sx={{ color: pink[700] }} />
-				) : (
-					<MdiHeartOutline sx={{ color: color }} />
-				)}
+				<div
+					className="material-symbols-rounded"
+					style={
+						isFavorite
+							? {
+									fontVariationSettings:
+										'"FILL" 1, "wght" 300, "GRAD" 25, "opsz" 40',
+									color: pink[700],
+							  }
+							: {
+									fontVariationSettings:
+										'"FILL" 0, "wght" 300, "GRAD" 25, "opsz" 40',
+									color: "white",
+							  }
+					}
+				>
+					favorite
+				</div>
 			</IconButton>
 		</div>
 	);

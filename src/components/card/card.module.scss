@@ -32,21 +32,24 @@
 			z-index: 0;
 		}
 		&-icon {
-			position: absolute;
-			top: 50%;
-			left: 50%;
-			transform: translate(-50%, -50%);
 			font-size: 5.4em !important;
 			fill: url(#clr-gradient-default) !important;
-			color: transparent;
 			&-container {
-				background: $clr-gradient-dark;
+				background: rgb(255 255 255 / 0.1);
 				height: 100%;
 				width: 100%;
 				position: absolute;
 				z-index: 0;
 				top: 0;
 				left: 0;
+				.material-symbols-rounded {
+					position: absolute;
+					top: 50%;
+					left: 50%;
+					transform: translate(-50%, -50%);
+					color: rgb(255 255 255 / 0.5);
+					font-size: 4em !important;
+				}
 			}
 		}
 		&-blurhash {

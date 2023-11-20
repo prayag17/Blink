@@ -7,8 +7,6 @@ import Fab from "@mui/material/Fab";
 import LinearProgress from "@mui/material/LinearProgress";
 import Typography from "@mui/material/Typography";
 
-import { MdiPlayOutline } from "../icons/mdiPlayOutline";
-
 import {
 	usePlaybackDataLoadStore,
 	usePlaybackStore,
@@ -330,7 +328,14 @@ const PlayButton = ({
 				size={size}
 				{...buttonProps}
 			>
-				<MdiPlayOutline {...iconProps} />
+				<div
+					className="material-symbols-rounded em-4"
+					style={{
+						fontSize: "3em",
+					}}
+				>
+					play_arrow
+				</div>
 			</Fab>
 		);
 	} else {
@@ -339,7 +344,16 @@ const PlayButton = ({
 				className={className}
 				variant="contained"
 				onClick={handleClick}
-				startIcon={<MdiPlayOutline />}
+				startIcon={
+					<div
+						className="material-symbols-rounded"
+						style={{
+							fontSize: "2em",
+						}}
+					>
+						play_arrow
+					</div>
+				}
 				{...buttonProps}
 				sx={{
 					position: "relative",

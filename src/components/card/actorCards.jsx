@@ -74,7 +74,9 @@ export const ActorCard = ({
 							/>
 						)}
 						<div className="card-image-icon-container">
-							<MdiAccountTie className="card-image-icon" />
+							<div className="material-symbols-rounded">
+								person
+							</div>
 						</div>
 						<img
 							src={api.getItemImageUrl(

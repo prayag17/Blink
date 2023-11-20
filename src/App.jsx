@@ -209,7 +209,18 @@ function App() {
 
 	const navigate = useNavigate();
 	if (!initialRoute) {
-		return <>Loading...</>;
+		return (
+			<div
+				style={{
+					position: "fixed",
+					top: "50%",
+					left: "50%",
+					transform: "translate(-50%, -50%)",
+				}}
+			>
+				<CircularProgress size={72} thickness={1.4} />
+			</div>
+		);
 	} else if (initialRoute) {
 		return (
 			<SnackbarProvider maxSnack={5}>

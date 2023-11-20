@@ -17,7 +17,7 @@ import CarouselSlideError from "../errors/carousel";
 import { MdiStar } from "../icons/mdiStar";
 import { endsAt, getRuntime } from "../../utils/date/time";
 import { useNavigate } from "react-router-dom";
-import { MediaTypeIconCollection } from "../utils/iconsCollection";
+import { MediaTypeIconCollection, getTypeIcon } from "../utils/iconsCollection";
 import { MdiChevronRight } from "../icons/mdiChevronRight";
 import { useQuery } from "@tanstack/react-query";
 
@@ -123,7 +123,7 @@ const CarouselSlide = ({ item }) => {
 						</>
 					)}
 					<div className="hero-carousel-background-icon-container">
-						{MediaTypeIconCollection[item.Type]}
+						{getTypeIcon(item.Type)}
 					</div>
 				</div>
 				<motion.div
@@ -264,7 +264,6 @@ const CarouselSlide = ({ item }) => {
 						{item.Overview}
 					</Typography>
 
-					{/* TODO Link PLay and More info buttons in carousel */}
 					<Stack
 						mt={3}
 						direction="row"
@@ -300,7 +299,16 @@ const CarouselSlide = ({ item }) => {
 							size="large"
 							color="white"
 							variant="outlined"
-							endIcon={<MdiChevronRight />}
+							endIcon={
+								<div
+									className="material-symbols-rounded"
+									style={{
+										fontSize: "2em",
+									}}
+								>
+									chevron_right
+								</div>
+							}
 							onClick={handleMoreInfo}
 						>
 							More info
@@ -328,4 +336,4 @@ const CarouselSlide = ({ item }) => {
 	);
 };
 
-export default memo(CarouselSlide);
+export default CarouselSlide;
