@@ -39,7 +39,7 @@ const init = async () => {
 						userOnDisk.Name,
 						userOnDisk.Password,
 					);
-				createApi(defaultServerInfo.address, auth.AccessToken);
+				createApi(defaultServerInfo.address, auth.data.AccessToken);
 				setInitialRoute("/home");
 				// window.startingRoute("/home");
 			} catch (error) {

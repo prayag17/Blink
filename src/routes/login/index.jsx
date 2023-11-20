@@ -238,7 +238,6 @@ export const UserLogin = () => {
 			const users = await getUserApi(api).getPublicUsers();
 			return users.data;
 		},
-		enabled: Boolean(api),
 		gcTime: 0,
 	});
 
@@ -339,7 +338,7 @@ export const UserLogin = () => {
 							variant="contained"
 							className="userEventButton"
 							onClick={handleInitiateQuickConnect.mutate}
-							disabled
+							// disabled
 						>
 							Quick Connect
 						</Button>
@@ -379,7 +378,6 @@ export const UserLoginManual = () => {
 			const result = await getBrandingApi(api).getBrandingOptions();
 			return result.data;
 		},
-		enabled: !!api,
 		networkMode: "always",
 	});
 

@@ -148,7 +148,7 @@ const LogicalRoute = () => {
 const LoginRoute = () => {
 	const navigate = useNavigate();
 	const [api] = useApi((state) => [state.api]);
-	console.log(api);
+
 	const usersList = useQuery({
 		queryKey: ["public-users"],
 		queryFn: async () => {
@@ -160,10 +160,8 @@ const LoginRoute = () => {
 	if (usersList.isSuccess && !usersList.isFetching) {
 		if (usersList.data.length > 0) {
 			navigate("/login/users");
-			// <Navigate replace to="/login/users" />;
 		} else {
 			navigate("/login/manual");
-			// <Navigate replace to="/login/manual" />;
 		}
 	}
 	return (
@@ -175,7 +173,7 @@ const LoginRoute = () => {
 				transform: "translate(-50%, -50%)",
 			}}
 		>
-			<CircularProgress size={84} thickness={1} />
+			<CircularProgress size={72} thickness={1.4} />
 		</div>
 	);
 };

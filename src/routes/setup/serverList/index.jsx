@@ -22,6 +22,8 @@ import { useSnackbar } from "notistack";
 import { createApi } from "../../../utils/store/api";
 import { delUser } from "../../../utils/storage/user";
 
+import { relaunch } from "@tauri-apps/api/process";
+
 const ServerList = () => {
 	const navigate = useNavigate();
 	const [serverState, setServerState] = useState(null);
@@ -40,18 +42,7 @@ const ServerList = () => {
 			delUser();
 		},
 		onSuccess: async () => {
-			defaultServer.refetch();
-			// get default server again since query not uptodate always
-			// let defServer = await getDefaultServer();
-			let server = await getServer(serverState);
-			createApi(server.address);
-
-			enqueueSnackbar("Successfully changed server!", {
-				variant: "success",
-			});
-			if (!defaultServer.isFetching) {
-				navigate("/");
-			}
+			await relaunch();
 		},
 		onError: (error) => {
 			console.error(error);
@@ -71,7 +62,7 @@ const ServerList = () => {
 				if (tempList.length > 0) {
 					setDefaultServer(tempList[0][0]);
 				} else {
-					console.log();
+					navigate("/setup/server");
 				}
 			}
 			servers.refetch();
