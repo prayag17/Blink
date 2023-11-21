@@ -1,12 +1,15 @@
 /** @format */
 
 .appBar {
+	top: 8px !important;
+	right: 8px !important;
+	border-radius: 10000px;
 	transition: background-color $transition-time-fast,
 		backdrop-filter $transition-time-fast,
 		box-shadow $transition-time-default !important;
 	&.backdropVisible {
-		background-color: $clr-background-dark-opacity-0_8 !important;
-		backdrop-filter: blur(30px);
+		background-color: rgb(0 0 0 / 0.6) !important;
+		backdrop-filter: blur(10px);
 	}
 	&-avatar {
 		background: $clr-gradient-dark;

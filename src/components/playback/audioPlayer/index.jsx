@@ -286,7 +286,9 @@ const AudioPlayer = () => {
 								onClick={handlePrevious}
 								disabled={currentTrack == 0}
 							>
-								<MdiSkipPrevious />
+								<div className="material-symbols-rounded">
+									skip_previous
+								</div>
 							</IconButton>
 							<div
 								style={{
@@ -309,11 +311,16 @@ const AudioPlayer = () => {
 									size="small"
 									onClick={handlePlayPause}
 								>
-									{playing ? (
-										<MdiPause />
-									) : (
-										<MdiPlay />
-									)}
+									<div
+										className="material-symbols-rounded"
+										style={{
+											fontSize: "2em",
+										}}
+									>
+										{playing
+											? "pause"
+											: "play_arrow"}
+									</div>
 								</Fab>
 							</div>
 							<IconButton
@@ -322,7 +329,9 @@ const AudioPlayer = () => {
 									tracks.length - 1 == currentTrack
 								}
 							>
-								<MdiSkipNext />
+								<div className="material-symbols-rounded">
+									skip_next
+								</div>
 							</IconButton>
 						</div>
 						<div
@@ -398,18 +407,18 @@ const AudioPlayer = () => {
 							</Paper>
 						</Popper>
 						<IconButton onClick={handleOpenQueue} disabled>
-							<MdiPlaylistMusicOutline />
+							<div className="material-symbols-rounded">
+								queue_music
+							</div>
 						</IconButton>
 						<IconButton
 							onClick={(e) => {
 								setIsMuted(!isMuted);
 							}}
 						>
-							{isMuted ? (
-								<MdiVolumeOff />
-							) : (
-								<MdiVolumeHigh />
-							)}
+							<div className="material-symbols-rounded">
+								{isMuted ? "volume_mute" : "volume_up"}
+							</div>
 						</IconButton>
 						<Slider
 							value={isMuted ? 0 : volume * 100}
@@ -453,7 +462,9 @@ const AudioPlayer = () => {
 							}}
 						/>
 						<IconButton onClick={resetPlayer}>
-							<MdiClose />
+							<div className="material-symbols-rounded">
+								close
+							</div>
 						</IconButton>
 					</div>
 				</motion.div>

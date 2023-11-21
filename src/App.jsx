@@ -476,7 +476,7 @@ function App() {
 							</Route>
 						</Routes>
 					</div>
-					<ReactQueryDevtools />
+					<ReactQueryDevtools buttonPosition="bottom-left" />
 				</ThemeProvider>
 			</SnackbarProvider>
 		);

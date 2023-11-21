@@ -40,7 +40,7 @@ const Carousel = ({ content, onChange }) => {
 				}}
 				disabled={currentSlide == 0}
 			>
-				<MdiChevronLeft />
+				<div className="material-symbols-rounded">arrow_left</div>
 			</IconButton>
 			<AnimatePresence>
 				<motion.div
@@ -93,7 +93,7 @@ const Carousel = ({ content, onChange }) => {
 					background: " rgb(200 200 200 / 0.05)",
 				}}
 			>
-				<MdiChevronRight />
+				<div className="material-symbols-rounded">arrow_right</div>
 			</IconButton>
 			<div className="carousel-indicator-container">
 				{content.map((item, index) => (

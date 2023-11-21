@@ -35,8 +35,6 @@
 				transform: scaleX(1);
 			}
 			.sidemenu-item-text {
-				max-height: 1.6em;
-				// transform: scaleY(1);
 				opacity: 1;
 			}
 			.material-symbols-rounded {
@@ -46,11 +44,10 @@
 		}
 
 		&-text {
-			// transform: scaleY(0);
-			transform-origin: top;
 			transition: max-height 0.5s;
-			max-height: 0;
 			transition-delay: 0.05s;
+
+			font-size: 0.7em !important;
 		}
 
 		&-icon {

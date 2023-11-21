@@ -596,7 +596,12 @@ export const VideoPlayer = () => {
 							gap: "2em",
 						}}
 					>
-						<MdiVolumeHigh style={{ fontSize: "3em" }} />
+						<div
+							className="material-symbols-rounded"
+							style={{ fontSize: "2.8em" }}
+						>
+							{isMuted ? "volume_mute" : "volume_up"}
+						</div>
 						<LinearProgress
 							variant="determinate"
 							value={volume * 100}
@@ -739,7 +744,9 @@ export const VideoPlayer = () => {
 										: true
 								}
 							>
-								<MdiSkipPrevious />
+								<div className="material-symbols-rounded">
+									skip_previous
+								</div>
 							</IconButton>
 							<IconButton
 								onClick={() =>
@@ -749,12 +756,20 @@ export const VideoPlayer = () => {
 									)
 								}
 							>
-								<MdiRewind />
+								<div className="material-symbols-rounded">
+									fast_rewind
+								</div>
 							</IconButton>
 							<IconButton
-								onClick={() => setIsPlaying(!isPlaying)}
+								onClick={() =>
+									setIsPlaying((state) => !state)
+								}
 							>
-								{isPlaying ? <MdiPause /> : <MdiPlay />}
+								<div className="material-symbols-rounded">
+									{isPlaying
+										? "pause"
+										: "play_arrow"}
+								</div>
 							</IconButton>
 							<IconButton
 								onClick={() =>
@@ -764,7 +779,9 @@ export const VideoPlayer = () => {
 									)
 								}
 							>
-								<MdiFastForward />
+								<div className="material-symbols-rounded">
+									fast_forward
+								</div>
 							</IconButton>
 							<IconButton
 								onClick={handlePlayNextEpisode}
@@ -778,7 +795,9 @@ export const VideoPlayer = () => {
 										: true
 								}
 							>
-								<MdiSkipNext />
+								<div className="material-symbols-rounded">
+									skip_next
+								</div>
 							</IconButton>
 							<Typography variant="subtitle1">
 								{endsAt(itemDuration - currentTime)}
@@ -848,20 +867,24 @@ export const VideoPlayer = () => {
 										)
 									}
 								>
-									<MdiPlaySpeed />
+									<div className="material-symbols-rounded">
+										pace
+									</div>
 								</IconButton>
 							</Box>
 							<IconButton
 								sx={{
 									ml: 0.1,
 								}}
-								onClick={() => setIsMuted(!isMuted)}
+								onClick={() =>
+									setIsMuted((state) => !state)
+								}
 							>
-								{isMuted ? (
-									<MdiVolumeOff />
-								) : (
-									<MdiVolumeHigh />
-								)}
+								<div className="material-symbols-rounded">
+									{isMuted
+										? "volume_mute"
+										: "volume_up"}
+								</div>
 							</IconButton>
 							<Slider
 								value={isMuted ? 0 : volume * 100}
@@ -930,7 +953,9 @@ export const VideoPlayer = () => {
 									}
 									disabled
 								>
-									<MdiCog />
+									<div className="material-symbols-rounded">
+										settings
+									</div>
 								</IconButton>
 							</Box>
 							<IconButton
@@ -938,7 +963,9 @@ export const VideoPlayer = () => {
 									setIsPIP(!isPIP);
 								}}
 							>
-								<MdiPictureInPictureBottomRight />
+								<div className="material-symbols-rounded">
+									picture_in_picture_alt
+								</div>
 							</IconButton>
 							<IconButton
 								onClick={async () => {
@@ -947,11 +974,11 @@ export const VideoPlayer = () => {
 									setAppFullScreen(!fstate);
 								}}
 							>
-								{appFullscreen ? (
-									<MdiFullscreenExit />
-								) : (
-									<MdiFullscreen />
-								)}
+								<div className="material-symbols-rounded">
+									{appFullscreen
+										? "fullscreen_exit"
+										: "fullscreen"}
+								</div>
 							</IconButton>
 						</Stack>
 					</Stack>

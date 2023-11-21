@@ -123,6 +123,7 @@ export const AppBar = () => {
 				style={{
 					backgroundColor: "transparent",
 					paddingRight: "0 !important",
+					width: "fit-content",
 				}}
 				className={trigger ? "appBar backdropVisible" : "appBar"}
 				elevation={0}
@@ -130,133 +131,106 @@ export const AppBar = () => {
 				<Toolbar
 					sx={{
 						justifyContent: "space-between",
-						paddingLeft: "20px !important",
+						padding: "13px !important",
+						display: "flex",
+						gap: "1.2em",
 					}}
 				>
-					<div
-						style={{
-							display: "flex",
-							gap: "1em",
-							alignItems: "center",
-						}}
+					<IconButton
+						onClick={() => navigate(-1)}
+						disabled={!backButtonVisible}
 					>
-						<IconButton
-							color="inherit"
-							aria-label="open drawer"
-							onClick={handleDrawerOpen}
+						<div className="material-symbols-rounded">
+							arrow_back
+						</div>
+					</IconButton>
+
+					<IconButton onClick={() => navigate("/search")}>
+						<div className="material-symbols-rounded">
+							search
+						</div>
+					</IconButton>
+					<IconButton onClick={() => navigate("/favorite")}>
+						<div className="material-symbols-rounded">
+							favorite
+						</div>
+					</IconButton>
+					<IconButton sx={{ p: 0 }} onClick={handleMenuOpen}>
+						{user.isSuccess &&
+							(user.data.PrimaryImageTag == undefined ? (
+								<Avatar
+									className="appBar-avatar"
+									alt={user.data.Name}
+								>
+									<MdiAccount className="appBar-avatar-icon" />
+								</Avatar>
+							) : (
+								<Avatar
+									className="appBar-avatar"
+									src={
+										api.basePath +
+										"/Users/" +
+										user.data.Id +
+										"/Images/Primary"
+									}
+									alt={user.data.Name}
+								>
+									<MdiAccount className="appBar-avatar-icon" />
+								</Avatar>
+							))}
+					</IconButton>
+					<Menu
+						anchorEl={anchorEl}
+						open={openMenu}
+						onClose={handleMenuClose}
+						sx={{ mt: 1 }}
+						disableScrollLock
+					>
+						<MenuItem
+							onClick={() => navigate("/settings")}
+							disabled
 						>
-							<div className="material-symbols-rounded">
-								menu
-							</div>
-						</IconButton>
-						<IconButton
-							onClick={() => navigate(-1)}
-							sx={{
-								transition: "transform 0.2s",
-								transform: backButtonVisible
-									? "scale(1)"
-									: "scale(0)",
-								transformOrigin: "left",
-								ml: 2,
+							<ListItemIcon>
+								<div className="material-symbols-rounded">
+									settings
+								</div>
+							</ListItemIcon>
+							Settings
+						</MenuItem>
+						<MenuItem
+							onClick={() => navigate("/about")}
+							disabled
+						>
+							<ListItemIcon>
+								<div className="material-symbols-rounded">
+									info
+								</div>
+							</ListItemIcon>
+							About
+						</MenuItem>
+						<MenuItem onClick={handleLogout}>
+							<ListItemIcon>
+								<div className="material-symbols-rounded">
+									logout
+								</div>
+							</ListItemIcon>
+							Logout
+						</MenuItem>
+						<MenuItem
+							onClick={async () => {
+								await delServer();
+								await delUser();
+								await relaunch();
 							}}
 						>
-							<div className="material-symbols-rounded">
-								arrow_back
-							</div>
-						</IconButton>
-					</div>
-					<div style={{ display: "flex", gap: "1.2em" }}>
-						<IconButton onClick={() => navigate("/search")}>
-							<div className="material-symbols-rounded">
-								search
-							</div>
-						</IconButton>
-						<IconButton onClick={() => navigate("/favorite")}>
-							<div className="material-symbols-rounded">
-								favorite
-							</div>
-						</IconButton>
-						<IconButton
-							sx={{ p: 0 }}
-							onClick={handleMenuOpen}
-						>
-							{user.isSuccess &&
-								(user.data.PrimaryImageTag ==
-								undefined ? (
-									<Avatar
-										className="appBar-avatar"
-										alt={user.data.Name}
-									>
-										<MdiAccount className="appBar-avatar-icon" />
-									</Avatar>
-								) : (
-									<Avatar
-										className="appBar-avatar"
-										src={
-											api.basePath +
-											"/Users/" +
-											user.data.Id +
-											"/Images/Primary"
-										}
-										alt={user.data.Name}
-									>
-										<MdiAccount className="appBar-avatar-icon" />
-									</Avatar>
-								))}
-						</IconButton>
-						<Menu
-							anchorEl={anchorEl}
-							open={openMenu}
-							onClose={handleMenuClose}
-							sx={{ mt: 1 }}
-							disableScrollLock
-						>
-							<MenuItem
-								onClick={() => navigate("/settings")}
-								disabled
-							>
-								<ListItemIcon>
-									<div className="material-symbols-rounded">
-										settings
-									</div>
-								</ListItemIcon>
-								Settings
-							</MenuItem>
-							<MenuItem
-								onClick={() => navigate("/about")}
-								disabled
-							>
-								<ListItemIcon>
-									<div className="material-symbols-rounded">
-										info
-									</div>
-								</ListItemIcon>
-								About
-							</MenuItem>
-							<MenuItem onClick={handleLogout}>
-								<ListItemIcon>
-									<div className="material-symbols-rounded">
-										logout
-									</div>
-								</ListItemIcon>
-								Logout
-							</MenuItem>
-							<MenuItem
-								onClick={async () => {
-									await delServer();
-									await delUser();
-									await relaunch();
-								}}
-							>
-								<ListItemIcon>
-									<div className="material-symbols-rounded appBar-icon">
-										delete
-									</div>
-								</ListItemIcon>
-								Remove Server
-							</MenuItem>
-						</Menu>
-					</div>
+							<ListItemIcon>
+								<div className="material-symbols-rounded appBar-icon">
+									delete
+								</div>
+							</ListItemIcon>
+							Remove Server
+						</MenuItem>
+					</Menu>
 				</Toolbar>
 			</MuiAppBar>
 		);

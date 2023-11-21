@@ -113,6 +113,10 @@ export const SideMenu = () => {
 		state.setOpen,
 	]);
 
+	const handleDrawerOpen = () => {
+		setDrawerOpen(true);
+	};
+
 	if (!display) {
 		return <></>;
 	}
@@ -143,7 +147,17 @@ export const SideMenu = () => {
 						sx={{
 							justifyContent: "center",
 						}}
-					></DrawerHeader>
+					>
+						<IconButton
+							color="inherit"
+							aria-label="open drawer"
+							onClick={handleDrawerOpen}
+						>
+							<div className="material-symbols-rounded">
+								menu
+							</div>
+						</IconButton>
+					</DrawerHeader>
 					<div className="sidemenu-item-container">
 						{libraries.isPending ? (
 							<></>
@@ -236,10 +250,13 @@ export const SideMenu = () => {
 						}}
 					>
 						<IconButton onClick={() => setDrawerOpen(false)}>
-							<MdiClose />
+							<div className="material-symbols-rounded">
+								close
+							</div>
 						</IconButton>
 					</DrawerHeader>
 					<Divider />
+
 					{libraries.isPending ? (
 						<>
 							<Skeleton
@@ -252,6 +269,50 @@ export const SideMenu = () => {
 					) : (
 						<>
 							<List sx={{ border: "none" }}>
+								<Tooltip
+									title="Home"
+									placement="right"
+									followCursor
+									arrow
+								>
+									<ListItem
+										className="sidemenu-item-container"
+										disablePadding
+										sx={{
+											mt: "0em !important",
+										}}
+									>
+										<ListItemButton
+											component={NavLink}
+											to={"home"}
+											className="sidemenu-item"
+											sx={{
+												minHeight: 48,
+												justifyContent:
+													"center",
+												px: 2.5,
+												flexDirection:
+													"row",
+											}}
+										>
+											<ListItemIcon
+												sx={{
+													minWidth: 0,
+													justifyContent:
+														"center",
+													mr: 2,
+												}}
+											>
+												<div className="material-symbols-rounded">
+													home
+												</div>
+											</ListItemIcon>
+											<ListItemText>
+												Home
+											</ListItemText>
+										</ListItemButton>
+									</ListItem>
+								</Tooltip>
 								{libraries.data.Items.map(
 									(library, index) => {
 										return (
@@ -265,6 +326,9 @@ export const SideMenu = () => {
 												<ListItem
 													className="sidemenu-item-container"
 													disablePadding
+													sx={{
+														mt: "0em !important",
+													}}
 												>
 													<ListItemButton
 														component={
@@ -292,12 +356,9 @@ export const SideMenu = () => {
 																mr: 2,
 															}}
 														>
-															{
-																MediaCollectionTypeIconCollection[
-																	library
-																		.CollectionType
-																]
-															}
+															{getTypeIcon(
+																library.CollectionType,
+															)}
 														</ListItemIcon>
 														<ListItemText>
 															{
@@ -313,43 +374,6 @@ export const SideMenu = () => {
 							</List>
 							<List sx={{ marginTop: "auto" }}>
 								<Divider />
-								<Tooltip
-									title="Home"
-									placement="right"
-									followCursor
-									arrow
-								>
-									<ListItem
-										className="sidemenu-item-container"
-										disablePadding
-									>
-										<ListItemButton
-											component={NavLink}
-											to="/home"
-											className="sidemenu-item"
-											sx={{
-												minHeight: 48,
-												justifyContent:
-													"center",
-												px: 2.5,
-											}}
-										>
-											<ListItemIcon
-												sx={{
-													minWidth: 0,
-													justifyContent:
-														"center",
-													mr: 2,
-												}}
-											>
-												<MdiHomeVariantOutline />
-											</ListItemIcon>
-											<ListItemText>
-												Home
-											</ListItemText>
-										</ListItemButton>
-									</ListItem>
-								</Tooltip>
 								<Tooltip
 									title="Logout"
 									placement="right"
@@ -374,7 +398,9 @@ export const SideMenu = () => {
 													mr: 2,
 												}}
 											>
-												<MdiLogoutVariant></MdiLogoutVariant>
+												<div className="material-symbols-rounded">
+													logout
+												</div>
 											</ListItemIcon>
 											<ListItemText>
 												Logout
