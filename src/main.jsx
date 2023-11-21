@@ -31,6 +31,7 @@ const init = async () => {
 		const defaultServerInfo = await getServer(defaultServerOnDisk);
 		createApi(defaultServerInfo.address);
 		const userOnDisk = await getUser();
+		console.log(userOnDisk);
 		if (userOnDisk) {
 			try {
 				const auth = await useApi

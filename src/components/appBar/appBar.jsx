@@ -12,7 +12,7 @@ import Menu from "@mui/material/Menu";
 import MenuItem from "@mui/material/MenuItem";
 import useScrollTrigger from "@mui/material/useScrollTrigger";
 
-import { MdiMagnify } from "../icons/mdiMagnify";
+import { red } from "@mui/material/colors";
 
 import { useLocation, useNavigate } from "react-router-dom";
 
@@ -197,10 +197,7 @@ export const AppBar = () => {
 							</ListItemIcon>
 							Settings
 						</MenuItem>
-						<MenuItem
-							onClick={() => navigate("/about")}
-							disabled
-						>
+						<MenuItem onClick={() => navigate("/about")}>
 							<ListItemIcon>
 								<div className="material-symbols-rounded">
 									info
@@ -218,17 +215,15 @@ export const AppBar = () => {
 						</MenuItem>
 						<MenuItem
 							onClick={async () => {
-								await delServer();
-								await delUser();
-								await relaunch();
+								navigate("/servers/list");
 							}}
 						>
 							<ListItemIcon>
 								<div className="material-symbols-rounded appBar-icon">
-									delete
+									dns
 								</div>
 							</ListItemIcon>
-							Remove Server
+							Select Server
 						</MenuItem>
 					</Menu>
 				</Toolbar>

@@ -35,9 +35,9 @@ const ServerList = () => {
 		queryFn: async () => await getDefaultServer(),
 	});
 	const handleServerChange = useMutation({
-		mutationFn: () => {
-			setDefaultServer(serverState);
-			delUser();
+		mutationFn: async () => {
+			await delUser();
+			await setDefaultServer(serverState);
 		},
 		onSuccess: async () => {
 			await relaunch();
@@ -54,8 +54,9 @@ const ServerList = () => {
 		let tempList = servers.data.filter(
 			(item) => item[0] != defaultServer.data && item[0] != serverId,
 		);
-		delServer(serverId).then(() => {
+		delServer(serverId).then(async () => {
 			// console.log(serverId);
+			await delUser();
 			if (serverId == defaultServer.data) {
 				if (tempList.length > 0) {
 					setDefaultServer(tempList[0][0]);

@@ -67,7 +67,9 @@ export const getTypeIcon = (icon) => {
 			return <div className="material-symbols-rounded">mic</div>;
 		case BaseItemKind.AudioBook:
 			return (
-				<div className="material-symbols-rounded">library_book</div>
+				<div className="material-symbols-rounded">
+					speech_to_text
+				</div>
 			);
 		case BaseItemKind.Book:
 			return <div className="material-symbols-rounded">book</div>;

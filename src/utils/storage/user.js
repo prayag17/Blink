@@ -31,5 +31,6 @@ const getUser = async () => {
  */
 const delUser = async () => {
 	await user.clear();
+	await user.save();
 };
 export { saveUser, getUser, delUser };

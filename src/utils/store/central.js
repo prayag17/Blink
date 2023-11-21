@@ -3,7 +3,7 @@
 import { create } from "zustand";
 import { getAllServer, getDefaultServer, getServer } from "../storage/servers";
 import { getUser } from "../storage/user";
-
+import { version } from "../../../package.json";
 /**
  * Central Store controls the base state required by the app
  */
@@ -17,6 +17,7 @@ export const useCentralStore = create(() => ({
 	userOnDisk: async () => getUser(),
 	/** This is the initial route that app goes to just after app startups */
 	initialRoute: null,
+	clientVersion: version,
 }));
 
 /**
