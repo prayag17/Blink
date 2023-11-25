@@ -88,192 +88,180 @@ export const Card = ({
 		}
 	};
 	return (
-		<CardActionArea
-			style={{
-				padding: disablePadding ? 0 : "0.6em",
-				borderRadius: "calc(0.6em + 6px)",
-			}}
-			className="card-container"
+		<div
+			className="card"
+			elevation={0}
+			tabIndex={0}
 			onClick={onClick ? onClick : defaultOnClick}
 		>
-			<MuiCard className="card" elevation={0}>
-				<div className="card-box">
-					<div
-						className="card-image-container"
-						style={{
-							aspectRatio: cardImageAspectRatios[cardType],
-						}}
-					>
-						{!!item.UserData && (
-							<>
-								<div
-									className="card-indicator check"
-									style={{
-										opacity: item.UserData?.Played
-											? 1
-											: 0,
-									}}
-								>
-									<div className="material-symbols-rounded">
-										done
-									</div>
-								</div>
-								<div
-									className={`card-indicator text`}
-									style={{
-										opacity: item.UserData
-											?.UnplayedItemCount
-											? 1
-											: 0,
-									}}
-								>
-									<Typography
-										variant="subtitle2"
-										padding="0.1em 0.4em"
-										fontWeight={400}
-									>
-										{
-											item.UserData
-												?.UnplayedItemCount
-										}
-									</Typography>
-								</div>
-							</>
-						)}
-						{!!imageBlurhash && (
-							<Blurhash
-								hash={imageBlurhash}
-								width={128}
-								height={128}
-								resolutionX={24}
-								resolutionY={24}
-								className="card-image-blurhash"
-							/>
-						)}
-						<div className="card-image-icon-container">
-							{overrideIcon
-								? getTypeIcon(overrideIcon)
-								: getTypeIcon(item.Type)}
-						</div>
-						<img
-							src={
-								overrideIcon == "User"
-									? `${api.basePath}/Users/${item.Id}/Images/Primary`
-									: api.getItemImageUrl(
-											seriesId
-												? item.SeriesId
-												: item.AlbumId
-												? item.AlbumId
-												: item.Id,
-											imageType,
-											{
-												quality: 85,
-												fillHeight: 462,
-												fillWidth: 462,
-											},
-									  )
-							}
-							style={{
-								height: "100%",
-								width: "100%",
-								opacity: 0,
-							}}
-							loading="lazy"
-							onLoad={(e) => (e.target.style.opacity = 1)}
-							className="card-image"
-						/>
-						{!disableOverlay && (
-							<div className="card-overlay">
-								<PlayButton
-									itemId={item.Id}
-									userId={userId}
-									itemType={item.Type}
-									currentAudioTrack={0}
-									currentSubTrack={0}
-									currentVideoTrack={0}
-									className="card-play-button"
-									iconProps={{
-										style: { fontSize: "2.5em" },
-									}}
-									iconOnly
-									audio={
-										item.Type ==
-											BaseItemKind.MusicAlbum ||
-										item.Type ==
-											BaseItemKind.Audio ||
-										item.Type ==
-											BaseItemKind.AudioBook ||
-										item.Type ==
-											BaseItemKind.Playlist
-									}
-									playlistItem={
-										item.Type ==
-										BaseItemKind.Playlist
-									}
-									playlistItemId={item.Id}
-								/>
-								<LikeButton
-									itemId={item.Id}
-									itemName={item.Name}
-									isFavorite={
-										item.UserData?.IsFavorite
-									}
-									queryKey={queryKey}
-									userId={userId}
-								/>
-								<MarkPlayedButton
-									itemId={item.Id}
-									itemName={item.Name}
-									isPlayed={item.UserData?.Played}
-									queryKey={queryKey}
-									userId={userId}
-								/>
-							</div>
-						)}
-						{item.UserData?.PlaybackPositionTicks > 0 && (
-							<LinearProgress
-								variant="determinate"
-								value={item.UserData?.PlayedPercentage}
+			<div className="card-box">
+				<div
+					className="card-image-container"
+					style={{
+						aspectRatio: cardImageAspectRatios[cardType],
+					}}
+				>
+					{!!item.UserData && (
+						<>
+							<div
+								className="card-indicator check"
 								style={{
-									position: "absolute",
-									left: 0,
-									right: 0,
-									bottom: 0,
-									zIndex: 2,
-									height: "6px",
-									background:
-										"rgb(5 5 5 /  0.5) !important",
-									backdropFilter: "blur(5px)",
+									opacity: item.UserData?.Played
+										? 1
+										: 0,
 								}}
-								color="primary"
+							>
+								<div className="material-symbols-rounded">
+									done
+								</div>
+							</div>
+							<div
+								className={`card-indicator text`}
+								style={{
+									opacity: item.UserData
+										?.UnplayedItemCount
+										? 1
+										: 0,
+								}}
+							>
+								<Typography
+									variant="subtitle2"
+									padding="0.1em 0.4em"
+									fontWeight={400}
+								>
+									{item.UserData?.UnplayedItemCount}
+								</Typography>
+							</div>
+						</>
+					)}
+					{!!imageBlurhash && (
+						<Blurhash
+							hash={imageBlurhash}
+							width={128}
+							height={128}
+							resolutionX={24}
+							resolutionY={24}
+							className="card-image-blurhash"
+						/>
+					)}
+					<div className="card-image-icon-container">
+						{overrideIcon
+							? getTypeIcon(overrideIcon)
+							: getTypeIcon(item.Type)}
+					</div>
+					<img
+						src={
+							overrideIcon == "User"
+								? `${api.basePath}/Users/${item.Id}/Images/Primary`
+								: api.getItemImageUrl(
+										seriesId
+											? item.SeriesId
+											: item.AlbumId
+											? item.AlbumId
+											: item.Id,
+										imageType,
+										{
+											quality: 85,
+											fillHeight: 462,
+											fillWidth: 462,
+										},
+								  )
+						}
+						style={{
+							height: "100%",
+							width: "100%",
+							opacity: 0,
+						}}
+						loading="lazy"
+						onLoad={(e) => (e.target.style.opacity = 1)}
+						className="card-image"
+					/>
+					{!disableOverlay && (
+						<div className="card-overlay">
+							<PlayButton
+								itemId={item.Id}
+								userId={userId}
+								itemType={item.Type}
+								currentAudioTrack={0}
+								currentSubTrack={0}
+								currentVideoTrack={0}
+								className="card-play-button"
+								iconProps={{
+									style: { fontSize: "2.5em" },
+								}}
+								iconOnly
+								audio={
+									item.Type ==
+										BaseItemKind.MusicAlbum ||
+									item.Type == BaseItemKind.Audio ||
+									item.Type ==
+										BaseItemKind.AudioBook ||
+									item.Type == BaseItemKind.Playlist
+								}
+								playlistItem={
+									item.Type == BaseItemKind.Playlist
+								}
+								playlistItemId={item.Id}
 							/>
-						)}
-					</div>
-					<div
-						className="card-text-container"
-						style={{ display: hideText ? "none" : "block" }}
-					>
-						<Typography
-							variant="subtitle1"
-							fontWeight={500}
-							noWrap
-							textAlign="center"
-							style={{ opacity: 0.9 }}
-						>
-							{cardTitle}
-						</Typography>
-						<Typography
-							variant="subtitle2"
-							noWrap
-							textAlign="center"
-							style={{ opacity: 0.6 }}
-							lineHeight="auto"
-						>
-							{cardCaption}
-						</Typography>
-					</div>
+							<LikeButton
+								itemId={item.Id}
+								itemName={item.Name}
+								isFavorite={item.UserData?.IsFavorite}
+								queryKey={queryKey}
+								userId={userId}
+							/>
+							<MarkPlayedButton
+								itemId={item.Id}
+								itemName={item.Name}
+								isPlayed={item.UserData?.Played}
+								queryKey={queryKey}
+								userId={userId}
+							/>
+						</div>
+					)}
+					{item.UserData?.PlaybackPositionTicks > 0 && (
+						<LinearProgress
+							variant="determinate"
+							value={item.UserData?.PlayedPercentage}
+							style={{
+								position: "absolute",
+								left: 0,
+								right: 0,
+								bottom: 0,
+								zIndex: 2,
+								height: "6px",
+								background:
+									"rgb(5 5 5 /  0.5) !important",
+								backdropFilter: "blur(5px)",
+							}}
+							color="primary"
+						/>
+					)}
 				</div>
-			</MuiCard>
-		</CardActionArea>
+				<div
+					className="card-text-container"
+					style={{ display: hideText ? "none" : "block" }}
+				>
+					<Typography
+						variant="subtitle1"
+						fontWeight={500}
+						noWrap
+						textAlign="center"
+						style={{ opacity: 0.9 }}
+					>
+						{cardTitle}
+					</Typography>
+					<Typography
+						variant="subtitle2"
+						noWrap
+						textAlign="center"
+						style={{ opacity: 0.6 }}
+						lineHeight="auto"
+					>
+						{cardCaption}
+					</Typography>
+				</div>
+			</div>
+		</div>
 	);
 };

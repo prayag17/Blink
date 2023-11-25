@@ -1,11 +1,16 @@
 /** @format */
 
 .sidemenu {
+	&-icon {
+		width: 60%;
+		object-fit: cover;
+	}
 	&-item {
 		&-container {
 			display: flex;
 			flex-direction: column;
 			margin-top: 1em;
+			overflow-y: auto;
 		}
 
 		position: relative;

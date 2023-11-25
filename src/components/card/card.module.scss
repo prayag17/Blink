@@ -4,6 +4,7 @@
 	overflow: visible !important;
 	align-items: flex-start;
 	background: transparent !important;
+	padding: 0.4em;
 	&-box {
 		display: flex;
 		width: 100%;
@@ -25,7 +26,7 @@
 		&-container {
 			position: relative;
 			width: 100%;
-			border-radius: $border-radius-default;
+			border-radius: 8px;
 			box-shadow: 0 4px 8px rgb(0 0 0 / 0.2);
 			overflow: hidden;
 			height: auto;
@@ -59,6 +60,8 @@
 			left: 0;
 			width: 100% !important;
 			height: 100% !important;
+			border-radius: 8px;
+			overflow: hidden;
 		}
 	}
 	&-overlay {
@@ -75,13 +78,21 @@
 		align-items: flex-end;
 		justify-content: flex-end;
 		padding: 0.5em;
+		border-radius: 8px;
 	}
-	&-container:hover,
-	&-container:focus,
-	&-container:focus-within {
+	&:hover,
+	&:focus,
+	&:focus-within {
 		.card-overlay {
 			opacity: 1;
 		}
+	}
+	&:hover {
+		cursor: pointer;
+	}
+
+	&:focus {
+		outline: none;
 	}
 	&-play-button {
 		position: absolute !important;
@@ -105,11 +116,6 @@
 		border-radius: 100px;
 		box-shadow: 0 0 5px rgb(0 0 0 / 0.2);
 	}
-	&-text {
-		&-container {
-			height: 15%;
-		}
-	}
 	&-episode {
 		.card-box {
 			height: unset !important;
@@ -117,6 +123,12 @@
 	}
 
 	&-actor {
+		transition: all $transition-time-default;
+		border-radius: 10px;
+		// padding: 1em !important;
+		&:hover {
+			background: rgb(255 255 255 / 0.1) !important;
+		}
 		.card-image-container {
 			border-radius: 100% !important;
 		}

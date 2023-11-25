@@ -13,6 +13,7 @@ $border-radius: 20px;
 		padding: 0.25em 0;
 		background: hsl(256, 100%, 4%, 40%);
 		transition: background $transition-time-default;
+		backdrop-filter: blur(5px);
 
 		&:first-child {
 			border-radius: $border-radius $border-radius 8px 8px;

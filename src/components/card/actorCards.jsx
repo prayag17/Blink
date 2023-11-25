@@ -47,82 +47,77 @@ export const ActorCard = ({
 		navigate(`/person/${item.Id}`);
 	};
 	return (
-		<CardActionArea
-			style={{
-				padding: disablePadding ? 0 : "0.6em",
-				borderRadius: "calc(0.6em + 6px)",
-			}}
-			className="card-container"
+		<div
+			className="card card-actor"
+			elevation={0}
 			onClick={onClick ? onClick : defaultOnClick}
 		>
-			<MuiCard className="card card-actor" elevation={0}>
-				<div className="card-box">
-					<div
-						className="card-image-container"
-						style={{
-							aspectRatio: 1,
-						}}
-					>
-						{!!imageBlurhash && (
-							<Blurhash
-								hash={imageBlurhash}
-								width={128}
-								height={128}
-								resolutionX={24}
-								resolutionY={24}
-								className="card-image-blurhash"
-							/>
-						)}
-						<div className="card-image-icon-container">
-							<div className="material-symbols-rounded">
-								person
-							</div>
-						</div>
-						<img
-							src={api.getItemImageUrl(
-								seriesId ? item.SeriesId : item.Id,
-								"Primary",
-								{
-									quality: 80,
-									fillHeight: 448,
-									fillWidth: 448,
-								},
-							)}
-							style={{
-								height: "100%",
-								width: "100%",
-								opacity: 0,
-							}}
-							loading="lazy"
-							onLoad={(e) => (e.target.style.opacity = 1)}
-							className="card-image"
+			<div className="card-box">
+				<div
+					className="card-image-container"
+					style={{
+						aspectRatio: 1,
+					}}
+				>
+					{!!imageBlurhash && (
+						<Blurhash
+							hash={imageBlurhash}
+							width={128}
+							height={128}
+							resolutionX={24}
+							resolutionY={24}
+							className="card-image-blurhash"
 						/>
+					)}
+					<div className="card-image-icon-container">
+						<div className="material-symbols-rounded">
+							person
+						</div>
 					</div>
-					<div
-						className="card-text-container"
-						style={{ display: hideText ? "none" : "block" }}
-					>
-						<Typography
-							variant="subtitle1"
-							fontWeight={500}
-							noWrap
-							textAlign="center"
-							style={{ opacity: 0.9 }}
-						>
-							{cardTitle}
-						</Typography>
-						<Typography
-							variant="subtitle2"
-							noWrap
-							textAlign="center"
-							style={{ opacity: 0.6 }}
-							lineHeight="auto"
-						>
-							{cardCaption}
-						</Typography>
-					</div>
+					<img
+						src={api.getItemImageUrl(
+							seriesId ? item.SeriesId : item.Id,
+							"Primary",
+							{
+								quality: 80,
+								fillHeight: 448,
+								fillWidth: 448,
+							},
+						)}
+						style={{
+							height: "100%",
+							width: "100%",
+							opacity: 0,
+						}}
+						loading="lazy"
+						onLoad={(e) => (e.target.style.opacity = 1)}
+						className="card-image"
+					/>
 				</div>
-			</MuiCard>
-		</CardActionArea>
+				<div
+					className="card-text-container"
+					style={{ display: hideText ? "none" : "block" }}
+				>
+					<Typography
+						variant="subtitle1"
+						fontWeight={500}
+						noWrap
+						textAlign="center"
+						style={{ opacity: 0.9 }}
+					>
+						{cardTitle}
+					</Typography>
+					<Typography
+						variant="subtitle2"
+						noWrap
+						textAlign="center"
+						style={{ opacity: 0.6 }}
+						lineHeight="auto"
+					>
+						{cardCaption}
+					</Typography>
+				</div>
+			</div>
+		</div>
 	);
 };
