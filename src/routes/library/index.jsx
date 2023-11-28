@@ -130,7 +130,6 @@ const LibraryView = () => {
 		if (currentLib.isError) {
 			console.error(currentLib.error);
 		}
-		console.log(currentLib.isSuccess);
 		if (currentLib.isSuccess) {
 			setViewType(null);
 			if (currentLib.data.CollectionType == "movies") {
@@ -875,7 +874,7 @@ const LibraryView = () => {
 													/>
 												</AccordionDetails>
 											</Accordion>
-											{currentLib.data.Items[0]
+											{currentLib.data
 												.CollectionType ==
 												"movies" && (
 												<Accordion className="library-filter-accordian">
@@ -1098,7 +1097,6 @@ const LibraryView = () => {
 											)}
 											{!onlyStatusFilterViews.includes(
 												currentLib.data
-													.Items[0]
 													.CollectionType,
 											) && (
 												<Accordion className="library-filter-accordian">
@@ -1308,9 +1306,7 @@ const LibraryView = () => {
 							return (
 								<GenreView
 									key={item.Id}
-									libraryId={
-										currentLib.data.Items[0].Id
-									}
+									libraryId={currentLib.data.Id}
 									genreId={item.Id}
 									genreName={item.Name}
 									userId={user.data.Id}

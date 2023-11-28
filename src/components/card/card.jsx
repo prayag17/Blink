@@ -101,7 +101,7 @@ export const Card = ({
 						aspectRatio: cardImageAspectRatios[cardType],
 					}}
 				>
-					{!!item.UserData && (
+					{/* {!!item.UserData && (
 						<>
 							<div
 								className="card-indicator check"
@@ -133,8 +133,8 @@ export const Card = ({
 								</Typography>
 							</div>
 						</>
-					)}
-					{!!imageBlurhash && (
+					)} */}
+					{/* {!!imageBlurhash && (
 						<Blurhash
 							hash={imageBlurhash}
 							width={128}
@@ -143,7 +143,7 @@ export const Card = ({
 							resolutionY={24}
 							className="card-image-blurhash"
 						/>
-					)}
+					)} */}
 					<div className="card-image-icon-container">
 						{overrideIcon
 							? getTypeIcon(overrideIcon)

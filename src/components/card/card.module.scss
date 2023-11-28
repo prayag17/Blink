@@ -23,6 +23,7 @@
 		z-index: 1;
 		top: 0;
 		left: 0;
+		transition: filter $transition-time-default;
 		&-container {
 			position: relative;
 			width: 100%;
@@ -43,6 +44,7 @@
 				z-index: 0;
 				top: 0;
 				left: 0;
+				transition: filter $transition-time-default;
 				.material-symbols-rounded {
 					position: absolute;
 					top: 50%;
@@ -70,7 +72,6 @@
 		height: 100%;
 		left: 0;
 		top: 0;
-		background: rgb(0 0 0 / 0.6);
 		z-index: 10;
 		opacity: 0;
 		transition: opacity $transition-time-default;
@@ -83,6 +84,12 @@
 	&:hover,
 	&:focus,
 	&:focus-within {
+		.card-image {
+			filter: brightness(0.6);
+		}
+		.card-image-icon-container {
+			filter: brightness(0.6);
+		}
 		.card-overlay {
 			opacity: 1;
 		}

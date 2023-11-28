@@ -6,6 +6,7 @@ import { useQuery } from "@tanstack/react-query";
 import { Card } from "../../../card/card";
 import { BaseItemKind } from "@jellyfin/sdk/lib/generated-client";
 import { useApi } from "../../../../utils/store/api";
+import { CardScroller } from "../../../cardScroller/cardScroller";
 
 const GenreView = ({ libraryId, genreId, genreName, userId }) => {
 	const [api] = useApi((state) => [state.api]);
@@ -23,26 +24,15 @@ const GenreView = ({ libraryId, genreId, genreName, userId }) => {
 	if (items.isSuccess && items.data.Items.length > 0) {
 		return (
 			<div className="library-genre">
-				<div className="library-genre-header">
-					<div className="library-genre-header-decoration"></div>
-					<Typography
-						noWrap
-						variant="h5"
-						color="textPrimary"
-						className=""
-					>
-						{genreName}
-					</Typography>
-				</div>
-				<div
-					className="library-grid"
-					style={{
-						paddingTop: "0.5em",
-					}}
+				<CardScroller
+					title={genreName}
+					displayCards={8}
+					disableDecoration
 				>
 					{items.data.Items.map((item, index) => {
 						return (
 							<Card
+								key={index}
 								item={item}
 								seriesId={item.SeriesId}
 								cardTitle={
@@ -109,7 +99,7 @@ const GenreView = ({ libraryId, genreId, genreName, userId }) => {
 							/>
 						);
 					})}
-				</div>
+				</CardScroller>
 			</div>
 		);
 	}
