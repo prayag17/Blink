@@ -74,7 +74,14 @@
 					"sidebarImage": "../public/installerSideBarImage.bmp",
 					"headerImage": "../public/installerHeaderImage.bmp",
 					"installerIcon": "icons/icon.ico"
+				},
+				"webviewInstallMode": {
+					"silent": true,
+					"type": "offlineInstaller"
 				}
+			},
+			"appimage": {
+				"bundleMediaFramework": true
 			}
 		},
 		"security": {
