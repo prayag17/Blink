@@ -138,45 +138,43 @@ export const SideMenu = () => {
 										Home
 									</Typography>
 								</NavLink>
-								{libraries.data.Items.map(
-									(lib, index) => {
-										return (
-											<Tooltip
-												title={lib.Name}
-												placement="right"
-												arrow
-												followCursor
-												key={index}
+								{libraries.data.Items.map((lib) => {
+									return (
+										<Tooltip
+											title={lib.Name}
+											placement="right"
+											arrow
+											followCursor
+											key={lib.Id}
+										>
+											<NavLink
+												to={`/library/${lib.Id}`}
+												className="sidemenu-item"
 											>
-												<NavLink
-													to={`/library/${lib.Id}`}
-													className="sidemenu-item"
+												<div className="sidemenu-item-icon">
+													{getTypeIcon(
+														lib.CollectionType,
+													)}
+												</div>
+												<Typography
+													className="sidemenu-item-text"
+													variant="caption"
+													fontWeight={
+														500
+													}
+													style={{
+														width: "80%",
+													}}
+													overflow="hidden"
+													textOverflow="ellipsis"
+													textAlign="center"
 												>
-													<div className="sidemenu-item-icon">
-														{getTypeIcon(
-															lib.CollectionType,
-														)}
-													</div>
-													<Typography
-														className="sidemenu-item-text"
-														variant="caption"
-														fontWeight={
-															500
-														}
-														style={{
-															width: "80%",
-														}}
-														overflow="hidden"
-														textOverflow="ellipsis"
-														textAlign="center"
-													>
-														{lib.Name}
-													</Typography>
-												</NavLink>
-											</Tooltip>
-										);
-									},
-								)}
+													{lib.Name}
+												</Typography>
+											</NavLink>
+										</Tooltip>
+									);
+								})}
 							</>
 						)}
 					</div>

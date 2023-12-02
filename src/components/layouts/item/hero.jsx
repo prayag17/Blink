@@ -721,7 +721,7 @@ const Hero = ({
 								{writers.map((writer, index) => (
 									<>
 										<TextLink
-											key={index}
+											key={writer.Id}
 											variant={"subtitle1"}
 											location={`/person/${writer.Id}`}
 										>
@@ -763,7 +763,7 @@ const Hero = ({
 								{directors.map((director, index) => (
 									<>
 										<TextLink
-											key={index}
+											key={director.Id}
 											variant={"subtitle1"}
 											location={`/person/${director.Id}`}
 										>
@@ -805,7 +805,7 @@ const Hero = ({
 								{artists.map((artist, index) => (
 									<>
 										<TextLink
-											key={index}
+											key={artist.Id}
 											variant={"subtitle1"}
 											location={`/artist/${artist.Id}`}
 										>

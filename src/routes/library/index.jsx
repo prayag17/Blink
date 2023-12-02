@@ -442,18 +442,14 @@ const LibraryView = () => {
 										onChange={handleSortBy}
 										size="small"
 									>
-										{sortByData.map(
-											(option, index) => (
-												<MenuItem
-													key={index}
-													value={
-														option.value
-													}
-												>
-													{option.title}
-												</MenuItem>
-											),
-										)}
+										{sortByData.map((option) => (
+											<MenuItem
+												key={option.value}
+												value={option.value}
+											>
+												{option.title}
+											</MenuItem>
+										))}
 									</TextField>
 								</>
 							)}
@@ -475,18 +471,14 @@ const LibraryView = () => {
 										}}
 										size="small"
 									>
-										{viewType.map(
-											(option, index) => (
-												<MenuItem
-													key={index}
-													value={
-														option.value
-													}
-												>
-													{option.title}
-												</MenuItem>
-											),
-										)}
+										{viewType.map((option) => (
+											<MenuItem
+												key={option.value}
+												value={option.value}
+											>
+												{option.title}
+											</MenuItem>
+										))}
 									</TextField>
 								</>
 							)}

@@ -29,10 +29,10 @@ const GenreView = ({ libraryId, genreId, genreName, userId }) => {
 					displayCards={8}
 					disableDecoration
 				>
-					{items.data.Items.map((item, index) => {
+					{items.data.Items.map((item) => {
 						return (
 							<Card
-								key={index}
+								key={item.Id}
 								item={item}
 								seriesId={item.SeriesId}
 								cardTitle={
