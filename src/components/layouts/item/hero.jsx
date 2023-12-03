@@ -106,7 +106,7 @@ const Hero = ({
 			setCurrentAudioIndex(audioTracks[0]?.Index);
 			setCurrentSubtitleIndex(subtitleTracks[0]?.Index);
 		}
-	}, [videoTracks, audioTracks, subtitleTracks]);
+	}, []);
 
 	const qualityLabel = () => {
 		if (
@@ -657,11 +657,12 @@ const Hero = ({
 								size="small"
 								value={currentSubtitleIndex}
 								select
-								onChange={(e) =>
+								onChange={(e) => {
+									console.log(e.target.value);
 									setCurrentSubtitleIndex(
 										e.target.value,
-									)
-								}
+									);
+								}}
 								SelectProps={{
 									MenuProps: {
 										disableScrollLock: true,
