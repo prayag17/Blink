@@ -83,6 +83,7 @@ export const VideoPlayer = () => {
 		setMediaSourceId,
 		setUserId,
 		setSeriesId,
+		item,
 	] = usePlaybackStore((state) => [
 		state.url,
 		state.startPosition,
@@ -104,6 +105,7 @@ export const VideoPlayer = () => {
 		state.setMediaSourceId,
 		state.setUserId,
 		state.setSeriesId,
+		state.item,
 	]);
 
 	const mediaInfo = useQuery({
@@ -504,6 +506,17 @@ export const VideoPlayer = () => {
 	const handleExit = async () => {
 		// Remove app from fullscreen
 		await appWindow.setFullscreen(false);
+		// Send playback end report
+		await getPlaystateApi(api).reportPlaybackStopped({
+			playbackStopInfo: {
+				Failed: false,
+				Item: item,
+				ItemId: itemId,
+				MediaSourceId: mediaInfo.data?.MediaSources[0].Id,
+				PlaySessionId: mediaInfo.data?.PlaySessionId,
+				PositionTicks: currentTime,
+			},
+		});
 		navigate(-1);
 
 		// Reset playback store

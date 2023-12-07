@@ -19,6 +19,10 @@ export const usePlaybackStore = create((set) => ({
 	seriesId: "",
 	queue: [],
 	episodeIndex: 0,
+	/**
+	 * @type {import("@jellyfin/sdk/lib/generated-client/models/base-item-dto").BaseItemDto}
+	 */
+	item: {},
 	setUrl: (aurl) => set((state) => ({ ...state, url: aurl })),
 	setPosition: (apos) => set((state) => ({ ...state, startPosition: apos })),
 	setDuration: (adur) => set((state) => ({ ...state, duration: adur })),
@@ -47,6 +51,8 @@ export const usePlaybackStore = create((set) => ({
 	setEpisodeIndex: (aitem) =>
 		set((state) => ({ ...state, episodeIndex: aitem })),
 }));
+export const setItem = (item) =>
+	usePlaybackStore.setState((state) => ({ ...state, item: item }));
 
 export const usePlaybackDataLoadStore = create((set) => ({
 	isPending: false,

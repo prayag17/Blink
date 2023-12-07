@@ -8,6 +8,7 @@ import LinearProgress from "@mui/material/LinearProgress";
 import Typography from "@mui/material/Typography";
 
 import {
+	setItem,
 	usePlaybackDataLoadStore,
 	usePlaybackStore,
 } from "../../utils/store/playback";
@@ -210,6 +211,7 @@ const PlayButton = ({
 				setSubtitleStreamIndex(currentSubTrack);
 
 				setMediaSourceId(item.Items[0].Id);
+				setItem(item.Items[0]);
 
 				switch (item.Items[0].Type) {
 					case BaseItemKind.Movie:

@@ -101,7 +101,7 @@ export const Card = ({
 						aspectRatio: cardImageAspectRatios[cardType],
 					}}
 				>
-					{/* {!!item.UserData && (
+					{!!item.UserData && (
 						<>
 							<div
 								className="card-indicator check"
@@ -133,7 +133,7 @@ export const Card = ({
 								</Typography>
 							</div>
 						</>
-					)} */}
+					)}
 					{/* {!!imageBlurhash && (
 						<Blurhash
 							hash={imageBlurhash}
