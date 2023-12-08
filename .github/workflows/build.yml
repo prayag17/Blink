@@ -14,6 +14,7 @@ jobs:
                matrix:
                     platform: [macos-latest, ubuntu-22.04, windows-latest]
           runs-on: ${{ matrix.platform }}
+          environment: TAURI
           steps:
                - name: Checkout repository
                  uses: actions/checkout@v4
@@ -67,8 +68,8 @@ jobs:
 
                  env:
                       GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-                      TAURI_PRIVATE_KEY: ${{ secrets.TAURI_PRIVATE_KEY}}
-                      TAURI_KEY_PASSWORD: ${{ secrets.TAURI_KEY_PASSWORD}}
+                      TAURI_PRIVATE_KEY: ${{ secrets.TAURI_PRIVATE_KEY }}
+                      TAURI_KEY_PASSWORD: ${{ secrets.TAURI_KEY_PASSWORD }}
                  with:
                       tagName: ${{ github.ref_name }} # This only works if your workflow triggers on new tags.
                       releaseName: "App Name v__VERSION__" # tauri-action replaces \_\_VERSION\_\_ with the app version.
