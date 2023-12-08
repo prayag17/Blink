@@ -32,7 +32,7 @@ jobs:
                  uses: swatinem/rust-cache@v2
                  with:
                       workspaces: "./src-tauri -> target"
-                      
+
                - uses: pnpm/action-setup@v2
                  name: Install pnpm
                  with:
@@ -42,16 +42,16 @@ jobs:
                - name: Get pnpm store directory
                  shell: bash
                  run: |
-                    echo "STORE_PATH=$(pnpm store path --silent)" >> $GITHUB_ENV
+                      echo "STORE_PATH=$(pnpm store path --silent)" >> $GITHUB_ENV
 
                - uses: actions/cache@v3
                  name: Setup pnpm cache
                  with:
-                    path: ${{ env.STORE_PATH }}
-                    key: ${{ runner.os }}-pnpm-store-${{ hashFiles('**/pnpm-lock.yaml') }}
-                    restore-keys: |
-                         ${{ runner.os }}-pnpm-store-
-                         
+                      path: ${{ env.STORE_PATH }}
+                      key: ${{ runner.os }}-pnpm-store-${{ hashFiles('**/pnpm-lock.yaml') }}
+                      restore-keys: |
+                           ${{ runner.os }}-pnpm-store-
+
                - name: Sync node version and setup cache
                  uses: actions/setup-node@v4
                  with:
@@ -63,10 +63,12 @@ jobs:
                  run: pnpm install --no-frozen-lockfile && pnpm run build # Change this to npm, yarn or pnpm.
 
                - name: Build the app
-                 uses: tauri-apps/tauri-action@v0
+                 uses: tauri-apps/tauri-action@vdev
 
                  env:
                       GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+                      TAURI_PRIVATE_KEY: ${{ secrets.TAURI_PRIVATE_KEY}}
+                      TAURI_KEY_PASSWORD: ${{ secrets.TAURI_KEY_PASSWORD}}
                  with:
                       tagName: ${{ github.ref_name }} # This only works if your workflow triggers on new tags.
                       releaseName: "App Name v__VERSION__" # tauri-action replaces \_\_VERSION\_\_ with the app version.

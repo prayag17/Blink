@@ -18,7 +18,7 @@ tauri-build = { version = "1.5.0", features = [] }
 log = "^0.4.20"
 serde_json = "1.0"
 serde = { version = "1.0", features = ["derive"] }
-tauri = { version = "1.5.3", features = [ "http-all", "devtools", "process-exit", "process-relaunch", "shell-all", "window-set-fullscreen", "http-all"] }
+tauri = { version = "1.5.3", features = [ "updater", "http-all", "devtools", "process-exit", "process-relaunch", "shell-all", "window-set-fullscreen", "http-all"] }
 tauri-plugin-store = { git = "https://github.com/tauri-apps/plugins-workspace", branch = "v1" }
 tauri-plugin-localhost = { git = "https://github.com/tauri-apps/plugins-workspace", branch = "v1" }
 tauri-plugin-log = { git = "https://github.com/tauri-apps/plugins-workspace", branch = "v1", features = ["colored"] }

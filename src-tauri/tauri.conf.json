@@ -100,7 +100,12 @@
 			]
 		},
 		"updater": {
-			"active": false
+			"active": true,
+			"endpoints": [
+				"https://cdn.jsdelivr.net/gh/prayag17/jellyplayer@latest/updater.json"
+			],
+			"dialog": true,
+			"pubkey": "dW50cnVzdGVkIGNvbW1lbnQ6IG1pbmlzaWduIHB1YmxpYyBrZXk6IDE1MTczRTNFNjFGQ0JBOEMKUldTTXV2eGhQajRYRmNFSG5EYVF1VE1YaVA5Qjl2WGt6alFWOGo5UCs2SGprTGtNOC9WMC8wTjMK"
 		},
 		"windows": [
 			{
