@@ -63,7 +63,7 @@ jobs:
                  run: pnpm install --no-frozen-lockfile && pnpm run build # Change this to npm, yarn or pnpm.
 
                - name: Build the app
-                 uses: tauri-apps/tauri-action@vdev
+                 uses: tauri-apps/tauri-action@dev
 
                  env:
                       GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
