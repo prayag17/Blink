@@ -8,7 +8,7 @@
 	},
 	"package": {
 		"productName": "JellyPlayer",
-		"version": "1.0.0"
+		"version": "0.0.1"
 	},
 	"tauri": {
 		"allowlist": {
@@ -102,10 +102,10 @@
 		"updater": {
 			"active": true,
 			"endpoints": [
-				"https://cdn.jsdelivr.net/gh/prayag17/jellyplayer@latest/updater.json"
+				"https://raw.githack.com/prayag17/JellyPlayer/main/latest.json"
 			],
 			"dialog": true,
-			"pubkey": "dW50cnVzdGVkIGNvbW1lbnQ6IG1pbmlzaWduIHB1YmxpYyBrZXk6IDE1MTczRTNFNjFGQ0JBOEMKUldTTXV2eGhQajRYRmNFSG5EYVF1VE1YaVA5Qjl2WGt6alFWOGo5UCs2SGprTGtNOC9WMC8wTjMK"
+			"pubkey": "dW50cnVzdGVkIGNvbW1lbnQ6IG1pbmlzaWduIHB1YmxpYyBrZXk6IDk5QkE0QjMzOEQyRUI5M0MKUldROHVTNk5NMHU2bVMvS3VNRWZHRzhuWE1TRlg3WHI1VHBtZjFvVy80alZ2UHc4T3BqcHVGOWwK"
 		},
 		"windows": [
 			{
