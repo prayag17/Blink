@@ -1,19 +1,19 @@
 {
-  "version": "1.0.0",
+  "version": "0.0.1",
   "notes": "See the assets to download and install this version.",
-  "pub_date": "2023-12-08T09:46:24.108Z",
+  "pub_date": "2023-12-08T10:15:47.030Z",
   "platforms": {
     "darwin-x86_64": {
-      "signature": "dW50cnVzdGVkIGNvbW1lbnQ6IHNpZ25hdHVyZSBmcm9tIHRhdXJpIHNlY3JldCBrZXkKUlVROHVTNk5NMHU2bVF4ZWlEenFvNU1yTmdTQkU0aGFFZVpzZ1ZnaGwybjRBMVYxS09KVFdQZ25oaTVrcGFHQXpMbGRXbDZncDRVZzh2Q1dPbytQM0NsZVVMUzhXenVaYmdNPQp0cnVzdGVkIGNvbW1lbnQ6IHRpbWVzdGFtcDoxNzAyMDI4MzgxCWZpbGU6SmVsbHlQbGF5ZXIuYXBwLnRhci5negp2MnFLellmQlMzOFFUMHVKWXFmUGxldnl2amU5YmswVnhhZXFqTHg4ZXpBakpsODhCWTdFQWpxb1hoemZhY3I5MUxMT0EyaDFIM3dEQi8xTlprMENCUT09Cg==",
-      "url": "https://github.com/prayag17/JellyPlayer/releases/download/v1.0.0-dev%40abca227/JellyPlayer_x64.app.tar.gz"
+      "signature": "dW50cnVzdGVkIGNvbW1lbnQ6IHNpZ25hdHVyZSBmcm9tIHRhdXJpIHNlY3JldCBrZXkKUlVROHVTNk5NMHU2bWVlb2tUSWF6NlRYL0dDYWVHK2hhWVpHVjkyeTFLMU9uM01QS0RhQ0huTnpsNDY5eUpiaHIzRlJxS0tGT3VPTWNkWlJWNCtPaXRlWlljZ1VFeEpSNUE4PQp0cnVzdGVkIGNvbW1lbnQ6IHRpbWVzdGFtcDoxNzAyMDMwNDI0CWZpbGU6SmVsbHlQbGF5ZXIuYXBwLnRhci5negpzMEx6WDlybVJkTmM4cE1oQThYKzhKT1BsNUlGUjB1MnNGUk4rYXVkNVJMMmoySks4VGp4bTd3a2Jtbm1kTnh2TDFKTXFRZXMzbTQyeXh6L2h3WjBEQT09Cg==",
+      "url": "https://github.com/prayag17/JellyPlayer/releases/download/v0.0.1-dev%40874646a/JellyPlayer_x64.app.tar.gz"
     },
     "linux-x86_64": {
-      "signature": "dW50cnVzdGVkIGNvbW1lbnQ6IHNpZ25hdHVyZSBmcm9tIHRhdXJpIHNlY3JldCBrZXkKUlVROHVTNk5NMHU2bVdGNU5zZkxOU1pWSTd2aWtEOFI0Q2FnbDgwOElVTkFvT2tZRjBNK0REL28wbE1FOE1SWWFMU2lOa0tXTmJoNlJmZVp0UElzQUdPMkZrejUwemUreXdJPQp0cnVzdGVkIGNvbW1lbnQ6IHRpbWVzdGFtcDoxNzAyMDI4NTQyCWZpbGU6amVsbHktcGxheWVyXzEuMC4wX2FtZDY0LkFwcEltYWdlLnRhci5negptSzFqQWpsQVpLYzVLTXV1WTZMaHFyeVQvclFROGNBYk5RVjRlK3p1bGw2TjJ0QU9zb203L2NSVkNxbHlKbkNhTFVTUGxGVTFaSm9HNVdQOTZWR21EQT09Cg==",
-      "url": "https://github.com/prayag17/JellyPlayer/releases/download/v1.0.0-dev%40abca227/jelly-player_1.0.0_amd64.AppImage.tar.gz"
+      "signature": "dW50cnVzdGVkIGNvbW1lbnQ6IHNpZ25hdHVyZSBmcm9tIHRhdXJpIHNlY3JldCBrZXkKUlVROHVTNk5NMHU2bWNQRlIzaTlNa2l4dHRGQk1hcVNIRUI5Z0Z4L0lEMktIWmhRT0RlS2RHMjBib240NHNlTWltbGZFY242cTNLM2xlTFpMdVh3WWw5a240QnVYNjF0Z2dzPQp0cnVzdGVkIGNvbW1lbnQ6IHRpbWVzdGFtcDoxNzAyMDMwMzE0CWZpbGU6amVsbHktcGxheWVyXzAuMC4xX2FtZDY0LkFwcEltYWdlLnRhci5negpBQWhWcDhjZGJTdHYxSG95WUpYZE81WmFrWS8zeDYvNFJpYVRzV1ZKNnVNVXUvL3A0a21YOHV0aHFQR3cwU3Fka2ZNb2dYQkR6OHlIWTRtdnc3T2RCdz09Cg==",
+      "url": "https://github.com/prayag17/JellyPlayer/releases/download/v0.0.1-dev%40874646a/jelly-player_0.0.1_amd64.AppImage.tar.gz"
     },
     "windows-x86_64": {
-      "signature": "dW50cnVzdGVkIGNvbW1lbnQ6IHNpZ25hdHVyZSBmcm9tIHRhdXJpIHNlY3JldCBrZXkKUlVROHVTNk5NMHU2bVNHY1k4NjJTQnFlT1ZIL0l4RUYzMGlFa1ZjYnVWZzJWNThrdE56cUN5Q3hwSGlTdXpwZUdzTWxwbnZPcnRycnV5WVB1bUZnMDdIaFpKUm9TdGdsWlFZPQp0cnVzdGVkIGNvbW1lbnQ6IHRpbWVzdGFtcDoxNzAyMDI4NzYxCWZpbGU6SmVsbHlQbGF5ZXJfMS4wLjBfeDY0X2VuLVVTLm1zaS56aXAKNDlJNFF0MHhRUEM2L2xQYXlqbURJZ0VJc1YrS0VhTUNuaUIzanhoZElSUVpXN0RtOVZOdjRrQU0zZzMrL3B5UVZadWtKYUEyeW93b002ZitoL2ZXRGc9PQo=",
-      "url": "https://github.com/prayag17/JellyPlayer/releases/download/v1.0.0-dev%40abca227/JellyPlayer_1.0.0_x64_en-US.msi.zip"
+      "signature": "dW50cnVzdGVkIGNvbW1lbnQ6IHNpZ25hdHVyZSBmcm9tIHRhdXJpIHNlY3JldCBrZXkKUlVROHVTNk5NMHU2bVJSTzNJTklhOGFjZUlwTnlPa1d3Zk5WazRzcWUrV0RqSWlvM2ZIWjYweVQ0TWtJK3ZtWEVPdmorbFpMN2M4TDhLdmR4QlJjdDAzWjV2T2NqcTQ3MkFvPQp0cnVzdGVkIGNvbW1lbnQ6IHRpbWVzdGFtcDoxNzAyMDMwNTIzCWZpbGU6SmVsbHlQbGF5ZXJfMC4wLjFfeDY0X2VuLVVTLm1zaS56aXAKU054eGZNSDlKeHJsOEVyT0VoczU3TjdIWU9jWGNiVUxvTWRac0ZUdmtRZ1Q1QStqS0NUOVVSRHVaUGJkNDNpc3NUNTFDaWRMOS9VRit2WnFCbVRyRGc9PQo=",
+      "url": "https://github.com/prayag17/JellyPlayer/releases/download/v0.0.1-dev%40874646a/JellyPlayer_0.0.1_x64_en-US.msi.zip"
     }
   }
 }
