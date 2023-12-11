@@ -117,7 +117,7 @@ const SeriesTitlePage = () => {
 			const result = await getTvShowsApi(api).getSeasons({
 				userId: user.data.Id,
 				seriesId: item.data.Id,
-				isSpecialSeason: false,
+				// isSpecialSeason: false,
 			});
 			return result.data;
 		},

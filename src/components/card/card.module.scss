@@ -61,7 +61,6 @@
 			left: 0;
 			width: 100% !important;
 			height: 100% !important;
-			border-radius: 8px;
 			overflow: hidden;
 		}
 	}
@@ -78,17 +77,11 @@
 		align-items: flex-end;
 		justify-content: flex-end;
 		padding: 0.5em;
-		border-radius: 8px;
+		background: rgb(0 0 0 / 0.4);
 	}
 	&:hover,
 	&:focus,
 	&:focus-within {
-		.card-image {
-			filter: brightness(0.6);
-		}
-		.card-image-icon-container {
-			filter: brightness(0.6);
-		}
 		.card-overlay {
 			opacity: 1;
 		}

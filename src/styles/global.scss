@@ -47,9 +47,9 @@ body {
 	width: calc(100% + 100px);
 	height: calc(100% + 100px);
 	position: absolute;
-	top: -100px;
-	left: -100px;
-	z-index: -1;
+	top: -50px;
+	left: -50px;
+	z-index: -2;
 	filter: blur(120px) saturate(130%) contrast(140%);
 	&-container {
 		position: fixed;
@@ -57,6 +57,7 @@ body {
 		height: 100vh;
 		left: 0;
 		top: 0;
+		z-index: -1;
 	}
 }
 

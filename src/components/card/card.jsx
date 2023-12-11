@@ -3,22 +3,18 @@ import React from "react";
 
 import { useNavigate } from "react-router-dom";
 
-import MuiCard from "@mui/material/Card";
-import CardActionArea from "@mui/material/CardActionArea";
 import Typography from "@mui/material/Typography";
 import LinearProgress from "@mui/material/LinearProgress";
 
-import { Blurhash } from "react-blurhash";
-
 import { getTypeIcon } from "../utils/iconsCollection";
 import "./card.module.scss";
-import { MdiCheck } from "../icons/mdiCheck";
 
 import LikeButton from "../buttons/likeButton";
 import MarkPlayedButton from "../buttons/markPlayedButton";
 import PlayButton from "../buttons/playButton";
 import { BaseItemKind } from "@jellyfin/sdk/lib/generated-client";
 import { useApi } from "../../utils/store/api";
+import ErrorBoundary from "../errorBoundary";
 
 const cardImageAspectRatios = {
 	thumb: 1.777,
@@ -63,7 +59,6 @@ export const Card = ({
 	cardTitle,
 	cardCaption,
 	imageType = "Primary",
-	imageBlurhash,
 	cardType,
 	queryKey,
 	userId,
@@ -71,7 +66,6 @@ export const Card = ({
 	hideText,
 	onClick,
 	disableOverlay = false,
-	disablePadding,
 	overrideIcon,
 }) => {
 	const [api] = useApi((state) => [state.api]);
@@ -94,47 +88,41 @@ export const Card = ({
 			tabIndex={0}
 			onClick={onClick ? onClick : defaultOnClick}
 		>
-			<div className="card-box">
-				<div
-					className="card-image-container"
-					style={{
-						aspectRatio: cardImageAspectRatios[cardType],
-					}}
-				>
-					{!!item.UserData && (
-						<>
-							<div
-								className="card-indicator check"
-								style={{
-									opacity: item.UserData?.Played
-										? 1
-										: 0,
-								}}
-							>
-								<div className="material-symbols-rounded">
-									done
-								</div>
-							</div>
-							<div
-								className={`card-indicator text`}
-								style={{
-									opacity: item.UserData
-										?.UnplayedItemCount
-										? 1
-										: 0,
-								}}
-							>
-								<Typography
-									variant="subtitle2"
-									padding="0.1em 0.4em"
-									fontWeight={400}
-								>
-									{item.UserData?.UnplayedItemCount}
-								</Typography>
-							</div>
-						</>
-					)}
-					{/* {!!imageBlurhash && (
+			<div
+				className="card-image-container"
+				style={{
+					aspectRatio: cardImageAspectRatios[cardType],
+				}}
+			>
+				<ErrorBoundary fallback={<></>}>
+					<div
+						className="card-indicator check"
+						style={{
+							opacity: item.UserData?.Played ? 1 : 0,
+						}}
+					>
+						<div className="material-symbols-rounded">
+							done
+						</div>
+					</div>
+					<div
+						className={`card-indicator text`}
+						style={{
+							opacity: item.UserData?.UnplayedItemCount
+								? 1
+								: 0,
+						}}
+					>
+						<Typography
+							variant="subtitle2"
+							padding="0.1em 0.4em"
+							fontWeight={400}
+						>
+							{item.UserData?.UnplayedItemCount}
+						</Typography>
+					</div>
+				</ErrorBoundary>
+				{/* {!!imageBlurhash && (
 						<Blurhash
 							hash={imageBlurhash}
 							width={128}
@@ -144,40 +132,46 @@ export const Card = ({
 							className="card-image-blurhash"
 						/>
 					)} */}
-					<div className="card-image-icon-container">
-						{overrideIcon
-							? getTypeIcon(overrideIcon)
-							: getTypeIcon(item.Type)}
-					</div>
-					<img
-						src={
-							overrideIcon == "User"
-								? `${api.basePath}/Users/${item.Id}/Images/Primary`
-								: api.getItemImageUrl(
-										seriesId
-											? item.SeriesId
-											: item.AlbumId
-											? item.AlbumId
-											: item.Id,
-										imageType,
-										{
-											quality: 85,
-											fillHeight: 462,
-											fillWidth: 462,
-										},
-								  )
-						}
-						style={{
-							height: "100%",
-							width: "100%",
-							opacity: 0,
-						}}
-						loading="lazy"
-						onLoad={(e) => (e.target.style.opacity = 1)}
-						className="card-image"
-					/>
+				<div className="card-image-icon-container">
+					{overrideIcon
+						? getTypeIcon(overrideIcon)
+						: getTypeIcon(item.Type)}
+				</div>
+				<img
+					src={
+						overrideIcon == "User"
+							? `${api.basePath}/Users/${item.Id}/Images/Primary`
+							: api.getItemImageUrl(
+									seriesId
+										? item.SeriesId
+										: item.AlbumId
+										? item.AlbumId
+										: item.Id,
+									imageType,
+									{
+										quality: 90,
+										fillHeight: 226,
+										fillWidth: Math.floor(
+											226 /
+												cardImageAspectRatios[
+													cardType
+												],
+										),
+									},
+							  )
+					}
+					style={{
+						height: "100%",
+						width: "100%",
+						opacity: 0,
+					}}
+					loading="lazy"
+					onLoad={(e) => (e.target.style.opacity = 1)}
+					className="card-image"
+				/>
+				<div className="card-overlay">
 					{!disableOverlay && (
-						<div className="card-overlay">
+						<>
 							<PlayButton
 								itemId={item.Id}
 								userId={userId}
@@ -217,50 +211,49 @@ export const Card = ({
 								queryKey={queryKey}
 								userId={userId}
 							/>
-						</div>
-					)}
-					{item.UserData?.PlaybackPositionTicks > 0 && (
-						<LinearProgress
-							variant="determinate"
-							value={item.UserData?.PlayedPercentage}
-							style={{
-								position: "absolute",
-								left: 0,
-								right: 0,
-								bottom: 0,
-								zIndex: 2,
-								height: "6px",
-								background:
-									"rgb(5 5 5 /  0.5) !important",
-								backdropFilter: "blur(5px)",
-							}}
-							color="primary"
-						/>
+						</>
 					)}
 				</div>
-				<div
-					className="card-text-container"
-					style={{ display: hideText ? "none" : "block" }}
+				{item.UserData?.PlaybackPositionTicks > 0 && (
+					<LinearProgress
+						variant="determinate"
+						value={item.UserData?.PlayedPercentage}
+						style={{
+							position: "absolute",
+							left: 0,
+							right: 0,
+							bottom: 0,
+							zIndex: 2,
+							height: "6px",
+							background: "rgb(5 5 5 /  0.5) !important",
+							backdropFilter: "blur(5px)",
+						}}
+						color="primary"
+					/>
+				)}
+			</div>
+			<div
+				className="card-text-container"
+				style={{ display: hideText ? "none" : "block" }}
+			>
+				<Typography
+					variant="subtitle1"
+					fontWeight={500}
+					noWrap
+					textAlign="center"
+					style={{ opacity: 0.9 }}
 				>
-					<Typography
-						variant="subtitle1"
-						fontWeight={500}
-						noWrap
-						textAlign="center"
-						style={{ opacity: 0.9 }}
-					>
-						{cardTitle}
-					</Typography>
-					<Typography
-						variant="subtitle2"
-						noWrap
-						textAlign="center"
-						style={{ opacity: 0.6 }}
-						lineHeight="auto"
-					>
-						{cardCaption}
-					</Typography>
-				</div>
+					{cardTitle}
+				</Typography>
+				<Typography
+					variant="subtitle2"
+					noWrap
+					textAlign="center"
+					style={{ opacity: 0.6 }}
+					lineHeight="auto"
+				>
+					{cardCaption}
+				</Typography>
 			</div>
 		</div>
 	);

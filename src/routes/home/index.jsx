@@ -31,6 +31,7 @@ import ErrorBoundary from "../../components/errorBoundary";
 import Typography from "@mui/material/Typography";
 import CarouselSlideError from "../../components/errors/carousel";
 import { useApi } from "../../utils/store/api";
+import { useSnackbar } from "notistack";
 
 const Home = () => {
 	const [api] = useApi((state) => [state.api]);
