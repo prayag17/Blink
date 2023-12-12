@@ -26,7 +26,7 @@ export const EmptyNotice = () => {
 					"--clr": yellow[800],
 				}}
 			>
-				error
+				sentiment_dissatisfied
 			</div>
 			<Typography
 				variant="h3"
