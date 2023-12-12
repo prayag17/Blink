@@ -185,7 +185,7 @@ h1 {
 		filter: blur(10px);
 		animation: iconAnimation cubic-bezier(0.175, 0.885, 0.32, 1.275) 3s
 			infinite;
-		background: rgb(255 0 0 / 0.1);
+		background: radial-gradient(transparent, var(--clr));
 	}
 }
 
@@ -195,7 +195,7 @@ h1 {
 		transform: translate(-50%, -50%) scale(1);
 	}
 	60% {
-		opacity: 1;
+		opacity: 0.1;
 		transform: translate(-50%, -50%) scale(4);
 	}
 	100% {

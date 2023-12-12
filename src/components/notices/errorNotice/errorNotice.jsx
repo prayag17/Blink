@@ -24,6 +24,7 @@ export const ErrorNotice = ({ error, resetErrorBoundary }) => {
 				style={{
 					fontSize: "10em",
 					color: red[800],
+					"--clr": red[800],
 				}}
 			>
 				error

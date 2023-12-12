@@ -1,8 +1,9 @@
 /** @format */
 
+import React from "react";
 import Box from "@mui/material/Box";
-import { MdiEmoticonCry } from "../../icons/mdiEmoticonCry";
 import Typography from "@mui/material/Typography";
+import { yellow } from "@mui/material/colors";
 
 export const EmptyNotice = () => {
 	return (
@@ -14,11 +15,26 @@ export const EmptyNotice = () => {
 				justifyContent: "center",
 				alignItems: "center",
 				flexFlow: "column",
-				opacity: 0.2,
+				// opacity: 0.2,
 			}}
 		>
-			<MdiEmoticonCry sx={{ fontSize: 200 }} />
-			<Typography variant="h3">Nothing found</Typography>
+			<div
+				className="material-symbols-rounded animate-icon"
+				style={{
+					fontSize: "10em",
+					color: yellow[800],
+					"--clr": yellow[800],
+				}}
+			>
+				error
+			</div>
+			<Typography
+				variant="h3"
+				fontFamily="JetBrains Mono Variable"
+				fontWeight={100}
+			>
+				No results found
+			</Typography>
 		</Box>
 	);
 };
