@@ -327,7 +327,7 @@ const Hero = ({
 									}}
 								/>
 							)}
-							{!!videoTracks[0].VideoRangeType && (
+							{!!videoTracks[0]?.VideoRangeType && (
 								<Chip
 									variant="filled"
 									label={

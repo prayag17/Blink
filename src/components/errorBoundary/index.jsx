@@ -17,6 +17,7 @@ class ErrorBoundary extends React.Component {
 		//   in ErrorBoundary (created by App)
 		//   in div (created by App)
 		//   in App
+		this.setState;
 		console.error(`Err in ${info} - ${error}`);
 	}
 

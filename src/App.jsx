@@ -101,6 +101,8 @@ import { CircularProgress } from "@mui/material";
 import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 import { useCentralStore } from "./utils/store/central.js";
 import { useSnackbar } from "notistack";
+import { ErrorBoundary } from "react-error-boundary";
+import { ErrorNotice } from "./components/notices/errorNotice/errorNotice.jsx";
 
 const anim = {
 	initial: {
@@ -457,148 +459,163 @@ function App() {
 						<SideMenu />
 						<AppBar />
 						<AudioPlayer key={audioPlayerVisible} />
-						<Routes location={location}>
-							{/* <Route
+						<ErrorBoundary FallbackComponent={ErrorNotice}>
+							<Routes location={location}>
+								{/* <Route
 								// key={location.key}
 								element={<AnimationWrapper />}
 							> */}
-							<Route
-								path="/"
-								exact
-								element={<Navigate to={initialRoute} />}
-								// element={<></>}
-							/>
-							<Route
-								path="/error"
-								element={
-									<Dialog
-										open
-										onClose={handleRelaunch}
-										aria-labelledby="alert-dialog-text"
-										aria-describedby="alert-dialog-desc"
-										maxWidth="md"
-									>
-										<DialogTitle id="alert-dialog-text">
-											Unable to reach server
-										</DialogTitle>
-										<DialogContent>
-											<DialogContentText id="alert-dialog-desc">
-												Unable to connect to
-												the jellyfin server.
-											</DialogContentText>
-										</DialogContent>
-										<DialogActions>
-											<Button
-												onClick={() =>
-													navigate(
-														"/servers/list",
-													)
-												}
-											>
-												Change Server
-											</Button>
-											<Button
-												variant="outlined"
-												onClick={
-													handleRelaunch
-												}
-											>
-												Restart JellyPlayer
-											</Button>
-										</DialogActions>
-									</Dialog>
-								}
-							/>
-							<Route
-								path="/login/index"
-								exact
-								element={<LoginRoute />}
-							/>
+								<Route
+									path="/"
+									exact
+									element={
+										<Navigate to={initialRoute} />
+									}
+									// element={<></>}
+								/>
+								<Route
+									path="/error"
+									element={
+										<Dialog
+											open
+											onClose={handleRelaunch}
+											aria-labelledby="alert-dialog-text"
+											aria-describedby="alert-dialog-desc"
+											maxWidth="md"
+										>
+											<DialogTitle id="alert-dialog-text">
+												Unable to reach
+												server
+											</DialogTitle>
+											<DialogContent>
+												<DialogContentText id="alert-dialog-desc">
+													Unable to
+													connect to the
+													jellyfin
+													server.
+												</DialogContentText>
+											</DialogContent>
+											<DialogActions>
+												<Button
+													onClick={() =>
+														navigate(
+															"/servers/list",
+														)
+													}
+												>
+													Change Server
+												</Button>
+												<Button
+													variant="outlined"
+													onClick={
+														handleRelaunch
+													}
+												>
+													Restart
+													JellyPlayer
+												</Button>
+											</DialogActions>
+										</Dialog>
+									}
+								/>
+								<Route
+									path="/login/index"
+									exact
+									element={<LoginRoute />}
+								/>
 
-							<Route path="/home" element={<Home />} />
-							<Route
-								path="/setup/server"
-								element={<ServerSetup />}
-							/>
-							<Route
-								path="/servers/list"
-								element={<ServerList />}
-							/>
-							<Route
-								path="/login/withImg/:userName/:userId/"
-								element={<LoginWithImage />}
-							/>
-							<Route
-								path="/login/users"
-								element={<UserLogin />}
-							/>
-							<Route
-								path="/login/manual"
-								element={<UserLoginManual />}
-							/>
-							<Route
-								exact
-								path="/library/:id"
-								element={<LibraryView />}
-							/>
-							<Route
-								exact
-								path="/item/:id"
-								element={<ItemDetail />}
-							/>
-							<Route
-								exact
-								path="/musicalbum/:id"
-								element={<MusicAlbumTitlePage />}
-							/>
-							<Route
-								exact
-								path="/artist/:id"
-								element={<ArtistTitlePage />}
-							/>
-							<Route
-								exact
-								path="/boxset/:id"
-								element={<BoxSetTitlePage />}
-							/>
-							<Route
-								exact
-								path="/episode/:id"
-								element={<EpisodeTitlePage />}
-							/>
-							<Route
-								exact
-								path="/person/:id"
-								element={<PersonTitlePage />}
-							/>
-							<Route
-								exact
-								path="/playlist/:id"
-								element={<PlaylistTitlePage />}
-							/>
-							<Route
-								path="/series/:id"
-								element={<SeriesTitlePage />}
-							/>
-							<Route
-								path="/search"
-								element={<SearchPage />}
-							/>
-							<Route
-								path="/favorite"
-								element={<FavoritePage />}
-							/>
-							<Route
-								path="/settings"
-								element={<Settings />}
-							/>
-							<Route path="/about" element={<About />} />
-							<Route
-								path="/player"
-								element={<VideoPlayer />}
-							/>
-							{/* </Route> */}
-						</Routes>
+								<Route
+									path="/home"
+									element={<Home />}
+								/>
+								<Route
+									path="/setup/server"
+									element={<ServerSetup />}
+								/>
+								<Route
+									path="/servers/list"
+									element={<ServerList />}
+								/>
+								<Route
+									path="/login/withImg/:userName/:userId/"
+									element={<LoginWithImage />}
+								/>
+								<Route
+									path="/login/users"
+									element={<UserLogin />}
+								/>
+								<Route
+									path="/login/manual"
+									element={<UserLoginManual />}
+								/>
+								<Route
+									exact
+									path="/library/:id"
+									element={<LibraryView />}
+								/>
+								<Route
+									exact
+									path="/item/:id"
+									element={<ItemDetail />}
+								/>
+								<Route
+									exact
+									path="/musicalbum/:id"
+									element={<MusicAlbumTitlePage />}
+									errorElement={<div>Error</div>}
+								/>
+								<Route
+									exact
+									path="/artist/:id"
+									element={<ArtistTitlePage />}
+								/>
+								<Route
+									exact
+									path="/boxset/:id"
+									element={<BoxSetTitlePage />}
+								/>
+								<Route
+									exact
+									path="/episode/:id"
+									element={<EpisodeTitlePage />}
+								/>
+								<Route
+									exact
+									path="/person/:id"
+									element={<PersonTitlePage />}
+								/>
+								<Route
+									exact
+									path="/playlist/:id"
+									element={<PlaylistTitlePage />}
+								/>
+								<Route
+									path="/series/:id"
+									element={<SeriesTitlePage />}
+								/>
+								<Route
+									path="/search"
+									element={<SearchPage />}
+								/>
+								<Route
+									path="/favorite"
+									element={<FavoritePage />}
+								/>
+								<Route
+									path="/settings"
+									element={<Settings />}
+								/>
+								<Route
+									path="/about"
+									element={<About />}
+								/>
+								<Route
+									path="/player"
+									element={<VideoPlayer />}
+								/>
+								{/* </Route> */}
+							</Routes>
+						</ErrorBoundary>
 					</div>
 					<ReactQueryDevtools buttonPosition="bottom-left" />
 				</ThemeProvider>

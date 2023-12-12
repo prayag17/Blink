@@ -67,6 +67,7 @@ const MarkPlayedButton = ({ itemId, isPlayed, queryKey, userId, itemName }) => {
 					opacity: mutation.isPending ? 1 : 0,
 					transition: "opacity 200ms",
 				}}
+				thickness={2}
 			/>
 			<IconButton
 				onClick={(e) => {
