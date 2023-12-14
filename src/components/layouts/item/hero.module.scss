@@ -57,7 +57,7 @@ $maskPercentage: 40%;
 
 	&-name-logo {
 		width: 10.4em;
-		height: 2.6em;
+		max-height: 2.6em;
 		object-fit: contain;
 		object-position: left;
 		opacity: 0;

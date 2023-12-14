@@ -228,7 +228,18 @@ const SeriesTitlePage = () => {
 	}
 	if (item.isSuccess && similarItems.isSuccess) {
 		return (
-			<div
+			<motion.div
+				key={id}
+				initial={{
+					opacity: 0,
+				}}
+				animate={{
+					opacity: 1,
+				}}
+				transition={{
+					duration: 0.25,
+					ease: "easeInOut",
+				}}
 				className="scrollY"
 				style={{
 					padding: "5em 2em 2em 1em",
@@ -633,7 +644,7 @@ const SeriesTitlePage = () => {
 						})}
 					</CardScroller>
 				)}
-			</div>
+			</motion.div>
 		);
 	}
 	if (item.isError || similarItems.isError) {

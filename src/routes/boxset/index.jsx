@@ -6,6 +6,8 @@ import Box from "@mui/material/Box";
 import CircularProgress from "@mui/material/CircularProgress";
 import { useParams, useNavigate } from "react-router-dom";
 
+import { motion } from "framer-motion";
+
 import {
 	BaseItemKind,
 	ItemFields,
@@ -149,7 +151,18 @@ const BoxSetTitlePage = () => {
 	}
 	if (item.isSuccess && similarItems.isSuccess) {
 		return (
-			<div
+			<motion.div
+				key={id}
+				initial={{
+					opacity: 0,
+				}}
+				animate={{
+					opacity: 1,
+				}}
+				transition={{
+					duration: 0.25,
+					ease: "easeInOut",
+				}}
 				className="scrollY"
 				style={{
 					padding: "5em 2em 2em 1em",
@@ -312,7 +325,7 @@ const BoxSetTitlePage = () => {
 						})}
 					</CardScroller>
 				)}
-			</div>
+			</motion.div>
 		);
 	}
 	if (item.isError || similarItems.isError) {

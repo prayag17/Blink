@@ -9,6 +9,8 @@ import Paper from "@mui/material/Paper";
 
 import { useParams } from "react-router-dom";
 
+import { motion } from "framer-motion";
+
 import {
 	BaseItemKind,
 	ItemFields,
@@ -34,6 +36,7 @@ import { useBackdropStore } from "../../utils/store/backdrop";
 import LikeButton from "../../components/buttons/likeButton";
 import { useAudioPlayback } from "../../utils/store/audioPlayback";
 import { useApi } from "../../utils/store/api";
+
 function TabPanel(props) {
 	const { children, value, index, ...other } = props;
 
@@ -179,7 +182,18 @@ const MusicAlbumTitlePage = () => {
 	}
 	if (item.isSuccess && similarItems.isSuccess) {
 		return (
-			<div
+			<motion.div
+				key={id}
+				initial={{
+					opacity: 0,
+				}}
+				animate={{
+					opacity: 1,
+				}}
+				transition={{
+					duration: 0.25,
+					ease: "easeInOut",
+				}}
 				className="scrollY"
 				style={{
 					padding: "5em 2em 2em 1em",
@@ -418,7 +432,7 @@ const MusicAlbumTitlePage = () => {
 						})}
 					</CardScroller>
 				)}
-			</div>
+			</motion.div>
 		);
 	}
 	if (item.isError || similarItems.isError) {

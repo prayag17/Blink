@@ -24,16 +24,14 @@ export const ErrorNotice = ({ error, resetErrorBoundary }) => {
 				style={{
 					fontSize: "10em",
 					color: red[800],
-					"--clr": red[800],
+					"--clr": "rgb(198 40 40 / 30%)",
+					fontVariationSettings:
+						'"FILL" 0, "wght" 100, "GRAD" 25, "opsz" 40',
 				}}
 			>
 				error
 			</div>
-			<Typography
-				variant="h3"
-				fontFamily="JetBrains Mono Variable"
-				fontWeight={100}
-			>
+			<Typography variant="h3" fontWeight={100}>
 				Something went wrong
 			</Typography>
 			<Typography
@@ -59,9 +57,20 @@ export const ErrorNotice = ({ error, resetErrorBoundary }) => {
 				style={{
 					marginTop: "1em",
 				}}
+				color="info"
 			>
-				Retry
+				Close
 			</Button>
+			<Typography
+				variant="subitle1"
+				fontWeight={300}
+				style={{
+					marginTop: "1em",
+				}}
+			>
+				Note: You need to click on CLOSE button if you change the
+				page in order to close this error message
+			</Typography>
 		</Box>
 	);
 };

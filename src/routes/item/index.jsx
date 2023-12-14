@@ -7,6 +7,8 @@ import CircularProgress from "@mui/material/CircularProgress";
 
 import { useParams } from "react-router-dom";
 
+import { motion, AnimatePresence } from "framer-motion";
+
 import {
 	BaseItemKind,
 	ItemFields,
@@ -29,6 +31,7 @@ import { ErrorNotice } from "../../components/notices/errorNotice/errorNotice";
 import { useBackdropStore } from "../../utils/store/backdrop";
 import { ActorCard } from "../../components/card/actorCards";
 import { useApi } from "../../utils/store/api";
+
 function TabPanel(props) {
 	const { children, value, index, ...other } = props;
 
@@ -200,9 +203,21 @@ const ItemDetail = () => {
 			</Box>
 		);
 	}
+
 	if (item.isSuccess && similarItems.isSuccess) {
 		return (
-			<div
+			<motion.div
+				key={id}
+				initial={{
+					opacity: 0,
+				}}
+				animate={{
+					opacity: 1,
+				}}
+				transition={{
+					duration: 0.25,
+					ease: "easeInOut",
+				}}
 				className="scrollY"
 				style={{
 					padding: "5em 2em 2em 1em",
@@ -320,7 +335,7 @@ const ItemDetail = () => {
 						})}
 					</CardScroller>
 				)}
-			</div>
+			</motion.div>
 		);
 	}
 	if (item.isError || similarItems.isError) {

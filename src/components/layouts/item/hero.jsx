@@ -13,8 +13,7 @@ import { BaseItemKind } from "@jellyfin/sdk/lib/generated-client/models/base-ite
 import { MediaStreamType } from "@jellyfin/sdk/lib/generated-client/models/media-stream-type";
 
 import { Card } from "../../card/card";
-import { MdiStar } from "../../icons/mdiStar";
-import { yellow } from "@mui/material/colors";
+import { yellow, red } from "@mui/material/colors";
 import { endsAt, getRuntime, getRuntimeFull } from "../../../utils/date/time";
 import LikeButton from "../../buttons/likeButton";
 import MarkPlayedButton from "../../buttons/markPlayedButton";
@@ -25,6 +24,7 @@ import { Blurhash } from "react-blurhash";
 import TextLink from "../../textLink";
 
 import { useApi } from "../../../utils/store/api";
+import { ErrorBoundary } from "react-error-boundary";
 /**
  * @typedef {Object} Props
  * @property {import("@jellyfin/sdk/lib/generated-client/models").BaseItemDto} item
@@ -418,42 +418,69 @@ const Hero = ({
 									item.OfficialRating ?? "Not Rated"
 								}
 							/>
-							<div
-								style={{
-									display: "flex",
-									gap: "0.25em",
-									alignItems: "center",
-								}}
-								className="hero-carousel-info-rating"
-							>
-								{item.CommunityRating ? (
-									<>
-										<MdiStar
-											sx={{
-												color: yellow[700],
-											}}
-										/>
-										<Typography
-											style={{
-												opacity: "0.8",
-											}}
-											variant="subtitle1"
-										>
-											{Math.round(
-												item.CommunityRating *
-													10,
-											) / 10}
-										</Typography>
-									</>
-								) : (
+							<ErrorBoundary fallback={<></>}>
+								<div
+									style={{
+										display: "flex",
+										gap: "0.25em",
+										alignItems: "center",
+									}}
+									className="hero-carousel-info-rating"
+								>
+									<div
+										className="material-symbols-rounded "
+										style={{
+											fontSize: "2.2em",
+											color: yellow[700],
+											fontVariationSettings:
+												'"FILL" 1, "wght" 300, "GRAD" 25, "opsz" 40',
+										}}
+									>
+										star
+									</div>
 									<Typography
-										style={{ opacity: "0.8" }}
+										style={{
+											opacity: "0.8",
+										}}
 										variant="subtitle1"
 									>
-										No Community Rating
+										{Math.round(
+											item.CommunityRating *
+												10,
+										) / 10}
 									</Typography>
-								)}
-							</div>
+								</div>
+							</ErrorBoundary>
+							<ErrorBoundary fallback={<></>}>
+								<div
+									style={{
+										display: "flex",
+										gap: "0.25em",
+										alignItems: "center",
+									}}
+									className="hero-carousel-info-rating"
+								>
+									<div
+										className="material-symbols-rounded "
+										style={{
+											color: red[400],
+											fontVariationSettings:
+												'"FILL" 1, "wght" 300, "GRAD" 25, "opsz" 40',
+										}}
+									>
+										thumb_up
+									</div>
+									<Typography
+										style={{
+											opacity: "0.8",
+										}}
+										variant="subtitle1"
+									>
+										{item.CriticRating}
+									</Typography>
+								</div>
+							</ErrorBoundary>
+
 							{!!item.RunTimeTicks && (
 								<Typography
 									style={{ opacity: "0.8" }}

@@ -181,22 +181,18 @@ h1 {
 		height: 100%;
 		border-radius: 100%;
 		opacity: 0;
-
-		filter: blur(10px);
-		animation: iconAnimation cubic-bezier(0.175, 0.885, 0.32, 1.275) 3s
-			infinite;
-		background: radial-gradient(transparent, var(--clr));
+		// filter: blur(10px);
+		animation: iconAnimation ease-out 1s infinite;
+		background: var(--clr);
+		z-index: -1;
+		// background: radial-gradient(transparent, var(--clr));
 	}
 }
 
 @keyframes iconAnimation {
 	0% {
-		opacity: 0;
-		transform: translate(-50%, -50%) scale(1);
-	}
-	60% {
-		opacity: 0.1;
-		transform: translate(-50%, -50%) scale(4);
+		opacity: 1;
+		transform: translate(-50%, -50%) scale(0);
 	}
 	100% {
 		opacity: 0;

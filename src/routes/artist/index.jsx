@@ -32,6 +32,7 @@ import { ArtistAlbum } from "../../components/layouts/artist/artistAlbum";
 import { useBackdropStore } from "../../utils/store/backdrop";
 import MusicTrack from "../../components/musicTrack";
 import { useApi } from "../../utils/store/api";
+
 function TabPanel(props) {
 	const { children, value, index, ...other } = props;
 
@@ -197,7 +198,18 @@ const ArtistTitlePage = () => {
 	}
 	if (item.isSuccess) {
 		return (
-			<div
+			<motion.div
+				key={id}
+				initial={{
+					opacity: 0,
+				}}
+				animate={{
+					opacity: 1,
+				}}
+				transition={{
+					duration: 0.25,
+					ease: "easeInOut",
+				}}
 				className="scrollY"
 				style={{
 					padding: "5em 2em 2em 1em",
@@ -401,7 +413,7 @@ const ArtistTitlePage = () => {
 						</TabPanel>
 					</AnimatePresence>
 				</div>
-			</div>
+			</motion.div>
 		);
 	}
 	if (item.isError) {

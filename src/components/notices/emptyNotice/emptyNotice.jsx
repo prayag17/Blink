@@ -10,7 +10,7 @@ export const EmptyNotice = () => {
 		<Box
 			sx={{
 				width: "100%",
-				height: "100vh",
+				height: "100%",
 				display: "flex",
 				justifyContent: "center",
 				alignItems: "center",
@@ -23,16 +23,14 @@ export const EmptyNotice = () => {
 				style={{
 					fontSize: "10em",
 					color: yellow[800],
-					"--clr": yellow[800],
+					fontVariationSettings:
+						'"FILL" 0, "wght" 100, "GRAD" 25, "opsz" 40',
+					"--clr": "rgb(249 168 37 / 30%)",
 				}}
 			>
 				sentiment_dissatisfied
 			</div>
-			<Typography
-				variant="h3"
-				fontFamily="JetBrains Mono Variable"
-				fontWeight={100}
-			>
+			<Typography variant="h3" fontWeight={100}>
 				No results found
 			</Typography>
 		</Box>
