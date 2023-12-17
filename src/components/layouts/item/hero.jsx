@@ -430,8 +430,8 @@ const Hero = ({
 									<div
 										className="material-symbols-rounded "
 										style={{
-											fontSize: "2.2em",
-											color: yellow[700],
+											// fontSize: "2.2em",
+											color: yellow[400],
 											fontVariationSettings:
 												'"FILL" 1, "wght" 300, "GRAD" 25, "opsz" 40',
 										}}
@@ -451,7 +451,7 @@ const Hero = ({
 									</Typography>
 								</div>
 							</ErrorBoundary>
-							<ErrorBoundary fallback={<></>}>
+							{Boolean(item.CriticRating) && (
 								<div
 									style={{
 										display: "flex",
@@ -479,7 +479,7 @@ const Hero = ({
 										{item.CriticRating}
 									</Typography>
 								</div>
-							</ErrorBoundary>
+							)}
 
 							{!!item.RunTimeTicks && (
 								<Typography
