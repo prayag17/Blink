@@ -36,7 +36,8 @@
 }
 
 .library {
-	padding: 0 !important;
+	padding-left: 0 !important;
+	padding-right: 0 !important;
 	position: relative;
 	display: flex;
 	flex-direction: column;
@@ -48,12 +49,10 @@
 		align-items: start;
 	}
 	&-items {
-		height: calc(100vh - 4em);
+		height: calc(100vh - 8.4em);
 		overflow-y: auto;
 		overflow-x: hidden;
-		padding-bottom: 1em;
-		padding-right: 1em;
-		padding-top: 4.5em;
+		padding: 1.5em 1em;
 		&-header {
 			position: absolute;
 			top: 4.4em;

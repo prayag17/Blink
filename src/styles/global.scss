@@ -122,8 +122,10 @@ h1 {
 	width: 100%;
 	box-sizing: border-box;
 	min-height: 100vh;
-	padding-left: 1em;
-	padding-right: calc(1em + 14px);
+	padding: 0 1.2em;
+	&.padded-top {
+		padding-top: 4.4em;
+	}
 }
 
 .home {
@@ -197,5 +199,16 @@ h1 {
 	100% {
 		opacity: 0;
 		transform: translate(-50%, -50%) scale(4);
+	}
+}
+
+.flex {
+	display: flex;
+	&-row {
+		flex-direction: row;
+	}
+	&-center {
+		align-items: center;
+		justify-content: center;
 	}
 }

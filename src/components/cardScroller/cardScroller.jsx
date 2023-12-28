@@ -32,21 +32,27 @@ export const CardScroller = ({
 			partialVisibilityGutter: 40,
 		},
 		desktop: {
-			breakpoint: { max: 3000, min: 625 },
+			breakpoint: { max: 3000, min: 925 },
 			items: displayCards,
 			slidesToSlide: displayCards, // optional, default to 1.
 			partialVisibilityGutter: 30,
 		},
 		tablet: {
-			breakpoint: { max: 624, min: 464 },
-			items: displayCards - 2,
-			slidesToSlide: displayCards - 2, // optional, default to 1.
+			breakpoint: { max: 925, min: 600 },
+			items: displayCards - 3,
+			slidesToSlide: displayCards - 3, // optional, default to 1.
 			partialVisibilityGutter: 20,
 		},
 		mobile: {
-			breakpoint: { max: 464, min: 0 },
+			breakpoint: { max: 600, min: 424 },
 			items: displayCards - 5,
 			slidesToSlide: displayCards - 5, // optional, default to 1.
+			partialVisibilityGutter: 10,
+		},
+		smallScreen: {
+			breakpoint: { max: 424, min: 0 },
+			items: 1,
+			slidesToSlide: 1, // optional, default to 1.
 			partialVisibilityGutter: 10,
 		},
 	};

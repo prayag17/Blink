@@ -369,7 +369,7 @@ const LibraryView = () => {
 		);
 	} else if (currentLib.isSuccess) {
 		return (
-			<main className="scrollY library">
+			<main className="scrollY library padded-top">
 				<div
 					style={{
 						padding: "1em 1em 1em 0.6em",
@@ -378,7 +378,7 @@ const LibraryView = () => {
 						zIndex: 10,
 						display: "flex",
 						alignItems: "center",
-						justifyContent: "center",
+						justifyContent: "flex-start",
 					}}
 				>
 					<div
@@ -386,6 +386,7 @@ const LibraryView = () => {
 							display: "flex",
 							alignItems: "center",
 							width: "fit-content",
+							padding: "0 1em",
 						}}
 					>
 						<Typography

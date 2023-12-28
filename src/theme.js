@@ -49,5 +49,21 @@ export const theme = createTheme({
 				},
 			},
 		},
+		MuiPaper: {
+			styleOverrides: {
+				root: {},
+			},
+		},
+		MuiMenu: {
+			styleOverrides: {
+				paper: {
+					borderRadius: "10px",
+					// boxShadow: "0 0 5px  hsl(273, 100%, 36%)",
+					background: "hsl(256, 100%, 2%, 40%)",
+					backdropFilter: "blur(20px)",
+					// border: "1.8px solid hsl(273, 100%, 36%)",
+				},
+			},
+		},
 	},
 });

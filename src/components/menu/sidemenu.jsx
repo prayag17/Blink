@@ -17,7 +17,7 @@ import { getTypeIcon } from "../../components/utils/iconsCollection.jsx";
 import "./sidemenu.module.scss";
 import { useApi } from "../../utils/store/api";
 
-import Icon from "../../assets/icon.png";
+import Icon from "../../assets/icon.svg";
 
 const DrawerHeader = styled("div")(({ theme }) => ({
 	display: "flex",

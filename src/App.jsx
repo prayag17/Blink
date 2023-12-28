@@ -456,7 +456,7 @@ function App() {
 						}}
 					>
 						<CssBaseline />
-						<SideMenu />
+						{/* <SideMenu />  */}
 						<AppBar />
 						<AudioPlayer key={audioPlayerVisible} />
 						<ErrorBoundary FallbackComponent={ErrorNotice}>
