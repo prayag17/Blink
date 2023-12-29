@@ -20,6 +20,7 @@ import { useNavigate } from "react-router-dom";
 import { MediaTypeIconCollection, getTypeIcon } from "../utils/iconsCollection";
 import { MdiChevronRight } from "../icons/mdiChevronRight";
 import { useQuery } from "@tanstack/react-query";
+import { red } from "@mui/material/colors";
 
 import { getUserApi } from "@jellyfin/sdk/lib/utils/api/user-api";
 import LikeButton from "../buttons/likeButton";
@@ -97,8 +98,8 @@ const CarouselSlide = ({ item }) => {
 										]
 									}
 									// hash="LEHV6nWB2yk8pyo0adR*.7kCMdnj"
-									width="1080"
-									height="720"
+									width="108"
+									height="72"
 									resolutionX={64}
 									resolutionY={96}
 									className="hero-carousel-background-blurhash"
@@ -127,32 +128,56 @@ const CarouselSlide = ({ item }) => {
 					</div>
 				</div>
 				<motion.div
-					initial={{
-						transform:
-							animationDirection == "right"
-								? "translateX(60px)"
-								: "translateX(-60px)",
-						opacity: 0,
-					}}
-					animate={{
-						transform: "translateX(0px)",
-						opacity: 1,
-					}}
-					exit={{
-						transform:
-							animationDirection == "right"
-								? "translateX(-60px)"
-								: "translateX(60px)",
+					// initial={{
+					// 	transform:
+					// 		animationDirection == "right"
+					// 			? "translateX(60px)"
+					// 			: "translateX(-60px)",
+					// 	opacity: 0,
+					// }}
+					// animate={{
+					// 	transform: "translateX(0px)",
+					// 	opacity: 1,
+					// }}
+					// exit={{
+					// 	transform:
+					// 		animationDirection == "right"
+					// 			? "translateX(-60px)"
+					// 			: "translateX(60px)",
 
-						opacity: 0,
-					}}
-					transition={{
-						duration: 0.25,
-						ease: "easeInOut",
-					}}
+					// 	opacity: 0,
+					// }}
+					// transition={{
+					// 	duration: 0.25,
+					// 	ease: "easeInOut",
+					// }}
 					className="hero-carousel-detail"
 				>
 					<Typography
+						component={motion.div}
+						initial={{
+							transform:
+								animationDirection == "right"
+									? "translateX(60px)"
+									: "translateX(-60px)",
+							opacity: 0,
+						}}
+						animate={{
+							transform: "translateX(0px)",
+							opacity: 1,
+						}}
+						exit={{
+							transform:
+								animationDirection == "right"
+									? "translateX(-60px)"
+									: "translateX(60px)",
+
+							opacity: 0,
+						}}
+						transition={{
+							duration: 0.25,
+							ease: "easeInOut",
+						}}
 						key={item.Id}
 						variant="h2"
 						className="hero-carousel-text"
@@ -184,23 +209,41 @@ const CarouselSlide = ({ item }) => {
 						)}
 					</Typography>
 					<Stack
+						component={motion.div}
+						initial={{
+							transform:
+								animationDirection == "right"
+									? "translateX(20px)"
+									: "translateX(-20px)",
+							opacity: 0,
+						}}
+						animate={{
+							transform: "translateX(0px)",
+							opacity: 1,
+						}}
+						exit={{
+							transform:
+								animationDirection == "right"
+									? "translateX(-20px)"
+									: "translateX(20px)",
+
+							opacity: 0,
+						}}
+						transition={{
+							duration: 0.25,
+							ease: "easeInOut",
+						}}
 						direction="row"
-						gap={1}
-						divider={
-							<div
-								style={{
-									width: "4px",
-									height: "4px",
-									background: "white",
-									alignSelf: "center",
-									aspectRatio: 1,
-									borderRadius: "10px",
-								}}
-							></div>
-						}
+						gap={2}
 						className="hero-carousel-info"
+						mt={1}
+						justifyItems="flex-start"
+						alignItems="center"
 					>
-						<Typography variant="subtitle1">
+						<Typography
+							style={{ opacity: "0.8" }}
+							variant="subtitle1"
+						>
 							{item.ProductionYear
 								? item.ProductionYear
 								: "Unknown"}
@@ -209,46 +252,110 @@ const CarouselSlide = ({ item }) => {
 							variant="filled"
 							label={item.OfficialRating ?? "Not Rated"}
 						/>
-						<div
-							style={{
-								display: "flex",
-								gap: "0.25em",
-								alignItems: "center",
-							}}
-							className="hero-carousel-info-rating"
-						>
-							{item.CommunityRating ? (
-								<>
-									<MdiStar
-										sx={{
-											color: yellow[700],
-										}}
-									/>
-									<Typography variant="subtitle1">
-										{Math.round(
-											item.CommunityRating *
-												10,
-										) / 10}
-									</Typography>
-								</>
-							) : (
-								<Typography variant="subtitle1">
-									No Community Rating
+						<ErrorBoundary fallback={<></>}>
+							<div
+								style={{
+									display: "flex",
+									gap: "0.25em",
+									alignItems: "center",
+								}}
+								className="hero-carousel-info-rating"
+							>
+								<div
+									className="material-symbols-rounded "
+									style={{
+										// fontSize: "2.2em",
+										color: yellow[400],
+										fontVariationSettings:
+											'"FILL" 1, "wght" 300, "GRAD" 25, "opsz" 40',
+									}}
+								>
+									star
+								</div>
+								<Typography
+									style={{
+										opacity: "0.8",
+									}}
+									variant="subtitle1"
+								>
+									{Math.round(
+										item.CommunityRating * 10,
+									) / 10}
 								</Typography>
-							)}
-						</div>
+							</div>
+						</ErrorBoundary>
+						{Boolean(item.CriticRating) && (
+							<div
+								style={{
+									display: "flex",
+									gap: "0.25em",
+									alignItems: "center",
+								}}
+								className="hero-carousel-info-rating"
+							>
+								<div
+									className="material-symbols-rounded "
+									style={{
+										color: red[400],
+										fontVariationSettings:
+											'"FILL" 1, "wght" 300, "GRAD" 25, "opsz" 40',
+									}}
+								>
+									thumb_up
+								</div>
+								<Typography
+									style={{
+										opacity: "0.8",
+									}}
+									variant="subtitle1"
+								>
+									{item.CriticRating}
+								</Typography>
+							</div>
+						)}
+
 						{!!item.RunTimeTicks && (
-							<Typography variant="subtitle1">
+							<Typography
+								style={{ opacity: "0.8" }}
+								variant="subtitle1"
+							>
 								{getRuntime(item.RunTimeTicks)}
 							</Typography>
 						)}
 						{!!item.RunTimeTicks && (
-							<Typography variant="subtitle1">
+							<Typography
+								style={{ opacity: "0.8" }}
+								variant="subtitle1"
+							>
 								{endsAt(item.RunTimeTicks)}
 							</Typography>
 						)}
 					</Stack>
 					<Typography
+						component={motion.div}
+						initial={{
+							transform:
+								animationDirection == "right"
+									? "translateX(20px)"
+									: "translateX(-20px)",
+							opacity: 0,
+						}}
+						animate={{
+							transform: "translateX(0px)",
+							opacity: 1,
+						}}
+						exit={{
+							transform:
+								animationDirection == "right"
+									? "translateX(-20px)"
+									: "translateX(20px)",
+
+							opacity: 0,
+						}}
+						transition={{
+							duration: 0.25,
+							ease: "easeInOut",
+						}}
 						variant="subtitle1"
 						className="hero-carousel-text"
 						sx={{
@@ -265,6 +372,30 @@ const CarouselSlide = ({ item }) => {
 					</Typography>
 
 					<Stack
+						component={motion.div}
+						initial={{
+							transform:
+								animationDirection == "right"
+									? "translateX(20px)"
+									: "translateX(-20px)",
+							opacity: 0,
+						}}
+						animate={{
+							transform: "translateX(0px)",
+							opacity: 1,
+						}}
+						exit={{
+							transform:
+								animationDirection == "right"
+									? "translateX(-20px)"
+									: "translateX(20px)",
+
+							opacity: 0,
+						}}
+						transition={{
+							duration: 0.25,
+							ease: "easeInOut",
+						}}
 						mt={3}
 						direction="row"
 						gap={3}

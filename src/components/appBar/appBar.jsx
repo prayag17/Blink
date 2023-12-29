@@ -200,23 +200,30 @@ export const AppBar = () => {
 						}}
 					>
 						<NavLink to="/home" className="appBar-text">
-							<Typography variant="subtitle1">
+							<Typography
+								variant="subtitle1"
+								fontWeight={600}
+							>
 								Home
 							</Typography>
 						</NavLink>
 						<Typography
 							ref={librariesText}
 							variant="subtitle1"
+							fontWeight={600}
+							onMouseEnter={popoverEnter}
+							onFocus={popoverEnter}
+							tabIndex={0}
 							className={
 								isBrowsingLibrary
 									? "appBar-text active"
 									: "appBar-text"
 							}
-							onMouseEnter={popoverEnter}
 							// onMouseLeave={popoverLeave}
 						>
 							Libraries
 						</Typography>
+
 						<Menu
 							open={Boolean(librariesPopover)}
 							anchorEl={librariesPopover}
@@ -237,6 +244,7 @@ export const AppBar = () => {
 								onMouseLeave: popoverLeave,
 							}}
 							disableScrollLock
+							hideBackdrop
 						>
 							{libraries.isPending
 								? "loading..."
@@ -254,6 +262,7 @@ export const AppBar = () => {
 												// 		`/library/${library.Id}`,
 												// 	)
 												// }
+												tabIndex={0}
 												className="appBar-library"
 											>
 												<ListItemIcon>

@@ -58,6 +58,7 @@ import About from "./routes/about";
 import SearchPage from "./routes/search";
 
 import { VideoPlayer } from "./routes/player/videoPlayer.jsx";
+import Markdown from "react-markdown";
 
 import { SideMenu } from "./components/menu/sidemenu.jsx";
 import { AppBar } from "./components/appBar/appBar.jsx";
@@ -315,7 +316,9 @@ function App() {
 								</DialogTitle>
 								<DialogContent dividers>
 									<DialogContentText>
-										{updateInfo.body}
+										<Markdown>
+											{updateInfo.body}
+										</Markdown>
 									</DialogContentText>
 								</DialogContent>
 								<DialogActions

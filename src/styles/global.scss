@@ -58,6 +58,7 @@ body {
 		left: 0;
 		top: 0;
 		z-index: -1;
+		filter: brightness(0.4);
 	}
 }
 
@@ -122,7 +123,7 @@ h1 {
 	width: 100%;
 	box-sizing: border-box;
 	min-height: 100vh;
-	padding: 0 1.2em;
+	padding: 0 1.6em;
 	&.padded-top {
 		padding-top: 4.4em;
 	}

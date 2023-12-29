@@ -72,7 +72,7 @@ const Carousel = ({ content, onChange }) => {
 						}
 					}}
 					style={{
-						height: "100vh",
+						height: "100%",
 						width: "100vw",
 						position: "absolute",
 					}}
