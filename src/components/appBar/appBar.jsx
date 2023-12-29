@@ -162,7 +162,8 @@ export const AppBar = () => {
 					paddingRight: "0 !important",
 				}}
 				className={trigger ? "appBar backdropVisible" : "appBar"}
-				elevation={0}
+				elevation={trigger ? 4 : 0}
+				color="transparent"
 			>
 				<Toolbar
 					sx={{
@@ -219,20 +220,6 @@ export const AppBar = () => {
 						<Menu
 							open={Boolean(librariesPopover)}
 							anchorEl={librariesPopover}
-							// anchorOrigin={{
-							// 	vertical: "bottom",
-							// 	horizontal: "right",
-							// }}
-							// transformOrigin={{
-							// 	vertical: "top",
-							// 	horizontal: "left",
-							// }}
-							// slotProps={{
-							// 	paper: {
-							// 		onMouseEnter: popoverEnter,
-							// 		onMouseLeave: popoverLeave,
-							// 	},
-							// }}
 							anchorOrigin={{
 								horizontal: "center",
 								vertical: "bottom",
@@ -256,12 +243,18 @@ export const AppBar = () => {
 								: libraries.data.Items.map(
 										(library) => (
 											<MenuItem
-												key={library.Id}
-												onClick={() =>
-													navigate(
-														`/library/${library.Id}`,
-													)
+												component={NavLink}
+												to={
+													"/library/" +
+													library.Id
 												}
+												key={library.Id}
+												// onClick={() =>
+												// 	navigate(
+												// 		`/library/${library.Id}`,
+												// 	)
+												// }
+												className="appBar-library"
 											>
 												<ListItemIcon>
 													{getTypeIcon(
