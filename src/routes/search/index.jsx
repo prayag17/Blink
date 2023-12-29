@@ -12,7 +12,7 @@ import { MdiMagnify } from "../../components/icons/mdiMagnify";
 import { useQuery } from "@tanstack/react-query";
 
 import { getUserApi } from "@jellyfin/sdk/lib/utils/api/user-api";
-import { getSearchApi } from "@jellyfin/sdk/lib/utils/api/search-api";
+import { EmptyNotice } from "../../components/notices/emptyNotice/emptyNotice";
 
 import useDebounce from "../../utils/hooks/useDebounce";
 
@@ -179,6 +179,7 @@ const SearchPage = () => {
 						style: {
 							border: "100px !important",
 						},
+						autoFocus: true,
 						startAdornment: (
 							<InputAdornment position="start">
 								<div
@@ -479,6 +480,31 @@ const SearchPage = () => {
 					</CardScroller>
 				)}
 			</div>
+
+			{movies.isSuccess &&
+				series.isSuccess &&
+				audio.isSuccess &&
+				musicAlbum.isSuccess &&
+				book.isSuccess &&
+				musicArtists.isSuccess &&
+				person.isSuccess &&
+				movies.data.Items.length == 0 &&
+				series.data.Items.length == 0 &&
+				audio.data.Items.length == 0 &&
+				musicAlbum.data.Items.length == 0 &&
+				book.data.Items.length == 0 &&
+				musicArtists.data.Items.length == 0 &&
+				person.data.Items.length == 0 && (
+					<div
+						style={{
+							height: "calc(100vh - 12em)",
+						}}
+					>
+						<EmptyNotice
+							extraMsg={"Try using different terms."}
+						/>
+					</div>
+				)}
 		</div>
 	);
 };

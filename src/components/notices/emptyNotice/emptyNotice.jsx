@@ -5,7 +5,7 @@ import Box from "@mui/material/Box";
 import Typography from "@mui/material/Typography";
 import { yellow } from "@mui/material/colors";
 
-export const EmptyNotice = () => {
+export const EmptyNotice = ({ extraMsg }) => {
 	return (
 		<Box
 			sx={{
@@ -19,19 +19,25 @@ export const EmptyNotice = () => {
 			}}
 		>
 			<div
-				className="material-symbols-rounded animate-icon"
+				className="material-symbols-rounded"
 				style={{
 					fontSize: "10em",
 					color: yellow[800],
 					fontVariationSettings:
-						'"FILL" 0, "wght" 100, "GRAD" 25, "opsz" 40',
-					"--clr": "rgb(249 168 37 / 30%)",
+						'"FILL" 1, "wght" 400, "GRAD" 25, "opsz" 60',
 				}}
 			>
 				sentiment_dissatisfied
 			</div>
-			<Typography variant="h3" fontWeight={100}>
+			<Typography variant="h4" fontWeight={300}>
 				No results found
+			</Typography>
+			<Typography
+				variant="subtitle1"
+				fontWeight={300}
+				style={{ opacity: 0.5 }}
+			>
+				{extraMsg}
 			</Typography>
 		</Box>
 	);
