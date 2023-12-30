@@ -17,14 +17,15 @@
 		}
 	}
 	&-indicator {
-		height: 2px;
+		height: 3px;
 		width: 100%;
 		border-radius: 10px;
 		transition: background $transition-time-fast,
 			height $transition-time-fast;
+		background: rgb(255 255 255 / 0.5);
 		&:hover {
 			cursor: pointer;
-			height: 5px;
+			height: 6px;
 			background: rgb(255 255 255 / 0.8) !important;
 		}
 		&-container {
@@ -38,7 +39,8 @@
 			justify-content: center;
 		}
 		&.active {
-			height: 5px;
+			height: 6px;
+			background: white !important;
 		}
 	}
 }

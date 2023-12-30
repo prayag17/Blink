@@ -30,6 +30,10 @@ const Carousel = ({ content, onChange }) => {
 			<IconButton
 				className="carousel-button left"
 				onClick={() => {
+					if (currentSlide == 0) {
+						setDirection("left");
+						setCurrentSlide(content.length - 1);
+					}
 					if (currentSlide > 0) {
 						setDirection("left");
 						setCurrentSlide((init) => init - 1);
@@ -38,7 +42,7 @@ const Carousel = ({ content, onChange }) => {
 				sx={{
 					background: " rgb(200 200 200 / 0.05)",
 				}}
-				disabled={currentSlide == 0}
+				// disabled={currentSlide == 0}
 			>
 				<div className="material-symbols-rounded">arrow_left</div>
 			</IconButton>
@@ -50,7 +54,6 @@ const Carousel = ({ content, onChange }) => {
 					exit={{ opacity: 0 }}
 					transition={{
 						duration: 0.25,
-						ease: "easeInOut",
 					}}
 					drag={"x"}
 					dragConstraints={{ left: 0, right: 0 }}
@@ -83,12 +86,15 @@ const Carousel = ({ content, onChange }) => {
 			<IconButton
 				className="carousel-button right"
 				onClick={() => {
-					if (currentSlide < content.length - 1) {
+					if (currentSlide == content.length - 1) {
+						setDirection("right");
+						setCurrentSlide(0);
+					} else if (currentSlide < content.length - 1) {
 						setDirection("right");
 						setCurrentSlide((init) => init + 1);
 					}
 				}}
-				disabled={currentSlide == content.length - 1}
+				// disabled={currentSlide == content.length - 1}
 				sx={{
 					background: " rgb(200 200 200 / 0.05)",
 				}}
@@ -104,12 +110,6 @@ const Carousel = ({ content, onChange }) => {
 								: "carousel-indicator"
 						}
 						key={index}
-						style={{
-							background:
-								currentSlide == index
-									? "white"
-									: "rgb(255 255 255 / 0.5)",
-						}}
 						onClick={() => {
 							if (currentSlide > index) {
 								setDirection("left");

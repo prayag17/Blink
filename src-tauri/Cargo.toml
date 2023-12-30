@@ -1,6 +1,6 @@
 [package]
 name = "jellyplayer"
-version = "0.0.1"
+version = "0.0.3-dev"
 description = "A Modern Jellyfin Client"
 authors = ["prayag17", "JellyPlayer contributors (https://github.com/prayag17/JellyPlayer/graphs/contributors)"]
 license = "GPL-3.0-only"
