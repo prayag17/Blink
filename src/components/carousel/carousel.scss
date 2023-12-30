@@ -2,7 +2,8 @@
 
 .carousel {
 	position: relative;
-	height: 80vh;
+	height: 70vh;
+	margin: 4.4em 1.6em 1.6em 1.6em;
 	&-button {
 		position: absolute !important;
 		top: 50%;
@@ -29,8 +30,7 @@
 		&-container {
 			display: flex;
 			position: absolute;
-			bottom: 1em;
-			width: calc(100vw - 3em);
+			bottom: -1em;
 			left: 1em;
 			right: 1em;
 			gap: 1em;

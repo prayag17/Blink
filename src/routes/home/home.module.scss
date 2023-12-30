@@ -1,20 +1,4 @@
 /** @format */
-.home {
-	&-background {
-		&-container {
-			position: fixed !important;
-			width: 100vw;
-			height: 100vh;
-		}
-	}
-	&-backdrop {
-		width: 100vw;
-		height: 100vh;
-		& > * {
-			all: inherit;
-		}
-	}
-}
 
 .hero-carousel {
 	position: relative;
@@ -23,9 +7,11 @@
 	&-slide {
 		position: relative;
 		height: 100%;
-		border-radius: 0px !important;
+		width: 100%;
+		border-radius: 10px !important;
 		overflow: hidden;
 		margin: 0 auto;
+		// box-shadow: 0 0 40px red;
 	}
 	&-background {
 		&-blurhash {
@@ -33,7 +19,7 @@
 			height: 100%;
 			position: absolute;
 			z-index: 1;
-			filter: brightness(0.7);
+			filter: brightness(0.4);
 		}
 		&-container {
 			position: absolute;
@@ -42,13 +28,7 @@
 			left: 0;
 			right: 0;
 			bottom: 0;
-			filter: brightness(0.5);
-			mask-image: linear-gradient(to bottom, black 40%, transparent);
-			-webkit-mask-image: linear-gradient(
-				to bottom,
-				black 40%,
-				transparent
-			);
+			filter: brightness(0.7);
 		}
 		&-image {
 			position: absolute;
@@ -63,23 +43,32 @@
 			width: 100%;
 			height: 100%;
 			transition: opacity 0.5s;
+			mask-image: linear-gradient(to bottom, black 10%, transparent);
+			-webkit-mask-image: linear-gradient(
+				to left,
+				black 40%,
+				transparent 90%
+			);
 		}
 
 		&-icon-container {
 			position: absolute;
-			background: $clr-gradient-dark;
-			// background: url("/public/assetsStatic//meshbackground.png");
+			// background: $clr-gradient-dark;
+			background: url("/src/assets/herobg.png"), rgb(0 0 0 /0.3);
 			z-index: 0;
 			top: 0;
 			left: 0;
 			right: 0;
 			bottom: 0;
+			background-blend-mode: overlay;
 			.material-symbols-rounded {
 				position: absolute;
 				font-size: 15em !important;
-				left: 70%;
+				left: 80%;
 				top: 50%;
 				transform: translate(-50%, -50%);
+				font-variation-settings: "FILL" 0, "wght" 300, "GRAD" 50,
+					"opsz" 60;
 			}
 		}
 	}
@@ -90,7 +79,7 @@
 		margin-bottom: 0.5em;
 		&-logo {
 			max-width: 9em;
-			height: 3em;
+			max-height: 3em;
 			object-fit: contain;
 			object-position: bottom;
 		}
@@ -101,15 +90,14 @@
 		display: flex;
 		height: 100%;
 		width: 80%;
-		padding: 2em;
+		padding: 2.5em;
 		flex-direction: column;
-		justify-content: flex-end;
+		justify-content: center;
 		align-items: flex-start;
-		padding-bottom: 5em;
 	}
 	&-indicator {
 		&-container {
-			width: calc(100% - 2em) !important;
+			// width: calc(100% - 2em) !important;
 			margin-top: -1em !important;
 			margin-left: 1em !important;
 			margin-right: 1em !important;

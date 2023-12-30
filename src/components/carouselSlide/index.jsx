@@ -80,8 +80,8 @@ const CarouselSlide = ({ item }) => {
 				sx={{
 					background: "transparent",
 					px: 3,
-					boxShadow: "none !important",
 				}}
+				elevation={6}
 			>
 				<div className="hero-carousel-background-container">
 					{!!item.ImageBlurHashes.Backdrop && (
@@ -182,7 +182,7 @@ const CarouselSlide = ({ item }) => {
 						variant="h2"
 						className="hero-carousel-text"
 						sx={{
-							mb: 2.5,
+							mb: "5px",
 						}}
 						overflow="visible"
 					>
@@ -195,12 +195,13 @@ const CarouselSlide = ({ item }) => {
 									api.basePath +
 									"/Items/" +
 									item.Id +
-									"/Images/Logo?quality=80&tag=" +
+									"/Images/Logo?quality=90&tag=" +
 									item.ImageTags.Logo
 								}
 								style={{
 									opacity: 0,
 									transition: "opacity 0.2s",
+									objectFit: "contain",
 								}}
 								onLoad={(e) =>
 									(e.target.style.opacity = 1)
@@ -372,30 +373,6 @@ const CarouselSlide = ({ item }) => {
 					</Typography>
 
 					<Stack
-						component={motion.div}
-						initial={{
-							transform:
-								animationDirection == "right"
-									? "translateX(20px)"
-									: "translateX(-20px)",
-							opacity: 0,
-						}}
-						animate={{
-							transform: "translateX(0px)",
-							opacity: 1,
-						}}
-						exit={{
-							transform:
-								animationDirection == "right"
-									? "translateX(-20px)"
-									: "translateX(20px)",
-
-							opacity: 0,
-						}}
-						transition={{
-							duration: 0.25,
-							ease: "easeInOut",
-						}}
 						mt={3}
 						direction="row"
 						gap={3}

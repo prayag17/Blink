@@ -212,9 +212,7 @@ const AudioPlayer = () => {
 						transform: "translateY(100%)",
 					}}
 					style={{
-						width: `calc(100vw - ${theme.spacing(
-							13,
-						)} - 10px)`,
+						width: `100%`,
 					}}
 					transition={{
 						duration: 0.2,
