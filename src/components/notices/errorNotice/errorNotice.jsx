@@ -26,12 +26,12 @@ export const ErrorNotice = ({ error, resetErrorBoundary }) => {
 					color: red[800],
 					"--clr": "rgb(198 40 40 / 30%)",
 					fontVariationSettings:
-						'"FILL" 0, "wght" 100, "GRAD" 25, "opsz" 40',
+						'"FILL" 1, "wght" 400, "GRAD" 25, "opsz" 60',
 				}}
 			>
 				error
 			</div>
-			<Typography variant="h3" fontWeight={100}>
+			<Typography variant="h3" fontWeight={300}>
 				Something went wrong
 			</Typography>
 			<Typography

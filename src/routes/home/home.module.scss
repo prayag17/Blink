@@ -28,26 +28,25 @@
 			left: 0;
 			right: 0;
 			bottom: 0;
-			filter: brightness(0.7);
+			filter: brightness(0.8);
 		}
 		&-image {
 			position: absolute;
 			background-size: cover;
 			z-index: 1;
 			top: 0;
-			left: 0;
 			right: 0;
 			bottom: 0;
 			background-position: center;
 			object-fit: cover;
-			width: 100%;
+			width: 80%;
 			height: 100%;
 			transition: opacity 0.5s;
-			mask-image: linear-gradient(to bottom, black 10%, transparent);
+			mask-image: linear-gradient(to left, black 50%, transparent);
 			-webkit-mask-image: linear-gradient(
 				to left,
-				black 40%,
-				transparent 90%
+				black 50%,
+				transparent
 			);
 		}
 

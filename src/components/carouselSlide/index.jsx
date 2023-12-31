@@ -20,7 +20,7 @@ import { useNavigate } from "react-router-dom";
 import { MediaTypeIconCollection, getTypeIcon } from "../utils/iconsCollection";
 import { MdiChevronRight } from "../icons/mdiChevronRight";
 import { useQuery } from "@tanstack/react-query";
-import { red } from "@mui/material/colors";
+import { red, green } from "@mui/material/colors";
 
 import { getUserApi } from "@jellyfin/sdk/lib/utils/api/user-api";
 import LikeButton from "../buttons/likeButton";
@@ -98,20 +98,20 @@ const CarouselSlide = ({ item }) => {
 										]
 									}
 									// hash="LEHV6nWB2yk8pyo0adR*.7kCMdnj"
-									width="108"
-									height="72"
+									width="256"
+									height="179.2"
 									resolutionX={64}
-									resolutionY={96}
+									resolutionY={45}
 									className="hero-carousel-background-blurhash"
-									punch={1}
+									punch={1.2}
 								/>
 							)}
 							<img
 								className="hero-carousel-background-image"
 								src={
 									item.ParentBackdropItemId
-										? `${api.basePath}/Items/${item.ParentBackdropItemId}/Images/Backdrop`
-										: `${api.basePath}/Items/${item.Id}/Images/Backdrop`
+										? `${api.basePath}/Items/${item.ParentBackdropItemId}/Images/Backdrop?quality=80`
+										: `${api.basePath}/Items/${item.Id}/Images/Backdrop?quality=80`
 								}
 								style={{
 									opacity: 0,
@@ -127,32 +127,7 @@ const CarouselSlide = ({ item }) => {
 						{getTypeIcon(item.Type)}
 					</div>
 				</div>
-				<motion.div
-					// initial={{
-					// 	transform:
-					// 		animationDirection == "right"
-					// 			? "translateX(60px)"
-					// 			: "translateX(-60px)",
-					// 	opacity: 0,
-					// }}
-					// animate={{
-					// 	transform: "translateX(0px)",
-					// 	opacity: 1,
-					// }}
-					// exit={{
-					// 	transform:
-					// 		animationDirection == "right"
-					// 			? "translateX(-60px)"
-					// 			: "translateX(60px)",
-
-					// 	opacity: 0,
-					// }}
-					// transition={{
-					// 	duration: 0.25,
-					// 	ease: "easeInOut",
-					// }}
-					className="hero-carousel-detail"
-				>
+				<div className="hero-carousel-detail">
 					<Typography
 						component={motion.div}
 						initial={{
@@ -253,7 +228,8 @@ const CarouselSlide = ({ item }) => {
 							variant="filled"
 							label={item.OfficialRating ?? "Not Rated"}
 						/>
-						<ErrorBoundary fallback={<></>}>
+
+						{item.CommunityRating && (
 							<div
 								style={{
 									display: "flex",
@@ -284,7 +260,7 @@ const CarouselSlide = ({ item }) => {
 									) / 10}
 								</Typography>
 							</div>
-						</ErrorBoundary>
+						)}
 						{Boolean(item.CriticRating) && (
 							<div
 								style={{
@@ -297,12 +273,17 @@ const CarouselSlide = ({ item }) => {
 								<div
 									className="material-symbols-rounded "
 									style={{
-										color: red[400],
+										color:
+											item.CriticRating > 50
+												? green[400]
+												: red[400],
 										fontVariationSettings:
 											'"FILL" 1, "wght" 300, "GRAD" 25, "opsz" 40',
 									}}
 								>
-									thumb_up
+									{item.CriticRating > 50
+										? "thumb_up"
+										: "thumb_down"}
 								</div>
 								<Typography
 									style={{
@@ -438,7 +419,7 @@ const CarouselSlide = ({ item }) => {
 							/>
 						</Stack>
 					</Stack>
-				</motion.div>
+				</div>
 			</Paper>
 		</ErrorBoundary>
 	);

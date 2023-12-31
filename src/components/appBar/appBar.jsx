@@ -41,7 +41,7 @@ import { useApi } from "../../utils/store/api";
 
 import { getTypeIcon } from "../../components/utils/iconsCollection";
 
-import logo from "../../assets/logo.svg";
+import logo from "../../assets/icon.svg";
 
 export const AppBar = () => {
 	const [api] = useApi((state) => [state.api]);
@@ -172,26 +172,17 @@ export const AppBar = () => {
 						gridTemplateColumns: "30% 1fr 30%",
 					}}
 				>
-					<div
-						className="flex flex-row flex-center"
+					<IconButton
+						onClick={() => navigate(-1)}
+						disabled={!backButtonVisible}
 						style={{
-							gap: "1.2em",
-							justifySelf: "start",
+							justifySelf: "left",
 						}}
 					>
-						<IconButton
-							onClick={() => navigate(-1)}
-							disabled={!backButtonVisible}
-							style={{
-								justifySelf: "left",
-							}}
-						>
-							<div className="material-symbols-rounded">
-								arrow_back
-							</div>
-						</IconButton>
-						<img src={logo} className="appBar-logo" />
-					</div>
+						<div className="material-symbols-rounded">
+							arrow_back
+						</div>
+					</IconButton>
 
 					<div
 						className="flex flex-row flex-center"

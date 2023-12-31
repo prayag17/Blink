@@ -46,7 +46,7 @@ const Carousel = ({ content, onChange }) => {
 			>
 				<div className="material-symbols-rounded">arrow_left</div>
 			</IconButton>
-			<AnimatePresence>
+			<AnimatePresence mode="sync">
 				<motion.div
 					key={currentSlide}
 					initial={{ opacity: 0 }}
@@ -54,6 +54,7 @@ const Carousel = ({ content, onChange }) => {
 					exit={{ opacity: 0 }}
 					transition={{
 						duration: 0.25,
+						ease: "linear",
 					}}
 					drag={"x"}
 					dragConstraints={{ left: 0, right: 0 }}

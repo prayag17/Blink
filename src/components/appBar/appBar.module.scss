@@ -14,9 +14,6 @@
 			fill: url(#clr-gradient-default) !important;
 		}
 	}
-	&-logo {
-		height: 1.8em !important;
-	}
 	&-text {
 		cursor: default;
 		opacity: 0.7;
@@ -54,11 +51,6 @@
 				background: $clr-accent-default;
 			}
 		}
-	}
-	&-logo {
-		width: 20em;
-		object-fit: contain;
-		object-position: center;
 	}
 	&-library {
 		transition: all 0.2s;

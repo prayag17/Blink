@@ -501,7 +501,9 @@ const SearchPage = () => {
 						}}
 					>
 						<EmptyNotice
-							extraMsg={"Try using different terms."}
+							extraMsg={
+								"Try using different search terms."
+							}
 						/>
 					</div>
 				)}
