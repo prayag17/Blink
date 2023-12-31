@@ -61,15 +61,11 @@
 			},
 			"resources": [],
 			"shortDescription": "A Modern Jellyfin Client for Jellyfin",
-			"targets": "all",
+			"targets": ["deb", "appimage", "nsis", "app", "dmg", "updater"],
 			"windows": {
 				"certificateThumbprint": null,
 				"digestAlgorithm": "sha256",
 				"timestampUrl": "",
-				"wix": {
-					"bannerPath": "../public/installerBanner.bmp",
-					"dialogImagePath": "../public/installerDialog.bmp"
-				},
 				"nsis": {
 					"sidebarImage": "../public/installerSideBarImage.bmp",
 					"headerImage": "../public/installerHeaderImage.bmp",
