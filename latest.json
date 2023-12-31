@@ -1,15 +1,19 @@
 {
-  "version": "0.0.3-dev",
-  "notes": "See the assets to download and install this version.",
-  "pub_date": "2023-12-30T13:19:40.566Z",
-  "platforms": {
-    "linux-x86_64": {
-      "signature": "dW50cnVzdGVkIGNvbW1lbnQ6IHNpZ25hdHVyZSBmcm9tIHRhdXJpIHNlY3JldCBrZXkKUlVROHVTNk5NMHU2bVUxMlNNMXNqRUJzbTlxQTVSeldOcG1QNnROYUpVbWx1dVJabHFzUFRTVnpSdlhPMnNMWlNZaW1RTFZ1NUhhYmtsNFBVa3cwWDVqWmU0R3JFNnJjVHdNPQp0cnVzdGVkIGNvbW1lbnQ6IHRpbWVzdGFtcDoxNzAzOTQyMzI3CWZpbGU6amVsbHktcGxheWVyXzAuMC4zLWRldl9hbWQ2NC5BcHBJbWFnZS50YXIuZ3oKbnpNR2VkeFB4eDZpd25JZDBDVjJFRVNFYndXM0hmeVRtZ3dJdmlRMldHRVpxeDBKL3AyTzZld21rbzYwanJwcUkzenpUQXNPSURETmdZZHBXNCtqREE9PQo=",
-      "url": "https://github.com/prayag17/JellyPlayer/releases/download/v0.0.3-dev/jelly-player_0.0.3-dev_amd64.AppImage.tar.gz"
-    },
-    "darwin-x86_64": {
-      "signature": "dW50cnVzdGVkIGNvbW1lbnQ6IHNpZ25hdHVyZSBmcm9tIHRhdXJpIHNlY3JldCBrZXkKUlVROHVTNk5NMHU2bVFSd2o2eGdKZUFuQ09ucXF6amJaYU1TVXRCaDBzTVJZM0xBZDVMNkRnL0N2WDJtclpBYTYwamthTGFVWERaUXVpRzdEZ3oyT2N1azFoamJ2RENZZFFvPQp0cnVzdGVkIGNvbW1lbnQ6IHRpbWVzdGFtcDoxNzAzOTQyMzc0CWZpbGU6SmVsbHlQbGF5ZXIuYXBwLnRhci5negpycDN3eWRlR1IyZXo0djlmSjJMVkpHUWNRVUhqbmFsSHFnbzNQM2VGc21uOTRESjJxaUNlbEl6K2hnSU41T0lPQ292VWFjYlVRM2YyM1BNM0NWOTJEUT09Cg==",
-      "url": "https://github.com/prayag17/JellyPlayer/releases/download/v0.0.3-dev/JellyPlayer_x64.app.tar.gz"
-    }
-  }
+	"version": "0.0.3-dev",
+	"notes": "- Updated home carousel.<br/>- Removed sidemenu<br/>- Updated appBar<br/>- Update Notices",
+	"pub_date": "2023-12-31T11:58:58.485Z",
+	"platforms": {
+		"darwin-x86_64": {
+			"signature": "dW50cnVzdGVkIGNvbW1lbnQ6IHNpZ25hdHVyZSBmcm9tIHRhdXJpIHNlY3JldCBrZXkKUlVROHVTNk5NMHU2bVhtQVFqQmJIbldTQ3F1YktNNWd4MkltMkF1b2pGQmc2Q3RmWlFnZGE0K2FSNmpkczUzNEEzZ1p3dDBBWldSZk15SDYrcE9ub0tUZG1uOVlvMnlwMWdFPQp0cnVzdGVkIGNvbW1lbnQ6IHRpbWVzdGFtcDoxNzA0MDIzNTA1CWZpbGU6SmVsbHlQbGF5ZXIuYXBwLnRhci5nego2M0NPUElEZzdjaUdaeDVMYm8rSTVRYTdncFA1YnNOMHpBd0wyS2JOaHhVeWhKM0lUaEN3TWw1RU1vQm5VYlgyQkZma2x1alpKY1pPSHhuSUx5Q1RCUT09Cg==",
+			"url": "https://github.com/prayag17/JellyPlayer/releases/download/v0.0.3-dev/JellyPlayer_x64.app.tar.gz"
+		},
+		"linux-x86_64": {
+			"signature": "dW50cnVzdGVkIGNvbW1lbnQ6IHNpZ25hdHVyZSBmcm9tIHRhdXJpIHNlY3JldCBrZXkKUlVROHVTNk5NMHU2bVY2aHRVL0Y2d09SL2sxZGhsUzNxQmF1NVR1c2h2cUpJYVFrRkU2N3JqWGU3aEhBYnJuK0NpdDlpRlBadW9HT1B5MDhjMTE1TURyTnRBQ2FmVUJvd2dBPQp0cnVzdGVkIGNvbW1lbnQ6IHRpbWVzdGFtcDoxNzA0MDIzNjQ4CWZpbGU6amVsbHktcGxheWVyXzAuMC4zLWRldl9hbWQ2NC5BcHBJbWFnZS50YXIuZ3oKRXd4dHhGUmd6Rm1ZeGEwcUdHd2NDNTdRS1d0ZWo0aWpwYS85SlFxa3ZyMW9VNm9McCtlRjlmN1N4dWcxck5oMWhoM0Y4L2xHZ2hQOXNockFyL3FYQUE9PQo=",
+			"url": "https://github.com/prayag17/JellyPlayer/releases/download/v0.0.3-dev/jelly-player_0.0.3-dev_amd64.AppImage.tar.gz"
+		},
+		"windows-x86_64": {
+			"signature": "dW50cnVzdGVkIGNvbW1lbnQ6IHNpZ25hdHVyZSBmcm9tIHRhdXJpIHNlY3JldCBrZXkKUlVROHVTNk5NMHU2bWE3TlYzV1NOK2NMK25lamlCY21RQkFMem9nK0E0bTlITWUyQm1xZzg0aEhwS0dvUURtN2pRcG1iczMwUHhIbU0vOUFaQkFSL1lHT3VLRnh5Q3VZVFFZPQp0cnVzdGVkIGNvbW1lbnQ6IHRpbWVzdGFtcDoxNzA0MDIzOTMxCWZpbGU6SmVsbHlQbGF5ZXJfMC4wLjMtZGV2X3g2NC1zZXR1cC5uc2lzLnppcApLN1V6aDN4Qndtb0NaQVlGOENIQ0pyTDJRd0NianRYZGxKanR3TU9IUWxTRE5TVW9mNWVPdkdyQkxudkRJY3ZzOU4wSnlmaWVmSWJYNFBKYUdpUG1CZz09Cg==",
+			"url": "https://github.com/prayag17/JellyPlayer/releases/download/v0.0.3-dev/JellyPlayer_0.0.3-dev_x64-setup.nsis.zip"
+		}
+	}
 }
