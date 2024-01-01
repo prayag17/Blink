@@ -1,4 +1,5 @@
 /** @format */
+import React from "react";
 import Skeleton from "@mui/material/Skeleton";
 import Paper from "@mui/material/Paper";
 import Box from "@mui/material/Box";
@@ -10,31 +11,28 @@ export const CarouselSkeleton = () => {
 			className="hero-carousel-skeleton"
 			elevation={0}
 			sx={{
-				height: "100vh",
+				height: "70vh",
+				margin: "4.4em 1.6em 1.6em 1.6em",
 				position: "relative",
 				background: theme.palette.primary.background.main,
-				borderRadius: 0,
+				borderRadius: "10px",
+				overflow: "hidden",
 			}}
 		>
-			<div className="hero-carousel-background">
-				<Skeleton
-					variant="rectangular"
-					height="100%"
-					animation="wave"
-					sx={{
-						width: "100vw",
-						height: "100vh",
-						position: "absolute",
-						background: "transparent !important",
-					}}
-				></Skeleton>
-			</div>
 			<div className="hero-carousel-detail">
 				<Typography variant="h3" className="hero-carousel-text">
 					<Skeleton
 						variant="text"
-						sx={{ fontSize: "5rem" }}
+						sx={{ fontSize: "8rem" }}
 						width={300}
+						animation="wave"
+					></Skeleton>
+				</Typography>
+				<Typography variant="p" className="hero-carousel-text">
+					<Skeleton
+						variant="text"
+						sx={{ fontSize: "3rem" }}
+						width={400}
 						animation="wave"
 					></Skeleton>
 				</Typography>
