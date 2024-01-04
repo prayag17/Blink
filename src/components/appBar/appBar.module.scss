@@ -15,7 +15,6 @@
 		}
 	}
 	&-text {
-		cursor: default;
 		opacity: 0.7;
 		transition: opacity $transition-time-fast;
 		position: relative;
@@ -53,9 +52,76 @@
 		}
 	}
 	&-library {
-		transition: all 0.2s;
+		position: relative;
+		width: 20rem;
+		text-decoration: none;
+		&::after {
+			content: "";
+			position: absolute;
+			inset: 5px;
+			background: rgb(0 0 0 / 0.3);
+			opacity: 0;
+			transition: opacity $transition-time-fast;
+			border-radius: 5px;
+		}
+		> img {
+			border: 0px solid white;
+			width: inherit;
+			object-fit: cover;
+			height: 100%;
+			border-radius: 10px;
+			transition: border $transition-time-fast;
+		}
+		&-icon {
+			height: 100%;
+			width: inherit;
+			display: flex;
+			align-items: center;
+			justify-content: center;
+			flex-direction: column;
+			color: white !important;
+			background: rgb(255 255 255 / 0.1);
+			border: 0px solid white;
+			border-radius: 10px;
+			transition: border $transition-time-fast;
+			.material-symbols-rounded {
+				font-size: 3em;
+			}
+		}
 		&.active {
-			background: $clr-gradient-default;
+			&::after {
+				opacity: 1;
+			}
+			> img {
+				border: 5px solid white;
+			}
+			.material-symbols-rounded {
+				font-variation-settings: "FILL" 1, "wght" 300, "GRAD" 25,
+					"opsz" 40;
+			}
+			.appBar-library-icon {
+				border: 5px solid white;
+			}
+		}
+		&-scrollContainer {
+			display: flex;
+			max-width: 35vw;
+			overflow: auto;
+			gap: 1em;
+			height: inherit;
+			padding: 15px;
+
+			// Magic scrollbar
+			&::-webkit-scrollbar {
+				&-thumb {
+					width: 150px;
+				}
+				&-track {
+					margin-left: 25px;
+					margin-right: 25px;
+					background: transparent !important;
+				}
+			}
 		}
 	}
 }

@@ -12,7 +12,10 @@ import Menu from "@mui/material/Menu";
 import MenuItem from "@mui/material/MenuItem";
 import useScrollTrigger from "@mui/material/useScrollTrigger";
 import Typography from "@mui/material/Typography";
+import Button from "@mui/material/Button";
 import Popper from "@mui/material/Popper";
+import Paper from "@mui/material/Paper";
+import Grow from "@mui/material/Grow";
 
 import { red } from "@mui/material/colors";
 
@@ -42,6 +45,23 @@ import { useApi } from "../../utils/store/api";
 import { getTypeIcon } from "../../components/utils/iconsCollection";
 
 import logo from "../../assets/icon.svg";
+
+const forwardRefNavLink = React.forwardRef({
+	displayName: "NavLink",
+	render: (props, ref) => (
+		<NavLink
+			ref={ref}
+			to={props.to}
+			className={({ isActive }) =>
+				`${props.className} ${
+					isActive ? props.activeClassName : ""
+				}`
+			}
+		>
+			{props.children}
+		</NavLink>
+	),
+});
 
 export const AppBar = () => {
 	const [api] = useApi((state) => [state.api]);
@@ -110,16 +130,15 @@ export const AppBar = () => {
 		navigate("/login/index");
 	};
 
-	const [librariesPopover, setLibrariesPopover] = useState(false);
+	const [librariesPopper, setLibrariesPopper] = useState(false);
 	const librariesText = useRef(null);
-	const popoverEnter = (event) => {
-		if (anchorEl !== event.currentTarget) {
-			setLibrariesPopover(event.currentTarget);
-		}
-	};
 
-	const popoverLeave = () => {
-		setLibrariesPopover(null);
+	const handlePopper = (event) => {
+		if (librariesPopper) {
+			setLibrariesPopper(null);
+		} else {
+			setLibrariesPopper(event.currentTarget);
+		}
 	};
 
 	const [isBrowsingLibrary, setIsBrowsingLibrary] = useState(false);
@@ -190,16 +209,70 @@ export const AppBar = () => {
 							gap: "2.6em",
 						}}
 					>
-						<NavLink to="/home" className="appBar-text">
+						<NavLink to="/home">
+							{({ isActive }) =>
+								isActive ? (
+									<Button
+										style={{
+											textTransform: "none",
+										}}
+										size="large"
+									>
+										<Typography
+											className="appBar-text active"
+											variant="subtitle1"
+											fontWeight={600}
+										>
+											Home
+										</Typography>
+									</Button>
+								) : (
+									<Button
+										style={{
+											textTransform: "none",
+										}}
+										// className="appBar-text "
+
+										color="white"
+									>
+										<Typography
+											className="appBar-text "
+											variant="subtitle1"
+											fontWeight={600}
+										>
+											Home
+										</Typography>
+									</Button>
+								)
+							}
+						</NavLink>
+						<Button
+							variant="text"
+							// disableRipple
+							disableElevation
+							onClick={handlePopper}
+							style={{ textTransform: "none" }}
+							size="large"
+							disableFocusRipple={false}
+							color={
+								isBrowsingLibrary ? "primary" : "white"
+							}
+
+							// ref={librariesText}
+						>
 							<Typography
 								variant="subtitle1"
 								fontWeight={600}
+								className={
+									isBrowsingLibrary
+										? "appBar-text active"
+										: "appBar-text"
+								}
 							>
-								Home
+								Libraries
 							</Typography>
-						</NavLink>
-						<Typography
-							ref={librariesText}
+						</Button>
+						{/* <Typography
 							variant="subtitle1"
 							fontWeight={600}
 							onMouseEnter={popoverEnter}
@@ -211,61 +284,104 @@ export const AppBar = () => {
 									: "appBar-text"
 							}
 							// onMouseLeave={popoverLeave}
-						>
-							Libraries
-						</Typography>
+						></Typography> */}
 
-						<Menu
-							open={Boolean(librariesPopover)}
-							anchorEl={librariesPopover}
-							anchorOrigin={{
-								horizontal: "center",
-								vertical: "bottom",
-							}}
-							transformOrigin={{
-								horizontal: "center",
-								vertical: "top",
-							}}
-							sx={{
-								mt: 3,
-								maxHeight: "72em",
-							}}
-							onClose={popoverLeave}
-							MenuListProps={{
-								onMouseLeave: popoverLeave,
-							}}
-							disableScrollLock
-							hideBackdrop
+						<Popper
+							open={Boolean(librariesPopper)}
+							anchorEl={librariesPopper}
+							placement="bottom"
+							disablePortal
+							modifiers={[
+								{
+									name: "flip",
+									enabled: true,
+									options: {
+										altBoundary: true,
+										rootBoundary: "document",
+										padding: 8,
+									},
+								},
+								{
+									name: "preventOverflow",
+									enabled: true,
+									options: {
+										altAxis: true,
+										altBoundary: true,
+										tether: true,
+										rootBoundary: "document",
+										padding: 8,
+									},
+								},
+							]}
+							transition
 						>
-							{libraries.isPending
-								? "loading..."
-								: libraries.data.Items.map(
-										(library) => (
-											<MenuItem
-												component={NavLink}
-												to={
-													"/library/" +
-													library.Id
-												}
-												key={library.Id}
-												// onClick={() =>
-												// 	navigate(
-												// 		`/library/${library.Id}`,
-												// 	)
-												// }
-												tabIndex={0}
-												className="appBar-library"
-											>
-												<ListItemIcon>
-													{getTypeIcon(
-														library.CollectionType,
-													)}
-												</ListItemIcon>
-												{library.Name}
-											</MenuItem>
-										),
-								  )}
-						</Menu>
+							{({ TransitionProps }) => (
+								<Grow
+									{...TransitionProps}
+									style={{
+										transformOrigin: "50% 0 0",
+									}}
+									timeout={250}
+								>
+									<Paper
+										sx={{
+											mt: "1.1em",
+											maxHeight: "72em",
+										}}
+										style={{
+											boxShadow:
+												"0px 5px 5px -3px rgba(0,0,0,0.2), 0px 8px 10px 1px rgba(0,0,0,0.14), 0px 3px 14px 2px rgba(0,0,0,0.12)",
+											overflow: "hidden",
+											borderRadius: "25px",
+										}}
+									>
+										<div className="appBar-library-scrollContainer">
+											{libraries.isPending
+												? "loading..."
+												: libraries.data.Items.map(
+														(
+															library,
+														) => (
+															<NavLink
+																key={
+																	library.Id
+																}
+																className="appBar-library"
+																to={`library/${library.Id}`}
+																style={{
+																	borderRadius:
+																		"10px",
+																}}
+															>
+																{Object.keys(
+																	library.ImageTags,
+																).includes(
+																	"Primary",
+																) ? (
+																	<img
+																		src={`${api.basePath}/Items/${library.Id}/Images/Primary?quality=90&fillHeight=226&fillWidth=127`}
+																	/>
+																) : (
+																	<div className="appBar-library-icon">
+																		{" "}
+																		{getTypeIcon(
+																			library.CollectionType,
+																		)}{" "}
+																		<Typography variant="h6">
+																			{
+																				library.Name
+																			}
+																		</Typography>
+																	</div>
+																)}
+															</NavLink>
+														),
+												  )}
+										</div>
+									</Paper>
+								</Grow>
+							)}
+						</Popper>
 					</div>
 
 					<div

@@ -35,18 +35,13 @@ const jellyfin = new Jellyfin({
  * @typedef {import("@jellyfin/sdk").Api} Api
  */
 
-export const useApi = create((set) => ({
+export const useApi = create(() => ({
 	/**
 	 * @type {Api}
 	 */
 	api: null,
 	deviceId: localStorage.getItem("deviceId"),
 	jellyfin: jellyfin,
-	createApi: (serverAddress, accessToken) =>
-		set((state) => ({
-			...state,
-			api: jellyfin.createApi(serverAddress, accessToken, axiosClient),
-		})),
 }));
 
 /**

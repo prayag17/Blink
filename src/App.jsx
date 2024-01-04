@@ -474,8 +474,7 @@ function App() {
 									element={
 										<Navigate to={initialRoute} />
 									}
-									// element={<></>}
-								/>
+								></Route>
 								<Route
 									path="/error"
 									element={
