@@ -217,9 +217,9 @@ export const AppBar = () => {
 											textTransform: "none",
 										}}
 										size="large"
+										className="appBar-text active"
 									>
 										<Typography
-											className="appBar-text active"
 											variant="subtitle1"
 											fontWeight={600}
 										>
@@ -231,12 +231,11 @@ export const AppBar = () => {
 										style={{
 											textTransform: "none",
 										}}
-										// className="appBar-text "
-
+										className="appBar-text"
+										size="large"
 										color="white"
 									>
 										<Typography
-											className="appBar-text "
 											variant="subtitle1"
 											fontWeight={600}
 										>
@@ -257,17 +256,15 @@ export const AppBar = () => {
 							color={
 								isBrowsingLibrary ? "primary" : "white"
 							}
-
-							// ref={librariesText}
+							className={
+								isBrowsingLibrary
+									? "appBar-text active"
+									: "appBar-text"
+							}
 						>
 							<Typography
 								variant="subtitle1"
 								fontWeight={600}
-								className={
-									isBrowsingLibrary
-										? "appBar-text active"
-										: "appBar-text"
-								}
 							>
 								Libraries
 							</Typography>

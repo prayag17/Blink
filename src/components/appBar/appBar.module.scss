@@ -27,7 +27,7 @@
 			background: white;
 			opacity: 0.7;
 			position: absolute;
-			bottom: -2.6px;
+			bottom: 4.6px;
 			left: 0;
 			transform: scaleX(0);
 			transition: transform $transition-time-fast,
@@ -37,7 +37,7 @@
 		&:hover {
 			opacity: 0.8;
 			&::after {
-				transform: scaleX(0.5);
+				transform: scaleX(0.25);
 				opacity: 0.8;
 			}
 		}
@@ -45,7 +45,7 @@
 			opacity: 1;
 			color: $clr-accent-default;
 			&::after {
-				transform: scaleX(0.75);
+				transform: scaleX(0.5);
 				opacity: 1;
 				background: $clr-accent-default;
 			}
@@ -115,6 +115,7 @@
 			&::-webkit-scrollbar {
 				&-thumb {
 					width: 150px;
+					max-width: 33%;
 				}
 				&-track {
 					margin-left: 25px;

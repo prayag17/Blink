@@ -15,14 +15,7 @@ import CircularProgress from "@mui/material/CircularProgress";
 
 import { useApi } from "../../utils/store/api";
 
-const LikeButton = ({
-	itemId,
-	isFavorite,
-	queryKey,
-	userId,
-	itemName,
-	color = "white",
-}) => {
+const LikeButton = ({ itemId, isFavorite, queryKey, userId, itemName }) => {
 	const [api] = useApi((state) => [state.api]);
 	const queryClient = useQueryClient();
 	const { enqueueSnackbar } = useSnackbar();

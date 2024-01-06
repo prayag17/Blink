@@ -29,6 +29,10 @@ div::-webkit-scrollbar {
 	}
 }
 
+::selection {
+	background: $clr-secondary-default;
+}
+
 body {
 	font-family: "Noto Sans";
 	background: $clr-background-default;
@@ -207,6 +211,9 @@ h1 {
 	display: flex;
 	&-row {
 		flex-direction: row;
+	}
+	&-column {
+		flex-direction: column;
 	}
 	&-center {
 		align-items: center;

@@ -22,8 +22,11 @@ $clr-gradient-dark: linear-gradient(
 	$clr-secondary-dark
 );
 
-$border-radius-default: 6px;
-$border-radius-intensity-1: 4px;
+$border-radius-default: 10px;
+$border-radius_04: 4px;
 
 $transition-time-default: 250ms;
 $transition-time-fast: 150ms;
+
+$shadow-card: 0 4px 12px rgb(0 0 0 / 0.4);
+$shadow-card-image: 0 2px 8px rgb(0 0 0 / 0.25);

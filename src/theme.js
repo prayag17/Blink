@@ -64,6 +64,9 @@ export const theme = createTheme({
 					// border: "1.8px solid hsl(273, 100%, 36%)",
 				},
 			},
+			defaultProps: {
+				disableScrollLock: true,
+			},
 		},
 	},
 });

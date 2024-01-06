@@ -36,7 +36,6 @@ const PlayButton = ({
 	currentVideoTrack,
 	className,
 	sx,
-	iconProps,
 	buttonProps,
 	iconOnly,
 	audio = false,
