@@ -9,10 +9,15 @@ import Chip from "@mui/material/Chip";
 import Divider from "@mui/material/Divider";
 import TextField from "@mui/material/TextField";
 import MenuItem from "@mui/material/MenuItem";
+import Stack from "@mui/material/Stack";
+import LinearProgress from "@mui/material/LinearProgress";
+import { red, yellow, green } from "@mui/material/colors";
 
 import { motion } from "framer-motion";
 
 import { useParams } from "react-router-dom";
+
+import { Blurhash } from "react-blurhash";
 
 import {
 	BaseItemKind,
@@ -26,7 +31,7 @@ import { getTvShowsApi } from "@jellyfin/sdk/lib/utils/api/tv-shows-api";
 
 import { useQuery } from "@tanstack/react-query";
 
-import { getRuntimeMusic } from "../../utils/date/time";
+import { endsAt, getRuntime, getRuntimeMusic } from "../../utils/date/time";
 
 import Hero from "../../components/layouts/item/hero";
 import { Card } from "../../components/card/card";
@@ -43,6 +48,11 @@ import { SeasonSelectorSkeleton } from "../../components/skeleton/seasonSelector
 import LikeButton from "../../components/buttons/likeButton";
 import MarkPlayedButton from "../../components/buttons/markPlayedButton";
 import { useApi } from "../../utils/store/api";
+import { Link } from "react-router-dom";
+import TextLink from "../../components/textLink";
+import PlayButton from "../../components/buttons/playButton";
+import { getTypeIcon } from "../../components/utils/iconsCollection";
+import { NavLink } from "react-router-dom";
 function TabPanel(props) {
 	const { children, value, index, ...other } = props;
 
@@ -191,6 +201,8 @@ const SeriesTitlePage = () => {
 
 	const [directors, setDirectors] = useState([]);
 	const [writers, setWriters] = useState([]);
+	const [actors, setActors] = useState([]);
+	const [producers, setProducers] = useState([]);
 	useEffect(() => {
 		if (item.isSuccess) {
 			setAppBackdrop(
@@ -208,6 +220,14 @@ const SeriesTitlePage = () => {
 				(itm) => itm.Type == "Writer",
 			);
 			setWriters(writeTp);
+			let producerTp = item.data.People.filter(
+				(itm) => itm.Type == "Producer",
+			);
+			setProducers(producerTp);
+			let actorTp = item.data.People.filter(
+				(itm) => itm.Type == "Actor",
+			);
+			setActors(actorTp);
 		}
 	}, [item.isSuccess]);
 
@@ -240,22 +260,645 @@ const SeriesTitlePage = () => {
 					duration: 0.25,
 					ease: "easeInOut",
 				}}
-				className="scrollY"
-				style={{
-					padding: "5em 2em 2em 1em",
-					display: "flex",
-					flexDirection: "column",
-					gap: "0.5em",
-				}}
+				className="scrollY padded-top flex flex-column item"
 			>
-				<Hero
-					item={item.data}
-					userId={user.data.Id}
-					queryKey={["item", id]}
-					writers={writers}
-					directors={directors}
-					studios={item.data.Studios}
-				/>
+				<div className="item-hero flex flex-row">
+					<div className="item-hero-backdrop-container">
+						{item.data.BackdropImageTags ? (
+							<img
+								src={api.getItemImageUrl(
+									item.data.Id,
+									"Backdrop",
+									{
+										quality: 90,
+									},
+								)}
+								className="item-hero-backdrop"
+								onLoad={(e) =>
+									(e.currentTarget.style.opacity = 1)
+								}
+							/>
+						) : (
+							<></>
+						)}
+					</div>
+					<div
+						className="item-hero-image-container"
+						style={{
+							aspectRatio:
+								item.data.PrimaryImageAspectRatio ?? 1,
+						}}
+					>
+						{Object.keys(item.data.ImageTags).includes(
+							"Primary",
+						) ? (
+							<>
+								<Blurhash
+									hash={
+										item.data.ImageBlurHashes
+											.Primary[
+											item.data.ImageTags[
+												"Primary"
+											]
+										]
+									}
+									className="item-hero-image-blurhash"
+								/>
+								<img
+									src={api.getItemImageUrl(
+										item.data.Id,
+										"Primary",
+										{
+											quality: 90,
+											tag: item.data.ImageTags[
+												"Primary"
+											],
+										},
+									)}
+									onLoad={(e) =>
+										(e.currentTarget.style.opacity = 1)
+									}
+									className="item-hero-image"
+								/>
+							</>
+						) : (
+							<></>
+						)}
+					</div>
+					<div className="item-hero-detail flex flex-column">
+						{Object.keys(item.data.ImageTags).includes(
+							"Logo",
+						) ? (
+							<img
+								src={api.getItemImageUrl(
+									item.data.Id,
+									"Logo",
+									{
+										quality: 90,
+										fillWidth: 592,
+										fillHeight: 592,
+									},
+								)}
+								onLoad={(e) =>
+									(e.currentTarget.style.opacity = 1)
+								}
+								className="item-hero-logo"
+							/>
+						) : (
+							<Typography variant="h3">
+								{item.data.Name}
+							</Typography>
+						)}
+						<Stack
+							direction="row"
+							gap={2}
+							justifyItems="flex-start"
+							alignItems="center"
+						>
+							<Typography
+								style={{ opacity: "0.8" }}
+								variant="subtitle1"
+							>
+								{item.data.ProductionYear ?? ""}
+							</Typography>
+							{item.data.OfficialRating && (
+								<Chip
+									variant="filled"
+									label={item.data.OfficialRating}
+								/>
+							)}
+
+							{item.data.CommunityRating && (
+								<div
+									style={{
+										display: "flex",
+										gap: "0.25em",
+										alignItems: "center",
+									}}
+									className="hero-carousel-info-rating"
+								>
+									<div
+										className="material-symbols-rounded "
+										style={{
+											// fontSize: "2.2em",
+											color: yellow[400],
+											fontVariationSettings:
+												'"FILL" 1, "wght" 300, "GRAD" 25, "opsz" 40',
+										}}
+									>
+										star
+									</div>
+									<Typography
+										style={{
+											opacity: "0.8",
+										}}
+										variant="subtitle1"
+									>
+										{Math.round(
+											item.data
+												.CommunityRating *
+												10,
+										) / 10}
+									</Typography>
+								</div>
+							)}
+							{item.data.CriticRating && (
+								<div
+									style={{
+										display: "flex",
+										gap: "0.25em",
+										alignItems: "center",
+									}}
+									className="hero-carousel-info-rating"
+								>
+									<div
+										className="material-symbols-rounded "
+										style={{
+											color:
+												item.data
+													.CriticRating >
+												50
+													? green[400]
+													: red[400],
+											fontVariationSettings:
+												'"FILL" 1, "wght" 300, "GRAD" 25, "opsz" 40',
+										}}
+									>
+										{item.data.CriticRating > 50
+											? "thumb_up"
+											: "thumb_down"}
+									</div>
+									<Typography
+										style={{
+											opacity: "0.8",
+										}}
+										variant="subtitle1"
+									>
+										{item.data.CriticRating}
+									</Typography>
+								</div>
+							)}
+
+							{seasons.data?.TotalRecordCount && (
+								<Typography
+									style={{ opacity: "0.8" }}
+									variant="subtitle1"
+								>
+									{seasons.data.TotalRecordCount}{" "}
+									Seasons
+								</Typography>
+							)}
+
+							{item.data.RunTimeTicks && (
+								<Typography
+									style={{ opacity: "0.8" }}
+									variant="subtitle1"
+								>
+									{getRuntime(
+										item.data.RunTimeTicks,
+									)}
+								</Typography>
+							)}
+							{item.data.RunTimeTicks && (
+								<Typography
+									style={{ opacity: "0.8" }}
+									variant="subtitle1"
+								>
+									{endsAt(
+										item.data.RunTimeTicks -
+											item.data.UserData
+												.PlaybackPositionTicks,
+									)}
+								</Typography>
+							)}
+						</Stack>
+						<Typography
+							variant="subtitle1"
+							style={{ opacity: 0.8 }}
+						>
+							{item.data.Genres.join(", ")}
+						</Typography>
+
+						<div className="item-hero-buttons-container flex flex-row">
+							<div className="flex flex-row">
+								<PlayButton
+									itemId={item.data.Id}
+									itemType={item.data.Type}
+									itemUserData={item.data.UserData}
+									currentAudioTrack={0}
+									currentVideoTrack={0}
+									currentSubTrack={0}
+									userId={user.data.Id}
+								/>
+							</div>
+							<div
+								className="flex flex-row"
+								style={{ gap: "1em" }}
+							>
+								<LikeButton
+									itemName={item.data.Name}
+									itemId={item.data.Id}
+									queryKey={["item", id]}
+									isFavorite={
+										item.data.UserData.IsFavorite
+									}
+									userId={user.data.Id}
+								/>
+								<MarkPlayedButton
+									itemName={item.data.Name}
+									itemId={item.data.Id}
+									queryKey={["item", id]}
+									isPlayed={
+										item.data.UserData.Played
+									}
+									userId={user.data.Id}
+								/>
+							</div>
+						</div>
+					</div>
+				</div>
+				<div className="item-detail">
+					<div style={{ width: "100%" }}>
+						{item.data.UserData.PlaybackPositionTicks > 0 && (
+							<div
+								style={{
+									width: "40%",
+									marginBottom: "1em",
+								}}
+							>
+								<Typography>
+									{getRuntime(
+										item.data.RunTimeTicks -
+											item.data.UserData
+												.PlaybackPositionTicks,
+									)}{" "}
+									left
+								</Typography>
+								<LinearProgress
+									color="white"
+									variant="determinate"
+									value={
+										item.data.UserData
+											.PlayedPercentage
+									}
+									style={{
+										borderRadius: "10px",
+									}}
+								/>
+							</div>
+						)}
+						<Typography
+							variant="h5"
+							fontStyle="italic"
+							mb={1}
+						>
+							{item.data.Taglines[0] ?? ""}
+						</Typography>
+						<Typography variant="subtitle1">
+							{item.data.Overview ?? ""}
+						</Typography>
+						{writers.length > 0 && (
+							<div className="hero-grid">
+								<Typography
+									variant="subtitle1"
+									style={{
+										opacity: 0.6,
+									}}
+									noWrap
+								>
+									Written by
+								</Typography>
+								<div className="hero-text-container">
+									{writers.map((writer, index) => (
+										<>
+											<TextLink
+												key={writer.Id}
+												variant={
+													"subtitle1"
+												}
+												location={`/person/${writer.Id}`}
+											>
+												{writer.Name}
+											</TextLink>
+											{index !=
+												writers.length -
+													1 && (
+												<span
+													style={{
+														whiteSpace:
+															"pre",
+													}}
+												>
+													,{" "}
+												</span>
+											)}
+										</>
+									))}
+								</div>
+							</div>
+						)}
+						{directors.length > 0 && (
+							<div className="hero-grid">
+								<Typography
+									variant="subtitle1"
+									style={{
+										opacity: 0.6,
+									}}
+									noWrap
+								>
+									Directed by
+								</Typography>
+								<div className="hero-text-container">
+									{directors.map(
+										(director, index) => (
+											<>
+												<TextLink
+													key={
+														director.Id
+													}
+													variant={
+														"subtitle1"
+													}
+													location={`/person/${director.Id}`}
+												>
+													{director.Name}
+												</TextLink>
+												{index !=
+													directors.length -
+														1 && (
+													<span
+														style={{
+															whiteSpace:
+																"pre",
+														}}
+													>
+														,{" "}
+													</span>
+												)}
+											</>
+										),
+									)}
+								</div>
+							</div>
+						)}
+						<div
+							style={{
+								display: "flex",
+								gap: "0.6em",
+								alignSelf: "end",
+								marginTop: "1em",
+							}}
+						>
+							{item.data.ExternalUrls.map((url) => (
+								<Link
+									key={url.Url}
+									target="_blank"
+									to={url.Url}
+									className="item-detail-link"
+								>
+									<Typography>{url.Name}</Typography>
+								</Link>
+							))}
+						</div>
+					</div>
+					<Divider flexItem orientation="vertical" />
+					<div
+						style={{
+							width: "100%",
+						}}
+					>
+						<div className="item-detail-cast">
+							{actors.length > 0 && (
+								<div className="item-detail-cast-container">
+									<Typography
+										variant="h6"
+										className="item-detail-cast-title"
+									>
+										Actors
+									</Typography>
+									<div className="item-detail-cast-grid">
+										{actors.map((actor) => (
+											<NavLink
+												className="item-detail-cast-card"
+												key={actor.Id}
+												to={`/person/${actor.Id}`}
+											>
+												{actor.PrimaryImageTag ? (
+													<img
+														src={api.getItemImageUrl(
+															actor.Id,
+															"Primary",
+															{
+																quality: 80,
+																fillWidth: 200,
+																fillHeight: 200,
+															},
+														)}
+														className="item-detail-cast-card-image"
+													/>
+												) : (
+													<div className="item-detail-cast-card-icon">
+														{getTypeIcon(
+															"Person",
+														)}
+													</div>
+												)}
+												<div className="item-detail-cast-card-text">
+													<Typography variant="subtitle1">
+														{
+															actor.Name
+														}
+													</Typography>
+													<Typography
+														variant="subtitle2"
+														style={{
+															opacity: 0.5,
+														}}
+													>
+														{
+															actor.Role
+														}
+													</Typography>
+												</div>
+											</NavLink>
+										))}
+									</div>
+								</div>
+							)}
+							{writers.length > 0 && (
+								<div className="item-detail-cast-container">
+									<Typography
+										variant="h6"
+										className="item-detail-cast-title"
+									>
+										Writers
+									</Typography>
+									<div className="item-detail-cast-grid">
+										{writers.map((actor) => (
+											<NavLink
+												className="item-detail-cast-card"
+												key={actor.Id}
+												to={`/person/${actor.Id}`}
+											>
+												{actor.PrimaryImageTag ? (
+													<img
+														src={api.getItemImageUrl(
+															actor.Id,
+															"Primary",
+															{
+																quality: 80,
+																fillWidth: 200,
+																fillHeight: 200,
+															},
+														)}
+														className="item-detail-cast-card-image"
+													/>
+												) : (
+													<div className="item-detail-cast-card-icon">
+														{getTypeIcon(
+															"Person",
+														)}
+													</div>
+												)}
+												<div className="item-detail-cast-card-text">
+													<Typography variant="subtitle1">
+														{
+															actor.Name
+														}
+													</Typography>
+													<Typography
+														variant="subtitle2"
+														style={{
+															opacity: 0.5,
+														}}
+													>
+														{
+															actor.Role
+														}
+													</Typography>
+												</div>
+											</NavLink>
+										))}
+									</div>
+								</div>
+							)}
+							{directors.length > 0 && (
+								<div className="item-detail-cast-container">
+									<Typography
+										variant="h6"
+										className="item-detail-cast-title"
+									>
+										Directors
+									</Typography>
+									<div className="item-detail-cast-grid">
+										{directors.map((actor) => (
+											<NavLink
+												className="item-detail-cast-card"
+												to={`/person/${actor.Id}`}
+												key={actor.Id}
+											>
+												{actor.PrimaryImageTag ? (
+													<img
+														src={api.getItemImageUrl(
+															actor.Id,
+															"Primary",
+															{
+																quality: 80,
+																fillWidth: 200,
+																fillHeight: 200,
+															},
+														)}
+														className="item-detail-cast-card-image"
+													/>
+												) : (
+													<div className="item-detail-cast-card-icon">
+														{getTypeIcon(
+															"Person",
+														)}
+													</div>
+												)}
+												<div className="item-detail-cast-card-text">
+													<Typography variant="subtitle1">
+														{
+															actor.Name
+														}
+													</Typography>
+													<Typography
+														variant="subtitle2"
+														style={{
+															opacity: 0.5,
+														}}
+													>
+														{
+															actor.Role
+														}
+													</Typography>
+												</div>
+											</NavLink>
+										))}
+									</div>
+								</div>
+							)}
+							{producers.length > 0 && (
+								<div className="item-detail-cast-container">
+									<Typography
+										variant="h6"
+										className="item-detail-cast-title"
+									>
+										Producers
+									</Typography>
+									<div className="item-detail-cast-grid">
+										{producers.map((actor) => (
+											<NavLink
+												className="item-detail-cast-card"
+												key={actor.Id}
+												to={`/person/${actor.Id}`}
+											>
+												{actor.PrimaryImageTag ? (
+													<img
+														src={api.getItemImageUrl(
+															actor.Id,
+															"Primary",
+															{
+																quality: 80,
+																fillWidth: 200,
+																fillHeight: 200,
+															},
+														)}
+														className="item-detail-cast-card-image"
+													/>
+												) : (
+													<div className="item-detail-cast-card-icon">
+														{getTypeIcon(
+															"Person",
+														)}
+													</div>
+												)}
+												<div className="item-detail-cast-card-text">
+													<Typography variant="subtitle1">
+														{
+															actor.Name
+														}
+													</Typography>
+													<Typography
+														variant="subtitle2"
+														style={{
+															opacity: 0.5,
+														}}
+													>
+														{
+															actor.Role
+														}
+													</Typography>
+												</div>
+											</NavLink>
+										))}
+									</div>
+								</div>
+							)}
+						</div>
+					</div>
+				</div>
 
 				{nextUpEpisode.isSuccess &&
 					nextUpEpisode.data.TotalRecordCount > 0 && (
@@ -453,7 +1096,7 @@ const SeriesTitlePage = () => {
 												ease: "backInOut",
 											}}
 											style={{
-												maxWidth: "23.3vw",
+												width: "100%",
 											}}
 										>
 											<EpisodeCard
@@ -546,7 +1189,7 @@ const SeriesTitlePage = () => {
 							})}
 						</CardScroller>
 					)}
-				{item.data.People.length > 0 && (
+				{/* {item.data.People.length > 0 && (
 					<CardScroller
 						title="Cast & Crew"
 						displayCards={8}
@@ -571,7 +1214,7 @@ const SeriesTitlePage = () => {
 							);
 						})}
 					</CardScroller>
-				)}
+				)} */}
 				{similarItems.data.TotalRecordCount > 0 && (
 					<CardScroller
 						title="You might also like"

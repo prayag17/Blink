@@ -670,9 +670,7 @@ const ItemDetail = () => {
 				</div>
 				<div className="item-detail">
 					<div style={{ width: "100%" }}>
-						{100 >
-							item.data.UserData.PlayedPercentage >
-							0 && (
+						{item.data.UserData.PlaybackPositionTicks > 0 && (
 							<div
 								style={{
 									width: "40%",
