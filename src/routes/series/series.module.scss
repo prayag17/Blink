@@ -82,19 +82,15 @@
 		align-items: start;
 		gap: 1em;
 
+		&-nextUp {
+			max-width: 23em;
+		}
+
 		&-cast {
-			max-height: 50vh;
-			overflow-y: auto;
-			mask-image: linear-gradient(to top, transparent, black 1.2em);
-			-webkit-mask-image: linear-gradient(
-				to top,
-				transparent,
-				black 1.2em
-			);
 			&-title {
 				position: sticky;
 				top: 0;
-				background: $clr-background-default;
+				background: $clr-background-dark;
 				padding: 0.35em;
 				border-radius: 10px;
 				z-index: 1;
@@ -106,7 +102,7 @@
 			}
 			&-grid {
 				display: grid;
-				grid-template-columns: repeat(2, minmax(0, 1fr));
+				grid-template-columns: repeat(5, minmax(0, 1fr));
 				gap: 1em;
 				margin-bottom: 1em;
 			}
@@ -162,8 +158,20 @@
 	}
 }
 
+.item-series {
+	.item-detail-cast {
+		max-height: 50vh;
+		overflow-y: auto;
+		mask-image: linear-gradient(to top, transparent, black 1.2em);
+		-webkit-mask-image: linear-gradient(to top, transparent, black 1.2em);
+		&-grid {
+			grid-template-columns: repeat(2, minmax(0, 1fr));
+		}
+	}
+}
+
 @media (max-width: 1320px) {
-	.item-detail {
+	.item-series .item-detail {
 		&-cast {
 			&-grid {
 				grid-template-columns: 1fr;
@@ -176,7 +184,7 @@
 }
 
 @media (max-width: 830px) {
-	.item-detail {
+	.item-series .item-detail {
 		&-episodes-container {
 			grid-template-columns: repeat(2, minmax(0, 1fr));
 		}
@@ -184,7 +192,7 @@
 }
 
 @media (max-width: 564px) {
-	.item-detail {
+	.item-series .item-detail {
 		&-episodes-container {
 			grid-template-columns: repeat(1, minmax(0, 1fr));
 		}

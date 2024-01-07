@@ -636,9 +636,15 @@ const ItemDetail = () => {
 									itemId={item.data.Id}
 									itemType={item.data.Type}
 									itemUserData={item.data.UserData}
-									currentAudioTrack={0}
-									currentVideoTrack={0}
-									currentSubTrack={0}
+									currentVideoTrack={
+										selectedVideoTrack
+									}
+									currentAudioTrack={
+										selectedAudioTrack
+									}
+									currentSubTrack={
+										selectedSubtitleTrack
+									}
 									userId={user.data.Id}
 								/>
 							</div>
@@ -863,6 +869,9 @@ const ItemDetail = () => {
 									)
 								}
 							>
+								<MenuItem key={-1} value={-1}>
+									No Subtitle
+								</MenuItem>
 								{subtitleTracks.map((track) => (
 									<MenuItem
 										key={track.Index}

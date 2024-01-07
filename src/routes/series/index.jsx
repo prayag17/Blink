@@ -11,6 +11,10 @@ import TextField from "@mui/material/TextField";
 import MenuItem from "@mui/material/MenuItem";
 import Stack from "@mui/material/Stack";
 import LinearProgress from "@mui/material/LinearProgress";
+import Skeleton from "@mui/material/Skeleton";
+import CardMedia from "@mui/material/CardMedia";
+import CardContent from "@mui/material/CardContent";
+import MuiCard from "@mui/material/Card";
 import { red, yellow, green } from "@mui/material/colors";
 
 import { motion } from "framer-motion";
@@ -33,17 +37,14 @@ import { useQuery } from "@tanstack/react-query";
 
 import { endsAt, getRuntime, getRuntimeMusic } from "../../utils/date/time";
 
-import Hero from "../../components/layouts/item/hero";
 import { Card } from "../../components/card/card";
 import { EpisodeCard } from "../../components/card/episodeCard";
 import { CardScroller } from "../../components/cardScroller/cardScroller";
 
 import "./series.module.scss";
-import { EpisodeCardsSkeleton } from "../../components/skeleton/episodeCards";
 import { ErrorNotice } from "../../components/notices/errorNotice/errorNotice";
 
 import { useBackdropStore } from "../../utils/store/backdrop";
-import { ActorCard } from "../../components/card/actorCards";
 import { SeasonSelectorSkeleton } from "../../components/skeleton/seasonSelector";
 import LikeButton from "../../components/buttons/likeButton";
 import MarkPlayedButton from "../../components/buttons/markPlayedButton";
@@ -260,7 +261,7 @@ const SeriesTitlePage = () => {
 					duration: 0.25,
 					ease: "easeInOut",
 				}}
-				className="scrollY padded-top flex flex-column item"
+				className="scrollY padded-top flex flex-column item item-series"
 			>
 				<div className="item-hero flex flex-row">
 					<div className="item-hero-backdrop-container">
@@ -444,8 +445,9 @@ const SeriesTitlePage = () => {
 									style={{ opacity: "0.8" }}
 									variant="subtitle1"
 								>
-									{seasons.data.TotalRecordCount}{" "}
-									Seasons
+									{seasons.data.TotalRecordCount > 1
+										? `${seasons.data.TotalRecordCount} Seasons`
+										: `${seasons.data.TotalRecordCount} Season`}
 								</Typography>
 							)}
 
@@ -1071,78 +1073,135 @@ const SeriesTitlePage = () => {
 						</div>
 						<Divider />
 						<div className="item-detail-episodes-container">
-							{episodes.isPending ? (
-								<EpisodeCardsSkeleton />
-							) : (
-								episodes.data.Items.map((episode) => {
-									return (
-										<motion.div
-											key={episode.Id}
-											initial={{
-												transform:
-													"translateY(10px)",
-												opacity: 0,
-											}}
-											whileInView={{
-												opacity: 1,
-												transform:
-													"translateY(0px)",
-											}}
-											viewport={{
-												once: true,
-											}}
-											transition={{
-												duration: 0.2,
-												ease: "backInOut",
-											}}
-											style={{
-												width: "100%",
-											}}
-										>
-											<EpisodeCard
-												item={episode}
-												cardTitle={
-													episode.ParentIndexNumber ==
-													0
-														? `${episode.SeasonName} - ${episode.Name}`
-														: episode.IndexNumberEnd
-														? `${episode.IndexNumber}-${episode.IndexNumberEnd}. ${episode.Name}`
-														: `${episode.IndexNumber}. ${episode.Name}`
-												}
-												cardCaption={
-													episode.Overview
-												}
-												imageBlurhash={
-													!!episode
-														.ImageBlurHashes
-														?.Primary &&
-													episode
-														.ImageBlurHashes
-														?.Primary[
-														Object.keys(
-															episode
-																.ImageBlurHashes
-																.Primary,
-														)[0]
-													]
-												}
-												queryKey={[
-													"item",
-													id,
-													`season ${
-														currentSeason +
-														1
-													}`,
-													"episodes",
-												]}
-												userId={
-													user.data.Id
-												}
-											/>
-										</motion.div>
-									);
-								})
-							)}
+							{episodes.isPending
+								? Array.from(new Array(4)).map((a) => {
+										return (
+											<MuiCard
+												key={a}
+												sx={{
+													background:
+														"transparent",
+												}}
+												elevation={0}
+											>
+												<CardMedia>
+													<Skeleton
+														animation="wave"
+														variant="rectangular"
+														sx={{
+															aspectRatio:
+																"1.777",
+															height: "auto",
+															m: 1,
+															borderRadius:
+																"10px",
+														}}
+													/>
+												</CardMedia>
+												<CardContent
+													sx={{
+														padding: "0 0.5em",
+														alignItems:
+															"flex-start",
+														backgroundColor:
+															"transparent",
+													}}
+												>
+													<Typography variant="h6">
+														<Skeleton
+															variant="text"
+															animation="wave"
+														/>
+													</Typography>
+
+													<Typography variant="body2">
+														<Skeleton
+															variant="text"
+															animation="wave"
+														/>
+														<Skeleton
+															variant="text"
+															animation="wave"
+														/>
+
+														<Skeleton
+															variant="text"
+															animation="wave"
+														/>
+													</Typography>
+												</CardContent>
+											</MuiCard>
+										);
+								  })
+								: episodes.data.Items.map((episode) => {
+										return (
+											<motion.div
+												key={episode.Id}
+												initial={{
+													transform:
+														"translateY(10px)",
+													opacity: 0,
+												}}
+												whileInView={{
+													opacity: 1,
+													transform:
+														"translateY(0px)",
+												}}
+												viewport={{
+													once: true,
+												}}
+												transition={{
+													duration: 0.2,
+													ease: "backInOut",
+												}}
+												style={{
+													width: "100%",
+												}}
+											>
+												<EpisodeCard
+													item={episode}
+													cardTitle={
+														episode.ParentIndexNumber ==
+														0
+															? `${episode.SeasonName} - ${episode.Name}`
+															: episode.IndexNumberEnd
+															? `${episode.IndexNumber}-${episode.IndexNumberEnd}. ${episode.Name}`
+															: `${episode.IndexNumber}. ${episode.Name}`
+													}
+													cardCaption={
+														episode.Overview
+													}
+													imageBlurhash={
+														!!episode
+															.ImageBlurHashes
+															?.Primary &&
+														episode
+															.ImageBlurHashes
+															?.Primary[
+															Object.keys(
+																episode
+																	.ImageBlurHashes
+																	.Primary,
+															)[0]
+														]
+													}
+													queryKey={[
+														"item",
+														id,
+														`season ${
+															currentSeason +
+															1
+														}`,
+														"episodes",
+													]}
+													userId={
+														user.data
+															.Id
+													}
+												/>
+											</motion.div>
+										);
+								  })}
 						</div>
 					</div>
 				)}
