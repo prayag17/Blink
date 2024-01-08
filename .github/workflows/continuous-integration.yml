@@ -6,6 +6,7 @@ on:
     branches:
       - main
   pull_request:
+    types: [opened, synchronize, reopened, ready_for_review]
 
 jobs:
   build_web:
@@ -50,6 +51,8 @@ jobs:
 
   build:
     needs: build_web
+    # Prevent forked PRs from running the build job which is expensive
+    if: github.repository == 'prayag17/JellyPlayer'
     strategy:
       fail-fast: false
       matrix:
@@ -99,8 +102,8 @@ jobs:
           node-version: "lts/*"
           cache: "pnpm"
 
-      - name: Install app dependencies and build web
-        run: pnpm install --no-frozen-lockfile && pnpm run build
+      - name: Install dependencies
+        run: pnpm install --no-frozen-lockfile
 
-      - name: Build the app
-        uses: tauri-apps/tauri-action@dev
+      - name: Build app
+        run: pnpm run tauri build
