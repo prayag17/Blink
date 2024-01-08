@@ -93,7 +93,7 @@ export const Card = ({
 					aspectRatio: cardImageAspectRatios[cardType],
 				}}
 			>
-				<ErrorBoundary fallback=>
+				<ErrorBoundary fallback>
 					<div
 						className="card-indicator check"
 						style={{

@@ -8,6 +8,7 @@ import { BrowserRouter as Router } from "react-router-dom";
 import App from "./App";
 
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { enqueueSnackbar } from "notistack";
 import {
 	delServer,
 	getAllServers,
@@ -18,7 +19,6 @@ import {
 import { delUser, getUser } from "./utils/storage/user";
 import { createApi, useApi } from "./utils/store/api";
 import { setInitialRoute } from "./utils/store/central";
-import { enqueueSnackbar } from "notistack";
 
 const queryClient = new QueryClient({
 	defaultOptions: {

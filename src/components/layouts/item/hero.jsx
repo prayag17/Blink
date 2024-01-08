@@ -379,7 +379,7 @@ const Hero = ({
 								variant="filled"
 								label={item.OfficialRating ?? "Not Rated"}
 							/>
-							<ErrorBoundary fallback=>
+							<ErrorBoundary fallback>
 								<div
 									style={{
 										display: "flex",
