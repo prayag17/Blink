@@ -15,9 +15,10 @@ import {
 	getServer,
 	setDefaultServer,
 } from "./utils/storage/servers";
-import { getUser } from "./utils/storage/user";
+import { delUser, getUser } from "./utils/storage/user";
 import { createApi, useApi } from "./utils/store/api";
 import { setInitialRoute } from "./utils/store/central";
+import { enqueueSnackbar } from "notistack";
 
 const queryClient = new QueryClient({
 	defaultOptions: {
@@ -61,16 +62,19 @@ const init = async () => {
 				// Api is created with empty token, so we can authenticate
 				const auth = await useApi
 					.getState()
-					.api?.authenticateUserByName(userOnDisk.Name, userOnDisk.Password);
+					.api!.authenticateUserByName(userOnDisk.Name, userOnDisk.Password);
 
 				if (auth.status !== 200 || !auth.data.AccessToken) {
-					// TODO: Proper error handling
-					console.error("Authentication failed");
-					return;
-				}
+					enqueueSnackbar("Incorrect Username or Password!", {
+						variant: "error",
+					});
 
-				createApi(defaultServerInfo.address, auth.data.AccessToken);
-				setInitialRoute("/home");
+					await delUser();
+					setInitialRoute("/login/index");
+				} else {
+					createApi(defaultServerInfo.address, auth.data.AccessToken);
+					setInitialRoute("/home");
+				}
 			} catch (error) {
 				console.error(error);
 				setInitialRoute("/error");
