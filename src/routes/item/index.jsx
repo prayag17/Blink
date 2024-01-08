@@ -1,5 +1,5 @@
 /** @format */
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useLayoutEffect } from "react";
 import PropTypes from "prop-types";
 
 import Box from "@mui/material/Box";
@@ -168,7 +168,7 @@ const ItemDetail = () => {
 	const [selectedAudioTrack, setSelectedAudioTrack] = useState(null);
 	const [selectedSubtitleTrack, setSelectedSubtitleTrack] = useState(null);
 
-	useEffect(() => {
+	useLayoutEffect(() => {
 		if (item.isSuccess && !!item.data.MediaStreams) {
 			let videos = item.data.MediaStreams.filter(
 				filterMediaStreamVideo,
@@ -196,7 +196,7 @@ const ItemDetail = () => {
 	const [writers, setWriters] = useState([]);
 	const [actors, setActors] = useState([]);
 	const [producers, setProducers] = useState([]);
-	useEffect(() => {
+	useLayoutEffect(() => {
 		if (item.isSuccess) {
 			setAppBackdrop(
 				item.data.Type === BaseItemKind.MusicAlbum ||
@@ -231,16 +231,16 @@ const ItemDetail = () => {
 			) ||
 			videoTracks[0]?.DisplayTitle.toLocaleLowerCase().includes("4k")
 		) {
-			return "4K";
+			return <span className="material-symbols-rounded">4k</span>;
 		} else if (
 			videoTracks[0]?.DisplayTitle.toLocaleLowerCase().includes(
 				"1080p",
 			) ||
 			videoTracks[0]?.DisplayTitle.toLocaleLowerCase().includes("hd")
 		) {
-			return "HD";
+			return <span className="material-symbols-rounded">full_hd</span>;
 		} else {
-			return "SD";
+			return <span className="material-symbols-rounded">hd</span>;
 		}
 	};
 
@@ -253,7 +253,7 @@ const ItemDetail = () => {
 				"truehd",
 			)
 		) {
-			return "TrueHD | Atmos";
+			return `TrueHD | Atmos`;
 		} else if (
 			audioTracks[0]?.DisplayTitle.toLocaleLowerCase().includes(
 				"atmos",
@@ -404,15 +404,7 @@ const ItemDetail = () => {
 							{!!qualityLabel() && (
 								<Chip
 									variant="filled"
-									label={
-										<Typography
-											variant="caption"
-											fontWeight={600}
-											// fontFamily="JetBrains Mono Variable"
-										>
-											{qualityLabel()}
-										</Typography>
-									}
+									label={qualityLabel()}
 									sx={{
 										borderRadius:
 											"8px !important",
@@ -429,7 +421,6 @@ const ItemDetail = () => {
 										<Typography
 											variant="caption"
 											fontWeight={600}
-											fontFamily="JetBrains Mono Variable"
 										>
 											{surroundSoundLabel()}
 										</Typography>
@@ -450,7 +441,6 @@ const ItemDetail = () => {
 										<Typography
 											variant="caption"
 											fontWeight={600}
-											fontFamily="JetBrains Mono Variable"
 										>
 											{
 												videoTracks[0]
@@ -474,7 +464,6 @@ const ItemDetail = () => {
 										<Typography
 											variant="caption"
 											fontWeight={600}
-											fontFamily="JetBrains Mono Variable"
 										>
 											{atmosLabel()}
 										</Typography>
@@ -492,13 +481,16 @@ const ItemDetail = () => {
 								<Chip
 									variant="filled"
 									label={
-										<Typography
-											variant="caption"
-											fontWeight={600}
-											fontFamily="JetBrains Mono Variable"
-										>
-											CC
-										</Typography>
+										// <Typography
+										// 	variant="caption"
+										// 	fontWeight={600}
+										// 	fontFamily="JetBrains Mono Variable"
+										// >
+										// 	CC
+										// </Typography>
+										<span className="material-symbols-rounded">
+											closed_caption
+										</span>
 									}
 									sx={{
 										borderRadius:
