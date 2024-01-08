@@ -3,7 +3,7 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 
-import { setDefaultServer, setServer } from "../../../utils/storage/servers.js";
+import { setDefaultServer, setServer } from "../../../utils/storage/servers";
 
 // MUI
 import TextField from "@mui/material/TextField";
@@ -20,18 +20,14 @@ import { useSnackbar } from "notistack";
 
 // SCSS
 import "./server.module.scss";
-import { useMutation, useQuery } from "@tanstack/react-query";
-import { useApi } from "../../../utils/store/api.js";
+import { useMutation } from "@tanstack/react-query";
+import { createApi, useApi } from "../../../utils/store/api";
 import { MdiInformation } from "../../../components/icons/mdiInformation.jsx";
 import { yellow } from "@mui/material/colors";
 
 export const ServerSetup = () => {
-	/**
-	 * @type {[import("@jellyfin/sdk").Api, function, Jellyfin]}
-	 */
-	const [api, createApi, jellyfin] = useApi((state) => [
-		state.api,
-		state.createApi,
+
+	const [jellyfin] = useApi((state) => [
 		state.jellyfin,
 	]);
 
@@ -40,6 +36,7 @@ export const ServerSetup = () => {
 	const { enqueueSnackbar } = useSnackbar();
 
 	const navigate = useNavigate();
+
 
 	const checkServer = useMutation({
 		mutationFn: async () => {
@@ -52,13 +49,15 @@ export const ServerSetup = () => {
 		},
 		onSuccess: (bestServer) => {
 			if (bestServer) {
-				console.info(bestServer);
-				createApi(bestServer.address, null);
+				createApi(bestServer.address, undefined);
+
 				setDefaultServer(bestServer.systemInfo.Id);
 				setServer(bestServer.systemInfo.Id, bestServer);
+
 				enqueueSnackbar("Client added successfully", {
 					variant: "success",
 				});
+
 				navigate("/login/index");
 			}
 		},

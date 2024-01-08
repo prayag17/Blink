@@ -11,15 +11,14 @@ import {
 	Route,
 	useNavigate,
 	useLocation,
-	Outlet,
 	Navigate,
 } from "react-router-dom";
 import { AnimatePresence, motion } from "framer-motion";
 
 import {
+	UpdateManifest,
 	checkUpdate,
 	installUpdate,
-	onUpdaterEvent,
 } from "@tauri-apps/api/updater";
 import { relaunch } from "@tauri-apps/api/process";
 
@@ -60,7 +59,6 @@ import SearchPage from "./routes/search";
 import { VideoPlayer } from "./routes/player/videoPlayer.jsx";
 import Markdown from "react-markdown";
 
-import { SideMenu } from "./components/menu/sidemenu.jsx";
 import { AppBar } from "./components/appBar/appBar.jsx";
 
 // Fonts
@@ -96,7 +94,7 @@ import ArtistTitlePage from "./routes/artist/index.jsx";
 import EpisodeTitlePage from "./routes/episode/index.jsx";
 import PlaylistTitlePage from "./routes/playlist/index.jsx";
 
-import { useApi } from "./utils/store/api.js";
+import { useApi } from "./utils/store/api";
 import { useQuery } from "@tanstack/react-query";
 import { CircularProgress } from "@mui/material";
 import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
@@ -105,20 +103,7 @@ import { useSnackbar } from "notistack";
 import { ErrorBoundary } from "react-error-boundary";
 import { ErrorNotice } from "./components/notices/errorNotice/errorNotice.jsx";
 
-const anim = {
-	initial: {
-		transform: "scale(0.98)",
-		opacity: 0,
-	},
-	animate: {
-		transform: "scale(1)",
-		opacity: 1,
-	},
-	exit: {
-		transform: "sscale(1.02)",
-		opacity: 0,
-	},
-};
+
 
 const LoginRoute = () => {
 	const navigate = useNavigate();
@@ -127,7 +112,7 @@ const LoginRoute = () => {
 	const usersList = useQuery({
 		queryKey: ["public-users"],
 		queryFn: async () => {
-			const result = await getUserApi(api).getPublicUsers();
+			const result = await getUserApi(api!).getPublicUsers();
 			return result.data;
 		},
 		enabled: Boolean(api),
@@ -153,23 +138,37 @@ const LoginRoute = () => {
 	);
 };
 
-const AnimationWrapper = () => {
-	return (
-		<motion.div
-			className="root-page"
-			variants={anim}
-			initial="initial"
-			animate="animate"
-			exit="exit"
-			transition={{
-				duration: 0.25,
-				ease: "easeInOut",
-			}}
-		>
-			<Outlet />
-		</motion.div>
-	);
-};
+// const anim = {
+// 	initial: {
+// 		transform: "scale(0.98)",
+// 		opacity: 0,
+// 	},
+// 	animate: {
+// 		transform: "scale(1)",
+// 		opacity: 1,
+// 	},
+// 	exit: {
+// 		transform: "sscale(1.02)",
+// 		opacity: 0,
+// 	},
+// };
+// const AnimationWrapper = () => {
+// 	return (
+// 		<motion.div
+// 			className="root-page"
+// 			variants={anim}
+// 			initial="initial"
+// 			animate="animate"
+// 			exit="exit"
+// 			transition={{
+// 				duration: 0.25,
+// 				ease: "easeInOut",
+// 			}}
+// 		>
+// 			<Outlet />
+// 		</motion.div>
+// 	);
+// };
 
 // const unlisten = await onUpdaterEvent(({ error, status }) => {
 // 	// This will log all updater events, including status updates and errors.
@@ -184,7 +183,7 @@ function App() {
 		state.isPending,
 	]);
 
-	const handleRelaunch = async (event, reason) => {
+	const handleRelaunch = async (_event: any, reason?: string) => {
 		if (reason && reason == "backdropClick") {
 			return;
 		}
@@ -229,10 +228,7 @@ function App() {
 
 	const [updateDialog, setUpdateDialog] = useState(false);
 
-	/**
-	 * @type {[import("@tauri-apps/api/updater.js").UpdateManifest, React.Dispatch<import("@tauri-apps/api/updater.js").UpdateManifest>]}
-	 */
-	const [updateInfo, setUpdateInfo] = useState(null);
+	const [updateInfo, setUpdateInfo] = useState<UpdateManifest | undefined>(undefined);
 
 	const [updateDialogButton, setUpdateDialogButton] = useState(false);
 
@@ -302,7 +298,7 @@ function App() {
 						// maxWidth="md"
 						fullWidth
 					>
-						{Boolean(updateInfo) && (
+						{updateInfo != undefined && (
 							<>
 								<DialogTitle>
 									Update Available!
@@ -470,7 +466,6 @@ function App() {
 							> */}
 								<Route
 									path="/"
-									exact
 									element={
 										<Navigate to={initialRoute} />
 									}
@@ -522,7 +517,6 @@ function App() {
 								/>
 								<Route
 									path="/login/index"
-									exact
 									element={<LoginRoute />}
 								/>
 
@@ -551,43 +545,35 @@ function App() {
 									element={<UserLoginManual />}
 								/>
 								<Route
-									exact
 									path="/library/:id"
 									element={<LibraryView />}
 								/>
 								<Route
-									exact
 									path="/item/:id"
 									element={<ItemDetail />}
 								/>
 								<Route
-									exact
 									path="/musicalbum/:id"
 									element={<MusicAlbumTitlePage />}
 									errorElement={<div>Error</div>}
 								/>
 								<Route
-									exact
 									path="/artist/:id"
 									element={<ArtistTitlePage />}
 								/>
 								<Route
-									exact
 									path="/boxset/:id"
 									element={<BoxSetTitlePage />}
 								/>
 								<Route
-									exact
 									path="/episode/:id"
 									element={<EpisodeTitlePage />}
 								/>
 								<Route
-									exact
 									path="/person/:id"
 									element={<PersonTitlePage />}
 								/>
 								<Route
-									exact
 									path="/playlist/:id"
 									element={<PlaylistTitlePage />}
 								/>

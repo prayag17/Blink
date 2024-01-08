@@ -11,7 +11,7 @@ import "./serverList.module.scss";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import {
 	delServer,
-	getAllServer,
+	getAllServers,
 	getDefaultServer,
 	setDefaultServer,
 } from "../../../utils/storage/servers";
@@ -20,27 +20,28 @@ import { useNavigate } from "react-router-dom";
 import { useSnackbar } from "notistack";
 import { delUser } from "../../../utils/storage/user";
 
-import { relaunch } from "@tauri-apps/api/process";
-
 const ServerList = () => {
 	const navigate = useNavigate();
 	const [serverState, setServerState] = useState(null);
 	const { enqueueSnackbar } = useSnackbar();
 	const servers = useQuery({
 		queryKey: ["servers-list"],
-		queryFn: async () => await getAllServer(),
+		queryFn: async () => await getAllServers(),
 	});
+
 	const defaultServer = useQuery({
 		queryKey: ["default-server"],
 		queryFn: async () => await getDefaultServer(),
 	});
+
 	const handleServerChange = useMutation({
 		mutationFn: async () => {
 			await delUser();
+			console.log(serverState)
 			await setDefaultServer(serverState);
 		},
 		onSuccess: async () => {
-			await relaunch();
+			navigate("/login/index")
 		},
 		onError: (error) => {
 			console.error(error);
@@ -50,24 +51,23 @@ const ServerList = () => {
 		},
 	});
 
-	const handleDelete = (serverId) => {
-		let tempList = servers.data.filter(
-			(item) => item[0] != defaultServer.data && item[0] != serverId,
-		);
-		delServer(serverId).then(async () => {
-			// console.log(serverId);
+	const handleDelete = async (serverId) => {
+		await delServer(serverId);
+		
+		if (serverId == defaultServer.data) {
 			await delUser();
-			if (serverId == defaultServer.data) {
-				if (tempList.length > 0) {
-					setDefaultServer(tempList[0][0]);
-				} else {
-					navigate("/setup/server");
-				}
+			await servers.refetch();
+
+			if (servers.length > 0) {
+				setDefaultServer(servers[0].id);
+			} else {
+				navigate("/setup/server");
 			}
-			servers.refetch();
-			defaultServer.refetch();
-		});
-	};
+		}
+
+		servers.refetch();
+		defaultServer.refetch();
+	}
 
 	return (
 		<div className="server-list">
@@ -109,8 +109,8 @@ const ServerList = () => {
 										alignItems: "center",
 									}}
 								>
-									{server[1].systemInfo.ServerName}
-									{server[0] ==
+									{server.systemInfo.ServerName}
+									{server.id ==
 										defaultServer.data && (
 										<Chip
 											label={
@@ -140,7 +140,7 @@ const ServerList = () => {
 									}}
 									fontWeight={300}
 								>
-									{server[1].address}
+									{server.address}
 								</Typography>
 								<Typography
 									variant="subtitle2"
@@ -150,7 +150,7 @@ const ServerList = () => {
 									fontWeight={300}
 								>
 									Version:{" "}
-									{server[1].systemInfo.Version}
+									{server.systemInfo.Version}
 								</Typography>
 							</div>
 							<div className="server-list-item-buttons">
@@ -159,7 +159,7 @@ const ServerList = () => {
 										fontSize: "1.64em",
 									}}
 									onClick={() => {
-										setServerState(server[0]);
+										setServerState(server.id);
 										handleServerChange.mutate();
 									}}
 									disabled={
@@ -180,7 +180,7 @@ const ServerList = () => {
 										handleServerChange.isPending
 									}
 									onClick={() => {
-										handleDelete(server[0]);
+										handleDelete(server.id);
 									}}
 								>
 									<div className="material-symbols-rounded">

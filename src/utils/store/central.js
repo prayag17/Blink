@@ -1,7 +1,7 @@
 /** @format */
 
 import { create } from "zustand";
-import { getAllServer, getDefaultServer, getServer } from "../storage/servers";
+import { getAllServers, getDefaultServer, getServer } from "../storage/servers";
 import { getUser } from "../storage/user";
 import { version } from "../../../package.json";
 /**
@@ -13,7 +13,7 @@ export const useCentralStore = create(() => ({
 		let a = await getDefaultServer();
 		return await getServer(a);
 	},
-	allServersOnDisk: async () => getAllServer(),
+	allServersOnDisk: async () => getAllServers(),
 	userOnDisk: async () => getUser(),
 	/** This is the initial route that app goes to just after app startups */
 	initialRoute: null,

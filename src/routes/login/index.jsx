@@ -5,7 +5,7 @@ import { useMutation, useQuery } from "@tanstack/react-query";
 import { useNavigate, useParams } from "react-router-dom";
 import { EventEmitter as event } from "../../eventEmitter.js";
 
-import { saveUser } from "../../utils/storage/user.js";
+import { saveUser } from "../../utils/storage/user";
 
 // import Icon from "mdi-material-ui";
 import { MdiEyeOffOutline } from "../../components/icons/mdiEyeOffOutline.jsx";
@@ -38,7 +38,7 @@ import { getQuickConnectApi } from "@jellyfin/sdk/lib/utils/api/quick-connect-ap
 
 import "./login.module.scss";
 import { ErrorNotice } from "../../components/notices/errorNotice/errorNotice.jsx";
-import { useApi } from "../../utils/store/api.js";
+import { useApi } from "../../utils/store/api";
 
 export const LoginWithImage = () => {
 	const { userName, userId } = useParams();
@@ -501,6 +501,11 @@ export const UserLoginManual = () => {
 									onChange={handlePassword(
 										"password",
 									)}
+									onKeyUp={(event) => {
+										if (event.key === "Enter") {
+											handleLogin();
+										}
+									}}
 									label="Password:"
 									endAdornment={
 										<InputAdornment position="end">
