@@ -1,4 +1,3 @@
-/** @format */
 import SvgIcon from "@mui/material/SvgIcon";
 
 import { mdiMusic } from "@mdi/js";

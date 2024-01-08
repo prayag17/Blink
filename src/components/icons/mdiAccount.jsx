@@ -1,6 +1,4 @@
-/** @format */
 
-/** @format */
 import SvgIcon from "@mui/material/SvgIcon";
 import { MdiChevronLeft } from "./mdiChevronLeft";
 

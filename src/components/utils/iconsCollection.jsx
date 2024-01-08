@@ -1,5 +1,4 @@
 import { BaseItemKind } from "@jellyfin/sdk/lib/generated-client";
-/** @format */
 import React from "react";
 import { MdiAccount } from "../icons/mdiAccount";
 import { MdiAccountMusic } from "../icons/mdiAccountMusic";

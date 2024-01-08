@@ -1,4 +1,3 @@
-/** @format */
 import { EventEmitter as eventEmitter } from "events";
 
 // const eventEmitter = require("events");

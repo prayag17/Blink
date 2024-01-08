@@ -1,5 +1,4 @@
 import { motion } from "framer-motion";
-/** @format */
 import React, { useState, useEffect } from "react";
 import { useParams } from "react-router-dom";
 

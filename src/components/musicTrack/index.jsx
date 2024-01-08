@@ -1,5 +1,4 @@
 import Typography from "@mui/material/Typography";
-/** @format */
 import React from "react";
 import { getRuntimeMusic } from "../../utils/date/time";
 import { useApi } from "../../utils/store/api";

@@ -1,4 +1,3 @@
-/** @format */
 import React, { useEffect, useState } from "react";
 
 import CircularProgress from "@mui/material/CircularProgress";

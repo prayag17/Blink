@@ -1,4 +1,3 @@
-/** @format */
 import React, { useEffect, useState } from "react";
 
 import { getUserApi } from "@jellyfin/sdk/lib/utils/api/user-api";

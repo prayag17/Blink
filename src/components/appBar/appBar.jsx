@@ -1,4 +1,3 @@
-/** @format */
 import React, { useEffect, useRef, useState } from "react";
 
 import { relaunch } from "@tauri-apps/api/process";

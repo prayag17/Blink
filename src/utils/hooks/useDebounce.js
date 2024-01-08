@@ -1,4 +1,3 @@
-/** @format */
 
 import { useEffect, useState } from "react";
 

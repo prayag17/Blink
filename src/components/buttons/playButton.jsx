@@ -1,5 +1,4 @@
 import PropTypes from "prop-types";
-/** @format */
 import React from "react";
 
 import Button from "@mui/material/Button";

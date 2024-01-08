@@ -2,7 +2,6 @@ import Box from "@mui/material/Box";
 import Paper from "@mui/material/Paper";
 import Skeleton from "@mui/material/Skeleton";
 import Typography from "@mui/material/Typography";
-/** @format */
 import React from "react";
 import { theme } from "../../theme";
 export const CarouselSkeleton = () => {

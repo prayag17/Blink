@@ -1,5 +1,4 @@
 import { AnimatePresence, motion } from "framer-motion";
-/** @format */
 import React, { useEffect, useState } from "react";
 
 import IconButton from "@mui/material/IconButton";

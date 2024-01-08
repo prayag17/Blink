@@ -1,6 +1,4 @@
-/** @format */
 
-/** @format */
 import SvgIcon from "@mui/material/SvgIcon";
 import React from "react";
 

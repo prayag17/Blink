@@ -1,4 +1,3 @@
-/** @format */
 import React, { memo } from "react";
 import { Blurhash } from "react-blurhash";
 

@@ -2,7 +2,6 @@ import Box from "@mui/material/Box";
 import Button from "@mui/material/Button";
 import Typography from "@mui/material/Typography";
 import { red } from "@mui/material/colors";
-/** @format */
 import React from "react";
 
 export const ErrorNotice = ({ error, resetErrorBoundary }) => {

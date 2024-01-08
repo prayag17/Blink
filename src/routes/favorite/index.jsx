@@ -1,4 +1,3 @@
-/** @format */
 import React, { useEffect } from "react";
 
 import { useBackdropStore } from "../../utils/store/backdrop";

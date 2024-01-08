@@ -2,7 +2,6 @@ import { BaseItemKind } from "@jellyfin/sdk/lib/generated-client";
 import { getItemsApi } from "@jellyfin/sdk/lib/utils/api/items-api";
 import Typography from "@mui/material/Typography";
 import { useQuery } from "@tanstack/react-query";
-/** @format */
 import React from "react";
 import { useApi } from "../../../../utils/store/api";
 import { Card } from "../../../card/card";

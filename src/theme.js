@@ -1,5 +1,3 @@
-/** @format */
-
 import { createTheme } from "@mui/material/styles";
 import {
 	clrAccentDefault,

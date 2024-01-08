@@ -1,4 +1,3 @@
-/** @format */
 
 import { create } from "zustand";
 

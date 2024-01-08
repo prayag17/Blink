@@ -1,5 +1,4 @@
 import PropTypes from "prop-types";
-/** @format */
 import React, { useState, useEffect } from "react";
 
 import Box from "@mui/material/Box";

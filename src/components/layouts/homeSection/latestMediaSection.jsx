@@ -1,5 +1,4 @@
 import { useQuery } from "@tanstack/react-query";
-/** @format */
 import React from "react";
 import { Card } from "../../card/card";
 import { CardScroller } from "../../cardScroller/cardScroller";

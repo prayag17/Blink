@@ -1,5 +1,4 @@
 import { appWindow } from "@tauri-apps/api/window";
-/** @format */
 import React from "react";
 
 import Backdrop from "@mui/material/Backdrop";

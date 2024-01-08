@@ -1,4 +1,3 @@
-/** @format */
 
 import { create } from "zustand";
 import { version } from "../../../package.json";
