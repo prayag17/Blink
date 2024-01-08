@@ -6,7 +6,7 @@ import { mdiAlertDecagram } from "@mdi/js";
 export const MdiAlertDecagram = (props) => {
 	return (
 		<SvgIcon {...props}>
-			<path d={mdiAlertDecagram}></path>
+			<path d={mdiAlertDecagram} />
 		</SvgIcon>
 	);
 };

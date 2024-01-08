@@ -7,7 +7,7 @@ import { mdiFilterOutline } from "@mdi/js";
 export const MdiFilterOutline = (props) => {
 	return (
 		<SvgIcon {...props}>
-			<path d={mdiFilterOutline}></path>
+			<path d={mdiFilterOutline} />
 		</SvgIcon>
 	);
 };

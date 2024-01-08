@@ -8,7 +8,7 @@
     "build": "vite build",
     "preview": "vite preview",
     "tauri": "tauri",
-    "lint": "eslint"
+    "lint": "biome check --apply src/"
   },
   "dependencies": {
     "@emotion/react": "^11.11.3",
@@ -50,6 +50,7 @@
     "zustand": "^4.4.7"
   },
   "devDependencies": {
+    "@biomejs/biome": "^1.5.0",
     "@tauri-apps/cli": "^1.5.9",
     "@types/uuid": "^9.0.7",
     "@vitejs/plugin-react": "^4.2.1",

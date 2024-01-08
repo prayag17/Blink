@@ -1,58 +1,58 @@
+import { motion } from "framer-motion";
 /** @format */
 import React, { useState, useEffect } from "react";
-import { motion } from "framer-motion";
 import { useParams } from "react-router-dom";
 
 import { useQuery } from "@tanstack/react-query";
 
+import Accordion from "@mui/material/Accordion";
+import AccordionDetails from "@mui/material/AccordionDetails";
+import AccordionSummary from "@mui/material/AccordionSummary";
 import Box from "@mui/material/Box";
-import Stack from "@mui/material/Stack";
-import FormControlLabel from "@mui/material/FormControlLabel";
-import Typography from "@mui/material/Typography";
+import Button from "@mui/material/Button";
+import Checkbox from "@mui/material/Checkbox";
+import Chip from "@mui/material/Chip";
 import CircularProgress from "@mui/material/CircularProgress";
 import Divider from "@mui/material/Divider";
-import Chip from "@mui/material/Chip";
-import TextField from "@mui/material/TextField";
-import Checkbox from "@mui/material/Checkbox";
-import MenuItem from "@mui/material/MenuItem";
-import Accordion from "@mui/material/Accordion";
-import AccordionSummary from "@mui/material/AccordionSummary";
-import AccordionDetails from "@mui/material/AccordionDetails";
-import Button from "@mui/material/Button";
+import FormControlLabel from "@mui/material/FormControlLabel";
+import Grow from "@mui/material/Grow";
 import IconButton from "@mui/material/IconButton";
+import MenuItem from "@mui/material/MenuItem";
 import Pagination from "@mui/material/Pagination";
 import Popper from "@mui/material/Popper";
-import Grow from "@mui/material/Grow";
+import Stack from "@mui/material/Stack";
+import TextField from "@mui/material/TextField";
+import Typography from "@mui/material/Typography";
 
-import { getUserApi } from "@jellyfin/sdk/lib/utils/api/user-api";
-import { getItemsApi } from "@jellyfin/sdk/lib/utils/api/items-api";
 import { getArtistsApi } from "@jellyfin/sdk/lib/utils/api/artists-api";
 import { getGenresApi } from "@jellyfin/sdk/lib/utils/api/genres-api";
+import { getItemsApi } from "@jellyfin/sdk/lib/utils/api/items-api";
 import { getMusicGenresApi } from "@jellyfin/sdk/lib/utils/api/music-genres-api";
-import { getStudiosApi } from "@jellyfin/sdk/lib/utils/api/studios-api";
 import { getPersonsApi } from "@jellyfin/sdk/lib/utils/api/persons-api";
+import { getStudiosApi } from "@jellyfin/sdk/lib/utils/api/studios-api";
+import { getUserApi } from "@jellyfin/sdk/lib/utils/api/user-api";
 
 import { Card } from "../../components/card/card";
 import { EmptyNotice } from "../../components/notices/emptyNotice/emptyNotice";
 
-import { MdiSortDescending } from "../../components/icons/mdiSortDescending";
-import { MdiSortAscending } from "../../components/icons/mdiSortAscending";
 import { MdiChevronDown } from "../../components/icons/mdiChevronDown";
 import { MdiFilterOutline } from "../../components/icons/mdiFilterOutline";
+import { MdiSortAscending } from "../../components/icons/mdiSortAscending";
+import { MdiSortDescending } from "../../components/icons/mdiSortDescending";
 
-import GenreView from "../../components/layouts/library/genreView";
-import { ErrorNotice } from "../../components/notices/errorNotice/errorNotice";
 import {
 	BaseItemKind,
 	ItemFields,
 	SortOrder,
 } from "@jellyfin/sdk/lib/generated-client";
+import GenreView from "../../components/layouts/library/genreView";
 import MusicTrack from "../../components/musicTrack";
+import { ErrorNotice } from "../../components/notices/errorNotice/errorNotice";
 import { useBackdropStore } from "../../utils/store/backdrop";
 
-import "./library.module.scss";
-import { useApi } from "../../utils/store/api";
 import { getUserLibraryApi } from "@jellyfin/sdk/lib/utils/api/user-library-api";
+import { useApi } from "../../utils/store/api";
+import "./library.module.scss";
 
 const LibraryView = () => {
 	const [api] = useApi((state) => [state.api]);
@@ -64,7 +64,7 @@ const LibraryView = () => {
 	const user = useQuery({
 		queryKey: ["user"],
 		queryFn: async () => {
-			let usr = await getUserApi(api).getCurrentUser();
+			const usr = await getUserApi(api).getCurrentUser();
 			return usr.data;
 		},
 		networkMode: "always",
@@ -132,14 +132,14 @@ const LibraryView = () => {
 		}
 		if (currentLib.isSuccess) {
 			setViewType(null);
-			if (currentLib.data.CollectionType == "movies") {
+			if (currentLib.data.CollectionType === "movies") {
 				setCurrentViewType(BaseItemKind.Movie);
 				setViewType([
 					{ title: "Movies", value: BaseItemKind.Movie },
 					{ title: "Genres", value: BaseItemKind.Genre },
 					{ title: "Studios", value: BaseItemKind.Studio },
 				]);
-			} else if (currentLib.data.CollectionType == "music") {
+			} else if (currentLib.data.CollectionType === "music") {
 				setCurrentViewType(BaseItemKind.MusicAlbum);
 				setViewType([
 					{ title: "Albums", value: BaseItemKind.MusicAlbum },
@@ -147,14 +147,14 @@ const LibraryView = () => {
 					{ title: "Artists", value: BaseItemKind.MusicArtist },
 					{ title: "Genres", value: BaseItemKind.MusicGenre },
 				]);
-			} else if (currentLib.data.CollectionType == "tvshows") {
+			} else if (currentLib.data.CollectionType === "tvshows") {
 				setCurrentViewType(BaseItemKind.Series);
 				setViewType([
 					{ title: "Series", value: BaseItemKind.Series },
 					{ title: "Genres", value: BaseItemKind.Genre },
 					{ title: "Networks", value: BaseItemKind.Studio },
 				]);
-			} else if (currentLib.data.CollectionType == "playlists") {
+			} else if (currentLib.data.CollectionType === "playlists") {
 				setCurrentViewType(BaseItemKind.PlaylistsFolder);
 				setViewType([
 					{
@@ -167,7 +167,7 @@ const LibraryView = () => {
 				setCurrentViewType("none");
 				setViewType([]);
 			}
-			if (currentLib.data.CollectionType == "movies") {
+			if (currentLib.data.CollectionType === "movies") {
 				setSortBy("SortName");
 				setSortByData([
 					{ title: "Name", value: "SortName" },
@@ -179,7 +179,7 @@ const LibraryView = () => {
 					{ title: "Runtime", value: "Runtime" },
 					{ title: "Random", value: "Random" },
 				]);
-			} else if (currentLib.data.CollectionType == "tvshows") {
+			} else if (currentLib.data.CollectionType === "tvshows") {
 				setSortBy("SortName");
 				setSortByData([
 					{ title: "Name", value: "SortName" },
@@ -190,7 +190,7 @@ const LibraryView = () => {
 					{ title: "Release Date", value: "PremiereDate" },
 					{ title: "Random", value: "Random" },
 				]);
-			} else if (currentLib.data.CollectionType == "music") {
+			} else if (currentLib.data.CollectionType === "music") {
 				setSortBy("Name");
 				setSortByData([
 					{ title: "Name", value: "Name" },
@@ -252,35 +252,35 @@ const LibraryView = () => {
 		],
 		queryFn: async () => {
 			let result;
-			if (currentViewType == "MusicArtist") {
+			if (currentViewType === "MusicArtist") {
 				result = await getArtistsApi(api).getAlbumArtists({
 					userId: user.data.Id,
 					parentId: id,
 					startIndex: maxDisplayItems * (page - 1),
 					limit: maxDisplayItems,
 				});
-			} else if (currentViewType == "Person") {
+			} else if (currentViewType === "Person") {
 				result = await getPersonsApi(api).getPersons({
 					userId: user.data.Id,
 					personTypes: ["Actor"],
 					startIndex: maxDisplayItems * (page - 1),
 					limit: maxDisplayItems,
 				});
-			} else if (currentViewType == "Genre") {
+			} else if (currentViewType === "Genre") {
 				result = await getGenresApi(api).getGenres({
 					userId: user.data.Id,
 					parentId: id,
 					startIndex: maxDisplayItems * (page - 1),
 					limit: maxDisplayItems,
 				});
-			} else if (currentViewType == "MusicGenre") {
+			} else if (currentViewType === "MusicGenre") {
 				result = await getMusicGenresApi(api).getMusicGenres({
 					userId: user.data.Id,
 					parentId: id,
 					startIndex: maxDisplayItems * (page - 1),
 					limit: maxDisplayItems,
 				});
-			} else if (currentViewType == "Studio") {
+			} else if (currentViewType === "Studio") {
 				result = await getStudiosApi(api).getStudios({
 					userId: user.data.Id,
 					parentId: id,
@@ -292,22 +292,16 @@ const LibraryView = () => {
 					userId: user.data.Id,
 					parentId: currentLib.data.Id,
 					recursive:
-						currentLib.data.CollectionType == "boxsets"
-							? undefined
-							: true,
+						currentLib.data.CollectionType === "boxsets" ? undefined : true,
 					includeItemTypes: [currentViewType],
 					sortOrder: [
-						sortAscending
-							? SortOrder.Ascending
-							: SortOrder.Descending,
+						sortAscending ? SortOrder.Ascending : SortOrder.Descending,
 					],
 					sortBy: sortBy,
 					filters: filterArray,
 					hasSubtitles: hasSubtitles ? true : undefined,
 					hasTrailer: hasTrailer ? true : undefined,
-					hasSpecialFeature: hasSpecialFeature
-						? true
-						: undefined,
+					hasSpecialFeature: hasSpecialFeature ? true : undefined,
 					hasThemeSong: hasThemeSong ? true : undefined,
 					hasThemeVideo: hasThemeVideo ? true : undefined,
 					videoTypes: videoTypes,
@@ -322,10 +316,7 @@ const LibraryView = () => {
 			return result.data;
 		},
 		// enabled: false,
-		enabled:
-			user.isSuccess &&
-			Boolean(currentViewType) &&
-			currentLib.isSuccess,
+		enabled: user.isSuccess && Boolean(currentViewType) && currentLib.isSuccess,
 		networkMode: "always",
 		// gcTime: 0,
 	});
@@ -367,7 +358,8 @@ const LibraryView = () => {
 				<CircularProgress size={72} thickness={1.4} />
 			</div>
 		);
-	} else if (currentLib.isSuccess) {
+	}
+	if (currentLib.isSuccess) {
 		return (
 			<main className="scrollY library padded-top">
 				<div
@@ -389,11 +381,7 @@ const LibraryView = () => {
 							padding: "0 1em",
 						}}
 					>
-						<Typography
-							variant="h5"
-							sx={{ mr: 2, flexShrink: 0 }}
-							noWrap
-						>
+						<Typography variant="h5" sx={{ mr: 2, flexShrink: 0 }} noWrap>
 							{currentLib.isPending ? (
 								<CircularProgress sx={{ p: 1 }} />
 							) : (
@@ -403,9 +391,7 @@ const LibraryView = () => {
 						<Chip
 							label={
 								!items.isSuccess ? (
-									<CircularProgress
-										sx={{ p: 1.5 }}
-									/>
+									<CircularProgress sx={{ p: 1.5 }} />
 								) : (
 									items.data.TotalRecordCount
 								)
@@ -416,19 +402,11 @@ const LibraryView = () => {
 				<div className="library-items">
 					<div className="library-items-header">
 						<div className="library-items-options">
-							{disabledSortViews.includes(
-								currentViewType,
-							) ? (
+							{disabledSortViews.includes(currentViewType) ? (
 								<></>
 							) : (
 								<>
-									<IconButton
-										onClick={() =>
-											setSortAscending(
-												!sortAscending,
-											)
-										}
-									>
+									<IconButton onClick={() => setSortAscending(!sortAscending)}>
 										{sortAscending ? (
 											<MdiSortAscending />
 										) : (
@@ -444,10 +422,7 @@ const LibraryView = () => {
 										size="small"
 									>
 										{sortByData.map((option) => (
-											<MenuItem
-												key={option.value}
-												value={option.value}
-											>
+											<MenuItem key={option.value} value={option.value}>
 												{option.title}
 											</MenuItem>
 										))}
@@ -457,26 +432,18 @@ const LibraryView = () => {
 
 							{viewType.length > 0 && (
 								<>
-									<Divider
-										flexItem
-										orientation="vertical"
-									/>
+									<Divider flexItem orientation="vertical" />
 									<TextField
 										disabled={!currentViewType}
 										select
 										value={currentViewType}
 										onChange={(e) => {
-											setCurrentViewType(
-												e.target.value,
-											);
+											setCurrentViewType(e.target.value);
 										}}
 										size="small"
 									>
 										{viewType.map((option) => (
-											<MenuItem
-												key={option.value}
-												value={option.value}
-											>
+											<MenuItem key={option.value} value={option.value}>
 												{option.title}
 											</MenuItem>
 										))}
@@ -485,26 +452,15 @@ const LibraryView = () => {
 							)}
 
 							{currentLib.isSuccess &&
-								allowedFilterViews.includes(
-									currentLib.data.CollectionType,
-								) && (
+								allowedFilterViews.includes(currentLib.data.CollectionType) && (
 									<>
-										<Divider
-											flexItem
-											orientation="vertical"
-										/>
+										<Divider flexItem orientation="vertical" />
 										<Button
-											startIcon={
-												<MdiFilterOutline />
-											}
+											startIcon={<MdiFilterOutline />}
 											color="white"
 											onClick={(event) => {
-												setFilterButtonAnchorEl(
-													event.currentTarget,
-												);
-												setFilterMenuOpen(
-													!filterMenuOpen,
-												);
+												setFilterButtonAnchorEl(event.currentTarget);
+												setFilterMenuOpen(!filterMenuOpen);
 											}}
 											// disabled
 										>
@@ -519,25 +475,15 @@ const LibraryView = () => {
 								transition
 							>
 								{({ TransitionProps }) => (
-									<Grow
-										{...TransitionProps}
-										timeout={200}
-									>
+									<Grow {...TransitionProps} timeout={200}>
 										<div className="library-filter-container">
 											<Accordion className="library-filter-accordian">
-												<AccordionSummary
-													expandIcon={
-														<MdiChevronDown />
-													}
-												>
-													<Typography variant="subtitle1">
-														Filters
-													</Typography>
+												<AccordionSummary expandIcon={<MdiChevronDown />}>
+													<Typography variant="subtitle1">Filters</Typography>
 												</AccordionSummary>
 												<AccordionDetails
 													style={{
-														background:
-															"rgb(0 0 0 / 0.4)",
+														background: "rgb(0 0 0 / 0.4)",
 														padding: "0 !important",
 													}}
 												>
@@ -546,38 +492,18 @@ const LibraryView = () => {
 														label="Played"
 														control={
 															<Checkbox
-																value={
-																	isPlayed
-																}
-																onChange={(
-																	e,
-																) => {
-																	setIsPlayed(
-																		e
-																			.target
-																			.checked,
-																	);
-																	if (
-																		e
-																			.target
-																			.checked
-																	) {
-																		setFilterArray(
-																			(
-																				state,
-																			) => [
-																				...state,
-																				"isPlayed",
-																			],
-																		);
+																value={isPlayed}
+																onChange={(e) => {
+																	setIsPlayed(e.target.checked);
+																	if (e.target.checked) {
+																		setFilterArray((state) => [
+																			...state,
+																			"isPlayed",
+																		]);
 																	} else {
 																		setFilterArray(
 																			filterArray.filter(
-																				(
-																					val,
-																				) =>
-																					val !=
-																					"isPlayed",
+																				(val) => val !== "isPlayed",
 																			),
 																		);
 																	}
@@ -586,13 +512,11 @@ const LibraryView = () => {
 														}
 														labelPlacement="start"
 														componentsProps={{
-															typography:
-																{
-																	style: {
-																		justifySelf:
-																			"start",
-																	},
+															typography: {
+																style: {
+																	justifySelf: "start",
 																},
+															},
 														}}
 													/>
 													<FormControlLabel
@@ -600,38 +524,18 @@ const LibraryView = () => {
 														label="Not Played"
 														control={
 															<Checkbox
-																value={
-																	isUnPlayed
-																}
-																onChange={(
-																	e,
-																) => {
-																	setIsUnPlayed(
-																		e
-																			.target
-																			.checked,
-																	);
-																	if (
-																		e
-																			.target
-																			.checked
-																	) {
-																		setFilterArray(
-																			(
-																				state,
-																			) => [
-																				...state,
-																				"IsUnplayed",
-																			],
-																		);
+																value={isUnPlayed}
+																onChange={(e) => {
+																	setIsUnPlayed(e.target.checked);
+																	if (e.target.checked) {
+																		setFilterArray((state) => [
+																			...state,
+																			"IsUnplayed",
+																		]);
 																	} else {
 																		setFilterArray(
 																			filterArray.filter(
-																				(
-																					val,
-																				) =>
-																					val !=
-																					"IsUnplayed",
+																				(val) => val !== "IsUnplayed",
 																			),
 																		);
 																	}
@@ -640,13 +544,11 @@ const LibraryView = () => {
 														}
 														labelPlacement="start"
 														componentsProps={{
-															typography:
-																{
-																	style: {
-																		justifySelf:
-																			"start",
-																	},
+															typography: {
+																style: {
+																	justifySelf: "start",
 																},
+															},
 														}}
 													/>
 													<FormControlLabel
@@ -654,38 +556,18 @@ const LibraryView = () => {
 														label="Resumable"
 														control={
 															<Checkbox
-																value={
-																	isResumable
-																}
-																onChange={(
-																	e,
-																) => {
-																	setIsResumable(
-																		e
-																			.target
-																			.checked,
-																	);
-																	if (
-																		e
-																			.target
-																			.checked
-																	) {
-																		setFilterArray(
-																			(
-																				state,
-																			) => [
-																				...state,
-																				"isResumable",
-																			],
-																		);
+																value={isResumable}
+																onChange={(e) => {
+																	setIsResumable(e.target.checked);
+																	if (e.target.checked) {
+																		setFilterArray((state) => [
+																			...state,
+																			"isResumable",
+																		]);
 																	} else {
 																		setFilterArray(
 																			filterArray.filter(
-																				(
-																					val,
-																				) =>
-																					val !=
-																					"isResumable",
+																				(val) => val !== "isResumable",
 																			),
 																		);
 																	}
@@ -694,13 +576,11 @@ const LibraryView = () => {
 														}
 														labelPlacement="start"
 														componentsProps={{
-															typography:
-																{
-																	style: {
-																		justifySelf:
-																			"start",
-																	},
+															typography: {
+																style: {
+																	justifySelf: "start",
 																},
+															},
 														}}
 													/>
 													<FormControlLabel
@@ -708,38 +588,18 @@ const LibraryView = () => {
 														label="Favorite"
 														control={
 															<Checkbox
-																value={
-																	isFavorite
-																}
-																onChange={(
-																	e,
-																) => {
-																	setisFavorite(
-																		e
-																			.target
-																			.checked,
-																	);
-																	if (
-																		e
-																			.target
-																			.checked
-																	) {
-																		setFilterArray(
-																			(
-																				state,
-																			) => [
-																				...state,
-																				"isFavorite",
-																			],
-																		);
+																value={isFavorite}
+																onChange={(e) => {
+																	setisFavorite(e.target.checked);
+																	if (e.target.checked) {
+																		setFilterArray((state) => [
+																			...state,
+																			"isFavorite",
+																		]);
 																	} else {
 																		setFilterArray(
 																			filterArray.filter(
-																				(
-																					val,
-																				) =>
-																					val !=
-																					"isFavorite",
+																				(val) => val !== "isFavorite",
 																			),
 																		);
 																	}
@@ -748,13 +608,11 @@ const LibraryView = () => {
 														}
 														labelPlacement="start"
 														componentsProps={{
-															typography:
-																{
-																	style: {
-																		justifySelf:
-																			"start",
-																	},
+															typography: {
+																style: {
+																	justifySelf: "start",
 																},
+															},
 														}}
 													/>
 													<FormControlLabel
@@ -762,38 +620,18 @@ const LibraryView = () => {
 														label="Likes"
 														control={
 															<Checkbox
-																value={
-																	isLiked
-																}
-																onChange={(
-																	e,
-																) => {
-																	setIsLiked(
-																		e
-																			.target
-																			.checked,
-																	);
-																	if (
-																		e
-																			.target
-																			.checked
-																	) {
-																		setFilterArray(
-																			(
-																				state,
-																			) => [
-																				...state,
-																				"isLiked",
-																			],
-																		);
+																value={isLiked}
+																onChange={(e) => {
+																	setIsLiked(e.target.checked);
+																	if (e.target.checked) {
+																		setFilterArray((state) => [
+																			...state,
+																			"isLiked",
+																		]);
 																	} else {
 																		setFilterArray(
 																			filterArray.filter(
-																				(
-																					val,
-																				) =>
-																					val !=
-																					"isLiked",
+																				(val) => val !== "isLiked",
 																			),
 																		);
 																	}
@@ -802,13 +640,11 @@ const LibraryView = () => {
 														}
 														labelPlacement="start"
 														componentsProps={{
-															typography:
-																{
-																	style: {
-																		justifySelf:
-																			"start",
-																	},
+															typography: {
+																style: {
+																	justifySelf: "start",
 																},
+															},
 														}}
 													/>
 													<FormControlLabel
@@ -816,38 +652,18 @@ const LibraryView = () => {
 														label="Dislikes"
 														control={
 															<Checkbox
-																value={
-																	isUnliked
-																}
-																onChange={(
-																	e,
-																) => {
-																	setIsUnliked(
-																		e
-																			.target
-																			.checked,
-																	);
-																	if (
-																		e
-																			.target
-																			.checked
-																	) {
-																		setFilterArray(
-																			(
-																				state,
-																			) => [
-																				...state,
-																				"isUnliked",
-																			],
-																		);
+																value={isUnliked}
+																onChange={(e) => {
+																	setIsUnliked(e.target.checked);
+																	if (e.target.checked) {
+																		setFilterArray((state) => [
+																			...state,
+																			"isUnliked",
+																		]);
 																	} else {
 																		setFilterArray(
 																			filterArray.filter(
-																				(
-																					val,
-																				) =>
-																					val !=
-																					"isUnliked",
+																				(val) => val !== "isUnliked",
 																			),
 																		);
 																	}
@@ -856,34 +672,23 @@ const LibraryView = () => {
 														}
 														labelPlacement="start"
 														componentsProps={{
-															typography:
-																{
-																	style: {
-																		justifySelf:
-																			"start",
-																	},
+															typography: {
+																style: {
+																	justifySelf: "start",
 																},
+															},
 														}}
 													/>
 												</AccordionDetails>
 											</Accordion>
-											{currentLib.data
-												.CollectionType ==
-												"movies" && (
+											{currentLib.data.CollectionType === "movies" && (
 												<Accordion className="library-filter-accordian">
-													<AccordionSummary
-														expandIcon={
-															<MdiChevronDown />
-														}
-													>
-														<Typography variant="subtitle1">
-															Quality
-														</Typography>
+													<AccordionSummary expandIcon={<MdiChevronDown />}>
+														<Typography variant="subtitle1">Quality</Typography>
 													</AccordionSummary>
 													<AccordionDetails
 														style={{
-															background:
-																"rgb(0 0 0 / 0.4)",
+															background: "rgb(0 0 0 / 0.4)",
 															padding: "0 !important",
 														}}
 													>
@@ -892,38 +697,18 @@ const LibraryView = () => {
 															label="BluRay"
 															control={
 																<Checkbox
-																	value={
-																		isBluRay
-																	}
-																	onChange={(
-																		e,
-																	) => {
-																		setIsBluRay(
-																			e
-																				.target
-																				.checked,
-																		);
-																		if (
-																			e
-																				.target
-																				.checked
-																		) {
-																			setVideoTypes(
-																				(
-																					state,
-																				) => [
-																					...state,
-																					"BluRay",
-																				],
-																			);
+																	value={isBluRay}
+																	onChange={(e) => {
+																		setIsBluRay(e.target.checked);
+																		if (e.target.checked) {
+																			setVideoTypes((state) => [
+																				...state,
+																				"BluRay",
+																			]);
 																		} else {
 																			setVideoTypes(
 																				filterArray.filter(
-																					(
-																						val,
-																					) =>
-																						val !=
-																						"BluRay",
+																					(val) => val !== "BluRay",
 																				),
 																			);
 																		}
@@ -932,13 +717,11 @@ const LibraryView = () => {
 															}
 															labelPlacement="start"
 															componentsProps={{
-																typography:
-																	{
-																		style: {
-																			justifySelf:
-																				"start",
-																		},
+																typography: {
+																	style: {
+																		justifySelf: "start",
 																	},
+																},
 															}}
 														/>
 														<FormControlLabel
@@ -946,38 +729,18 @@ const LibraryView = () => {
 															label="Dvd"
 															control={
 																<Checkbox
-																	value={
-																		isDVD
-																	}
-																	onChange={(
-																		e,
-																	) => {
-																		setIsDVD(
-																			e
-																				.target
-																				.checked,
-																		);
-																		if (
-																			e
-																				.target
-																				.checked
-																		) {
-																			setVideoTypes(
-																				(
-																					state,
-																				) => [
-																					...state,
-																					"Dvd",
-																				],
-																			);
+																	value={isDVD}
+																	onChange={(e) => {
+																		setIsDVD(e.target.checked);
+																		if (e.target.checked) {
+																			setVideoTypes((state) => [
+																				...state,
+																				"Dvd",
+																			]);
 																		} else {
 																			setVideoTypes(
 																				filterArray.filter(
-																					(
-																						val,
-																					) =>
-																						val !=
-																						"Dvd",
+																					(val) => val !== "Dvd",
 																				),
 																			);
 																		}
@@ -986,13 +749,11 @@ const LibraryView = () => {
 															}
 															labelPlacement="start"
 															componentsProps={{
-																typography:
-																	{
-																		style: {
-																			justifySelf:
-																				"start",
-																		},
+																typography: {
+																	style: {
+																		justifySelf: "start",
 																	},
+																},
 															}}
 														/>
 														<FormControlLabel
@@ -1000,29 +761,19 @@ const LibraryView = () => {
 															label="Hd"
 															control={
 																<Checkbox
-																	value={
-																		isHD
-																	}
-																	onChange={(
-																		e,
-																	) => {
-																		setIsHD(
-																			e
-																				.target
-																				.checked,
-																		);
+																	value={isHD}
+																	onChange={(e) => {
+																		setIsHD(e.target.checked);
 																	}}
 																/>
 															}
 															labelPlacement="start"
 															componentsProps={{
-																typography:
-																	{
-																		style: {
-																			justifySelf:
-																				"start",
-																		},
+																typography: {
+																	style: {
+																		justifySelf: "start",
 																	},
+																},
 															}}
 														/>
 														<FormControlLabel
@@ -1030,29 +781,19 @@ const LibraryView = () => {
 															label="4k"
 															control={
 																<Checkbox
-																	value={
-																		is4K
-																	}
-																	onChange={(
-																		e,
-																	) => {
-																		setIs4K(
-																			e
-																				.target
-																				.checked,
-																		);
+																	value={is4K}
+																	onChange={(e) => {
+																		setIs4K(e.target.checked);
 																	}}
 																/>
 															}
 															labelPlacement="start"
 															componentsProps={{
-																typography:
-																	{
-																		style: {
-																			justifySelf:
-																				"start",
-																		},
+																typography: {
+																	style: {
+																		justifySelf: "start",
 																	},
+																},
 															}}
 														/>
 														<FormControlLabel
@@ -1060,52 +801,36 @@ const LibraryView = () => {
 															label="3D"
 															control={
 																<Checkbox
-																	value={
-																		is3D
-																	}
-																	onChange={(
-																		e,
-																	) => {
-																		setIs3D(
-																			e
-																				.target
-																				.checked,
-																		);
+																	value={is3D}
+																	onChange={(e) => {
+																		setIs3D(e.target.checked);
 																	}}
 																/>
 															}
 															labelPlacement="start"
 															componentsProps={{
-																typography:
-																	{
-																		style: {
-																			justifySelf:
-																				"start",
-																		},
+																typography: {
+																	style: {
+																		justifySelf: "start",
 																	},
+																},
 															}}
 														/>
 													</AccordionDetails>
 												</Accordion>
 											)}
 											{!onlyStatusFilterViews.includes(
-												currentLib.data
-													.CollectionType,
+												currentLib.data.CollectionType,
 											) && (
 												<Accordion className="library-filter-accordian">
-													<AccordionSummary
-														expandIcon={
-															<MdiChevronDown />
-														}
-													>
+													<AccordionSummary expandIcon={<MdiChevronDown />}>
 														<Typography variant="subtitle1">
 															Features
 														</Typography>
 													</AccordionSummary>
 													<AccordionDetails
 														style={{
-															background:
-																"rgb(0 0 0 / 0.4)",
+															background: "rgb(0 0 0 / 0.4)",
 															padding: "0 !important",
 														}}
 													>
@@ -1114,29 +839,19 @@ const LibraryView = () => {
 															label="Subtitles"
 															control={
 																<Checkbox
-																	value={
-																		hasSubtitles
-																	}
-																	onChange={(
-																		e,
-																	) => {
-																		setHasSubtitles(
-																			e
-																				.target
-																				.checked,
-																		);
+																	value={hasSubtitles}
+																	onChange={(e) => {
+																		setHasSubtitles(e.target.checked);
 																	}}
 																/>
 															}
 															labelPlacement="start"
 															componentsProps={{
-																typography:
-																	{
-																		style: {
-																			justifySelf:
-																				"start",
-																		},
+																typography: {
+																	style: {
+																		justifySelf: "start",
 																	},
+																},
 															}}
 														/>
 														<FormControlLabel
@@ -1144,29 +859,19 @@ const LibraryView = () => {
 															label="Trailer"
 															control={
 																<Checkbox
-																	value={
-																		hasTrailer
-																	}
-																	onChange={(
-																		e,
-																	) => {
-																		setHasTrailer(
-																			e
-																				.target
-																				.checked,
-																		);
+																	value={hasTrailer}
+																	onChange={(e) => {
+																		setHasTrailer(e.target.checked);
 																	}}
 																/>
 															}
 															labelPlacement="start"
 															componentsProps={{
-																typography:
-																	{
-																		style: {
-																			justifySelf:
-																				"start",
-																		},
+																typography: {
+																	style: {
+																		justifySelf: "start",
 																	},
+																},
 															}}
 														/>
 														<FormControlLabel
@@ -1174,29 +879,19 @@ const LibraryView = () => {
 															label="Special Features"
 															control={
 																<Checkbox
-																	value={
-																		hasSpecialFeature
-																	}
-																	onChange={(
-																		e,
-																	) => {
-																		setHasSpecialFeature(
-																			e
-																				.target
-																				.checked,
-																		);
+																	value={hasSpecialFeature}
+																	onChange={(e) => {
+																		setHasSpecialFeature(e.target.checked);
 																	}}
 																/>
 															}
 															labelPlacement="start"
 															componentsProps={{
-																typography:
-																	{
-																		style: {
-																			justifySelf:
-																				"start",
-																		},
+																typography: {
+																	style: {
+																		justifySelf: "start",
 																	},
+																},
 															}}
 														/>
 														<FormControlLabel
@@ -1204,29 +899,19 @@ const LibraryView = () => {
 															label="Theme Song"
 															control={
 																<Checkbox
-																	value={
-																		hasThemeSong
-																	}
-																	onChange={(
-																		e,
-																	) => {
-																		setHasThemeSong(
-																			e
-																				.target
-																				.checked,
-																		);
+																	value={hasThemeSong}
+																	onChange={(e) => {
+																		setHasThemeSong(e.target.checked);
 																	}}
 																/>
 															}
 															labelPlacement="start"
 															componentsProps={{
-																typography:
-																	{
-																		style: {
-																			justifySelf:
-																				"start",
-																		},
+																typography: {
+																	style: {
+																		justifySelf: "start",
 																	},
+																},
 															}}
 														/>
 														<FormControlLabel
@@ -1234,29 +919,19 @@ const LibraryView = () => {
 															label="Theme Video"
 															control={
 																<Checkbox
-																	value={
-																		hasThemeVideo
-																	}
-																	onChange={(
-																		e,
-																	) => {
-																		setHasThemeVideo(
-																			e
-																				.target
-																				.checked,
-																		);
+																	value={hasThemeVideo}
+																	onChange={(e) => {
+																		setHasThemeVideo(e.target.checked);
 																	}}
 																/>
 															}
 															labelPlacement="start"
 															componentsProps={{
-																typography:
-																	{
-																		style: {
-																			justifySelf:
-																				"start",
-																		},
+																typography: {
+																	style: {
+																		justifySelf: "start",
 																	},
+																},
 															}}
 														/>
 													</AccordionDetails>
@@ -1292,9 +967,9 @@ const LibraryView = () => {
 								}}
 							/>
 						</Box>
-					) : items.data.TotalRecordCount == 0 ? (
+					) : items.data.TotalRecordCount === 0 ? (
 						<EmptyNotice />
-					) : currentViewType == BaseItemKind.Genre ? (
+					) : currentViewType === BaseItemKind.Genre ? (
 						items.data.Items.map((item) => {
 							return (
 								<GenreView
@@ -1306,7 +981,7 @@ const LibraryView = () => {
 								/>
 							);
 						})
-					) : currentViewType != BaseItemKind.Audio ? (
+					) : currentViewType !== BaseItemKind.Audio ? (
 						<div className="library-grid">
 							{items.data.Items.map((item) => {
 								return (
@@ -1335,57 +1010,37 @@ const LibraryView = () => {
 											item={item}
 											seriesId={item.SeriesId}
 											cardTitle={
-												item.Type ==
-												BaseItemKind.Episode
+												item.Type === BaseItemKind.Episode
 													? item.SeriesName
 													: item.Name
 											}
 											imageType={"Primary"}
 											cardCaption={
-												item.Type ==
-												BaseItemKind.Episode
+												item.Type === BaseItemKind.Episode
 													? `S${item.ParentIndexNumber}:E${item.IndexNumber} - ${item.Name}`
-													: item.Type ==
-													  BaseItemKind.Series
-													? `${
-															item.ProductionYear
-													  } - ${
-															item.EndDate
-																? new Date(
-																		item.EndDate,
-																  ).toLocaleString(
-																		[],
-																		{
+													: item.Type === BaseItemKind.Series
+													  ? `${item.ProductionYear} - ${
+																item.EndDate
+																	? new Date(item.EndDate).toLocaleString([], {
 																			year: "numeric",
-																		},
-																  )
-																: "Present"
-													  }`
-													: item.ProductionYear
+																	  })
+																	: "Present"
+														  }`
+													  : item.ProductionYear
 											}
 											disableOverlay={
-												item.Type ==
-													BaseItemKind.Person ||
-												item.Type ==
-													BaseItemKind.Genre ||
-												item.Type ==
-													BaseItemKind.MusicGenre ||
-												item.Type ==
-													BaseItemKind.Studio
+												item.Type === BaseItemKind.Person ||
+												item.Type === BaseItemKind.Genre ||
+												item.Type === BaseItemKind.MusicGenre ||
+												item.Type === BaseItemKind.Studio
 											}
 											cardType={
-												item.Type ==
-													BaseItemKind.MusicAlbum ||
-												item.Type ==
-													BaseItemKind.Audio ||
-												item.Type ==
-													BaseItemKind.Genre ||
-												item.Type ==
-													BaseItemKind.MusicGenre ||
-												item.Type ==
-													BaseItemKind.Studio ||
-												item.Type ==
-													BaseItemKind.Playlist
+												item.Type === BaseItemKind.MusicAlbum ||
+												item.Type === BaseItemKind.Audio ||
+												item.Type === BaseItemKind.Genre ||
+												item.Type === BaseItemKind.MusicGenre ||
+												item.Type === BaseItemKind.Studio ||
+												item.Type === BaseItemKind.Playlist
 													? "square"
 													: "portrait"
 											}
@@ -1395,51 +1050,34 @@ const LibraryView = () => {
 												id,
 												`page: ${page}`,
 												{
-													currentViewType:
-														currentViewType,
-													sortAscending:
-														sortAscending,
+													currentViewType: currentViewType,
+													sortAscending: sortAscending,
 													sortBy: sortBy,
-													playbackFilters:
-														filterArray,
+													playbackFilters: filterArray,
 													extraFilters: {
-														hasSubtitles:
-															hasSubtitles,
-														hasTrailer:
-															hasTrailer,
-														hasSpecialFeature:
-															hasSpecialFeature,
-														hasThemeSong:
-															hasThemeSong,
-														hasThemeVideo:
-															hasThemeVideo,
+														hasSubtitles: hasSubtitles,
+														hasTrailer: hasTrailer,
+														hasSpecialFeature: hasSpecialFeature,
+														hasThemeSong: hasThemeSong,
+														hasThemeVideo: hasThemeVideo,
 													},
-													qualityFilters:
-														{
-															isBluRay:
-																isBluRay,
-															isDVD: isDVD,
-															isHD: isHD,
-															is4K: is4K,
-															is3D: is3D,
-														},
+													qualityFilters: {
+														isBluRay: isBluRay,
+														isDVD: isDVD,
+														isHD: isHD,
+														is4K: is4K,
+														is3D: is3D,
+													},
 												},
 											]}
 											userId={user.data.Id}
 											imageBlurhash={
-												!!item
-													.ImageBlurHashes
-													?.Primary &&
-												item.ImageBlurHashes
-													?.Primary[
-													Object.keys(
-														item
-															.ImageBlurHashes
-															.Primary,
-													)[0]
+												!!item.ImageBlurHashes?.Primary &&
+												item.ImageBlurHashes?.Primary[
+													Object.keys(item.ImageBlurHashes.Primary)[0]
 												]
 											}
-										></Card>
+										/>
 									</motion.div>
 								);
 							})}
@@ -1461,24 +1099,16 @@ const LibraryView = () => {
 										id,
 										`page: ${page}`,
 										{
-											currentViewType:
-												currentViewType,
-											sortAscending:
-												sortAscending,
+											currentViewType: currentViewType,
+											sortAscending: sortAscending,
 											sortBy: sortBy,
-											playbackFilters:
-												filterArray,
+											playbackFilters: filterArray,
 											extraFilters: {
-												hasSubtitles:
-													hasSubtitles,
-												hasTrailer:
-													hasTrailer,
-												hasSpecialFeature:
-													hasSpecialFeature,
-												hasThemeSong:
-													hasThemeSong,
-												hasThemeVideo:
-													hasThemeVideo,
+												hasSubtitles: hasSubtitles,
+												hasTrailer: hasTrailer,
+												hasSpecialFeature: hasSpecialFeature,
+												hasThemeSong: hasThemeSong,
+												hasThemeVideo: hasThemeVideo,
 											},
 											qualityFilters: {
 												isBluRay: isBluRay,
@@ -1495,46 +1125,39 @@ const LibraryView = () => {
 						</div>
 					)}
 
-					{items.isSuccess &&
-						items.data.TotalRecordCount > maxDisplayItems && (
-							<Stack
-								alignItems="center"
-								justifyContent="center"
-								paddingTop={2}
-								direction="row"
-							>
-								<Typography
-									variant="subtitle2"
-									sx={{ opacity: 0.5 }}
-								>
-									{maxDisplayItems * (page - 1)} -{" "}
-									{items.data.TotalRecordCount <=
-									maxDisplayItems * page
-										? items.data.TotalRecordCount
-										: maxDisplayItems * page}{" "}
-									of {items.data.TotalRecordCount}
-								</Typography>
-								<Pagination
-									page={page}
-									onChange={(e, val) => {
-										setPage(val);
-									}}
-									count={Math.ceil(
-										items.data.TotalRecordCount /
-											maxDisplayItems,
-									)}
-									sx={{
-										width: "fit-content",
-									}}
-								/>
-							</Stack>
-						)}
+					{items.isSuccess && items.data.TotalRecordCount > maxDisplayItems && (
+						<Stack
+							alignItems="center"
+							justifyContent="center"
+							paddingTop={2}
+							direction="row"
+						>
+							<Typography variant="subtitle2" sx={{ opacity: 0.5 }}>
+								{maxDisplayItems * (page - 1)} -{" "}
+								{items.data.TotalRecordCount <= maxDisplayItems * page
+									? items.data.TotalRecordCount
+									: maxDisplayItems * page}{" "}
+								of {items.data.TotalRecordCount}
+							</Typography>
+							<Pagination
+								page={page}
+								onChange={(e, val) => {
+									setPage(val);
+								}}
+								count={Math.ceil(items.data.TotalRecordCount / maxDisplayItems)}
+								sx={{
+									width: "fit-content",
+								}}
+							/>
+						</Stack>
+					)}
 				</div>
 
 				{items.isError && <ErrorNotice />}
 			</main>
 		);
-	} else if (currentLib.isError) {
+	}
+	if (currentLib.isError) {
 		return <h6>{currentLib.error}</h6>;
 	}
 };

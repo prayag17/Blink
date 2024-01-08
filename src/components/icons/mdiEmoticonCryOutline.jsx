@@ -6,7 +6,7 @@ import { mdiEmoticonCryOutline } from "@mdi/js";
 export const MdiEmoticonCryOutline = (props) => {
 	return (
 		<SvgIcon {...props}>
-			<path d={mdiEmoticonCryOutline}></path>
+			<path d={mdiEmoticonCryOutline} />
 		</SvgIcon>
 	);
 };

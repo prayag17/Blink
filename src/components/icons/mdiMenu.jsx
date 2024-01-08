@@ -6,7 +6,7 @@ import { mdiMenu } from "@mdi/js";
 export const MdiMenu = (props) => {
 	return (
 		<SvgIcon {...props}>
-			<path d={mdiMenu}></path>
+			<path d={mdiMenu} />
 		</SvgIcon>
 	);
 };

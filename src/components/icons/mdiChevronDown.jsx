@@ -7,7 +7,7 @@ import { mdiChevronDown } from "@mdi/js";
 export const MdiChevronDown = (props) => {
 	return (
 		<SvgIcon {...props}>
-			<path d={mdiChevronDown}></path>
+			<path d={mdiChevronDown} />
 		</SvgIcon>
 	);
 };

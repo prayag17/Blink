@@ -118,6 +118,9 @@ dependencies:
     version: 4.4.7(@types/react@18.2.47)(react@18.2.0)
 
 devDependencies:
+  '@biomejs/biome':
+    specifier: ^1.5.0
+    version: 1.5.0
   '@tauri-apps/cli':
     specifier: ^1.5.9
     version: 1.5.9
@@ -364,6 +367,94 @@ packages:
       '@babel/helper-string-parser': 7.23.4
       '@babel/helper-validator-identifier': 7.22.20
       to-fast-properties: 2.0.0
+
+  /@biomejs/biome@1.5.0:
+    resolution: {integrity: sha512-ln+o5jbs109qpeDoA+5n+vlAPai3DhlK0tHtZXzQvu4tswFgxNiJCeIXmlW1DYHziTmtBImV3Y0uhbm2iVSE3Q==}
+    engines: {node: '>=14.*'}
+    hasBin: true
+    requiresBuild: true
+    optionalDependencies:
+      '@biomejs/cli-darwin-arm64': 1.5.0
+      '@biomejs/cli-darwin-x64': 1.5.0
+      '@biomejs/cli-linux-arm64': 1.5.0
+      '@biomejs/cli-linux-arm64-musl': 1.5.0
+      '@biomejs/cli-linux-x64': 1.5.0
+      '@biomejs/cli-linux-x64-musl': 1.5.0
+      '@biomejs/cli-win32-arm64': 1.5.0
+      '@biomejs/cli-win32-x64': 1.5.0
+    dev: true
+
+  /@biomejs/cli-darwin-arm64@1.5.0:
+    resolution: {integrity: sha512-3+D7axf04dpadGMOaqb2q+zyQnhWW0o/Imt7TJBWsoE0N3/+28Wht8g3UEHHcUL5FPuGIfsE+NcYntBaaAsEIg==}
+    engines: {node: '>=14.*'}
+    cpu: [arm64]
+    os: [darwin]
+    requiresBuild: true
+    dev: true
+    optional: true
+
+  /@biomejs/cli-darwin-x64@1.5.0:
+    resolution: {integrity: sha512-8k5aaLWE/B6ZAXLC+z/Vwh9ogyiSaiRIfvg+F9foxuneHl2R/D/2Iy7pvd3Yoi4Kf6/MBdowekPVezGP4/Kbcw==}
+    engines: {node: '>=14.*'}
+    cpu: [x64]
+    os: [darwin]
+    requiresBuild: true
+    dev: true
+    optional: true
+
+  /@biomejs/cli-linux-arm64-musl@1.5.0:
+    resolution: {integrity: sha512-+1B3J8tWLTOvP3+00Cap+XhEXMvxwCHvVfuywUsB7Sqd66NWic3wKJuGbGcS3PuCWtGuIFsiQMNAGqiOXG4uBQ==}
+    engines: {node: '>=14.*'}
+    cpu: [arm64]
+    os: [linux]
+    requiresBuild: true
+    dev: true
+    optional: true
+
+  /@biomejs/cli-linux-arm64@1.5.0:
+    resolution: {integrity: sha512-RiecxG71E1jnqiJZ3FaikVBDRkk2ohIxBo0O4o68g87y6Hug//G0S83sj6Wqyn8DgKMCRWQg+XYMgk5CwLVowA==}
+    engines: {node: '>=14.*'}
+    cpu: [arm64]
+    os: [linux]
+    requiresBuild: true
+    dev: true
+    optional: true
+
+  /@biomejs/cli-linux-x64-musl@1.5.0:
+    resolution: {integrity: sha512-4S2rLluc0WT+XTbLTgcm9+5EEFwJmoGiUEzR6N0P2sIjZD8c5KNf9Ou46BP1Pdg5AgqV+IIClGPK1I80ApSh1Q==}
+    engines: {node: '>=14.*'}
+    cpu: [x64]
+    os: [linux]
+    requiresBuild: true
+    dev: true
+    optional: true
+
+  /@biomejs/cli-linux-x64@1.5.0:
+    resolution: {integrity: sha512-TlTsG+ptSmnDTUsAAYsXyGOXMcFiF8SiwhPdj4YsNkJRgx9M2curEVcTVm66FINIPK6VJTUcEDahFlx3NPUOzA==}
+    engines: {node: '>=14.*'}
+    cpu: [x64]
+    os: [linux]
+    requiresBuild: true
+    dev: true
+    optional: true
+
+  /@biomejs/cli-win32-arm64@1.5.0:
+    resolution: {integrity: sha512-sWOi1SR+YqJuXElBncGRnWBR7IN7ni6GQY4Zm/vTpP6nVA0dX5C301eQUW1N/VnFQb6fyrJTcBslDUKyemsN/g==}
+    engines: {node: '>=14.*'}
+    cpu: [arm64]
+    os: [win32]
+    requiresBuild: true
+    dev: true
+    optional: true
+
+  /@biomejs/cli-win32-x64@1.5.0:
+    resolution: {integrity: sha512-OoqgUXyzmRwX466bklOsWS7WdcvWtBuxF94DXATNe7bUiBa2tlW8QX7VVZvPnMKH57E5J619AkB3b5fhzyUhXA==}
+    engines: {node: '>=14.*'}
+    cpu: [x64]
+    os: [win32]
+    requiresBuild: true
+    dev: true
+    optional: true
 
   /@emotion/babel-plugin@11.11.0:
     resolution: {integrity: sha512-m4HEDZleaaCH+XgDDsPF15Ht6wTLsgDTeR3WYj9Q/k76JtWhrJjcP4+/XlG8LGT/Rol9qUfOIztXeA84ATpqPQ==}

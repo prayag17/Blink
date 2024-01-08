@@ -1,16 +1,16 @@
 /** @format */
 
 import { create } from "zustand";
+import { version } from "../../../package.json";
 import { getAllServers, getDefaultServer, getServer } from "../storage/servers";
 import { getUser } from "../storage/user";
-import { version } from "../../../package.json";
 /**
  * Central Store controls the base state required by the app
  */
 export const useCentralStore = create(() => ({
 	defaultServerOnDisk: async () => await getDefaultServer(),
 	defaultServerInfoOnDisk: async () => {
-		let a = await getDefaultServer();
+		const a = await getDefaultServer();
 		return await getServer(a);
 	},
 	allServersOnDisk: async () => getAllServers(),

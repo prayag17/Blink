@@ -6,7 +6,7 @@ import { mdiBookMusic } from "@mdi/js";
 export const MdiBookMusic = (props) => {
 	return (
 		<SvgIcon {...props}>
-			<path d={mdiBookMusic}></path>
+			<path d={mdiBookMusic} />
 		</SvgIcon>
 	);
 };

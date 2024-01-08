@@ -1,9 +1,9 @@
+import Box from "@mui/material/Box";
+import Paper from "@mui/material/Paper";
+import Skeleton from "@mui/material/Skeleton";
+import Typography from "@mui/material/Typography";
 /** @format */
 import React from "react";
-import Skeleton from "@mui/material/Skeleton";
-import Paper from "@mui/material/Paper";
-import Box from "@mui/material/Box";
-import Typography from "@mui/material/Typography";
 import { theme } from "../../theme";
 export const CarouselSkeleton = () => {
 	return (
@@ -26,7 +26,7 @@ export const CarouselSkeleton = () => {
 						sx={{ fontSize: "8rem" }}
 						width={300}
 						animation="wave"
-					></Skeleton>
+					/>
 				</Typography>
 				<Typography variant="p" className="hero-carousel-text">
 					<Skeleton
@@ -34,7 +34,7 @@ export const CarouselSkeleton = () => {
 						sx={{ fontSize: "3rem" }}
 						width={400}
 						animation="wave"
-					></Skeleton>
+					/>
 				</Typography>
 				<Typography variant="p" className="hero-carousel-text">
 					<Skeleton
@@ -42,7 +42,7 @@ export const CarouselSkeleton = () => {
 						sx={{ fontSize: "3rem" }}
 						width={400}
 						animation="wave"
-					></Skeleton>
+					/>
 				</Typography>
 			</div>
 		</Paper>

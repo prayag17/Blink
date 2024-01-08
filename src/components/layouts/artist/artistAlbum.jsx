@@ -1,26 +1,26 @@
 /** @format */
 import React, { useState } from "react";
 
-import Paper from "@mui/material/Paper";
-import Typography from "@mui/material/Typography";
-import Stack from "@mui/material/Stack";
 import MuiLink from "@mui/material/Link";
+import Paper from "@mui/material/Paper";
+import Stack from "@mui/material/Stack";
+import Typography from "@mui/material/Typography";
 
 import { Link } from "react-router-dom";
 
-import { useQuery } from "@tanstack/react-query";
 import { getItemsApi } from "@jellyfin/sdk/lib/utils/api/items-api";
+import { useQuery } from "@tanstack/react-query";
 
 import { getRuntimeMusic } from "../../../utils/date/time";
 
-import { MdiClockOutline } from "../../icons/mdiClockOutline";
 import { MdiAlbum } from "../../icons/mdiAlbum";
+import { MdiClockOutline } from "../../icons/mdiClockOutline";
 
-import "./albumArtist.scss";
-import { useAudioPlayback } from "../../../utils/store/audioPlayback";
-import LikeButton from "../../buttons/likeButton";
 import { SortOrder } from "@jellyfin/sdk/lib/generated-client";
 import { useApi } from "../../../utils/store/api";
+import { useAudioPlayback } from "../../../utils/store/audioPlayback";
+import LikeButton from "../../buttons/likeButton";
+import "./albumArtist.scss";
 
 export const ArtistAlbum = ({ user, album, boxProps }) => {
 	const [api] = useApi((state) => [state.api]);
@@ -92,18 +92,12 @@ export const ArtistAlbum = ({ user, album, boxProps }) => {
 							onLoad={() => setImgLoaded(true)}
 						/>
 						<div className="album-image-icon-container">
-							<MdiAlbum
-								className="album-image-icon"
-								sx={{ fontSize: "6em" }}
-							/>
+							<MdiAlbum className="album-image-icon" sx={{ fontSize: "6em" }} />
 						</div>
 					</div>
 				)}
 				<Stack>
-					<Typography
-						variant="h5"
-						style={{ opacity: `0.6`, mb: 1 }}
-					>
+					<Typography variant="h5" style={{ opacity: "0.6", mb: 1 }}>
 						{album.ProductionYear}
 					</Typography>
 					<MuiLink
@@ -142,7 +136,7 @@ export const ArtistAlbum = ({ user, album, boxProps }) => {
 						>
 							#
 						</Typography>
-						<div></div>
+						<div />
 						<Typography
 							variant="h6"
 							style={{
@@ -159,9 +153,8 @@ export const ArtistAlbum = ({ user, album, boxProps }) => {
 							<div
 								key={track.Id}
 								className={
-									currentTrackItem.Id == track.Id &&
-									currentTrackItem.ParentId ==
-										track.ParentId
+									currentTrackItem.Id === track.Id &&
+									currentTrackItem.ParentId === track.ParentId
 										? "item-detail-album-track playing"
 										: "item-detail-album-track"
 								}
@@ -173,28 +166,18 @@ export const ArtistAlbum = ({ user, album, boxProps }) => {
 										justifySelf: "end",
 									}}
 								>
-									{track.IndexNumber
-										? track.IndexNumber
-										: "-"}
+									{track.IndexNumber ? track.IndexNumber : "-"}
 								</Typography>
 
 								<LikeButton
 									itemId={track.Id}
-									isFavorite={
-										track.UserData?.IsFavorite
-									}
-									queryKey={[
-										"artist",
-										"album",
-										album.Id,
-									]}
+									isFavorite={track.UserData?.IsFavorite}
+									queryKey={["artist", "album", album.Id]}
 									userId={user.Id}
 									itemName={track.Name}
 									color={
-										currentTrackItem.Id ==
-											track.Id &&
-										currentTrackItem.ParentId ==
-											track.ParentId
+										currentTrackItem.Id === track.Id &&
+										currentTrackItem.ParentId === track.ParentId
 											? "hsl(337, 96%, 56%)"
 											: "white"
 									}
@@ -216,25 +199,21 @@ export const ArtistAlbum = ({ user, album, boxProps }) => {
 									>
 										{track.Name}
 									</Typography>
-									{track.AlbumArtist ==
-										"Various Artists" && (
+									{track.AlbumArtist === "Various Artists" && (
 										<Typography
 											variant="subtitle2"
 											style={{
 												opacity: 0.5,
 											}}
 										>
-											{track.ArtistItems.map(
-												(artist) =>
-													artist.Name,
-											).join(", ")}
+											{track.ArtistItems.map((artist) => artist.Name).join(
+												", ",
+											)}
 										</Typography>
 									)}
 								</div>
 								<Typography variant="subtitle1">
-									{getRuntimeMusic(
-										track.RunTimeTicks,
-									)}
+									{getRuntimeMusic(track.RunTimeTicks)}
 								</Typography>
 							</div>
 						);

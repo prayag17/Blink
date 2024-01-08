@@ -6,7 +6,7 @@ import { mdiEmoticonDead } from "@mdi/js";
 export const MdiEmoticonDead = (props) => {
 	return (
 		<SvgIcon {...props}>
-			<path d={mdiEmoticonDead}></path>
+			<path d={mdiEmoticonDead} />
 		</SvgIcon>
 	);
 };

@@ -7,7 +7,7 @@ import { mdiFilmstripBoxMultiple } from "@mdi/js";
 export const MdiFilmstripBoxMultiple = (props) => {
 	return (
 		<SvgIcon {...props}>
-			<path d={mdiFilmstripBoxMultiple}></path>
+			<path d={mdiFilmstripBoxMultiple} />
 		</SvgIcon>
 	);
 };

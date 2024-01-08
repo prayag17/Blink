@@ -1,11 +1,11 @@
+import PropTypes from "prop-types";
 /** @format */
 import React, { useEffect } from "react";
-import PropTypes from "prop-types";
 
 import Box from "@mui/material/Box";
 import CircularProgress from "@mui/material/CircularProgress";
-import Typography from "@mui/material/Typography";
 import Paper from "@mui/material/Paper";
+import Typography from "@mui/material/Typography";
 
 import { useParams } from "react-router-dom";
 
@@ -16,26 +16,26 @@ import {
 	ItemFields,
 	SortOrder,
 } from "@jellyfin/sdk/lib/generated-client";
+import { getItemsApi } from "@jellyfin/sdk/lib/utils/api/items-api";
+import { getLibraryApi } from "@jellyfin/sdk/lib/utils/api/library-api";
 import { getUserApi } from "@jellyfin/sdk/lib/utils/api/user-api";
 import { getUserLibraryApi } from "@jellyfin/sdk/lib/utils/api/user-library-api";
-import { getLibraryApi } from "@jellyfin/sdk/lib/utils/api/library-api";
-import { getItemsApi } from "@jellyfin/sdk/lib/utils/api/items-api";
 
 import { useQuery } from "@tanstack/react-query";
 import { MdiClockOutline } from "../../components/icons/mdiClockOutline";
 
 import { getRuntimeMusic } from "../../utils/date/time";
 
-import Hero from "../../components/layouts/item/hero";
 import { Card } from "../../components/card/card";
 import { CardScroller } from "../../components/cardScroller/cardScroller";
+import Hero from "../../components/layouts/item/hero";
 
-import "./album.module.scss";
-import { ErrorNotice } from "../../components/notices/errorNotice/errorNotice";
-import { useBackdropStore } from "../../utils/store/backdrop";
 import LikeButton from "../../components/buttons/likeButton";
-import { useAudioPlayback } from "../../utils/store/audioPlayback";
+import { ErrorNotice } from "../../components/notices/errorNotice/errorNotice";
 import { useApi } from "../../utils/store/api";
+import { useAudioPlayback } from "../../utils/store/audioPlayback";
+import { useBackdropStore } from "../../utils/store/backdrop";
+import "./album.module.scss";
 
 function TabPanel(props) {
 	const { children, value, index, ...other } = props;
@@ -74,7 +74,7 @@ const MusicAlbumTitlePage = () => {
 	const user = useQuery({
 		queryKey: ["user"],
 		queryFn: async () => {
-			let usr = await getUserApi(api).getCurrentUser();
+			const usr = await getUserApi(api).getCurrentUser();
 			return usr.data;
 		},
 		networkMode: "always",
@@ -99,7 +99,7 @@ const MusicAlbumTitlePage = () => {
 	const similarItems = useQuery({
 		queryKey: ["item", id, "similarItem"],
 		queryFn: async () => {
-			let result = await getLibraryApi(api).getSimilarAlbums({
+			const result = await getLibraryApi(api).getSimilarAlbums({
 				userId: user.data.Id,
 				itemId: item.data.Id,
 				limit: 16,
@@ -122,7 +122,7 @@ const MusicAlbumTitlePage = () => {
 			});
 			return result.data;
 		},
-		enabled: item.isSuccess && item.data.Type == BaseItemKind.MusicAlbum,
+		enabled: item.isSuccess && item.data.Type === BaseItemKind.MusicAlbum,
 		networkMode: "always",
 	});
 
@@ -227,8 +227,7 @@ const MusicAlbumTitlePage = () => {
 								className="item-detail-album-track"
 								style={{
 									padding: "0.75em 0 ",
-									background:
-										"hsl(256, 100%, 4%, 60%)",
+									background: "hsl(256, 100%, 4%, 60%)",
 								}}
 							>
 								<Typography
@@ -240,7 +239,7 @@ const MusicAlbumTitlePage = () => {
 								>
 									#
 								</Typography>
-								<div></div>
+								<div />
 								<Typography
 									variant="h6"
 									style={{
@@ -252,110 +251,76 @@ const MusicAlbumTitlePage = () => {
 								</Typography>
 								<MdiClockOutline />
 							</div>
-							{musicTracks.data.Items.map(
-								(track, index) => {
-									return (
+							{musicTracks.data.Items.map((track, index) => {
+								return (
+									<div
+										key={track.Id}
+										className={
+											currentTrackItem.Id === track.Id &&
+											currentTrackItem.ParentId === track.ParentId
+												? "item-detail-album-track playing"
+												: "item-detail-album-track"
+										}
+										onClick={() => playTrack(index)}
+									>
+										<Typography
+											variant="subtitle1"
+											style={{
+												justifySelf: "end",
+											}}
+										>
+											{track.IndexNumber ? track.IndexNumber : "-"}
+										</Typography>
+
+										<LikeButton
+											itemId={track.Id}
+											isFavorite={track.UserData?.IsFavorite}
+											queryKey={["item", id, "musicTracks"]}
+											userId={user.data.Id}
+											itemName={track.Name}
+											color={
+												currentTrackItem.Id === track.Id &&
+												currentTrackItem.ParentId === track.ParentId
+													? "hsl(337, 96%, 56%)"
+													: "white"
+											}
+										/>
+
 										<div
-											key={track.Id}
-											className={
-												currentTrackItem.Id ==
-													track.Id &&
-												currentTrackItem.ParentId ==
-													track.ParentId
-													? "item-detail-album-track playing"
-													: "item-detail-album-track"
-											}
-											onClick={() =>
-												playTrack(index)
-											}
+											style={{
+												display: "flex",
+												flexDirection: "column",
+												width: "100%",
+											}}
 										>
 											<Typography
 												variant="subtitle1"
 												style={{
-													justifySelf:
-														"end",
+													justifySelf: "start",
 												}}
+												fontWeight={500}
 											>
-												{!!track.IndexNumber
-													? track.IndexNumber
-													: "-"}
+												{track.Name}
 											</Typography>
-
-											<LikeButton
-												itemId={track.Id}
-												isFavorite={
-													track.UserData
-														?.IsFavorite
-												}
-												queryKey={[
-													"item",
-													id,
-													"musicTracks",
-												]}
-												userId={
-													user.data.Id
-												}
-												itemName={
-													track.Name
-												}
-												color={
-													currentTrackItem.Id ==
-														track.Id &&
-													currentTrackItem.ParentId ==
-														track.ParentId
-														? "hsl(337, 96%, 56%)"
-														: "white"
-												}
-											/>
-
-											<div
-												style={{
-													display: "flex",
-													flexDirection:
-														"column",
-													width: "100%",
-												}}
-											>
+											{track.AlbumArtist === "Various Artists" && (
 												<Typography
-													variant="subtitle1"
+													variant="subtitle2"
 													style={{
-														justifySelf:
-															"start",
+														opacity: 0.5,
 													}}
-													fontWeight={
-														500
-													}
 												>
-													{track.Name}
+													{track.ArtistItems.map((artist) => artist.Name).join(
+														", ",
+													)}
 												</Typography>
-												{track.AlbumArtist ==
-													"Various Artists" && (
-													<Typography
-														variant="subtitle2"
-														style={{
-															opacity: 0.5,
-														}}
-													>
-														{track.ArtistItems.map(
-															(
-																artist,
-															) =>
-																artist.Name,
-														).join(
-															", ",
-														)}
-													</Typography>
-												)}
-											</div>
-											<Typography variant="subtitle1">
-												{getRuntimeMusic(
-													track.RunTimeTicks,
-												)}
-											</Typography>
+											)}
 										</div>
-									);
-								},
-							)}
+										<Typography variant="subtitle1">
+											{getRuntimeMusic(track.RunTimeTicks)}
+										</Typography>
+									</div>
+								);
+							})}
 						</Paper>
 					)
 				)}
@@ -373,58 +338,36 @@ const MusicAlbumTitlePage = () => {
 									item={similar}
 									seriesId={similar.SeriesId}
 									cardTitle={
-										similar.Type ==
-										BaseItemKind.Episode
+										similar.Type === BaseItemKind.Episode
 											? similar.SeriesName
 											: similar.Name
 									}
 									imageType={"Primary"}
 									cardCaption={
-										similar.Type ==
-										BaseItemKind.Episode
+										similar.Type === BaseItemKind.Episode
 											? `S${similar.ParentIndexNumber}:E${similar.IndexNumber} - ${similar.Name}`
-											: similar.Type ==
-											  BaseItemKind.Series
-											? `${
-													similar.ProductionYear
-											  } - ${
-													!!similar.EndDate
-														? new Date(
-																similar.EndDate,
-														  ).toLocaleString(
-																[],
-																{
+											: similar.Type === BaseItemKind.Series
+											  ? `${similar.ProductionYear} - ${
+														similar.EndDate
+															? new Date(similar.EndDate).toLocaleString([], {
 																	year: "numeric",
-																},
-														  )
-														: "Present"
-											  }`
-											: similar.ProductionYear
+															  })
+															: "Present"
+												  }`
+											  : similar.ProductionYear
 									}
 									cardType={
-										similar.Type ==
-											BaseItemKind.MusicAlbum ||
-										similar.Type ==
-											BaseItemKind.Audio
+										similar.Type === BaseItemKind.MusicAlbum ||
+										similar.Type === BaseItemKind.Audio
 											? "square"
 											: "portrait"
 									}
-									queryKey={[
-										"item",
-										id,
-										"similarItem",
-									]}
+									queryKey={["item", id, "similarItem"]}
 									userId={user.data.Id}
 									imageBlurhash={
-										!!similar.ImageBlurHashes
-											?.Primary &&
-										similar.ImageBlurHashes
-											?.Primary[
-											Object.keys(
-												similar
-													.ImageBlurHashes
-													.Primary,
-											)[0]
+										!!similar.ImageBlurHashes?.Primary &&
+										similar.ImageBlurHashes?.Primary[
+											Object.keys(similar.ImageBlurHashes.Primary)[0]
 										]
 									}
 								/>

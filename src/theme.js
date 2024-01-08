@@ -3,8 +3,8 @@
 import { createTheme } from "@mui/material/styles";
 import {
 	clrAccentDefault,
-	clrBackgroundDefault,
 	clrBackgroundDark,
+	clrBackgroundDefault,
 	clrBackgroundLight,
 	clrSecondaryDefault,
 } from "./palette.module.scss";

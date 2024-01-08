@@ -1,3 +1,4 @@
+import PropTypes from "prop-types";
 /** @format */
 import React, { useState, useLayoutEffect } from "react";
 import PropTypes from "prop-types";
@@ -24,14 +25,15 @@ import {
 	ItemFields,
 	MediaStreamType,
 } from "@jellyfin/sdk/lib/generated-client";
+import { getItemsApi } from "@jellyfin/sdk/lib/utils/api/items-api";
 import { getUserApi } from "@jellyfin/sdk/lib/utils/api/user-api";
 import { getUserLibraryApi } from "@jellyfin/sdk/lib/utils/api/user-library-api";
-import { getItemsApi } from "@jellyfin/sdk/lib/utils/api/items-api";
 
 import { useQuery } from "@tanstack/react-query";
 
 import { Card } from "../../components/card/card";
 import { CardScroller } from "../../components/cardScroller/cardScroller";
+import Hero from "../../components/layouts/item/hero";
 
 import "./episode.module.scss";
 import { ErrorNotice } from "../../components/notices/errorNotice/errorNotice";
@@ -74,7 +76,7 @@ const EpisodeTitlePage = () => {
 	const user = useQuery({
 		queryKey: ["user"],
 		queryFn: async () => {
-			let usr = await getUserApi(api).getCurrentUser();
+			const usr = await getUserApi(api).getCurrentUser();
 			return usr.data;
 		},
 		networkMode: "always",
@@ -117,19 +119,19 @@ const EpisodeTitlePage = () => {
 	const [subtitleTracks, setSubtitleTracks] = useState([]);
 
 	const filterMediaStreamVideo = (source) => {
-		if (source.Type == MediaStreamType.Video) {
+		if (source.Type === MediaStreamType.Video) {
 			return true;
 		}
 		return false;
 	};
 	const filterMediaStreamAudio = (source) => {
-		if (source.Type == MediaStreamType.Audio) {
+		if (source.Type === MediaStreamType.Audio) {
 			return true;
 		}
 		return false;
 	};
 	const filterMediaStreamSubtitle = (source) => {
-		if (source.Type == MediaStreamType.Subtitle) {
+		if (source.Type === MediaStreamType.Subtitle) {
 			return true;
 		}
 		return false;
@@ -141,15 +143,9 @@ const EpisodeTitlePage = () => {
 
 	useLayoutEffect(() => {
 		if (item.isSuccess && !!item.data.MediaStreams) {
-			let videos = item.data.MediaStreams.filter(
-				filterMediaStreamVideo,
-			);
-			let audios = item.data.MediaStreams.filter(
-				filterMediaStreamAudio,
-			);
-			let subs = item.data.MediaStreams.filter(
-				filterMediaStreamSubtitle,
-			);
+			const videos = item.data.MediaStreams.filter(filterMediaStreamVideo);
+			const audios = item.data.MediaStreams.filter(filterMediaStreamAudio);
+			const subs = item.data.MediaStreams.filter(filterMediaStreamSubtitle);
 
 			setSelectedVideoTrack(videos[0]?.Index ?? null);
 			setSelectedAudioTrack(audios[0]?.Index ?? null);
@@ -174,13 +170,9 @@ const EpisodeTitlePage = () => {
 					: `${api.basePath}/Items/${item.data.Id}/Images/Backdrop`,
 				item.data.Id,
 			);
-			let direTp = item.data.People.filter(
-				(itm) => itm.Type == "Director",
-			);
+			const direTp = item.data.People.filter((itm) => itm.Type === "Director");
 			setDirectors(direTp);
-			let writeTp = item.data.People.filter(
-				(itm) => itm.Type == "Writer",
-			);
+			const writeTp = item.data.People.filter((itm) => itm.Type === "Writer");
 			setWriters(writeTp);
 			let producerTp = item.data.People.filter(
 				(itm) => itm.Type == "Producer",
@@ -878,43 +870,26 @@ const EpisodeTitlePage = () => {
 							displayCards={4}
 							disableDecoration
 						>
-							{upcomingEpisodes.data.Items.map(
-								(episode) => {
-									return (
-										<Card
-											key={episode.Id}
-											item={episode}
-											cardTitle={
-												episode.SeriesName
-											}
-											imageType="Primary"
-											cardCaption={`S${episode.ParentIndexNumber}:E${episode.IndexNumber} - ${episode.Name}`}
-											cardType="thumb"
-											queryKey={[
-												"item",
-												id,
-												"episode",
-												"upcomingEpisodes",
-											]}
-											userId={user.data.Id}
-											imageBlurhash={
-												!!episode
-													.ImageBlurHashes
-													?.Primary &&
-												episode
-													.ImageBlurHashes
-													?.Primary[
-													Object.keys(
-														episode
-															.ImageBlurHashes
-															.Primary,
-													)[0]
-												]
-											}
-										></Card>
-									);
-								},
-							)}
+							{upcomingEpisodes.data.Items.map((episode) => {
+								return (
+									<Card
+										key={episode.Id}
+										item={episode}
+										cardTitle={episode.SeriesName}
+										imageType="Primary"
+										cardCaption={`S${episode.ParentIndexNumber}:E${episode.IndexNumber} - ${episode.Name}`}
+										cardType="thumb"
+										queryKey={["item", id, "episode", "upcomingEpisodes"]}
+										userId={user.data.Id}
+										imageBlurhash={
+											!!episode.ImageBlurHashes?.Primary &&
+											episode.ImageBlurHashes?.Primary[
+												Object.keys(episode.ImageBlurHashes.Primary)[0]
+											]
+										}
+									/>
+								);
+							})}
 						</CardScroller>
 					)}
 				<div className="item-detail-cast">

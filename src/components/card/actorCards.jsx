@@ -10,8 +10,8 @@ import { Blurhash } from "react-blurhash";
 
 import { MdiAccountTie } from "../icons/mdiAccountTie";
 
-import "./card.module.scss";
 import { useApi } from "../../utils/store/api";
+import "./card.module.scss";
 
 /**
  * @typedef {Object} Props
@@ -70,9 +70,7 @@ export const ActorCard = ({
 						/>
 					)}
 					<div className="card-image-icon-container">
-						<div className="material-symbols-rounded">
-							person
-						</div>
+						<div className="material-symbols-rounded">person</div>
 					</div>
 					<img
 						src={api.getItemImageUrl(

@@ -3,38 +3,38 @@ import React, { useEffect, useRef, useState } from "react";
 
 import { motion } from "framer-motion";
 
+import CircularProgress from "@mui/material/CircularProgress";
 import Fab from "@mui/material/Fab";
 import IconButton from "@mui/material/IconButton";
-import Typography from "@mui/material/Typography";
-import CircularProgress from "@mui/material/CircularProgress";
-import Slider from "@mui/material/Slider";
-import Popper from "@mui/material/Popper";
 import Paper from "@mui/material/Paper";
+import Popper from "@mui/material/Popper";
+import Slider from "@mui/material/Slider";
+import Typography from "@mui/material/Typography";
 
 import WaveSurfer from "wavesurfer.js";
 
 import { useAudioPlayback } from "../../../utils/store/audioPlayback";
 
-import "./audioPlayer.module.scss";
-import { MdiPlay } from "../../icons/mdiPlay";
-import { MdiPause } from "../../icons/mdiPause";
 import { AnimatePresence } from "framer-motion";
+import { MdiPause } from "../../icons/mdiPause";
+import { MdiPlay } from "../../icons/mdiPlay";
+import "./audioPlayer.module.scss";
 
-import { getRuntimeMusic, secToTicks } from "../../../utils/date/time";
-import { MdiSkipNext } from "../../icons/mdiSkipNext";
-import { MdiSkipPrevious } from "../../icons/mdiSkipPrevious";
-import { useQuery } from "@tanstack/react-query";
 import { getUserApi } from "@jellyfin/sdk/lib/utils/api/user-api";
+import { useQuery } from "@tanstack/react-query";
+import { getRuntimeMusic, secToTicks } from "../../../utils/date/time";
 import { MdiClose } from "../../icons/mdiClose";
 import { MdiMusic } from "../../icons/mdiMusic";
+import { MdiSkipNext } from "../../icons/mdiSkipNext";
+import { MdiSkipPrevious } from "../../icons/mdiSkipPrevious";
 
-import { theme } from "../../../theme";
 import { getPlaystateApi } from "@jellyfin/sdk/lib/utils/api/playstate-api";
+import { theme } from "../../../theme";
+import { useApi } from "../../../utils/store/api";
+import { MdiPlaylistMusicOutline } from "../../icons/mdiPlaylistMusicOutline";
 import { MdiVolumeHigh } from "../../icons/mdiVolumeHigh";
 import { MdiVolumeOff } from "../../icons/mdiVolumeOff";
-import { MdiPlaylistMusicOutline } from "../../icons/mdiPlaylistMusicOutline";
 import MusicTrack from "../../musicTrack";
-import { useApi } from "../../../utils/store/api";
 
 const AudioPlayer = () => {
 	const [api] = useApi((state) => [state.api]);
@@ -69,7 +69,7 @@ const AudioPlayer = () => {
 	const user = useQuery({
 		queryKey: ["user"],
 		queryFn: async () => {
-			let usr = await getUserApi(api).getCurrentUser();
+			const usr = await getUserApi(api).getCurrentUser();
 			return usr.data;
 		},
 		networkMode: "always",
@@ -134,16 +134,14 @@ const AudioPlayer = () => {
 			});
 			waveSurfer.on("finish", () => {
 				setPlaying(false);
-				if (currentTrack != tracks.length - 1) {
+				if (currentTrack !== tracks.length - 1) {
 					setCurrentTrack(currentTrack + 1);
 					setAudioUrl(
 						`${api.basePath}/Audio/${
 							tracks[currentTrack + 1].Id
-						}/universal?deviceId=${
-							api.deviceInfo.id
-						}&userId=${user.data.Id}&api_key=${
-							api.accessToken
-						}`,
+						}/universal?deviceId=${api.deviceInfo.id}&userId=${
+							user.data.Id
+						}&api_key=${api.accessToken}`,
 					);
 					setAudioItem(tracks[currentTrack + 1]);
 					setShowWaveform(false);
@@ -212,7 +210,7 @@ const AudioPlayer = () => {
 						transform: "translateY(100%)",
 					}}
 					style={{
-						width: `100%`,
+						width: "100%",
 					}}
 					transition={{
 						duration: 0.2,
@@ -237,8 +235,7 @@ const AudioPlayer = () => {
 							<img
 								className="audio-player-image"
 								src={api.getItemImageUrl(
-									Object.keys(item.ImageTags)
-										.length == 0
+									Object.keys(item.ImageTags).length === 0
 										? item.AlbumId
 										: item.Id,
 									"Primary",
@@ -259,7 +256,7 @@ const AudioPlayer = () => {
 								}}
 								fontWeight={500}
 							>
-								{!!item.IndexNumber
+								{item.IndexNumber
 									? `${item.IndexNumber}. ${item.Name}`
 									: item.Name}
 							</Typography>
@@ -271,10 +268,7 @@ const AudioPlayer = () => {
 								noWrap
 								fontWeight={400}
 							>
-								by{" "}
-								{item.Artists.map(
-									(artist) => artist,
-								).join(",")}
+								by {item.Artists.map((artist) => artist).join(",")}
 							</Typography>
 						</div>
 					</motion.div>
@@ -282,11 +276,9 @@ const AudioPlayer = () => {
 						<div style={{ display: "flex", gap: "1em" }}>
 							<IconButton
 								onClick={handlePrevious}
-								disabled={currentTrack == 0}
+								disabled={currentTrack === 0}
 							>
-								<div className="material-symbols-rounded">
-									skip_previous
-								</div>
+								<div className="material-symbols-rounded">skip_previous</div>
 							</IconButton>
 							<div
 								style={{
@@ -305,31 +297,22 @@ const AudioPlayer = () => {
 										transition: "opacity 500ms",
 									}}
 								/>
-								<Fab
-									size="small"
-									onClick={handlePlayPause}
-								>
+								<Fab size="small" onClick={handlePlayPause}>
 									<div
 										className="material-symbols-rounded"
 										style={{
 											fontSize: "2em",
 										}}
 									>
-										{playing
-											? "pause"
-											: "play_arrow"}
+										{playing ? "pause" : "play_arrow"}
 									</div>
 								</Fab>
 							</div>
 							<IconButton
 								onClick={handleNext}
-								disabled={
-									tracks.length - 1 == currentTrack
-								}
+								disabled={tracks.length - 1 === currentTrack}
 							>
-								<div className="material-symbols-rounded">
-									skip_next
-								</div>
+								<div className="material-symbols-rounded">skip_next</div>
 							</IconButton>
 						</div>
 						<div
@@ -348,15 +331,13 @@ const AudioPlayer = () => {
 									opacity: 0.8,
 								}}
 							>
-								{getRuntimeMusic(
-									secToTicks(currentTime),
-								)}
+								{getRuntimeMusic(secToTicks(currentTime))}
 							</Typography>
 							<div
 								id="waveform"
 								ref={waveSurferContainerRef}
 								data-show={Boolean(showWaveform)}
-							></div>
+							/>
 							<Typography
 								variant="subtitle2"
 								fontWeight={300}
@@ -405,9 +386,7 @@ const AudioPlayer = () => {
 							</Paper>
 						</Popper>
 						<IconButton onClick={handleOpenQueue} disabled>
-							<div className="material-symbols-rounded">
-								queue_music
-							</div>
+							<div className="material-symbols-rounded">queue_music</div>
 						</IconButton>
 						<IconButton
 							onClick={(e) => {
@@ -422,13 +401,9 @@ const AudioPlayer = () => {
 							value={isMuted ? 0 : volume * 100}
 							step={1}
 							max={100}
-							onChange={(e, newVal) =>
-								setVolume(newVal / 100)
-							}
+							onChange={(e, newVal) => setVolume(newVal / 100)}
 							valueLabelDisplay="auto"
-							valueLabelFormat={(value) =>
-								Math.floor(value)
-							}
+							valueLabelFormat={(value) => Math.floor(value)}
 							size="small"
 							sx={{
 								mr: 1,
@@ -442,16 +417,13 @@ const AudioPlayer = () => {
 									padding: 1,
 									borderRadius: "10px",
 									border: "1px solid rgb(255 255 255 / 0.15)",
-									boxShadow:
-										"0 0 10px rgb(0 0 0 / 0.4) ",
-									transform:
-										"translatey(-120%) scale(0)",
+									boxShadow: "0 0 10px rgb(0 0 0 / 0.4) ",
+									transform: "translatey(-120%) scale(0)",
 									"&:before": {
 										display: "none",
 									},
 									"&.MuiSlider-valueLabelOpen": {
-										transform:
-											"translateY(-120%) scale(1)",
+										transform: "translateY(-120%) scale(1)",
 									},
 									"& > *": {
 										transform: "rotate(0deg)",
@@ -460,9 +432,7 @@ const AudioPlayer = () => {
 							}}
 						/>
 						<IconButton onClick={resetPlayer}>
-							<div className="material-symbols-rounded">
-								close
-							</div>
+							<div className="material-symbols-rounded">close</div>
 						</IconButton>
 					</div>
 				</motion.div>

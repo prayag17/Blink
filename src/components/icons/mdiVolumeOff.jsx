@@ -7,7 +7,7 @@ import { mdiVolumeOff } from "@mdi/js";
 export const MdiVolumeOff = (props) => {
 	return (
 		<SvgIcon {...props}>
-			<path d={mdiVolumeOff}></path>
+			<path d={mdiVolumeOff} />
 		</SvgIcon>
 	);
 };

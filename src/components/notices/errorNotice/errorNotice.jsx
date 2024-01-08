@@ -1,9 +1,9 @@
+import Box from "@mui/material/Box";
+import Button from "@mui/material/Button";
+import Typography from "@mui/material/Typography";
+import { red } from "@mui/material/colors";
 /** @format */
 import React from "react";
-import Box from "@mui/material/Box";
-import Typography from "@mui/material/Typography";
-import Button from "@mui/material/Button";
-import { red } from "@mui/material/colors";
 
 export const ErrorNotice = ({ error, resetErrorBoundary }) => {
 	console.error(error);
@@ -25,8 +25,7 @@ export const ErrorNotice = ({ error, resetErrorBoundary }) => {
 					fontSize: "10em",
 					color: red[800],
 					"--clr": "rgb(198 40 40 / 30%)",
-					fontVariationSettings:
-						'"FILL" 1, "wght" 400, "GRAD" 25, "opsz" 60',
+					fontVariationSettings: '"FILL" 1, "wght" 400, "GRAD" 25, "opsz" 60',
 				}}
 			>
 				error
@@ -68,8 +67,8 @@ export const ErrorNotice = ({ error, resetErrorBoundary }) => {
 					marginTop: "1em",
 				}}
 			>
-				Note: You need to click on CLOSE button if you change the
-				page in order to close this error message
+				Note: You need to click on CLOSE button if you change the page in order
+				to close this error message
 			</Typography>
 		</Box>
 	);

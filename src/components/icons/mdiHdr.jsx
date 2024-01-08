@@ -7,7 +7,7 @@ import { mdiHdr } from "@mdi/js";
 export const MdiHdr = (props) => {
 	return (
 		<SvgIcon {...props}>
-			<path d={mdiHdr}></path>
+			<path d={mdiHdr} />
 		</SvgIcon>
 	);
 };

@@ -1,44 +1,44 @@
 /** @format */
 
-import React, { useState } from "react";
 import { useMutation, useQuery } from "@tanstack/react-query";
+import React, { useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { EventEmitter as event } from "../../eventEmitter.js";
 
 import { saveUser } from "../../utils/storage/user";
 
+import { MdiChevronRight } from "../../components/icons/mdiChevronRight.jsx";
 // import Icon from "mdi-material-ui";
 import { MdiEyeOffOutline } from "../../components/icons/mdiEyeOffOutline.jsx";
 import { MdiEyeOutline } from "../../components/icons/mdiEyeOutline.jsx";
-import { MdiChevronRight } from "../../components/icons/mdiChevronRight.jsx";
 
-import Container from "@mui/material/Container";
-import Grid from "@mui/material/Unstable_Grid2";
-import Typography from "@mui/material/Typography";
-import OutlinedInput from "@mui/material/OutlinedInput";
-import FormControl from "@mui/material/FormControl";
-import InputAdornment from "@mui/material/InputAdornment";
-import InputLabel from "@mui/material/InputLabel";
-import IconButton from "@mui/material/IconButton";
 import LoadingButton from "@mui/lab/LoadingButton";
 import Button from "@mui/material/Button";
-import LinearProgress from "@mui/material/LinearProgress";
-import { useSnackbar } from "notistack";
-import FormGroup from "@mui/material/FormGroup";
-import FormControlLabel from "@mui/material/FormControlLabel";
 import Checkbox from "@mui/material/Checkbox";
+import Container from "@mui/material/Container";
+import FormControl from "@mui/material/FormControl";
+import FormControlLabel from "@mui/material/FormControlLabel";
+import FormGroup from "@mui/material/FormGroup";
+import IconButton from "@mui/material/IconButton";
+import InputAdornment from "@mui/material/InputAdornment";
+import InputLabel from "@mui/material/InputLabel";
+import LinearProgress from "@mui/material/LinearProgress";
+import OutlinedInput from "@mui/material/OutlinedInput";
+import Typography from "@mui/material/Typography";
+import Grid from "@mui/material/Unstable_Grid2";
+import { useSnackbar } from "notistack";
 
+import { AppBarBackOnly } from "../../components/appBar/backOnly.jsx";
 import { AvatarImage } from "../../components/avatar/avatar.jsx";
 import { Card } from "../../components/card/card.jsx";
-import { AppBarBackOnly } from "../../components/appBar/backOnly.jsx";
 
-import { getUserApi } from "@jellyfin/sdk/lib/utils/api/user-api";
 import { getBrandingApi } from "@jellyfin/sdk/lib/utils/api/branding-api";
 import { getQuickConnectApi } from "@jellyfin/sdk/lib/utils/api/quick-connect-api";
+import { getUserApi } from "@jellyfin/sdk/lib/utils/api/user-api";
 
-import "./login.module.scss";
 import { ErrorNotice } from "../../components/notices/errorNotice/errorNotice.jsx";
 import { useApi } from "../../utils/store/api";
+import "./login.module.scss";
 
 export const LoginWithImage = () => {
 	const { userName, userId } = useParams();
@@ -87,12 +87,12 @@ export const LoginWithImage = () => {
 		setLoading(true);
 		const user = await authUser();
 		sessionStorage.setItem("accessToken", user.data.AccessToken);
-		if (rememberMe == true) {
+		if (rememberMe === true) {
 			saveUser(userName, password.password);
 		}
 		event.emit("set-api-accessToken", api.basePath);
 		setLoading(false);
-		navigate(`/home`);
+		navigate("/home");
 	};
 
 	const handleCheckRememberMe = (event) => {
@@ -143,38 +143,24 @@ export const LoginWithImage = () => {
 						mb={1}
 					>
 						<AvatarImage userId={userId} />
-						<Typography
-							color="textPrimary"
-							textAlign="center"
-							variant="h4"
-						>
+						<Typography color="textPrimary" textAlign="center" variant="h4">
 							{userName}
 						</Typography>
 					</Grid>
 					<Grid minWidth="100%">
 						<FormGroup>
 							<FormControl variant="outlined" fullWidth>
-								<InputLabel htmlFor="user-password">
-									Password:
-								</InputLabel>
+								<InputLabel htmlFor="user-password">Password:</InputLabel>
 								<OutlinedInput
 									id="user-password"
-									type={
-										password.showpass
-											? "text"
-											: "password"
-									}
+									type={password.showpass ? "text" : "password"}
 									variant="outlined"
-									onChange={handlePassword(
-										"password",
-									)}
+									onChange={handlePassword("password")}
 									label="Password:"
 									endAdornment={
 										<InputAdornment position="end">
 											<IconButton
-												onClick={
-													handleShowPassword
-												}
+												onClick={handleShowPassword}
 												aria-label="toggle password visibility"
 											>
 												{password.showpass ? (
@@ -191,9 +177,7 @@ export const LoginWithImage = () => {
 								control={
 									<Checkbox
 										checked={rememberMe}
-										onChange={
-											handleCheckRememberMe
-										}
+										onChange={handleCheckRememberMe}
 									/>
 								}
 								label="Remember me"
@@ -313,9 +297,7 @@ export const UserLogin = () => {
 										itemType="User"
 										cardType="square"
 										onClick={() =>
-											navigate(
-												`/login/withImg/${item.Name}/${item.Id}/`,
-											)
+											navigate(`/login/withImg/${item.Name}/${item.Id}/`)
 										}
 										overrideIcon="User"
 										imageType="Primary"
@@ -419,13 +401,13 @@ export const UserLoginManual = () => {
 		setLoading(true);
 		const user = await authUser();
 		sessionStorage.setItem("accessToken", user.data.AccessToken);
-		if (rememberMe == true) {
+		if (rememberMe === true) {
 			saveUser(userName, password.password);
 		}
 		event.emit("set-api-accessToken", api.basePath);
 		// setAccessToken(user.data.AccessToken)
 		setLoading(false);
-		navigate(`/home`);
+		navigate("/home");
 	};
 
 	const handleCheckRememberMe = (event) => {
@@ -463,13 +445,8 @@ export const UserLoginManual = () => {
 						</Typography>
 					</Grid>
 					<Grid sx={{ width: "100%" }}>
-						<FormControl
-							sx={{ width: "100%" }}
-							variant="outlined"
-						>
-							<InputLabel htmlFor="user-name">
-								Username:
-							</InputLabel>
+						<FormControl sx={{ width: "100%" }} variant="outlined">
+							<InputLabel htmlFor="user-name">Username:</InputLabel>
 							<OutlinedInput
 								fullWidth
 								id="user-name"
@@ -482,25 +459,14 @@ export const UserLoginManual = () => {
 					</Grid>
 					<Grid sx={{ width: "100%" }}>
 						<FormGroup>
-							<FormControl
-								sx={{ width: "100%" }}
-								variant="outlined"
-							>
-								<InputLabel htmlFor="user-password">
-									Password:
-								</InputLabel>
+							<FormControl sx={{ width: "100%" }} variant="outlined">
+								<InputLabel htmlFor="user-password">Password:</InputLabel>
 								<OutlinedInput
 									fullWidth
 									id="user-password"
-									type={
-										password.showpass
-											? "text"
-											: "password"
-									}
+									type={password.showpass ? "text" : "password"}
 									variant="outlined"
-									onChange={handlePassword(
-										"password",
-									)}
+									onChange={handlePassword("password")}
 									onKeyUp={(event) => {
 										if (event.key === "Enter") {
 											handleLogin();
@@ -510,9 +476,7 @@ export const UserLoginManual = () => {
 									endAdornment={
 										<InputAdornment position="end">
 											<IconButton
-												onClick={
-													handleShowPassword
-												}
+												onClick={handleShowPassword}
 												aria-label="toggle password visibility"
 											>
 												{password.showpass ? (
@@ -529,9 +493,7 @@ export const UserLoginManual = () => {
 								control={
 									<Checkbox
 										checked={rememberMe}
-										onChange={
-											handleCheckRememberMe
-										}
+										onChange={handleCheckRememberMe}
 									/>
 								}
 								label="Remember me"
@@ -563,8 +525,7 @@ export const UserLoginManual = () => {
 					</Grid>
 					<Grid sx={{ width: "100%" }}>
 						<Typography variant="subtitle2">
-							{server.isSuccess &&
-								server.data.LoginDisclaimer}
+							{server.isSuccess && server.data.LoginDisclaimer}
 						</Typography>
 					</Grid>
 				</Grid>

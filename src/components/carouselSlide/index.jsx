@@ -4,31 +4,31 @@ import { Blurhash } from "react-blurhash";
 
 import { motion } from "framer-motion";
 
-import Paper from "@mui/material/Paper";
-import Typography from "@mui/material/Typography";
-import Stack from "@mui/material/Stack";
-import Chip from "@mui/material/Chip";
 import Button from "@mui/material/Button";
+import Chip from "@mui/material/Chip";
+import Paper from "@mui/material/Paper";
+import Stack from "@mui/material/Stack";
+import Typography from "@mui/material/Typography";
 
 import { yellow } from "@mui/material/colors";
 import ErrorBoundary from "../errorBoundary";
 
-import CarouselSlideError from "../errors/carousel";
-import { MdiStar } from "../icons/mdiStar";
-import { endsAt, getRuntime } from "../../utils/date/time";
-import { useNavigate } from "react-router-dom";
-import { MediaTypeIconCollection, getTypeIcon } from "../utils/iconsCollection";
-import { MdiChevronRight } from "../icons/mdiChevronRight";
+import { green, red } from "@mui/material/colors";
 import { useQuery } from "@tanstack/react-query";
-import { red, green } from "@mui/material/colors";
+import { useNavigate } from "react-router-dom";
+import { endsAt, getRuntime } from "../../utils/date/time";
+import CarouselSlideError from "../errors/carousel";
+import { MdiChevronRight } from "../icons/mdiChevronRight";
+import { MdiStar } from "../icons/mdiStar";
+import { MediaTypeIconCollection, getTypeIcon } from "../utils/iconsCollection";
 
+import { BaseItemKind } from "@jellyfin/sdk/lib/generated-client";
 import { getUserApi } from "@jellyfin/sdk/lib/utils/api/user-api";
+import { useApi } from "../../utils/store/api";
+import { useCarouselStore } from "../../utils/store/carousel";
 import LikeButton from "../buttons/likeButton";
 import MarkPlayedButton from "../buttons/markPlayedButton";
-import { useCarouselStore } from "../../utils/store/carousel";
 import PlayButton from "../buttons/playButton";
-import { BaseItemKind } from "@jellyfin/sdk/lib/generated-client";
-import { useApi } from "../../utils/store/api";
 
 const availableSpecialRoutes = [
 	BaseItemKind.Series,
@@ -53,7 +53,7 @@ const CarouselSlide = ({ item }) => {
 	const user = useQuery({
 		queryKey: ["user"],
 		queryFn: async () => {
-			let usr = await getUserApi(api).getCurrentUser();
+			const usr = await getUserApi(api).getCurrentUser();
 			return usr.data;
 		},
 		networkMode: "always",
@@ -69,9 +69,7 @@ const CarouselSlide = ({ item }) => {
 		}
 	};
 
-	const [animationDirection] = useCarouselStore((state) => [
-		state.direction,
-	]);
+	const [animationDirection] = useCarouselStore((state) => [state.direction]);
 
 	return (
 		<ErrorBoundary fallback={<CarouselSlideError itemName={item.Name} />}>
@@ -86,15 +84,11 @@ const CarouselSlide = ({ item }) => {
 				<div className="hero-carousel-background-container">
 					{!!item.ImageBlurHashes.Backdrop && (
 						<>
-							{Object.keys(item.ImageBlurHashes.Backdrop)
-								.length != 0 && (
+							{Object.keys(item.ImageBlurHashes.Backdrop).length !== 0 && (
 								<Blurhash
 									hash={
 										item.ImageBlurHashes.Backdrop[
-											Object.keys(
-												item.ImageBlurHashes
-													.Backdrop,
-											)[0]
+											Object.keys(item.ImageBlurHashes.Backdrop)[0]
 										]
 									}
 									// hash="LEHV6nWB2yk8pyo0adR*.7kCMdnj"
@@ -116,9 +110,7 @@ const CarouselSlide = ({ item }) => {
 								style={{
 									opacity: 0,
 								}}
-								onLoad={(e) =>
-									(e.target.style.opacity = 1)
-								}
+								onLoad={(e) => (e.target.style.opacity = 1)}
 								loading="eager"
 							/>
 						</>
@@ -132,7 +124,7 @@ const CarouselSlide = ({ item }) => {
 						component={motion.div}
 						initial={{
 							transform:
-								animationDirection == "right"
+								animationDirection === "right"
 									? "translateX(60px)"
 									: "translateX(-60px)",
 							opacity: 0,
@@ -143,7 +135,7 @@ const CarouselSlide = ({ item }) => {
 						}}
 						exit={{
 							transform:
-								animationDirection == "right"
+								animationDirection === "right"
 									? "translateX(-60px)"
 									: "translateX(60px)",
 
@@ -166,21 +158,13 @@ const CarouselSlide = ({ item }) => {
 						) : (
 							<img
 								className="hero-carousel-text-logo"
-								src={
-									api.basePath +
-									"/Items/" +
-									item.Id +
-									"/Images/Logo?quality=90&tag=" +
-									item.ImageTags.Logo
-								}
+								src={`${api.basePath}/Items/${item.Id}/Images/Logo?quality=90&tag=${item.ImageTags.Logo}`}
 								style={{
 									opacity: 0,
 									transition: "opacity 0.2s",
 									objectFit: "contain",
 								}}
-								onLoad={(e) =>
-									(e.target.style.opacity = 1)
-								}
+								onLoad={(e) => (e.target.style.opacity = 1)}
 							/>
 						)}
 					</Typography>
@@ -188,7 +172,7 @@ const CarouselSlide = ({ item }) => {
 						component={motion.div}
 						initial={{
 							transform:
-								animationDirection == "right"
+								animationDirection === "right"
 									? "translateX(20px)"
 									: "translateX(-20px)",
 							opacity: 0,
@@ -199,7 +183,7 @@ const CarouselSlide = ({ item }) => {
 						}}
 						exit={{
 							transform:
-								animationDirection == "right"
+								animationDirection === "right"
 									? "translateX(-20px)"
 									: "translateX(20px)",
 
@@ -216,18 +200,10 @@ const CarouselSlide = ({ item }) => {
 						justifyItems="flex-start"
 						alignItems="center"
 					>
-						<Typography
-							style={{ opacity: "0.8" }}
-							variant="subtitle1"
-						>
-							{item.ProductionYear
-								? item.ProductionYear
-								: "Unknown"}
+						<Typography style={{ opacity: "0.8" }} variant="subtitle1">
+							{item.ProductionYear ? item.ProductionYear : "Unknown"}
 						</Typography>
-						<Chip
-							variant="filled"
-							label={item.OfficialRating ?? "Not Rated"}
-						/>
+						<Chip variant="filled" label={item.OfficialRating ?? "Not Rated"} />
 
 						{item.CommunityRating && (
 							<div
@@ -255,9 +231,7 @@ const CarouselSlide = ({ item }) => {
 									}}
 									variant="subtitle1"
 								>
-									{Math.round(
-										item.CommunityRating * 10,
-									) / 10}
+									{Math.round(item.CommunityRating * 10) / 10}
 								</Typography>
 							</div>
 						)}
@@ -273,17 +247,12 @@ const CarouselSlide = ({ item }) => {
 								<div
 									className="material-symbols-rounded "
 									style={{
-										color:
-											item.CriticRating > 50
-												? green[400]
-												: red[400],
+										color: item.CriticRating > 50 ? green[400] : red[400],
 										fontVariationSettings:
 											'"FILL" 1, "wght" 300, "GRAD" 25, "opsz" 40',
 									}}
 								>
-									{item.CriticRating > 50
-										? "thumb_up"
-										: "thumb_down"}
+									{item.CriticRating > 50 ? "thumb_up" : "thumb_down"}
 								</div>
 								<Typography
 									style={{
@@ -297,18 +266,12 @@ const CarouselSlide = ({ item }) => {
 						)}
 
 						{!!item.RunTimeTicks && (
-							<Typography
-								style={{ opacity: "0.8" }}
-								variant="subtitle1"
-							>
+							<Typography style={{ opacity: "0.8" }} variant="subtitle1">
 								{getRuntime(item.RunTimeTicks)}
 							</Typography>
 						)}
 						{!!item.RunTimeTicks && (
-							<Typography
-								style={{ opacity: "0.8" }}
-								variant="subtitle1"
-							>
+							<Typography style={{ opacity: "0.8" }} variant="subtitle1">
 								{endsAt(item.RunTimeTicks)}
 							</Typography>
 						)}
@@ -317,7 +280,7 @@ const CarouselSlide = ({ item }) => {
 						component={motion.div}
 						initial={{
 							transform:
-								animationDirection == "right"
+								animationDirection === "right"
 									? "translateX(20px)"
 									: "translateX(-20px)",
 							opacity: 0,
@@ -328,7 +291,7 @@ const CarouselSlide = ({ item }) => {
 						}}
 						exit={{
 							transform:
-								animationDirection == "right"
+								animationDirection === "right"
 									? "translateX(-20px)"
 									: "translateX(20px)",
 
@@ -373,14 +336,12 @@ const CarouselSlide = ({ item }) => {
 							}}
 							itemUserData={item.UserData}
 							audio={
-								item.Type == BaseItemKind.MusicAlbum ||
-								item.Type == BaseItemKind.Audio ||
-								item.Type == BaseItemKind.AudioBook ||
-								item.Type == BaseItemKind.Playlist
+								item.Type === BaseItemKind.MusicAlbum ||
+								item.Type === BaseItemKind.Audio ||
+								item.Type === BaseItemKind.AudioBook ||
+								item.Type === BaseItemKind.Playlist
 							}
-							playlistItem={
-								item.Type == BaseItemKind.Playlist
-							}
+							playlistItem={item.Type === BaseItemKind.Playlist}
 							playlistItemId={item.Id}
 						/>
 

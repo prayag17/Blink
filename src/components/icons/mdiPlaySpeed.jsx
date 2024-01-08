@@ -7,7 +7,7 @@ import { mdiPlaySpeed } from "@mdi/js";
 export const MdiPlaySpeed = (props) => {
 	return (
 		<SvgIcon {...props}>
-			<path d={mdiPlaySpeed}></path>
+			<path d={mdiPlaySpeed} />
 		</SvgIcon>
 	);
 };

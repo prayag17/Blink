@@ -1,51 +1,51 @@
+import { appWindow } from "@tauri-apps/api/window";
 /** @format */
 import React from "react";
-import { appWindow } from "@tauri-apps/api/window";
 
+import Backdrop from "@mui/material/Backdrop";
 import Box from "@mui/material/Box";
-import Stack from "@mui/material/Stack";
-import IconButton from "@mui/material/IconButton";
-import Typography from "@mui/material/Typography";
-import Slider from "@mui/material/Slider";
 import CircularProgress from "@mui/material/CircularProgress";
+import IconButton from "@mui/material/IconButton";
+import LinearProgress from "@mui/material/LinearProgress";
 import Menu from "@mui/material/Menu";
 import MenuItem from "@mui/material/MenuItem";
-import Backdrop from "@mui/material/Backdrop";
-import LinearProgress from "@mui/material/LinearProgress";
+import Slider from "@mui/material/Slider";
+import Stack from "@mui/material/Stack";
+import Typography from "@mui/material/Typography";
 
 import ReactPlayer from "react-player";
 
-import { usePlaybackStore } from "../../utils/store/playback";
 import { MdiArrowLeft } from "../../components/icons/mdiArrowLeft";
 import { MdiPlay } from "../../components/icons/mdiPlay";
+import { usePlaybackStore } from "../../utils/store/playback";
 
+import { useCallback, useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { useRef, useState, useCallback, useEffect } from "react";
 import { secToTicks, ticksToSec } from "../../utils/date/time";
 
-import { getPlaystateApi } from "@jellyfin/sdk/lib/utils/api/playstate-api";
 import { getMediaInfoApi } from "@jellyfin/sdk/lib/utils/api/media-info-api";
+import { getPlaystateApi } from "@jellyfin/sdk/lib/utils/api/playstate-api";
 import { getTvShowsApi } from "@jellyfin/sdk/lib/utils/api/tv-shows-api";
 
-import "./videoPlayer.module.scss";
-import { MdiPause } from "../../components/icons/mdiPause";
 import { MdiFastForward } from "../../components/icons/mdiFastForward";
-import { MdiRewind } from "../../components/icons/mdiRewind";
 import { MdiFullscreen } from "../../components/icons/mdiFullscreen";
 import { MdiFullscreenExit } from "../../components/icons/mdiFullscreenExit";
+import { MdiPause } from "../../components/icons/mdiPause";
 import { MdiPictureInPictureBottomRight } from "../../components/icons/mdiPictureInPictureBottomRight";
+import { MdiPlaySpeed } from "../../components/icons/mdiPlaySpeed";
+import { MdiRewind } from "../../components/icons/mdiRewind";
 import { MdiVolumeHigh } from "../../components/icons/mdiVolumeHigh";
 import { MdiVolumeOff } from "../../components/icons/mdiVolumeOff";
-import { MdiPlaySpeed } from "../../components/icons/mdiPlaySpeed";
+import "./videoPlayer.module.scss";
 
 import { endsAt } from "../../utils/date/time";
 
+import { useQuery } from "@tanstack/react-query";
 import { MdiCog } from "../../components/icons/mdiCog";
 import { MdiSkipNext } from "../../components/icons/mdiSkipNext";
-import { useQuery } from "@tanstack/react-query";
 
-import { motion, AnimatePresence } from "framer-motion";
 import { ItemFields, LocationType } from "@jellyfin/sdk/lib/generated-client";
+import { AnimatePresence, motion } from "framer-motion";
 import { MdiSkipPrevious } from "../../components/icons/mdiSkipPrevious";
 
 import { useApi } from "../../utils/store/api";
@@ -133,7 +133,7 @@ export const VideoPlayer = () => {
 	});
 
 	const currentEpisodeIndex = episodes.data?.Items?.findIndex(
-		(item) => item.Id == itemId,
+		(item) => item.Id === itemId,
 	);
 
 	const [currentSubtrack] = useState(subtitleStreamIndex);
@@ -157,13 +157,11 @@ export const VideoPlayer = () => {
 			const timeToStart = ticksToSec(startPosition);
 			await getPlaystateApi(api).reportPlaybackStart({
 				playbackStartInfo: {
-					PlayMethod: mediaInfo.data?.MediaSources[0]
-						.SupportsDirectPlay
+					PlayMethod: mediaInfo.data?.MediaSources[0].SupportsDirectPlay
 						? "DirectPlay"
-						: mediaInfo.data?.MediaSources[0]
-								.SupportsDirectStream
-						? "DirectStream"
-						: "Transcode",
+						: mediaInfo.data?.MediaSources[0].SupportsDirectStream
+						  ? "DirectStream"
+						  : "Transcode",
 					AudioStreamIndex: audioStreamIndex,
 					SubtitleStreamIndex: subtitleStreamIndex,
 					userId: userId,
@@ -181,9 +179,9 @@ export const VideoPlayer = () => {
 
 	const handleDisplayCurrentTime = () => {
 		let time = ticksToSec(progress * itemDuration);
-		let hr = Math.floor(time / 3600);
+		const hr = Math.floor(time / 3600);
 		time -= hr * 3600;
-		let min = Math.floor(time / 60);
+		const min = Math.floor(time / 60);
 		time -= min * 60;
 		return `${hr.toLocaleString([], {
 			minimumIntegerDigits: 2,
@@ -199,9 +197,9 @@ export const VideoPlayer = () => {
 
 	const handleDisplayTime = (ticks) => {
 		let time = ticksToSec(ticks);
-		let hr = Math.floor(time / 3600);
+		const hr = Math.floor(time / 3600);
 		time -= hr * 3600;
-		let min = Math.floor(time / 60);
+		const min = Math.floor(time / 60);
 		time -= min * 60;
 		return `${hr.toLocaleString([], {
 			minimumIntegerDigits: 2,
@@ -231,18 +229,16 @@ export const VideoPlayer = () => {
 		setMediaSourceId(episodes.data.Items[currentEpisodeIndex + 1].Id);
 
 		setUrl(
-			`${api.basePath}/Videos/${
-				episodes.data.Items[currentEpisodeIndex + 1].Id
-			}/stream.
-					${episodes.data.Items[currentEpisodeIndex + 1].MediaSources[0].Container}
+			`${api.basePath}/Videos/${episodes.data.Items[currentEpisodeIndex + 1].Id}/stream.
+					${
+						episodes.data.Items[currentEpisodeIndex + 1].MediaSources[0]
+							.Container
+					}
 				?Static=true&mediaSourceId=${
 					episodes.data.Items[currentEpisodeIndex + 1].Id
-				}&deviceId=${api.deviceInfo.id}&api_key=${
-				api.accessToken
-			}&Tag=${
-				episodes.data.Items[currentEpisodeIndex + 1].MediaSources[0]
-					.ETag
-			}&videoStreamIndex=${0}&audioStreamIndex=${0}`,
+				}&deviceId=${api.deviceInfo.id}&api_key=${api.accessToken}&Tag=${
+					episodes.data.Items[currentEpisodeIndex + 1].MediaSources[0].ETag
+				}&videoStreamIndex=${0}&audioStreamIndex=${0}`,
 		);
 		setPosition(
 			episodes.data.Items[currentEpisodeIndex + 1].UserData
@@ -250,15 +246,12 @@ export const VideoPlayer = () => {
 		);
 
 		setSeriesId(episodes.data.Items[currentEpisodeIndex + 1].SeriesId);
-		if (
-			episodes.data.Items[currentEpisodeIndex + 1].ImageBlurHashes.Logo
-		) {
+		if (episodes.data.Items[currentEpisodeIndex + 1].ImageBlurHashes.Logo) {
 			setItemName(
 				<div className="video-osd-name">
 					<img
 						src={`${api.basePath}/Items/${
-							episodes.data.Items[currentEpisodeIndex + 1]
-								.SeriesId
+							episodes.data.Items[currentEpisodeIndex + 1].SeriesId
 						}/Images/Logo`}
 						className="video-osd-name-logo"
 						onLoad={(e) => {
@@ -266,20 +259,10 @@ export const VideoPlayer = () => {
 						}}
 					/>
 					<Typography variant="subtitle1">
-						S
-						{
-							episodes.data.Items[currentEpisodeIndex + 1]
-								.ParentIndexNumber
-						}
+						S{episodes.data.Items[currentEpisodeIndex + 1].ParentIndexNumber}
 						:E
-						{
-							episodes.data.Items[currentEpisodeIndex + 1]
-								.IndexNumber
-						}{" "}
-						{
-							episodes.data.Items[currentEpisodeIndex + 1]
-								.Name
-						}
+						{episodes.data.Items[currentEpisodeIndex + 1].IndexNumber}{" "}
+						{episodes.data.Items[currentEpisodeIndex + 1].Name}
 					</Typography>
 				</div>,
 			);
@@ -287,35 +270,20 @@ export const VideoPlayer = () => {
 			setItemName(
 				<div className="video-osd-name">
 					<Typography variant="h6">
-						{
-							episodes.data.Items[currentEpisodeIndex + 1]
-								.SeriesName
-						}
+						{episodes.data.Items[currentEpisodeIndex + 1].SeriesName}
 					</Typography>
 					<Typography variant="subtitle1">
-						S
-						{
-							episodes.data.Items[currentEpisodeIndex + 1]
-								.ParentIndexNumber
-						}
+						S{episodes.data.Items[currentEpisodeIndex + 1].ParentIndexNumber}
 						:E
-						{
-							episodes.data.Items[currentEpisodeIndex + 1]
-								.IndexNumber
-						}{" "}
-						{
-							episodes.data.Items[currentEpisodeIndex + 1]
-								.Name
-						}
+						{episodes.data.Items[currentEpisodeIndex + 1].IndexNumber}{" "}
+						{episodes.data.Items[currentEpisodeIndex + 1].Name}
 					</Typography>
 				</div>,
 			);
 		}
 
 		setItemId(episodes.data.Items[currentEpisodeIndex + 1].Id);
-		setDurationStore(
-			episodes.data.Items[currentEpisodeIndex + 1].RunTimeTicks,
-		);
+		setDurationStore(episodes.data.Items[currentEpisodeIndex + 1].RunTimeTicks);
 
 		// navigate("player");
 	};
@@ -335,18 +303,16 @@ export const VideoPlayer = () => {
 		setMediaSourceId(episodes.data.Items[currentEpisodeIndex - 1].Id);
 
 		setUrl(
-			`${api.basePath}/Videos/${
-				episodes.data.Items[currentEpisodeIndex - 1].Id
-			}/stream.
-					${episodes.data.Items[currentEpisodeIndex - 1].MediaSources[0].Container}
+			`${api.basePath}/Videos/${episodes.data.Items[currentEpisodeIndex - 1].Id}/stream.
+					${
+						episodes.data.Items[currentEpisodeIndex - 1].MediaSources[0]
+							.Container
+					}
 				?Static=true&mediaSourceId=${
 					episodes.data.Items[currentEpisodeIndex - 1].Id
-				}&deviceId=${api.deviceInfo.id}&api_key=${
-				api.accessToken
-			}&Tag=${
-				episodes.data.Items[currentEpisodeIndex - 1].MediaSources[0]
-					.ETag
-			}&videoStreamIndex=${0}&audioStreamIndex=${0}`,
+				}&deviceId=${api.deviceInfo.id}&api_key=${api.accessToken}&Tag=${
+					episodes.data.Items[currentEpisodeIndex - 1].MediaSources[0].ETag
+				}&videoStreamIndex=${0}&audioStreamIndex=${0}`,
 		);
 		setPosition(
 			episodes.data.Items[currentEpisodeIndex - 1].UserData
@@ -354,15 +320,12 @@ export const VideoPlayer = () => {
 		);
 
 		setSeriesId(episodes.data.Items[currentEpisodeIndex - 1].SeriesId);
-		if (
-			episodes.data.Items[currentEpisodeIndex - 1].ImageBlurHashes.Logo
-		) {
+		if (episodes.data.Items[currentEpisodeIndex - 1].ImageBlurHashes.Logo) {
 			setItemName(
 				<div className="video-osd-name">
 					<img
 						src={`${api.basePath}/Items/${
-							episodes.data.Items[currentEpisodeIndex - 1]
-								.SeriesId
+							episodes.data.Items[currentEpisodeIndex - 1].SeriesId
 						}/Images/Logo`}
 						className="video-osd-name-logo"
 						onLoad={(e) => {
@@ -370,20 +333,10 @@ export const VideoPlayer = () => {
 						}}
 					/>
 					<Typography variant="subtitle1">
-						S
-						{
-							episodes.data.Items[currentEpisodeIndex - 1]
-								.ParentIndexNumber
-						}
+						S{episodes.data.Items[currentEpisodeIndex - 1].ParentIndexNumber}
 						:E
-						{
-							episodes.data.Items[currentEpisodeIndex - 1]
-								.IndexNumber
-						}{" "}
-						{
-							episodes.data.Items[currentEpisodeIndex - 1]
-								.Name
-						}
+						{episodes.data.Items[currentEpisodeIndex - 1].IndexNumber}{" "}
+						{episodes.data.Items[currentEpisodeIndex - 1].Name}
 					</Typography>
 				</div>,
 			);
@@ -391,35 +344,20 @@ export const VideoPlayer = () => {
 			setItemName(
 				<div className="video-osd-name">
 					<Typography variant="h6">
-						{
-							episodes.data.Items[currentEpisodeIndex - 1]
-								.SeriesName
-						}
+						{episodes.data.Items[currentEpisodeIndex - 1].SeriesName}
 					</Typography>
 					<Typography variant="subtitle1">
-						S
-						{
-							episodes.data.Items[currentEpisodeIndex - 1]
-								.ParentIndexNumber
-						}
+						S{episodes.data.Items[currentEpisodeIndex - 1].ParentIndexNumber}
 						:E
-						{
-							episodes.data.Items[currentEpisodeIndex - 1]
-								.IndexNumber
-						}{" "}
-						{
-							episodes.data.Items[currentEpisodeIndex - 1]
-								.Name
-						}
+						{episodes.data.Items[currentEpisodeIndex - 1].IndexNumber}{" "}
+						{episodes.data.Items[currentEpisodeIndex - 1].Name}
 					</Typography>
 				</div>,
 			);
 		}
 
 		setItemId(episodes.data.Items[currentEpisodeIndex - 1].Id);
-		setDurationStore(
-			episodes.data.Items[currentEpisodeIndex - 1].RunTimeTicks,
-		);
+		setDurationStore(episodes.data.Items[currentEpisodeIndex - 1].RunTimeTicks);
 
 		// navigate("player");
 	};
@@ -428,7 +366,7 @@ export const VideoPlayer = () => {
 
 	useEffect(() => {
 		if (showControls) {
-			let timeout = setTimeout(() => {
+			const timeout = setTimeout(() => {
 				setShowControls(false);
 			}, 5000);
 			return () => {
@@ -440,14 +378,10 @@ export const VideoPlayer = () => {
 	const handleKeyPress = useCallback((event) => {
 		switch (event.key) {
 			case "ArrowRight":
-				playerRef.current.seekTo(
-					playerRef.current.getCurrentTime() + 15,
-				);
+				playerRef.current.seekTo(playerRef.current.getCurrentTime() + 15);
 				break;
 			case "ArrowLeft":
-				playerRef.current.seekTo(
-					playerRef.current.getCurrentTime() - 15,
-				);
+				playerRef.current.seekTo(playerRef.current.getCurrentTime() - 15);
 				break;
 			case " ":
 				setIsPlaying((state) => !state);
@@ -551,12 +485,11 @@ export const VideoPlayer = () => {
 		}
 		await getPlaystateApi(api).reportPlaybackProgress({
 			playbackProgressInfo: {
-				PlayMethod: mediaInfo.data?.MediaSources[0]
-					.SupportsDirectPlay
+				PlayMethod: mediaInfo.data?.MediaSources[0].SupportsDirectPlay
 					? "DirectPlay"
 					: mediaInfo.data?.MediaSources[0].SupportsDirectStream
-					? "DirectStream"
-					: "Transcode",
+					  ? "DirectStream"
+					  : "Transcode",
 				ItemId: itemId,
 				IsMuted: isMuted,
 				PositionTicks: secToTicks(e.playedSeconds),
@@ -571,7 +504,7 @@ export const VideoPlayer = () => {
 				PlaySessionId: mediaInfo.data?.PlaySessionId,
 			},
 		});
-		if (Math.round(e.playedSeconds) == ticksToSec(itemDuration)) {
+		if (Math.round(e.playedSeconds) === ticksToSec(itemDuration)) {
 			handleOnEnd();
 		}
 	};
@@ -640,11 +573,7 @@ export const VideoPlayer = () => {
 				<CircularProgress />
 			</div>
 			<Backdrop
-				className={
-					showControls
-						? "video-osd video-osd-visible"
-						: "video-osd"
-				}
+				className={showControls ? "video-osd video-osd-visible" : "video-osd"}
 				sx={{
 					display: "flex",
 					flexDirection: "column",
@@ -686,9 +615,7 @@ export const VideoPlayer = () => {
 						justifyContent="center"
 						gap={2}
 					>
-						<Typography variant="h6">
-							{handleDisplayCurrentTime()}
-						</Typography>
+						<Typography variant="h6">{handleDisplayCurrentTime()}</Typography>
 						<Slider
 							value={currentTime ? currentTime : 0}
 							step={0.01}
@@ -698,16 +625,12 @@ export const VideoPlayer = () => {
 								setCurrentTime(newVal);
 							}}
 							onChangeCommitted={(e, newVal) => {
-								playerRef.current.seekTo(
-									ticksToSec(newVal),
-								);
+								playerRef.current.seekTo(ticksToSec(newVal));
 								setCurrentTime(newVal);
 								setIsSeeking(false);
 							}}
 							valueLabelDisplay="auto"
-							valueLabelFormat={(value) =>
-								handleDisplayTime(value)
-							}
+							valueLabelFormat={(value) => handleDisplayTime(value)}
 							// size="medium"
 							sx={{
 								"& .MuiSlider-valueLabel": {
@@ -718,14 +641,11 @@ export const VideoPlayer = () => {
 									padding: 1,
 									borderRadius: "10px",
 									border: "1px solid rgb(255 255 255 / 0.15)",
-									boxShadow:
-										"0 0 10px rgb(0 0 0 / 0.4) ",
-									transform:
-										"translatey(-120%) scale(0)",
+									boxShadow: "0 0 10px rgb(0 0 0 / 0.4) ",
+									transform: "translatey(-120%) scale(0)",
 									"&:before": { display: "none" },
 									"&.MuiSlider-valueLabelOpen": {
-										transform:
-											"translateY(-120%) scale(1)",
+										transform: "translateY(-120%) scale(1)",
 									},
 									"& > *": {
 										transform: "rotate(0deg)",
@@ -752,65 +672,46 @@ export const VideoPlayer = () => {
 								onClick={handlePlayPrevEpisode}
 								disabled={
 									seriesId
-										? episodes.isPending ||
-										  currentEpisodeIndex == 0
+										? episodes.isPending || currentEpisodeIndex === 0
 										: true
 								}
 							>
+								<div className="material-symbols-rounded">skip_previous</div>
+							</IconButton>
+							<IconButton
+								onClick={() =>
+									playerRef.current.seekTo(
+										playerRef.current.getCurrentTime() - 15,
+									)
+								}
+							>
+								<div className="material-symbols-rounded">fast_rewind</div>
+							</IconButton>
+							<IconButton onClick={() => setIsPlaying((state) => !state)}>
 								<div className="material-symbols-rounded">
-									skip_previous
+									{isPlaying ? "pause" : "play_arrow"}
 								</div>
 							</IconButton>
 							<IconButton
 								onClick={() =>
 									playerRef.current.seekTo(
-										playerRef.current.getCurrentTime() -
-											15,
+										playerRef.current.getCurrentTime() + 15,
 									)
 								}
 							>
-								<div className="material-symbols-rounded">
-									fast_rewind
-								</div>
-							</IconButton>
-							<IconButton
-								onClick={() =>
-									setIsPlaying((state) => !state)
-								}
-							>
-								<div className="material-symbols-rounded">
-									{isPlaying
-										? "pause"
-										: "play_arrow"}
-								</div>
-							</IconButton>
-							<IconButton
-								onClick={() =>
-									playerRef.current.seekTo(
-										playerRef.current.getCurrentTime() +
-											15,
-									)
-								}
-							>
-								<div className="material-symbols-rounded">
-									fast_forward
-								</div>
+								<div className="material-symbols-rounded">fast_forward</div>
 							</IconButton>
 							<IconButton
 								onClick={handlePlayNextEpisode}
 								disabled={
 									seriesId
 										? episodes.isPending ||
-										  episodes.data
-												?.TotalRecordCount ==
-												currentEpisodeIndex +
-													1
+										  episodes.data?.TotalRecordCount ===
+												currentEpisodeIndex + 1
 										: true
 								}
 							>
-								<div className="material-symbols-rounded">
-									skip_next
-								</div>
+								<div className="material-symbols-rounded">skip_next</div>
 							</IconButton>
 							<Typography variant="subtitle1">
 								{endsAt(itemDuration - currentTime)}
@@ -826,12 +727,9 @@ export const VideoPlayer = () => {
 								<Menu
 									anchorEl={speedMenuEl}
 									open={speedMenuState}
-									onClose={() =>
-										setSpeedMenuEl(null)
-									}
+									onClose={() => setSpeedMenuEl(null)}
 									MenuListProps={{
-										"aria-labelledby":
-											"lock-button",
+										"aria-labelledby": "lock-button",
 										role: "listbox",
 									}}
 									anchorOrigin={{
@@ -846,70 +744,45 @@ export const VideoPlayer = () => {
 										mb: 20,
 									}}
 								>
-									{availableSpeeds.map(
-										(sspeed, index) => {
-											return (
-												<MenuItem
-													key={sspeed}
-													selected={
-														index ===
-														speed
-													}
-													onClick={() => {
-														setSpeed(
-															index,
-														);
-														setSpeedMenuEl(
-															null,
-														);
-													}}
-													sx={{
-														width: 160,
-													}}
-												>
-													{sspeed}x
-												</MenuItem>
-											);
-										},
-									)}
+									{availableSpeeds.map((sspeed, index) => {
+										return (
+											<MenuItem
+												key={sspeed}
+												selected={index === speed}
+												onClick={() => {
+													setSpeed(index);
+													setSpeedMenuEl(null);
+												}}
+												sx={{
+													width: 160,
+												}}
+											>
+												{sspeed}x
+											</MenuItem>
+										);
+									})}
 								</Menu>
-								<IconButton
-									onClick={(e) =>
-										setSpeedMenuEl(
-											e.currentTarget,
-										)
-									}
-								>
-									<div className="material-symbols-rounded">
-										pace
-									</div>
+								<IconButton onClick={(e) => setSpeedMenuEl(e.currentTarget)}>
+									<div className="material-symbols-rounded">pace</div>
 								</IconButton>
 							</Box>
 							<IconButton
 								sx={{
 									ml: 0.1,
 								}}
-								onClick={() =>
-									setIsMuted((state) => !state)
-								}
+								onClick={() => setIsMuted((state) => !state)}
 							>
 								<div className="material-symbols-rounded">
-									{isMuted
-										? "volume_mute"
-										: "volume_up"}
+									{isMuted ? "volume_mute" : "volume_up"}
 								</div>
 							</IconButton>
 							<Slider
 								value={isMuted ? 0 : volume * 100}
 								step={1}
 								max={100}
-								onChange={(e, newVal) =>
-									setVolume(newVal / 100)
-								}
+								onChange={(e, newVal) => setVolume(newVal / 100)}
 								valueLabelDisplay="auto"
-								valueLabelFormat={(value) =>
-									Math.floor(value)
-								}
+								valueLabelFormat={(value) => Math.floor(value)}
 								size="small"
 								sx={{
 									mr: 1,
@@ -918,27 +791,21 @@ export const VideoPlayer = () => {
 									"& .MuiSlider-valueLabel": {
 										lineHeight: 1.2,
 										fontSize: 24,
-										background:
-											"rgb(0 0 0 / 0.5)",
+										background: "rgb(0 0 0 / 0.5)",
 										backdropFilter: "blur(5px)",
 										padding: 1,
 										borderRadius: "10px",
 										border: "1px solid rgb(255 255 255 / 0.15)",
-										boxShadow:
-											"0 0 10px rgb(0 0 0 / 0.4) ",
-										transform:
-											"translatey(-120%) scale(0)",
+										boxShadow: "0 0 10px rgb(0 0 0 / 0.4) ",
+										transform: "translatey(-120%) scale(0)",
 										"&:before": {
 											display: "none",
 										},
-										"&.MuiSlider-valueLabelOpen":
-											{
-												transform:
-													"translateY(-120%) scale(1)",
-											},
+										"&.MuiSlider-valueLabelOpen": {
+											transform: "translateY(-120%) scale(1)",
+										},
 										"& > *": {
-											transform:
-												"rotate(0deg)",
+											transform: "rotate(0deg)",
 										},
 									},
 								}}
@@ -953,22 +820,14 @@ export const VideoPlayer = () => {
 									sx={{ padding: 2 }}
 								>
 									<Stack direction="row">
-										<Typography variant="h6">
-											Subtitle
-										</Typography>
+										<Typography variant="h6">Subtitle</Typography>
 									</Stack>
 								</Menu>
 								<IconButton
-									onClick={(e) =>
-										setSettingsMenuEl(
-											e.currentTarget,
-										)
-									}
+									onClick={(e) => setSettingsMenuEl(e.currentTarget)}
 									disabled
 								>
-									<div className="material-symbols-rounded">
-										settings
-									</div>
+									<div className="material-symbols-rounded">settings</div>
 								</IconButton>
 							</Box>
 							<IconButton
@@ -982,15 +841,12 @@ export const VideoPlayer = () => {
 							</IconButton>
 							<IconButton
 								onClick={async () => {
-									let fstate =
-										await appWindow.isFullscreen();
+									const fstate = await appWindow.isFullscreen();
 									setAppFullScreen(!fstate);
 								}}
 							>
 								<div className="material-symbols-rounded">
-									{appFullscreen
-										? "fullscreen_exit"
-										: "fullscreen"}
+									{appFullscreen ? "fullscreen_exit" : "fullscreen"}
 								</div>
 							</IconButton>
 						</Stack>

@@ -1,5 +1,5 @@
 /** @format */
-import { useState, useEffect } from "react";
+import { useEffect, useState } from "react";
 
 const useKeyPress = (targetKey) => {
 	// State for keeping track of whether key is pressed

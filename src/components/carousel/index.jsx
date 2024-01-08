@@ -1,13 +1,13 @@
+import { AnimatePresence, motion } from "framer-motion";
 /** @format */
 import React, { useEffect, useState } from "react";
-import { AnimatePresence, motion } from "framer-motion";
 
 import IconButton from "@mui/material/IconButton";
 import { MdiChevronLeft } from "../icons/mdiChevronLeft";
 import { MdiChevronRight } from "../icons/mdiChevronRight";
 
-import "./carousel.scss";
 import { useCarouselStore } from "../../utils/store/carousel";
+import "./carousel.scss";
 
 const swipeConfidenceThreshold = 8000;
 const swipePower = (offset, velocity) => {
@@ -30,7 +30,7 @@ const Carousel = ({ content, onChange }) => {
 			<IconButton
 				className="carousel-button left"
 				onClick={() => {
-					if (currentSlide == 0) {
+					if (currentSlide === 0) {
 						setDirection("left");
 						setCurrentSlide(content.length - 1);
 					}
@@ -62,15 +62,12 @@ const Carousel = ({ content, onChange }) => {
 					onDragEnd={(e, { offset, velocity }) => {
 						const swipe = swipePower(offset.x, velocity.x);
 						if (
-							currentSlide != content.length - 1 &&
+							currentSlide !== content.length - 1 &&
 							swipe < -swipeConfidenceThreshold
 						) {
 							setDirection("right");
 							setCurrentSlide((init) => init + 1);
-						} else if (
-							currentSlide != 0 &&
-							swipe > swipeConfidenceThreshold
-						) {
+						} else if (currentSlide !== 0 && swipe > swipeConfidenceThreshold) {
 							setDirection("left");
 							setCurrentSlide((init) => init - 1);
 						}
@@ -87,7 +84,7 @@ const Carousel = ({ content, onChange }) => {
 			<IconButton
 				className="carousel-button right"
 				onClick={() => {
-					if (currentSlide == content.length - 1) {
+					if (currentSlide === content.length - 1) {
 						setDirection("right");
 						setCurrentSlide(0);
 					} else if (currentSlide < content.length - 1) {
@@ -106,7 +103,7 @@ const Carousel = ({ content, onChange }) => {
 				{content.map((item, index) => (
 					<div
 						className={
-							currentSlide == index
+							currentSlide === index
 								? "carousel-indicator active"
 								: "carousel-indicator"
 						}

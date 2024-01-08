@@ -1,21 +1,21 @@
 /** @format */
 import React, { useEffect, useState } from "react";
 
-import { useQuery } from "@tanstack/react-query";
-import { getUserViewsApi } from "@jellyfin/sdk/lib/utils/api/user-views-api";
 import { getUserApi } from "@jellyfin/sdk/lib/utils/api/user-api";
+import { getUserViewsApi } from "@jellyfin/sdk/lib/utils/api/user-views-api";
+import { useQuery } from "@tanstack/react-query";
 
 import { NavLink, useLocation } from "react-router-dom";
 
-import { styled } from "@mui/material/styles";
-import Tooltip from "@mui/material/Tooltip";
 import MuiDrawer from "@mui/material/Drawer";
+import Tooltip from "@mui/material/Tooltip";
 import Typography from "@mui/material/Typography";
+import { styled } from "@mui/material/styles";
 
 import { getTypeIcon } from "../../components/utils/iconsCollection.jsx";
 
-import "./sidemenu.module.scss";
 import { useApi } from "../../utils/store/api";
+import "./sidemenu.module.scss";
 
 import Icon from "../../assets/icon.svg";
 
@@ -46,16 +46,16 @@ export const SideMenu = () => {
 	const user = useQuery({
 		queryKey: ["user"],
 		queryFn: async () => {
-			let usr = await getUserApi(api).getCurrentUser();
+			const usr = await getUserApi(api).getCurrentUser();
 			return usr.data;
 		},
 		enabled: display,
 		networkMode: "always",
 	});
-	let libraries = useQuery({
+	const libraries = useQuery({
 		queryKey: ["libraries"],
 		queryFn: async () => {
-			let libs = await getUserViewsApi(api).getUserViews({
+			const libs = await getUserViewsApi(api).getUserViews({
 				userId: user.data.Id,
 			});
 			return libs.data;
@@ -93,14 +93,14 @@ export const SideMenu = () => {
 						sx: {
 							backgroundColor: "inherit",
 							border: "none",
-							width: `5em`,
+							width: "5em",
 							height: "100vh",
 							zIndex: "1",
 						},
 					}}
 					sx={{
 						zIndex: 1,
-						width: `5em`,
+						width: "5em",
 						background: "transparent !important ",
 					}}
 				>
@@ -117,10 +117,7 @@ export const SideMenu = () => {
 							<></>
 						) : (
 							<>
-								<NavLink
-									to="/home"
-									className="sidemenu-item small"
-								>
+								<NavLink to="/home" className="sidemenu-item small">
 									<div className="sidemenu-item-icon">
 										{getTypeIcon("Home")}
 									</div>
@@ -152,16 +149,12 @@ export const SideMenu = () => {
 												className="sidemenu-item"
 											>
 												<div className="sidemenu-item-icon">
-													{getTypeIcon(
-														lib.CollectionType,
-													)}
+													{getTypeIcon(lib.CollectionType)}
 												</div>
 												<Typography
 													className="sidemenu-item-text"
 													variant="caption"
-													fontWeight={
-														500
-													}
+													fontWeight={500}
 													style={{
 														width: "80%",
 													}}

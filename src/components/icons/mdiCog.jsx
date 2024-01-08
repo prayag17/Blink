@@ -1,15 +1,15 @@
 /** @format */
 
-import { MdiChevronLeft } from "./mdiChevronLeft";
 /** @format */
 import SvgIcon from "@mui/material/SvgIcon";
+import { MdiChevronLeft } from "./mdiChevronLeft";
 
 import { mdiCog } from "@mdi/js";
 
 export const MdiCog = (props) => {
 	return (
 		<SvgIcon {...props}>
-			<path d={mdiCog}></path>
+			<path d={mdiCog} />
 		</SvgIcon>
 	);
 };

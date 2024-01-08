@@ -31,13 +31,13 @@ export const secToTicks = (ticks) => {
  * @return {number} Converted ticks to Hhr Mmin formate
  */
 export const getRuntime = (ticks) => {
-	let time = ticksToMs(ticks);
+	const time = ticksToMs(ticks);
 	let formatedTime = "";
 	let timeSec = Math.floor(time / 1000);
 	let timeMin = Math.floor(timeSec / 60);
 	timeSec -= timeMin * 60;
 	if (timeMin > 60) {
-		let timeHr = Math.floor(timeMin / 60);
+		const timeHr = Math.floor(timeMin / 60);
 		timeMin -= timeHr * 60;
 		formatedTime = `${timeHr}hr ${timeMin}min`;
 	} else {
@@ -52,14 +52,14 @@ export const getRuntime = (ticks) => {
  * @return {number} Converted ticks to hh:mm:ss formate
  */
 export const getRuntimeMusic = (ticks) => {
-	let time = ticksToMs(ticks);
+	const time = ticksToMs(ticks);
 	let formatedTime = "";
 	let timeSec = Math.floor(time / 1000);
 	let timeMin = Math.floor(timeSec / 60);
 	timeSec -= timeMin * 60;
-	timeSec = timeSec == 0 ? 0o0 : timeSec;
+	timeSec = timeSec === 0 ? 0o0 : timeSec;
 	if (timeMin > 60) {
-		let timeHr = Math.floor(timeMin / 60);
+		const timeHr = Math.floor(timeMin / 60);
 		timeMin -= timeHr * 60;
 		formatedTime = `${timeHr}:${timeMin.toLocaleString([], {
 			minimumIntegerDigits: 2,
@@ -83,13 +83,13 @@ export const getRuntimeMusic = (ticks) => {
  * @return {number} Converted ticks to H hour M minutes formate
  */
 export const getRuntimeFull = (ticks) => {
-	let time = ticksToMs(ticks);
+	const time = ticksToMs(ticks);
 	let formatedTime = "";
 	let timeSec = Math.floor(time / 1000);
 	let timeMin = Math.floor(timeSec / 60);
 	timeSec -= timeMin * 60;
 	if (timeMin > 60) {
-		let timeHr = Math.floor(timeMin / 60);
+		const timeHr = Math.floor(timeMin / 60);
 		timeMin -= timeHr * 60;
 		formatedTime = `${timeHr} hour ${timeMin} minutes`;
 	} else {
@@ -104,13 +104,13 @@ export const getRuntimeFull = (ticks) => {
  * @return {number} Converted ticks to Hhr Mmin formate
  */
 export const getRuntimeCompact = (ticks) => {
-	let time = ticksToMs(ticks);
+	const time = ticksToMs(ticks);
 	let formatedTime = "";
 	let timeSec = Math.floor(time / 1000);
 	let timeMin = Math.floor(timeSec / 60);
 	timeSec -= timeMin * 60;
 	if (timeMin > 60) {
-		let timeHr = Math.floor(timeMin / 60);
+		const timeHr = Math.floor(timeMin / 60);
 		timeMin -= timeHr * 60;
 		formatedTime = `${timeHr}h ${timeMin}m`;
 	} else {
@@ -125,11 +125,11 @@ export const getRuntimeCompact = (ticks) => {
  * @return {number} End time of an item
  */
 export const endsAt = (ticks) => {
-	let current = new Date();
-	let currentTime = current.getTime();
-	let time = ticksToMs(ticks);
-	let calculatedTime = currentTime + time;
-	let formated = new Date(calculatedTime).toLocaleString([], {
+	const current = new Date();
+	const currentTime = current.getTime();
+	const time = ticksToMs(ticks);
+	const calculatedTime = currentTime + time;
+	const formated = new Date(calculatedTime).toLocaleString([], {
 		hour: "2-digit",
 		minute: "2-digit",
 	});

@@ -6,7 +6,7 @@ import { mdiRewind } from "@mdi/js";
 export const MdiRewind = (props) => {
 	return (
 		<SvgIcon {...props}>
-			<path d={mdiRewind}></path>
+			<path d={mdiRewind} />
 		</SvgIcon>
 	);
 };

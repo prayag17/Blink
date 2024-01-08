@@ -7,7 +7,7 @@ import { mdiPlaylistMusicOutline } from "@mdi/js";
 export const MdiPlaylistMusicOutline = (props) => {
 	return (
 		<SvgIcon {...props}>
-			<path d={mdiPlaylistMusicOutline}></path>
+			<path d={mdiPlaylistMusicOutline} />
 		</SvgIcon>
 	);
 };

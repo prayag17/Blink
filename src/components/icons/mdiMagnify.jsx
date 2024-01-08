@@ -6,7 +6,7 @@ import { mdiMagnify } from "@mdi/js";
 export const MdiMagnify = (props) => {
 	return (
 		<SvgIcon {...props}>
-			<path d={mdiMagnify}></path>
+			<path d={mdiMagnify} />
 		</SvgIcon>
 	);
 };

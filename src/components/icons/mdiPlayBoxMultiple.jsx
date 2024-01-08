@@ -6,7 +6,7 @@ import { mdiPlayBoxMultiple } from "@mdi/js";
 export const MdiPlayBoxMultiple = (props) => {
 	return (
 		<SvgIcon {...props}>
-			<path d={mdiPlayBoxMultiple}></path>
+			<path d={mdiPlayBoxMultiple} />
 		</SvgIcon>
 	);
 };

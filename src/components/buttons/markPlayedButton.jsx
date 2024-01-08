@@ -3,16 +3,16 @@ import PropTypes from "prop-types";
 
 import React from "react";
 
-import IconButton from "@mui/material/IconButton";
 import CircularProgress from "@mui/material/CircularProgress";
+import IconButton from "@mui/material/IconButton";
 
-import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { green } from "@mui/material/colors";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 
 import { getPlaystateApi } from "@jellyfin/sdk/lib/utils/api/playstate-api";
-import { MdiCheck } from "../icons/mdiCheck";
 import { useSnackbar } from "notistack";
 import { useApi } from "../../utils/store/api";
+import { MdiCheck } from "../icons/mdiCheck";
 
 const MarkPlayedButton = ({ itemId, isPlayed, queryKey, userId, itemName }) => {
 	const [api] = useApi((state) => [state.api]);
@@ -39,12 +39,9 @@ const MarkPlayedButton = ({ itemId, isPlayed, queryKey, userId, itemName }) => {
 			enqueueSnackbar(`${error}`, {
 				variant: "error",
 			});
-			enqueueSnackbar(
-				`An error occured while updating "${itemName}"`,
-				{
-					variant: "error",
-				},
-			);
+			enqueueSnackbar(`An error occured while updating "${itemName}"`, {
+				variant: "error",
+			});
 			console.error(error);
 		},
 		onSettled: async () => {

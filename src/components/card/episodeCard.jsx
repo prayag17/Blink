@@ -4,20 +4,20 @@ import { useNavigate } from "react-router-dom";
 
 import MuiCard from "@mui/material/Card";
 import CardActionArea from "@mui/material/CardActionArea";
-import Typography from "@mui/material/Typography";
 import LinearProgress from "@mui/material/LinearProgress";
+import Typography from "@mui/material/Typography";
 
 import { Blurhash } from "react-blurhash";
 
-import "./card.module.scss";
 import { MdiCheck } from "../icons/mdiCheck";
+import "./card.module.scss";
 
+import { getRuntimeCompact } from "../../utils/date/time";
+import { useApi } from "../../utils/store/api";
 import LikeButton from "../buttons/likeButton";
 import MarkPlayedButton from "../buttons/markPlayedButton";
 import PlayButton from "../buttons/playButton";
 import { MdiTelevisionClassic } from "../icons/mdiTelevisionClassic";
-import { getRuntimeCompact } from "../../utils/date/time";
-import { useApi } from "../../utils/store/api";
 
 /**
  * @typedef {Object} Props
@@ -70,9 +70,7 @@ export const EpisodeCard = ({
 								opacity: item.UserData?.Played ? 1 : 0,
 							}}
 						>
-							<div className="material-symbols-rounded">
-								done
-							</div>
+							<div className="material-symbols-rounded">done</div>
 						</div>
 					)}
 					{!!imageBlurhash && (
@@ -86,9 +84,7 @@ export const EpisodeCard = ({
 						/>
 					)}
 					<div className="card-image-icon-container">
-						<div className="material-symbols-rounded">
-							tv_gen
-						</div>
+						<div className="material-symbols-rounded">tv_gen</div>
 					</div>
 					<img
 						src={api.getItemImageUrl(item.Id, "Primary", {
@@ -146,8 +142,7 @@ export const EpisodeCard = ({
 								bottom: 0,
 								zIndex: 2,
 								height: "6px",
-								background:
-									"rgb(5 5 5 /  0.5) !important",
+								background: "rgb(5 5 5 /  0.5) !important",
 								backdropFilter: "blur(5px)",
 							}}
 							color="primary"

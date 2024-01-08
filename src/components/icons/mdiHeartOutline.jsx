@@ -7,7 +7,7 @@ import { mdiHeartOutline } from "@mdi/js";
 export const MdiHeartOutline = (props) => {
 	return (
 		<SvgIcon {...props}>
-			<path d={mdiHeartOutline}></path>
+			<path d={mdiHeartOutline} />
 		</SvgIcon>
 	);
 };

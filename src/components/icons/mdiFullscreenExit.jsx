@@ -7,7 +7,7 @@ import { mdiFullscreenExit } from "@mdi/js";
 export const MdiFullscreenExit = (props) => {
 	return (
 		<SvgIcon {...props}>
-			<path d={mdiFullscreenExit}></path>
+			<path d={mdiFullscreenExit} />
 		</SvgIcon>
 	);
 };

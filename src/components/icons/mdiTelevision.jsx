@@ -7,7 +7,7 @@ import { mdiTelevision } from "@mdi/js";
 export const MdiTelevision = (props) => {
 	return (
 		<SvgIcon {...props}>
-			<path d={mdiTelevision}></path>
+			<path d={mdiTelevision} />
 		</SvgIcon>
 	);
 };

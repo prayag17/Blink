@@ -7,7 +7,7 @@ import { mdiFolderOutline } from "@mdi/js";
 export const MdiFolderOutline = (props) => {
 	return (
 		<SvgIcon {...props}>
-			<path d={mdiFolderOutline}></path>
+			<path d={mdiFolderOutline} />
 		</SvgIcon>
 	);
 };

@@ -1,24 +1,23 @@
-/** @format */
 import React, { useState } from "react";
 
-import Typography from "@mui/material/Typography";
-import Paper from "@mui/material/Paper";
-import IconButton from "@mui/material/IconButton";
 import Chip from "@mui/material/Chip";
+import IconButton from "@mui/material/IconButton";
+import Paper from "@mui/material/Paper";
+import Typography from "@mui/material/Typography";
 import { red } from "@mui/material/colors";
 
-import "./serverList.module.scss";
 import { useMutation, useQuery } from "@tanstack/react-query";
+import { useSnackbar } from "notistack";
+import { useNavigate } from "react-router-dom";
+import { AppBarBackOnly } from "../../../components/appBar/backOnly";
 import {
 	delServer,
 	getAllServers,
 	getDefaultServer,
 	setDefaultServer,
 } from "../../../utils/storage/servers";
-import { AppBarBackOnly } from "../../../components/appBar/backOnly";
-import { useNavigate } from "react-router-dom";
-import { useSnackbar } from "notistack";
 import { delUser } from "../../../utils/storage/user";
+import "./serverList.module.scss";
 
 const ServerList = () => {
 	const navigate = useNavigate();
@@ -37,11 +36,11 @@ const ServerList = () => {
 	const handleServerChange = useMutation({
 		mutationFn: async () => {
 			await delUser();
-			console.log(serverState)
+			console.log(serverState);
 			await setDefaultServer(serverState);
 		},
 		onSuccess: async () => {
-			navigate("/login/index")
+			navigate("/login/index");
 		},
 		onError: (error) => {
 			console.error(error);
@@ -53,8 +52,8 @@ const ServerList = () => {
 
 	const handleDelete = async (serverId) => {
 		await delServer(serverId);
-		
-		if (serverId == defaultServer.data) {
+
+		if (serverId === defaultServer.data) {
 			await delUser();
 			await servers.refetch();
 
@@ -67,7 +66,7 @@ const ServerList = () => {
 
 		servers.refetch();
 		defaultServer.refetch();
-	}
+	};
 
 	return (
 		<div className="server-list">
@@ -110,15 +109,12 @@ const ServerList = () => {
 									}}
 								>
 									{server.systemInfo.ServerName}
-									{server.id ==
-										defaultServer.data && (
+									{server.id === defaultServer.data && (
 										<Chip
 											label={
 												<Typography
 													variant="caption"
-													fontWeight={
-														600
-													}
+													fontWeight={600}
 													fontFamily="JetBrains Mono Variable"
 												>
 													Current
@@ -149,8 +145,7 @@ const ServerList = () => {
 									}}
 									fontWeight={300}
 								>
-									Version:{" "}
-									{server.systemInfo.Version}
+									Version: {server.systemInfo.Version}
 								</Typography>
 							</div>
 							<div className="server-list-item-buttons">
@@ -162,13 +157,9 @@ const ServerList = () => {
 										setServerState(server.id);
 										handleServerChange.mutate();
 									}}
-									disabled={
-										handleServerChange.isPending
-									}
+									disabled={handleServerChange.isPending}
 								>
-									<div className="material-symbols-rounded">
-										start
-									</div>
+									<div className="material-symbols-rounded">start</div>
 								</IconButton>
 								<IconButton
 									style={{
@@ -176,16 +167,12 @@ const ServerList = () => {
 
 										color: red[400],
 									}}
-									disabled={
-										handleServerChange.isPending
-									}
+									disabled={handleServerChange.isPending}
 									onClick={() => {
 										handleDelete(server.id);
 									}}
 								>
-									<div className="material-symbols-rounded">
-										delete_forever
-									</div>
+									<div className="material-symbols-rounded">delete_forever</div>
 								</IconButton>
 							</div>
 						</div>

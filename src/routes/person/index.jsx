@@ -1,12 +1,12 @@
+import PropTypes from "prop-types";
 /** @format */
 import React, { useState, useEffect } from "react";
-import PropTypes from "prop-types";
 
 import Box from "@mui/material/Box";
 import CircularProgress from "@mui/material/CircularProgress";
 import Divider from "@mui/material/Divider";
-import Tabs from "@mui/material/Tabs";
 import Tab from "@mui/material/Tab";
+import Tabs from "@mui/material/Tabs";
 import Typography from "@mui/material/Typography";
 
 import { AnimatePresence, motion } from "framer-motion";
@@ -18,18 +18,18 @@ import {
 	ItemFields,
 	LocationType,
 } from "@jellyfin/sdk/lib/generated-client";
+import { getItemsApi } from "@jellyfin/sdk/lib/utils/api/items-api";
 import { getUserApi } from "@jellyfin/sdk/lib/utils/api/user-api";
 import { getUserLibraryApi } from "@jellyfin/sdk/lib/utils/api/user-library-api";
-import { getItemsApi } from "@jellyfin/sdk/lib/utils/api/items-api";
 
 import { useQuery } from "@tanstack/react-query";
-import Hero from "../../components/layouts/item/hero";
 import { Card } from "../../components/card/card";
+import Hero from "../../components/layouts/item/hero";
 
-import "./person.module.scss";
 import { ErrorNotice } from "../../components/notices/errorNotice/errorNotice";
-import { useBackdropStore } from "../../utils/store/backdrop";
 import { useApi } from "../../utils/store/api";
+import { useBackdropStore } from "../../utils/store/backdrop";
+import "./person.module.scss";
 
 function TabPanel(props) {
 	const { children, value, index, ...other } = props;
@@ -68,7 +68,7 @@ const PersonTitlePage = () => {
 	const user = useQuery({
 		queryKey: ["user"],
 		queryFn: async () => {
-			let usr = await getUserApi(api).getCurrentUser();
+			const usr = await getUserApi(api).getCurrentUser();
 			return usr.data;
 		},
 		networkMode: "always",
@@ -104,7 +104,7 @@ const PersonTitlePage = () => {
 			});
 			return result.data;
 		},
-		enabled: item.isSuccess && item.data.Type == BaseItemKind.Person,
+		enabled: item.isSuccess && item.data.Type === BaseItemKind.Person,
 		networkMode: "always",
 	});
 	const personShows = useQuery({
@@ -121,7 +121,7 @@ const PersonTitlePage = () => {
 			});
 			return result.data;
 		},
-		enabled: item.isSuccess && item.data.Type == BaseItemKind.Person,
+		enabled: item.isSuccess && item.data.Type === BaseItemKind.Person,
 		networkMode: "always",
 	});
 
@@ -139,7 +139,7 @@ const PersonTitlePage = () => {
 			});
 			return result.data;
 		},
-		enabled: item.isSuccess && item.data.Type == BaseItemKind.Person,
+		enabled: item.isSuccess && item.data.Type === BaseItemKind.Person,
 		networkMode: "always",
 	});
 	const personPhotos = useQuery({
@@ -155,7 +155,7 @@ const PersonTitlePage = () => {
 			});
 			return result.data;
 		},
-		enabled: item.isSuccess && item.data.Type == BaseItemKind.Person,
+		enabled: item.isSuccess && item.data.Type === BaseItemKind.Person,
 		networkMode: "always",
 	});
 	const personEpisodes = useQuery({
@@ -173,7 +173,7 @@ const PersonTitlePage = () => {
 			});
 			return result.data;
 		},
-		enabled: item.isSuccess && item.data.Type == BaseItemKind.Person,
+		enabled: item.isSuccess && item.data.Type === BaseItemKind.Person,
 		networkMode: "always",
 	});
 
@@ -215,15 +215,15 @@ const PersonTitlePage = () => {
 			personPhotos.isSuccess &&
 			personEpisodes.isSuccess
 		) {
-			if (personMovies.data.TotalRecordCount != 0) {
+			if (personMovies.data.TotalRecordCount !== 0) {
 				setActivePersonTab(0);
-			} else if (personShows.data.TotalRecordCount != 0) {
+			} else if (personShows.data.TotalRecordCount !== 0) {
 				setActivePersonTab(1);
-			} else if (personBooks.data.TotalRecordCount != 0) {
+			} else if (personBooks.data.TotalRecordCount !== 0) {
 				setActivePersonTab(2);
-			} else if (personPhotos.data.TotalRecordCount != 0) {
+			} else if (personPhotos.data.TotalRecordCount !== 0) {
 				setActivePersonTab(3);
-			} else if (personEpisodes.data.TotalRecordCount != 0) {
+			} else if (personEpisodes.data.TotalRecordCount !== 0) {
 				setActivePersonTab(4);
 			}
 		}
@@ -314,11 +314,7 @@ const PersonTitlePage = () => {
 									<Tab
 										key={index}
 										label={tab.title}
-										disabled={
-											tab.data.data
-												?.TotalRecordCount ==
-											0
-										}
+										disabled={tab.data.data?.TotalRecordCount === 0}
 									/>
 								);
 							})}
@@ -328,33 +324,26 @@ const PersonTitlePage = () => {
 					<AnimatePresence>
 						{personTabs.map((tab, index) => {
 							return (
-								<TabPanel
-									value={activePersonTab}
-									index={index}
-									key={tab.title}
-								>
+								<TabPanel value={activePersonTab} index={index} key={tab.title}>
 									<motion.div
 										className={`item-detail-person-cards ${
-											tab.title == "Movies" ||
-											tab.title ==
-												"TV Shows" ||
-											tab.title == "Books"
-												? `col-8`
-												: `col-4`
+											tab.title === "Movies" ||
+											tab.title === "TV Shows" ||
+											tab.title === "Books"
+												? "col-8"
+												: "col-4"
 										}`}
 										key={tab.queryKey}
 										initial={{
 											opacity: 0,
 											transform:
-												animationDirection ==
-												"forward"
+												animationDirection === "forward"
 													? "translate(30px)"
 													: "translate(-30px)",
 										}}
 										animate={{
 											opacity: 1,
-											transform:
-												"translate(0px)",
+											transform: "translate(0px)",
 										}}
 										transition={{
 											duration: 0.2,
@@ -362,87 +351,51 @@ const PersonTitlePage = () => {
 										}}
 									>
 										{tab.data.isSuccess &&
-											tab.data.data.Items.map(
-												(
-													tabitem,
-													index,
-												) => {
-													return (
-														<Card
-															key={
-																tabitem.Id
-															}
-															item={
-																tabitem
-															}
-															cardTitle={
-																tabitem.Type ==
-																BaseItemKind.Episode
-																	? tabitem.SeriesName
-																	: tabitem.Name
-															}
-															imageType={
-																"Primary"
-															}
-															cardCaption={
-																tabitem.Type ==
-																BaseItemKind.Episode
-																	? `S${tabitem.ParentIndexNumber}:E${tabitem.IndexNumber} - ${tabitem.Name}`
-																	: tabitem.Type ==
-																	  BaseItemKind.Series
-																	? `${
-																			tabitem.ProductionYear
-																	  } - ${
-																			!!tabitem.EndDate
+											tab.data.data.Items.map((tabitem, index) => {
+												return (
+													<Card
+														key={tabitem.Id}
+														item={tabitem}
+														cardTitle={
+															tabitem.Type === BaseItemKind.Episode
+																? tabitem.SeriesName
+																: tabitem.Name
+														}
+														imageType={"Primary"}
+														cardCaption={
+															tabitem.Type === BaseItemKind.Episode
+																? `S${tabitem.ParentIndexNumber}:E${tabitem.IndexNumber} - ${tabitem.Name}`
+																: tabitem.Type === BaseItemKind.Series
+																  ? `${tabitem.ProductionYear} - ${
+																			tabitem.EndDate
 																				? new Date(
 																						tabitem.EndDate,
-																				  ).toLocaleString(
-																						[],
-																						{
-																							year: "numeric",
-																						},
-																				  )
+																				  ).toLocaleString([], {
+																						year: "numeric",
+																				  })
 																				: "Present"
 																	  }`
-																	: tabitem.ProductionYear
-															}
-															cardType={
-																tabitem.Type ==
-																BaseItemKind.Episode
-																	? "thumb"
-																	: "portrait"
-															}
-															queryKey={
-																tab.queryKey
-															}
-															userId={
-																user
-																	.data
-																	.Id
-															}
-															imageBlurhash={
-																!!tabitem
-																	.ImageBlurHashes
-																	?.Primary &&
-																tabitem
-																	.ImageBlurHashes
-																	?.Primary[
-																	Object.keys(
-																		tabitem
-																			.ImageBlurHashes
-																			.Primary,
-																	)[0]
-																]
-															}
-														/>
-													);
-												},
-											)}
+																  : tabitem.ProductionYear
+														}
+														cardType={
+															tabitem.Type === BaseItemKind.Episode
+																? "thumb"
+																: "portrait"
+														}
+														queryKey={tab.queryKey}
+														userId={user.data.Id}
+														imageBlurhash={
+															!!tabitem.ImageBlurHashes?.Primary &&
+															tabitem.ImageBlurHashes?.Primary[
+																Object.keys(tabitem.ImageBlurHashes.Primary)[0]
+															]
+														}
+													/>
+												);
+											})}
 									</motion.div>
 									{tab.data.isSuccess &&
-										tab.data.data
-											.TotalRecordCount >
-											24 && (
+										tab.data.data.TotalRecordCount > 24 && (
 											<Typography
 												variant="h6"
 												style={{

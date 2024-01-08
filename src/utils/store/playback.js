@@ -32,8 +32,7 @@ export const usePlaybackStore = create((set) => ({
 	setSeriesId: (anm) => set((state) => ({ ...state, seriesId: anm })),
 	setMediaContainer: (anm) =>
 		set((state) => ({ ...state, mediaContainer: anm })),
-	setMediaSourceId: (anm) =>
-		set((state) => ({ ...state, mediaSourceId: anm })),
+	setMediaSourceId: (anm) => set((state) => ({ ...state, mediaSourceId: anm })),
 	setAudioStreamIndex: (anm) =>
 		set((state) => ({ ...state, audioStreamIndex: anm })),
 	setVideoStreamIndex: (anm) =>

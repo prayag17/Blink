@@ -1,6 +1,6 @@
+import PropTypes from "prop-types";
 /** @format */
 import React from "react";
-import PropTypes from "prop-types";
 
 import Button from "@mui/material/Button";
 import Fab from "@mui/material/Fab";
@@ -8,23 +8,23 @@ import LinearProgress from "@mui/material/LinearProgress";
 import Typography from "@mui/material/Typography";
 
 import {
-	setItem,
-	usePlaybackDataLoadStore,
-	usePlaybackStore,
-} from "../../utils/store/playback";
-import { useNavigate } from "react-router-dom";
-import { useMutation } from "@tanstack/react-query";
-import { getTvShowsApi } from "@jellyfin/sdk/lib/utils/api/tv-shows-api";
-import { getItemsApi } from "@jellyfin/sdk/lib/utils/api/items-api";
-import {
 	BaseItemKind,
 	ItemFields,
 	SortOrder,
 } from "@jellyfin/sdk/lib/generated-client";
-import { useSnackbar } from "notistack";
-import { useAudioPlayback } from "../../utils/store/audioPlayback";
+import { getItemsApi } from "@jellyfin/sdk/lib/utils/api/items-api";
 import { getPlaylistsApi } from "@jellyfin/sdk/lib/utils/api/playlists-api";
+import { getTvShowsApi } from "@jellyfin/sdk/lib/utils/api/tv-shows-api";
+import { useMutation } from "@tanstack/react-query";
+import { useSnackbar } from "notistack";
+import { useNavigate } from "react-router-dom";
 import { useApi } from "../../utils/store/api";
+import { useAudioPlayback } from "../../utils/store/audioPlayback";
+import {
+	setItem,
+	usePlaybackDataLoadStore,
+	usePlaybackStore,
+} from "../../utils/store/playback";
 
 const PlayButton = ({
 	itemId,
@@ -114,17 +114,12 @@ const PlayButton = ({
 							seriesId: itemId,
 							limit: 1,
 							startIndex: 0,
-							fields: [
-								ItemFields.MediaSources,
-								ItemFields.MediaStreams,
-							],
+							fields: [ItemFields.MediaSources, ItemFields.MediaStreams],
 							enableUserData: true,
 						});
 						break;
 					case BaseItemKind.Playlist:
-						result = await getPlaylistsApi(
-							api,
-						).getPlaylistItems({
+						result = await getPlaylistsApi(api).getPlaylistItems({
 							userId: userId,
 							playlistId: playlistItemId,
 						});
@@ -133,10 +128,7 @@ const PlayButton = ({
 						result = await getItemsApi(api).getItems({
 							parentId: itemId,
 							userId: userId,
-							fields: [
-								ItemFields.MediaSources,
-								ItemFields.MediaStreams,
-							],
+							fields: [ItemFields.MediaSources, ItemFields.MediaStreams],
 							sortOrder: SortOrder.Ascending,
 							sortBy: "IndexNumber",
 						});
@@ -147,26 +139,16 @@ const PlayButton = ({
 							recursive: true,
 							includeItemTypes: [BaseItemKind.Audio],
 							userId: userId,
-							fields: [
-								ItemFields.MediaSources,
-								ItemFields.MediaStreams,
-							],
+							fields: [ItemFields.MediaSources, ItemFields.MediaStreams],
 							sortOrder: SortOrder.Ascending,
-							sortBy: [
-								"PremiereDate",
-								"ProductionYear",
-								"SortName",
-							],
+							sortBy: ["PremiereDate", "ProductionYear", "SortName"],
 						});
 						break;
 					default:
 						result = await getItemsApi(api).getItems({
 							ids: [itemId],
 							userId: userId,
-							fields: [
-								ItemFields.MediaSources,
-								ItemFields.MediaStreams,
-							],
+							fields: [ItemFields.MediaSources, ItemFields.MediaStreams],
 							sortOrder: SortOrder.Ascending,
 							sortBy: "IndexNumber",
 						});
@@ -198,7 +180,7 @@ const PlayButton = ({
 				setItemId(item.Items[0].Id);
 				setDuration(item.Items[0].RunTimeTicks);
 
-				if (item.Items[0].Type == BaseItemKind.Episode) {
+				if (item.Items[0].Type === BaseItemKind.Episode) {
 					setSeriesId(item.Items[0].SeriesId);
 					// setEpisodeIndex(item.Ite)
 				}
@@ -229,9 +211,7 @@ const PlayButton = ({
 						} else {
 							setItemName(
 								<div className="video-osd-name">
-									<Typography variant="h6">
-										{item.Items[0].Name}
-									</Typography>
+									<Typography variant="h6">{item.Items[0].Name}</Typography>
 								</div>,
 							);
 						}
@@ -248,16 +228,9 @@ const PlayButton = ({
 										}}
 									/>
 									<Typography variant="subtitle1">
-										S
-										{
-											item.Items[0]
-												.ParentIndexNumber
-										}
+										S{item.Items[0].ParentIndexNumber}
 										:E
-										{
-											item.Items[0].IndexNumber
-										}{" "}
-										{item.Items[0].Name}
+										{item.Items[0].IndexNumber} {item.Items[0].Name}
 									</Typography>
 								</div>,
 							);
@@ -268,16 +241,9 @@ const PlayButton = ({
 										{item.Items[0].SeriesName}
 									</Typography>
 									<Typography variant="subtitle1">
-										S
-										{
-											item.Items[0]
-												.ParentIndexNumber
-										}
+										S{item.Items[0].ParentIndexNumber}
 										:E
-										{
-											item.Items[0].IndexNumber
-										}{" "}
-										{item.Items[0].Name}
+										{item.Items[0].IndexNumber} {item.Items[0].Name}
 									</Typography>
 								</div>,
 							);
@@ -287,9 +253,7 @@ const PlayButton = ({
 					default:
 						setItemName(
 							<div className="video-osd-name">
-								<Typography variant="h6">
-									{item.Items[0].Name}
-								</Typography>
+								<Typography variant="h6">{item.Items[0].Name}</Typography>
 							</div>,
 						);
 						break;
@@ -302,7 +266,7 @@ const PlayButton = ({
 								?Static=true&mediaSourceId=${item.Items[0].Id}&deviceId=${api.deviceInfo.id}&api_key=${api.accessToken}&Tag=${item.Items[0].MediaSources[0].ETag}&videoStreamIndex=${currentVideoTrack}&audioStreamIndex=${currentAudioTrack}`,
 				);
 
-				navigate(`/player`);
+				navigate("/player");
 			}
 		},
 		onSettled: () => {
@@ -339,53 +303,52 @@ const PlayButton = ({
 				</div>
 			</Fab>
 		);
-	} else {
-		return (
-			<Button
-				className={className}
-				variant="contained"
-				onClick={handleClick}
-				startIcon={
-					<div
-						className="material-symbols-rounded"
-						style={{
-							fontSize: "2em",
-						}}
-					>
-						play_arrow
-					</div>
-				}
-				{...buttonProps}
-				sx={{
-					position: "relative",
-					overflow: "hidden",
-				}}
-				size={size}
-			>
-				<LinearProgress
-					variant="determinate"
-					value={
-						100 > itemUserData.PlayedPercentage > 0
-							? itemUserData.PlayedPercentage
-							: 0
-					}
-					sx={{
-						position: "absolute",
-						top: 0,
-						left: 0,
-						right: 0,
-						bottom: 0,
-						height: "100%",
-						background: "transparent",
-						opacity: 0.2,
-						zIndex: 0,
-					}}
-					color="white"
-				/>
-				{itemUserData.PlaybackPositionTicks > 0 ? "Resume" : "Play"}
-			</Button>
-		);
 	}
+	return (
+		<Button
+			className={className}
+			variant="contained"
+			onClick={handleClick}
+			startIcon={
+				<div
+					className="material-symbols-rounded"
+					style={{
+						fontSize: "2em",
+					}}
+				>
+					play_arrow
+				</div>
+			}
+			{...buttonProps}
+			sx={{
+				position: "relative",
+				overflow: "hidden",
+			}}
+			size={size}
+		>
+			<LinearProgress
+				variant="determinate"
+				value={
+					100 > itemUserData.PlayedPercentage > 0
+						? itemUserData.PlayedPercentage
+						: 0
+				}
+				sx={{
+					position: "absolute",
+					top: 0,
+					left: 0,
+					right: 0,
+					bottom: 0,
+					height: "100%",
+					background: "transparent",
+					opacity: 0.2,
+					zIndex: 0,
+				}}
+				color="white"
+			/>
+			{itemUserData.PlaybackPositionTicks > 0 ? "Resume" : "Play"}
+		</Button>
+	);
 };
 
 export default PlayButton;

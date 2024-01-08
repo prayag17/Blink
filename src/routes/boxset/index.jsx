@@ -1,10 +1,10 @@
+import PropTypes from "prop-types";
 /** @format */
 import React, { useState, useEffect } from "react";
-import PropTypes from "prop-types";
 
 import Box from "@mui/material/Box";
 import CircularProgress from "@mui/material/CircularProgress";
-import { useParams, useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 
 import { motion } from "framer-motion";
 
@@ -13,20 +13,20 @@ import {
 	ItemFields,
 	LocationType,
 } from "@jellyfin/sdk/lib/generated-client";
+import { getItemsApi } from "@jellyfin/sdk/lib/utils/api/items-api";
+import { getLibraryApi } from "@jellyfin/sdk/lib/utils/api/library-api";
 import { getUserApi } from "@jellyfin/sdk/lib/utils/api/user-api";
 import { getUserLibraryApi } from "@jellyfin/sdk/lib/utils/api/user-library-api";
-import { getLibraryApi } from "@jellyfin/sdk/lib/utils/api/library-api";
-import { getItemsApi } from "@jellyfin/sdk/lib/utils/api/items-api";
 import { useQuery } from "@tanstack/react-query";
 
-import Hero from "../../components/layouts/item/hero";
 import { Card } from "../../components/card/card";
 import { CardScroller } from "../../components/cardScroller/cardScroller";
+import Hero from "../../components/layouts/item/hero";
 
-import "./boxset.module.scss";
 import { ErrorNotice } from "../../components/notices/errorNotice/errorNotice";
-import { useBackdropStore } from "../../utils/store/backdrop";
 import { useApi } from "../../utils/store/api";
+import { useBackdropStore } from "../../utils/store/backdrop";
+import "./boxset.module.scss";
 function TabPanel(props) {
 	const { children, value, index, ...other } = props;
 
@@ -57,7 +57,7 @@ const BoxSetTitlePage = () => {
 	const user = useQuery({
 		queryKey: ["user"],
 		queryFn: async () => {
-			let usr = await getUserApi(api).getCurrentUser();
+			const usr = await getUserApi(api).getCurrentUser();
 			return usr.data;
 		},
 		networkMode: "always",
@@ -80,7 +80,7 @@ const BoxSetTitlePage = () => {
 	});
 
 	const collectionItems = useQuery({
-		queryKey: ["item", id, `collection`],
+		queryKey: ["item", id, "collection"],
 		queryFn: async () => {
 			const result = await getItemsApi(api).getItems({
 				userId: user.data.Id,
@@ -123,13 +123,9 @@ const BoxSetTitlePage = () => {
 					: `${api.basePath}/Items/${item.data.Id}/Images/Backdrop`,
 				item.data.Id,
 			);
-			let direTp = item.data.People.filter(
-				(itm) => itm.Type == "Director",
-			);
+			const direTp = item.data.People.filter((itm) => itm.Type === "Director");
 			setDirectors(direTp);
-			let writeTp = item.data.People.filter(
-				(itm) => itm.Type == "Writer",
-			);
+			const writeTp = item.data.People.filter((itm) => itm.Type === "Writer");
 			setWriters(writeTp);
 		}
 	}, [item.isSuccess]);
@@ -180,11 +176,7 @@ const BoxSetTitlePage = () => {
 					studios={item.data.Studios}
 				/>
 				{item.data.People.length > 0 && (
-					<CardScroller
-						title="Cast & Crew"
-						displayCards={8}
-						disableDecoration
-					>
+					<CardScroller title="Cast & Crew" displayCards={8} disableDecoration>
 						{item.data.People.map((person, index) => {
 							return (
 								<Card
@@ -194,10 +186,7 @@ const BoxSetTitlePage = () => {
 									cardCaption={person.Role}
 									cardType="square"
 									userId={user.data.Id}
-									imageBlurhash={
-										person.ImageBlurHashes
-											?.Primary[0]
-									}
+									imageBlurhash={person.ImageBlurHashes?.Primary[0]}
 									overrideIcon="Person"
 									disableOverlay
 								/>
@@ -206,51 +195,32 @@ const BoxSetTitlePage = () => {
 					</CardScroller>
 				)}
 				{collectionItems.data.TotalRecordCount > 0 && (
-					<CardScroller
-						title="Items"
-						displayCards={8}
-						disableDecoration
-					>
-						{collectionItems.data.Items.map(
-							(similar, index) => {
-								return (
-									<Card
-										key={similar.Id}
-										item={similar}
-										seriesId={similar.SeriesId}
-										cardTitle={
-											similar.Type ==
-											BaseItemKind.Episode
-												? similar.SeriesName
-												: similar.Name
-										}
-										imageType={"Primary"}
-										cardCaption={
-											similar.ProductionYear
-										}
-										cardType={"portrait"}
-										queryKey={[
-											"item",
-											id,
-											`collection`,
-										]}
-										userId={user.data.Id}
-										imageBlurhash={
-											!!similar.ImageBlurHashes
-												?.Primary &&
-											similar.ImageBlurHashes
-												?.Primary[
-												Object.keys(
-													similar
-														.ImageBlurHashes
-														.Primary,
-												)[0]
-											]
-										}
-									/>
-								);
-							},
-						)}
+					<CardScroller title="Items" displayCards={8} disableDecoration>
+						{collectionItems.data.Items.map((similar, index) => {
+							return (
+								<Card
+									key={similar.Id}
+									item={similar}
+									seriesId={similar.SeriesId}
+									cardTitle={
+										similar.Type === BaseItemKind.Episode
+											? similar.SeriesName
+											: similar.Name
+									}
+									imageType={"Primary"}
+									cardCaption={similar.ProductionYear}
+									cardType={"portrait"}
+									queryKey={["item", id, "collection"]}
+									userId={user.data.Id}
+									imageBlurhash={
+										!!similar.ImageBlurHashes?.Primary &&
+										similar.ImageBlurHashes?.Primary[
+											Object.keys(similar.ImageBlurHashes.Primary)[0]
+										]
+									}
+								/>
+							);
+						})}
 					</CardScroller>
 				)}
 				{similarItems.data.TotalRecordCount > 0 && (
@@ -266,58 +236,36 @@ const BoxSetTitlePage = () => {
 									item={similar}
 									seriesId={similar.SeriesId}
 									cardTitle={
-										similar.Type ==
-										BaseItemKind.Episode
+										similar.Type === BaseItemKind.Episode
 											? similar.SeriesName
 											: similar.Name
 									}
 									imageType={"Primary"}
 									cardCaption={
-										similar.Type ==
-										BaseItemKind.Episode
+										similar.Type === BaseItemKind.Episode
 											? `S${similar.ParentIndexNumber}:E${similar.IndexNumber} - ${similar.Name}`
-											: similar.Type ==
-											  BaseItemKind.Series
-											? `${
-													similar.ProductionYear
-											  } - ${
-													!!similar.EndDate
-														? new Date(
-																similar.EndDate,
-														  ).toLocaleString(
-																[],
-																{
+											: similar.Type === BaseItemKind.Series
+											  ? `${similar.ProductionYear} - ${
+														similar.EndDate
+															? new Date(similar.EndDate).toLocaleString([], {
 																	year: "numeric",
-																},
-														  )
-														: "Present"
-											  }`
-											: similar.ProductionYear
+															  })
+															: "Present"
+												  }`
+											  : similar.ProductionYear
 									}
 									cardType={
-										similar.Type ==
-											BaseItemKind.MusicAlbum ||
-										similar.Type ==
-											BaseItemKind.Audio
+										similar.Type === BaseItemKind.MusicAlbum ||
+										similar.Type === BaseItemKind.Audio
 											? "square"
 											: "portrait"
 									}
-									queryKey={[
-										"item",
-										id,
-										"similarItem",
-									]}
+									queryKey={["item", id, "similarItem"]}
 									userId={user.data.Id}
 									imageBlurhash={
-										!!similar.ImageBlurHashes
-											?.Primary &&
-										similar.ImageBlurHashes
-											?.Primary[
-											Object.keys(
-												similar
-													.ImageBlurHashes
-													.Primary,
-											)[0]
+										!!similar.ImageBlurHashes?.Primary &&
+										similar.ImageBlurHashes?.Primary[
+											Object.keys(similar.ImageBlurHashes.Primary)[0]
 										]
 									}
 								/>
