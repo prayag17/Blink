@@ -34,7 +34,6 @@ import DialogContentText from "@mui/material/DialogContentText";
 import DialogTitle from "@mui/material/DialogTitle";
 import IconButton from "@mui/material/IconButton";
 import LinearProgress from "@mui/material/LinearProgress";
-import Slide from "@mui/material/Slide";
 import SvgIcon from "@mui/material/SvgIcon";
 import Typography from "@mui/material/Typography";
 
@@ -48,7 +47,12 @@ import FavoritePage from "./routes/favorite/index.jsx";
 import Home from "./routes/home";
 import ItemDetail from "./routes/item";
 import LibraryView from "./routes/library";
-import { LoginRoute, LoginWithImage, UserLogin, UserLoginManual } from "./routes/login";
+import {
+	LoginRoute,
+	LoginWithImage,
+	UserLogin,
+	UserLoginManual,
+} from "./routes/login";
 import PersonTitlePage from "./routes/person/index.jsx";
 import { VideoPlayer } from "./routes/player/videoPlayer.jsx";
 import PlaylistTitlePage from "./routes/playlist/index.jsx";
@@ -100,7 +104,6 @@ import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 import { useSnackbar } from "notistack";
 import { ErrorBoundary } from "react-error-boundary";
 import { EasterEgg } from "./components/utils/easterEgg.jsx";
-import { useKonamiEasterEgg } from "./utils/misc/konami";
 import { handleRelaunch } from "./utils/misc/relaunch";
 
 // const anim = {
@@ -137,7 +140,6 @@ import { handleRelaunch } from "./utils/misc/relaunch";
 
 function App() {
 	const [audioPlayerVisible] = useAudioPlayback((state) => [state.display]);
-	const [easterEgg, setEasterEgg] = useKonamiEasterEgg();
 	const { enqueueSnackbar } = useSnackbar();
 
 	const [initialRoute] = useCentralStore((state) => [state.initialRoute]);

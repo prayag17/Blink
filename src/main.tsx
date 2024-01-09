@@ -33,12 +33,13 @@ const handleAuthError = async () => {
 	setInitialRoute("/login/index");
 };
 
-const authenticateUser = async (address: string, api: Api, user: UserStore["user"]) => {
+const authenticateUser = async (
+	address: string,
+	api: Api,
+	user: UserStore["user"],
+) => {
 	try {
-		const auth = await api.authenticateUserByName(
-			user.Name,
-			user.Password
-		);
+		const auth = await api.authenticateUserByName(user.Name, user.Password);
 
 		if (auth.status !== 200 || !auth.data.AccessToken) {
 			enqueueSnackbar("Incorrect Username or Password!", {
@@ -98,16 +99,16 @@ const init = async () => {
 	}
 };
 
-await init();
+init().then(() => {
+	ReactDOM.createRoot(document.getElementById("root")!).render(
+		<React.StrictMode>
+			<QueryClientProvider client={queryClient}>
+				<Router>
+					<App />
+				</Router>
+			</QueryClientProvider>
+		</React.StrictMode>,
+	);
 
-ReactDOM.createRoot(document.getElementById("root")!).render(
-	<React.StrictMode>
-		<QueryClientProvider client={queryClient}>
-			<Router>
-				<App />
-			</Router>
-		</QueryClientProvider>
-	</React.StrictMode>
-);
-
-document.querySelector(".app-loading")!.setAttribute("style", "display:none");
+	document.querySelector(".app-loading")!.setAttribute("style", "display:none");
+});

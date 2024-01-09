@@ -1,26 +1,24 @@
-import { appLocalDataDir, join } from "@tauri-apps/api/path";
 import { Store } from "tauri-plugin-store-api";
 
 export interface UserStore {
-  user: {
-    Name: string;
-    Password: string;
-  };
+	user: {
+		Name: string;
+		Password: string;
+	};
 }
 
-const base = await appLocalDataDir();
-const user = new Store(await join(base, ".user.dat"));
+const user = new Store(".user.dat");
 
 /**
  * Set User details to .user.dat
  */
 const saveUser = async (userName: string, userPassword?: string) => {
-  user.set("user", {
-    Name: userName,
-    Password: userPassword,
-  });
+	user.set("user", {
+		Name: userName,
+		Password: userPassword,
+	});
 
-  await user.save();
+	await user.save();
 };
 
 /**
@@ -28,15 +26,15 @@ const saveUser = async (userName: string, userPassword?: string) => {
  * @return {object}
  */
 const getUser = async () => {
-  return user.get<UserStore["user"]>("user");
+	return user.get<UserStore["user"]>("user");
 };
 
 /**
  * Delete user from storage
  */
 const delUser = async () => {
-  await user.clear();
-  await user.save();
+	await user.clear();
+	await user.save();
 };
 
 export { saveUser, getUser, delUser };

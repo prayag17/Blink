@@ -10,6 +10,18 @@
 	"[json]": {
 		"editor.defaultFormatter": "biomejs.biome"
 	},
+	"[typescriptreact]": {
+		"editor.defaultFormatter": "biomejs.biome"
+	},
+	"[typescript]": {
+		"editor.defaultFormatter": "biomejs.biome"
+	},
+	"[javascriptreact]": {
+		"editor.defaultFormatter": "biomejs.biome"
+	},
+	"[javascript]": {
+		"editor.defaultFormatter": "biomejs.biome"
+	},
 	"rust-analyzer.linkedProjects": ["./src-tauri/Cargo.toml"],
 	"typescript.tsdk": "node_modules/typescript/lib"
 }
