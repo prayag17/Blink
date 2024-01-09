@@ -271,7 +271,8 @@ const SeriesTitlePage = () => {
 									item.data.Id,
 									"Backdrop",
 									{
-										quality: 90,
+										tag: item.data
+											.BackdropImageTags[0],
 									},
 								)}
 								className="item-hero-backdrop"
@@ -1074,65 +1075,92 @@ const SeriesTitlePage = () => {
 						<Divider />
 						<div className="item-detail-episodes-container">
 							{episodes.isPending
-								? Array.from(new Array(4)).map((a) => {
-										return (
-											<MuiCard
-												key={a}
-												sx={{
-													background:
-														"transparent",
-												}}
-												elevation={0}
-											>
-												<CardMedia>
-													<Skeleton
-														animation="wave"
-														variant="rectangular"
-														sx={{
-															aspectRatio:
-																"1.777",
-															height: "auto",
-															m: 1,
-															borderRadius:
-																"10px",
-														}}
-													/>
-												</CardMedia>
-												<CardContent
+								? Array.from(new Array(4)).map(
+										(a, index) => {
+											return (
+												<MuiCard
+													key={a}
 													sx={{
-														padding: "0 0.5em",
-														alignItems:
-															"flex-start",
-														backgroundColor:
+														background:
 															"transparent",
+														width: "100%",
 													}}
+													elevation={0}
 												>
-													<Typography variant="h6">
+													<CardMedia>
 														<Skeleton
-															variant="text"
-															animation="wave"
+															// animation="wave"
+															variant="rectangular"
+															sx={{
+																aspectRatio:
+																	"1.777",
+																height: "auto",
+																m: 1,
+																borderRadius:
+																	"10px",
+																animationDelay: `${
+																	index *
+																	0.15
+																}s`,
+															}}
 														/>
-													</Typography>
+													</CardMedia>
+													<CardContent
+														sx={{
+															padding: "0 0.5em",
+															alignItems:
+																"flex-start",
+															backgroundColor:
+																"transparent",
+														}}
+													>
+														<Typography variant="h6">
+															<Skeleton
+																variant="text"
+																sx={{
+																	animationDelay: `${
+																		index *
+																		0.15
+																	}s`,
+																}}
+															/>
+														</Typography>
 
-													<Typography variant="body2">
-														<Skeleton
-															variant="text"
-															animation="wave"
-														/>
-														<Skeleton
-															variant="text"
-															animation="wave"
-														/>
+														<Typography variant="body2">
+															<Skeleton
+																variant="text"
+																sx={{
+																	animationDelay: `${
+																		index *
+																		0.15
+																	}s`,
+																}}
+															/>
+															<Skeleton
+																variant="text"
+																sx={{
+																	animationDelay: `${
+																		index *
+																		0.15
+																	}s`,
+																}}
+															/>
 
-														<Skeleton
-															variant="text"
-															animation="wave"
-														/>
-													</Typography>
-												</CardContent>
-											</MuiCard>
-										);
-								  })
+															<Skeleton
+																variant="text"
+																sx={{
+																	animationDelay: `${
+																		index *
+																		0.15
+																	}s`,
+																}}
+															/>
+														</Typography>
+													</CardContent>
+												</MuiCard>
+											);
+										},
+								  )
 								: episodes.data.Items.map((episode) => {
 										return (
 											<motion.div

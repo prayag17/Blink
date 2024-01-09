@@ -321,7 +321,8 @@ const ItemDetail = () => {
 									item.data.Id,
 									"Backdrop",
 									{
-										quality: 90,
+										tag: item.data
+											.BackdropImageTags[0],
 									},
 								)}
 								className="item-hero-backdrop"
