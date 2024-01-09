@@ -1,4 +1,3 @@
-
 import { useMutation, useQuery } from "@tanstack/react-query";
 import React, { useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
@@ -38,6 +37,41 @@ import { getUserApi } from "@jellyfin/sdk/lib/utils/api/user-api";
 import { ErrorNotice } from "../../components/notices/errorNotice/errorNotice.jsx";
 import { useApi } from "../../utils/store/api";
 import "./login.module.scss";
+
+export const LoginRoute = () => {
+	const navigate = useNavigate();
+	const [api] = useApi((state) => [state.api]);
+
+	const usersList = useQuery({
+		queryKey: ["public-users"],
+		queryFn: async () => {
+			const result = await getUserApi(api).getPublicUsers();
+			return result.data;
+		},
+		enabled: Boolean(api),
+	});
+
+	if (usersList.isSuccess && !usersList.isFetching) {
+		if (usersList.data.length > 0) {
+			navigate("/login/users");
+		} else {
+			navigate("/login/manual");
+		}
+	}
+
+	return (
+		<div
+			style={{
+				position: "fixed",
+				top: "50%",
+				left: "50%",
+				transform: "translate(-50%, -50%)",
+			}}
+		>
+			<CircularProgress size={72} thickness={1.4} />
+		</div>
+	);
+};
 
 export const LoginWithImage = () => {
 	const { userName, userId } = useParams();
@@ -281,7 +315,7 @@ export const UserLogin = () => {
 						{users.data.map((item, index) => {
 							return (
 								<Grid
-									key={index}
+									key={item.Id}
 									flexShrink={0}
 									flexGrow={1}
 									xs={1}
@@ -289,7 +323,6 @@ export const UserLogin = () => {
 									md={1}
 								>
 									<Card
-										key={index}
 										cardTitle={item.Name}
 										item={item}
 										disableOverlay

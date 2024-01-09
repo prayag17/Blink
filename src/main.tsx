@@ -1,12 +1,10 @@
-import React from "react";
-import ReactDOM from "react-dom/client";
-
-import { BrowserRouter as Router } from "react-router-dom";
-
-import App from "./App";
-
+import { Api } from "@jellyfin/sdk";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { enqueueSnackbar } from "notistack";
+import React from "react";
+import ReactDOM from "react-dom/client";
+import { BrowserRouter as Router } from "react-router-dom";
+import App from "./App";
 import {
 	delServer,
 	getAllServers,
@@ -14,7 +12,7 @@ import {
 	getServer,
 	setDefaultServer,
 } from "./utils/storage/servers";
-import { delUser, getUser } from "./utils/storage/user";
+import { UserStore, delUser, getUser } from "./utils/storage/user";
 import { createApi, useApi } from "./utils/store/api";
 import { setInitialRoute } from "./utils/store/central";
 
@@ -30,10 +28,38 @@ const queryClient = new QueryClient({
 	},
 });
 
+const handleAuthError = async () => {
+	await delUser();
+	setInitialRoute("/login/index");
+};
+
+const authenticateUser = async (address: string, api: Api, user: UserStore["user"]) => {
+	try {
+		const auth = await api.authenticateUserByName(
+			user.Name,
+			user.Password
+		);
+
+		if (auth.status !== 200 || !auth.data.AccessToken) {
+			enqueueSnackbar("Incorrect Username or Password!", {
+				variant: "error",
+			});
+
+			handleAuthError();
+		} else {
+			createApi(address, auth.data.AccessToken);
+			setInitialRoute("/home");
+		}
+	} catch (error) {
+		console.error(error);
+		setInitialRoute("/error");
+	}
+};
+
 const init = async () => {
 	const defaultServerOnDisk = await getDefaultServer();
+
 	if (defaultServerOnDisk) {
-		// This will be defined as we have a default server
 		const defaultServerInfo = await getServer(defaultServerOnDisk);
 
 		if (!defaultServerInfo) {
@@ -42,40 +68,27 @@ const init = async () => {
 
 			const servers = await getAllServers();
 
-			if (servers.length > 0) {
-				setInitialRoute("/servers/list");
-			} else {
-				setInitialRoute("/setup/server");
-			}
+			setInitialRoute(servers.length > 0 ? "/servers/list" : "/setup/server");
 
 			return;
 		}
 
 		const userOnDisk = await getUser();
-
 		createApi(defaultServerInfo.address, "");
 
 		if (userOnDisk) {
 			try {
-				// Api is created with empty token, so we can authenticate
-				const auth = await useApi
-					.getState()
-					.api!.authenticateUserByName(userOnDisk.Name, userOnDisk.Password);
+				const authApi = useApi.getState().api;
 
-				if (auth.status !== 200 || !auth.data.AccessToken) {
-					enqueueSnackbar("Incorrect Username or Password!", {
-						variant: "error",
-					});
-
-					await delUser();
-					setInitialRoute("/login/index");
-				} else {
-					createApi(defaultServerInfo.address, auth.data.AccessToken);
-					setInitialRoute("/home");
+				if (!authApi) {
+					handleAuthError();
+					return;
 				}
+
+				await authenticateUser(defaultServerInfo.address, authApi, userOnDisk);
 			} catch (error) {
 				console.error(error);
-				setInitialRoute("/error");
+				handleAuthError();
 			}
 		} else {
 			setInitialRoute("/login/index");
@@ -84,7 +97,8 @@ const init = async () => {
 		setInitialRoute("/setup/server");
 	}
 };
-init();
+
+await init();
 
 ReactDOM.createRoot(document.getElementById("root")!).render(
 	<React.StrictMode>
@@ -93,12 +107,7 @@ ReactDOM.createRoot(document.getElementById("root")!).render(
 				<App />
 			</Router>
 		</QueryClientProvider>
-	</React.StrictMode>,
+	</React.StrictMode>
 );
 
-document.addEventListener("DOMContentLoaded", () => {
-	// This will wait for the window to load, but you could
-	// run this function on whatever trigger you want
-	console.info("Initial render complete");
-	document.querySelector(".app-loading")?.setAttribute("style", "display:none");
-});
+document.querySelector(".app-loading")!.setAttribute("style", "display:none");

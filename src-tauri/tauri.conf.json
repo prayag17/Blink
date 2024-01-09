@@ -28,6 +28,9 @@
 				"all": true,
 				"request": true,
 				"scope": ["http://**", "http://*", "https://**", "https://*"]
+			},
+			"path": {
+				"all": true
 			}
 		},
 		"bundle": {

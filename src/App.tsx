@@ -1,7 +1,5 @@
 import React, { useState, useEffect } from "react";
 
-import useKonami from "react-use-konami";
-
 import { ThemeProvider } from "@mui/material/styles";
 import { AnimatePresence, motion } from "framer-motion";
 import { SnackbarProvider } from "notistack";
@@ -19,8 +17,6 @@ import {
 	checkUpdate,
 	installUpdate,
 } from "@tauri-apps/api/updater";
-
-import { getUserApi } from "@jellyfin/sdk/lib/utils/api/user-api";
 
 // Theming
 import CssBaseline from "@mui/material/CssBaseline";
@@ -52,7 +48,7 @@ import FavoritePage from "./routes/favorite/index.jsx";
 import Home from "./routes/home";
 import ItemDetail from "./routes/item";
 import LibraryView from "./routes/library";
-import { LoginWithImage, UserLogin, UserLoginManual } from "./routes/login";
+import { LoginRoute, LoginWithImage, UserLogin, UserLoginManual } from "./routes/login";
 import PersonTitlePage from "./routes/person/index.jsx";
 import { VideoPlayer } from "./routes/player/videoPlayer.jsx";
 import PlaylistTitlePage from "./routes/playlist/index.jsx";
@@ -93,7 +89,6 @@ import { ErrorNotice } from "./components/notices/errorNotice/errorNotice.jsx";
 import AudioPlayer from "./components/playback/audioPlayer/index.jsx";
 
 // Utils
-import { useApi } from "./utils/store/api";
 import { useAudioPlayback } from "./utils/store/audioPlayback.js";
 import { useBackdropStore } from "./utils/store/backdrop.js";
 import { useCentralStore } from "./utils/store/central.js";
@@ -101,45 +96,12 @@ import { usePlaybackDataLoadStore } from "./utils/store/playback.js";
 
 // 3rd Party
 import { CircularProgress } from "@mui/material";
-import { useQuery } from "@tanstack/react-query";
 import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 import { useSnackbar } from "notistack";
 import { ErrorBoundary } from "react-error-boundary";
-
-const LoginRoute = () => {
-	const navigate = useNavigate();
-	const [api] = useApi((state) => [state.api]);
-
-	const usersList = useQuery({
-		queryKey: ["public-users"],
-		queryFn: async () => {
-			const result = await getUserApi(api!).getPublicUsers();
-			return result.data;
-		},
-		enabled: Boolean(api),
-	});
-
-	if (usersList.isSuccess && !usersList.isFetching) {
-		if (usersList.data.length > 0) {
-			navigate("/login/users");
-		} else {
-			navigate("/login/manual");
-		}
-	}
-
-	return (
-		<div
-			style={{
-				position: "fixed",
-				top: "50%",
-				left: "50%",
-				transform: "translate(-50%, -50%)",
-			}}
-		>
-			<CircularProgress size={72} thickness={1.4} />
-		</div>
-	);
-};
+import { EasterEgg } from "./components/utils/easterEgg.jsx";
+import { useKonamiEasterEgg } from "./utils/misc/konami";
+import { handleRelaunch } from "./utils/misc/relaunch";
 
 // const anim = {
 // 	initial: {
@@ -173,70 +135,34 @@ const LoginRoute = () => {
 // 	);
 // };
 
-// const unlisten = await onUpdaterEvent(({ error, status }) => {
-// 	// This will log all updater events, including status updates and errors.
-// 	console.log("Updater event", error, status);
-// });
-
-// // you need to call unlisten if your handler goes out of scope, for example if the component is unmounted.
-// unlisten();
-
 function App() {
+	const [audioPlayerVisible] = useAudioPlayback((state) => [state.display]);
+	const [easterEgg, setEasterEgg] = useKonamiEasterEgg();
+	const { enqueueSnackbar } = useSnackbar();
+
+	const [initialRoute] = useCentralStore((state) => [state.initialRoute]);
+	const [backdropUrl, backdropId] = useBackdropStore((state) => [
+		state.backdropUrl,
+		state.backdropId,
+	]);
 	const [playbackDataLoading] = usePlaybackDataLoadStore((state) => [
 		state.isPending,
 	]);
 
-	const handleRelaunch = async (_event: unknown, reason?: string) => {
-		if (reason && reason === "backdropClick") {
-			return;
-		}
-		await relaunch();
-	};
-
 	const location = useLocation();
+	const navigate = useNavigate();
+
+	const [updateDialog, setUpdateDialog] = useState(false);
+	const [updateDialogButton, setUpdateDialogButton] = useState(false);
+	const [backdropLoading, setBackdropLoading] = useState(true);
+	const [updateInfo, setUpdateInfo] = useState<UpdateManifest | undefined>(
+		undefined,
+	);
 
 	// biome-ignore lint/correctness/useExhaustiveDependencies: this dependency is required
 	useEffect(() => {
 		window.scrollTo(0, 0);
 	}, [location.key]);
-
-	const [audioPlayerVisible] = useAudioPlayback((state) => [state.display]);
-
-	const [backdropUrl, backdropId] = useBackdropStore((state) => [
-		state.backdropUrl,
-		state.backdropId,
-	]);
-
-	const [backdropLoading, setBackdropLoading] = useState(true);
-
-	const [easterEgg, setEasterEgg] = useState(false);
-	const sixtyNine = () => {
-		setEasterEgg(true);
-	};
-
-	useKonami(sixtyNine, {
-		code: [
-			"ArrowUp",
-			"ArrowUp",
-			"ArrowDown",
-			"ArrowDown",
-			"ArrowLeft",
-			"ArrowRight",
-			"ArrowLeft",
-			"ArrowRight",
-			"b",
-			"a",
-		],
-	});
-	const { enqueueSnackbar } = useSnackbar();
-
-	const [updateDialog, setUpdateDialog] = useState(false);
-
-	const [updateInfo, setUpdateInfo] = useState<UpdateManifest | undefined>(
-		undefined,
-	);
-
-	const [updateDialogButton, setUpdateDialogButton] = useState(false);
 
 	useEffect(() => {
 		async function checkForUpdates() {
@@ -246,26 +172,16 @@ function App() {
 				if (shouldUpdate) {
 					setUpdateInfo(manifest);
 					setUpdateDialog(true);
-					// You could show a dialog asking the user if they want to install the update here.
+
 					console.log(`Update found : ${manifest?.version}, ${manifest?.date}`);
-
-					// Install the update. This will also restart the app on Windows!
-					// await installUpdate();
-
-					// On macOS and Linux you will need to restart the app manually.
-					// You could use this step to display another confirmation dialog.
-					// await relaunch();
 				}
 			} catch (error) {
 				console.error(error);
 			}
 		}
 		checkForUpdates();
-	}, []);
+	});
 
-	const [initialRoute] = useCentralStore((state) => [state.initialRoute]);
-
-	const navigate = useNavigate();
 	if (!initialRoute) {
 		return (
 			<div
@@ -280,250 +196,220 @@ function App() {
 			</div>
 		);
 	}
-	if (initialRoute) {
-		return (
-			<SnackbarProvider maxSnack={5}>
-				<ThemeProvider theme={theme}>
-					{playbackDataLoading && (
-						<LinearProgress
-							sx={{
-								position: "fixed",
-								top: 0,
-								left: 0,
-								right: 0,
-								width: "100vw",
-								zIndex: 100000,
-							}}
-						/>
-					)}
-					<Dialog
-						// open={true}
-						open={updateDialog}
-						// onClose={}
-						// maxWidth="md"
-						fullWidth
-					>
-						{updateInfo !== undefined && (
-							<>
-								<DialogTitle>
-									Update Available!
-									<Typography
-										style={{
-											opacity: "0.5",
-										}}
-									>
-										v{updateInfo.version}
-									</Typography>
-								</DialogTitle>
-								<DialogContent dividers>
-									<DialogContentText>
-										<Markdown>{updateInfo.body}</Markdown>
-									</DialogContentText>
-								</DialogContent>
-								<DialogActions
+
+	return (
+		<SnackbarProvider maxSnack={5}>
+			<ThemeProvider theme={theme}>
+				{playbackDataLoading && (
+					<LinearProgress
+						sx={{
+							position: "fixed",
+							top: 0,
+							left: 0,
+							right: 0,
+							width: "100vw",
+							zIndex: 100000,
+						}}
+					/>
+				)}
+				<Dialog
+					// open={true}
+					open={updateDialog}
+					// onClose={}
+					// maxWidth="md"
+					fullWidth
+				>
+					{updateInfo !== undefined && (
+						<>
+							<DialogTitle>
+								Update Available!
+								<Typography
 									style={{
-										padding: "1em",
+										opacity: "0.5",
 									}}
 								>
-									<IconButton disabled={updateDialogButton}>
-										<SvgIcon>
-											<svg
-												xmlns="http://www.w3.org/2000/svg"
-												width="16"
-												height="16"
-												fill="currentColor"
-												viewBox="0 0 16 16"
-											>
-												<title>Update</title>
-												<path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.012 8.012 0 0 0 16 8c0-4.42-3.58-8-8-8" />
-											</svg>
-										</SvgIcon>
-									</IconButton>
-									<Button
-										size="large"
-										color="error"
-										variant="outlined"
-										disabled={updateDialogButton}
-										onClick={() => setUpdateDialog(false)}
-									>
-										close
-									</Button>
-									<LoadingButton
-										size="large"
-										color="success"
-										variant="contained"
-										loading={updateDialogButton}
-										loadingIndicator="Updating..."
-										onClick={async () => {
-											setUpdateDialogButton(true);
-											await installUpdate();
-											enqueueSnackbar(
-												"Update has been installed! You need to relaunch JellyPlayer.",
-												{
-													variant: "success",
-												},
-											);
-											await relaunch();
-										}}
-									>
-										Update
-									</LoadingButton>
-								</DialogActions>
-							</>
-						)}
-					</Dialog>
-					<Dialog
-						open={easterEgg}
-						onClose={() => setEasterEgg(false)}
-						sx={{
-							background: "black",
-						}}
-					>
-						<iframe
-							width="560"
-							height="315"
-							src="https://www.youtube.com/embed/dQw4w9WgXcQ?autoplay=1&disablekb=1"
-							title="EasterEgg"
-							allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-						/>
-					</Dialog>
-					<Slide direction="up" in={easterEgg} mountOnEnter unmountOnExit>
-						<img
-							src="https://i.gifer.com/PYh.gif"
-							width={320}
-							height={320}
-							alt="nyan cat gif"
+									v{updateInfo.version}
+								</Typography>
+							</DialogTitle>
+							<DialogContent dividers>
+								<DialogContentText>
+									<Markdown>{updateInfo.body}</Markdown>
+								</DialogContentText>
+							</DialogContent>
+							<DialogActions
+								style={{
+									padding: "1em",
+								}}
+							>
+								<IconButton disabled={updateDialogButton}>
+									<SvgIcon>
+										<svg
+											xmlns="http://www.w3.org/2000/svg"
+											width="16"
+											height="16"
+											fill="currentColor"
+											viewBox="0 0 16 16"
+										>
+											<title>Update</title>
+											<path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.012 8.012 0 0 0 16 8c0-4.42-3.58-8-8-8" />
+										</svg>
+									</SvgIcon>
+								</IconButton>
+								<Button
+									size="large"
+									color="error"
+									variant="outlined"
+									disabled={updateDialogButton}
+									onClick={() => setUpdateDialog(false)}
+								>
+									close
+								</Button>
+								<LoadingButton
+									size="large"
+									color="success"
+									variant="contained"
+									loading={updateDialogButton}
+									loadingIndicator="Updating..."
+									onClick={async () => {
+										setUpdateDialogButton(true);
+										await installUpdate();
+										enqueueSnackbar(
+											"Update has been installed! You need to relaunch JellyPlayer.",
+											{
+												variant: "success",
+											},
+										);
+										await relaunch();
+									}}
+								>
+									Update
+								</LoadingButton>
+							</DialogActions>
+						</>
+					)}
+				</Dialog>
+				<EasterEgg />
+
+				{/* Show Dialog if server not reachable */}
+
+				<div className="app-backdrop-container">
+					<AnimatePresence>
+						<motion.img
+							key={backdropId}
+							src={backdropUrl}
+							alt=""
+							className="app-backdrop"
+							initial={{
+								opacity: 0,
+							}}
+							animate={{
+								opacity: backdropLoading ? 0 : 0.6,
+							}}
+							exit={{
+								opacity: 0,
+							}}
+							transition={{
+								duration: 0.8,
+								ease: "easeInOut",
+							}}
+							onLoadCapture={() => {
+								setBackdropLoading(true);
+							}}
+							onLoad={() => {
+								setBackdropLoading(false);
+							}}
+							loading="eager"
 							style={{
-								zIndex: "99999999",
-								position: "fixed",
-								bottom: 0,
-								left: 0,
-								objectFit: "cover",
+								transition: "opacity 0.8s",
 							}}
 						/>
-					</Slide>
-
-					{/* Show Dialog if server not reachable */}
-
-					<div className="app-backdrop-container">
-						<AnimatePresence>
-							<motion.img
-								key={backdropId}
-								src={backdropUrl}
-								alt=""
-								className="app-backdrop"
-								initial={{
-									opacity: 0,
-								}}
-								animate={{
-									opacity: backdropLoading ? 0 : 0.6,
-								}}
-								exit={{
-									opacity: 0,
-								}}
-								transition={{
-									duration: 0.8,
-									ease: "easeInOut",
-								}}
-								onLoadCapture={() => {
-									setBackdropLoading(true);
-								}}
-								onLoad={() => {
-									setBackdropLoading(false);
-								}}
-								loading="eager"
-								style={{
-									transition: "opacity 0.8s",
-								}}
-							/>
-						</AnimatePresence>
-					</div>
-					<div
-						className={audioPlayerVisible ? "audio-playing" : ""}
-						style={{
-							display: "flex",
-							width: "100vw",
-							transition: "padding 250ms",
-						}}
-					>
-						<CssBaseline />
-						{/* <SideMenu />  */}
-						<AppBar />
-						<AudioPlayer key={audioPlayerVisible} />
-						<ErrorBoundary FallbackComponent={ErrorNotice}>
-							<Routes location={location}>
-								{/* <Route
+					</AnimatePresence>
+				</div>
+				<div
+					className={audioPlayerVisible ? "audio-playing" : ""}
+					style={{
+						display: "flex",
+						width: "100vw",
+						transition: "padding 250ms",
+					}}
+				>
+					<CssBaseline />
+					{/* <SideMenu />  */}
+					<AppBar />
+					<AudioPlayer key={audioPlayerVisible} />
+					<ErrorBoundary FallbackComponent={ErrorNotice}>
+						<Routes location={location}>
+							{/* <Route
 								// key={location.key}
 								element={<AnimationWrapper />}
 							> */}
-								<Route path="/" element={<Navigate to={initialRoute} />} />
-								<Route
-									path="/error"
-									element={
-										<Dialog
-											open
-											onClose={handleRelaunch}
-											aria-labelledby="alert-dialog-text"
-											aria-describedby="alert-dialog-desc"
-											maxWidth="md"
-										>
-											<DialogTitle id="alert-dialog-text">
-												Unable to reach server
-											</DialogTitle>
-											<DialogContent>
-												<DialogContentText id="alert-dialog-desc">
-													Unable to connect to the jellyfin server.
-												</DialogContentText>
-											</DialogContent>
-											<DialogActions>
-												<Button onClick={() => navigate("/servers/list")}>
-													Change Server
-												</Button>
-												<Button variant="outlined" onClick={handleRelaunch}>
-													Restart JellyPlayer
-												</Button>
-											</DialogActions>
-										</Dialog>
-									}
-								/>
-								<Route path="/login/index" element={<LoginRoute />} />
+							<Route path="/" element={<Navigate to={initialRoute} />} />
+							<Route
+								path="/error"
+								element={
+									<Dialog
+										open
+										onClose={handleRelaunch}
+										aria-labelledby="alert-dialog-text"
+										aria-describedby="alert-dialog-desc"
+										maxWidth="md"
+									>
+										<DialogTitle id="alert-dialog-text">
+											Unable to reach server
+										</DialogTitle>
+										<DialogContent>
+											<DialogContentText id="alert-dialog-desc">
+												Unable to connect to the jellyfin server.
+											</DialogContentText>
+										</DialogContent>
+										<DialogActions>
+											<Button onClick={() => navigate("/servers/list")}>
+												Change Server
+											</Button>
+											<Button variant="outlined" onClick={handleRelaunch}>
+												Restart JellyPlayer
+											</Button>
+										</DialogActions>
+									</Dialog>
+								}
+							/>
+							<Route path="/login/index" element={<LoginRoute />} />
 
-								<Route path="/home" element={<Home />} />
-								<Route path="/setup/server" element={<ServerSetup />} />
-								<Route path="/servers/list" element={<ServerList />} />
-								<Route
-									path="/login/withImg/:userName/:userId/"
-									element={<LoginWithImage />}
-								/>
-								<Route path="/login/users" element={<UserLogin />} />
-								<Route path="/login/manual" element={<UserLoginManual />} />
-								<Route path="/library/:id" element={<LibraryView />} />
-								<Route path="/item/:id" element={<ItemDetail />} />
-								<Route
-									path="/musicalbum/:id"
-									element={<MusicAlbumTitlePage />}
-									errorElement={<div>Error</div>}
-								/>
-								<Route path="/artist/:id" element={<ArtistTitlePage />} />
-								<Route path="/boxset/:id" element={<BoxSetTitlePage />} />
-								<Route path="/episode/:id" element={<EpisodeTitlePage />} />
-								<Route path="/person/:id" element={<PersonTitlePage />} />
-								<Route path="/playlist/:id" element={<PlaylistTitlePage />} />
-								<Route path="/series/:id" element={<SeriesTitlePage />} />
-								<Route path="/search" element={<SearchPage />} />
-								<Route path="/favorite" element={<FavoritePage />} />
-								<Route path="/settings" element={<Settings />} />
-								<Route path="/about" element={<About />} />
-								<Route path="/player" element={<VideoPlayer />} />
-								{/* </Route> */}
-							</Routes>
-						</ErrorBoundary>
-					</div>
-					<ReactQueryDevtools buttonPosition="bottom-left" />
-				</ThemeProvider>
-			</SnackbarProvider>
-		);
-	}
+							<Route path="/home" element={<Home />} />
+							<Route path="/setup/server" element={<ServerSetup />} />
+							<Route path="/servers/list" element={<ServerList />} />
+							<Route
+								path="/login/withImg/:userName/:userId/"
+								element={<LoginWithImage />}
+							/>
+							<Route path="/login/users" element={<UserLogin />} />
+							<Route path="/login/manual" element={<UserLoginManual />} />
+							<Route path="/library/:id" element={<LibraryView />} />
+							<Route path="/item/:id" element={<ItemDetail />} />
+							<Route
+								path="/musicalbum/:id"
+								element={<MusicAlbumTitlePage />}
+								errorElement={<div>Error</div>}
+							/>
+							<Route path="/artist/:id" element={<ArtistTitlePage />} />
+							<Route path="/boxset/:id" element={<BoxSetTitlePage />} />
+							<Route path="/episode/:id" element={<EpisodeTitlePage />} />
+							<Route path="/person/:id" element={<PersonTitlePage />} />
+							<Route path="/playlist/:id" element={<PlaylistTitlePage />} />
+							<Route path="/series/:id" element={<SeriesTitlePage />} />
+							<Route path="/search" element={<SearchPage />} />
+							<Route path="/favorite" element={<FavoritePage />} />
+							<Route path="/settings" element={<Settings />} />
+							<Route path="/about" element={<About />} />
+							<Route path="/player" element={<VideoPlayer />} />
+							{/* </Route> */}
+						</Routes>
+					</ErrorBoundary>
+				</div>
+				<ReactQueryDevtools buttonPosition="bottom-left" />
+			</ThemeProvider>
+		</SnackbarProvider>
+	);
 }
 
 export default App;

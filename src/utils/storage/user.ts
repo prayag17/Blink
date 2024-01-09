@@ -1,6 +1,6 @@
+import { appLocalDataDir, join } from "@tauri-apps/api/path";
 import { Store } from "tauri-plugin-store-api";
 
-// TODO: Add encryption to user data
 export interface UserStore {
   user: {
     Name: string;
@@ -8,7 +8,8 @@ export interface UserStore {
   };
 }
 
-const user = new Store(".user.dat");
+const base = await appLocalDataDir();
+const user = new Store(await join(base, ".user.dat"));
 
 /**
  * Set User details to .user.dat
@@ -16,8 +17,9 @@ const user = new Store(".user.dat");
 const saveUser = async (userName: string, userPassword?: string) => {
   user.set("user", {
     Name: userName,
-    Password: userPassword || "",
+    Password: userPassword,
   });
+
   await user.save();
 };
 

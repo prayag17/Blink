@@ -1,6 +1,6 @@
 {
   "compilerOptions": {
-    "target": "es5", // Specify ECMAScript target version
+    "target": "ESNext", // Specify ECMAScript target version
     "lib": [
       "dom",
       "dom.iterable",

@@ -9,7 +9,9 @@ import { v4 as uuidv4 } from "uuid";
 
 export const axiosClient = axios.create({
   adapter: axiosTauriApiAdapter,
-  headers: { "Access-Control-Allow-Origin": "*" },
+  headers: {
+    "Access-Control-Allow-Origin": "*",
+  },
   timeout: 60000,
 });
 
