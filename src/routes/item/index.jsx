@@ -1,5 +1,5 @@
 /** @format */
-import React, { useState, useEffect, useLayoutEffect } from "react";
+import React, { useState, useLayoutEffect } from "react";
 import PropTypes from "prop-types";
 
 import Box from "@mui/material/Box";
@@ -15,7 +15,7 @@ import { red, green, yellow } from "@mui/material/colors";
 
 import { Blurhash } from "react-blurhash";
 
-import { useParams } from "react-router-dom";
+import { useParams, Link, NavLink } from "react-router-dom";
 
 import { motion } from "framer-motion";
 
@@ -30,7 +30,6 @@ import { getLibraryApi } from "@jellyfin/sdk/lib/utils/api/library-api";
 
 import { useQuery } from "@tanstack/react-query";
 
-import Hero from "../../components/layouts/item/hero";
 import { Card } from "../../components/card/card";
 import { CardScroller } from "../../components/cardScroller/cardScroller";
 
@@ -39,7 +38,6 @@ import "./item.module.scss";
 import { ErrorNotice } from "../../components/notices/errorNotice/errorNotice";
 
 import { useBackdropStore } from "../../utils/store/backdrop";
-import { ActorCard } from "../../components/card/actorCards";
 import { useApi } from "../../utils/store/api";
 import { endsAt, getRuntime } from "../../utils/date/time";
 import PlayButton from "../../components/buttons/playButton";
@@ -47,8 +45,6 @@ import LikeButton from "../../components/buttons/likeButton";
 import MarkPlayedButton from "../../components/buttons/markPlayedButton";
 import TextLink from "../../components/textLink";
 import { getTypeIcon } from "../../components/utils/iconsCollection";
-import { NavLink } from "react-router-dom";
-import { Link } from "react-router-dom";
 
 function TabPanel(props) {
 	const { children, value, index, ...other } = props;

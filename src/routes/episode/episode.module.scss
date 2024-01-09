@@ -1,5 +1,151 @@
 /** @format */
 
-.episode .item-detail-primaryImage {
-	align-self: center;
+.item {
+	gap: 1em;
+	&-hero {
+		height: 50vh;
+		gap: 2em;
+		position: relative;
+		align-items: center;
+		&-image {
+			opacity: 0;
+			width: 100%;
+			object-fit: contain;
+			transition: opacity $transition-time-default;
+			&-container {
+				height: fit-content;
+				max-height: 100%;
+				overflow: hidden;
+				border-radius: $border-radius-default;
+				width: fit-content;
+				box-shadow: $shadow-card;
+				flex-grow: 1;
+				flex-shrink: 0;
+				position: relative;
+			}
+			&-blurhash {
+				position: absolute !important;
+				width: 100% !important;
+				height: 100% !important;
+				z-index: -1;
+			}
+		}
+		&-logo {
+			max-width: 42rem;
+			max-height: 10rem;
+			opacity: 0;
+			transition: opacity $transition-time-default;
+			object-position: bottom;
+		}
+		&-detail {
+			width: 100%;
+			align-items: flex-start;
+			gap: 1em;
+			justify-content: end;
+		}
+		&-buttons {
+			&-container {
+				align-items: center;
+				justify-content: space-between;
+				width: 100%;
+			}
+		}
+		&-backdrop {
+			width: 100%;
+			height: 100%;
+			object-fit: cover;
+			object-position: top;
+			opacity: 0;
+			transition: opacity $transition-time-default;
+			&-container {
+				filter: brightness(0.8);
+				position: absolute;
+				top: -4.4em;
+				left: -1.6em;
+				width: 100vw;
+				height: calc(50vh + 4.4em);
+				z-index: -1;
+				mask-image: linear-gradient(to top, transparent, black);
+				-webkit-mask-image: linear-gradient(
+					to top,
+					transparent,
+					black
+				);
+			}
+		}
+	}
+
+	&-detail {
+		display: grid;
+		grid-template-columns: 1fr 5px 35%;
+		justify-items: center;
+		align-items: start;
+		gap: 1em;
+
+		&-cast {
+			&-container {
+				display: flex;
+				flex-direction: column;
+				gap: 1em;
+			}
+			&-grid {
+				display: grid;
+				grid-template-columns: repeat(5, minmax(0, 1fr));
+				gap: 1em;
+				margin-bottom: 1em;
+			}
+			&-card {
+				display: grid;
+				grid-template-columns: 6em 1fr;
+				gap: 0.5em;
+				align-items: center;
+				color: white !important;
+				text-decoration: none;
+				padding: 0.5em;
+				background: rgb(255 255 255 / 0);
+				transition: background $transition-time-default;
+				border-radius: $border-radius-default;
+				&:hover {
+					background: rgb(255 255 255 / 0.1);
+				}
+				&-image,
+				&-icon {
+					width: 6em;
+					height: 6em;
+					object-fit: cover;
+					border-radius: 100%;
+					box-shadow: $shadow-card-image;
+				}
+				&-icon {
+					display: flex;
+					align-items: center;
+					justify-content: center;
+					font-size: 1em;
+					background: rgb(255 255 255 / 0.1);
+					.material-symbols-rounded {
+						font-size: 3em;
+					}
+				}
+			}
+		}
+		&-link {
+			color: white;
+			text-decoration-color: rgb(255 255 255 / 0.5);
+			&:hover {
+				text-decoration-color: white;
+			}
+		}
+	}
+}
+
+.item-episode {
+	.item-hero {
+		&-image-container {
+			width: 26% !important;
+			max-width: 26% !important;
+		}
+		&-detail {
+			gap: 0.5em;
+		}
+	}
 }

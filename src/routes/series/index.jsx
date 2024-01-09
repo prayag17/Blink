@@ -1100,8 +1100,12 @@ const SeriesTitlePage = () => {
 																	"10px",
 																animationDelay: `${
 																	index *
-																	0.15
+																	0.2
 																}s`,
+																animationDuration:
+																	"1.4s",
+																animationName:
+																	"pulse",
 															}}
 														/>
 													</CardMedia>
@@ -1120,8 +1124,12 @@ const SeriesTitlePage = () => {
 																sx={{
 																	animationDelay: `${
 																		index *
-																		0.15
+																		0.2
 																	}s`,
+																	animationDuration:
+																		"1.4s",
+																	animationName:
+																		"pulse",
 																}}
 															/>
 														</Typography>
@@ -1132,8 +1140,12 @@ const SeriesTitlePage = () => {
 																sx={{
 																	animationDelay: `${
 																		index *
-																		0.15
+																		0.2
 																	}s`,
+																	animationDuration:
+																		"1.4s",
+																	animationName:
+																		"pulse",
 																}}
 															/>
 															<Skeleton
@@ -1141,8 +1153,12 @@ const SeriesTitlePage = () => {
 																sx={{
 																	animationDelay: `${
 																		index *
-																		0.15
+																		0.2
 																	}s`,
+																	animationDuration:
+																		"1.4s",
+																	animationName:
+																		"pulse",
 																}}
 															/>
 
@@ -1151,8 +1167,12 @@ const SeriesTitlePage = () => {
 																sx={{
 																	animationDelay: `${
 																		index *
-																		0.15
+																		0.2
 																	}s`,
+																	animationDuration:
+																		"1.4s",
+																	animationName:
+																		"pulse",
 																}}
 															/>
 														</Typography>

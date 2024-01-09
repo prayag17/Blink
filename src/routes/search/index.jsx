@@ -54,7 +54,7 @@ const SearchPage = () => {
 			});
 			return result.data;
 		},
-		enabled: user.isSuccess && Boolean(searchParam),
+		enabled: user.isSuccess,
 		cacheTime: 0,
 	});
 	const series = useQuery({
@@ -69,7 +69,7 @@ const SearchPage = () => {
 			});
 			return result.data;
 		},
-		enabled: user.isSuccess && Boolean(searchParam),
+		enabled: user.isSuccess,
 		cacheTime: 0,
 	});
 	const musicAlbum = useQuery({
@@ -84,7 +84,7 @@ const SearchPage = () => {
 			});
 			return result.data;
 		},
-		enabled: user.isSuccess && Boolean(searchParam),
+		enabled: user.isSuccess,
 		cacheTime: 0,
 	});
 	const audio = useQuery({
@@ -99,7 +99,7 @@ const SearchPage = () => {
 			});
 			return result.data;
 		},
-		enabled: user.isSuccess && Boolean(searchParam),
+		enabled: user.isSuccess,
 		cacheTime: 0,
 	});
 	const book = useQuery({
@@ -114,7 +114,7 @@ const SearchPage = () => {
 			});
 			return result.data;
 		},
-		enabled: user.isSuccess && Boolean(searchParam),
+		enabled: user.isSuccess,
 		cacheTime: 0,
 	});
 	const musicArtists = useQuery({
@@ -129,7 +129,7 @@ const SearchPage = () => {
 			});
 			return result.data;
 		},
-		enabled: user.isSuccess && Boolean(searchParam),
+		enabled: user.isSuccess,
 		cacheTime: 0,
 	});
 	const person = useQuery({
@@ -142,7 +142,7 @@ const SearchPage = () => {
 			});
 			return result.data;
 		},
-		enabled: user.isSuccess && Boolean(searchParam),
+		enabled: user.isSuccess,
 		cacheTime: 0,
 	});
 

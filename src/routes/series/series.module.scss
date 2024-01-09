@@ -1,19 +1,19 @@
 /** @format */
-/** @format */
 .item {
 	gap: 1em;
 	&-hero {
 		height: 50vh;
 		gap: 2em;
 		position: relative;
+		align-items: center;
 		&-image {
-			height: 100%;
 			opacity: 0;
 			width: 100%;
 			object-fit: contain;
 			transition: opacity $transition-time-default;
 			&-container {
-				height: 100%;
+				height: fit-content;
+				max-height: 100%;
 				overflow: hidden;
 				border-radius: $border-radius-default;
 				width: fit-content;
@@ -21,7 +21,6 @@
 				flex-grow: 1;
 				flex-shrink: 0;
 				position: relative;
-				max-width: 26%;
 			}
 			&-blurhash {
 				position: absolute !important;
@@ -159,6 +158,9 @@
 }
 
 .item-series {
+	.item-hero-image-container {
+		width: 18% !important;
+	}
 	.item-detail-cast {
 		max-height: 50vh;
 		overflow-y: auto;
