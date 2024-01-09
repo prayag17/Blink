@@ -29,6 +29,7 @@ import { theme } from "./theme";
 
 import LoadingButton from "@mui/lab/LoadingButton";
 import Button from "@mui/material/Button";
+
 // MUI
 import Dialog from "@mui/material/Dialog";
 import DialogActions from "@mui/material/DialogActions";
@@ -41,27 +42,31 @@ import Slide from "@mui/material/Slide";
 import SvgIcon from "@mui/material/SvgIcon";
 import Typography from "@mui/material/Typography";
 
+// Routes
 import About from "./routes/about";
+import MusicAlbumTitlePage from "./routes/album/index.jsx";
+import ArtistTitlePage from "./routes/artist/index.jsx";
+import BoxSetTitlePage from "./routes/boxset/index.jsx";
+import EpisodeTitlePage from "./routes/episode/index.jsx";
 import FavoritePage from "./routes/favorite/index.jsx";
 import Home from "./routes/home";
 import ItemDetail from "./routes/item";
 import LibraryView from "./routes/library";
 import { LoginWithImage, UserLogin, UserLoginManual } from "./routes/login";
+import PersonTitlePage from "./routes/person/index.jsx";
+import { VideoPlayer } from "./routes/player/videoPlayer.jsx";
+import PlaylistTitlePage from "./routes/playlist/index.jsx";
 import SearchPage from "./routes/search";
 import SeriesTitlePage from "./routes/series/index.jsx";
 import Settings from "./routes/settings";
-// Routes
 import { ServerSetup } from "./routes/setup/server";
 import ServerList from "./routes/setup/serverList/index.jsx";
 
 import Markdown from "react-markdown";
-import { VideoPlayer } from "./routes/player/videoPlayer.jsx";
 
-import { AppBar } from "./components/appBar/appBar.jsx";
-
+// Fonts
 import "@fontsource-variable/jetbrains-mono";
 import "@fontsource/noto-sans/100-italic.css";
-// Fonts
 import "@fontsource/noto-sans/100.css";
 import "@fontsource/noto-sans/200-italic.css";
 import "@fontsource/noto-sans/200.css";
@@ -79,27 +84,27 @@ import "@fontsource/noto-sans/800-italic.css";
 import "@fontsource/noto-sans/800.css";
 import "@fontsource/noto-sans/900-italic.css";
 import "@fontsource/noto-sans/900.css";
+
 import "material-symbols";
 
+// Components
+import { AppBar } from "./components/appBar/appBar.jsx";
+import { ErrorNotice } from "./components/notices/errorNotice/errorNotice.jsx";
 import AudioPlayer from "./components/playback/audioPlayer/index.jsx";
-import MusicAlbumTitlePage from "./routes/album/index.jsx";
-import ArtistTitlePage from "./routes/artist/index.jsx";
-import BoxSetTitlePage from "./routes/boxset/index.jsx";
-import EpisodeTitlePage from "./routes/episode/index.jsx";
-import PersonTitlePage from "./routes/person/index.jsx";
-import PlaylistTitlePage from "./routes/playlist/index.jsx";
+
+// Utils
+import { useApi } from "./utils/store/api";
 import { useAudioPlayback } from "./utils/store/audioPlayback.js";
 import { useBackdropStore } from "./utils/store/backdrop.js";
+import { useCentralStore } from "./utils/store/central.js";
 import { usePlaybackDataLoadStore } from "./utils/store/playback.js";
 
+// 3rd Party
 import { CircularProgress } from "@mui/material";
 import { useQuery } from "@tanstack/react-query";
 import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 import { useSnackbar } from "notistack";
 import { ErrorBoundary } from "react-error-boundary";
-import { ErrorNotice } from "./components/notices/errorNotice/errorNotice.jsx";
-import { useApi } from "./utils/store/api";
-import { useCentralStore } from "./utils/store/central.js";
 
 const LoginRoute = () => {
 	const navigate = useNavigate();
@@ -113,6 +118,7 @@ const LoginRoute = () => {
 		},
 		enabled: Boolean(api),
 	});
+
 	if (usersList.isSuccess && !usersList.isFetching) {
 		if (usersList.data.length > 0) {
 			navigate("/login/users");
@@ -120,6 +126,7 @@ const LoginRoute = () => {
 			navigate("/login/manual");
 		}
 	}
+
 	return (
 		<div
 			style={{

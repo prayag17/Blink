@@ -2,6 +2,8 @@
     "recommendations": [
         "biomejs.biome",
         "github.vscode-github-actions",
-        "esbenp.prettier-vscode"
+        "esbenp.prettier-vscode",
+        "swellaby.rust-pack",
+        "1yib.rust-bundle"
     ]
 }
