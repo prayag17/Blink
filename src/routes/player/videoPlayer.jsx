@@ -174,7 +174,7 @@ export const VideoPlayer = () => {
 			playerRef.current.seekTo(timeToStart, "seconds");
 			setIsReady(true);
 		}
-	}, [isReady]);
+	});
 
 	const handleDisplayCurrentTime = () => {
 		let time = ticksToSec(progress * itemDuration);
@@ -249,6 +249,7 @@ export const VideoPlayer = () => {
 			setItemName(
 				<div className="video-osd-name">
 					<img
+						alt="Series Logo"
 						src={`${api.basePath}/Items/${
 							episodes.data.Items[currentEpisodeIndex + 1].SeriesId
 						}/Images/Logo`}
@@ -323,6 +324,7 @@ export const VideoPlayer = () => {
 			setItemName(
 				<div className="video-osd-name">
 					<img
+						alt="Series Logo"
 						src={`${api.basePath}/Items/${
 							episodes.data.Items[currentEpisodeIndex - 1].SeriesId
 						}/Images/Logo`}
@@ -434,7 +436,7 @@ export const VideoPlayer = () => {
 		return () => {
 			clearTimeout(timeout);
 		};
-	}, [volume]);
+	});
 
 	const handleExit = async () => {
 		// Remove app from fullscreen

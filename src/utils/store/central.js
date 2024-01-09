@@ -1,4 +1,3 @@
-
 import { create } from "zustand";
 import { version } from "../../../package.json";
 import { getAllServers, getDefaultServer, getServer } from "../storage/servers";

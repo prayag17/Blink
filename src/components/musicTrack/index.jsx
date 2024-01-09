@@ -49,6 +49,7 @@ const MusicTrack = ({
 					/>
 				</div>
 				<img
+					alt={item.Name}
 					src={api.getItemImageUrl(
 						Object.keys(item.ImageTags).length === 0 ? item.AlbumId : item.Id,
 						"Primary",
@@ -64,7 +65,9 @@ const MusicTrack = ({
 						objectFit: "cover",
 						opacity: 0,
 					}}
-					onLoad={(e) => (e.target.style.opacity = 1)}
+					onLoad={(e) => {
+						e.target.style.opacity = 1;
+					}}
 				/>
 				<div className="music-track-image-overlay">
 					<PlayButton

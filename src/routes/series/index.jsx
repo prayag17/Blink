@@ -203,6 +203,7 @@ const SeriesTitlePage = () => {
 	const [writers, setWriters] = useState([]);
 	const [actors, setActors] = useState([]);
 	const [producers, setProducers] = useState([]);
+
 	useEffect(() => {
 		if (item.isSuccess) {
 			setAppBackdrop(
@@ -223,7 +224,7 @@ const SeriesTitlePage = () => {
 			const actorTp = item.data.People.filter((itm) => itm.Type === "Actor");
 			setActors(actorTp);
 		}
-	}, [item.isSuccess]);
+	});
 
 	if (item.isPending || similarItems.isPending) {
 		return (
@@ -260,16 +261,14 @@ const SeriesTitlePage = () => {
 					<div className="item-hero-backdrop-container">
 						{item.data.BackdropImageTags ? (
 							<img
-								src={api.getItemImageUrl(
-									item.data.Id,
-									"Backdrop",
-									{
-										tag: item.data
-											.BackdropImageTags[0],
-									},
-								)}
+								alt={item.data.Name}
+								src={api.getItemImageUrl(item.data.Id, "Backdrop", {
+									tag: item.data.BackdropImageTags[0],
+								})}
 								className="item-hero-backdrop"
-								onLoad={(e) => (e.currentTarget.style.opacity = 1)}
+								onLoad={(e) => {
+									e.currentTarget.style.opacity = 1;
+								}}
 							/>
 						) : (
 							<></>
@@ -292,11 +291,14 @@ const SeriesTitlePage = () => {
 									className="item-hero-image-blurhash"
 								/>
 								<img
+									alt={item.data.Name}
 									src={api.getItemImageUrl(item.data.Id, "Primary", {
 										quality: 90,
 										tag: item.data.ImageTags.Primary,
 									})}
-									onLoad={(e) => (e.currentTarget.style.opacity = 1)}
+									onLoad={(e) => {
+										e.currentTarget.style.opacity = 1;
+									}}
 									className="item-hero-image"
 								/>
 							</>
@@ -307,12 +309,15 @@ const SeriesTitlePage = () => {
 					<div className="item-hero-detail flex flex-column">
 						{Object.keys(item.data.ImageTags).includes("Logo") ? (
 							<img
+								alt={item.data.Name}
 								src={api.getItemImageUrl(item.data.Id, "Logo", {
 									quality: 90,
 									fillWidth: 592,
 									fillHeight: 592,
 								})}
-								onLoad={(e) => (e.currentTarget.style.opacity = 1)}
+								onLoad={(e) => {
+									e.currentTarget.style.opacity = 1;
+								}}
 								className="item-hero-logo"
 							/>
 						) : (
@@ -592,6 +597,7 @@ const SeriesTitlePage = () => {
 											>
 												{actor.PrimaryImageTag ? (
 													<img
+														alt={actor.Name}
 														src={api.getItemImageUrl(actor.Id, "Primary", {
 															quality: 80,
 															fillWidth: 200,
@@ -636,6 +642,7 @@ const SeriesTitlePage = () => {
 											>
 												{actor.PrimaryImageTag ? (
 													<img
+														alt={actor.Name}
 														src={api.getItemImageUrl(actor.Id, "Primary", {
 															quality: 80,
 															fillWidth: 200,
@@ -680,6 +687,7 @@ const SeriesTitlePage = () => {
 											>
 												{actor.PrimaryImageTag ? (
 													<img
+														alt={actor.Name}
 														src={api.getItemImageUrl(actor.Id, "Primary", {
 															quality: 80,
 															fillWidth: 200,
@@ -724,6 +732,7 @@ const SeriesTitlePage = () => {
 											>
 												{actor.PrimaryImageTag ? (
 													<img
+														alt={actor.Name}
 														src={api.getItemImageUrl(actor.Id, "Primary", {
 															quality: 80,
 															fillWidth: 200,
@@ -874,112 +883,80 @@ const SeriesTitlePage = () => {
 						<Divider />
 						<div className="item-detail-episodes-container">
 							{episodes.isPending
-								? Array.from(new Array(4)).map(
-										(a, index) => {
-											return (
-												<MuiCard
-													key={a}
+								? Array.from(new Array(4)).map((a, index) => {
+										return (
+											<MuiCard
+												key={a}
+												sx={{
+													background: "transparent",
+													width: "100%",
+												}}
+												elevation={0}
+											>
+												<CardMedia>
+													<Skeleton
+														// animation="wave"
+														variant="rectangular"
+														sx={{
+															aspectRatio: "1.777",
+															height: "auto",
+															m: 1,
+															borderRadius: "10px",
+															animationDelay: `${index * 0.2}s`,
+															animationDuration: "1.4s",
+															animationName: "pulse",
+														}}
+													/>
+												</CardMedia>
+												<CardContent
 													sx={{
-														background:
-															"transparent",
-														width: "100%",
+														padding: "0 0.5em",
+														alignItems: "flex-start",
+														backgroundColor: "transparent",
 													}}
-													elevation={0}
 												>
-													<CardMedia>
+													<Typography variant="h6">
 														<Skeleton
-															// animation="wave"
-															variant="rectangular"
+															variant="text"
 															sx={{
-																aspectRatio:
-																	"1.777",
-																height: "auto",
-																m: 1,
-																borderRadius:
-																	"10px",
-																animationDelay: `${
-																	index *
-																	0.2
-																}s`,
-																animationDuration:
-																	"1.4s",
-																animationName:
-																	"pulse",
+																animationDelay: `${index * 0.2}s`,
+																animationDuration: "1.4s",
+																animationName: "pulse",
 															}}
 														/>
-													</CardMedia>
-													<CardContent
-														sx={{
-															padding: "0 0.5em",
-															alignItems:
-																"flex-start",
-															backgroundColor:
-																"transparent",
-														}}
-													>
-														<Typography variant="h6">
-															<Skeleton
-																variant="text"
-																sx={{
-																	animationDelay: `${
-																		index *
-																		0.2
-																	}s`,
-																	animationDuration:
-																		"1.4s",
-																	animationName:
-																		"pulse",
-																}}
-															/>
-														</Typography>
+													</Typography>
 
-														<Typography variant="body2">
-															<Skeleton
-																variant="text"
-																sx={{
-																	animationDelay: `${
-																		index *
-																		0.2
-																	}s`,
-																	animationDuration:
-																		"1.4s",
-																	animationName:
-																		"pulse",
-																}}
-															/>
-															<Skeleton
-																variant="text"
-																sx={{
-																	animationDelay: `${
-																		index *
-																		0.2
-																	}s`,
-																	animationDuration:
-																		"1.4s",
-																	animationName:
-																		"pulse",
-																}}
-															/>
+													<Typography variant="body2">
+														<Skeleton
+															variant="text"
+															sx={{
+																animationDelay: `${index * 0.2}s`,
+																animationDuration: "1.4s",
+																animationName: "pulse",
+															}}
+														/>
+														<Skeleton
+															variant="text"
+															sx={{
+																animationDelay: `${index * 0.2}s`,
+																animationDuration: "1.4s",
+																animationName: "pulse",
+															}}
+														/>
 
-															<Skeleton
-																variant="text"
-																sx={{
-																	animationDelay: `${
-																		index *
-																		0.2
-																	}s`,
-																	animationDuration:
-																		"1.4s",
-																	animationName:
-																		"pulse",
-																}}
-															/>
-														</Typography>
-													</CardContent>
-												</MuiCard>
-											);
-										},
-								  )
+														<Skeleton
+															variant="text"
+															sx={{
+																animationDelay: `${index * 0.2}s`,
+																animationDuration: "1.4s",
+																animationName: "pulse",
+															}}
+														/>
+													</Typography>
+												</CardContent>
+											</MuiCard>
+										);
+								  })
 								: episodes.data.Items.map((episode) => {
 										return (
 											<motion.div

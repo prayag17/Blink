@@ -1,4 +1,3 @@
-
 import SvgIcon from "@mui/material/SvgIcon";
 
 import { mdiCheck } from "@mdi/js";

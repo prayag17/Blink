@@ -1,4 +1,3 @@
-
 import SvgIcon from "@mui/material/SvgIcon";
 
 import { mdiTelevision } from "@mdi/js";

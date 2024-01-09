@@ -158,11 +158,7 @@ const ArtistTitlePage = () => {
 				setActiveArtistTab(2);
 			}
 		}
-	}, [
-		artistDiscography.isPending,
-		artistSongs.isPending,
-		artistAppearances.isPending,
-	]);
+	});
 
 	const [animationDirection, setAnimationDirection] = useState("forward");
 
@@ -178,7 +174,7 @@ const ArtistTitlePage = () => {
 				item.data.Id,
 			);
 		}
-	}, [item.isSuccess]);
+	});
 
 	if (item.isPending) {
 		return (
@@ -243,7 +239,7 @@ const ArtistTitlePage = () => {
 							{artistTabs.map((tab, index) => {
 								return (
 									<Tab
-										key={index}
+										key={tab.title}
 										label={tab.title}
 										disabled={tab.data.data?.TotalRecordCount === 0}
 									/>
@@ -273,10 +269,10 @@ const ArtistTitlePage = () => {
 								}}
 							>
 								{artistDiscography.isSuccess &&
-									artistDiscography.data.Items.map((tabitem, aindex) => {
+									artistDiscography.data.Items.map((tabitem) => {
 										return (
 											<ArtistAlbum
-												key={aindex}
+												key={tabitem.Id}
 												user={user.data}
 												album={tabitem}
 											/>

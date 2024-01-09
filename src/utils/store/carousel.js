@@ -1,4 +1,3 @@
-
 import { create } from "zustand";
 
 export const useCarouselStore = create((set) => ({

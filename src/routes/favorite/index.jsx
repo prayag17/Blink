@@ -119,9 +119,9 @@ const FavoritePage = () => {
 	});
 
 	useEffect(() => {
-		// Removing app's backdrop
 		setBackdrop("", "");
-	}, []);
+	});
+
 	return (
 		<main
 			className="scrollY"

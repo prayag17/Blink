@@ -86,6 +86,7 @@ export const EpisodeCard = ({
 						<div className="material-symbols-rounded">tv_gen</div>
 					</div>
 					<img
+						alt={item.Name}
 						src={api.getItemImageUrl(item.Id, "Primary", {
 							quality: 90,
 							fillHeight: 512,
@@ -97,7 +98,9 @@ export const EpisodeCard = ({
 							opacity: 0,
 						}}
 						loading="lazy"
-						onLoad={(e) => (e.target.style.opacity = 1)}
+						onLoad={(e) => {
+							e.target.style.opacity = 1;
+						}}
 						className="card-image"
 					/>
 

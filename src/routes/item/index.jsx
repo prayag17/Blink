@@ -1,6 +1,5 @@
 import PropTypes from "prop-types";
 import React, { useState, useLayoutEffect } from "react";
-import PropTypes from "prop-types";
 
 import Box from "@mui/material/Box";
 import Chip from "@mui/material/Chip";
@@ -15,7 +14,7 @@ import { green, red, yellow } from "@mui/material/colors";
 
 import { Blurhash } from "react-blurhash";
 
-import { useParams, Link, NavLink } from "react-router-dom";
+import { Link, NavLink, useParams } from "react-router-dom";
 
 import { motion } from "framer-motion";
 
@@ -38,14 +37,14 @@ import "./item.module.scss";
 
 import { ErrorNotice } from "../../components/notices/errorNotice/errorNotice";
 
-import { useBackdropStore } from "../../utils/store/backdrop";
-import { useApi } from "../../utils/store/api";
-import { endsAt, getRuntime } from "../../utils/date/time";
-import PlayButton from "../../components/buttons/playButton";
 import LikeButton from "../../components/buttons/likeButton";
 import MarkPlayedButton from "../../components/buttons/markPlayedButton";
+import PlayButton from "../../components/buttons/playButton";
 import TextLink from "../../components/textLink";
 import { getTypeIcon } from "../../components/utils/iconsCollection";
+import { endsAt, getRuntime } from "../../utils/date/time";
+import { useApi } from "../../utils/store/api";
+import { useBackdropStore } from "../../utils/store/backdrop";
 
 function TabPanel(props) {
 	const { children, value, index, ...other } = props;
@@ -179,7 +178,7 @@ const ItemDetail = () => {
 			setAudioTracks(audios);
 			setSubtitleTracks(subs);
 		}
-	}, [item.isSuccess]);
+	});
 
 	const [setAppBackdrop] = useBackdropStore((state) => [state.setBackdrop]);
 
@@ -187,6 +186,7 @@ const ItemDetail = () => {
 	const [writers, setWriters] = useState([]);
 	const [actors, setActors] = useState([]);
 	const [producers, setProducers] = useState([]);
+
 	useLayoutEffect(() => {
 		if (item.isSuccess) {
 			setAppBackdrop(
@@ -207,7 +207,7 @@ const ItemDetail = () => {
 			const actorTp = item.data.People.filter((itm) => itm.Type === "Actor");
 			setActors(actorTp);
 		}
-	}, [item.isSuccess]);
+	});
 
 	const qualityLabel = () => {
 		if (
@@ -287,16 +287,14 @@ const ItemDetail = () => {
 					<div className="item-hero-backdrop-container">
 						{item.data.BackdropImageTags ? (
 							<img
-								src={api.getItemImageUrl(
-									item.data.Id,
-									"Backdrop",
-									{
-										tag: item.data
-											.BackdropImageTags[0],
-									},
-								)}
+								alt={item.data.Name}
+								src={api.getItemImageUrl(item.data.Id, "Backdrop", {
+									tag: item.data.BackdropImageTags[0],
+								})}
 								className="item-hero-backdrop"
-								onLoad={(e) => (e.currentTarget.style.opacity = 1)}
+								onLoad={(e) => {
+									e.currentTarget.style.opacity = 1;
+								}}
 							/>
 						) : (
 							<></>
@@ -319,11 +317,14 @@ const ItemDetail = () => {
 									className="item-hero-image-blurhash"
 								/>
 								<img
+									alt={item.data.Name}
 									src={api.getItemImageUrl(item.data.Id, "Primary", {
 										quality: 90,
 										tag: item.data.ImageTags.Primary,
 									})}
-									onLoad={(e) => (e.currentTarget.style.opacity = 1)}
+									onLoad={(e) => {
+										e.currentTarget.style.opacity = 1;
+									}}
 									className="item-hero-image"
 								/>
 							</>
@@ -334,12 +335,15 @@ const ItemDetail = () => {
 					<div className="item-hero-detail flex flex-column">
 						{Object.keys(item.data.ImageTags).includes("Logo") ? (
 							<img
+								alt={item.data.Name}
 								src={api.getItemImageUrl(item.data.Id, "Logo", {
 									quality: 90,
 									fillWidth: 592,
 									fillHeight: 592,
 								})}
-								onLoad={(e) => (e.currentTarget.style.opacity = 1)}
+								onLoad={(e) => {
+									e.currentTarget.style.opacity = 1;
+								}}
 								className="item-hero-logo"
 							/>
 						) : (
@@ -755,6 +759,7 @@ const ItemDetail = () => {
 									>
 										{actor.PrimaryImageTag ? (
 											<img
+												alt={actor.Name}
 												src={api.getItemImageUrl(actor.Id, "Primary", {
 													quality: 80,
 													fillWidth: 200,
@@ -795,6 +800,7 @@ const ItemDetail = () => {
 									>
 										{actor.PrimaryImageTag ? (
 											<img
+												alt={actor.Name}
 												src={api.getItemImageUrl(actor.Id, "Primary", {
 													quality: 80,
 													fillWidth: 200,
@@ -835,6 +841,7 @@ const ItemDetail = () => {
 									>
 										{actor.PrimaryImageTag ? (
 											<img
+												alt={actor.Name}
 												src={api.getItemImageUrl(actor.Id, "Primary", {
 													quality: 80,
 													fillWidth: 200,
@@ -875,6 +882,7 @@ const ItemDetail = () => {
 									>
 										{actor.PrimaryImageTag ? (
 											<img
+												alt={actor.Name}
 												src={api.getItemImageUrl(actor.Id, "Primary", {
 													quality: 80,
 													fillWidth: 200,

@@ -113,6 +113,7 @@ const BoxSetTitlePage = () => {
 
 	const [directors, setDirectors] = useState([]);
 	const [writers, setWriters] = useState([]);
+
 	useEffect(() => {
 		if (item.isSuccess) {
 			setAppBackdrop(
@@ -127,7 +128,7 @@ const BoxSetTitlePage = () => {
 			const writeTp = item.data.People.filter((itm) => itm.Type === "Writer");
 			setWriters(writeTp);
 		}
-	}, [item.isSuccess]);
+	});
 
 	if (item.isPending || similarItems.isPending) {
 		return (

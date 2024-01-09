@@ -72,6 +72,7 @@ export const ActorCard = ({
 						<div className="material-symbols-rounded">person</div>
 					</div>
 					<img
+						alt={item.Name}
 						src={api.getItemImageUrl(
 							seriesId ? item.SeriesId : item.Id,
 							"Primary",
@@ -87,7 +88,9 @@ export const ActorCard = ({
 							opacity: 0,
 						}}
 						loading="lazy"
-						onLoad={(e) => (e.target.style.opacity = 1)}
+						onLoad={(e) => {
+							e.target.style.opacity = 1;
+						}}
 						className="card-image"
 					/>
 				</div>

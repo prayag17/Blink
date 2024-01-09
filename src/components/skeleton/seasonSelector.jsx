@@ -1,4 +1,3 @@
-
 import Card from "@mui/material/Card";
 import CardContent from "@mui/material/CardContent";
 import CardMedia from "@mui/material/CardMedia";
@@ -50,7 +49,7 @@ export const SeasonSelectorSkeleton = () => {
 			/>
 			{Array.from(new Array(4)).map((a, index) => {
 				return (
-					<Grid xs={1} sm={1} md={1} key={index}>
+					<Grid xs={1} sm={1} md={1} key={a}>
 						<Card sx={{ background: "transparent" }} elevation={0}>
 							<CardMedia>
 								<Skeleton

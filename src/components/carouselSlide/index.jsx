@@ -100,6 +100,7 @@ const CarouselSlide = ({ item }) => {
 								/>
 							)}
 							<img
+								alt={item.Name}
 								className="hero-carousel-background-image"
 								src={
 									item.ParentBackdropItemId
@@ -109,7 +110,9 @@ const CarouselSlide = ({ item }) => {
 								style={{
 									opacity: 0,
 								}}
-								onLoad={(e) => (e.target.style.opacity = 1)}
+								onLoad={(e) => {
+									e.target.style.opacity = 1;
+								}}
 								loading="eager"
 							/>
 						</>
@@ -156,6 +159,7 @@ const CarouselSlide = ({ item }) => {
 							item.Name
 						) : (
 							<img
+								alt={item.Name}
 								className="hero-carousel-text-logo"
 								src={`${api.basePath}/Items/${item.Id}/Images/Logo?quality=90&tag=${item.ImageTags.Logo}`}
 								style={{
@@ -163,7 +167,9 @@ const CarouselSlide = ({ item }) => {
 									transition: "opacity 0.2s",
 									objectFit: "contain",
 								}}
-								onLoad={(e) => (e.target.style.opacity = 1)}
+								onLoad={(e) => {
+									e.target.style.opacity = 1;
+								}}
 							/>
 						)}
 					</Typography>

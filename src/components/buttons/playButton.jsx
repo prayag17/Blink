@@ -199,6 +199,7 @@ const PlayButton = ({
 							setItemName(
 								<div className="video-osd-name">
 									<img
+										alt={item.Items[0].Name}
 										src={`${api.basePath}/Items/${item.Items[0].Id}/Images/Logo`}
 										className="video-osd-name-logo"
 										onLoad={(e) => {
@@ -220,6 +221,7 @@ const PlayButton = ({
 							setItemName(
 								<div className="video-osd-name">
 									<img
+										alt={item.Items[0].SeriesName}
 										src={`${api.basePath}/Items/${item.Items[0].SeriesId}/Images/Logo`}
 										className="video-osd-name-logo"
 										onLoad={(e) => {

@@ -150,7 +150,7 @@ const SearchPage = () => {
 	useEffect(() => {
 		// Removing app's backdrop
 		setBackdrop("", "");
-	}, []);
+	});
 	return (
 		<div
 			className="scrollY"

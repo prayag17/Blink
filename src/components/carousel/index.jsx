@@ -20,6 +20,8 @@ const Carousel = ({ content, onChange }) => {
 		state.setDirection,
 		state.direction,
 	]);
+
+	// biome-ignore lint/correctness/useExhaustiveDependencies: <explanation>
 	useEffect(() => {
 		onChange(currentSlide);
 	}, [content[currentSlide].key]);
@@ -106,7 +108,7 @@ const Carousel = ({ content, onChange }) => {
 								? "carousel-indicator active"
 								: "carousel-indicator"
 						}
-						key={index}
+						key={item.Id}
 						onClick={() => {
 							if (currentSlide > index) {
 								setDirection("left");

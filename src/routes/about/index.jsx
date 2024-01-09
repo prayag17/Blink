@@ -40,7 +40,7 @@ const About = () => {
 
 	useEffect(() => {
 		setBackdrop("", "");
-	}, []);
+	});
 	if (systemInfo.isPending) {
 		return (
 			<div
@@ -69,7 +69,7 @@ const About = () => {
 					target="_blank"
 					rel="noreferrer"
 				>
-					<img width="100%" height="100%" src={logo} />
+					<img alt="JellyPlayer" width="100%" height="100%" src={logo} />
 				</a>
 				<div
 					style={{

@@ -216,7 +216,7 @@ const LibraryView = () => {
 				]);
 			}
 		}
-	}, [currentLib.isSuccess]);
+	});
 
 	const [filterArray, setFilterArray] = useState([]);
 

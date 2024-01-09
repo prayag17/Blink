@@ -130,6 +130,7 @@ export const Card = ({
 					{overrideIcon ? getTypeIcon(overrideIcon) : getTypeIcon(item.Type)}
 				</div>
 				<img
+					alt={item.Name}
 					src={
 						overrideIcon === "User"
 							? `${api.basePath}/Users/${item.Id}/Images/Primary`
@@ -155,7 +156,9 @@ export const Card = ({
 						opacity: 0,
 					}}
 					loading="lazy"
-					onLoad={(e) => (e.target.style.opacity = 1)}
+					onLoad={(e) => {
+						e.target.style.opacity = 1;
+					}}
 					className="card-image"
 				/>
 				<div className="card-overlay">

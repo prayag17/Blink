@@ -1,4 +1,3 @@
-
 import SvgIcon from "@mui/material/SvgIcon";
 
 import { mdiMusicBoxMultipleOutline } from "@mdi/js";

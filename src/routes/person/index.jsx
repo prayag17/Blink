@@ -226,13 +226,7 @@ const PersonTitlePage = () => {
 				setActivePersonTab(4);
 			}
 		}
-	}, [
-		personMovies.isPending,
-		personShows.isPending,
-		personBooks.isPending,
-		personPhotos.isPending,
-		personEpisodes.isPending,
-	]);
+	});
 	const [setAppBackdrop] = useBackdropStore((state) => [state.setBackdrop]);
 
 	const [animationDirection, setAnimationDirection] = useState("forward");
@@ -247,7 +241,7 @@ const PersonTitlePage = () => {
 				item.data.Id,
 			);
 		}
-	}, [item.isSuccess]);
+	});
 
 	if (item.isPending) {
 		return (
@@ -308,10 +302,10 @@ const PersonTitlePage = () => {
 								setActivePersonTab(newVal);
 							}}
 						>
-							{personTabs.map((tab, index) => {
+							{personTabs.map((tab) => {
 								return (
 									<Tab
-										key={index}
+										key={tab.title}
 										label={tab.title}
 										disabled={tab.data.data?.TotalRecordCount === 0}
 									/>

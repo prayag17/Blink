@@ -330,6 +330,7 @@ export const AppBar = () => {
 																"Primary",
 															) ? (
 																<img
+																	alt={library.Name}
 																	src={`${api.basePath}/Items/${library.Id}/Images/Primary?quality=90&fillHeight=226&fillWidth=127`}
 																/>
 															) : (

@@ -111,13 +111,14 @@ const Hero = ({
 			videoTracks[0]?.DisplayTitle.toLocaleLowerCase().includes("4k")
 		) {
 			return "4K";
-		}if (
+		}
+		if (
 			videoTracks[0]?.DisplayTitle.toLocaleLowerCase().includes("1080p") ||
 			videoTracks[0]?.DisplayTitle.toLocaleLowerCase().includes("hd")
 		) {
 			return "HD";
 		}
-			return "SD";
+		return "SD";
 	};
 
 	const atmosLabel = () => {
@@ -126,25 +127,24 @@ const Hero = ({
 			audioTracks[0]?.DisplayTitle.toLocaleLowerCase().includes("truehd")
 		) {
 			return "TrueHD | Atmos";
-		}if (
-			audioTracks[0]?.DisplayTitle.toLocaleLowerCase().includes("atmos")
-		) {
+		}
+		if (audioTracks[0]?.DisplayTitle.toLocaleLowerCase().includes("atmos")) {
 			return "Atmos";
-		}if (
-			audioTracks[0]?.DisplayTitle.toLocaleLowerCase().includes("truehd")
-		) {
+		}
+		if (audioTracks[0]?.DisplayTitle.toLocaleLowerCase().includes("truehd")) {
 			return "TrueHD";
 		}
-			return "";
+		return "";
 	};
 
 	const surroundSoundLabel = () => {
 		if (audioTracks[0]?.DisplayTitle.includes("7.1")) {
 			return "7.1";
-		}if (audioTracks[0].DisplayTitle.includes("5.1")) {
+		}
+		if (audioTracks[0].DisplayTitle.includes("5.1")) {
 			return "5.1";
 		}
-			return "2.0";
+		return "2.0";
 	};
 
 	return (
@@ -182,7 +182,9 @@ const Hero = ({
 							style={{
 								opacity: 0,
 							}}
-							onLoad={(e) => (e.target.style.opacity = 1)}
+							onLoad={(e) => {
+								e.target.style.opacity = 1;
+							}}
 							loading="eager"
 						/>
 					</>

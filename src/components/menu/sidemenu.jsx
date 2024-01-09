@@ -109,7 +109,7 @@ export const SideMenu = () => {
 							justifyContent: "center",
 						}}
 					>
-						<img src={Icon} className="sidemenu-icon" />
+						<img alt="JellyPlayer" src={Icon} className="sidemenu-icon" />
 					</DrawerHeader>
 					<div className="sidemenu-item-container">
 						{libraries.isPending ? (

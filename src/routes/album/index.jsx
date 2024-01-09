@@ -162,7 +162,7 @@ const MusicAlbumTitlePage = () => {
 				item.data.Id,
 			);
 		}
-	}, [item.isSuccess]);
+	});
 
 	if (item.isPending || similarItems.isPending) {
 		return (
