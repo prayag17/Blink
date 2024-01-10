@@ -224,7 +224,7 @@ const SeriesTitlePage = () => {
 			const actorTp = item.data.People.filter((itm) => itm.Type === "Actor");
 			setActors(actorTp);
 		}
-	});
+	}, [item.isSuccess]);
 
 	if (item.isPending || similarItems.isPending) {
 		return (
@@ -241,6 +241,7 @@ const SeriesTitlePage = () => {
 			</Box>
 		);
 	}
+
 	if (item.isSuccess && similarItems.isSuccess) {
 		return (
 			<motion.div
