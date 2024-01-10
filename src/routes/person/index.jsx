@@ -258,6 +258,7 @@ const PersonTitlePage = () => {
 			</Box>
 		);
 	}
+
 	if (item.isSuccess) {
 		return (
 			<motion.div

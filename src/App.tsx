@@ -96,7 +96,7 @@ import AudioPlayer from "./components/playback/audioPlayer/index.jsx";
 import { useAudioPlayback } from "./utils/store/audioPlayback.js";
 import { useBackdropStore } from "./utils/store/backdrop.js";
 import { useCentralStore } from "./utils/store/central.js";
-import { usePlaybackDataLoadStore } from "./utils/store/playback.js";
+import { usePlaybackDataLoadStore } from "./utils/store/playback";
 
 // 3rd Party
 import { CircularProgress } from "@mui/material";

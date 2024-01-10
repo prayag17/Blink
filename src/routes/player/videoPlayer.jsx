@@ -19,7 +19,7 @@ import { MdiPlay } from "../../components/icons/mdiPlay";
 import { usePlaybackStore } from "../../utils/store/playback";
 
 import { useCallback, useEffect, useRef, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { Navigate, useNavigate } from "react-router-dom";
 import { secToTicks, ticksToSec } from "../../utils/date/time";
 
 import { getMediaInfoApi } from "@jellyfin/sdk/lib/utils/api/media-info-api";
@@ -170,7 +170,7 @@ export const VideoPlayer = () => {
 					PlaySessionId: mediaInfo.data?.PlaySessionId,
 				},
 			});
-			console.log(startPosition);
+
 			playerRef.current.seekTo(timeToStart, "seconds");
 			setIsReady(true);
 		}
@@ -284,8 +284,6 @@ export const VideoPlayer = () => {
 
 		setItemId(episodes.data.Items[currentEpisodeIndex + 1].Id);
 		setDurationStore(episodes.data.Items[currentEpisodeIndex + 1].RunTimeTicks);
-
-		// navigate("player");
 	};
 	const handlePlayPrevEpisode = () => {
 		// Reset video player state
@@ -359,8 +357,6 @@ export const VideoPlayer = () => {
 
 		setItemId(episodes.data.Items[currentEpisodeIndex - 1].Id);
 		setDurationStore(episodes.data.Items[currentEpisodeIndex - 1].RunTimeTicks);
-
-		// navigate("player");
 	};
 
 	const [appFullscreen, setAppFullScreen] = useState(false);
@@ -436,7 +432,7 @@ export const VideoPlayer = () => {
 		return () => {
 			clearTimeout(timeout);
 		};
-	});
+	}, []);
 
 	const handleExit = async () => {
 		// Remove app from fullscreen
@@ -452,6 +448,7 @@ export const VideoPlayer = () => {
 				PositionTicks: currentTime,
 			},
 		});
+
 		navigate(-1);
 
 		// Reset playback store
@@ -469,7 +466,6 @@ export const VideoPlayer = () => {
 	};
 
 	const handleOnEnd = () => {
-		console.log("Playback ended");
 		if (seriesId) {
 			if (episodes.isSuccess && episodes.data.TotalRecordCount > 0) {
 				handlePlayNextEpisode();
@@ -509,6 +505,14 @@ export const VideoPlayer = () => {
 			handleOnEnd();
 		}
 	};
+
+	if (!itemId) {
+		return (
+			<>
+				<Navigate to="/library/index" />;
+			</>
+		);
+	}
 
 	return (
 		<div

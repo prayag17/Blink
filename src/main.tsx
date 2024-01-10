@@ -58,6 +58,11 @@ const authenticateUser = async (
 };
 
 const init = async () => {
+	if (window.location.pathname !== "/") {
+		window.location.href = "/";
+		return;
+	}
+
 	const defaultServerOnDisk = await getDefaultServer();
 
 	if (defaultServerOnDisk) {

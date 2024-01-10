@@ -153,7 +153,7 @@ const EpisodeTitlePage = () => {
 			setAudioTracks(audios);
 			setSubtitleTracks(subs);
 		}
-	});
+	}, [item.isSuccess, item.data?.MediaStreams]);
 
 	const [directors, setDirectors] = useState([]);
 	const [writers, setWriters] = useState([]);
@@ -180,7 +180,7 @@ const EpisodeTitlePage = () => {
 			const actorTp = item.data.People.filter((itm) => itm.Type === "Actor");
 			setActors(actorTp);
 		}
-	});
+	}, [item.isSuccess]);
 
 	const qualityLabel = () => {
 		if (
