@@ -18,6 +18,12 @@
         align-items: center;
         justify-content: center;
         flex-direction: column;
+        transition: opacity 0.25s ease-in-out;
+      }
+
+      .app-loading.hidden {
+        opacity: 0;
+        pointer-events: none;
       }
 
       .app-loading-logo {
