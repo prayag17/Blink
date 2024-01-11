@@ -27,7 +27,7 @@ const jellyfin = new Jellyfin({
 	},
 	deviceInfo: {
 		name: "JellyPlayer",
-		id: deviceId!,
+		id: deviceId,
 	},
 });
 
