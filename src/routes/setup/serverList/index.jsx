@@ -1,5 +1,7 @@
 import React, { useState } from "react";
 
+import { relaunch } from "@tauri-apps/api/process";
+
 import Chip from "@mui/material/Chip";
 import IconButton from "@mui/material/IconButton";
 import Paper from "@mui/material/Paper";
@@ -40,7 +42,7 @@ const ServerList = () => {
 			await setDefaultServer(serverState);
 		},
 		onSuccess: async () => {
-			navigate("/login/index");
+			await relaunch();
 		},
 		onError: (error) => {
 			console.error(error);
@@ -60,7 +62,7 @@ const ServerList = () => {
 			if (servers.length > 0) {
 				setDefaultServer(servers[0].id);
 			} else {
-				navigate("/setup/server");
+				await relaunch()
 			}
 		}
 

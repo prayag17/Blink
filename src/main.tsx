@@ -64,10 +64,10 @@ const init = async () => {
 	}
 
 	const defaultServerOnDisk = await getDefaultServer();
+	console.log(defaultServerOnDisk)
 
 	if (defaultServerOnDisk) {
 		const defaultServerInfo = await getServer(defaultServerOnDisk);
-
 		if (!defaultServerInfo) {
 			await setDefaultServer(null);
 			await delServer(defaultServerOnDisk);
