@@ -1,11 +1,5 @@
-import { Api } from "@jellyfin/sdk";
 import { getUserApi } from "@jellyfin/sdk/lib/utils/api/user-api";
-import {
-	QueryClient,
-	QueryClientProvider,
-	useQuery,
-} from "@tanstack/react-query";
-import { enqueueSnackbar } from "notistack";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import React from "react";
 import ReactDOM from "react-dom/client";
 import { BrowserRouter as Router } from "react-router-dom";
@@ -40,7 +34,6 @@ const handleAuthError = async () => {
 
 const authenticateUser = async (address: string, user: UserStore["user"]) => {
 	try {
-		console.log(user);
 		createApi(address, user.AccessToken);
 
 		setInitialRoute("/home");

@@ -161,7 +161,6 @@ function App() {
 		undefined,
 	);
 
-	// biome-ignore lint/correctness/useExhaustiveDependencies: this dependency is required
 	useEffect(() => {
 		window.scrollTo(0, 0);
 	}, [location.key]);
