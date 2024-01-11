@@ -3,7 +3,7 @@ import { Store } from "tauri-plugin-store-api";
 export interface UserStore {
 	user: {
 		Name: string;
-		Password: string;
+		AccessToken: string;
 	};
 }
 
@@ -12,10 +12,10 @@ const user = new Store(".user.dat");
 /**
  * Set User details to .user.dat
  */
-const saveUser = async (userName: string, userPassword?: string) => {
+const saveUser = async (userName: string, accessToken: string) => {
 	user.set("user", {
 		Name: userName,
-		Password: userPassword,
+		AccessToken: accessToken,
 	});
 
 	await user.save();

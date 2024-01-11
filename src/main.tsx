@@ -1,6 +1,5 @@
-import { Api } from "@jellyfin/sdk";
+import { getUserApi } from "@jellyfin/sdk/lib/utils/api/user-api";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { enqueueSnackbar } from "notistack";
 import React from "react";
 import ReactDOM from "react-dom/client";
 import { BrowserRouter as Router } from "react-router-dom";
@@ -33,24 +32,11 @@ const handleAuthError = async () => {
 	setInitialRoute("/login/index");
 };
 
-const authenticateUser = async (
-	address: string,
-	api: Api,
-	user: UserStore["user"],
-) => {
+const authenticateUser = async (address: string, user: UserStore["user"]) => {
 	try {
-		const auth = await api.authenticateUserByName(user.Name, user.Password);
+		createApi(address, user.AccessToken);
 
-		if (auth.status !== 200 || !auth.data.AccessToken) {
-			enqueueSnackbar("Incorrect Username or Password!", {
-				variant: "error",
-			});
-
-			handleAuthError();
-		} else {
-			createApi(address, auth.data.AccessToken);
-			setInitialRoute("/home");
-		}
+		setInitialRoute("/home");
 	} catch (error) {
 		console.error(error);
 		setInitialRoute("/error");
@@ -64,7 +50,7 @@ const init = async () => {
 	}
 
 	const defaultServerOnDisk = await getDefaultServer();
-	console.log(defaultServerOnDisk)
+	console.log(defaultServerOnDisk);
 
 	if (defaultServerOnDisk) {
 		const defaultServerInfo = await getServer(defaultServerOnDisk);
@@ -84,14 +70,23 @@ const init = async () => {
 
 		if (userOnDisk) {
 			try {
-				const authApi = useApi.getState().api;
+				let authApi = useApi.getState().api;
 
 				if (!authApi) {
 					handleAuthError();
 					return;
 				}
 
-				await authenticateUser(defaultServerInfo.address, authApi, userOnDisk);
+				await authenticateUser(defaultServerInfo.address, userOnDisk);
+
+				authApi = useApi.getState().api!;
+
+				const user = await getUserApi(authApi).getCurrentUser();
+
+				if (!user) {
+					await delUser();
+					handleAuthError();
+				}
 			} catch (error) {
 				console.error(error);
 				handleAuthError();
