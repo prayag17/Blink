@@ -95,16 +95,27 @@ import AudioPlayer from "./components/playback/audioPlayer/index.jsx";
 // Utils
 import { useAudioPlayback } from "./utils/store/audioPlayback.js";
 import { useBackdropStore } from "./utils/store/backdrop.js";
-import { useCentralStore } from "./utils/store/central.js";
+import { setInitialRoute, useCentralStore } from "./utils/store/central.js";
 import { usePlaybackDataLoadStore } from "./utils/store/playback";
 
 // 3rd Party
+import { Api } from "@jellyfin/sdk";
+import { getUserApi } from "@jellyfin/sdk/lib/utils/api/user-api";
 import { CircularProgress } from "@mui/material";
 import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 import { useSnackbar } from "notistack";
 import { ErrorBoundary } from "react-error-boundary";
 import { EasterEgg } from "./components/utils/easterEgg.jsx";
 import { handleRelaunch } from "./utils/misc/relaunch";
+import {
+	delServer,
+	getAllServers,
+	getDefaultServer,
+	getServer,
+	setDefaultServer,
+} from "./utils/storage/servers";
+import { UserStore, delUser, getUser } from "./utils/storage/user";
+import { createApi, useApi } from "./utils/store/api";
 
 // const anim = {
 // 	initial: {
@@ -138,7 +149,104 @@ import { handleRelaunch } from "./utils/misc/relaunch";
 // 	);
 // };
 
+const handleAuthError = async () => {
+	await delUser();
+	setInitialRoute("/login/index");
+};
+
+const authenticateUser = async (address: string, user: UserStore["user"]) => {
+	try {
+		createApi(address, user.AccessToken);
+		setInitialRoute("/home");
+	} catch (error) {
+		console.error(error);
+		setInitialRoute("/error");
+	}
+};
+
+const init = async () => {
+	if (window.location.pathname !== "/") {
+		window.location.href = "/";
+		return;
+	}
+
+	const defaultServerOnDisk = await getDefaultServer();
+
+	if (defaultServerOnDisk) {
+		const defaultServerInfo = await getServer(defaultServerOnDisk);
+		if (!defaultServerInfo) {
+			await setDefaultServer(null);
+			await delServer(defaultServerOnDisk);
+
+			const servers = await getAllServers();
+
+			setInitialRoute(servers.length > 0 ? "/servers/list" : "/setup/server");
+
+			return;
+		}
+
+		const userOnDisk = await getUser();
+		createApi(defaultServerInfo.address, "");
+
+		if (userOnDisk) {
+			try {
+				let authApi = useApi.getState().api;
+
+				if (!authApi) {
+					handleAuthError();
+					return;
+				}
+
+				await authenticateUser(defaultServerInfo.address, userOnDisk);
+
+				authApi = useApi.getState().api!;
+
+				const user = await getUserApi(authApi).getCurrentUser();
+
+				if (!user) {
+					await delUser();
+					handleAuthError();
+				}
+			} catch (error) {
+				console.error(error);
+				handleAuthError();
+			}
+		} else {
+			setInitialRoute("/login/index");
+		}
+	} else {
+		setInitialRoute("/setup/server");
+	}
+};
+
 function App() {
+	const [appReady, setAppReady] = useState(false);
+
+	useEffect(() => {
+		init().then(() => {
+			setAppReady(true);
+		});
+	}, []);
+
+	if (!appReady) {
+		return (
+			<div
+				style={{
+					position: "fixed",
+					top: "50%",
+					left: "50%",
+					transform: "translate(-50%, -50%)",
+				}}
+			>
+				<CircularProgress size={72} thickness={1.4} />
+			</div>
+		);
+	}
+
+	return <AppReady />;
+}
+
+function AppReady() {
 	const [audioPlayerVisible] = useAudioPlayback((state) => [state.display]);
 	const { enqueueSnackbar } = useSnackbar();
 
@@ -161,7 +269,6 @@ function App() {
 		undefined,
 	);
 
-	// biome-ignore lint/correctness/useExhaustiveDependencies: this dependency is required
 	useEffect(() => {
 		window.scrollTo(0, 0);
 	}, [location.key]);

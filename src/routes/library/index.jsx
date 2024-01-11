@@ -96,7 +96,7 @@ const LibraryView = () => {
 		},
 		enabled: !!user.data,
 		networkMode: "always",
-		gcTime: 0,
+		staleTime: 0,
 	});
 
 	const [isPlayed, setIsPlayed] = useState(false);

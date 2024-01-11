@@ -122,7 +122,7 @@ export const LoginWithImage = () => {
 		const user = await authUser();
 		sessionStorage.setItem("accessToken", user.data.AccessToken);
 		if (rememberMe === true) {
-			saveUser(userName, password.password);
+			saveUser(userName, user.data.AccessToken);
 		}
 		event.emit("set-api-accessToken", api.basePath);
 		setLoading(false);
@@ -256,7 +256,7 @@ export const UserLogin = () => {
 			const users = await getUserApi(api).getPublicUsers();
 			return users.data;
 		},
-		gcTime: 0,
+		staleTime: 0,
 	});
 
 	const handleInitiateQuickConnect = useMutation({
@@ -435,7 +435,7 @@ export const UserLoginManual = () => {
 		const user = await authUser();
 		sessionStorage.setItem("accessToken", user.data.AccessToken);
 		if (rememberMe === true) {
-			saveUser(userName, password.password);
+			saveUser(userName, user.data.AccessToken);
 		}
 		event.emit("set-api-accessToken", api.basePath);
 		// setAccessToken(user.data.AccessToken)
