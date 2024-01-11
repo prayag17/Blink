@@ -5,7 +5,6 @@ import { version as appVer } from "../../../package.json";
 // Initial custom axios client to use tauri's http module
 import axios from "axios";
 import axiosTauriApiAdapter from "axios-tauri-api-adapter";
-import { v4 as uuidv4 } from "uuid";
 
 export const axiosClient = axios.create({
 	adapter: axiosTauriApiAdapter,
@@ -15,13 +14,10 @@ export const axiosClient = axios.create({
 	timeout: 60000,
 });
 
-let deviceId = localStorage.getItem("deviceId");
+const deviceId = localStorage.getItem("deviceId") || crypto.randomUUID();
 
-if (!deviceId) {
-	const randomId = uuidv4();
-	localStorage.setItem("deviceId", randomId);
-
-	deviceId = randomId;
+if (!localStorage.getItem("deviceId")) {
+	localStorage.setItem("deviceId", deviceId);
 }
 
 const jellyfin = new Jellyfin({
@@ -31,7 +27,7 @@ const jellyfin = new Jellyfin({
 	},
 	deviceInfo: {
 		name: "JellyPlayer",
-		id: deviceId!,
+		id: deviceId,
 	},
 });
 

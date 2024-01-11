@@ -1,6 +1,5 @@
 import { RecommendedServerInfo } from "@jellyfin/sdk";
 import { Store } from "tauri-plugin-store-api";
-import { v4 as uuidv4 } from "uuid";
 
 interface ServerInfo extends RecommendedServerInfo {
 	id: string;
