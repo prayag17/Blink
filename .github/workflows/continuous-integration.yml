@@ -107,7 +107,7 @@ jobs:
         run: pnpm install --no-frozen-lockfile
 
       - name: Build app
-        run: pnpm run tauri build
+        run: pnpm run tauri build --bundles "deb" "appimage" "nsis" "app" "dmg"
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           TAURI_PRIVATE_KEY: ${{ secrets.TAURI_PRIVATE_KEY }}
