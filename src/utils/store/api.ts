@@ -2,7 +2,6 @@ import { Api, Jellyfin } from "@jellyfin/sdk";
 import { create } from "zustand";
 import { version as appVer } from "../../../package.json";
 
-import { randomUUID } from "crypto";
 // Initial custom axios client to use tauri's http module
 import axios from "axios";
 import axiosTauriApiAdapter from "axios-tauri-api-adapter";
@@ -15,7 +14,7 @@ export const axiosClient = axios.create({
 	timeout: 60000,
 });
 
-const deviceId = localStorage.getItem("deviceId") || randomUUID();
+const deviceId = localStorage.getItem("deviceId") || crypto.randomUUID();
 
 if (!localStorage.getItem("deviceId")) {
 	localStorage.setItem("deviceId", deviceId);
