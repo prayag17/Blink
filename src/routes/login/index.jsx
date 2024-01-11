@@ -256,7 +256,7 @@ export const UserLogin = () => {
 			const users = await getUserApi(api).getPublicUsers();
 			return users.data;
 		},
-		gcTime: 0,
+		staleTime: 0,
 	});
 
 	const handleInitiateQuickConnect = useMutation({
