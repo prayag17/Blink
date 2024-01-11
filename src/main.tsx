@@ -28,4 +28,4 @@ ReactDOM.createRoot(document.getElementById("root")!).render(
 	</React.StrictMode>,
 );
 
-document.querySelector(".app-loading")!.setAttribute("style", "display:none");
+document.querySelector(".app-loading")!.classList.toggle("hidden");
