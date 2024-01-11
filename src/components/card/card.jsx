@@ -1,19 +1,18 @@
-/** @format */
 import React from "react";
 
 import { useNavigate } from "react-router-dom";
 
-import Typography from "@mui/material/Typography";
 import LinearProgress from "@mui/material/LinearProgress";
+import Typography from "@mui/material/Typography";
 
 import { getTypeIcon } from "../utils/iconsCollection";
 import "./card.module.scss";
 
+import { BaseItemKind } from "@jellyfin/sdk/lib/generated-client";
+import { useApi } from "../../utils/store/api";
 import LikeButton from "../buttons/likeButton";
 import MarkPlayedButton from "../buttons/markPlayedButton";
 import PlayButton from "../buttons/playButton";
-import { BaseItemKind } from "@jellyfin/sdk/lib/generated-client";
-import { useApi } from "../../utils/store/api";
 import ErrorBoundary from "../errorBoundary";
 
 const cardImageAspectRatios = {
@@ -73,9 +72,9 @@ export const Card = ({
 	const defaultOnClick = () => {
 		if (availableSpecialRoutes.includes(item.Type)) {
 			navigate(`/${item.Type.toLocaleLowerCase()}/${item.Id}`);
-		} else if (!!item.Role || item.Type == BaseItemKind.Person) {
+		} else if (!!item.Role || item.Type === BaseItemKind.Person) {
 			navigate(`/person/${item.Id}`);
-		} else if (item.Type == BaseItemKind.MusicArtist) {
+		} else if (item.Type === BaseItemKind.MusicArtist) {
 			navigate(`/artist/${item.Id}`);
 		} else {
 			navigate(`/item/${item.Id}`);
@@ -85,7 +84,6 @@ export const Card = ({
 		<div
 			className="card"
 			elevation={0}
-			tabIndex={0}
 			onClick={onClick ? onClick : defaultOnClick}
 		>
 			<div
@@ -94,23 +92,19 @@ export const Card = ({
 					aspectRatio: cardImageAspectRatios[cardType],
 				}}
 			>
-				<ErrorBoundary fallback={<></>}>
+				<ErrorBoundary fallback>
 					<div
 						className="card-indicator check"
 						style={{
 							opacity: item.UserData?.Played ? 1 : 0,
 						}}
 					>
-						<div className="material-symbols-rounded">
-							done
-						</div>
+						<div className="material-symbols-rounded">done</div>
 					</div>
 					<div
-						className={`card-indicator text`}
+						className={"card-indicator text"}
 						style={{
-							opacity: item.UserData?.UnplayedItemCount
-								? 1
-								: 0,
+							opacity: item.UserData?.UnplayedItemCount ? 1 : 0,
 						}}
 					>
 						<Typography
@@ -133,29 +127,25 @@ export const Card = ({
 						/>
 					)} */}
 				<div className="card-image-icon-container">
-					{overrideIcon
-						? getTypeIcon(overrideIcon)
-						: getTypeIcon(item.Type)}
+					{overrideIcon ? getTypeIcon(overrideIcon) : getTypeIcon(item.Type)}
 				</div>
 				<img
+					alt={item.Name}
 					src={
-						overrideIcon == "User"
+						overrideIcon === "User"
 							? `${api.basePath}/Users/${item.Id}/Images/Primary`
 							: api.getItemImageUrl(
 									seriesId
 										? item.SeriesId
 										: item.AlbumId
-										? item.AlbumId
-										: item.Id,
+										  ? item.AlbumId
+										  : item.Id,
 									imageType,
 									{
 										quality: 90,
 										fillHeight: 226,
 										fillWidth: Math.floor(
-											226 /
-												cardImageAspectRatios[
-													cardType
-												],
+											226 / cardImageAspectRatios[cardType],
 										),
 									},
 							  )
@@ -166,7 +156,9 @@ export const Card = ({
 						opacity: 0,
 					}}
 					loading="lazy"
-					onLoad={(e) => (e.target.style.opacity = 1)}
+					onLoad={(e) => {
+						e.target.style.opacity = 1;
+					}}
 					className="card-image"
 				/>
 				<div className="card-overlay">
@@ -185,16 +177,12 @@ export const Card = ({
 								}}
 								iconOnly
 								audio={
-									item.Type ==
-										BaseItemKind.MusicAlbum ||
-									item.Type == BaseItemKind.Audio ||
-									item.Type ==
-										BaseItemKind.AudioBook ||
-									item.Type == BaseItemKind.Playlist
+									item.Type === BaseItemKind.MusicAlbum ||
+									item.Type === BaseItemKind.Audio ||
+									item.Type === BaseItemKind.AudioBook ||
+									item.Type === BaseItemKind.Playlist
 								}
-								playlistItem={
-									item.Type == BaseItemKind.Playlist
-								}
+								playlistItem={item.Type === BaseItemKind.Playlist}
 								playlistItemId={item.Id}
 							/>
 							<LikeButton

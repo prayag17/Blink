@@ -1,30 +1,29 @@
-/** @format */
-import React, { useEffect, useState } from "react";
-import TextField from "@mui/material/TextField";
-import MenuItem from "@mui/material/MenuItem";
 import Chip from "@mui/material/Chip";
-import Stack from "@mui/material/Stack";
-import Typography from "@mui/material/Typography";
 import LinearProgress from "@mui/material/LinearProgress";
+import MenuItem from "@mui/material/MenuItem";
+import Stack from "@mui/material/Stack";
+import TextField from "@mui/material/TextField";
+import Typography from "@mui/material/Typography";
+import React, { useEffect, useState } from "react";
 
 // import { BaseItemDto } from "";
 // import { BaseItemPerson } from "@jellyfin/sdk/lib/generated-client/models/base-item-person";
 import { BaseItemKind } from "@jellyfin/sdk/lib/generated-client/models/base-item-kind";
 import { MediaStreamType } from "@jellyfin/sdk/lib/generated-client/models/media-stream-type";
 
-import { Card } from "../../card/card";
-import { yellow, red } from "@mui/material/colors";
+import { red, yellow } from "@mui/material/colors";
 import { endsAt, getRuntime, getRuntimeFull } from "../../../utils/date/time";
 import LikeButton from "../../buttons/likeButton";
 import MarkPlayedButton from "../../buttons/markPlayedButton";
 import PlayButton from "../../buttons/playButton";
+import { Card } from "../../card/card";
 
-import "./hero.module.scss";
 import { Blurhash } from "react-blurhash";
 import TextLink from "../../textLink";
+import "./hero.module.scss";
 
-import { useApi } from "../../../utils/store/api";
 import { ErrorBoundary } from "react-error-boundary";
+import { useApi } from "../../../utils/store/api";
 /**
  * @typedef {Object} Props
  * @property {import("@jellyfin/sdk/lib/generated-client/models").BaseItemDto} item
@@ -72,19 +71,19 @@ const Hero = ({
 	const [api] = useApi((state) => [state.api]);
 
 	const filterMediaStreamVideo = (source) => {
-		if (source.Type == MediaStreamType.Video) {
+		if (source.Type === MediaStreamType.Video) {
 			return true;
 		}
 		return false;
 	};
 	const filterMediaStreamAudio = (source) => {
-		if (source.Type == MediaStreamType.Audio) {
+		if (source.Type === MediaStreamType.Audio) {
 			return true;
 		}
 		return false;
 	};
 	const filterMediaStreamSubtitle = (source) => {
-		if (source.Type == MediaStreamType.Subtitle) {
+		if (source.Type === MediaStreamType.Subtitle) {
 			return true;
 		}
 		return false;
@@ -92,9 +91,7 @@ const Hero = ({
 
 	const videoTracks = item.MediaStreams?.filter(filterMediaStreamVideo);
 	const audioTracks = item.MediaStreams?.filter(filterMediaStreamAudio);
-	const subtitleTracks = item.MediaStreams?.filter(
-		filterMediaStreamSubtitle,
-	);
+	const subtitleTracks = item.MediaStreams?.filter(filterMediaStreamSubtitle);
 
 	const [currentVideoIndex, setCurrentVideoIndex] = useState(0);
 	const [currentAudioIndex, setCurrentAudioIndex] = useState(0);
@@ -110,59 +107,44 @@ const Hero = ({
 
 	const qualityLabel = () => {
 		if (
-			videoTracks[0]?.DisplayTitle.toLocaleLowerCase().includes(
-				"2160p",
-			) ||
+			videoTracks[0]?.DisplayTitle.toLocaleLowerCase().includes("2160p") ||
 			videoTracks[0]?.DisplayTitle.toLocaleLowerCase().includes("4k")
 		) {
 			return "4K";
-		} else if (
-			videoTracks[0]?.DisplayTitle.toLocaleLowerCase().includes(
-				"1080p",
-			) ||
+		}
+		if (
+			videoTracks[0]?.DisplayTitle.toLocaleLowerCase().includes("1080p") ||
 			videoTracks[0]?.DisplayTitle.toLocaleLowerCase().includes("hd")
 		) {
 			return "HD";
-		} else {
-			return "SD";
 		}
+		return "SD";
 	};
 
 	const atmosLabel = () => {
 		if (
-			audioTracks[0]?.DisplayTitle.toLocaleLowerCase().includes(
-				"atmos",
-			) &&
-			audioTracks[0]?.DisplayTitle.toLocaleLowerCase().includes(
-				"truehd",
-			)
+			audioTracks[0]?.DisplayTitle.toLocaleLowerCase().includes("atmos") &&
+			audioTracks[0]?.DisplayTitle.toLocaleLowerCase().includes("truehd")
 		) {
 			return "TrueHD | Atmos";
-		} else if (
-			audioTracks[0]?.DisplayTitle.toLocaleLowerCase().includes(
-				"atmos",
-			)
-		) {
-			return "Atmos";
-		} else if (
-			audioTracks[0]?.DisplayTitle.toLocaleLowerCase().includes(
-				"truehd",
-			)
-		) {
-			return "TrueHD";
-		} else {
-			return "";
 		}
+		if (audioTracks[0]?.DisplayTitle.toLocaleLowerCase().includes("atmos")) {
+			return "Atmos";
+		}
+		if (audioTracks[0]?.DisplayTitle.toLocaleLowerCase().includes("truehd")) {
+			return "TrueHD";
+		}
+		return "";
 	};
 
 	const surroundSoundLabel = () => {
 		if (audioTracks[0]?.DisplayTitle.includes("7.1")) {
 			return "7.1";
-		} else if (audioTracks[0].DisplayTitle.includes("5.1")) {
-			return "5.1";
-		} else {
-			return "2.0";
 		}
+		if (audioTracks[0].DisplayTitle.includes("5.1")) {
+			return "5.1";
+		}
+		return "2.0";
 	};
 
 	return (
@@ -175,15 +157,11 @@ const Hero = ({
 			<div className="hero-backdrop">
 				{!!item.ImageBlurHashes.Backdrop && (
 					<>
-						{Object.keys(item.ImageBlurHashes.Backdrop)
-							.length != 0 && (
+						{Object.keys(item.ImageBlurHashes.Backdrop).length !== 0 && (
 							<Blurhash
 								hash={
 									item.ImageBlurHashes.Backdrop[
-										Object.keys(
-											item.ImageBlurHashes
-												.Backdrop,
-										)[0]
+										Object.keys(item.ImageBlurHashes.Backdrop)[0]
 									]
 								}
 								width="1080"
@@ -204,12 +182,14 @@ const Hero = ({
 							style={{
 								opacity: 0,
 							}}
-							onLoad={(e) => (e.target.style.opacity = 1)}
+							onLoad={(e) => {
+								e.target.style.opacity = 1;
+							}}
 							loading="eager"
 						/>
 					</>
 				)}
-				<div className="hero-backdrop-icon-container"></div>
+				<div className="hero-backdrop-icon-container" />
 			</div>
 			<div
 				className="item-detail-hero-info-container"
@@ -242,10 +222,7 @@ const Hero = ({
 										item.SeriesName
 									)}
 								</TextLink>
-								<Typography
-									variant="h3"
-									fontWeight={300}
-								>
+								<Typography variant="h3" fontWeight={300}>
 									{`S${item.ParentIndexNumber}:E${item.IndexNumber} ${item.Name}`}
 								</Typography>
 							</>
@@ -298,8 +275,7 @@ const Hero = ({
 										</Typography>
 									}
 									sx={{
-										borderRadius:
-											"8px !important",
+										borderRadius: "8px !important",
 										"& .MuiChip-label": {
 											fontSize: "2.2em",
 										},
@@ -319,8 +295,7 @@ const Hero = ({
 										</Typography>
 									}
 									sx={{
-										borderRadius:
-											"8px !important",
+										borderRadius: "8px !important",
 										"& .MuiChip-label": {
 											fontSize: "2.2em",
 										},
@@ -336,15 +311,11 @@ const Hero = ({
 											fontWeight={600}
 											fontFamily="JetBrains Mono Variable"
 										>
-											{
-												videoTracks[0]
-													.VideoRangeType
-											}
+											{videoTracks[0].VideoRangeType}
 										</Typography>
 									}
 									sx={{
-										borderRadius:
-											"8px !important",
+										borderRadius: "8px !important",
 										"& .MuiChip-label": {
 											fontSize: "2.2em",
 										},
@@ -364,8 +335,7 @@ const Hero = ({
 										</Typography>
 									}
 									sx={{
-										borderRadius:
-											"8px !important",
+										borderRadius: "8px !important",
 										"& .MuiChip-label": {
 											fontSize: "2.2em",
 										},
@@ -385,8 +355,7 @@ const Hero = ({
 										</Typography>
 									}
 									sx={{
-										borderRadius:
-											"8px !important",
+										borderRadius: "8px !important",
 										"& .MuiChip-label": {
 											fontSize: "2.2em",
 										},
@@ -404,21 +373,14 @@ const Hero = ({
 							justifyItems="flex-start"
 							alignItems="center"
 						>
-							<Typography
-								style={{ opacity: "0.8" }}
-								variant="subtitle1"
-							>
-								{item.ProductionYear
-									? item.ProductionYear
-									: "Unknown"}
+							<Typography style={{ opacity: "0.8" }} variant="subtitle1">
+								{item.ProductionYear ? item.ProductionYear : "Unknown"}
 							</Typography>
 							<Chip
 								variant="filled"
-								label={
-									item.OfficialRating ?? "Not Rated"
-								}
+								label={item.OfficialRating ?? "Not Rated"}
 							/>
-							<ErrorBoundary fallback={<></>}>
+							<ErrorBoundary fallback>
 								<div
 									style={{
 										display: "flex",
@@ -444,10 +406,7 @@ const Hero = ({
 										}}
 										variant="subtitle1"
 									>
-										{Math.round(
-											item.CommunityRating *
-												10,
-										) / 10}
+										{Math.round(item.CommunityRating * 10) / 10}
 									</Typography>
 								</div>
 							</ErrorBoundary>
@@ -482,28 +441,18 @@ const Hero = ({
 							)}
 
 							{!!item.RunTimeTicks && (
-								<Typography
-									style={{ opacity: "0.8" }}
-									variant="subtitle1"
-								>
+								<Typography style={{ opacity: "0.8" }} variant="subtitle1">
 									{getRuntime(item.RunTimeTicks)}
 								</Typography>
 							)}
 							{!!item.RunTimeTicks && (
-								<Typography
-									style={{ opacity: "0.8" }}
-									variant="subtitle1"
-								>
+								<Typography style={{ opacity: "0.8" }} variant="subtitle1">
 									{endsAt(item.RunTimeTicks)}
 								</Typography>
 							)}
 						</Stack>
 					)}
-					<Typography
-						style={{ opacity: "0.8" }}
-						variant="subtitle1"
-						mt={1}
-					>
+					<Typography style={{ opacity: "0.8" }} variant="subtitle1" mt={1}>
 						{item.Genres.join(", ")}
 					</Typography>
 				</div>
@@ -527,9 +476,7 @@ const Hero = ({
 						/>
 						<Typography variant="subtitle1" fontWeight={600}>
 							{getRuntimeFull(
-								item.RunTimeTicks -
-									item.UserData
-										.PlaybackPositionTicks,
+								item.RunTimeTicks - item.UserData.PlaybackPositionTicks,
 							)}{" "}
 							remaining
 						</Typography>
@@ -557,10 +504,7 @@ const Hero = ({
 							}}
 							itemUserData={item.UserData}
 							audio={audioPlayButton}
-							playlistItemId={
-								item.Type == BaseItemKind.Playlist &&
-								item.Id
-							}
+							playlistItemId={item.Type === BaseItemKind.Playlist && item.Id}
 						/>
 					)}
 					{!disableLikeButton && (
@@ -606,11 +550,7 @@ const Hero = ({
 								size="small"
 								value={currentVideoIndex}
 								select
-								onChange={(e) =>
-									setCurrentVideoIndex(
-										e.target.value,
-									)
-								}
+								onChange={(e) => setCurrentVideoIndex(e.target.value)}
 								SelectProps={{
 									MenuProps: {
 										disableScrollLock: true,
@@ -619,10 +559,7 @@ const Hero = ({
 							>
 								{videoTracks.map((track) => {
 									return (
-										<MenuItem
-											key={track.Index}
-											value={track.Index}
-										>
+										<MenuItem key={track.Index} value={track.Index}>
 											{track.DisplayTitle}
 										</MenuItem>
 									);
@@ -645,11 +582,7 @@ const Hero = ({
 								size="small"
 								value={currentAudioIndex}
 								select
-								onChange={(e) =>
-									setCurrentAudioIndex(
-										e.target.value,
-									)
-								}
+								onChange={(e) => setCurrentAudioIndex(e.target.value)}
 								SelectProps={{
 									MenuProps: {
 										disableScrollLock: true,
@@ -658,10 +591,7 @@ const Hero = ({
 							>
 								{audioTracks.map((track) => {
 									return (
-										<MenuItem
-											key={track.Index}
-											value={track.Index}
-										>
+										<MenuItem key={track.Index} value={track.Index}>
 											{track.DisplayTitle}
 										</MenuItem>
 									);
@@ -686,9 +616,7 @@ const Hero = ({
 								select
 								onChange={(e) => {
 									console.log(e.target.value);
-									setCurrentSubtitleIndex(
-										e.target.value,
-									);
+									setCurrentSubtitleIndex(e.target.value);
 								}}
 								SelectProps={{
 									MenuProps: {
@@ -698,10 +626,7 @@ const Hero = ({
 							>
 								{subtitleTracks.map((track) => {
 									return (
-										<MenuItem
-											key={track.Index}
-											value={track.Index}
-										>
+										<MenuItem key={track.Index} value={track.Index}>
 											{track.DisplayTitle}
 										</MenuItem>
 									);
@@ -715,17 +640,10 @@ const Hero = ({
 						marginTop: "0.2em",
 					}}
 				>
-					<Typography
-						fontStyle="italic"
-						variant="h5"
-						mb={1}
-						mt={1}
-					>
+					<Typography fontStyle="italic" variant="h5" mb={1} mt={1}>
 						{item.Taglines[0]}
 					</Typography>
-					<Typography variant="subtitle1">
-						{item.Overview}
-					</Typography>
+					<Typography variant="subtitle1">{item.Overview}</Typography>
 				</div>
 				<div
 					style={{
@@ -755,12 +673,10 @@ const Hero = ({
 										>
 											{writer.Name}
 										</TextLink>
-										{index !=
-											writers.length - 1 && (
+										{index !== writers.length - 1 && (
 											<span
 												style={{
-													whiteSpace:
-														"pre",
+													whiteSpace: "pre",
 												}}
 											>
 												,{" "}
@@ -797,12 +713,10 @@ const Hero = ({
 										>
 											{director.Name}
 										</TextLink>
-										{index !=
-											directors.length - 1 && (
+										{index !== directors.length - 1 && (
 											<span
 												style={{
-													whiteSpace:
-														"pre",
+													whiteSpace: "pre",
 												}}
 											>
 												,{" "}
@@ -839,12 +753,10 @@ const Hero = ({
 										>
 											{artist.Name}
 										</TextLink>
-										{index !=
-											artists.length - 1 && (
+										{index !== artists.length - 1 && (
 											<span
 												style={{
-													whiteSpace:
-														"pre",
+													whiteSpace: "pre",
 												}}
 											>
 												,{" "}
@@ -872,9 +784,7 @@ const Hero = ({
 								Studios
 							</Typography>
 							<Typography variant="subtitle1">
-								{studios
-									.map((studio) => studio.Name)
-									.join(", ")}
+								{studios.map((studio) => studio.Name).join(", ")}
 							</Typography>
 						</div>
 					)}

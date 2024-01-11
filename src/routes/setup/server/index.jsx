@@ -1,39 +1,31 @@
-/** @format */
 
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 
-import { setDefaultServer, setServer } from "../../../utils/storage/servers.js";
+import { setDefaultServer, setServer } from "../../../utils/storage/servers";
 
+import LoadingButton from "@mui/lab/LoadingButton";
+import Container from "@mui/material/Container";
+import Grid from "@mui/material/Grid";
+import LinearProgress from "@mui/material/LinearProgress";
+import SvgIcon from "@mui/material/SvgIcon";
 // MUI
 import TextField from "@mui/material/TextField";
 import Typography from "@mui/material/Typography";
-import Grid from "@mui/material/Grid";
-import LoadingButton from "@mui/lab/LoadingButton";
-import SvgIcon from "@mui/material/SvgIcon";
-import Container from "@mui/material/Container";
-import LinearProgress from "@mui/material/LinearProgress";
 
 import { mdiChevronRight } from "@mdi/js";
 
 import { useSnackbar } from "notistack";
 
+import { yellow } from "@mui/material/colors";
+import { useMutation } from "@tanstack/react-query";
+import { MdiInformation } from "../../../components/icons/mdiInformation.jsx";
+import { createApi, useApi } from "../../../utils/store/api";
 // SCSS
 import "./server.module.scss";
-import { useMutation, useQuery } from "@tanstack/react-query";
-import { useApi } from "../../../utils/store/api.js";
-import { MdiInformation } from "../../../components/icons/mdiInformation.jsx";
-import { yellow } from "@mui/material/colors";
 
 export const ServerSetup = () => {
-	/**
-	 * @type {[import("@jellyfin/sdk").Api, function, Jellyfin]}
-	 */
-	const [api, createApi, jellyfin] = useApi((state) => [
-		state.api,
-		state.createApi,
-		state.jellyfin,
-	]);
+	const [jellyfin] = useApi((state) => [state.jellyfin]);
 
 	const [serverIp, setServerIp] = useState("");
 
@@ -44,21 +36,21 @@ export const ServerSetup = () => {
 	const checkServer = useMutation({
 		mutationFn: async () => {
 			const servers =
-				await jellyfin.discovery.getRecommendedServerCandidates(
-					serverIp,
-				);
+				await jellyfin.discovery.getRecommendedServerCandidates(serverIp);
 			const bestServer = jellyfin.discovery.findBestServer(servers);
 			return bestServer;
 		},
 		onSuccess: (bestServer) => {
 			if (bestServer) {
-				console.info(bestServer);
-				createApi(bestServer.address, null);
+				createApi(bestServer.address, undefined);
+
 				setDefaultServer(bestServer.systemInfo.Id);
 				setServer(bestServer.systemInfo.Id, bestServer);
+
 				enqueueSnackbar("Client added successfully", {
 					variant: "success",
 				});
+
 				navigate("/login/index");
 			}
 		},
@@ -70,12 +62,9 @@ export const ServerSetup = () => {
 		onSettled: (bestServer) => {
 			console.log(bestServer);
 			if (!bestServer) {
-				enqueueSnackbar(
-					`Provided server address is not a Jellyfin server.`,
-					{
-						variant: "error",
-					},
-				);
+				enqueueSnackbar("Provided server address is not a Jellyfin server.", {
+					variant: "error",
+				});
 			}
 		},
 	});
@@ -119,7 +108,7 @@ export const ServerSetup = () => {
 							onChange={(event) => {
 								setServerIp(event.target.value);
 							}}
-						></TextField>
+						/>
 					</Grid>
 					<Grid item xl={5} md={6} sx={{ width: "100%" }}>
 						<LoadingButton
@@ -129,7 +118,7 @@ export const ServerSetup = () => {
 							loading={checkServer.isPending}
 							endIcon={
 								<SvgIcon>
-									<path d={mdiChevronRight}></path>
+									<path d={mdiChevronRight} />
 								</SvgIcon>
 							}
 							loadingPosition="end"

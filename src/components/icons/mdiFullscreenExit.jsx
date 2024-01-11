@@ -1,5 +1,3 @@
-/** @format */
-
 import SvgIcon from "@mui/material/SvgIcon";
 
 import { mdiFullscreenExit } from "@mdi/js";
@@ -7,7 +5,7 @@ import { mdiFullscreenExit } from "@mdi/js";
 export const MdiFullscreenExit = (props) => {
 	return (
 		<SvgIcon {...props}>
-			<path d={mdiFullscreenExit}></path>
+			<path d={mdiFullscreenExit} />
 		</SvgIcon>
 	);
 };

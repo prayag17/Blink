@@ -1,5 +1,3 @@
-/** @format */
-
 import SvgIcon from "@mui/material/SvgIcon";
 
 import { mdiArrowLeft } from "@mdi/js";
@@ -7,7 +5,7 @@ import { mdiArrowLeft } from "@mdi/js";
 export const MdiArrowLeft = (props) => {
 	return (
 		<SvgIcon {...props}>
-			<path d={mdiArrowLeft}></path>
+			<path d={mdiArrowLeft} />
 		</SvgIcon>
 	);
 };

@@ -1,5 +1,3 @@
-/** @format */
-
 import { useEffect, useMemo, useState } from "react";
 
 const useIntersecting = (ref) => {
@@ -10,13 +8,12 @@ const useIntersecting = (ref) => {
 			new IntersectionObserver(([entry]) =>
 				setIntersecting(entry.isIntersecting),
 			),
-		[ref],
 	);
 
 	useEffect(() => {
 		observer.observe(ref.current);
 		return () => observer.disconnect();
-	}, []);
+	});
 
 	return isIntersecting;
 };

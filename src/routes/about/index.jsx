@@ -1,16 +1,15 @@
-/** @format */
-import React, { useEffect } from "react";
 import Box from "@mui/material/Box";
-import Typography from "@mui/material/Typography";
-import Stack from "@mui/material/Stack";
-import Paper from "@mui/material/Paper";
 import CircularProgress from "@mui/material/CircularProgress";
+import Link from "@mui/material/Link";
+import Paper from "@mui/material/Paper";
+import Stack from "@mui/material/Stack";
 import Table from "@mui/material/Table";
-import TableHead from "@mui/material/TableHead";
-import TableRow from "@mui/material/TableRow";
 import TableBody from "@mui/material/TableBody";
 import TableCell from "@mui/material/TableCell";
-import Link from "@mui/material/Link";
+import TableHead from "@mui/material/TableHead";
+import TableRow from "@mui/material/TableRow";
+import Typography from "@mui/material/Typography";
+import React, { useEffect } from "react";
 
 import logo from "../../assets/logo.svg";
 
@@ -18,10 +17,10 @@ import { useQuery } from "@tanstack/react-query";
 
 import { getSystemApi } from "@jellyfin/sdk/lib/utils/api/system-api";
 
-import "./about.module.scss";
 import { axiosClient, useApi } from "../../utils/store/api";
 import { useBackdropStore } from "../../utils/store/backdrop";
 import { useCentralStore } from "../../utils/store/central";
+import "./about.module.scss";
 
 const About = () => {
 	const [api] = useApi((state) => [state.api]);
@@ -41,7 +40,7 @@ const About = () => {
 
 	useEffect(() => {
 		setBackdrop("", "");
-	}, []);
+	});
 	if (systemInfo.isPending) {
 		return (
 			<div
@@ -70,7 +69,7 @@ const About = () => {
 					target="_blank"
 					rel="noreferrer"
 				>
-					<img width="100%" height="100%" src={logo} />
+					<img alt="JellyPlayer" width="100%" height="100%" src={logo} />
 				</a>
 				<div
 					style={{

@@ -1,4 +1,3 @@
-/** @format */
 import SvgIcon from "@mui/material/SvgIcon";
 
 import { mdiSkipNext } from "@mdi/js";
@@ -6,7 +5,7 @@ import { mdiSkipNext } from "@mdi/js";
 export const MdiSkipNext = (props) => {
 	return (
 		<SvgIcon {...props}>
-			<path d={mdiSkipNext}></path>
+			<path d={mdiSkipNext} />
 		</SvgIcon>
 	);
 };

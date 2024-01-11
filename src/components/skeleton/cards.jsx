@@ -1,12 +1,10 @@
-/** @format */
-
-import Skeleton from "@mui/material/Skeleton";
+import Box from "@mui/material/Box";
 import Card from "@mui/material/Card";
+import CardActionArea from "@mui/material/CardActionArea";
 import CardContent from "@mui/material/CardContent";
 import CardMedia from "@mui/material/CardMedia";
-import CardActionArea from "@mui/material/CardActionArea";
+import Skeleton from "@mui/material/Skeleton";
 import Typography from "@mui/material/Typography";
-import Box from "@mui/material/Box";
 
 export const CardsSkeleton = () => {
 	return (
@@ -21,7 +19,7 @@ export const CardsSkeleton = () => {
 				<Skeleton width="35%" animation="wave" />
 			</Typography>
 			<Skeleton width="100%" variant="rounded" animation="wave">
-				<div style={{ paddingTop: "20%" }}></div>
+				<div style={{ paddingTop: "20%" }} />
 			</Skeleton>
 		</div>
 	);

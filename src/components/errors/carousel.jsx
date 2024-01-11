@@ -1,8 +1,7 @@
-/** @format */
-import React from "react";
 import Paper from "@mui/material/Paper";
 import Stack from "@mui/material/Stack";
 import Typography from "@mui/material/Typography";
+import React from "react";
 import { MdiEmoticonDead } from "../icons/mdiEmoticonDead";
 
 import slideBackground from "../../assets/errorbg.png";
@@ -20,9 +19,7 @@ const CarouselSlideError = ({ itemName }) => {
 					backgroundSize: "cover",
 				}}
 			>
-				<MdiEmoticonDead
-					sx={{ fontSize: "10em", opacity: "0.8" }}
-				/>
+				<MdiEmoticonDead sx={{ fontSize: "10em", opacity: "0.8" }} />
 				<Typography mb={2} variant="h4" sx={{ opacity: "0.5" }}>
 					Error caused by
 				</Typography>

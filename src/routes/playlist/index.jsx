@@ -1,6 +1,5 @@
-/** @format */
-import React, { useEffect } from "react";
 import PropTypes from "prop-types";
+import React, { useEffect } from "react";
 
 import Box from "@mui/material/Box";
 import CircularProgress from "@mui/material/CircularProgress";
@@ -8,22 +7,22 @@ import CircularProgress from "@mui/material/CircularProgress";
 import { useParams } from "react-router-dom";
 
 import { BaseItemKind, ItemFields } from "@jellyfin/sdk/lib/generated-client";
-import { getUserApi } from "@jellyfin/sdk/lib/utils/api/user-api";
-import { getUserLibraryApi } from "@jellyfin/sdk/lib/utils/api/user-library-api";
 import { getLibraryApi } from "@jellyfin/sdk/lib/utils/api/library-api";
 import { getPlaylistsApi } from "@jellyfin/sdk/lib/utils/api/playlists-api";
+import { getUserApi } from "@jellyfin/sdk/lib/utils/api/user-api";
+import { getUserLibraryApi } from "@jellyfin/sdk/lib/utils/api/user-library-api";
 
 import { useQuery } from "@tanstack/react-query";
 
-import Hero from "../../components/layouts/item/hero";
 import { Card } from "../../components/card/card";
 import { CardScroller } from "../../components/cardScroller/cardScroller";
+import Hero from "../../components/layouts/item/hero";
 
-import "./playlist.module.scss";
-import { ErrorNotice } from "../../components/notices/errorNotice/errorNotice";
-import { useBackdropStore } from "../../utils/store/backdrop";
 import MusicTrack from "../../components/musicTrack";
+import { ErrorNotice } from "../../components/notices/errorNotice/errorNotice";
 import { useApi } from "../../utils/store/api";
+import { useBackdropStore } from "../../utils/store/backdrop";
+import "./playlist.module.scss";
 function TabPanel(props) {
 	const { children, value, index, ...other } = props;
 
@@ -61,7 +60,7 @@ const PlaylistTitlePage = () => {
 	const user = useQuery({
 		queryKey: ["user"],
 		queryFn: async () => {
-			let usr = await getUserApi(api).getCurrentUser();
+			const usr = await getUserApi(api).getCurrentUser();
 			return usr.data;
 		},
 		networkMode: "always",
@@ -86,7 +85,7 @@ const PlaylistTitlePage = () => {
 	const similarItems = useQuery({
 		queryKey: ["item", id, "similarItem"],
 		queryFn: async () => {
-			let result = await getLibraryApi(api).getSimilarAlbums({
+			const result = await getLibraryApi(api).getSimilarAlbums({
 				userId: user.data.Id,
 				itemId: item.data.Id,
 				limit: 16,
@@ -123,7 +122,7 @@ const PlaylistTitlePage = () => {
 				item.data.Id,
 			);
 		}
-	}, [item.isSuccess]);
+	});
 
 	if (item.isPending || similarItems.isPending) {
 		return (
@@ -192,58 +191,36 @@ const PlaylistTitlePage = () => {
 									item={similar}
 									seriesId={similar.SeriesId}
 									cardTitle={
-										similar.Type ==
-										BaseItemKind.Episode
+										similar.Type === BaseItemKind.Episode
 											? similar.SeriesName
 											: similar.Name
 									}
 									imageType={"Primary"}
 									cardCaption={
-										similar.Type ==
-										BaseItemKind.Episode
+										similar.Type === BaseItemKind.Episode
 											? `S${similar.ParentIndexNumber}:E${similar.IndexNumber} - ${similar.Name}`
-											: similar.Type ==
-											  BaseItemKind.Series
-											? `${
-													similar.ProductionYear
-											  } - ${
-													similar.EndDate
-														? new Date(
-																similar.EndDate,
-														  ).toLocaleString(
-																[],
-																{
+											: similar.Type === BaseItemKind.Series
+											  ? `${similar.ProductionYear} - ${
+														similar.EndDate
+															? new Date(similar.EndDate).toLocaleString([], {
 																	year: "numeric",
-																},
-														  )
-														: "Present"
-											  }`
-											: similar.ProductionYear
+															  })
+															: "Present"
+												  }`
+											  : similar.ProductionYear
 									}
 									cardType={
-										similar.Type ==
-											BaseItemKind.MusicAlbum ||
-										similar.Type ==
-											BaseItemKind.Audio
+										similar.Type === BaseItemKind.MusicAlbum ||
+										similar.Type === BaseItemKind.Audio
 											? "square"
 											: "portrait"
 									}
-									queryKey={[
-										"item",
-										id,
-										"similarItem",
-									]}
+									queryKey={["item", id, "similarItem"]}
 									userId={user.data.Id}
 									imageBlurhash={
-										!!similar.ImageBlurHashes
-											?.Primary &&
-										similar.ImageBlurHashes
-											?.Primary[
-											Object.keys(
-												similar
-													.ImageBlurHashes
-													.Primary,
-											)[0]
+										!!similar.ImageBlurHashes?.Primary &&
+										similar.ImageBlurHashes?.Primary[
+											Object.keys(similar.ImageBlurHashes.Primary)[0]
 										]
 									}
 								/>

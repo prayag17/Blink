@@ -1,6 +1,5 @@
-/** @format */
-import React from "react";
 import PropTypes from "prop-types";
+import React from "react";
 
 import Box from "@mui/material/Box";
 
@@ -17,14 +16,9 @@ export const AvatarImage = ({ userId }) => {
 			<div
 				className="avatar-image"
 				style={{
-					backgroundImage:
-						"url('" +
-						api.basePath +
-						"/Users/" +
-						userId +
-						"/Images/Primary')",
+					backgroundImage: `url('${api.basePath}/Users/${userId}/Images/Primary')`,
 				}}
-			></div>
+			/>
 
 			<div className="avatar-image-icon-container">
 				<MdiAccount className="avatar-image-icon" />
@@ -34,7 +28,7 @@ export const AvatarImage = ({ userId }) => {
 };
 
 export const AvatarSideMenu = ({ userName }) => {
-	return <div></div>;
+	return <div />;
 };
 
 AvatarImage.propType = {

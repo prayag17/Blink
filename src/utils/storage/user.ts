@@ -1,19 +1,23 @@
-/** @format */
-
 import { Store } from "tauri-plugin-store-api";
+
+export interface UserStore {
+	user: {
+		Name: string;
+		Password: string;
+	};
+}
 
 const user = new Store(".user.dat");
 
 /**
  * Set User details to .user.dat
- * @param {string} userName - User's name
- * @param {string} userPassword - User's Password
  */
-const saveUser = async (userName, userPassword) => {
-	let details = user.set("user", {
+const saveUser = async (userName: string, userPassword?: string) => {
+	user.set("user", {
 		Name: userName,
-		Password: userPassword || "",
+		Password: userPassword,
 	});
+
 	await user.save();
 };
 
@@ -22,8 +26,7 @@ const saveUser = async (userName, userPassword) => {
  * @return {object}
  */
 const getUser = async () => {
-	let details = await user.get("user");
-	return details;
+	return user.get<UserStore["user"]>("user");
 };
 
 /**
@@ -33,4 +36,5 @@ const delUser = async () => {
 	await user.clear();
 	await user.save();
 };
+
 export { saveUser, getUser, delUser };

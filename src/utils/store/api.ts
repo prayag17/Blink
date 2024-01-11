@@ -1,6 +1,5 @@
-/** @format */
-import { create } from "zustand";
 import { Api, Jellyfin } from "@jellyfin/sdk";
+import { create } from "zustand";
 import { version as appVer } from "../../../package.json";
 
 // Initial custom axios client to use tauri's http module
@@ -10,14 +9,19 @@ import { v4 as uuidv4 } from "uuid";
 
 export const axiosClient = axios.create({
 	adapter: axiosTauriApiAdapter,
-	headers: { "Access-Control-Allow-Origin": "*" },
+	headers: {
+		"Access-Control-Allow-Origin": "*",
+	},
 	timeout: 60000,
 });
 
-const deviceId = localStorage.getItem("deviceId");
+let deviceId = localStorage.getItem("deviceId");
 
 if (!deviceId) {
-	localStorage.setItem("deviceId", uuidv4());
+	const randomId = uuidv4();
+	localStorage.setItem("deviceId", randomId);
+
+	deviceId = randomId;
 }
 
 const jellyfin = new Jellyfin({
@@ -27,30 +31,24 @@ const jellyfin = new Jellyfin({
 	},
 	deviceInfo: {
 		name: "JellyPlayer",
-		id: deviceId,
+		id: deviceId!,
 	},
 });
 
-/**
- * @typedef {import("@jellyfin/sdk").Api} Api
- */
-
-export const useApi = create(() => ({
-	/**
-	 * @type {Api}
-	 */
+export const useApi = create<{
+	api: Api | null;
+	deviceId: string | null;
+	jellyfin: Jellyfin;
+}>(() => ({
 	api: null,
-	deviceId: localStorage.getItem("deviceId"),
+	deviceId: deviceId,
 	jellyfin: jellyfin,
 }));
 
-/**
- * Create api
- * @param {string} serverAddress
- * @param {string} accessToken
- * @returns
- */
-export const createApi = (serverAddress, accessToken) =>
+export const createApi = (
+	serverAddress: string,
+	accessToken: string | undefined,
+) =>
 	useApi.setState((state) => ({
 		...state,
 		api: jellyfin.createApi(serverAddress, accessToken, axiosClient),

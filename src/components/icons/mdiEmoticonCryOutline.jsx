@@ -1,4 +1,3 @@
-/** @format */
 import SvgIcon from "@mui/material/SvgIcon";
 
 import { mdiEmoticonCryOutline } from "@mdi/js";
@@ -6,7 +5,7 @@ import { mdiEmoticonCryOutline } from "@mdi/js";
 export const MdiEmoticonCryOutline = (props) => {
 	return (
 		<SvgIcon {...props}>
-			<path d={mdiEmoticonCryOutline}></path>
+			<path d={mdiEmoticonCryOutline} />
 		</SvgIcon>
 	);
 };

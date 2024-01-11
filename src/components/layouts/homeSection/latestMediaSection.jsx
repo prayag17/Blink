@@ -1,13 +1,12 @@
-/** @format */
-import React from "react";
 import { useQuery } from "@tanstack/react-query";
-import { CardScroller } from "../../cardScroller/cardScroller";
+import React from "react";
 import { Card } from "../../card/card";
+import { CardScroller } from "../../cardScroller/cardScroller";
 import { CardsSkeleton } from "../../skeleton/cards";
 
+import { BaseItemKind } from "@jellyfin/sdk/lib/generated-client";
 import { getUserApi } from "@jellyfin/sdk/lib/utils/api/user-api";
 import { getUserLibraryApi } from "@jellyfin/sdk/lib/utils/api/user-library-api";
-import { BaseItemKind } from "@jellyfin/sdk/lib/generated-client";
 import { useApi } from "../../../utils/store/api";
 
 /**
@@ -18,7 +17,7 @@ export const LatestMediaSection = ({ latestMediaLib }) => {
 	const user = useQuery({
 		queryKey: ["user"],
 		queryFn: async () => {
-			let usr = await getUserApi(api).getCurrentUser();
+			const usr = await getUserApi(api).getCurrentUser();
 			return usr.data;
 		},
 		networkMode: "always",
@@ -43,10 +42,7 @@ export const LatestMediaSection = ({ latestMediaLib }) => {
 	}
 	if (data.isSuccess && data.data.length >= 1) {
 		return (
-			<CardScroller
-				displayCards={8}
-				title={"Latest " + latestMediaLib[1]}
-			>
+			<CardScroller displayCards={8} title={`Latest ${latestMediaLib[1]}`}>
 				{data.data.map((item) => {
 					return (
 						<Card
@@ -54,49 +50,37 @@ export const LatestMediaSection = ({ latestMediaLib }) => {
 							item={item}
 							seriesId={item.SeriesId}
 							cardTitle={
-								item.Type == BaseItemKind.Episode
-									? item.SeriesName
-									: item.Name
+								item.Type === BaseItemKind.Episode ? item.SeriesName : item.Name
 							}
 							imageType={"Primary"}
 							cardCaption={
-								item.Type == BaseItemKind.Episode
+								item.Type === BaseItemKind.Episode
 									? `S${item.ParentIndexNumber}:E${item.IndexNumber} - ${item.Name}`
-									: item.Type == BaseItemKind.Series
-									? `${item.ProductionYear} - ${
-											item.EndDate
-												? new Date(
-														item.EndDate,
-												  ).toLocaleString(
-														[],
-														{
+									: item.Type === BaseItemKind.Series
+									  ? `${item.ProductionYear} - ${
+												item.EndDate
+													? new Date(item.EndDate).toLocaleString([], {
 															year: "numeric",
-														},
-												  )
-												: "Present"
-									  }`
-									: item.ProductionYear
+													  })
+													: "Present"
+										  }`
+									  : item.ProductionYear
 							}
 							cardType={
-								item.Type == BaseItemKind.MusicAlbum ||
-								item.Type == BaseItemKind.Audio
+								item.Type === BaseItemKind.MusicAlbum ||
+								item.Type === BaseItemKind.Audio
 									? "square"
 									: "portrait"
 							}
-							queryKey={[
-								"homeSection, latestMedia",
-								latestMediaLib,
-							]}
+							queryKey={["homeSection, latestMedia", latestMediaLib]}
 							userId={user.data.Id}
 							imageBlurhash={
 								!!item.ImageBlurHashes?.Primary &&
 								item.ImageBlurHashes?.Primary[
-									Object.keys(
-										item.ImageBlurHashes.Primary,
-									)[0]
+									Object.keys(item.ImageBlurHashes.Primary)[0]
 								]
 							}
-						></Card>
+						/>
 					);
 				})}
 			</CardScroller>

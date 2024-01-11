@@ -1,14 +1,13 @@
-/** @format */
-import React from "react";
 import Typography from "@mui/material/Typography";
-import "./musicTrack.module.scss";
+import React from "react";
 import { getRuntimeMusic } from "../../utils/date/time";
-import LikeButton from "../buttons/likeButton";
-import TextLink from "../textLink";
-import PlayButton from "../buttons/playButton";
-import { useAudioPlayback } from "../../utils/store/audioPlayback";
-import { MdiMusic } from "../icons/mdiMusic";
 import { useApi } from "../../utils/store/api";
+import { useAudioPlayback } from "../../utils/store/audioPlayback";
+import LikeButton from "../buttons/likeButton";
+import PlayButton from "../buttons/playButton";
+import { MdiMusic } from "../icons/mdiMusic";
+import TextLink from "../textLink";
+import "./musicTrack.module.scss";
 
 /**
  * @typedef {Object} Props
@@ -50,10 +49,9 @@ const MusicTrack = ({
 					/>
 				</div>
 				<img
+					alt={item.Name}
 					src={api.getItemImageUrl(
-						Object.keys(item.ImageTags).length == 0
-							? item.AlbumId
-							: item.Id,
+						Object.keys(item.ImageTags).length === 0 ? item.AlbumId : item.Id,
 						"Primary",
 						{
 							quality: 70,
@@ -67,7 +65,9 @@ const MusicTrack = ({
 						objectFit: "cover",
 						opacity: 0,
 					}}
-					onLoad={(e) => (e.target.style.opacity = 1)}
+					onLoad={(e) => {
+						e.target.style.opacity = 1;
+					}}
 				/>
 				<div className="music-track-image-overlay">
 					<PlayButton
@@ -88,9 +88,7 @@ const MusicTrack = ({
 					variant="subtitle1"
 					style={{
 						color:
-							item.Id == currentTrackItem.Id
-								? "hsl(337, 96%, 56%)"
-								: "white",
+							item.Id === currentTrackItem.Id ? "hsl(337, 96%, 56%)" : "white",
 					}}
 				>
 					{item.Name}
@@ -113,7 +111,7 @@ const MusicTrack = ({
 							>
 								{artist.Name}
 							</TextLink>
-							{index != item.ArtistItems.length - 1 && (
+							{index !== item.ArtistItems.length - 1 && (
 								<span
 									style={{
 										whiteSpace: "pre",

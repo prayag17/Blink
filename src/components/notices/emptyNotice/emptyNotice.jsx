@@ -1,9 +1,8 @@
-/** @format */
 
-import React from "react";
 import Box from "@mui/material/Box";
 import Typography from "@mui/material/Typography";
 import { yellow } from "@mui/material/colors";
+import React from "react";
 
 export const EmptyNotice = ({ extraMsg }) => {
 	return (
@@ -23,8 +22,7 @@ export const EmptyNotice = ({ extraMsg }) => {
 				style={{
 					fontSize: "10em",
 					color: yellow[800],
-					fontVariationSettings:
-						'"FILL" 1, "wght" 400, "GRAD" 25, "opsz" 60',
+					fontVariationSettings: '"FILL" 1, "wght" 400, "GRAD" 25, "opsz" 60',
 				}}
 			>
 				sentiment_dissatisfied
@@ -32,11 +30,7 @@ export const EmptyNotice = ({ extraMsg }) => {
 			<Typography variant="h4" fontWeight={300}>
 				No results found
 			</Typography>
-			<Typography
-				variant="subtitle1"
-				fontWeight={300}
-				style={{ opacity: 0.5 }}
-			>
+			<Typography variant="subtitle1" fontWeight={300} style={{ opacity: 0.5 }}>
 				{extraMsg}
 			</Typography>
 		</Box>

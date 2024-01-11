@@ -1,21 +1,20 @@
-/** @format */
-import React, { useState, useLayoutEffect } from "react";
 import PropTypes from "prop-types";
+import React, { useState, useLayoutEffect } from "react";
 
 import Box from "@mui/material/Box";
-import Stack from "@mui/material/Stack";
-import Typography from "@mui/material/Typography";
-import CircularProgress from "@mui/material/CircularProgress";
 import Chip from "@mui/material/Chip";
-import TextField from "@mui/material/TextField";
-import MenuItem from "@mui/material/MenuItem";
+import CircularProgress from "@mui/material/CircularProgress";
 import Divider from "@mui/material/Divider";
 import LinearProgress from "@mui/material/LinearProgress";
-import { red, green, yellow } from "@mui/material/colors";
+import MenuItem from "@mui/material/MenuItem";
+import Stack from "@mui/material/Stack";
+import TextField from "@mui/material/TextField";
+import Typography from "@mui/material/Typography";
+import { green, red, yellow } from "@mui/material/colors";
 
 import { Blurhash } from "react-blurhash";
 
-import { useParams, Link, NavLink } from "react-router-dom";
+import { Link, NavLink, useParams } from "react-router-dom";
 
 import { motion } from "framer-motion";
 
@@ -24,27 +23,28 @@ import {
 	ItemFields,
 	MediaStreamType,
 } from "@jellyfin/sdk/lib/generated-client";
+import { getLibraryApi } from "@jellyfin/sdk/lib/utils/api/library-api";
 import { getUserApi } from "@jellyfin/sdk/lib/utils/api/user-api";
 import { getUserLibraryApi } from "@jellyfin/sdk/lib/utils/api/user-library-api";
-import { getLibraryApi } from "@jellyfin/sdk/lib/utils/api/library-api";
 
 import { useQuery } from "@tanstack/react-query";
 
 import { Card } from "../../components/card/card";
 import { CardScroller } from "../../components/cardScroller/cardScroller";
+import Hero from "../../components/layouts/item/hero";
 
 import "./item.module.scss";
 
 import { ErrorNotice } from "../../components/notices/errorNotice/errorNotice";
 
-import { useBackdropStore } from "../../utils/store/backdrop";
-import { useApi } from "../../utils/store/api";
-import { endsAt, getRuntime } from "../../utils/date/time";
-import PlayButton from "../../components/buttons/playButton";
 import LikeButton from "../../components/buttons/likeButton";
 import MarkPlayedButton from "../../components/buttons/markPlayedButton";
+import PlayButton from "../../components/buttons/playButton";
 import TextLink from "../../components/textLink";
 import { getTypeIcon } from "../../components/utils/iconsCollection";
+import { endsAt, getRuntime } from "../../utils/date/time";
+import { useApi } from "../../utils/store/api";
+import { useBackdropStore } from "../../utils/store/backdrop";
 
 function TabPanel(props) {
 	const { children, value, index, ...other } = props;
@@ -77,7 +77,7 @@ const ItemDetail = () => {
 	const user = useQuery({
 		queryKey: ["user"],
 		queryFn: async () => {
-			let usr = await getUserApi(api).getCurrentUser();
+			const usr = await getUserApi(api).getCurrentUser();
 			return usr.data;
 		},
 		networkMode: "always",
@@ -103,23 +103,23 @@ const ItemDetail = () => {
 		queryKey: ["item", id, "similarItem"],
 		queryFn: async () => {
 			let result;
-			if (item.data.Type == "Movie") {
+			if (item.data.Type === "Movie") {
 				result = await getLibraryApi(api).getSimilarMovies({
 					userId: user.data.Id,
 					itemId: item.data.Id,
 					limit: 16,
 				});
-			} else if (item.data.Type == "Series") {
+			} else if (item.data.Type === "Series") {
 				result = await getLibraryApi(api).getSimilarShows({
 					userId: user.data.Id,
 					itemId: item.data.Id,
 				});
-			} else if (item.data.Type == "MusicAlbum") {
+			} else if (item.data.Type === "MusicAlbum") {
 				result = await getLibraryApi(api).getSimilarAlbums({
 					userId: user.data.Id,
 					itemId: item.data.Id,
 				});
-			} else if (item.data.Type == "MusicArtist") {
+			} else if (item.data.Type === "MusicArtist") {
 				result = await getLibraryApi(api).getSimilarArtists({
 					userId: user.data.Id,
 					itemId: item.data.Id,
@@ -142,19 +142,19 @@ const ItemDetail = () => {
 	const [subtitleTracks, setSubtitleTracks] = useState([]);
 
 	const filterMediaStreamVideo = (source) => {
-		if (source.Type == MediaStreamType.Video) {
+		if (source.Type === MediaStreamType.Video) {
 			return true;
 		}
 		return false;
 	};
 	const filterMediaStreamAudio = (source) => {
-		if (source.Type == MediaStreamType.Audio) {
+		if (source.Type === MediaStreamType.Audio) {
 			return true;
 		}
 		return false;
 	};
 	const filterMediaStreamSubtitle = (source) => {
-		if (source.Type == MediaStreamType.Subtitle) {
+		if (source.Type === MediaStreamType.Subtitle) {
 			return true;
 		}
 		return false;
@@ -166,15 +166,9 @@ const ItemDetail = () => {
 
 	useLayoutEffect(() => {
 		if (item.isSuccess && !!item.data.MediaStreams) {
-			let videos = item.data.MediaStreams.filter(
-				filterMediaStreamVideo,
-			);
-			let audios = item.data.MediaStreams.filter(
-				filterMediaStreamAudio,
-			);
-			let subs = item.data.MediaStreams.filter(
-				filterMediaStreamSubtitle,
-			);
+			const videos = item.data.MediaStreams.filter(filterMediaStreamVideo);
+			const audios = item.data.MediaStreams.filter(filterMediaStreamAudio);
+			const subs = item.data.MediaStreams.filter(filterMediaStreamSubtitle);
 
 			setSelectedVideoTrack(videos[0]?.Index ?? null);
 			setSelectedAudioTrack(audios[0]?.Index ?? null);
@@ -184,7 +178,7 @@ const ItemDetail = () => {
 			setAudioTracks(audios);
 			setSubtitleTracks(subs);
 		}
-	}, [item.isSuccess]);
+	});
 
 	const [setAppBackdrop] = useBackdropStore((state) => [state.setBackdrop]);
 
@@ -192,6 +186,7 @@ const ItemDetail = () => {
 	const [writers, setWriters] = useState([]);
 	const [actors, setActors] = useState([]);
 	const [producers, setProducers] = useState([]);
+
 	useLayoutEffect(() => {
 		if (item.isSuccess) {
 			setAppBackdrop(
@@ -201,80 +196,59 @@ const ItemDetail = () => {
 					: `${api.basePath}/Items/${item.data.Id}/Images/Backdrop`,
 				item.data.Id,
 			);
-			let direTp = item.data.People.filter(
-				(itm) => itm.Type == "Director",
-			);
+			const direTp = item.data.People.filter((itm) => itm.Type === "Director");
 			setDirectors(direTp);
-			let writeTp = item.data.People.filter(
-				(itm) => itm.Type == "Writer",
-			);
+			const writeTp = item.data.People.filter((itm) => itm.Type === "Writer");
 			setWriters(writeTp);
-			let producerTp = item.data.People.filter(
-				(itm) => itm.Type == "Producer",
+			const producerTp = item.data.People.filter(
+				(itm) => itm.Type === "Producer",
 			);
 			setProducers(producerTp);
-			let actorTp = item.data.People.filter(
-				(itm) => itm.Type == "Actor",
-			);
+			const actorTp = item.data.People.filter((itm) => itm.Type === "Actor");
 			setActors(actorTp);
 		}
-	}, [item.isSuccess]);
+	});
 
 	const qualityLabel = () => {
 		if (
-			videoTracks[0]?.DisplayTitle.toLocaleLowerCase().includes(
-				"2160p",
-			) ||
+			videoTracks[0]?.DisplayTitle.toLocaleLowerCase().includes("2160p") ||
 			videoTracks[0]?.DisplayTitle.toLocaleLowerCase().includes("4k")
 		) {
 			return <span className="material-symbols-rounded">4k</span>;
-		} else if (
-			videoTracks[0]?.DisplayTitle.toLocaleLowerCase().includes(
-				"1080p",
-			) ||
+		}
+		if (
+			videoTracks[0]?.DisplayTitle.toLocaleLowerCase().includes("1080p") ||
 			videoTracks[0]?.DisplayTitle.toLocaleLowerCase().includes("hd")
 		) {
 			return <span className="material-symbols-rounded">full_hd</span>;
-		} else {
-			return <span className="material-symbols-rounded">hd</span>;
 		}
+		return <span className="material-symbols-rounded">hd</span>;
 	};
 
 	const atmosLabel = () => {
 		if (
-			audioTracks[0]?.DisplayTitle.toLocaleLowerCase().includes(
-				"atmos",
-			) &&
-			audioTracks[0]?.DisplayTitle.toLocaleLowerCase().includes(
-				"truehd",
-			)
+			audioTracks[0]?.DisplayTitle.toLocaleLowerCase().includes("atmos") &&
+			audioTracks[0]?.DisplayTitle.toLocaleLowerCase().includes("truehd")
 		) {
-			return `TrueHD | Atmos`;
-		} else if (
-			audioTracks[0]?.DisplayTitle.toLocaleLowerCase().includes(
-				"atmos",
-			)
-		) {
-			return "Atmos";
-		} else if (
-			audioTracks[0]?.DisplayTitle.toLocaleLowerCase().includes(
-				"truehd",
-			)
-		) {
-			return "TrueHD";
-		} else {
-			return "";
+			return "TrueHD | Atmos";
 		}
+		if (audioTracks[0]?.DisplayTitle.toLocaleLowerCase().includes("atmos")) {
+			return "Atmos";
+		}
+		if (audioTracks[0]?.DisplayTitle.toLocaleLowerCase().includes("truehd")) {
+			return "TrueHD";
+		}
+		return "";
 	};
 
 	const surroundSoundLabel = () => {
 		if (audioTracks[0]?.DisplayTitle.includes("7.1")) {
 			return "7.1";
-		} else if (audioTracks[0]?.DisplayTitle.includes("5.1")) {
-			return "5.1";
-		} else {
-			return "2.0";
 		}
+		if (audioTracks[0]?.DisplayTitle.includes("5.1")) {
+			return "5.1";
+		}
+		return "2.0";
 	};
 
 	if (item.isPending || similarItems.isPending) {
@@ -313,18 +287,14 @@ const ItemDetail = () => {
 					<div className="item-hero-backdrop-container">
 						{item.data.BackdropImageTags ? (
 							<img
-								src={api.getItemImageUrl(
-									item.data.Id,
-									"Backdrop",
-									{
-										tag: item.data
-											.BackdropImageTags[0],
-									},
-								)}
+								alt={item.data.Name}
+								src={api.getItemImageUrl(item.data.Id, "Backdrop", {
+									tag: item.data.BackdropImageTags[0],
+								})}
 								className="item-hero-backdrop"
-								onLoad={(e) =>
-									(e.currentTarget.style.opacity = 1)
-								}
+								onLoad={(e) => {
+									e.currentTarget.style.opacity = 1;
+								}}
 							/>
 						) : (
 							<></>
@@ -333,39 +303,28 @@ const ItemDetail = () => {
 					<div
 						className="item-hero-image-container"
 						style={{
-							aspectRatio:
-								item.data.PrimaryImageAspectRatio ?? 1,
+							aspectRatio: item.data.PrimaryImageAspectRatio ?? 1,
 						}}
 					>
-						{Object.keys(item.data.ImageTags).includes(
-							"Primary",
-						) ? (
+						{Object.keys(item.data.ImageTags).includes("Primary") ? (
 							<>
 								<Blurhash
 									hash={
-										item.data.ImageBlurHashes
-											.Primary[
-											item.data.ImageTags[
-												"Primary"
-											]
+										item.data.ImageBlurHashes.Primary[
+											item.data.ImageTags.Primary
 										]
 									}
 									className="item-hero-image-blurhash"
 								/>
 								<img
-									src={api.getItemImageUrl(
-										item.data.Id,
-										"Primary",
-										{
-											quality: 90,
-											tag: item.data.ImageTags[
-												"Primary"
-											],
-										},
-									)}
-									onLoad={(e) =>
-										(e.currentTarget.style.opacity = 1)
-									}
+									alt={item.data.Name}
+									src={api.getItemImageUrl(item.data.Id, "Primary", {
+										quality: 90,
+										tag: item.data.ImageTags.Primary,
+									})}
+									onLoad={(e) => {
+										e.currentTarget.style.opacity = 1;
+									}}
 									className="item-hero-image"
 								/>
 							</>
@@ -374,28 +333,21 @@ const ItemDetail = () => {
 						)}
 					</div>
 					<div className="item-hero-detail flex flex-column">
-						{Object.keys(item.data.ImageTags).includes(
-							"Logo",
-						) ? (
+						{Object.keys(item.data.ImageTags).includes("Logo") ? (
 							<img
-								src={api.getItemImageUrl(
-									item.data.Id,
-									"Logo",
-									{
-										quality: 90,
-										fillWidth: 592,
-										fillHeight: 592,
-									},
-								)}
-								onLoad={(e) =>
-									(e.currentTarget.style.opacity = 1)
-								}
+								alt={item.data.Name}
+								src={api.getItemImageUrl(item.data.Id, "Logo", {
+									quality: 90,
+									fillWidth: 592,
+									fillHeight: 592,
+								})}
+								onLoad={(e) => {
+									e.currentTarget.style.opacity = 1;
+								}}
 								className="item-hero-logo"
 							/>
 						) : (
-							<Typography variant="h3">
-								{item.data.Name}
-							</Typography>
+							<Typography variant="h3">{item.data.Name}</Typography>
 						)}
 						<Stack direction="row" gap={1}>
 							{!!qualityLabel() && (
@@ -403,8 +355,7 @@ const ItemDetail = () => {
 									variant="filled"
 									label={qualityLabel()}
 									sx={{
-										borderRadius:
-											"8px !important",
+										borderRadius: "8px !important",
 										"& .MuiChip-label": {
 											fontSize: "2.2em",
 										},
@@ -415,16 +366,12 @@ const ItemDetail = () => {
 								<Chip
 									variant="filled"
 									label={
-										<Typography
-											variant="caption"
-											fontWeight={600}
-										>
+										<Typography variant="caption" fontWeight={600}>
 											{surroundSoundLabel()}
 										</Typography>
 									}
 									sx={{
-										borderRadius:
-											"8px !important",
+										borderRadius: "8px !important",
 										"& .MuiChip-label": {
 											fontSize: "2.2em",
 										},
@@ -435,19 +382,12 @@ const ItemDetail = () => {
 								<Chip
 									variant="filled"
 									label={
-										<Typography
-											variant="caption"
-											fontWeight={600}
-										>
-											{
-												videoTracks[0]
-													.VideoRangeType
-											}
+										<Typography variant="caption" fontWeight={600}>
+											{videoTracks[0].VideoRangeType}
 										</Typography>
 									}
 									sx={{
-										borderRadius:
-											"8px !important",
+										borderRadius: "8px !important",
 										"& .MuiChip-label": {
 											fontSize: "2.2em",
 										},
@@ -458,16 +398,12 @@ const ItemDetail = () => {
 								<Chip
 									variant="filled"
 									label={
-										<Typography
-											variant="caption"
-											fontWeight={600}
-										>
+										<Typography variant="caption" fontWeight={600}>
 											{atmosLabel()}
 										</Typography>
 									}
 									sx={{
-										borderRadius:
-											"8px !important",
+										borderRadius: "8px !important",
 										"& .MuiChip-label": {
 											fontSize: "2.2em",
 										},
@@ -490,8 +426,7 @@ const ItemDetail = () => {
 										</span>
 									}
 									sx={{
-										borderRadius:
-											"8px !important",
+										borderRadius: "8px !important",
 										"& .MuiChip-label": {
 											fontSize: "2.2em",
 										},
@@ -505,17 +440,11 @@ const ItemDetail = () => {
 							justifyItems="flex-start"
 							alignItems="center"
 						>
-							<Typography
-								style={{ opacity: "0.8" }}
-								variant="subtitle1"
-							>
+							<Typography style={{ opacity: "0.8" }} variant="subtitle1">
 								{item.data.ProductionYear ?? ""}
 							</Typography>
 							{item.data.OfficialRating && (
-								<Chip
-									variant="filled"
-									label={item.data.OfficialRating}
-								/>
+								<Chip variant="filled" label={item.data.OfficialRating} />
 							)}
 
 							{item.data.CommunityRating && (
@@ -544,11 +473,7 @@ const ItemDetail = () => {
 										}}
 										variant="subtitle1"
 									>
-										{Math.round(
-											item.data
-												.CommunityRating *
-												10,
-										) / 10}
+										{Math.round(item.data.CommunityRating * 10) / 10}
 									</Typography>
 								</div>
 							)}
@@ -565,18 +490,12 @@ const ItemDetail = () => {
 										className="material-symbols-rounded "
 										style={{
 											color:
-												item.data
-													.CriticRating >
-												50
-													? green[400]
-													: red[400],
+												item.data.CriticRating > 50 ? green[400] : red[400],
 											fontVariationSettings:
 												'"FILL" 1, "wght" 300, "GRAD" 25, "opsz" 40',
 										}}
 									>
-										{item.data.CriticRating > 50
-											? "thumb_up"
-											: "thumb_down"}
+										{item.data.CriticRating > 50 ? "thumb_up" : "thumb_down"}
 									</div>
 									<Typography
 										style={{
@@ -590,32 +509,20 @@ const ItemDetail = () => {
 							)}
 
 							{item.data.RunTimeTicks && (
-								<Typography
-									style={{ opacity: "0.8" }}
-									variant="subtitle1"
-								>
-									{getRuntime(
-										item.data.RunTimeTicks,
-									)}
+								<Typography style={{ opacity: "0.8" }} variant="subtitle1">
+									{getRuntime(item.data.RunTimeTicks)}
 								</Typography>
 							)}
 							{item.data.RunTimeTicks && (
-								<Typography
-									style={{ opacity: "0.8" }}
-									variant="subtitle1"
-								>
+								<Typography style={{ opacity: "0.8" }} variant="subtitle1">
 									{endsAt(
 										item.data.RunTimeTicks -
-											item.data.UserData
-												.PlaybackPositionTicks,
+											item.data.UserData.PlaybackPositionTicks,
 									)}
 								</Typography>
 							)}
 						</Stack>
-						<Typography
-							variant="subtitle1"
-							style={{ opacity: 0.8 }}
-						>
+						<Typography variant="subtitle1" style={{ opacity: 0.8 }}>
 							{item.data.Genres.join(", ")}
 						</Typography>
 
@@ -625,38 +532,25 @@ const ItemDetail = () => {
 									itemId={item.data.Id}
 									itemType={item.data.Type}
 									itemUserData={item.data.UserData}
-									currentVideoTrack={
-										selectedVideoTrack
-									}
-									currentAudioTrack={
-										selectedAudioTrack
-									}
-									currentSubTrack={
-										selectedSubtitleTrack
-									}
+									currentVideoTrack={selectedVideoTrack}
+									currentAudioTrack={selectedAudioTrack}
+									currentSubTrack={selectedSubtitleTrack}
 									userId={user.data.Id}
 								/>
 							</div>
-							<div
-								className="flex flex-row"
-								style={{ gap: "1em" }}
-							>
+							<div className="flex flex-row" style={{ gap: "1em" }}>
 								<LikeButton
 									itemName={item.data.Name}
 									itemId={item.data.Id}
 									queryKey={["item", id]}
-									isFavorite={
-										item.data.UserData.IsFavorite
-									}
+									isFavorite={item.data.UserData.IsFavorite}
 									userId={user.data.Id}
 								/>
 								<MarkPlayedButton
 									itemName={item.data.Name}
 									itemId={item.data.Id}
 									queryKey={["item", id]}
-									isPlayed={
-										item.data.UserData.Played
-									}
+									isPlayed={item.data.UserData.Played}
 									userId={user.data.Id}
 								/>
 							</div>
@@ -675,29 +569,21 @@ const ItemDetail = () => {
 								<Typography>
 									{getRuntime(
 										item.data.RunTimeTicks -
-											item.data.UserData
-												.PlaybackPositionTicks,
+											item.data.UserData.PlaybackPositionTicks,
 									)}{" "}
 									left
 								</Typography>
 								<LinearProgress
 									color="white"
 									variant="determinate"
-									value={
-										item.data.UserData
-											.PlayedPercentage
-									}
+									value={item.data.UserData.PlayedPercentage}
 									style={{
 										borderRadius: "10px",
 									}}
 								/>
 							</div>
 						)}
-						<Typography
-							variant="h5"
-							fontStyle="italic"
-							mb={1}
-						>
+						<Typography variant="h5" fontStyle="italic" mb={1}>
 							{item.data.Taglines[0] ?? ""}
 						</Typography>
 						<Typography variant="subtitle1">
@@ -719,20 +605,15 @@ const ItemDetail = () => {
 										<>
 											<TextLink
 												key={writer.Id}
-												variant={
-													"subtitle1"
-												}
+												variant={"subtitle1"}
 												location={`/person/${writer.Id}`}
 											>
 												{writer.Name}
 											</TextLink>
-											{index !=
-												writers.length -
-													1 && (
+											{index !== writers.length - 1 && (
 												<span
 													style={{
-														whiteSpace:
-															"pre",
+														whiteSpace: "pre",
 													}}
 												>
 													,{" "}
@@ -755,35 +636,26 @@ const ItemDetail = () => {
 									Directed by
 								</Typography>
 								<div className="hero-text-container">
-									{directors.map(
-										(director, index) => (
-											<>
-												<TextLink
-													key={
-														director.Id
-													}
-													variant={
-														"subtitle1"
-													}
-													location={`/person/${director.Id}`}
+									{directors.map((director, index) => (
+										<>
+											<TextLink
+												key={director.Id}
+												variant={"subtitle1"}
+												location={`/person/${director.Id}`}
+											>
+												{director.Name}
+											</TextLink>
+											{index !== directors.length - 1 && (
+												<span
+													style={{
+														whiteSpace: "pre",
+													}}
 												>
-													{director.Name}
-												</TextLink>
-												{index !=
-													directors.length -
-														1 && (
-													<span
-														style={{
-															whiteSpace:
-																"pre",
-														}}
-													>
-														,{" "}
-													</span>
-												)}
-											</>
-										),
-									)}
+													,{" "}
+												</span>
+											)}
+										</>
+									))}
 								</div>
 							</div>
 						)}
@@ -803,17 +675,10 @@ const ItemDetail = () => {
 									marginBottom: "1em",
 								}}
 								value={selectedVideoTrack}
-								onChange={(e) =>
-									setSelectedVideoTrack(
-										e.target.value,
-									)
-								}
+								onChange={(e) => setSelectedVideoTrack(e.target.value)}
 							>
 								{videoTracks.map((track) => (
-									<MenuItem
-										key={track.Index}
-										value={track.Index}
-									>
+									<MenuItem key={track.Index} value={track.Index}>
 										{track.DisplayTitle}
 									</MenuItem>
 								))}
@@ -828,17 +693,10 @@ const ItemDetail = () => {
 									marginBottom: "1em",
 								}}
 								value={selectedAudioTrack}
-								onChange={(e) =>
-									setSelectedAudioTrack(
-										e.target.value,
-									)
-								}
+								onChange={(e) => setSelectedAudioTrack(e.target.value)}
 							>
 								{audioTracks.map((track) => (
-									<MenuItem
-										key={track.Index}
-										value={track.Index}
-									>
+									<MenuItem key={track.Index} value={track.Index}>
 										{track.DisplayTitle}
 									</MenuItem>
 								))}
@@ -852,20 +710,13 @@ const ItemDetail = () => {
 									width: "100%",
 								}}
 								value={selectedSubtitleTrack}
-								onChange={(e) =>
-									setSelectedSubtitleTrack(
-										e.target.value,
-									)
-								}
+								onChange={(e) => setSelectedSubtitleTrack(e.target.value)}
 							>
 								<MenuItem key={-1} value={-1}>
 									No Subtitle
 								</MenuItem>
 								{subtitleTracks.map((track) => (
-									<MenuItem
-										key={track.Index}
-										value={track.Index}
-									>
+									<MenuItem key={track.Index} value={track.Index}>
 										{track.DisplayTitle}
 									</MenuItem>
 								))}
@@ -908,28 +759,21 @@ const ItemDetail = () => {
 									>
 										{actor.PrimaryImageTag ? (
 											<img
-												src={api.getItemImageUrl(
-													actor.Id,
-													"Primary",
-													{
-														quality: 80,
-														fillWidth: 200,
-														fillHeight: 200,
-													},
-												)}
+												alt={actor.Name}
+												src={api.getItemImageUrl(actor.Id, "Primary", {
+													quality: 80,
+													fillWidth: 200,
+													fillHeight: 200,
+												})}
 												className="item-detail-cast-card-image"
 											/>
 										) : (
 											<div className="item-detail-cast-card-icon">
-												{getTypeIcon(
-													"Person",
-												)}
+												{getTypeIcon("Person")}
 											</div>
 										)}
 										<div className="item-detail-cast-card-text">
-											<Typography variant="subtitle1">
-												{actor.Name}
-											</Typography>
+											<Typography variant="subtitle1">{actor.Name}</Typography>
 											<Typography
 												variant="subtitle2"
 												style={{
@@ -956,28 +800,21 @@ const ItemDetail = () => {
 									>
 										{actor.PrimaryImageTag ? (
 											<img
-												src={api.getItemImageUrl(
-													actor.Id,
-													"Primary",
-													{
-														quality: 80,
-														fillWidth: 200,
-														fillHeight: 200,
-													},
-												)}
+												alt={actor.Name}
+												src={api.getItemImageUrl(actor.Id, "Primary", {
+													quality: 80,
+													fillWidth: 200,
+													fillHeight: 200,
+												})}
 												className="item-detail-cast-card-image"
 											/>
 										) : (
 											<div className="item-detail-cast-card-icon">
-												{getTypeIcon(
-													"Person",
-												)}
+												{getTypeIcon("Person")}
 											</div>
 										)}
 										<div className="item-detail-cast-card-text">
-											<Typography variant="subtitle1">
-												{actor.Name}
-											</Typography>
+											<Typography variant="subtitle1">{actor.Name}</Typography>
 											<Typography
 												variant="subtitle2"
 												style={{
@@ -994,9 +831,7 @@ const ItemDetail = () => {
 					)}
 					{directors.length > 0 && (
 						<div className="item-detail-cast-container">
-							<Typography variant="h6">
-								Directors
-							</Typography>
+							<Typography variant="h6">Directors</Typography>
 							<div className="item-detail-cast-grid">
 								{directors.map((actor) => (
 									<NavLink
@@ -1006,28 +841,21 @@ const ItemDetail = () => {
 									>
 										{actor.PrimaryImageTag ? (
 											<img
-												src={api.getItemImageUrl(
-													actor.Id,
-													"Primary",
-													{
-														quality: 80,
-														fillWidth: 200,
-														fillHeight: 200,
-													},
-												)}
+												alt={actor.Name}
+												src={api.getItemImageUrl(actor.Id, "Primary", {
+													quality: 80,
+													fillWidth: 200,
+													fillHeight: 200,
+												})}
 												className="item-detail-cast-card-image"
 											/>
 										) : (
 											<div className="item-detail-cast-card-icon">
-												{getTypeIcon(
-													"Person",
-												)}
+												{getTypeIcon("Person")}
 											</div>
 										)}
 										<div className="item-detail-cast-card-text">
-											<Typography variant="subtitle1">
-												{actor.Name}
-											</Typography>
+											<Typography variant="subtitle1">{actor.Name}</Typography>
 											<Typography
 												variant="subtitle2"
 												style={{
@@ -1044,9 +872,7 @@ const ItemDetail = () => {
 					)}
 					{producers.length > 0 && (
 						<div className="item-detail-cast-container">
-							<Typography variant="h6">
-								Producers
-							</Typography>
+							<Typography variant="h6">Producers</Typography>
 							<div className="item-detail-cast-grid">
 								{producers.map((actor) => (
 									<NavLink
@@ -1056,28 +882,21 @@ const ItemDetail = () => {
 									>
 										{actor.PrimaryImageTag ? (
 											<img
-												src={api.getItemImageUrl(
-													actor.Id,
-													"Primary",
-													{
-														quality: 80,
-														fillWidth: 200,
-														fillHeight: 200,
-													},
-												)}
+												alt={actor.Name}
+												src={api.getItemImageUrl(actor.Id, "Primary", {
+													quality: 80,
+													fillWidth: 200,
+													fillHeight: 200,
+												})}
 												className="item-detail-cast-card-image"
 											/>
 										) : (
 											<div className="item-detail-cast-card-icon">
-												{getTypeIcon(
-													"Person",
-												)}
+												{getTypeIcon("Person")}
 											</div>
 										)}
 										<div className="item-detail-cast-card-text">
-											<Typography variant="subtitle1">
-												{actor.Name}
-											</Typography>
+											<Typography variant="subtitle1">{actor.Name}</Typography>
 											<Typography
 												variant="subtitle2"
 												style={{
@@ -1132,58 +951,36 @@ const ItemDetail = () => {
 									item={similar}
 									seriesId={similar.SeriesId}
 									cardTitle={
-										similar.Type ==
-										BaseItemKind.Episode
+										similar.Type === BaseItemKind.Episode
 											? similar.SeriesName
 											: similar.Name
 									}
 									imageType={"Primary"}
 									cardCaption={
-										similar.Type ==
-										BaseItemKind.Episode
+										similar.Type === BaseItemKind.Episode
 											? `S${similar.ParentIndexNumber}:E${similar.IndexNumber} - ${similar.Name}`
-											: similar.Type ==
-											  BaseItemKind.Series
-											? `${
-													similar.ProductionYear
-											  } - ${
-													similar.EndDate
-														? new Date(
-																similar.EndDate,
-														  ).toLocaleString(
-																[],
-																{
+											: similar.Type === BaseItemKind.Series
+											  ? `${similar.ProductionYear} - ${
+														similar.EndDate
+															? new Date(similar.EndDate).toLocaleString([], {
 																	year: "numeric",
-																},
-														  )
-														: "Present"
-											  }`
-											: similar.ProductionYear
+															  })
+															: "Present"
+												  }`
+											  : similar.ProductionYear
 									}
 									cardType={
-										similar.Type ==
-											BaseItemKind.MusicAlbum ||
-										similar.Type ==
-											BaseItemKind.Audio
+										similar.Type === BaseItemKind.MusicAlbum ||
+										similar.Type === BaseItemKind.Audio
 											? "square"
 											: "portrait"
 									}
-									queryKey={[
-										"item",
-										id,
-										"similarItem",
-									]}
+									queryKey={["item", id, "similarItem"]}
 									userId={user.data.Id}
 									imageBlurhash={
-										!!similar.ImageBlurHashes
-											?.Primary &&
-										similar.ImageBlurHashes
-											?.Primary[
-											Object.keys(
-												similar
-													.ImageBlurHashes
-													.Primary,
-											)[0]
+										!!similar.ImageBlurHashes?.Primary &&
+										similar.ImageBlurHashes?.Primary[
+											Object.keys(similar.ImageBlurHashes.Primary)[0]
 										]
 									}
 								/>

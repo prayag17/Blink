@@ -1,4 +1,3 @@
-/** @format */
 import PropTypes from "prop-types";
 
 import React from "react";
@@ -6,12 +5,12 @@ import React from "react";
 import IconButton from "@mui/material/IconButton";
 
 import { getUserLibraryApi } from "@jellyfin/sdk/lib/utils/api/user-library-api";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
+import CircularProgress from "@mui/material/CircularProgress";
 import { pink } from "@mui/material/colors";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { useSnackbar } from "notistack";
 import { MdiHeart } from "../icons/mdiHeart";
 import { MdiHeartOutline } from "../icons/mdiHeartOutline";
-import { useSnackbar } from "notistack";
-import CircularProgress from "@mui/material/CircularProgress";
 
 import { useApi } from "../../utils/store/api";
 
@@ -39,12 +38,9 @@ const LikeButton = ({ itemId, isFavorite, queryKey, userId, itemName }) => {
 			enqueueSnackbar(`${error}`, {
 				variant: "error",
 			});
-			enqueueSnackbar(
-				`An error occured while updating "${itemName}"`,
-				{
-					variant: "error",
-				},
-			);
+			enqueueSnackbar(`An error occured while updating "${itemName}"`, {
+				variant: "error",
+			});
 			console.error(error);
 		},
 		onSettled: async () => {

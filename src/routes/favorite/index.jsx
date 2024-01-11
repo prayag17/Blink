@@ -1,17 +1,16 @@
-/** @format */
 import React, { useEffect } from "react";
 
 import { useBackdropStore } from "../../utils/store/backdrop";
 
-import "./favorite.module.scss";
 import Typography from "@mui/material/Typography";
 import { useQuery } from "@tanstack/react-query";
+import "./favorite.module.scss";
 
+import { BaseItemKind } from "@jellyfin/sdk/lib/generated-client";
 import { getItemsApi } from "@jellyfin/sdk/lib/utils/api/items-api";
 import { getUserApi } from "@jellyfin/sdk/lib/utils/api/user-api";
-import { BaseItemKind } from "@jellyfin/sdk/lib/generated-client";
-import { CardScroller } from "../../components/cardScroller/cardScroller";
 import { Card } from "../../components/card/card";
+import { CardScroller } from "../../components/cardScroller/cardScroller";
 import { useApi } from "../../utils/store/api";
 
 const FavoritePage = () => {
@@ -21,7 +20,7 @@ const FavoritePage = () => {
 	const user = useQuery({
 		queryKey: ["user"],
 		queryFn: async () => {
-			let usr = await getUserApi(api).getCurrentUser();
+			const usr = await getUserApi(api).getCurrentUser();
 			return usr.data;
 		},
 		networkMode: "always",
@@ -120,9 +119,9 @@ const FavoritePage = () => {
 	});
 
 	useEffect(() => {
-		// Removing app's backdrop
 		setBackdrop("", "");
-	}, []);
+	});
+
 	return (
 		<main
 			className="scrollY"
@@ -149,9 +148,7 @@ const FavoritePage = () => {
 							imageBlurhash={
 								!!item.ImageBlurHashes?.Primary &&
 								item.ImageBlurHashes?.Primary[
-									Object.keys(
-										item.ImageBlurHashes.Primary,
-									)[0]
+									Object.keys(item.ImageBlurHashes.Primary)[0]
 								]
 							}
 						/>
@@ -159,11 +156,7 @@ const FavoritePage = () => {
 				</CardScroller>
 			)}
 			{series.isSuccess && series.data.Items.length > 0 && (
-				<CardScroller
-					title="TV Shows"
-					displayCards={8}
-					disableDecoration
-				>
+				<CardScroller title="TV Shows" displayCards={8} disableDecoration>
 					{series.data.Items.map((item) => (
 						<Card
 							key={item.Id}
@@ -172,9 +165,7 @@ const FavoritePage = () => {
 							imageType={"Primary"}
 							cardCaption={`${item.ProductionYear} - ${
 								item.EndDate
-									? new Date(
-											item.EndDate,
-									  ).toLocaleString([], {
+									? new Date(item.EndDate).toLocaleString([], {
 											year: "numeric",
 									  })
 									: "Present"
@@ -185,9 +176,7 @@ const FavoritePage = () => {
 							imageBlurhash={
 								!!item.ImageBlurHashes?.Primary &&
 								item.ImageBlurHashes?.Primary[
-									Object.keys(
-										item.ImageBlurHashes.Primary,
-									)[0]
+									Object.keys(item.ImageBlurHashes.Primary)[0]
 								]
 							}
 						/>
@@ -195,11 +184,7 @@ const FavoritePage = () => {
 				</CardScroller>
 			)}
 			{audio.isSuccess && audio.data.Items.length > 0 && (
-				<CardScroller
-					title="Audio"
-					displayCards={8}
-					disableDecoration
-				>
+				<CardScroller title="Audio" displayCards={8} disableDecoration>
 					{audio.data.Items.map((item) => (
 						<Card
 							key={item.Id}
@@ -213,9 +198,7 @@ const FavoritePage = () => {
 							imageBlurhash={
 								!!item.ImageBlurHashes?.Primary &&
 								item.ImageBlurHashes?.Primary[
-									Object.keys(
-										item.ImageBlurHashes.Primary,
-									)[0]
+									Object.keys(item.ImageBlurHashes.Primary)[0]
 								]
 							}
 						/>
@@ -223,11 +206,7 @@ const FavoritePage = () => {
 				</CardScroller>
 			)}
 			{musicAlbum.isSuccess && musicAlbum.data.Items.length > 0 && (
-				<CardScroller
-					title="Albums"
-					displayCards={8}
-					disableDecoration
-				>
+				<CardScroller title="Albums" displayCards={8} disableDecoration>
 					{musicAlbum.data.Items.map((item) => (
 						<Card
 							key={item.Id}
@@ -242,9 +221,7 @@ const FavoritePage = () => {
 							imageBlurhash={
 								!!item.ImageBlurHashes?.Primary &&
 								item.ImageBlurHashes?.Primary[
-									Object.keys(
-										item.ImageBlurHashes.Primary,
-									)[0]
+									Object.keys(item.ImageBlurHashes.Primary)[0]
 								]
 							}
 						/>
@@ -252,11 +229,7 @@ const FavoritePage = () => {
 				</CardScroller>
 			)}
 			{book.isSuccess && book.data.Items.length > 0 && (
-				<CardScroller
-					title="Books"
-					displayCards={8}
-					disableDecoration
-				>
+				<CardScroller title="Books" displayCards={8} disableDecoration>
 					{book.data.Items.map((item) => (
 						<Card
 							key={item.Id}
@@ -271,51 +244,37 @@ const FavoritePage = () => {
 							imageBlurhash={
 								!!item.ImageBlurHashes?.Primary &&
 								item.ImageBlurHashes?.Primary[
-									Object.keys(
-										item.ImageBlurHashes.Primary,
-									)[0]
+									Object.keys(item.ImageBlurHashes.Primary)[0]
 								]
 							}
 						/>
 					))}
 				</CardScroller>
 			)}
-			{musicArtists.isSuccess &&
-				musicArtists.data.Items.length > 0 && (
-					<CardScroller
-						title="Artists"
-						displayCards={8}
-						disableDecoration
-					>
-						{musicArtists.data.Items.map((item) => (
-							<Card
-								key={item.Id}
-								item={item}
-								cardTitle={item.Name}
-								imageType={"Primary"}
-								disableOverlay
-								cardType={"square"}
-								queryKey={["favorite", "musicArtist"]}
-								userId={user.data.Id}
-								imageBlurhash={
-									!!item.ImageBlurHashes?.Primary &&
-									item.ImageBlurHashes?.Primary[
-										Object.keys(
-											item.ImageBlurHashes
-												.Primary,
-										)[0]
-									]
-								}
-							/>
-						))}
-					</CardScroller>
-				)}
+			{musicArtists.isSuccess && musicArtists.data.Items.length > 0 && (
+				<CardScroller title="Artists" displayCards={8} disableDecoration>
+					{musicArtists.data.Items.map((item) => (
+						<Card
+							key={item.Id}
+							item={item}
+							cardTitle={item.Name}
+							imageType={"Primary"}
+							disableOverlay
+							cardType={"square"}
+							queryKey={["favorite", "musicArtist"]}
+							userId={user.data.Id}
+							imageBlurhash={
+								!!item.ImageBlurHashes?.Primary &&
+								item.ImageBlurHashes?.Primary[
+									Object.keys(item.ImageBlurHashes.Primary)[0]
+								]
+							}
+						/>
+					))}
+				</CardScroller>
+			)}
 			{person.isSuccess && person.data.Items.length > 0 && (
-				<CardScroller
-					title="People"
-					displayCards={8}
-					disableDecoration
-				>
+				<CardScroller title="People" displayCards={8} disableDecoration>
 					{person.data.Items.map((item) => (
 						<Card
 							key={item.Id}
@@ -329,9 +288,7 @@ const FavoritePage = () => {
 							imageBlurhash={
 								!!item.ImageBlurHashes?.Primary &&
 								item.ImageBlurHashes?.Primary[
-									Object.keys(
-										item.ImageBlurHashes.Primary,
-									)[0]
+									Object.keys(item.ImageBlurHashes.Primary)[0]
 								]
 							}
 						/>

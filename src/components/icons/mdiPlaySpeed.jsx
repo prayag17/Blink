@@ -1,5 +1,3 @@
-/** @format */
-
 import SvgIcon from "@mui/material/SvgIcon";
 
 import { mdiPlaySpeed } from "@mdi/js";
@@ -7,7 +5,7 @@ import { mdiPlaySpeed } from "@mdi/js";
 export const MdiPlaySpeed = (props) => {
 	return (
 		<SvgIcon {...props}>
-			<path d={mdiPlaySpeed}></path>
+			<path d={mdiPlaySpeed} />
 		</SvgIcon>
 	);
 };

@@ -1,7 +1,5 @@
-/** @format */
-
-import React, { useState } from "react";
 import PropTypes from "prop-types";
+import React, { useState } from "react";
 
 import Carousel from "react-multi-carousel";
 import "react-multi-carousel/lib/styles.css";
@@ -9,10 +7,10 @@ import "react-multi-carousel/lib/styles.css";
 import { MdiChevronLeft } from "../icons/mdiChevronLeft";
 import { MdiChevronRight } from "../icons/mdiChevronRight";
 
-import IconButton from "@mui/material/IconButton";
 import Box from "@mui/material/Box";
-import Typography from "@mui/material/Typography";
 import ButtonGroup from "@mui/material/ButtonGroup";
+import IconButton from "@mui/material/IconButton";
+import Typography from "@mui/material/Typography";
 
 import "./cardScroller.module.scss";
 export const CardScroller = ({
@@ -65,8 +63,8 @@ export const CardScroller = ({
 				sx={{ mb: 1 }}
 				className={
 					disableDecoration
-						? `card-scroller-header-container hidden-decoration`
-						: `card-scroller-header-container`
+						? "card-scroller-header-container hidden-decoration"
+						: "card-scroller-header-container"
 				}
 			>
 				<Typography
@@ -75,25 +73,20 @@ export const CardScroller = ({
 					className="card-scroller-heading"
 					{...headingProps}
 				>
-					<div className="card-scroller-heading-decoration"></div>{" "}
-					{title}
+					<div className="card-scroller-heading-decoration" /> {title}
 				</Typography>
 				<ButtonGroup className="card-scroller-button-group">
 					<IconButton
 						className="card-scroller-button"
 						onClick={() => carouselRef.previous()}
 					>
-						<div className="material-symbols-rounded">
-							chevron_left
-						</div>
+						<div className="material-symbols-rounded">chevron_left</div>
 					</IconButton>
 					<IconButton
 						className="card-scroller-button"
 						onClick={() => carouselRef.next()}
 					>
-						<div className="material-symbols-rounded">
-							chevron_right
-						</div>
+						<div className="material-symbols-rounded">chevron_right</div>
 					</IconButton>
 				</ButtonGroup>
 			</Box>

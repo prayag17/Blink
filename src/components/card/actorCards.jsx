@@ -1,4 +1,3 @@
-/** @format */
 import React from "react";
 import { useNavigate } from "react-router-dom";
 
@@ -10,8 +9,8 @@ import { Blurhash } from "react-blurhash";
 
 import { MdiAccountTie } from "../icons/mdiAccountTie";
 
-import "./card.module.scss";
 import { useApi } from "../../utils/store/api";
+import "./card.module.scss";
 
 /**
  * @typedef {Object} Props
@@ -70,11 +69,10 @@ export const ActorCard = ({
 						/>
 					)}
 					<div className="card-image-icon-container">
-						<div className="material-symbols-rounded">
-							person
-						</div>
+						<div className="material-symbols-rounded">person</div>
 					</div>
 					<img
+						alt={item.Name}
 						src={api.getItemImageUrl(
 							seriesId ? item.SeriesId : item.Id,
 							"Primary",
@@ -90,7 +88,9 @@ export const ActorCard = ({
 							opacity: 0,
 						}}
 						loading="lazy"
-						onLoad={(e) => (e.target.style.opacity = 1)}
+						onLoad={(e) => {
+							e.target.style.opacity = 1;
+						}}
 						className="card-image"
 					/>
 				</div>

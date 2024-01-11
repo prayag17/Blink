@@ -1,5 +1,3 @@
-/** @format */
-
 import { useEffect, useState } from "react";
 
 // see https://github.com/tannerlinsley/react-query/issues/293

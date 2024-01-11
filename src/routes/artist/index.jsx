@@ -1,12 +1,11 @@
-/** @format */
-import React, { useState, useEffect } from "react";
 import PropTypes from "prop-types";
+import React, { useState, useEffect } from "react";
 
 import Box from "@mui/material/Box";
 import CircularProgress from "@mui/material/CircularProgress";
 import Divider from "@mui/material/Divider";
-import Tabs from "@mui/material/Tabs";
 import Tab from "@mui/material/Tab";
+import Tabs from "@mui/material/Tabs";
 
 import { AnimatePresence, motion } from "framer-motion";
 
@@ -17,21 +16,21 @@ import {
 	ItemFields,
 	SortOrder,
 } from "@jellyfin/sdk/lib/generated-client";
+import { getItemsApi } from "@jellyfin/sdk/lib/utils/api/items-api";
 import { getUserApi } from "@jellyfin/sdk/lib/utils/api/user-api";
 import { getUserLibraryApi } from "@jellyfin/sdk/lib/utils/api/user-library-api";
-import { getItemsApi } from "@jellyfin/sdk/lib/utils/api/items-api";
 
 import { useQuery } from "@tanstack/react-query";
 
-import Hero from "../../components/layouts/item/hero";
 import { Card } from "../../components/card/card";
+import Hero from "../../components/layouts/item/hero";
 
-import "./artist.module.scss";
-import { ErrorNotice } from "../../components/notices/errorNotice/errorNotice";
 import { ArtistAlbum } from "../../components/layouts/artist/artistAlbum";
-import { useBackdropStore } from "../../utils/store/backdrop";
 import MusicTrack from "../../components/musicTrack";
+import { ErrorNotice } from "../../components/notices/errorNotice/errorNotice";
 import { useApi } from "../../utils/store/api";
+import { useBackdropStore } from "../../utils/store/backdrop";
+import "./artist.module.scss";
 
 function TabPanel(props) {
 	const { children, value, index, ...other } = props;
@@ -63,7 +62,7 @@ const ArtistTitlePage = () => {
 	const user = useQuery({
 		queryKey: ["user"],
 		queryFn: async () => {
-			let usr = await getUserApi(api).getCurrentUser();
+			const usr = await getUserApi(api).getCurrentUser();
 			return usr.data;
 		},
 		networkMode: "always",
@@ -98,7 +97,7 @@ const ArtistTitlePage = () => {
 			});
 			return result.data;
 		},
-		enabled: item.isSuccess && item.data.Type == BaseItemKind.MusicArtist,
+		enabled: item.isSuccess && item.data.Type === BaseItemKind.MusicArtist,
 		networkMode: "always",
 	});
 
@@ -116,7 +115,7 @@ const ArtistTitlePage = () => {
 			});
 			return result.data;
 		},
-		enabled: item.isSuccess && item.data.Type == BaseItemKind.MusicArtist,
+		enabled: item.isSuccess && item.data.Type === BaseItemKind.MusicArtist,
 		networkMode: "always",
 	});
 
@@ -134,7 +133,7 @@ const ArtistTitlePage = () => {
 			});
 			return result.data;
 		},
-		enabled: item.isSuccess && item.data.Type == BaseItemKind.MusicArtist,
+		enabled: item.isSuccess && item.data.Type === BaseItemKind.MusicArtist,
 		networkMode: "always",
 	});
 
@@ -151,19 +150,15 @@ const ArtistTitlePage = () => {
 			artistSongs.isSuccess &&
 			artistAppearances.isSuccess
 		) {
-			if (artistDiscography.data.TotalRecordCount != 0) {
+			if (artistDiscography.data.TotalRecordCount !== 0) {
 				setActiveArtistTab(0);
-			} else if (artistSongs.data.TotalRecordCount != 0) {
+			} else if (artistSongs.data.TotalRecordCount !== 0) {
 				setActiveArtistTab(1);
-			} else if (artistAppearances.data.TotalRecordCount != 0) {
+			} else if (artistAppearances.data.TotalRecordCount !== 0) {
 				setActiveArtistTab(2);
 			}
 		}
-	}, [
-		artistDiscography.isPending,
-		artistSongs.isPending,
-		artistAppearances.isPending,
-	]);
+	});
 
 	const [animationDirection, setAnimationDirection] = useState("forward");
 
@@ -179,7 +174,7 @@ const ArtistTitlePage = () => {
 				item.data.Id,
 			);
 		}
-	}, [item.isSuccess]);
+	});
 
 	if (item.isPending) {
 		return (
@@ -244,13 +239,9 @@ const ArtistTitlePage = () => {
 							{artistTabs.map((tab, index) => {
 								return (
 									<Tab
-										key={index}
+										key={tab.title}
 										label={tab.title}
-										disabled={
-											tab.data.data
-												?.TotalRecordCount ==
-											0
-										}
+										disabled={tab.data.data?.TotalRecordCount === 0}
 									/>
 								);
 							})}
@@ -264,8 +255,7 @@ const ArtistTitlePage = () => {
 								initial={{
 									opacity: 0,
 									transform:
-										animationDirection ==
-										"forward"
+										animationDirection === "forward"
 											? "translate(30px)"
 											: "translate(-30px)",
 								}}
@@ -279,19 +269,15 @@ const ArtistTitlePage = () => {
 								}}
 							>
 								{artistDiscography.isSuccess &&
-									artistDiscography.data.Items.map(
-										(tabitem, aindex) => {
-											return (
-												<ArtistAlbum
-													key={aindex}
-													user={
-														user.data
-													}
-													album={tabitem}
-												/>
-											);
-										},
-									)}
+									artistDiscography.data.Items.map((tabitem) => {
+										return (
+											<ArtistAlbum
+												key={tabitem.Id}
+												user={user.data}
+												album={tabitem}
+											/>
+										);
+									})}
 							</motion.div>
 						</TabPanel>
 						<TabPanel value={activeArtistTab} index={1}>
@@ -300,8 +286,7 @@ const ArtistTitlePage = () => {
 								initial={{
 									opacity: 0,
 									transform:
-										animationDirection ==
-										"forward"
+										animationDirection === "forward"
 											? "translate(30px)"
 											: "translate(-30px)",
 								}}
@@ -315,28 +300,16 @@ const ArtistTitlePage = () => {
 								}}
 							>
 								{artistSongs.isSuccess &&
-									artistSongs.data.Items.map(
-										(tabitem) => {
-											return (
-												<MusicTrack
-													item={tabitem}
-													key={
-														tabitem.Id
-													}
-													queryKey={[
-														"item",
-														id,
-														"artist",
-														"songs",
-													]}
-													userId={
-														user.data
-															.Id
-													}
-												/>
-											);
-										},
-									)}
+									artistSongs.data.Items.map((tabitem) => {
+										return (
+											<MusicTrack
+												item={tabitem}
+												key={tabitem.Id}
+												queryKey={["item", id, "artist", "songs"]}
+												userId={user.data.Id}
+											/>
+										);
+									})}
 							</motion.div>
 						</TabPanel>
 						<TabPanel value={activeArtistTab} index={2}>
@@ -345,8 +318,7 @@ const ArtistTitlePage = () => {
 								initial={{
 									opacity: 0,
 									transform:
-										animationDirection ==
-										"forward"
+										animationDirection === "forward"
 											? "translate(30px)"
 											: "translate(-30px)",
 								}}
@@ -361,54 +333,26 @@ const ArtistTitlePage = () => {
 								className="grid"
 							>
 								{artistAppearances.isSuccess &&
-									artistAppearances.data.Items.map(
-										(tabitem) => {
-											return (
-												<Card
-													key={
-														tabitem.Id
-													}
-													item={tabitem}
-													cardTitle={
-														tabitem.Name
-													}
-													imageType={
-														"Primary"
-													}
-													cardCaption={
-														tabitem.AlbumArtist
-													}
-													cardType={
-														"square"
-													}
-													queryKey={[
-														"item",
-														id,
-														"artist",
-														"appearences",
-													]}
-													userId={
-														user.data
-															.Id
-													}
-													imageBlurhash={
-														!!tabitem
-															.ImageBlurHashes
-															?.Primary &&
-														tabitem
-															.ImageBlurHashes
-															?.Primary[
-															Object.keys(
-																tabitem
-																	.ImageBlurHashes
-																	.Primary,
-															)[0]
-														]
-													}
-												></Card>
-											);
-										},
-									)}
+									artistAppearances.data.Items.map((tabitem) => {
+										return (
+											<Card
+												key={tabitem.Id}
+												item={tabitem}
+												cardTitle={tabitem.Name}
+												imageType={"Primary"}
+												cardCaption={tabitem.AlbumArtist}
+												cardType={"square"}
+												queryKey={["item", id, "artist", "appearences"]}
+												userId={user.data.Id}
+												imageBlurhash={
+													!!tabitem.ImageBlurHashes?.Primary &&
+													tabitem.ImageBlurHashes?.Primary[
+														Object.keys(tabitem.ImageBlurHashes.Primary)[0]
+													]
+												}
+											/>
+										);
+									})}
 							</motion.div>
 						</TabPanel>
 					</AnimatePresence>

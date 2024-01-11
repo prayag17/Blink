@@ -1,5 +1,3 @@
-/** @format */
-
 const Settings = () => {
 	return <h1>WIP Settings</h1>;
 };

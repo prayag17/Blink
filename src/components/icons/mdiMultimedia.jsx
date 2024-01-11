@@ -1,5 +1,3 @@
-/** @format */
-
 import SvgIcon from "@mui/material/SvgIcon";
 
 import { mdiMultimedia } from "@mdi/js";
@@ -7,7 +5,7 @@ import { mdiMultimedia } from "@mdi/js";
 export const MdiMultimedia = (props) => {
 	return (
 		<SvgIcon {...props}>
-			<path d={mdiMultimedia}></path>
+			<path d={mdiMultimedia} />
 		</SvgIcon>
 	);
 };

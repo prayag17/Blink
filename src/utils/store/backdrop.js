@@ -1,5 +1,3 @@
-/** @format */
-
 import { create } from "zustand";
 
 export const useBackdropStore = create((set) => ({

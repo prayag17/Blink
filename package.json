@@ -8,7 +8,8 @@
 		"build": "vite build",
 		"preview": "vite preview",
 		"tauri": "tauri",
-		"lint": "eslint"
+		"lint": "biome check src/**/*",
+		"lint:fix": "biome check --apply src/**/*"
 	},
 	"dependencies": {
 		"@emotion/react": "^11.11.3",
@@ -22,6 +23,9 @@
 		"@tanstack/react-query": "^5.17.5",
 		"@tanstack/react-query-devtools": "^5.17.5",
 		"@tauri-apps/api": "^1.5.3",
+		"@types/node": "^20.10.7",
+		"@types/react": "^18.2.47",
+		"@types/react-dom": "^18.2.18",
 		"axios": "^1.6.5",
 		"axios-tauri-api-adapter": "^0.2.1",
 		"blurhash": "^2.0.5",
@@ -40,13 +44,16 @@
 		"react-use-konami": "^1.1.0",
 		"tauri-plugin-log-api": "github:tauri-apps/tauri-plugin-log#v1",
 		"tauri-plugin-store-api": "github:tauri-apps/tauri-plugin-store",
+		"typescript": "^5.3.3",
 		"uuid": "^9.0.1",
 		"vite-plugin-svgr": "^4.2.0",
 		"wavesurfer.js": "^7.6.1",
 		"zustand": "^4.4.7"
 	},
 	"devDependencies": {
+		"@biomejs/biome": "^1.5.0",
 		"@tauri-apps/cli": "^1.5.9",
+		"@types/uuid": "^9.0.7",
 		"@vitejs/plugin-react": "^4.2.1",
 		"eslint": "^8.56.0",
 		"eslint-plugin-react": "^7.33.2",
