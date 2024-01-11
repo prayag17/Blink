@@ -14,6 +14,7 @@ jobs:
       matrix:
         platform: [macos-latest, ubuntu-22.04, windows-latest]
     runs-on: ${{ matrix.platform }}
+    environment: TAURI
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
