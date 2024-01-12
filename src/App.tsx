@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useLayoutEffect } from "react";
 
 import { ThemeProvider } from "@mui/material/styles";
 import { AnimatePresence, motion } from "framer-motion";
@@ -27,15 +27,17 @@ import LoadingButton from "@mui/lab/LoadingButton";
 import Button from "@mui/material/Button";
 
 // MUI
-import Dialog from "@mui/material/Dialog";
-import DialogActions from "@mui/material/DialogActions";
-import DialogContent from "@mui/material/DialogContent";
-import DialogContentText from "@mui/material/DialogContentText";
-import DialogTitle from "@mui/material/DialogTitle";
-import IconButton from "@mui/material/IconButton";
-import LinearProgress from "@mui/material/LinearProgress";
-import SvgIcon from "@mui/material/SvgIcon";
-import Typography from "@mui/material/Typography";
+import {
+	Chip,
+	Dialog,
+	DialogActions,
+	DialogContent,
+	DialogContentText,
+	DialogTitle,
+	IconButton,
+	LinearProgress,
+	SvgIcon,
+} from "@mui/material";
 
 // Routes
 import About from "./routes/about";
@@ -63,6 +65,7 @@ import { ServerSetup } from "./routes/setup/server";
 import ServerList from "./routes/setup/serverList/index.jsx";
 
 import Markdown from "react-markdown";
+import remarkGfm from "remark-gfm";
 
 // Fonts
 import "@fontsource-variable/jetbrains-mono";
@@ -99,12 +102,12 @@ import { setInitialRoute, useCentralStore } from "./utils/store/central.js";
 import { usePlaybackDataLoadStore } from "./utils/store/playback";
 
 // 3rd Party
-import { Api } from "@jellyfin/sdk";
 import { getUserApi } from "@jellyfin/sdk/lib/utils/api/user-api";
 import { CircularProgress } from "@mui/material";
 import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 import { useSnackbar } from "notistack";
 import { ErrorBoundary } from "react-error-boundary";
+
 import { EasterEgg } from "./components/utils/easterEgg.jsx";
 import { handleRelaunch } from "./utils/misc/relaunch";
 import {
@@ -116,38 +119,6 @@ import {
 } from "./utils/storage/servers";
 import { UserStore, delUser, getUser } from "./utils/storage/user";
 import { createApi, useApi } from "./utils/store/api";
-
-// const anim = {
-// 	initial: {
-// 		transform: "scale(0.98)",
-// 		opacity: 0,
-// 	},
-// 	animate: {
-// 		transform: "scale(1)",
-// 		opacity: 1,
-// 	},
-// 	exit: {
-// 		transform: "sscale(1.02)",
-// 		opacity: 0,
-// 	},
-// };
-// const AnimationWrapper = () => {
-// 	return (
-// 		<motion.div
-// 			className="root-page"
-// 			variants={anim}
-// 			initial="initial"
-// 			animate="animate"
-// 			exit="exit"
-// 			transition={{
-// 				duration: 0.25,
-// 				ease: "easeInOut",
-// 			}}
-// 		>
-// 			<Outlet />
-// 		</motion.div>
-// 	);
-// };
 
 const handleAuthError = async () => {
 	await delUser();
@@ -273,7 +244,7 @@ function AppReady() {
 		window.scrollTo(0, 0);
 	}, [location.key]);
 
-	useEffect(() => {
+	useLayoutEffect(() => {
 		async function checkForUpdates() {
 			try {
 				const { shouldUpdate, manifest } = await checkUpdate();
@@ -289,7 +260,7 @@ function AppReady() {
 			}
 		}
 		checkForUpdates();
-	});
+	}, []);
 
 	if (!initialRoute) {
 		return (
@@ -322,27 +293,42 @@ function AppReady() {
 					/>
 				)}
 				<Dialog
-					// open={true}
 					open={updateDialog}
-					// onClose={}
-					// maxWidth="md"
 					fullWidth
+					PaperProps={{
+						style: {
+							borderRadius: "14px",
+							background: "rgb(0 0 0 / 0.5)",
+							backdropFilter: "blur(10px)",
+							border: "1px solid rgb(255 255 255 / 0.2)",
+						},
+					}}
 				>
 					{updateInfo !== undefined && (
 						<>
-							<DialogTitle>
+							<DialogTitle
+								variant="h5"
+								style={{
+									display: "flex",
+									flexDirection: "column",
+									alignItems: "flex-start",
+									gap: "0.4em",
+								}}
+							>
 								Update Available!
-								<Typography
-									style={{
-										opacity: "0.5",
-									}}
-								>
-									v{updateInfo.version}
-								</Typography>
+								<Chip
+									icon={
+										<span className="material-symbols-rounded">update</span>
+									}
+									label={`v${updateInfo.version}`}
+									color="success"
+								/>
 							</DialogTitle>
 							<DialogContent dividers>
 								<DialogContentText>
-									<Markdown>{updateInfo.body}</Markdown>
+									<Markdown remarkPlugins={[remarkGfm]}>
+										{updateInfo.body}
+									</Markdown>
 								</DialogContentText>
 							</DialogContent>
 							<DialogActions
@@ -350,7 +336,11 @@ function AppReady() {
 									padding: "1em",
 								}}
 							>
-								<IconButton disabled={updateDialogButton}>
+								<IconButton
+									disabled={updateDialogButton}
+									target="_blank"
+									href={`https://github.com/prayag17/JellyPlayer/releases/${updateInfo.version}`}
+								>
 									<SvgIcon>
 										<svg
 											xmlns="http://www.w3.org/2000/svg"

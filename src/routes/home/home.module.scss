@@ -113,3 +113,23 @@
 		$clr-background-light
 	);
 }
+
+@media (max-width: 1140px) {
+	.carousel{
+		height: 60vh !important;
+	}
+	.hero-carousel{
+		&-background-image{
+			width: 100%;
+		}
+		&-text {
+		-webkit-line-clamp: 2 !important;
+		&-logo {
+			max-width: 7em;
+			max-height: 2em;
+			object-fit: contain;
+			object-position: bottom;
+		}
+	}
+	}
+}

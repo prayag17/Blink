@@ -26,9 +26,10 @@ import { useBackdropStore } from "../../utils/store/backdrop";
 import { BaseItemKind, ItemFields } from "@jellyfin/sdk/lib/generated-client";
 import Typography from "@mui/material/Typography";
 import { useSnackbar } from "notistack";
+import { ErrorBoundary } from "react-error-boundary";
 import CarouselSlide from "../../components/carouselSlide";
-import ErrorBoundary from "../../components/errorBoundary";
 import CarouselSlideError from "../../components/errors/carousel";
+import { ErrorNotice } from "../../components/notices/errorNotice/errorNotice";
 import { useApi } from "../../utils/store/api";
 
 const Home = () => {
@@ -70,13 +71,13 @@ const Home = () => {
 					ItemFields.MediaStreams,
 					ItemFields.MediaSources,
 				],
+				// limit: 16,
 				enableUserData: true,
 				enableImages: true,
 			});
 			return media.data;
 		},
 		enabled: !!user.data,
-		networkMode: "always",
 	});
 
 	const resumeItemsVideo = useQuery({
@@ -92,7 +93,6 @@ const Home = () => {
 			return resumeItems.data;
 		},
 		enabled: !!user.data,
-		networkMode: "always",
 	});
 
 	const resumeItemsAudio = useQuery({
@@ -108,7 +108,6 @@ const Home = () => {
 			return resumeItems.data;
 		},
 		enabled: !!user.data,
-		networkMode: "always",
 	});
 
 	const upNextItems = useQuery({
@@ -129,7 +128,6 @@ const Home = () => {
 			return upNext.data;
 		},
 		enabled: !!user.data,
-		networkMode: "always",
 	});
 
 	const [latestMediaLibs, setLatestMediaLibs] = useState([]);
@@ -166,37 +164,38 @@ const Home = () => {
 	return (
 		<>
 			<main
-				className="scrollY home"
+				className="scrollY home padded-top"
 				style={{
 					flexGrow: 1,
-					// paddingBottom: "3em",
 					position: "relative",
 				}}
 			>
-				<ErrorBoundary fallback={<CarouselSlideError />}>
+				<ErrorBoundary FallbackComponent={ErrorNotice}>
 					{latestMedia.isPending ? (
 						<CarouselSkeleton />
 					) : (
-						<Carousel
-							content={latestMedia.data?.map((item) => (
-								<CarouselSlide item={item} key={item.Id} />
-							))}
-							onChange={(now) => {
-								if (latestMedia.isSuccess) {
-									if (latestMedia.data[now].ParentBackdropImageTags) {
-										setAppBackdrop(
-											`${api.basePath}/Items/${latestMedia.data[now].ParentBackdropItemId}/Images/Backdrop`,
-											latestMedia.data[now].Id,
-										);
-									} else {
-										setAppBackdrop(
-											`${api.basePath}/Items/${latestMedia.data[now].Id}/Images/Backdrop`,
-											latestMedia.data[now].Id,
-										);
+						latestMedia.data.length > 0 && (
+							<Carousel
+								content={latestMedia.data?.map((item) => (
+									<CarouselSlide item={item} key={item.Id} />
+								))}
+								onChange={(now) => {
+									if (latestMedia.isSuccess && latestMedia.data.length > 0) {
+										if (latestMedia.data[now]?.ParentBackdropImageTags) {
+											setAppBackdrop(
+												`${api.basePath}/Items/${latestMedia.data[now].ParentBackdropItemId}/Images/Backdrop`,
+												latestMedia.data[now].Id,
+											);
+										} else {
+											setAppBackdrop(
+												`${api.basePath}/Items/${latestMedia.data[now].Id}/Images/Backdrop`,
+												latestMedia.data[now].Id,
+											);
+										}
 									}
-								}
-							}}
-						/>
+								}}
+							/>
+						)
 					)}
 				</ErrorBoundary>
 

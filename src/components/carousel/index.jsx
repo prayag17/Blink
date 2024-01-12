@@ -24,7 +24,7 @@ const Carousel = ({ content, onChange }) => {
 	// biome-ignore lint/correctness/useExhaustiveDependencies: <explanation>
 	useEffect(() => {
 		onChange(currentSlide);
-	}, [content[currentSlide].key]);
+	}, [content[currentSlide]?.key]);
 
 	return (
 		<div className="carousel">

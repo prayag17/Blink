@@ -1,52 +1,49 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Jellyplayer</title>
-    <script src="http://localhost:8097"></script>
-    <style>
-      .app-loading {
-        position: fixed;
-        top: 0;
-        left: 0;
-        bottom: 0;
-        right: 0;
-        background: hsl(256, 100%, 4%);
-        z-index: 100000;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        flex-direction: column;
-        transition: opacity 0.25s ease-in-out;
-      }
 
-      .app-loading.hidden {
-        opacity: 0;
-        pointer-events: none;
-      }
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Jellyplayer</title>
+  <style>
+    .app-loading {
+      position: fixed;
+      top: 0;
+      left: 0;
+      bottom: 0;
+      right: 0;
+      background: hsl(256, 100%, 4%);
+      z-index: 100000;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-direction: column;
+      transition: opacity 0.25s ease-in-out;
+    }
 
-      .app-loading-logo {
-        width: 65vw;
-      }
-    </style>
-  </head>
+    .app-loading.hidden {
+      opacity: 0;
+      pointer-events: none;
+    }
 
-  <body>
-    <div class="app-loading">
-      <img src="./assetsStatic/LogoBig.svg" class="app-loading-logo" />
-    </div>
-    <div id="root"></div>
-    <svg
-      style="width: 0; height: 0; position: absolute"
-      aria-hidden="true"
-      focusable="false"
-    >
-      <linearGradient id="clr-gradient-default" x2="1" y2="1">
-        <stop offset="0%" stop-color="hsl(337, 96%, 56%)" />
-        <stop offset="100%" stop-color="hsl(273, 100%, 36%)" />
-      </linearGradient>
-    </svg>
-    <script type="module" src="/src/main.tsx"></script>
-  </body>
+    .app-loading-logo {
+      width: 65vw;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="app-loading">
+    <img src="./assetsStatic/LogoBig.svg" class="app-loading-logo" />
+  </div>
+  <div id="root"></div>
+  <svg style="width: 0; height: 0; position: absolute" aria-hidden="true" focusable="false">
+    <linearGradient id="clr-gradient-default" x2="1" y2="1">
+      <stop offset="0%" stop-color="hsl(337, 96%, 56%)" />
+      <stop offset="100%" stop-color="hsl(273, 100%, 36%)" />
+    </linearGradient>
+  </svg>
+  <script type="module" src="/src/main.tsx"></script>
+</body>
+
 </html>
