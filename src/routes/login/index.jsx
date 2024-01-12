@@ -117,7 +117,7 @@ export const LoginWithImage = () => {
 		const user = await authUser();
 		sessionStorage.setItem("accessToken", user.data.AccessToken);
 		if (rememberMe === true) {
-			saveUser(userName, user.data.AccessToken);
+			await saveUser(userName, user.data.AccessToken);
 		}
 		event.emit("set-api-accessToken", api.basePath);
 		setLoading(false);
@@ -258,27 +258,10 @@ export const UserLogin = () => {
 		staleTime: 0,
 	});
 
-	const handleInitiateQuickConnect = useMutation({
-		mutationKey: ["quick-connect"],
-		mutationFn: async () => {
-			console.log(api);
-			const result = await getQuickConnectApi(api).initiate();
-			return result.data;
-		},
-		onSuccess: (data) => {
-			console.info(data);
-		},
-		onError: (error) => {
-			console.error(error);
-			enqueueSnackbar("Unable to use Quick Connect", {
-				variant: "error",
-			});
-		},
-	});
-
 	if (users.isPending) {
 		return <LinearProgress />;
 	}
+
 	if (users.isSuccess) {
 		return (
 			<>
@@ -375,6 +358,8 @@ export const UserLogin = () => {
 
 export const UserLoginManual = () => {
 	const [loading, setLoading] = useState(false);
+	const [quickConnectLoading, setQuickConnectLoading] = useState(-1);
+	const [quickConnectCode, setQuickConnectCode] = useState("");
 	const [rememberMe, setRememberMe] = useState(true);
 	const [api] = useApi((state) => [state.api]);
 
@@ -434,16 +419,99 @@ export const UserLoginManual = () => {
 		const user = await authUser();
 		sessionStorage.setItem("accessToken", user.data.AccessToken);
 		if (rememberMe === true) {
-			saveUser(userName, user.data.AccessToken);
+			await saveUser(userName, user.data.AccessToken);
 		}
 		event.emit("set-api-accessToken", api.basePath);
-		// setAccessToken(user.data.AccessToken)
 		setLoading(false);
 		navigate("/home");
 	};
 
 	const handleCheckRememberMe = (event) => {
 		setRememberMe(event.target.checked);
+	};
+
+	const handleQuickConnect = async () => {
+		setQuickConnectLoading(0);
+
+		const quickApi = getQuickConnectApi(api);
+
+		const headers = {
+			"X-Emby-Authorization": `MediaBrowser Client="${api.clientInfo.name}", Device="${api.deviceInfo.name}", DeviceId="${api.deviceInfo.id}", Version="${api.clientInfo.version}"`,
+		};
+
+		const quickConnectInitiation = await quickApi
+			.initiate({
+				headers,
+			})
+			.catch(() => ({ status: 401 }));
+
+		if (quickConnectInitiation.status !== 200) {
+			setQuickConnectLoading(-1);
+			enqueueSnackbar("Unable to use Quick Connect", {
+				variant: "error",
+			});
+			return;
+		}
+
+		setQuickConnectLoading(1);
+
+		const { Secret, Code } = quickConnectInitiation.data;
+
+		setQuickConnectCode(Code);
+
+		const interval = setInterval(async () => {
+			const quickConnectCheck = await quickApi
+				.connect({
+					secret: Secret,
+				})
+				.catch(() => ({ status: 401, data: { Authenticated: false } }));
+
+			if (quickConnectCheck.status !== 200) {
+				enqueueSnackbar("Unable to use Quick Connect", {
+					variant: "error",
+				});
+
+				setQuickConnectLoading(-1);
+				clearInterval(interval);
+				return;
+			}
+
+			if (!quickConnectCheck.data.Authenticated) {
+				return;
+			}
+
+			const auth = await getUserApi(api)
+				.authenticateWithQuickConnect({
+					quickConnectDto: {
+						Secret: Secret,
+					},
+				})
+				.catch(() => ({ status: 401 }));
+
+			api.accessToken = auth.data.AccessToken;
+
+			clearInterval(interval);
+
+			if (auth.status !== 200) {
+				enqueueSnackbar("Unable to use Quick Connect", {
+					variant: "error",
+				});
+				setQuickConnectLoading(-1);
+				return;
+			}
+
+			sessionStorage.setItem("accessToken", auth.data.AccessToken);
+
+			if (rememberMe === true) {
+				await saveUser(userName, auth.data.AccessToken);
+			}
+
+			event.emit("set-api-accessToken", api.basePath);
+			setQuickConnectLoading(-1);
+			navigate("/home");
+		}, 1000);
+
+		setLoading(false);
 	};
 
 	return (
@@ -554,6 +622,44 @@ export const UserLoginManual = () => {
 						>
 							Change Server
 						</Button>
+						<Button
+							onClick={handleQuickConnect}
+							variant="contained"
+							className="userEventButton"
+							size="large"
+							sx={{ width: "100%", marginTop: "0.6em" }}
+						>
+							{
+								{
+									[-1]: "Quick Connect",
+									[0]: "Connecting",
+									[1]: <CircularProgress color="white" size={24} />,
+								}[Math.min(quickConnectLoading, 1)]
+							}
+						</Button>
+						{quickConnectCode !== "" && (
+							<div
+								style={{
+									position: "fixed",
+									top: 0,
+									left: 0,
+									width: "100%",
+									height: "100%",
+									display: "flex",
+									justifyContent: "center",
+									alignItems: "center",
+									zIndex: 9999,
+									backgroundColor: "rgba(0,0,0,0.8)",
+								}}
+							>
+								<div>
+									<Typography variant="h5" color="textPrimary">
+										{quickConnectCode}
+									</Typography>
+									<Button onClick={() => setQuickConnectCode("")}>Close</Button>
+								</div>
+							</div>
+						)}
 					</Grid>
 					<Grid sx={{ width: "100%" }}>
 						<Typography variant="subtitle2">
