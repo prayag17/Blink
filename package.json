@@ -45,7 +45,6 @@
 		"tauri-plugin-log-api": "github:tauri-apps/tauri-plugin-log#v1",
 		"tauri-plugin-store-api": "github:tauri-apps/tauri-plugin-store",
 		"typescript": "^5.3.3",
-		"uuid": "^9.0.1",
 		"vite-plugin-svgr": "^4.2.0",
 		"wavesurfer.js": "^7.6.1",
 		"zustand": "^4.4.7"
@@ -53,7 +52,6 @@
 	"devDependencies": {
 		"@biomejs/biome": "^1.5.0",
 		"@tauri-apps/cli": "^1.5.9",
-		"@types/uuid": "^9.0.7",
 		"@vitejs/plugin-react": "^4.2.1",
 		"eslint": "^8.56.0",
 		"eslint-plugin-react": "^7.33.2",
