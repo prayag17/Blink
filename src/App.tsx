@@ -88,7 +88,7 @@ import "@fontsource/noto-sans/800.css";
 import "@fontsource/noto-sans/900-italic.css";
 import "@fontsource/noto-sans/900.css";
 
-import "material-symbols";
+import "material-symbols/rounded.scss";
 
 // Components
 import { AppBar } from "./components/appBar/appBar.jsx";
