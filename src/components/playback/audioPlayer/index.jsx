@@ -15,24 +15,15 @@ import WaveSurfer from "wavesurfer.js";
 import { useAudioPlayback } from "../../../utils/store/audioPlayback";
 
 import { AnimatePresence } from "framer-motion";
-import { MdiPause } from "../../icons/mdiPause";
-import { MdiPlay } from "../../icons/mdiPlay";
 import "./audioPlayer.module.scss";
 
 import { getUserApi } from "@jellyfin/sdk/lib/utils/api/user-api";
 import { useQuery } from "@tanstack/react-query";
 import { getRuntimeMusic, secToTicks } from "../../../utils/date/time";
-import { MdiClose } from "../../icons/mdiClose";
-import { MdiMusic } from "../../icons/mdiMusic";
-import { MdiSkipNext } from "../../icons/mdiSkipNext";
-import { MdiSkipPrevious } from "../../icons/mdiSkipPrevious";
 
 import { getPlaystateApi } from "@jellyfin/sdk/lib/utils/api/playstate-api";
 import { theme } from "../../../theme";
 import { useApi } from "../../../utils/store/api";
-import { MdiPlaylistMusicOutline } from "../../icons/mdiPlaylistMusicOutline";
-import { MdiVolumeHigh } from "../../icons/mdiVolumeHigh";
-import { MdiVolumeOff } from "../../icons/mdiVolumeOff";
 import MusicTrack from "../../musicTrack";
 
 const AudioPlayer = () => {
@@ -245,7 +236,9 @@ const AudioPlayer = () => {
 									},
 								)}
 							/>
-							<MdiMusic className="audio-player-image-icon" />
+							<span className="material-symbols-rounded audio-player-image-icon">
+								music_note
+							</span>
 						</div>
 						<div className="audio-player-info-text">
 							<Typography

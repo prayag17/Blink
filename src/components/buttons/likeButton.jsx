@@ -9,8 +9,6 @@ import CircularProgress from "@mui/material/CircularProgress";
 import { pink } from "@mui/material/colors";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useSnackbar } from "notistack";
-import { MdiHeart } from "../icons/mdiHeart";
-import { MdiHeartOutline } from "../icons/mdiHeartOutline";
 
 import { useApi } from "../../utils/store/api";
 

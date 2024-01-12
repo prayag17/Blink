@@ -4,9 +4,6 @@ import React, { useState } from "react";
 import Carousel from "react-multi-carousel";
 import "react-multi-carousel/lib/styles.css";
 
-import { MdiChevronLeft } from "../icons/mdiChevronLeft";
-import { MdiChevronRight } from "../icons/mdiChevronRight";
-
 import Box from "@mui/material/Box";
 import ButtonGroup from "@mui/material/ButtonGroup";
 import IconButton from "@mui/material/IconButton";

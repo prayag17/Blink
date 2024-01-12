@@ -11,7 +11,6 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { getPlaystateApi } from "@jellyfin/sdk/lib/utils/api/playstate-api";
 import { useSnackbar } from "notistack";
 import { useApi } from "../../utils/store/api";
-import { MdiCheck } from "../icons/mdiCheck";
 
 const MarkPlayedButton = ({ itemId, isPlayed, queryKey, userId, itemName }) => {
 	const [api] = useApi((state) => [state.api]);

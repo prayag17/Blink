@@ -2,8 +2,6 @@ import { AnimatePresence, motion } from "framer-motion";
 import React, { useEffect, useState } from "react";
 
 import IconButton from "@mui/material/IconButton";
-import { MdiChevronLeft } from "../icons/mdiChevronLeft";
-import { MdiChevronRight } from "../icons/mdiChevronRight";
 
 import { useCarouselStore } from "../../utils/store/carousel";
 import "./carousel.scss";

@@ -2,7 +2,6 @@ import AppBar from "@mui/material/AppBar";
 import IconButton from "@mui/material/IconButton";
 import Toolbar from "@mui/material/Toolbar";
 import { useNavigate } from "react-router-dom";
-import { MdiArrowLeft } from "../icons/mdiArrowLeft";
 
 export const AppBarBackOnly = () => {
 	const navigate = useNavigate();
@@ -22,7 +21,7 @@ export const AppBarBackOnly = () => {
 					onClick={handleBack}
 					sx={{ mr: 2 }}
 				>
-					<MdiArrowLeft />
+					<span className="material-symbols-rounded">arrow_back</span>
 				</IconButton>
 			</Toolbar>
 		</AppBar>

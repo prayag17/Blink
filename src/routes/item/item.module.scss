@@ -15,12 +15,11 @@
 				max-height: 100%;
 				overflow: hidden;
 				border-radius: $border-radius-default;
-				width: fit-content;
 				box-shadow: $shadow-card;
 				flex-grow: 1;
 				flex-shrink: 0;
 				position: relative;
-				width: 20%;
+				width: 18% !important;
 			}
 			&-blurhash {
 				position: absolute !important;

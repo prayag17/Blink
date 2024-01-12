@@ -178,7 +178,7 @@ const ItemDetail = () => {
 			setAudioTracks(audios);
 			setSubtitleTracks(subs);
 		}
-	});
+	}, [item.isSuccess]);
 
 	const [setAppBackdrop] = useBackdropStore((state) => [state.setBackdrop]);
 
@@ -207,7 +207,7 @@ const ItemDetail = () => {
 			const actorTp = item.data.People.filter((itm) => itm.Type === "Actor");
 			setActors(actorTp);
 		}
-	});
+	}, [item.isSuccess]);
 
 	const qualityLabel = () => {
 		if (

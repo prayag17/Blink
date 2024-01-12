@@ -6,8 +6,6 @@ import TextField from "@mui/material/TextField";
 
 import { useBackdropStore } from "../../utils/store/backdrop";
 
-import { MdiMagnify } from "../../components/icons/mdiMagnify";
-
 import { useQuery } from "@tanstack/react-query";
 
 import { getUserApi } from "@jellyfin/sdk/lib/utils/api/user-api";
@@ -207,7 +205,7 @@ const SearchPage = () => {
 										}}
 										size={35}
 									/>
-									<MdiMagnify />
+									<span className="material-symbols-rounded">search</span>
 								</div>
 							</InputAdornment>
 						),

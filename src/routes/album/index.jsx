@@ -21,7 +21,6 @@ import { getUserApi } from "@jellyfin/sdk/lib/utils/api/user-api";
 import { getUserLibraryApi } from "@jellyfin/sdk/lib/utils/api/user-library-api";
 
 import { useQuery } from "@tanstack/react-query";
-import { MdiClockOutline } from "../../components/icons/mdiClockOutline";
 
 import { getRuntimeMusic } from "../../utils/date/time";
 
@@ -248,7 +247,7 @@ const MusicAlbumTitlePage = () => {
 								>
 									Name
 								</Typography>
-								<MdiClockOutline />
+								<span className="material-symbols-rounded">schedule</span>
 							</div>
 							{musicTracks.data.Items.map((track, index) => {
 								return (

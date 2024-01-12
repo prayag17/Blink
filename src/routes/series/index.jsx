@@ -1,5 +1,5 @@
 import PropTypes from "prop-types";
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useLayoutEffect } from "react";
 
 import Box from "@mui/material/Box";
 import MuiCard from "@mui/material/Card";
@@ -204,7 +204,7 @@ const SeriesTitlePage = () => {
 	const [actors, setActors] = useState([]);
 	const [producers, setProducers] = useState([]);
 
-	useEffect(() => {
+	useLayoutEffect(() => {
 		if (item.isSuccess) {
 			setAppBackdrop(
 				item.data.Type === BaseItemKind.MusicAlbum ||

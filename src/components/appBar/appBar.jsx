@@ -28,18 +28,10 @@ import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { delServer } from "../../utils/storage/servers";
 import { delUser } from "../../utils/storage/user";
 import { useDrawerStore } from "../../utils/store/drawer";
-import { MdiAccount } from "../icons/mdiAccount";
-import { MdiArrowLeft } from "../icons/mdiArrowLeft";
-import { MdiCog } from "../icons/mdiCog";
-import { MdiDelete } from "../icons/mdiDelete";
-import { MdiHeartOutline } from "../icons/mdiHeartOutline";
-import { MdiInformation } from "../icons/mdiInformation";
-import { MdiMenu } from "../icons/mdiMenu";
 import "./appBar.module.scss";
 
 import { EventEmitter as event } from "../../eventEmitter";
 import { useApi } from "../../utils/store/api";
-import { MdiLogoutVariant } from "../icons/mdiLogoutVariant";
 
 import { getTypeIcon } from "../../components/utils/iconsCollection";
 
@@ -365,7 +357,9 @@ export const AppBar = () => {
 							{user.isSuccess &&
 								(user.data.PrimaryImageTag === undefined ? (
 									<Avatar className="appBar-avatar" alt={user.data.Name}>
-										<MdiAccount className="appBar-avatar-icon" />
+										<span className="material-symbols-rounded appBar-avatar-icon">
+											account_circle
+										</span>
 									</Avatar>
 								) : (
 									<Avatar
@@ -373,7 +367,9 @@ export const AppBar = () => {
 										src={`${api.basePath}/Users/${user.data.Id}/Images/Primary`}
 										alt={user.data.Name}
 									>
-										<MdiAccount className="appBar-avatar-icon" />
+										<span className="material-symbols-rounded appBar-avatar-icon">
+											account_circle
+										</span>
 									</Avatar>
 								))}
 						</IconButton>

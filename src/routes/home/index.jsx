@@ -28,7 +28,6 @@ import Typography from "@mui/material/Typography";
 import { useSnackbar } from "notistack";
 import { ErrorBoundary } from "react-error-boundary";
 import CarouselSlide from "../../components/carouselSlide";
-import CarouselSlideError from "../../components/errors/carousel";
 import { ErrorNotice } from "../../components/notices/errorNotice/errorNotice";
 import { useApi } from "../../utils/store/api";
 

@@ -1,4 +1,3 @@
-
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 
@@ -13,13 +12,10 @@ import SvgIcon from "@mui/material/SvgIcon";
 import TextField from "@mui/material/TextField";
 import Typography from "@mui/material/Typography";
 
-import { mdiChevronRight } from "@mdi/js";
-
 import { useSnackbar } from "notistack";
 
 import { yellow } from "@mui/material/colors";
 import { useMutation } from "@tanstack/react-query";
-import { MdiInformation } from "../../../components/icons/mdiInformation.jsx";
 import { createApi, useApi } from "../../../utils/store/api";
 // SCSS
 import "./server.module.scss";
@@ -117,9 +113,7 @@ export const ServerSetup = () => {
 							size="large"
 							loading={checkServer.isPending}
 							endIcon={
-								<SvgIcon>
-									<path d={mdiChevronRight} />
-								</SvgIcon>
+								<span className="material-symbols-rounded">chevron_right</span>
 							}
 							loadingPosition="end"
 							onClick={checkServer.mutate}
@@ -139,11 +133,14 @@ export const ServerSetup = () => {
 							opacity: 0.6,
 						}}
 					>
-						<MdiInformation
-							sx={{
+						<span
+							className="material-symbols-rounded"
+							style={{
 								color: yellow[700],
 							}}
-						/>
+						>
+							info
+						</span>
 						<Typography variant="subtitle1">
 							Example: https://demo.jellyfin.org/stable
 						</Typography>

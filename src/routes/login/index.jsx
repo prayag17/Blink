@@ -5,11 +5,6 @@ import { EventEmitter as event } from "../../eventEmitter.js";
 
 import { saveUser } from "../../utils/storage/user";
 
-import { MdiChevronRight } from "../../components/icons/mdiChevronRight.jsx";
-// import Icon from "mdi-material-ui";
-import { MdiEyeOffOutline } from "../../components/icons/mdiEyeOffOutline.jsx";
-import { MdiEyeOutline } from "../../components/icons/mdiEyeOutline.jsx";
-
 import LoadingButton from "@mui/lab/LoadingButton";
 import Button from "@mui/material/Button";
 import Checkbox from "@mui/material/Checkbox";
@@ -198,9 +193,13 @@ export const LoginWithImage = () => {
 												aria-label="toggle password visibility"
 											>
 												{password.showpass ? (
-													<MdiEyeOffOutline />
+													<span className="material-symbols-rounded">
+														visibility_off
+													</span>
 												) : (
-													<MdiEyeOutline />
+													<span className="material-symbols-rounded">
+														visibility
+													</span>
 												)}
 											</IconButton>
 										</InputAdornment>

@@ -5,7 +5,6 @@ import { useApi } from "../../utils/store/api";
 import { useAudioPlayback } from "../../utils/store/audioPlayback";
 import LikeButton from "../buttons/likeButton";
 import PlayButton from "../buttons/playButton";
-import { MdiMusic } from "../icons/mdiMusic";
 import TextLink from "../textLink";
 import "./musicTrack.module.scss";
 
@@ -41,12 +40,12 @@ const MusicTrack = ({
 		<div className={`music-track ${className}`}>
 			<div className="music-track-image">
 				<div className="music-track-icon">
-					<MdiMusic
-						sx={{
-							fontSize: "2em !important",
-							fill: "url(#clr-gradient-default) !important",
-						}}
-					/>
+					<span
+						className="material-symbols-rounded"
+						style={{ fontSize: "2em !important" }}
+					>
+						music_note
+					</span>
 				</div>
 				<img
 					alt={item.Name}

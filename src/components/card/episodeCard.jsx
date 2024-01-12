@@ -8,7 +8,6 @@ import Typography from "@mui/material/Typography";
 
 import { Blurhash } from "react-blurhash";
 
-import { MdiCheck } from "../icons/mdiCheck";
 import "./card.module.scss";
 
 import { getRuntimeCompact } from "../../utils/date/time";
@@ -16,7 +15,6 @@ import { useApi } from "../../utils/store/api";
 import LikeButton from "../buttons/likeButton";
 import MarkPlayedButton from "../buttons/markPlayedButton";
 import PlayButton from "../buttons/playButton";
-import { MdiTelevisionClassic } from "../icons/mdiTelevisionClassic";
 
 /**
  * @typedef {Object} Props

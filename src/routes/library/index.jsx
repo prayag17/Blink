@@ -34,11 +34,6 @@ import { getUserApi } from "@jellyfin/sdk/lib/utils/api/user-api";
 import { Card } from "../../components/card/card";
 import { EmptyNotice } from "../../components/notices/emptyNotice/emptyNotice";
 
-import { MdiChevronDown } from "../../components/icons/mdiChevronDown";
-import { MdiFilterOutline } from "../../components/icons/mdiFilterOutline";
-import { MdiSortAscending } from "../../components/icons/mdiSortAscending";
-import { MdiSortDescending } from "../../components/icons/mdiSortDescending";
-
 import {
 	BaseItemKind,
 	ItemFields,
@@ -406,11 +401,16 @@ const LibraryView = () => {
 							) : (
 								<>
 									<IconButton onClick={() => setSortAscending(!sortAscending)}>
-										{sortAscending ? (
-											<MdiSortAscending />
-										) : (
-											<MdiSortDescending />
-										)}
+										<span
+											className="material-symbols-rounded"
+											style={{
+												transform: sortAscending
+													? "rotateX(0deg)"
+													: "rotateX(180deg)",
+											}}
+										>
+											sort
+										</span>
 									</IconButton>
 
 									<TextField
@@ -455,7 +455,11 @@ const LibraryView = () => {
 									<>
 										<Divider flexItem orientation="vertical" />
 										<Button
-											startIcon={<MdiFilterOutline />}
+											startIcon={
+												<span className="material-symbols-rounded">
+													filter_list
+												</span>
+											}
 											color="white"
 											onClick={(event) => {
 												setFilterButtonAnchorEl(event.currentTarget);
@@ -477,7 +481,13 @@ const LibraryView = () => {
 									<Grow {...TransitionProps} timeout={200}>
 										<div className="library-filter-container">
 											<Accordion className="library-filter-accordian">
-												<AccordionSummary expandIcon={<MdiChevronDown />}>
+												<AccordionSummary
+													expandIcon={
+														<span className="material-symbols-rounded">
+															expand_more
+														</span>
+													}
+												>
 													<Typography variant="subtitle1">Filters</Typography>
 												</AccordionSummary>
 												<AccordionDetails
@@ -682,7 +692,13 @@ const LibraryView = () => {
 											</Accordion>
 											{currentLib.data.CollectionType === "movies" && (
 												<Accordion className="library-filter-accordian">
-													<AccordionSummary expandIcon={<MdiChevronDown />}>
+													<AccordionSummary
+														expandIcon={
+															<span className="material-symbols-rounded">
+																expand_more
+															</span>
+														}
+													>
 														<Typography variant="subtitle1">Quality</Typography>
 													</AccordionSummary>
 													<AccordionDetails
@@ -822,7 +838,13 @@ const LibraryView = () => {
 												currentLib.data.CollectionType,
 											) && (
 												<Accordion className="library-filter-accordian">
-													<AccordionSummary expandIcon={<MdiChevronDown />}>
+													<AccordionSummary
+														expandIcon={
+															<span className="material-symbols-rounded">
+																expand_more
+															</span>
+														}
+													>
 														<Typography variant="subtitle1">
 															Features
 														</Typography>

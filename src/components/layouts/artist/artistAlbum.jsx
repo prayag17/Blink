@@ -12,9 +12,6 @@ import { useQuery } from "@tanstack/react-query";
 
 import { getRuntimeMusic } from "../../../utils/date/time";
 
-import { MdiAlbum } from "../../icons/mdiAlbum";
-import { MdiClockOutline } from "../../icons/mdiClockOutline";
-
 import { SortOrder } from "@jellyfin/sdk/lib/generated-client";
 import { useApi } from "../../../utils/store/api";
 import { useAudioPlayback } from "../../../utils/store/audioPlayback";
@@ -91,7 +88,12 @@ export const ArtistAlbum = ({ user, album, boxProps }) => {
 							onLoad={() => setImgLoaded(true)}
 						/>
 						<div className="album-image-icon-container">
-							<MdiAlbum className="album-image-icon" sx={{ fontSize: "6em" }} />
+							<span
+								className="material-symbols-rounded album-image-icon"
+								sx={{ fontSize: "6em" }}
+							>
+								schedule
+							</span>
 						</div>
 					</div>
 				)}
@@ -145,7 +147,7 @@ export const ArtistAlbum = ({ user, album, boxProps }) => {
 						>
 							Name
 						</Typography>
-						<MdiClockOutline />
+						<span className="material-symbols-rounded">schedule</span>
 					</div>
 					{albumTracks.data.Items.map((track, index) => {
 						return (

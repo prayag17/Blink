@@ -3,8 +3,6 @@ import React from "react";
 
 import Box from "@mui/material/Box";
 
-import { MdiAccount } from "../icons/mdiAccount";
-
 import "./avatar.module.scss";
 
 import { useApi } from "../../utils/store/api";
@@ -21,14 +19,12 @@ export const AvatarImage = ({ userId }) => {
 			/>
 
 			<div className="avatar-image-icon-container">
-				<MdiAccount className="avatar-image-icon" />
+				<span className="material-symbols-rounded avatar-image-icon">
+					account_circle
+				</span>
 			</div>
 		</Box>
 	);
-};
-
-export const AvatarSideMenu = ({ userName }) => {
-	return <div />;
 };
 
 AvatarImage.propType = {

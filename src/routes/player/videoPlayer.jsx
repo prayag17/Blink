@@ -14,8 +14,6 @@ import Typography from "@mui/material/Typography";
 
 import ReactPlayer from "react-player";
 
-import { MdiArrowLeft } from "../../components/icons/mdiArrowLeft";
-import { MdiPlay } from "../../components/icons/mdiPlay";
 import { usePlaybackStore } from "../../utils/store/playback";
 
 import { useCallback, useEffect, useRef, useState } from "react";
@@ -26,26 +24,14 @@ import { getMediaInfoApi } from "@jellyfin/sdk/lib/utils/api/media-info-api";
 import { getPlaystateApi } from "@jellyfin/sdk/lib/utils/api/playstate-api";
 import { getTvShowsApi } from "@jellyfin/sdk/lib/utils/api/tv-shows-api";
 
-import { MdiFastForward } from "../../components/icons/mdiFastForward";
-import { MdiFullscreen } from "../../components/icons/mdiFullscreen";
-import { MdiFullscreenExit } from "../../components/icons/mdiFullscreenExit";
-import { MdiPause } from "../../components/icons/mdiPause";
-import { MdiPictureInPictureBottomRight } from "../../components/icons/mdiPictureInPictureBottomRight";
-import { MdiPlaySpeed } from "../../components/icons/mdiPlaySpeed";
-import { MdiRewind } from "../../components/icons/mdiRewind";
-import { MdiVolumeHigh } from "../../components/icons/mdiVolumeHigh";
-import { MdiVolumeOff } from "../../components/icons/mdiVolumeOff";
 import "./videoPlayer.module.scss";
 
 import { endsAt } from "../../utils/date/time";
 
 import { useQuery } from "@tanstack/react-query";
-import { MdiCog } from "../../components/icons/mdiCog";
-import { MdiSkipNext } from "../../components/icons/mdiSkipNext";
 
 import { ItemFields, LocationType } from "@jellyfin/sdk/lib/generated-client";
 import { AnimatePresence, motion } from "framer-motion";
-import { MdiSkipPrevious } from "../../components/icons/mdiSkipPrevious";
 
 import { useApi } from "../../utils/store/api";
 
@@ -599,7 +585,7 @@ export const VideoPlayer = () => {
 					}}
 				>
 					<IconButton onClick={handleExit}>
-						<MdiArrowLeft />
+						<span className="material-symbols-rounded">arrow_back</span>
 					</IconButton>
 
 					{itemName}
