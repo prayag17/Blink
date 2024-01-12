@@ -15,6 +15,9 @@
 			},
 			"correctness": {
 				"useExhaustiveDependencies": "off"
+			},
+			"nursery": {
+				"noUnusedImports": "off"
 			}
 		}
 	},
