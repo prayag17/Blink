@@ -1,6 +1,9 @@
 {
 	"version": "0.0.3-dev",
-	"notes": "- Updated home carousel.<br/>- Removed sidemenu<br/>- Updated appBar<br/>- Update Notices",
+	"notes": "- Updated home carousel.
+	- Removed sidemenu
+	- Updated appBar
+	- Update Notices",
 	"pub_date": "2023-12-31T11:58:58.485Z",
 	"platforms": {
 		"darwin-x86_64": {
