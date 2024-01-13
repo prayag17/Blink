@@ -6,3 +6,7 @@ export const useBackdropStore = create((set) => ({
 	setBackdrop: (url, id) =>
 		set((state) => ({ backdropUrl: url, backdropId: id })),
 }));
+
+export const setBackdrop = (url, id) => {
+	useBackdropStore.setState(() => ({ backdropUrl: url, backdropId: id }));
+};

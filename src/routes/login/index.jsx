@@ -1,11 +1,20 @@
 import { useMutation, useQuery } from "@tanstack/react-query";
-import React, { useState } from "react";
+import React, { useLayoutEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { EventEmitter as event } from "../../eventEmitter.js";
 
 import { saveUser } from "../../utils/storage/user";
 
 import LoadingButton from "@mui/lab/LoadingButton";
+import {
+	Dialog,
+	DialogActions,
+	DialogContent,
+	DialogContentText,
+	Grid,
+	OutlinedInput,
+	Typography,
+} from "@mui/material";
 import Button from "@mui/material/Button";
 import Checkbox from "@mui/material/Checkbox";
 import CircularProgress from "@mui/material/CircularProgress";
@@ -17,9 +26,7 @@ import IconButton from "@mui/material/IconButton";
 import InputAdornment from "@mui/material/InputAdornment";
 import InputLabel from "@mui/material/InputLabel";
 import LinearProgress from "@mui/material/LinearProgress";
-import OutlinedInput from "@mui/material/OutlinedInput";
-import Typography from "@mui/material/Typography";
-import Grid from "@mui/material/Unstable_Grid2";
+
 import { useSnackbar } from "notistack";
 
 import { AppBarBackOnly } from "../../components/appBar/backOnly.jsx";
@@ -33,6 +40,8 @@ import { getUserApi } from "@jellyfin/sdk/lib/utils/api/user-api";
 import { ErrorNotice } from "../../components/notices/errorNotice/errorNotice.jsx";
 import { useApi } from "../../utils/store/api";
 import "./login.module.scss";
+
+import { setBackdrop } from "../../utils/store/backdrop.js";
 
 export const LoginRoute = () => {
 	const navigate = useNavigate();
@@ -123,6 +132,10 @@ export const LoginWithImage = () => {
 		setLoading(false);
 		navigate("/home");
 	};
+
+	useLayoutEffect(() => {
+		setBackdrop("", "");
+	}, []);
 
 	const handleCheckRememberMe = (event) => {
 		setRememberMe(event.target.checked);
@@ -220,7 +233,9 @@ export const LoginWithImage = () => {
 					<Grid minWidth="100%">
 						<LoadingButton
 							variant="contained"
-							endIcon={<MdiChevronRight />}
+							endIcon={
+								<span className="material-symbols-rounded">chevron_right</span>
+							}
 							onClick={handleLogin}
 							loading={loading}
 							loadingPosition="end"
@@ -243,6 +258,10 @@ export const UserLogin = () => {
 
 	const [api] = useApi((state) => [state.api]);
 
+	const [loading, setLoading] = useState(false);
+	const [quickConnectLoading, setQuickConnectLoading] = useState(-1);
+	const [quickConnectCode, setQuickConnectCode] = useState("");
+
 	const handleChangeServer = () => {
 		navigate("/servers/list");
 	};
@@ -257,6 +276,94 @@ export const UserLogin = () => {
 		},
 		staleTime: 0,
 	});
+
+	const handleQuickConnect = async () => {
+		setQuickConnectLoading(0);
+
+		const quickApi = getQuickConnectApi(api);
+
+		const headers = {
+			"X-Emby-Authorization": `MediaBrowser Client="${api.clientInfo.name}", Device="${api.deviceInfo.name}", DeviceId="${api.deviceInfo.id}", Version="${api.clientInfo.version}"`,
+		};
+
+		const quickConnectInitiation = await quickApi
+			.initiate({
+				headers,
+			})
+			.catch(() => ({ status: 401 }));
+
+		if (quickConnectInitiation.status !== 200) {
+			setQuickConnectLoading(-1);
+			enqueueSnackbar("Unable to use Quick Connect", {
+				variant: "error",
+			});
+			return;
+		}
+
+		setQuickConnectLoading(1);
+
+		const { Secret, Code } = quickConnectInitiation.data;
+
+		setQuickConnectCode(Code);
+
+		const interval = setInterval(async () => {
+			const quickConnectCheck = await quickApi
+				.connect({
+					secret: Secret,
+				})
+				.catch(() => ({ status: 401, data: { Authenticated: false } }));
+
+			if (quickConnectCheck.status !== 200) {
+				enqueueSnackbar("Unable to use Quick Connect", {
+					variant: "error",
+				});
+
+				setQuickConnectLoading(-1);
+				clearInterval(interval);
+				return;
+			}
+
+			if (!quickConnectCheck.data.Authenticated) {
+				return;
+			}
+
+			const auth = await getUserApi(api)
+				.authenticateWithQuickConnect({
+					quickConnectDto: {
+						Secret: Secret,
+					},
+				})
+				.catch(() => ({ status: 401 }));
+
+			api.accessToken = auth.data.AccessToken;
+
+			clearInterval(interval);
+
+			if (auth.status !== 200) {
+				enqueueSnackbar("Unable to use Quick Connect", {
+					variant: "error",
+				});
+				setQuickConnectLoading(-1);
+				return;
+			}
+
+			sessionStorage.setItem("accessToken", auth.data.AccessToken);
+
+			if (rememberMe === true) {
+				await saveUser(userName, auth.data.AccessToken);
+			}
+
+			event.emit("set-api-accessToken", api.basePath);
+			setQuickConnectLoading(-1);
+			navigate("/home");
+		}, 1000);
+
+		setLoading(false);
+	};
+
+	useLayoutEffect(() => {
+		setBackdrop("", "");
+	}, []);
 
 	if (users.isPending) {
 		return <LinearProgress />;
@@ -331,22 +438,91 @@ export const UserLogin = () => {
 						>
 							Change Server
 						</Button>
-						<Button
+						<LoadingButton
+							onClick={handleQuickConnect}
 							variant="contained"
 							className="userEventButton"
-							onClick={handleInitiateQuickConnect.mutate}
-							// disabled
+							sx={{ width: "100%" }}
+							loading={quickConnectLoading === 1}
+							size="large"
 						>
 							Quick Connect
-						</Button>
+						</LoadingButton>
 						<Button
 							variant="contained"
 							className="userEventButton"
 							onClick={handleManualLogin}
+							size="small"
 						>
 							Manual Login
 						</Button>
 					</div>
+
+					<Dialog open={Boolean(quickConnectCode)} fullWidth maxWidth="xs">
+						<DialogContent
+							style={{
+								display: "flex",
+								flexDirection: "column",
+								alignItems: "center",
+							}}
+						>
+							<Typography
+								variant="h5"
+								mb={2}
+								style={{
+									width: "100%",
+								}}
+							>
+								Quick Connect Code:
+							</Typography>
+							<DialogContentText>
+								Use this code in the Quick Connect tab in your server to login.
+							</DialogContentText>
+							<div
+								className="flex flex-row"
+								style={{ gap: "1em", alignItems: "center", marginTop: "1em" }}
+							>
+								<Typography
+									variant="h3"
+									color="textPrimary"
+									textAlign="center"
+									sx={{
+										background: "rgb(255 255 255 / 0.1)",
+										width: "fit-content",
+										padding: "0.4em",
+										borderRadius: "10px",
+									}}
+								>
+									{quickConnectCode}
+								</Typography>
+								<IconButton
+									onClick={(e) => {
+										navigator.clipboard.writeText(quickConnectCode);
+										enqueueSnackbar("Quick Connect Code copied!", {
+											variant: "info",
+										});
+									}}
+								>
+									<span className="material-symbols-rounded">content_copy</span>
+								</IconButton>
+							</div>
+						</DialogContent>
+						<DialogActions
+							sx={{
+								padding: "0em 1em 1em 0em",
+							}}
+						>
+							<Button
+								variant="contained"
+								onClick={() => {
+									setQuickConnectCode("");
+									setQuickConnectLoading(-1);
+								}}
+							>
+								Close
+							</Button>
+						</DialogActions>
+					</Dialog>
 				</Container>
 			</>
 		);
@@ -514,6 +690,10 @@ export const UserLoginManual = () => {
 		setLoading(false);
 	};
 
+	useLayoutEffect(() => {
+		setBackdrop("", "");
+	}, []);
+
 	return (
 		<>
 			{server.isPending && <LinearProgress />}
@@ -544,7 +724,7 @@ export const UserLoginManual = () => {
 							Login
 						</Typography>
 					</Grid>
-					<Grid sx={{ width: "100%" }}>
+					<Grid sx={{ width: "100%", mb: 1 }}>
 						<FormControl sx={{ width: "100%" }} variant="outlined">
 							<InputLabel htmlFor="user-name">Username:</InputLabel>
 							<OutlinedInput
@@ -580,9 +760,13 @@ export const UserLoginManual = () => {
 												aria-label="toggle password visibility"
 											>
 												{password.showpass ? (
-													<MdiEyeOffOutline />
+													<span className="material-symbols-rounded">
+														visibility
+													</span>
 												) : (
-													<MdiEyeOutline />
+													<span className="material-symbols-rounded">
+														visibility_off
+													</span>
 												)}
 											</IconButton>
 										</InputAdornment>
@@ -600,67 +784,109 @@ export const UserLoginManual = () => {
 							/>
 						</FormGroup>
 					</Grid>
-					<Grid sx={{ width: "100%" }}>
+					<div
+						className="flex flex-column"
+						style={{ width: "100%", gap: "0.4em" }}
+					>
 						<LoadingButton
 							variant="contained"
-							endIcon={<MdiChevronRight />}
+							endIcon={
+								<span className="material-symbols-rounded">chevron_right</span>
+							}
 							onClick={handleLogin}
 							loading={loading}
 							loadingPosition="end"
 							size="large"
-							sx={{ width: "100%", mb: 1 }}
+							sx={{ width: "100%" }}
 						>
 							Login
+						</LoadingButton>
+						<LoadingButton
+							onClick={handleQuickConnect}
+							variant="contained"
+							className="userEventButton"
+							sx={{ width: "100%" }}
+							loading={quickConnectLoading === 1}
+							// size="large"
+						>
+							Quick Connect
 						</LoadingButton>
 						<Button
 							color="secondary"
 							variant="contained"
 							className="userEventButton"
-							size="large"
+							// size="large"
 							sx={{ width: "100%" }}
 							onClick={() => navigate("/servers/list")}
 						>
 							Change Server
 						</Button>
-						<Button
-							onClick={handleQuickConnect}
-							variant="contained"
-							className="userEventButton"
-							size="large"
-							sx={{ width: "100%", marginTop: "0.6em" }}
+					</div>
+					<Dialog open={Boolean(quickConnectCode)} fullWidth maxWidth="xs">
+						<DialogContent
+							style={{
+								display: "flex",
+								flexDirection: "column",
+								alignItems: "center",
+							}}
 						>
-							{
-								{
-									[-1]: "Quick Connect",
-									[0]: "Connecting",
-									[1]: <CircularProgress color="white" size={24} />,
-								}[Math.min(quickConnectLoading, 1)]
-							}
-						</Button>
-						{quickConnectCode !== "" && (
-							<div
+							<Typography
+								variant="h5"
+								mb={2}
 								style={{
-									position: "fixed",
-									top: 0,
-									left: 0,
 									width: "100%",
-									height: "100%",
-									display: "flex",
-									justifyContent: "center",
-									alignItems: "center",
-									zIndex: 9999,
-									backgroundColor: "rgba(0,0,0,0.8)",
 								}}
 							>
-								<div>
-									<Typography variant="h5" color="textPrimary">
-										{quickConnectCode}
-									</Typography>
-									<Button onClick={() => setQuickConnectCode("")}>Close</Button>
-								</div>
+								Quick Connect Code:
+							</Typography>
+							<DialogContentText>
+								Use this code in the Quick Connect tab in your server to login.
+							</DialogContentText>
+							<div
+								className="flex flex-row"
+								style={{ gap: "1em", alignItems: "center", marginTop: "1em" }}
+							>
+								<Typography
+									variant="h3"
+									color="textPrimary"
+									textAlign="center"
+									sx={{
+										background: "rgb(255 255 255 / 0.1)",
+										width: "fit-content",
+										padding: "0.4em",
+										borderRadius: "10px",
+									}}
+								>
+									{quickConnectCode ?? "******"}
+								</Typography>
+								<IconButton
+									onClick={(e) => {
+										navigator.clipboard.writeText(quickConnectCode);
+										enqueueSnackbar("Quick Connect Code copied!", {
+											variant: "info",
+										});
+									}}
+								>
+									<span className="material-symbols-rounded">content_copy</span>
+								</IconButton>
 							</div>
-						)}
-					</Grid>
+						</DialogContent>
+						<DialogActions
+							sx={{
+								padding: "0em 1em 1em 0em",
+							}}
+						>
+							<Button
+								variant="contained"
+								onClick={() => {
+									setQuickConnectCode("");
+									setQuickConnectLoading(-1);
+								}}
+							>
+								Close
+							</Button>
+						</DialogActions>
+					</Dialog>
 					<Grid sx={{ width: "100%" }}>
 						<Typography variant="subtitle2">
 							{server.isSuccess && server.data.LoginDisclaimer}

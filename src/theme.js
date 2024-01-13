@@ -66,5 +66,15 @@ export const theme = createTheme({
 				disableScrollLock: true,
 			},
 		},
+		MuiDialog: {
+			styleOverrides: {
+				paper: {
+					borderRadius: "20px",
+					background: "rgb(0 0 0 / 0.5)",
+					backdropFilter: "blur(10px)",
+					border: "1px solid rgb(255 255 255 / 0.2)",
+				},
+			},
+		},
 	},
 });
