@@ -259,8 +259,13 @@ export const UserLogin = () => {
 	const [api] = useApi((state) => [state.api]);
 
 	const [loading, setLoading] = useState(false);
+	const [rememberMe, setRememberMe] = useState(true);
 	const [quickConnectLoading, setQuickConnectLoading] = useState(-1);
 	const [quickConnectCode, setQuickConnectCode] = useState("");
+
+	const handleCheckRememberMe = (event) => {
+		setRememberMe(event.target.checked);
+	};
 
 	const handleChangeServer = () => {
 		navigate("/servers/list");
@@ -314,6 +319,7 @@ export const UserLogin = () => {
 				.catch(() => ({ status: 401, data: { Authenticated: false } }));
 
 			if (quickConnectCheck.status !== 200) {
+				setQuickConnectCode("");
 				enqueueSnackbar("Unable to use Quick Connect", {
 					variant: "error",
 				});
@@ -350,11 +356,14 @@ export const UserLogin = () => {
 			sessionStorage.setItem("accessToken", auth.data.AccessToken);
 
 			if (rememberMe === true) {
-				await saveUser(userName, auth.data.AccessToken);
+				await saveUser(auth.data.User.Name, auth.data.AccessToken);
 			}
 
 			event.emit("set-api-accessToken", api.basePath);
 			setQuickConnectLoading(-1);
+			enqueueSnackbar(`Logged in as ${auth.data.User.Name}!`, {
+				variant: "success",
+			});
 			navigate("/home");
 		}, 1000);
 
@@ -508,10 +517,21 @@ export const UserLogin = () => {
 							</div>
 						</DialogContent>
 						<DialogActions
+							className="flex flex-row"
 							sx={{
-								padding: "0em 1em 1em 0em",
+								padding: "0em 1em 1em 1em",
+								justifyContent: "space-between",
 							}}
 						>
+							<FormControlLabel
+								control={
+									<Checkbox
+										checked={rememberMe}
+										onChange={handleCheckRememberMe}
+									/>
+								}
+								label="Remember device"
+							/>
 							<Button
 								variant="contained"
 								onClick={() => {
@@ -622,6 +642,7 @@ export const UserLoginManual = () => {
 			.catch(() => ({ status: 401 }));
 
 		if (quickConnectInitiation.status !== 200) {
+			setQuickConnectCode("");
 			setQuickConnectLoading(-1);
 			enqueueSnackbar("Unable to use Quick Connect", {
 				variant: "error",
@@ -684,6 +705,9 @@ export const UserLoginManual = () => {
 
 			event.emit("set-api-accessToken", api.basePath);
 			setQuickConnectLoading(-1);
+			enqueueSnackbar(`Logged in as ${auth.data.User.Name}!`, {
+				variant: "success",
+			});
 			navigate("/home");
 		}, 1000);
 
@@ -872,10 +896,21 @@ export const UserLoginManual = () => {
 							</div>
 						</DialogContent>
 						<DialogActions
+							className="flex flex-row"
 							sx={{
-								padding: "0em 1em 1em 0em",
+								padding: "0em 1em 1em 1em",
+								justifyContent: "space-between",
 							}}
 						>
+							<FormControlLabel
+								control={
+									<Checkbox
+										checked={rememberMe}
+										onChange={handleCheckRememberMe}
+									/>
+								}
+								label="Remember device"
+							/>
 							<Button
 								variant="contained"
 								onClick={() => {
