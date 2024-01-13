@@ -13,6 +13,7 @@ import {
 	DialogContentText,
 	Grid,
 	OutlinedInput,
+	Tooltip,
 	Typography,
 } from "@mui/material";
 import Button from "@mui/material/Button";
@@ -491,29 +492,29 @@ export const UserLogin = () => {
 								className="flex flex-row"
 								style={{ gap: "1em", alignItems: "center", marginTop: "1em" }}
 							>
-								<Typography
-									variant="h3"
-									color="textPrimary"
-									textAlign="center"
-									sx={{
-										background: "rgb(255 255 255 / 0.1)",
-										width: "fit-content",
-										padding: "0.4em",
-										borderRadius: "10px",
-									}}
-								>
-									{quickConnectCode}
-								</Typography>
-								<IconButton
-									onClick={(e) => {
-										navigator.clipboard.writeText(quickConnectCode);
-										enqueueSnackbar("Quick Connect Code copied!", {
-											variant: "info",
-										});
-									}}
-								>
-									<span className="material-symbols-rounded">content_copy</span>
-								</IconButton>
+								<Tooltip title="Click to copy" arrow placement="top">
+									<Typography
+										variant="h3"
+										color="textPrimary"
+										textAlign="center"
+										sx={{
+											background: "rgb(255 255 255 / 0.1)",
+											width: "fit-content",
+											padding: "0.4em",
+											borderRadius: "10px",
+											cursor: "pointer",
+										}}
+										onClick={(e) => {
+											navigator.clipboard.writeText(quickConnectCode);
+											enqueueSnackbar("Quick Connect Code copied!", {
+												variant: "info",
+												key: "copiedText",
+											});
+										}}
+									>
+										{quickConnectCode}
+									</Typography>
+								</Tooltip>
 							</div>
 						</DialogContent>
 						<DialogActions
@@ -870,29 +871,29 @@ export const UserLoginManual = () => {
 								className="flex flex-row"
 								style={{ gap: "1em", alignItems: "center", marginTop: "1em" }}
 							>
-								<Typography
-									variant="h3"
-									color="textPrimary"
-									textAlign="center"
-									sx={{
-										background: "rgb(255 255 255 / 0.1)",
-										width: "fit-content",
-										padding: "0.4em",
-										borderRadius: "10px",
-									}}
-								>
-									{quickConnectCode ?? "******"}
-								</Typography>
-								<IconButton
-									onClick={(e) => {
-										navigator.clipboard.writeText(quickConnectCode);
-										enqueueSnackbar("Quick Connect Code copied!", {
-											variant: "info",
-										});
-									}}
-								>
-									<span className="material-symbols-rounded">content_copy</span>
-								</IconButton>
+								<Tooltip title="Click to copy" arrow placement="top">
+									<Typography
+										variant="h3"
+										color="textPrimary"
+										textAlign="center"
+										sx={{
+											background: "rgb(255 255 255 / 0.1)",
+											width: "fit-content",
+											padding: "0.4em",
+											borderRadius: "10px",
+											cursor: "pointer",
+										}}
+										onClick={(e) => {
+											navigator.clipboard.writeText(quickConnectCode);
+											enqueueSnackbar("Quick Connect Code copied!", {
+												variant: "info",
+												key: "copiedText",
+											});
+										}}
+									>
+										{quickConnectCode}
+									</Typography>
+								</Tooltip>
 							</div>
 						</DialogContent>
 						<DialogActions
