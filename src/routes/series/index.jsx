@@ -226,6 +226,19 @@ const SeriesTitlePage = () => {
 		}
 	}, [item.isSuccess]);
 
+	useLayoutEffect(() => {
+		if (seasons.isSuccess) {
+			if (
+				seasons.data.TotalRecordCount > 1 &&
+				seasons.data.Items[0].Name.toLowerCase().includes("special")
+			) {
+				setCurrentSeason(1);
+			} else {
+				setCurrentSeason(0);
+			}
+		}
+	}, [seasons.isSuccess]);
+
 	if (item.isPending || similarItems.isPending) {
 		return (
 			<Box
