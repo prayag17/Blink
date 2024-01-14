@@ -13,6 +13,7 @@ import {
 	DialogContentText,
 	Grid,
 	OutlinedInput,
+	Paper,
 	Tooltip,
 	Typography,
 } from "@mui/material";
@@ -145,109 +146,105 @@ export const LoginWithImage = () => {
 	return (
 		<>
 			<AppBarBackOnly />
-			<Container
-				maxWidth="xs"
-				sx={{
+			<div
+				style={{
 					height: "100vh",
 					display: "flex",
 					justifyContent: "center",
 					alignItems: "center",
+					flexDirection: "column",
+					width: "30vw",
+					margin: "auto",
 				}}
 			>
-				<Grid
-					container
-					direction="column"
-					justifyContent="center"
-					alignItems="center"
-					spacing={2}
-					width="100%"
+				<div
+					style={{
+						marginBottom: "-4em",
+						boxShadow: "1em 0 hsl(256, 100%, 6%)",
+					}}
 				>
-					<Grid
-						container
-						direction="column"
-						justifyContent="center"
-						alignItems="center"
-						marginBottom={2}
+					<AvatarImage userId={userId} />
+				</div>
+				<Paper
+					sx={{
+						width: "100%",
+						padding: "1em",
+						paddingTop: "5em",
+						borderRadius: "10px",
+					}}
+					elevation={2}
+				>
+					<Typography
+						textAlign="left"
+						variant="h5"
+						sx={{ opacity: 0.8 }}
+						mb={2}
 					>
-						<Typography
-							textAlign="center"
-							variant="h3"
-							color="textPrimary"
-							mb={2}
+						Login as {userName}:
+					</Typography>
+					<FormGroup
+						sx={{
+							width: "100%",
+						}}
+					>
+						<FormControl
+							variant="outlined"
+							style={{
+								width: "100%",
+							}}
 						>
-							Login
-						</Typography>
-					</Grid>
-					<Grid
-						container
-						direction="column"
-						justifyContent="center"
-						alignItems="center"
-						mb={1}
-					>
-						<AvatarImage userId={userId} />
-						<Typography color="textPrimary" textAlign="center" variant="h4">
-							{userName}
-						</Typography>
-					</Grid>
-					<Grid minWidth="100%">
-						<FormGroup>
-							<FormControl variant="outlined" fullWidth>
-								<InputLabel htmlFor="user-password">Password:</InputLabel>
-								<OutlinedInput
-									id="user-password"
-									type={password.showpass ? "text" : "password"}
-									variant="outlined"
-									onChange={handlePassword("password")}
-									label="Password:"
-									endAdornment={
-										<InputAdornment position="end">
-											<IconButton
-												onClick={handleShowPassword}
-												aria-label="toggle password visibility"
-											>
-												{password.showpass ? (
-													<span className="material-symbols-rounded">
-														visibility_off
-													</span>
-												) : (
-													<span className="material-symbols-rounded">
-														visibility
-													</span>
-												)}
-											</IconButton>
-										</InputAdornment>
-									}
-								/>
-							</FormControl>
-							<FormControlLabel
-								control={
-									<Checkbox
-										checked={rememberMe}
-										onChange={handleCheckRememberMe}
-									/>
+							<InputLabel htmlFor="user-password">Password:</InputLabel>
+							<OutlinedInput
+								id="user-password"
+								type={password.showpass ? "text" : "password"}
+								variant="outlined"
+								onChange={handlePassword("password")}
+								label="Password:"
+								endAdornment={
+									<InputAdornment position="end">
+										<IconButton
+											onClick={handleShowPassword}
+											aria-label="toggle password visibility"
+										>
+											{password.showpass ? (
+												<span className="material-symbols-rounded">
+													visibility_off
+												</span>
+											) : (
+												<span className="material-symbols-rounded">
+													visibility
+												</span>
+											)}
+										</IconButton>
+									</InputAdornment>
 								}
-								label="Remember me"
 							/>
-						</FormGroup>
-					</Grid>
-					<Grid minWidth="100%">
-						<LoadingButton
-							variant="contained"
-							endIcon={
-								<span className="material-symbols-rounded">chevron_right</span>
+						</FormControl>
+						<FormControlLabel
+							control={
+								<Checkbox
+									checked={rememberMe}
+									onChange={handleCheckRememberMe}
+								/>
 							}
-							onClick={handleLogin}
-							loading={loading}
-							loadingPosition="end"
-							size="large"
-							fullWidth
-						>
-							Login
-						</LoadingButton>
-					</Grid>
-				</Grid>
-			</Container>
+							label="Remember me"
+						/>
+					</FormGroup>
+					<LoadingButton
+						variant="contained"
+						endIcon={
+							<span className="material-symbols-rounded">chevron_right</span>
+						}
+						onClick={handleLogin}
+						loading={loading}
+						loadingPosition="end"
+						size="large"
+						fullWidth
+					>
+						Login
+					</LoadingButton>
+				</Paper>
+			</div>
 		</>
 	);
 };
