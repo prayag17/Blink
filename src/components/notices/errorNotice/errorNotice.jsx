@@ -48,27 +48,6 @@ export const ErrorNotice = ({ error, resetErrorBoundary }) => {
 			>
 				{error.message}
 			</Typography>
-			<Button
-				size="large"
-				variant="contained"
-				onClick={resetErrorBoundary ? resetErrorBoundary : () => {}}
-				style={{
-					marginTop: "1em",
-				}}
-				color="info"
-			>
-				Close
-			</Button>
-			<Typography
-				variant="subitle1"
-				fontWeight={300}
-				style={{
-					marginTop: "1em",
-				}}
-			>
-				Note: You need to click on CLOSE button if you change the page in order
-				to close this error message
-			</Typography>
 		</Box>
 	);
 };

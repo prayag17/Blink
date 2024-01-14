@@ -1,5 +1,5 @@
 import PropTypes from "prop-types";
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useLayoutEffect } from "react";
 
 import Box from "@mui/material/Box";
 import CircularProgress from "@mui/material/CircularProgress";
@@ -25,9 +25,14 @@ import { useQuery } from "@tanstack/react-query";
 import { Card } from "../../components/card/card";
 import Hero from "../../components/layouts/item/hero";
 
+import { Blurhash } from "react-blurhash";
+
+import LikeButton from "../../components/buttons/likeButton";
 import { ErrorNotice } from "../../components/notices/errorNotice/errorNotice";
 import { useApi } from "../../utils/store/api";
-import { useBackdropStore } from "../../utils/store/backdrop";
+import { setBackdrop } from "../../utils/store/backdrop";
+
+import meshBg from "../../assets/herobg.png";
 import "./person.module.scss";
 
 function TabPanel(props) {
@@ -206,7 +211,7 @@ const PersonTitlePage = () => {
 		},
 	];
 
-	useEffect(() => {
+	useLayoutEffect(() => {
 		if (
 			personMovies.isSuccess &&
 			personShows.isSuccess &&
@@ -226,22 +231,10 @@ const PersonTitlePage = () => {
 				setActivePersonTab(4);
 			}
 		}
-	});
-	const [setAppBackdrop] = useBackdropStore((state) => [state.setBackdrop]);
+		setBackdrop("", "");
+	}, []);
 
 	const [animationDirection, setAnimationDirection] = useState("forward");
-
-	useEffect(() => {
-		if (item.isSuccess) {
-			setAppBackdrop(
-				item.data.Type === BaseItemKind.MusicAlbum ||
-					item.data.Type === BaseItemKind.Episode
-					? `${api.basePath}/Items/${item.data.ParentBackdropItemId}/Images/Backdrop`
-					: `${api.basePath}/Items/${item.data.Id}/Images/Backdrop`,
-				item.data.Id,
-			);
-		}
-	});
 
 	if (item.isPending) {
 		return (
@@ -273,22 +266,82 @@ const PersonTitlePage = () => {
 					duration: 0.25,
 					ease: "easeInOut",
 				}}
-				className="scrollY"
-				style={{
-					padding: "5em 2em 2em 1em",
-					display: "flex",
-					flexDirection: "column",
-					gap: "0.5em",
-				}}
+				className="scrollY padded-top"
 			>
-				<Hero
-					item={item.data}
-					userId={user.data.Id}
-					queryKey={["item", id]}
-					disableInfoStrip
-					disablePlayButton
-					disableMarkAsPlayedButton
-				/>
+				<div className="item-hero flex flex-row">
+					<div className="item-hero-backdrop-container">
+						<img
+							alt={item.data.Name}
+							src={meshBg}
+							className="item-hero-backdrop"
+							onLoad={(e) => {
+								e.currentTarget.style.opacity = 1;
+							}}
+						/>
+					</div>
+					<div
+						className="item-hero-image-container"
+						style={{
+							aspectRatio: item.data.PrimaryImageAspectRatio ?? 1,
+						}}
+					>
+						{Object.keys(item.data.ImageTags).includes("Primary") ? (
+							<>
+								<Blurhash
+									hash={
+										item.data.ImageBlurHashes.Primary[
+											item.data.ImageTags.Primary
+										]
+									}
+									className="item-hero-image-blurhash"
+								/>
+								<img
+									alt={item.data.Name}
+									src={api.getItemImageUrl(item.data.Id, "Primary", {
+										quality: 90,
+										tag: item.data.ImageTags.Primary,
+									})}
+									onLoad={(e) => {
+										e.currentTarget.style.opacity = 1;
+									}}
+									className="item-hero-image"
+								/>
+							</>
+						) : (
+							<></>
+						)}
+					</div>
+					<div className="item-hero-detail flex flex-column">
+						{Object.keys(item.data.ImageTags).includes("Logo") ? (
+							<img
+								alt={item.data.Name}
+								src={api.getItemImageUrl(item.data.Id, "Logo", {
+									quality: 90,
+									fillWidth: 592,
+									fillHeight: 592,
+								})}
+								onLoad={(e) => {
+									e.currentTarget.style.opacity = 1;
+								}}
+								className="item-hero-logo"
+							/>
+						) : (
+							<Typography variant="h3">{item.data.Name}</Typography>
+						)}
+
+						<LikeButton
+							itemName={item.data.Name}
+							itemId={item.data.Id}
+							queryKey={["item", id]}
+							isFavorite={item.data.UserData.IsFavorite}
+							userId={user.data.Id}
+						/>
+					</div>
+				</div>
+				<Typography variant="subtitle1" mx={1}>
+					{item.data.Overview ?? ""}
+				</Typography>
+
 				<div className="item-detail-person-container">
 					<div className="item-detail-person-header">
 						<Tabs

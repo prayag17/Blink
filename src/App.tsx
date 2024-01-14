@@ -436,7 +436,7 @@ function AppReady() {
 					{/* <SideMenu />  */}
 					<AppBar />
 					<AudioPlayer key={audioPlayerVisible} />
-					<ErrorBoundary FallbackComponent={ErrorNotice}>
+					<ErrorBoundary FallbackComponent={ErrorNotice} key={location.key}>
 						<Routes location={location}>
 							{/* <Route
 								// key={location.key}

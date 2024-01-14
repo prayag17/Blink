@@ -6,9 +6,6 @@ import CardActionArea from "@mui/material/CardActionArea";
 import Typography from "@mui/material/Typography";
 
 import { Blurhash } from "react-blurhash";
-
-import { MdiAccountTie } from "../icons/mdiAccountTie";
-
 import { useApi } from "../../utils/store/api";
 import "./card.module.scss";
 
