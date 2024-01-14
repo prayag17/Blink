@@ -43,7 +43,7 @@ const ServerList = () => {
 			await setDefaultServer(serverState);
 		},
 		onSuccess: async () => {
-			navigate("login/index");
+			navigate("/login/index");
 		},
 		onError: (error) => {
 			console.error(error);
