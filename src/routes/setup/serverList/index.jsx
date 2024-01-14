@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useLayoutEffect, useState } from "react";
 
 import { relaunch } from "@tauri-apps/api/process";
 
@@ -19,6 +19,7 @@ import {
 	setDefaultServer,
 } from "../../../utils/storage/servers";
 import { delUser } from "../../../utils/storage/user";
+import { setBackdrop } from "../../../utils/store/backdrop";
 import "./serverList.module.scss";
 
 const ServerList = () => {
@@ -42,7 +43,7 @@ const ServerList = () => {
 			await setDefaultServer(serverState);
 		},
 		onSuccess: async () => {
-			await relaunch();
+			navigate("login/index");
 		},
 		onError: (error) => {
 			console.error(error);
@@ -62,13 +63,17 @@ const ServerList = () => {
 			if (servers.length > 0) {
 				setDefaultServer(servers[0].id);
 			} else {
-				await relaunch()
+				navigate("/login/index");
 			}
 		}
 
 		servers.refetch();
 		defaultServer.refetch();
 	};
+
+	useLayoutEffect(() => {
+		setBackdrop("", "");
+	}, []);
 
 	return (
 		<div className="server-list">
