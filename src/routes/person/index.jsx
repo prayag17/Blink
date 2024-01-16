@@ -10,7 +10,7 @@ import Typography from "@mui/material/Typography";
 
 import { AnimatePresence, motion } from "framer-motion";
 
-import { useParams } from "react-router-dom";
+import { Link, useParams } from "react-router-dom";
 
 import {
 	BaseItemKind,
@@ -232,7 +232,13 @@ const PersonTitlePage = () => {
 			}
 		}
 		setBackdrop("", "");
-	}, []);
+	}, [
+		personMovies.isSuccess,
+		personShows.isSuccess,
+		personBooks.isSuccess,
+		personPhotos.isSuccess,
+		personEpisodes.isSuccess,
+	]);
 
 	const [animationDirection, setAnimationDirection] = useState("forward");
 
@@ -338,9 +344,57 @@ const PersonTitlePage = () => {
 						/>
 					</div>
 				</div>
-				<Typography variant="subtitle1" mx={1}>
-					{item.data.Overview ?? ""}
-				</Typography>
+				<div className="item-detail">
+					<div style={{ width: "100%" }}>
+						<Typography variant="subtitle1">
+							{item.data.Overview ?? ""}
+						</Typography>
+						<div
+							style={{
+								display: "flex",
+								gap: "0.6em",
+								alignSelf: "end",
+								marginTop: "1em",
+							}}
+						>
+							{item.data.ExternalUrls.map((url) => (
+								<Link
+									key={url.Url}
+									target="_blank"
+									to={url.Url}
+									className="item-detail-link"
+								>
+									<Typography>{url.Name}</Typography>
+								</Link>
+							))}
+						</div>
+					</div>
+					<Divider flexItem orientation="vertical" />
+					<div
+						style={{
+							width: "100%",
+						}}
+					>
+						{item.data.PremiereDate && (
+							<>
+								<Typography variant="h5">Born</Typography>
+								<Typography sx={{ opacity: 0.8 }}>
+									{new Date(item.data.PremiereDate).toDateString()}
+								</Typography>
+							</>
+						)}
+						{item.data.EndDate && (
+							<>
+								<Typography variant="h5" mt={2}>
+									Death
+								</Typography>
+								<Typography sx={{ opacity: 0.8 }}>
+									{new Date(item.data.EndDate).toDateString()}
+								</Typography>
+							</>
+						)}
+					</div>
+				</div>
 
 				<div className="item-detail-person-container">
 					<div className="item-detail-person-header">

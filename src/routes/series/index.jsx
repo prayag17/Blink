@@ -345,6 +345,10 @@ const SeriesTitlePage = () => {
 						>
 							<Typography style={{ opacity: "0.8" }} variant="subtitle1">
 								{item.data.ProductionYear ?? ""}
+								{item.data.Status === "Continuing"
+									? " - Present"
+									: item.data.EndDate &&
+									  ` - ${new Date(item.data.EndDate).getFullYear()}`}
 							</Typography>
 							{item.data.OfficialRating && (
 								<Chip variant="filled" label={item.data.OfficialRating} />

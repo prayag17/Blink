@@ -53,13 +53,16 @@ export const SeasonSelectorSkeleton = () => {
 						<Card sx={{ background: "transparent" }} elevation={0}>
 							<CardMedia>
 								<Skeleton
-									animation="wave"
+									// animation="wave"
 									variant="rectangular"
 									sx={{
 										aspectRatio: "1.777",
 										height: "auto",
 										m: 1,
-										borderRadius: borderRadiusDefault,
+										borderRadius: "10px",
+										animationDelay: `${index * 0.2}s`,
+										animationDuration: "1.4s",
+										animationName: "pulse",
 									}}
 								/>
 							</CardMedia>
@@ -71,14 +74,42 @@ export const SeasonSelectorSkeleton = () => {
 								}}
 							>
 								<Typography variant="h6">
-									<Skeleton variant="text" animation="wave" />
+									<Skeleton
+										variant="text"
+										sx={{
+											animationDelay: `${index * 0.2}s`,
+											animationDuration: "1.4s",
+											animationName: "pulse",
+										}}
+									/>
 								</Typography>
 
 								<Typography variant="body2">
-									<Skeleton variant="text" animation="wave" />
-									<Skeleton variant="text" animation="wave" />
+									<Skeleton
+										variant="text"
+										sx={{
+											animationDelay: `${index * 0.2}s`,
+											animationDuration: "1.4s",
+											animationName: "pulse",
+										}}
+									/>
+									<Skeleton
+										variant="text"
+										sx={{
+											animationDelay: `${index * 0.2}s`,
+											animationDuration: "1.4s",
+											animationName: "pulse",
+										}}
+									/>
 
-									<Skeleton variant="text" animation="wave" />
+									<Skeleton
+										variant="text"
+										sx={{
+											animationDelay: `${index * 0.2}s`,
+											animationDuration: "1.4s",
+											animationName: "pulse",
+										}}
+									/>
 								</Typography>
 							</CardContent>
 						</Card>
