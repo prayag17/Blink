@@ -21,7 +21,7 @@ import { getUserViewsApi } from "@jellyfin/sdk/lib/utils/api/user-views-api";
 
 import { useNavigate } from "react-router-dom";
 
-import { useBackdropStore } from "../../utils/store/backdrop";
+import { setBackdrop, useBackdropStore } from "../../utils/store/backdrop";
 
 import { BaseItemKind, ItemFields } from "@jellyfin/sdk/lib/generated-client";
 import Typography from "@mui/material/Typography";
@@ -153,8 +153,6 @@ const Home = () => {
 		});
 	}
 
-	const [setAppBackdrop] = useBackdropStore((state) => [state.setBackdrop]);
-
 	if (user.isPaused) {
 		user.refetch();
 		console.log(user.isError);
@@ -181,12 +179,12 @@ const Home = () => {
 								onChange={(now) => {
 									if (latestMedia.isSuccess && latestMedia.data.length > 0) {
 										if (latestMedia.data[now]?.ParentBackdropImageTags) {
-											setAppBackdrop(
+											setBackdrop(
 												`${api.basePath}/Items/${latestMedia.data[now].ParentBackdropItemId}/Images/Backdrop`,
 												latestMedia.data[now].Id,
 											);
 										} else {
-											setAppBackdrop(
+											setBackdrop(
 												`${api.basePath}/Items/${latestMedia.data[now].Id}/Images/Backdrop`,
 												latestMedia.data[now].Id,
 											);

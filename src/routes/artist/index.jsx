@@ -158,7 +158,7 @@ const ArtistTitlePage = () => {
 				setActiveArtistTab(2);
 			}
 		}
-	});
+	}, []);
 
 	const [animationDirection, setAnimationDirection] = useState("forward");
 
@@ -174,7 +174,7 @@ const ArtistTitlePage = () => {
 				item.data.Id,
 			);
 		}
-	});
+	}, []);
 
 	if (item.isPending) {
 		return (

@@ -1,5 +1,5 @@
 import { motion } from "framer-motion";
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useLayoutEffect } from "react";
 import { useParams } from "react-router-dom";
 
 import { useQuery } from "@tanstack/react-query";
@@ -120,7 +120,7 @@ const LibraryView = () => {
 	 */
 	const [viewType, setViewType] = useState([]);
 
-	useEffect(() => {
+	useLayoutEffect(() => {
 		if (currentLib.isError) {
 			console.error(currentLib.error);
 		}
@@ -211,8 +211,7 @@ const LibraryView = () => {
 				]);
 			}
 		}
-	});
-
+	}, [currentLib.isSuccess]);
 	const [filterArray, setFilterArray] = useState([]);
 
 	const [videoTypes, setVideoTypes] = useState([]);
@@ -330,10 +329,10 @@ const LibraryView = () => {
 
 	const [setAppBackdrop] = useBackdropStore((state) => [state.setBackdrop]);
 
-	useState(() => {
+	useEffect(() => {
 		// Remove App backdrop in library page
 		setAppBackdrop("", "");
-		console.log(items.isSuccess);
+		// console.log(items.isSuccess);
 	}, []);
 
 	if (items.isError) {

@@ -1,12 +1,15 @@
 import PropTypes from "prop-types";
-import React, { useEffect } from "react";
+import React, { useEffect, useLayoutEffect } from "react";
 
 import Box from "@mui/material/Box";
+import Chip from "@mui/material/Chip";
 import CircularProgress from "@mui/material/CircularProgress";
+import Divider from "@mui/material/Divider";
 import Paper from "@mui/material/Paper";
+import Stack from "@mui/material/Stack";
 import Typography from "@mui/material/Typography";
 
-import { useParams } from "react-router-dom";
+import { Link, NavLink, useParams } from "react-router-dom";
 
 import { motion } from "framer-motion";
 
@@ -20,16 +23,20 @@ import { getLibraryApi } from "@jellyfin/sdk/lib/utils/api/library-api";
 import { getUserApi } from "@jellyfin/sdk/lib/utils/api/user-api";
 import { getUserLibraryApi } from "@jellyfin/sdk/lib/utils/api/user-library-api";
 
+import { Blurhash } from "react-blurhash";
+
 import { useQuery } from "@tanstack/react-query";
 
-import { getRuntimeMusic } from "../../utils/date/time";
+import { endsAt, getRuntime, getRuntimeMusic } from "../../utils/date/time";
 
 import { Card } from "../../components/card/card";
 import { CardScroller } from "../../components/cardScroller/cardScroller";
-import Hero from "../../components/layouts/item/hero";
 
 import LikeButton from "../../components/buttons/likeButton";
+import MarkPlayedButton from "../../components/buttons/markPlayedButton";
+import PlayButton from "../../components/buttons/playButton";
 import { ErrorNotice } from "../../components/notices/errorNotice/errorNotice";
+import { getTypeIcon } from "../../components/utils/iconsCollection";
 import { useApi } from "../../utils/store/api";
 import { useAudioPlayback } from "../../utils/store/audioPlayback";
 import { useBackdropStore } from "../../utils/store/backdrop";
@@ -151,17 +158,14 @@ const MusicAlbumTitlePage = () => {
 
 	const [setAppBackdrop] = useBackdropStore((state) => [state.setBackdrop]);
 
-	useEffect(() => {
+	useLayoutEffect(() => {
 		if (item.isSuccess) {
 			setAppBackdrop(
-				item.data.Type === BaseItemKind.MusicAlbum ||
-					item.data.Type === BaseItemKind.Episode
-					? `${api.basePath}/Items/${item.data.ParentBackdropItemId}/Images/Backdrop`
-					: `${api.basePath}/Items/${item.data.Id}/Images/Backdrop`,
+				`${api.basePath}/Items/${item.data.ParentBackdropItemId}/Images/Backdrop`,
 				item.data.Id,
 			);
 		}
-	});
+	}, [item.isSuccess]);
 
 	if (item.isPending || similarItems.isPending) {
 		return (
@@ -192,24 +196,203 @@ const MusicAlbumTitlePage = () => {
 					duration: 0.25,
 					ease: "easeInOut",
 				}}
-				className="scrollY"
-				style={{
-					padding: "5em 2em 2em 1em",
-					display: "flex",
-					flexDirection: "column",
-					gap: "0.5em",
-				}}
+				className="scrollY padded-top item-album"
 			>
-				<Hero
-					item={item.data}
-					userId={user.data.Id}
-					queryKey={["item", id]}
-					artists={item.data.ArtistItems}
-					albumBy={item.data.AlbumArtists[0]}
-					disableMarkAsPlayedButton
-					audioPlayButton
-					cardType="square"
-				/>
+				<div className="item-hero flex flex-row">
+					<div className="item-hero-backdrop-container">
+						{item.data.BackdropImageTags ? (
+							<img
+								alt={item.data.Name}
+								src={api.getItemImageUrl(
+									item.data.ParentBackdropItemId,
+									"Backdrop",
+									{
+										tag: item.data.ParentBackdropImageTags[0],
+									},
+								)}
+								className="item-hero-backdrop"
+								onLoad={(e) => {
+									e.currentTarget.style.opacity = 1;
+								}}
+							/>
+						) : (
+							<></>
+						)}
+					</div>
+					<div
+						className="item-hero-image-container"
+						style={{
+							aspectRatio: item.data.PrimaryImageAspectRatio ?? 1,
+						}}
+					>
+						{Object.keys(item.data.ImageTags).includes("Primary") ? (
+							<>
+								<Blurhash
+									hash={
+										item.data.ImageBlurHashes.Primary[
+											item.data.ImageTags.Primary
+										]
+									}
+									className="item-hero-image-blurhash"
+								/>
+								<img
+									alt={item.data.Name}
+									src={api.getItemImageUrl(item.data.Id, "Primary", {
+										quality: 90,
+										tag: item.data.ImageTags.Primary,
+									})}
+									onLoad={(e) => {
+										e.currentTarget.style.opacity = 1;
+									}}
+									className="item-hero-image"
+								/>
+							</>
+						) : (
+							<></>
+						)}
+					</div>
+					<div className="item-hero-detail flex flex-column">
+						<Typography variant="h3">{item.data.Name}</Typography>
+
+						<Chip label={`By ${item.data.AlbumArtist}`} />
+						<Stack
+							direction="row"
+							gap={2}
+							justifyItems="flex-start"
+							alignItems="center"
+						>
+							<Typography style={{ opacity: "0.8" }} variant="subtitle1">
+								{item.data.ProductionYear ?? ""}
+							</Typography>
+							<Typography style={{ opacity: "0.8" }} variant="subtitle1">
+								{item.data.ChildCount > 1
+									? `${item.data.ChildCount} Tracks`
+									: `${item.data.ChildCount}`}
+							</Typography>
+							{item.data.RunTimeTicks && (
+								<Typography style={{ opacity: "0.8" }} variant="subtitle1">
+									{getRuntime(item.data.RunTimeTicks)}
+								</Typography>
+							)}
+						</Stack>
+						<Typography variant="subtitle1" style={{ opacity: 0.8 }}>
+							{item.data.Genres.join(", ")}
+						</Typography>
+
+						<div className="item-hero-buttons-container flex flex-row">
+							<div className="flex flex-row">
+								<PlayButton
+									audio
+									itemId={item.data.Id}
+									itemType={item.data.Type}
+									itemUserData={item.data.UserData}
+									userId={user.data.Id}
+								/>
+							</div>
+							<div className="flex flex-row" style={{ gap: "1em" }}>
+								<LikeButton
+									itemName={item.data.Name}
+									itemId={item.data.Id}
+									queryKey={["item", id]}
+									isFavorite={item.data.UserData.IsFavorite}
+									userId={user.data.Id}
+								/>
+							</div>
+						</div>
+					</div>
+				</div>
+				<div className="item-detail">
+					<div style={{ width: "100%" }}>
+						<Typography variant="subtitle1" style={{ display: "block" }}>
+							{item.data.Overview ?? ""}
+						</Typography>
+						<Divider flexItem orientation="vertical" />
+
+						<div
+							style={{
+								display: "flex",
+								gap: "0.6em",
+								alignSelf: "start",
+								marginTop: "0.2em",
+							}}
+						>
+							{item.data.ExternalUrls.map((url) => (
+								<Link
+									key={url.Url}
+									target="_blank"
+									to={url.Url}
+									className="item-detail-link"
+								>
+									<Typography>{url.Name}</Typography>
+								</Link>
+							))}
+						</div>
+					</div>
+					<Divider />
+					<div
+						style={{
+							width: "100%",
+						}}
+					>
+						<div className="item-detail-cast">
+							{item.data.ArtistItems.length > 0 && (
+								<div className="item-detail-cast-container">
+									<Typography variant="h6" className="item-detail-cast-title">
+										Artists
+									</Typography>
+									<div className="item-detail-cast-grid">
+										{item.data.ArtistItems.map((artist) => (
+											<NavLink
+												className="item-detail-cast-card"
+												key={artist.Id}
+												to={`/person/${artist.Id}`}
+											>
+												<div
+													style={{
+														width: "5em",
+														position: "relative",
+													}}
+												>
+													<img
+														alt={artist.Name}
+														src={api.getItemImageUrl(artist.Id, "Primary", {
+															quality: 80,
+															fillWidth: 200,
+															fillHeight: 200,
+														})}
+														style={{
+															position: "absolute",
+															top: 0,
+															left: 0,
+														}}
+														className="item-detail-cast-card-image"
+													/>
+
+													<div className="item-detail-cast-card-icon">
+														{getTypeIcon("Person")}
+													</div>
+												</div>
+												<div className="item-detail-cast-card-text">
+													<Typography variant="subtitle1">
+														{artist.Name}
+													</Typography>
+													<Typography
+														variant="subtitle2"
+														style={{
+															opacity: 0.5,
+														}}
+													>
+														{artist.Role}
+													</Typography>
+												</div>
+											</NavLink>
+										))}
+									</div>
+								</div>
+							)}
+						</div>
+					</div>
+				</div>
 				{musicTracks.isPending ? (
 					<></>
 				) : (
@@ -217,6 +400,7 @@ const MusicAlbumTitlePage = () => {
 						<Paper
 							className="item-detail-album-tracks"
 							style={{
+								marginTop: "1.2em",
 								marginBottom: "1.2em",
 							}}
 						>
@@ -225,7 +409,7 @@ const MusicAlbumTitlePage = () => {
 								className="item-detail-album-track"
 								style={{
 									padding: "0.75em 0 ",
-									background: "hsl(256, 100%, 4%, 60%)",
+									background: "rgb(0 0 0 / 0.6)",
 								}}
 							>
 								<Typography
@@ -265,9 +449,24 @@ const MusicAlbumTitlePage = () => {
 											variant="subtitle1"
 											style={{
 												justifySelf: "end",
+												display: "flex",
+												alignItems: "center",
+												justifyContent: "center",
 											}}
 										>
-											{track.IndexNumber ? track.IndexNumber : "-"}
+											{(currentTrackItem.Id === track.Id &&
+											currentTrackItem.ParentId === track.ParentId ? (
+												<div
+													className="material-symbols-rounded"
+													style={{
+														height: "100%",
+													}}
+												>
+													equalizer
+												</div>
+											) : (
+												track.IndexNumber
+											)) ?? "-"}
 										</Typography>
 
 										<LikeButton

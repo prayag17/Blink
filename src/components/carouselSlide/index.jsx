@@ -135,12 +135,11 @@ const CarouselSlide = ({ item }) => {
 							animationDirection === "right"
 								? "translateX(-60px)"
 								: "translateX(60px)",
-
 						opacity: 0,
 					}}
 					transition={{
-						duration: 0.25,
-						ease: "easeInOut",
+						duration: 0.35,
+						ease: "anticipate",
 					}}
 					key={item.Id}
 					variant="h2"
