@@ -138,8 +138,8 @@ const CarouselSlide = ({ item }) => {
 						opacity: 0,
 					}}
 					transition={{
-						duration: 0.35,
-						ease: "anticipate",
+						duration: 0.25,
+						ease: "easeInOut",
 					}}
 					key={item.Id}
 					variant="h2"

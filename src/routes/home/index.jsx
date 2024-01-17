@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 
 import { useQuery } from "@tanstack/react-query";
 
@@ -70,7 +70,6 @@ const Home = () => {
 					ItemFields.MediaStreams,
 					ItemFields.MediaSources,
 				],
-				// limit: 16,
 				enableUserData: true,
 				enableImages: true,
 			});
@@ -136,22 +135,25 @@ const Home = () => {
 	const excludeTypes = ["boxsets", "playlists", "livetv", "channels"];
 
 	let tempData = [];
-	if (libraries.status === "success") {
-		libraries.data.Items.map((lib) => {
-			if (excludeTypes.includes(lib.CollectionType)) {
-				return;
-			}
-			tempData = latestMediaLibs;
-			if (
-				!tempData.some(
-					(el) => JSON.stringify(el) === JSON.stringify([lib.Id, lib.Name]),
-				)
-			) {
-				tempData.push([lib.Id, lib.Name]);
-				setLatestMediaLibs(tempData);
-			}
-		});
-	}
+
+	useEffect(() => {
+		if (libraries.isSuccess) {
+			libraries.data.Items.map((lib) => {
+				if (excludeTypes.includes(lib.CollectionType)) {
+					return;
+				}
+				tempData = latestMediaLibs;
+				if (
+					!tempData.some(
+						(el) => JSON.stringify(el) === JSON.stringify([lib.Id, lib.Name]),
+					)
+				) {
+					tempData.push([lib.Id, lib.Name]);
+					setLatestMediaLibs(tempData);
+				}
+			});
+		}
+	}, [libraries.isSuccess]);
 
 	if (user.isPaused) {
 		user.refetch();

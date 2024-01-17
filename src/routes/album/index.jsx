@@ -345,7 +345,7 @@ const MusicAlbumTitlePage = () => {
 											<NavLink
 												className="item-detail-cast-card"
 												key={artist.Id}
-												to={`/person/${artist.Id}`}
+												to={`/artist/${artist.Id}`}
 											>
 												<div
 													style={{
