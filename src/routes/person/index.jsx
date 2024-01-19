@@ -345,9 +345,10 @@ const PersonTitlePage = () => {
 				</div>
 				<div className="item-detail">
 					<div style={{ width: "100%" }}>
-						<Typography variant="subtitle1">
-							{item.data.Overview ?? ""}
-						</Typography>
+						<ShowMoreText
+							content={item.data.Overview ?? ""}
+							collapsedLines={4}
+						/>
 						<div
 							style={{
 								display: "flex",
