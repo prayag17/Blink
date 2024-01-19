@@ -48,6 +48,7 @@ import { NavLink } from "react-router-dom";
 import LikeButton from "../../components/buttons/likeButton";
 import MarkPlayedButton from "../../components/buttons/markPlayedButton";
 import PlayButton from "../../components/buttons/playButton";
+import ShowMoreText from "../../components/showMoreText";
 import { SeasonSelectorSkeleton } from "../../components/skeleton/seasonSelector";
 import TextLink from "../../components/textLink";
 import { getTypeIcon } from "../../components/utils/iconsCollection";
@@ -501,9 +502,10 @@ const SeriesTitlePage = () => {
 						<Typography variant="h5" fontStyle="italic" mb={1}>
 							{item.data.Taglines[0] ?? ""}
 						</Typography>
-						<Typography variant="subtitle1">
-							{item.data.Overview ?? ""}
-						</Typography>
+						<ShowMoreText
+							content={item.data.Overview ?? ""}
+							collapsedLines={4}
+						/>
 						{writers.length > 0 && (
 							<div className="hero-grid">
 								<Typography

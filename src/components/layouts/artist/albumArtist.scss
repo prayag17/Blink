@@ -2,17 +2,19 @@
 .album {
 	&-image {
 		aspect-ratio: 1;
-		border-radius: 10px;
+		border-radius: 20px;
 		overflow: hidden;
-		width: 12em;
-		box-shadow: 0 0 10px rgb(0 0 0 /0.2);
+		width: 16em;
+		height: 16em;
+		box-shadow: $shadow-card-image;
 		position: relative;
-		height: 12em;
 		&-icon {
-			fill: url(#clr-gradient-default) !important;
+			color: rgb(255 255 255 / 0.5);
+				font-variation-settings: "FILL" 1, "wght" 300, "GRAD" 25, "opsz" 40;
+
 
 			&-container {
-				background: $clr-gradient-dark;
+				background: $clr-background-card-icon;
 				position: absolute;
 				width: 100%;
 				height: 100%;

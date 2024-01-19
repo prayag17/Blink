@@ -40,6 +40,7 @@ import { ErrorNotice } from "../../components/notices/errorNotice/errorNotice";
 import LikeButton from "../../components/buttons/likeButton";
 import MarkPlayedButton from "../../components/buttons/markPlayedButton";
 import PlayButton from "../../components/buttons/playButton";
+import ShowMoreText from "../../components/showMoreText";
 import TextLink from "../../components/textLink";
 import { getTypeIcon } from "../../components/utils/iconsCollection";
 import { endsAt, getRuntime } from "../../utils/date/time";
@@ -281,7 +282,7 @@ const ItemDetail = () => {
 					duration: 0.25,
 					ease: "easeInOut",
 				}}
-				className="scrollY padded-top flex flex-column item"
+				className="scrollY padded-top flex flex-column item item-default"
 			>
 				<div className="item-hero flex flex-row">
 					<div className="item-hero-backdrop-container">
@@ -586,9 +587,10 @@ const ItemDetail = () => {
 						<Typography variant="h5" fontStyle="italic" mb={1}>
 							{item.data.Taglines[0] ?? ""}
 						</Typography>
-						<Typography variant="subtitle1">
-							{item.data.Overview ?? ""}
-						</Typography>
+						<ShowMoreText
+							content={item.data.Overview ?? ""}
+							collapsedLines={4}
+						/>
 						{writers.length > 0 && (
 							<div className="hero-grid">
 								<Typography

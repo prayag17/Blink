@@ -1,7 +1,7 @@
 
-.item {
+.item-episode.item {
 	gap: 1em;
-	&-hero {
+	.item-hero {
 		height: 50vh;
 		gap: 2em;
 		position: relative;
@@ -21,6 +21,8 @@
 				flex-grow: 1;
 				flex-shrink: 0;
 				position: relative;
+				width: 26% !important;
+				max-width: 26% !important;
 			}
 			&-blurhash {
 				position: absolute !important;
@@ -39,8 +41,8 @@
 		&-detail {
 			width: 100%;
 			align-items: flex-start;
-			gap: 1em;
 			justify-content: end;
+			gap: 0.5em;
 		}
 		&-buttons {
 			&-container {
@@ -66,21 +68,21 @@
 				z-index: -1;
 				mask-image: linear-gradient(to top, transparent, black);
 				-webkit-mask-image: linear-gradient(
-					to top,
-					transparent,
-					black
+				to top,
+				transparent,
+				black
 				);
 			}
 		}
 	}
-
-	&-detail {
+	
+	.item-detail {
 		display: grid;
 		grid-template-columns: 1fr 5px 35%;
 		justify-items: center;
 		align-items: start;
 		gap: 1em;
-
+		
 		&-cast {
 			&-container {
 				display: flex;
@@ -133,18 +135,6 @@
 			&:hover {
 				text-decoration-color: white;
 			}
-		}
-	}
-}
-
-.item-episode {
-	.item-hero {
-		&-image-container {
-			width: 26% !important;
-			max-width: 26% !important;
-		}
-		&-detail {
-			gap: 0.5em;
 		}
 	}
 }

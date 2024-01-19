@@ -16,6 +16,9 @@ import { SortOrder } from "@jellyfin/sdk/lib/generated-client";
 import { useApi } from "../../../utils/store/api";
 import { useAudioPlayback } from "../../../utils/store/audioPlayback";
 import LikeButton from "../../buttons/likeButton";
+import PlayButton from "../../buttons/playButton";
+
+import TrackList from "../tracksList/index";
 import "./albumArtist.scss";
 
 export const ArtistAlbum = ({ user, album, boxProps }) => {
@@ -34,8 +37,6 @@ export const ArtistAlbum = ({ user, album, boxProps }) => {
 
 		networkMode: "always",
 	});
-
-	const [imgLoaded, setImgLoaded] = useState(false);
 
 	const [
 		currentTrackItem,
@@ -75,57 +76,109 @@ export const ArtistAlbum = ({ user, album, boxProps }) => {
 				{!!album.ImageTags?.Primary && (
 					<div className="album-image">
 						<img
+							alt={album.Name}
 							src={`${api.basePath}/Items/${album.Id}/Images/Primary?fillHeight=532&fillWidth=532&quality=96`}
 							style={{
 								width: "100%",
 								height: "100%",
 								objectFit: "cover",
-								opacity: imgLoaded ? 1 : 0,
+								opacity: 0,
 								transition: "opacity 250ms",
 								position: "relative",
 								zIndex: 2,
 							}}
-							onLoad={() => setImgLoaded(true)}
+							onLoad={(e) => (e.currentTarget.style.opacity = 1)}
 						/>
 						<div className="album-image-icon-container">
 							<span
 								className="material-symbols-rounded album-image-icon"
-								sx={{ fontSize: "6em" }}
+								style={{ fontSize: "8em" }}
 							>
-								schedule
+								album
 							</span>
 						</div>
 					</div>
 				)}
-				<Stack>
-					<Typography variant="h5" style={{ opacity: "0.6", mb: 1 }}>
-						{album.ProductionYear}
-					</Typography>
-					<MuiLink
-						component={Link}
-						to={`/musicalbum/${album.Id}`}
-						variant="h3"
-						color="inherit"
-						underline="hover"
+				<div
+					className="flex flex-column"
+					style={{
+						alignItems: "flex-start",
+						justifyContent: "space-between",
+						padding: "1em 0",
+					}}
+				>
+					<div className="flex flex-column">
+						<Typography
+							variant="h4"
+							fontWeight={300}
+							style={{ opacity: "0.6", mb: 1 }}
+						>
+							{album.ProductionYear}
+						</Typography>
+						<MuiLink
+							component={Link}
+							to={`/musicalbum/${album.Id}`}
+							variant="h2"
+							color="inherit"
+							underline="hover"
+						>
+							{album.Name}
+						</MuiLink>
+					</div>
+					<div
+						className=" flex flex-row"
+						style={{
+							gap: "1em",
+							alignItems: "center",
+						}}
 					>
-						{album.Name}
-					</MuiLink>
-				</Stack>
+						<PlayButton
+							audio
+							itemId={album.Id}
+							itemType={album.Type}
+							itemUserData={album.UserData}
+							userId={user.Id}
+							buttonProps={{
+								color: "white",
+								style: {
+									color: "black ",
+								},
+							}}
+						/>
+
+						<LikeButton
+							itemName={album.Name}
+							key={album.Id}
+							queryKey={[
+								"item",
+								album.ParentBackdropItemId,
+								"artist",
+								"discography",
+							]}
+							isFavorite={album.UserData.IsFavorite}
+							itemId={album.Id}
+							itemType={album.Type}
+							itemUserData={album.UserData}
+							userId={user.Id}
+						/>
+					</div>
+				</div>
 			</div>
 
 			{albumTracks.isSuccess && (
-				<Paper
-					className="item-detail-album-tracks"
-					style={{
-						marginBottom: "1.2em",
-					}}
-				>
-					<div
+				<TrackList user={user} tracks={albumTracks.data.Items} />
+			)}
+		</div>
+	);
+};
+
+{
+	/* <div
 						key={0}
 						className="item-detail-album-track"
 						style={{
 							padding: "0.75em 0 ",
-							background: "hsl(256, 100%, 4%, 60%)",
+							background: "rgb(0 0 0 / 0.6)",
 						}}
 					>
 						<Typography
@@ -148,8 +201,8 @@ export const ArtistAlbum = ({ user, album, boxProps }) => {
 							Name
 						</Typography>
 						<span className="material-symbols-rounded">schedule</span>
-					</div>
-					{albumTracks.data.Items.map((track, index) => {
+					</div> 
+					{/*albumTracks.data.Items.map((track, index) => {
 						return (
 							<div
 								key={track.Id}
@@ -218,9 +271,5 @@ export const ArtistAlbum = ({ user, album, boxProps }) => {
 								</Typography>
 							</div>
 						);
-					})}
-				</Paper>
-			)}
-		</div>
-	);
-};
+					})*/
+}

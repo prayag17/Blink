@@ -402,7 +402,7 @@ function AppReady() {
 								opacity: 0,
 							}}
 							animate={{
-								opacity: backdropLoading ? 0 : 0.6,
+								opacity: backdropLoading ? 0 : 1,
 							}}
 							exit={{
 								opacity: 0,

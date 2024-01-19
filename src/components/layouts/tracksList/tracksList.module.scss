@@ -1,0 +1,38 @@
+.track{
+    display: grid;
+    grid-template-columns: 4% 1fr 80% 1fr;
+    align-items: center;
+    justify-items: center;
+    gap: 0.5em;
+    width: 100%;
+    transition: background $transition-time-default;
+    padding: 0.4em;
+    border-bottom: 1px solid rgb(255 255 255 / 0.1);
+    cursor: pointer;
+    box-sizing: border-box;
+
+    &:hover{
+        background: rgb(255 255 255 / 0.1);
+    }
+    &.playing {
+        background: rgb(255 255 255 / 0.2);
+    }
+
+    &-list {
+        background: rgb(0 0 0 / 0.4);
+        backdrop-filter: blur(5px);
+        border-radius: 20px;
+        overflow: hidden;
+        border: 1px solid rgb(255 255 255 / 0.2);
+    }
+    &-header{
+        background: rgb(0 0 0 / 0.4) !important;
+        padding: 0.8em 0.4em;
+    }
+    > *:first-child {
+        justify-self: end;
+    }
+    &:last-child {
+        border-bottom: 0px solid !important;
+    }
+}

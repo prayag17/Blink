@@ -23,7 +23,6 @@ import { getUserLibraryApi } from "@jellyfin/sdk/lib/utils/api/user-library-api"
 
 import { useQuery } from "@tanstack/react-query";
 import { Card } from "../../components/card/card";
-import Hero from "../../components/layouts/item/hero";
 
 import { Blurhash } from "react-blurhash";
 
@@ -272,7 +271,7 @@ const PersonTitlePage = () => {
 					duration: 0.25,
 					ease: "easeInOut",
 				}}
-				className="scrollY padded-top"
+				className="scrollY padded-top item item-person"
 			>
 				<div className="item-hero flex flex-row">
 					<div className="item-hero-backdrop-container">

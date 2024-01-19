@@ -35,7 +35,10 @@ import { CardScroller } from "../../components/cardScroller/cardScroller";
 import LikeButton from "../../components/buttons/likeButton";
 import MarkPlayedButton from "../../components/buttons/markPlayedButton";
 import PlayButton from "../../components/buttons/playButton";
+import TrackList from "../../components/layouts/tracksList";
 import { ErrorNotice } from "../../components/notices/errorNotice/errorNotice";
+import ShowMoreText from "../../components/showMoreText";
+
 import { getTypeIcon } from "../../components/utils/iconsCollection";
 import { useApi } from "../../utils/store/api";
 import { useAudioPlayback } from "../../utils/store/audioPlayback";
@@ -196,7 +199,7 @@ const MusicAlbumTitlePage = () => {
 					duration: 0.25,
 					ease: "easeInOut",
 				}}
-				className="scrollY padded-top item-album"
+				className="scrollY padded-top item item-album"
 			>
 				<div className="item-hero flex flex-row">
 					<div className="item-hero-backdrop-container">
@@ -301,12 +304,17 @@ const MusicAlbumTitlePage = () => {
 						</div>
 					</div>
 				</div>
-				<div className="item-detail">
+				<div
+					className="item-detail"
+					style={{
+						marginBottom: "1em",
+					}}
+				>
 					<div style={{ width: "100%" }}>
-						<Typography variant="subtitle1" style={{ display: "block" }}>
-							{item.data.Overview ?? ""}
-						</Typography>
-						<Divider flexItem orientation="vertical" />
+						<ShowMoreText
+							content={item.data.Overview ?? ""}
+							collapsedLines={4}
+						/>
 
 						<div
 							style={{
@@ -328,7 +336,7 @@ const MusicAlbumTitlePage = () => {
 							))}
 						</div>
 					</div>
-					<Divider />
+					<Divider flexItem orientation="vertical" />
 					<div
 						style={{
 							width: "100%",
@@ -393,133 +401,8 @@ const MusicAlbumTitlePage = () => {
 						</div>
 					</div>
 				</div>
-				{musicTracks.isPending ? (
-					<></>
-				) : (
-					musicTracks.data.TotalRecordCount > 0 && (
-						<Paper
-							className="item-detail-album-tracks"
-							style={{
-								marginTop: "1.2em",
-								marginBottom: "1.2em",
-							}}
-						>
-							<div
-								key={0}
-								className="item-detail-album-track"
-								style={{
-									padding: "0.75em 0 ",
-									background: "rgb(0 0 0 / 0.6)",
-								}}
-							>
-								<Typography
-									variant="h6"
-									fontWeight={400}
-									style={{
-										justifySelf: "end",
-									}}
-								>
-									#
-								</Typography>
-								<div />
-								<Typography
-									variant="h6"
-									style={{
-										justifySelf: "start",
-									}}
-									fontWeight={400}
-								>
-									Name
-								</Typography>
-								<span className="material-symbols-rounded">schedule</span>
-							</div>
-							{musicTracks.data.Items.map((track, index) => {
-								return (
-									<div
-										key={track.Id}
-										className={
-											currentTrackItem.Id === track.Id &&
-											currentTrackItem.ParentId === track.ParentId
-												? "item-detail-album-track playing"
-												: "item-detail-album-track"
-										}
-										onClick={() => playTrack(index)}
-									>
-										<Typography
-											variant="subtitle1"
-											style={{
-												justifySelf: "end",
-												display: "flex",
-												alignItems: "center",
-												justifyContent: "center",
-											}}
-										>
-											{(currentTrackItem.Id === track.Id &&
-											currentTrackItem.ParentId === track.ParentId ? (
-												<div
-													className="material-symbols-rounded"
-													style={{
-														height: "100%",
-													}}
-												>
-													equalizer
-												</div>
-											) : (
-												track.IndexNumber
-											)) ?? "-"}
-										</Typography>
-
-										<LikeButton
-											itemId={track.Id}
-											isFavorite={track.UserData?.IsFavorite}
-											queryKey={["item", id, "musicTracks"]}
-											userId={user.data.Id}
-											itemName={track.Name}
-											color={
-												currentTrackItem.Id === track.Id &&
-												currentTrackItem.ParentId === track.ParentId
-													? "hsl(337, 96%, 56%)"
-													: "white"
-											}
-										/>
-
-										<div
-											style={{
-												display: "flex",
-												flexDirection: "column",
-												width: "100%",
-											}}
-										>
-											<Typography
-												variant="subtitle1"
-												style={{
-													justifySelf: "start",
-												}}
-												fontWeight={500}
-											>
-												{track.Name}
-											</Typography>
-											{track.AlbumArtist === "Various Artists" && (
-												<Typography
-													variant="subtitle2"
-													style={{
-														opacity: 0.5,
-													}}
-												>
-													{track.ArtistItems.map((artist) => artist.Name).join(
-														", ",
-													)}
-												</Typography>
-											)}
-										</div>
-										<Typography variant="subtitle1">
-											{getRuntimeMusic(track.RunTimeTicks)}
-										</Typography>
-									</div>
-								);
-							})}
-						</Paper>
-					)
+				{musicTracks.isSuccess && musicTracks.data.TotalRecordCount > 0 && (
+					<TrackList user={user.data.Id} tracks={musicTracks.data.Items} />
 				)}
 
 				{similarItems.data.TotalRecordCount > 0 && (

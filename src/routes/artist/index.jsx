@@ -1,15 +1,16 @@
 import PropTypes from "prop-types";
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useLayoutEffect } from "react";
 
 import Box from "@mui/material/Box";
 import CircularProgress from "@mui/material/CircularProgress";
 import Divider from "@mui/material/Divider";
 import Tab from "@mui/material/Tab";
 import Tabs from "@mui/material/Tabs";
+import Typography from "@mui/material/Typography";
 
 import { AnimatePresence, motion } from "framer-motion";
 
-import { useParams } from "react-router-dom";
+import { Link, useParams } from "react-router-dom";
 
 import {
 	BaseItemKind,
@@ -22,14 +23,17 @@ import { getUserLibraryApi } from "@jellyfin/sdk/lib/utils/api/user-library-api"
 
 import { useQuery } from "@tanstack/react-query";
 
+import { Blurhash } from "react-blurhash";
+import LikeButton from "../../components/buttons/likeButton";
 import { Card } from "../../components/card/card";
-import Hero from "../../components/layouts/item/hero";
 
+import meshBg from "../../assets/herobg.png";
 import { ArtistAlbum } from "../../components/layouts/artist/artistAlbum";
 import MusicTrack from "../../components/musicTrack";
 import { ErrorNotice } from "../../components/notices/errorNotice/errorNotice";
+import ShowMoreText from "../../components/showMoreText";
 import { useApi } from "../../utils/store/api";
-import { useBackdropStore } from "../../utils/store/backdrop";
+import { setBackdrop, useBackdropStore } from "../../utils/store/backdrop";
 import "./artist.module.scss";
 
 function TabPanel(props) {
@@ -98,7 +102,6 @@ const ArtistTitlePage = () => {
 			return result.data;
 		},
 		enabled: item.isSuccess && item.data.Type === BaseItemKind.MusicArtist,
-		networkMode: "always",
 	});
 
 	const artistSongs = useQuery({
@@ -116,7 +119,6 @@ const ArtistTitlePage = () => {
 			return result.data;
 		},
 		enabled: item.isSuccess && item.data.Type === BaseItemKind.MusicArtist,
-		networkMode: "always",
 	});
 
 	const artistAppearances = useQuery({
@@ -134,7 +136,6 @@ const ArtistTitlePage = () => {
 			return result.data;
 		},
 		enabled: item.isSuccess && item.data.Type === BaseItemKind.MusicArtist,
-		networkMode: "always",
 	});
 
 	const artistTabs = [
@@ -144,7 +145,7 @@ const ArtistTitlePage = () => {
 	];
 	const [activeArtistTab, setActiveArtistTab] = useState(0);
 
-	useEffect(() => {
+	useLayoutEffect(() => {
 		if (
 			artistDiscography.isSuccess &&
 			artistSongs.isSuccess &&
@@ -158,23 +159,22 @@ const ArtistTitlePage = () => {
 				setActiveArtistTab(2);
 			}
 		}
-	}, []);
+	}, [
+		artistDiscography.isSuccess,
+		artistSongs.isSuccess,
+		artistAppearances.isSuccess,
+	]);
 
 	const [animationDirection, setAnimationDirection] = useState("forward");
 
-	const [setAppBackdrop] = useBackdropStore((state) => [state.setBackdrop]);
-
 	useEffect(() => {
 		if (item.isSuccess) {
-			setAppBackdrop(
-				item.data.Type === BaseItemKind.MusicAlbum ||
-					item.data.Type === BaseItemKind.Episode
-					? `${api.basePath}/Items/${item.data.ParentBackdropItemId}/Images/Backdrop`
-					: `${api.basePath}/Items/${item.data.Id}/Images/Backdrop`,
+			setBackdrop(
+				`${api.basePath}/Items/${item.data.Id}/Images/Backdrop`,
 				item.data.Id,
 			);
 		}
-	}, []);
+	}, [item.isSuccess]);
 
 	if (item.isPending) {
 		return (
@@ -205,23 +205,132 @@ const ArtistTitlePage = () => {
 					duration: 0.25,
 					ease: "easeInOut",
 				}}
-				className="scrollY"
-				style={{
-					padding: "5em 2em 2em 1em",
-					display: "flex",
-					flexDirection: "column",
-					gap: "0.5em",
-				}}
+				className="scrollY item item-artist"
 			>
-				<Hero
-					item={item.data}
-					userId={user.data.Id}
-					queryKey={["item", id]}
-					disableMarkAsPlayedButton
-					audioPlayButton
-					disableInfoStrip
-				/>
+				<div className="item-hero flex flex-row">
+					<div className="item-hero-backdrop-container">
+						<img
+							alt={item.data.Name}
+							src={api.getItemImageUrl(item.data.Id, "Backdrop", {
+								tag: item.data.BackdropImageTags[0],
+							})}
+							className="item-hero-backdrop"
+							onLoad={(e) => {
+								e.currentTarget.style.opacity = 1;
+							}}
+						/>
+					</div>
+					<div
+						className="item-hero-image-container"
+						style={{
+							aspectRatio: item.data.PrimaryImageAspectRatio ?? 1,
+						}}
+					>
+						{Object.keys(item.data.ImageTags).includes("Primary") ? (
+							<>
+								<Blurhash
+									hash={
+										item.data.ImageBlurHashes.Primary[
+											item.data.ImageTags.Primary
+										]
+									}
+									className="item-hero-image-blurhash"
+								/>
+								<img
+									alt={item.data.Name}
+									src={api.getItemImageUrl(item.data.Id, "Primary", {
+										quality: 90,
+										tag: item.data.ImageTags.Primary,
+									})}
+									onLoad={(e) => {
+										e.currentTarget.style.opacity = 1;
+									}}
+									className="item-hero-image"
+								/>
+							</>
+						) : (
+							<></>
+						)}
+					</div>
+					<div className="item-hero-detail flex flex-column">
+						{Object.keys(item.data.ImageTags).includes("Logo") ? (
+							<img
+								alt={item.data.Name}
+								src={api.getItemImageUrl(item.data.Id, "Logo", {
+									quality: 90,
+									fillWidth: 592,
+									fillHeight: 592,
+								})}
+								onLoad={(e) => {
+									e.currentTarget.style.opacity = 1;
+								}}
+								className="item-hero-logo"
+							/>
+						) : (
+							<Typography variant="h3">{item.data.Name}</Typography>
+						)}
 
+						<LikeButton
+							itemName={item.data.Name}
+							itemId={item.data.Id}
+							queryKey={["item", id]}
+							isFavorite={item.data.UserData.IsFavorite}
+							userId={user.data.Id}
+						/>
+					</div>
+				</div>
+				<div className="item-detail">
+					<div style={{ width: "100%", overflow: "hidden" }}>
+						<ShowMoreText
+							content={item.data.Overview ?? ""}
+							collapsedLines={4}
+						/>
+						<div
+							style={{
+								display: "flex",
+								gap: "0.6em",
+								alignSelf: "end",
+								marginTop: "1em",
+							}}
+						>
+							{item.data.ExternalUrls.map((url) => (
+								<Link
+									key={url.Url}
+									target="_blank"
+									to={url.Url}
+									className="item-detail-link"
+								>
+									<Typography>{url.Name}</Typography>
+								</Link>
+							))}
+						</div>
+					</div>
+					<Divider flexItem orientation="vertical" />
+					<div
+						style={{
+							width: "100%",
+						}}
+					>
+						{item.data.PremiereDate && (
+							<>
+								<Typography variant="h5">Born</Typography>
+								<Typography sx={{ opacity: 0.8 }}>
+									{new Date(item.data.PremiereDate).toDateString()}
+								</Typography>
+							</>
+						)}
+						{item.data.EndDate && (
+							<>
+								<Typography variant="h5" mt={2}>
+									Death
+								</Typography>
+								<Typography sx={{ opacity: 0.8 }}>
+									{new Date(item.data.EndDate).toDateString()}
+								</Typography>
+							</>
+						)}
+					</div>
+				</div>
 				<div className="item-detail-artist-container">
 					<div className="item-detail-artist-header">
 						<Tabs

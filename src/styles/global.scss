@@ -47,13 +47,13 @@ body {
 
 .app-backdrop {
 	object-fit: cover;
-	width: calc(100% + 100px);
-	height: calc(100% + 100px);
+	width: calc(100% + 160px);
+	height: calc(100% + 160px);
 	position: absolute;
-	top: -50px;
-	left: -50px;
+	top: -80px;
+	left: -80px;
 	z-index: -2;
-	filter: blur(120px) saturate(130%) contrast(140%);
+	filter: blur(160px) saturate(130%) contrast(170%);
 	&-container {
 		position: fixed;
 		width: 100vw;
@@ -61,7 +61,7 @@ body {
 		left: 0;
 		top: 0;
 		z-index: -1;
-		filter: brightness(0.4);
+		filter: brightness(0.3);
 	}
 }
 
@@ -126,7 +126,7 @@ h1 {
 	width: 100%;
 	box-sizing: border-box;
 	min-height: 100vh;
-	padding: 0 1.6em;
+	padding: 1.6em;
 	&.padded-top {
 		padding-top: 4.4em;
 	}

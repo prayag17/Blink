@@ -107,9 +107,9 @@ $border-radius: 20px;
 	}
 }
 
-.item {
+.item-album.item {
 	gap: 1em;
-	&-hero {
+	.item-hero {
 		height: 50vh;
 		gap: 2em;
 		position: relative;
@@ -181,20 +181,86 @@ $border-radius: 20px;
 		}
 	}
 
-	&-detail {
+	.item-detail {
 		display: grid;
 		grid-template-columns: 1fr 5px 35%;
 		justify-items: center;
 		align-items: start;
 		gap: 1em;
-
 		
+		&-cast {
+			max-height: 50vh;
+			overflow-y: auto;
+			mask-image: linear-gradient(to top, transparent, black 1.2em);
+			-webkit-mask-image: linear-gradient(to top, transparent, black 1.2em);
+			&-title {
+				position: sticky;
+				top: 0;
+				background: black;
+				border:1px solid rgb(255 255 255 / 0.2) ;
+				padding: 0.35em;
+				border-radius: 10px;
+				z-index: 1;
+			}
+			&-container {
+				display: flex;
+				flex-direction: column;
+				gap: 1em;
+			}
+			&-grid {
+				display: grid;
+				gap: 1em;
+				margin-bottom: 1em;
+				grid-template-columns: repeat(2, minmax(0, 1fr));
+			}
+			&-card {
+				display: grid;
+				grid-template-columns: 6em 1fr;
+				gap: 0.5em;
+				align-items: center;
+				color: white !important;
+				text-decoration: none;
+				padding: 0.5em;
+				background: rgb(255 255 255 / 0);
+				transition: background $transition-time-default;
+				border-radius: $border-radius-default;
+				&:hover {
+					background: rgb(255 255 255 / 0.1);
+				}
+				&-image,
+				&-icon {
+					width: 6em;
+					height: 6em;
+					object-fit: cover;
+					border-radius: 100%;
+					box-shadow: $shadow-card-image;
+				}
+				&-icon {
+					display: flex;
+					align-items: center;
+					justify-content: center;
+					font-size: 1em;
+					background: rgb(255 255 255 / 0.1);
+					.material-symbols-rounded {
+						font-size: 3em;
+					}
+				}
+			}
+		}
 		&-link {
 			color: white;
 			text-decoration-color: rgb(255 255 255 / 0.5);
 			&:hover {
 				text-decoration-color: white;
 			}
+		}
+		&-episodes-container {
+			display: grid;
+			grid-template-columns: repeat(4, minmax(0, 1fr));
+			gap: 0.25em;
+			margin-top: 0.5em;
+			align-items: start;
+			justify-items: center;
 		}
 	}
 }

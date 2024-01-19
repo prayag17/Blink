@@ -20,9 +20,9 @@
 	grid-template-columns: repeat(4, minmax(0, 1fr));
 }
 
-.item {
+.item-person.item {
 	gap: 1em;
-	&-hero {
+	.item-hero {
 		height: 50vh;
 		gap: 2em;
 		position: relative;
@@ -95,7 +95,7 @@
 		}
 	}
 
-	&-detail {
+	.item-detail {
 		display: grid;
 		grid-template-columns: 1fr 5px 35%;
 		justify-items: center;
