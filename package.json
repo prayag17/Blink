@@ -17,7 +17,7 @@
 		"@fontsource-variable/jetbrains-mono": "^5.0.19",
 		"@fontsource/noto-sans": "^5.0.18",
 		"@jellyfin/sdk": "0.8.2",
-		"@mui/lab": "5.0.0-alpha.160",
+		"@mui/lab": "5.0.0-alpha.161",
 		"@mui/material": "^5.15.4",
 		"@tanstack/react-query": "^5.17.9",
 		"@tanstack/react-query-devtools": "^5.17.9",
@@ -58,7 +58,7 @@
 		"eslint-plugin-react-refresh": "^0.4.5",
 		"prop-types": "^15.8.1",
 		"sass": "^1.69.7",
-		"vite": "^5.0.11",
+		"vite": "^5.0.12",
 		"vite-plugin-compression": "^0.5.1"
 	},
 	"license": "GPL-3.0-only"
