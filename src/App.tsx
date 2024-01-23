@@ -303,6 +303,11 @@ function AppReady() {
 							border: "1px solid rgb(255 255 255 / 0.2)",
 						},
 					}}
+					sx={{
+						"& img": {
+							width: "100%",
+						},
+					}}
 				>
 					{updateInfo !== undefined && (
 						<>
