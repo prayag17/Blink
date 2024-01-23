@@ -37,7 +37,7 @@ import LikeButton from "../../components/buttons/likeButton";
 import MarkPlayedButton from "../../components/buttons/markPlayedButton";
 import PlayButton from "../../components/buttons/playButton";
 
-import meshBg from "../../assets/heroBg.png";
+import meshBg from "../../assets/herobg.png";
 import "./boxset.module.scss";
 function TabPanel(props) {
 	const { children, value, index, ...other } = props;
