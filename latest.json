@@ -1,19 +1,19 @@
 {
-	"version": "0.0.3-dev",
-	"notes": "- Updated home carousel.\n- Removed sidemenu\n- Updated appBar\n- Update Notices",
-	"pub_date": "2023-12-31T11:58:58.485Z",
-	"platforms": {
-		"darwin-x86_64": {
-			"signature": "dW50cnVzdGVkIGNvbW1lbnQ6IHNpZ25hdHVyZSBmcm9tIHRhdXJpIHNlY3JldCBrZXkKUlVROHVTNk5NMHU2bVhtQVFqQmJIbldTQ3F1YktNNWd4MkltMkF1b2pGQmc2Q3RmWlFnZGE0K2FSNmpkczUzNEEzZ1p3dDBBWldSZk15SDYrcE9ub0tUZG1uOVlvMnlwMWdFPQp0cnVzdGVkIGNvbW1lbnQ6IHRpbWVzdGFtcDoxNzA0MDIzNTA1CWZpbGU6SmVsbHlQbGF5ZXIuYXBwLnRhci5nego2M0NPUElEZzdjaUdaeDVMYm8rSTVRYTdncFA1YnNOMHpBd0wyS2JOaHhVeWhKM0lUaEN3TWw1RU1vQm5VYlgyQkZma2x1alpKY1pPSHhuSUx5Q1RCUT09Cg==",
-			"url": "https://github.com/prayag17/JellyPlayer/releases/download/v0.0.3-dev/JellyPlayer_x64.app.tar.gz"
-		},
-		"linux-x86_64": {
-			"signature": "dW50cnVzdGVkIGNvbW1lbnQ6IHNpZ25hdHVyZSBmcm9tIHRhdXJpIHNlY3JldCBrZXkKUlVROHVTNk5NMHU2bVY2aHRVL0Y2d09SL2sxZGhsUzNxQmF1NVR1c2h2cUpJYVFrRkU2N3JqWGU3aEhBYnJuK0NpdDlpRlBadW9HT1B5MDhjMTE1TURyTnRBQ2FmVUJvd2dBPQp0cnVzdGVkIGNvbW1lbnQ6IHRpbWVzdGFtcDoxNzA0MDIzNjQ4CWZpbGU6amVsbHktcGxheWVyXzAuMC4zLWRldl9hbWQ2NC5BcHBJbWFnZS50YXIuZ3oKRXd4dHhGUmd6Rm1ZeGEwcUdHd2NDNTdRS1d0ZWo0aWpwYS85SlFxa3ZyMW9VNm9McCtlRjlmN1N4dWcxck5oMWhoM0Y4L2xHZ2hQOXNockFyL3FYQUE9PQo=",
-			"url": "https://github.com/prayag17/JellyPlayer/releases/download/v0.0.3-dev/jelly-player_0.0.3-dev_amd64.AppImage.tar.gz"
-		},
-		"windows-x86_64": {
-			"signature": "dW50cnVzdGVkIGNvbW1lbnQ6IHNpZ25hdHVyZSBmcm9tIHRhdXJpIHNlY3JldCBrZXkKUlVROHVTNk5NMHU2bWE3TlYzV1NOK2NMK25lamlCY21RQkFMem9nK0E0bTlITWUyQm1xZzg0aEhwS0dvUURtN2pRcG1iczMwUHhIbU0vOUFaQkFSL1lHT3VLRnh5Q3VZVFFZPQp0cnVzdGVkIGNvbW1lbnQ6IHRpbWVzdGFtcDoxNzA0MDIzOTMxCWZpbGU6SmVsbHlQbGF5ZXJfMC4wLjMtZGV2X3g2NC1zZXR1cC5uc2lzLnppcApLN1V6aDN4Qndtb0NaQVlGOENIQ0pyTDJRd0NianRYZGxKanR3TU9IUWxTRE5TVW9mNWVPdkdyQkxudkRJY3ZzOU4wSnlmaWVmSWJYNFBKYUdpUG1CZz09Cg==",
-			"url": "https://github.com/prayag17/JellyPlayer/releases/download/v0.0.3-dev/JellyPlayer_0.0.3-dev_x64-setup.nsis.zip"
-		}
-	}
+  "version": "0.0.4-dev",
+  "notes": "![banner](https://imgur.com/w3l4WFh.png)\n## What's Changed\n* refactor(web): update to typescript, cleanup small bugs + workspace by @dan-online in [#244](https://github.com/prayag17/JellyPlayer/pull/244)\n* feat(user): store `accessToken` over password by @dan-online in [#247](https://github.com/prayag17/JellyPlayer/pull/247)\n* fix(queries): staleTime and invalidating cache by @dan-online in [#248](https://github.com/prayag17/JellyPlayer/pull/248)\n* refactor: use `crypto.randomUUID` vs `uuid.v4` by @dan-online in [#249](https://github.com/prayag17/JellyPlayer/pull/249)\n* style(icons): only use the rounded css by @dan-online in [#250](https://github.com/prayag17/JellyPlayer/pull/250)\n* feat: quick connect by @dan-online in [#251](https://github.com/prayag17/JellyPlayer/pull/251)\n* feat: add new itemDetail Pages by @prayag17 in [#243](https://github.com/prayag17/issue/243)\n* feat: Auto focus search input in search route when opened initially by @prayag17\n* feat: Improved Login page ui by @prayag17\n* refactor: improve error boundary component\n## New Contributors\n* @dan-online made their first contribution in [#244](https://github.com/prayag17/JellyPlayer/pull/244)\n**Full Changelog**: [v0.0.3-dev...v0.0.4-dev](https://github.com/prayag17/JellyPlayer/compare/v0.0.3-dev...v0.0.4-dev)",
+  "pub_date": "2024-01-23T17:12:09.705Z",
+  "platforms": {
+    "linux-x86_64": {
+      "signature": "dW50cnVzdGVkIGNvbW1lbnQ6IHNpZ25hdHVyZSBmcm9tIHRhdXJpIHNlY3JldCBrZXkKUlVROHVTNk5NMHU2bVordkFWa21Fa2ZJTUFRcElHbmxFWlJFY29IdHg2WTZaeTRxbXNuUy9lMmI1MWEwSEtIa0FUN09WTjlKZDZiMHVWUEFPV0lneE9TWG53dis0K0hpdUFVPQp0cnVzdGVkIGNvbW1lbnQ6IHRpbWVzdGFtcDoxNzA2MDI5NjgxCWZpbGU6amVsbHktcGxheWVyXzAuMC40LWRldl9hbWQ2NC5BcHBJbWFnZS50YXIuZ3oKeDFiSzBtalVnYjlweUV5RElYeHlrZDRxS2tMQXFLZ3RmUkkveUVEQjhoSkp5ZmJCdEJlKzMza3lBdFRvMzVJZUhkUmdMejVBZGFvSEgwL2h2VnRZRHc9PQo=",
+      "url": "https://github.com/prayag17/JellyPlayer/releases/download/v0.0.4-dev/jelly-player_0.0.4-dev_amd64.AppImage.tar.gz"
+    },
+    "darwin-x86_64": {
+      "signature": "dW50cnVzdGVkIGNvbW1lbnQ6IHNpZ25hdHVyZSBmcm9tIHRhdXJpIHNlY3JldCBrZXkKUlVROHVTNk5NMHU2bVRxQlpMUGxUcjhZYWVmSWllK2JQYXFTVnVaZGxCQnNaL1J5ekVnSitUOVhWdjVBeEFQUHJXOER4bTI2Q0ZsWFYvSWNVK0FOSFE4M0U1VjNTRzFVOEF3PQp0cnVzdGVkIGNvbW1lbnQ6IHRpbWVzdGFtcDoxNzA2MDI5Nzg0CWZpbGU6SmVsbHlQbGF5ZXIuYXBwLnRhci5negpkT2VmTmNjRG1hWjBYNUV3UUh4OG1KM1BRdHVvUTBrZWZ5NlhMOWx5U0YvZURZcUUzeVVFbFNDV2JzaDAyVThtZk9NV1lwSXozQjYyekNKY2hXVjdCdz09Cg==",
+      "url": "https://github.com/prayag17/JellyPlayer/releases/download/v0.0.4-dev/JellyPlayer_x64.app.tar.gz"
+    },
+    "windows-x86_64": {
+      "signature": "dW50cnVzdGVkIGNvbW1lbnQ6IHNpZ25hdHVyZSBmcm9tIHRhdXJpIHNlY3JldCBrZXkKUlVROHVTNk5NMHU2bWVHdGR2NTB1SDF5Vk5rN3ZyTXpybW5rMktsZmlwbVAxK2ZEMHltWndCdG9qUmpQNlNnaGcwdUdRVW1NeUJ3VmRPK1hFTFdLcWpINWZrdzBBYlBFUkFNPQp0cnVzdGVkIGNvbW1lbnQ6IHRpbWVzdGFtcDoxNzA2MDI5OTIyCWZpbGU6SmVsbHlQbGF5ZXJfMC4wLjQtZGV2X3g2NC1zZXR1cC5uc2lzLnppcApDWlpoYVd2enE5dDRhblV4R1g3djJtSzBTTlR1MXRIMHFVbTRYb3dIalZ0U0ozRlg1eXdjcHMrU1gwWGtuL24vNnI5UWRZdVNKSnF5Z0JycDNwcy9DQT09Cg==",
+      "url": "https://github.com/prayag17/JellyPlayer/releases/download/v0.0.4-dev/JellyPlayer_0.0.4-dev_x64-setup.nsis.zip"
+    }
+  }
 }
