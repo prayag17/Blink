@@ -29,7 +29,7 @@
 		"axios-tauri-api-adapter": "^0.2.1",
 		"blurhash": "^2.0.5",
 		"events": "^3.3.0",
-		"framer-motion": "^10.18.0",
+		"framer-motion": "^11.0.0",
 		"material-symbols": "^0.14.4",
 		"notistack": "^3.0.1",
 		"react": "^18.2.0",
