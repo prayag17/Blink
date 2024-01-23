@@ -255,9 +255,30 @@ const MusicAlbumTitlePage = () => {
 						)}
 					</div>
 					<div className="item-hero-detail flex flex-column">
-						<Typography variant="h3">{item.data.Name}</Typography>
+						<Typography variant="h2">{item.data.Name}</Typography>
 
-						<Chip label={`By ${item.data.AlbumArtist}`} />
+						<Chip
+							label={item.data.AlbumArtist}
+							icon={
+								<span
+									className="material-symbols-rounded"
+									style={{
+										padding: "0.2em",
+
+										fontVariationSettings:
+											'"FILL" 1, "wght" 300, "GRAD" 25, "opsz" 40',
+									}}
+								>
+									artist
+								</span>
+							}
+							size="large"
+							sx={{
+								"& .MuiChip-label": {
+									marginLeft: 0.5,
+								},
+							}}
+						/>
 						<Stack
 							direction="row"
 							gap={2}

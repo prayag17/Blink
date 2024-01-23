@@ -348,7 +348,7 @@ const ItemDetail = () => {
 								className="item-hero-logo"
 							/>
 						) : (
-							<Typography variant="h3">{item.data.Name}</Typography>
+							<Typography variant="h2">{item.data.Name}</Typography>
 						)}
 						<Stack direction="row" gap={1}>
 							{!!qualityLabel() && (
@@ -537,6 +537,9 @@ const ItemDetail = () => {
 									currentAudioTrack={selectedAudioTrack}
 									currentSubTrack={selectedSubtitleTrack}
 									userId={user.data.Id}
+									sx={{
+										background: "hsl(195.56deg 29.03% 18.24%) !important",
+									}}
 								/>
 							</div>
 							<div className="flex flex-row" style={{ gap: "1em" }}>
@@ -677,6 +680,7 @@ const ItemDetail = () => {
 									marginBottom: "1em",
 								}}
 								value={selectedVideoTrack}
+								variant="filled"
 								onChange={(e) => setSelectedVideoTrack(e.target.value)}
 							>
 								{videoTracks.map((track) => (
@@ -695,6 +699,7 @@ const ItemDetail = () => {
 									marginBottom: "1em",
 								}}
 								value={selectedAudioTrack}
+								variant="filled"
 								onChange={(e) => setSelectedAudioTrack(e.target.value)}
 							>
 								{audioTracks.map((track) => (
@@ -712,6 +717,12 @@ const ItemDetail = () => {
 									width: "100%",
 								}}
 								value={selectedSubtitleTrack}
+								variant="filled"
+								SelectProps={{
+									MenuProps: {
+										disablePortal: true,
+									},
+								}}
 								onChange={(e) => setSelectedSubtitleTrack(e.target.value)}
 							>
 								<MenuItem key={-1} value={-1}>
@@ -745,175 +756,185 @@ const ItemDetail = () => {
 						</div>
 					</div>
 				</div>
-				<div className="item-detail-cast">
-					<Typography variant="h5" mb={2}>
-						Cast & Crew
-					</Typography>
-					{actors.length > 0 && (
-						<div className="item-detail-cast-container">
-							<Typography variant="h6">Actors</Typography>
-							<div className="item-detail-cast-grid">
-								{actors.map((actor) => (
-									<NavLink
-										className="item-detail-cast-card"
-										key={actor.Id}
-										to={`/person/${actor.Id}`}
-									>
-										{actor.PrimaryImageTag ? (
-											<img
-												alt={actor.Name}
-												src={api.getItemImageUrl(actor.Id, "Primary", {
-													quality: 80,
-													fillWidth: 200,
-													fillHeight: 200,
-												})}
-												className="item-detail-cast-card-image"
-											/>
-										) : (
-											<div className="item-detail-cast-card-icon">
-												{getTypeIcon("Person")}
+				{item.data.People.length > 0 && (
+					<div className="item-detail-cast">
+						<Typography variant="h5" mb={2}>
+							Cast & Crew
+						</Typography>
+						{actors.length > 0 && (
+							<div className="item-detail-cast-container">
+								<Typography variant="h6">Actors</Typography>
+								<div className="item-detail-cast-grid">
+									{actors.map((actor) => (
+										<NavLink
+											className="item-detail-cast-card"
+											key={actor.Id}
+											to={`/person/${actor.Id}`}
+										>
+											{actor.PrimaryImageTag ? (
+												<img
+													alt={actor.Name}
+													src={api.getItemImageUrl(actor.Id, "Primary", {
+														quality: 80,
+														fillWidth: 200,
+														fillHeight: 200,
+													})}
+													className="item-detail-cast-card-image"
+												/>
+											) : (
+												<div className="item-detail-cast-card-icon">
+													{getTypeIcon("Person")}
+												</div>
+											)}
+											<div className="item-detail-cast-card-text">
+												<Typography variant="subtitle1">
+													{actor.Name}
+												</Typography>
+												<Typography
+													variant="subtitle2"
+													style={{
+														opacity: 0.5,
+													}}
+												>
+													{actor.Role}
+												</Typography>
 											</div>
-										)}
-										<div className="item-detail-cast-card-text">
-											<Typography variant="subtitle1">{actor.Name}</Typography>
-											<Typography
-												variant="subtitle2"
-												style={{
-													opacity: 0.5,
-												}}
-											>
-												{actor.Role}
-											</Typography>
-										</div>
-									</NavLink>
-								))}
+										</NavLink>
+									))}
+								</div>
 							</div>
-						</div>
-					)}
-					{writers.length > 0 && (
-						<div className="item-detail-cast-container">
-							<Typography variant="h6">Writers</Typography>
-							<div className="item-detail-cast-grid">
-								{writers.map((actor) => (
-									<NavLink
-										className="item-detail-cast-card"
-										key={actor.Id}
-										to={`/person/${actor.Id}`}
-									>
-										{actor.PrimaryImageTag ? (
-											<img
-												alt={actor.Name}
-												src={api.getItemImageUrl(actor.Id, "Primary", {
-													quality: 80,
-													fillWidth: 200,
-													fillHeight: 200,
-												})}
-												className="item-detail-cast-card-image"
-											/>
-										) : (
-											<div className="item-detail-cast-card-icon">
-												{getTypeIcon("Person")}
+						)}
+						{writers.length > 0 && (
+							<div className="item-detail-cast-container">
+								<Typography variant="h6">Writers</Typography>
+								<div className="item-detail-cast-grid">
+									{writers.map((actor) => (
+										<NavLink
+											className="item-detail-cast-card"
+											key={actor.Id}
+											to={`/person/${actor.Id}`}
+										>
+											{actor.PrimaryImageTag ? (
+												<img
+													alt={actor.Name}
+													src={api.getItemImageUrl(actor.Id, "Primary", {
+														quality: 80,
+														fillWidth: 200,
+														fillHeight: 200,
+													})}
+													className="item-detail-cast-card-image"
+												/>
+											) : (
+												<div className="item-detail-cast-card-icon">
+													{getTypeIcon("Person")}
+												</div>
+											)}
+											<div className="item-detail-cast-card-text">
+												<Typography variant="subtitle1">
+													{actor.Name}
+												</Typography>
+												<Typography
+													variant="subtitle2"
+													style={{
+														opacity: 0.5,
+													}}
+												>
+													{actor.Role}
+												</Typography>
 											</div>
-										)}
-										<div className="item-detail-cast-card-text">
-											<Typography variant="subtitle1">{actor.Name}</Typography>
-											<Typography
-												variant="subtitle2"
-												style={{
-													opacity: 0.5,
-												}}
-											>
-												{actor.Role}
-											</Typography>
-										</div>
-									</NavLink>
-								))}
+										</NavLink>
+									))}
+								</div>
 							</div>
-						</div>
-					)}
-					{directors.length > 0 && (
-						<div className="item-detail-cast-container">
-							<Typography variant="h6">Directors</Typography>
-							<div className="item-detail-cast-grid">
-								{directors.map((actor) => (
-									<NavLink
-										className="item-detail-cast-card"
-										to={`/person/${actor.Id}`}
-										key={actor.Id}
-									>
-										{actor.PrimaryImageTag ? (
-											<img
-												alt={actor.Name}
-												src={api.getItemImageUrl(actor.Id, "Primary", {
-													quality: 80,
-													fillWidth: 200,
-													fillHeight: 200,
-												})}
-												className="item-detail-cast-card-image"
-											/>
-										) : (
-											<div className="item-detail-cast-card-icon">
-												{getTypeIcon("Person")}
+						)}
+						{directors.length > 0 && (
+							<div className="item-detail-cast-container">
+								<Typography variant="h6">Directors</Typography>
+								<div className="item-detail-cast-grid">
+									{directors.map((actor) => (
+										<NavLink
+											className="item-detail-cast-card"
+											to={`/person/${actor.Id}`}
+											key={actor.Id}
+										>
+											{actor.PrimaryImageTag ? (
+												<img
+													alt={actor.Name}
+													src={api.getItemImageUrl(actor.Id, "Primary", {
+														quality: 80,
+														fillWidth: 200,
+														fillHeight: 200,
+													})}
+													className="item-detail-cast-card-image"
+												/>
+											) : (
+												<div className="item-detail-cast-card-icon">
+													{getTypeIcon("Person")}
+												</div>
+											)}
+											<div className="item-detail-cast-card-text">
+												<Typography variant="subtitle1">
+													{actor.Name}
+												</Typography>
+												<Typography
+													variant="subtitle2"
+													style={{
+														opacity: 0.5,
+													}}
+												>
+													{actor.Role}
+												</Typography>
 											</div>
-										)}
-										<div className="item-detail-cast-card-text">
-											<Typography variant="subtitle1">{actor.Name}</Typography>
-											<Typography
-												variant="subtitle2"
-												style={{
-													opacity: 0.5,
-												}}
-											>
-												{actor.Role}
-											</Typography>
-										</div>
-									</NavLink>
-								))}
+										</NavLink>
+									))}
+								</div>
 							</div>
-						</div>
-					)}
-					{producers.length > 0 && (
-						<div className="item-detail-cast-container">
-							<Typography variant="h6">Producers</Typography>
-							<div className="item-detail-cast-grid">
-								{producers.map((actor) => (
-									<NavLink
-										className="item-detail-cast-card"
-										key={actor.Id}
-										to={`/person/${actor.Id}`}
-									>
-										{actor.PrimaryImageTag ? (
-											<img
-												alt={actor.Name}
-												src={api.getItemImageUrl(actor.Id, "Primary", {
-													quality: 80,
-													fillWidth: 200,
-													fillHeight: 200,
-												})}
-												className="item-detail-cast-card-image"
-											/>
-										) : (
-											<div className="item-detail-cast-card-icon">
-												{getTypeIcon("Person")}
+						)}
+						{producers.length > 0 && (
+							<div className="item-detail-cast-container">
+								<Typography variant="h6">Producers</Typography>
+								<div className="item-detail-cast-grid">
+									{producers.map((actor) => (
+										<NavLink
+											className="item-detail-cast-card"
+											key={actor.Id}
+											to={`/person/${actor.Id}`}
+										>
+											{actor.PrimaryImageTag ? (
+												<img
+													alt={actor.Name}
+													src={api.getItemImageUrl(actor.Id, "Primary", {
+														quality: 80,
+														fillWidth: 200,
+														fillHeight: 200,
+													})}
+													className="item-detail-cast-card-image"
+												/>
+											) : (
+												<div className="item-detail-cast-card-icon">
+													{getTypeIcon("Person")}
+												</div>
+											)}
+											<div className="item-detail-cast-card-text">
+												<Typography variant="subtitle1">
+													{actor.Name}
+												</Typography>
+												<Typography
+													variant="subtitle2"
+													style={{
+														opacity: 0.5,
+													}}
+												>
+													{actor.Role}
+												</Typography>
 											</div>
-										)}
-										<div className="item-detail-cast-card-text">
-											<Typography variant="subtitle1">{actor.Name}</Typography>
-											<Typography
-												variant="subtitle2"
-												style={{
-													opacity: 0.5,
-												}}
-											>
-												{actor.Role}
-											</Typography>
-										</div>
-									</NavLink>
-								))}
+										</NavLink>
+									))}
+								</div>
 							</div>
-						</div>
-					)}
-				</div>
+						)}
+					</div>
+				)}
 				{/* {item.data.People.length > 0 && (
 					<CardScroller
 						title="Cast & Crew"

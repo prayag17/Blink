@@ -73,7 +73,7 @@ const CarouselSlide = ({ item }) => {
 				background: "transparent",
 				px: 3,
 			}}
-			elevation={6}
+			elevation={10}
 		>
 			<div className="hero-carousel-background-container">
 				{!!item.ImageBlurHashes.Backdrop && (

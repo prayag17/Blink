@@ -10,7 +10,8 @@
 		border-radius: 10px !important;
 		overflow: hidden;
 		margin: 0 auto;
-		// box-shadow: 0 0 40px red;
+		border: 1.2px solid rgb(255 255 255 / 0.15);
+		// box-shadow: 0 0 30px black !important;
 	}
 	&-background {
 		&-blurhash {
@@ -92,17 +93,6 @@
 		flex-direction: column;
 		justify-content: center;
 		align-items: flex-start;
-	}
-	&-indicator {
-		&-container {
-			// width: calc(100% - 2em) !important;
-			margin-top: -1em !important;
-			margin-left: 1em !important;
-			margin-right: 1em !important;
-		}
-		width: 100%;
-		height: 5px;
-		border-radius: 0;
 	}
 }
 

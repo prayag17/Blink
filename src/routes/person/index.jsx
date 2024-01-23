@@ -32,6 +32,7 @@ import { useApi } from "../../utils/store/api";
 import { setBackdrop } from "../../utils/store/backdrop";
 
 import meshBg from "../../assets/herobg.png";
+import ShowMoreText from "../../components/showMoreText";
 import "./person.module.scss";
 
 function TabPanel(props) {
@@ -271,7 +272,7 @@ const PersonTitlePage = () => {
 					duration: 0.25,
 					ease: "easeInOut",
 				}}
-				className="scrollY padded-top item item-person"
+				className="scrollY padded-top item item-person flex flex-column"
 			>
 				<div className="item-hero flex flex-row">
 					<div className="item-hero-backdrop-container">
@@ -317,22 +318,7 @@ const PersonTitlePage = () => {
 						)}
 					</div>
 					<div className="item-hero-detail flex flex-column">
-						{Object.keys(item.data.ImageTags).includes("Logo") ? (
-							<img
-								alt={item.data.Name}
-								src={api.getItemImageUrl(item.data.Id, "Logo", {
-									quality: 90,
-									fillWidth: 592,
-									fillHeight: 592,
-								})}
-								onLoad={(e) => {
-									e.currentTarget.style.opacity = 1;
-								}}
-								className="item-hero-logo"
-							/>
-						) : (
-							<Typography variant="h3">{item.data.Name}</Typography>
-						)}
+						<Typography variant="h2">{item.data.Name}</Typography>
 
 						<LikeButton
 							itemName={item.data.Name}

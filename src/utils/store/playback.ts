@@ -6,7 +6,7 @@ export interface PlaybackState {
 	startPosition: number;
 	duration: number;
 	itemId: string;
-	itemName: string;
+	itemName: string | Element;
 	subtitleTracks: unknown[];
 	selectedSubtitleTrack: number;
 	mediaSourceId: string;
@@ -23,7 +23,7 @@ export interface PlaybackState {
 	setPosition: (apos: number) => void;
 	setDuration: (adur: number) => void;
 	setItemId: (aid: string) => void;
-	setItemName: (anm: string) => void;
+	setItemName: (anm: string | Element) => void;
 	setUserId: (anm: string) => void;
 	setSeriesId: (anm: string) => void;
 	setMediaContainer: (anm: string) => void;
@@ -64,7 +64,7 @@ export const usePlaybackStore = create<PlaybackState>((set) => ({
 		set((state: PlaybackState) => ({ ...state, duration: adur })),
 	setItemId: (aid: string) =>
 		set((state: PlaybackState) => ({ ...state, itemId: aid })),
-	setItemName: (anm: string) =>
+	setItemName: (anm: string | Element) =>
 		set((state: PlaybackState) => ({ ...state, itemName: anm })),
 	setUserId: (anm: string) =>
 		set((state: PlaybackState) => ({ ...state, userId: anm })),

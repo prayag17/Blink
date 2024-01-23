@@ -1,15 +1,20 @@
 import PropTypes from "prop-types";
 import React from "react";
 
-import Button from "@mui/material/Button";
+import Button, {
+	ButtonProps,
+	ButtonPropsSizeOverrides,
+} from "@mui/material/Button";
 import Fab from "@mui/material/Fab";
 import LinearProgress from "@mui/material/LinearProgress";
 import Typography from "@mui/material/Typography";
 
 import {
+	BaseItemDto,
 	BaseItemKind,
 	ItemFields,
 	SortOrder,
+	UserItemDataDto,
 } from "@jellyfin/sdk/lib/generated-client";
 import { getItemsApi } from "@jellyfin/sdk/lib/utils/api/items-api";
 import { getPlaylistsApi } from "@jellyfin/sdk/lib/utils/api/playlists-api";
@@ -25,7 +30,10 @@ import {
 	usePlaybackStore,
 } from "../../utils/store/playback";
 
+import { SxProps } from "@mui/material";
+
 const PlayButton = ({
+	item,
 	itemId,
 	itemUserData,
 	userId,
@@ -42,6 +50,24 @@ const PlayButton = ({
 	playlistItem,
 	playlistItemId = "",
 	trackIndex,
+}: {
+	item: BaseItemDto;
+	itemId: string;
+	itemUserData: UserItemDataDto;
+	userId: string;
+	itemType: BaseItemKind;
+	currentAudioTrack: number;
+	currentVideoTrack: number;
+	currentSubTrack: number;
+	className: string;
+	sx: SxProps;
+	buttonProps: ButtonProps;
+	iconOnly: boolean;
+	audio: boolean;
+	size: ButtonPropsSizeOverrides;
+	playlistItem: BaseItemDto;
+	playlistItemId: string;
+	trackIndex: number;
 }) => {
 	const [api] = useApi((state) => [state.api]);
 
@@ -96,11 +122,11 @@ const PlayButton = ({
 
 	const { enqueueSnackbar } = useSnackbar();
 
-	const item = useMutation({
+	const itemQuery = useMutation({
 		mutationKey: ["playButton", itemId, userId],
 		mutationFn: async () => {
 			setPlaybackDataLoading(true);
-			let result;
+			let result: any;
 			if (playlistItem) {
 				result = await getPlaylistsApi(api).getPlaylistItems({
 					userId: userId,
@@ -112,9 +138,9 @@ const PlayButton = ({
 						result = await getTvShowsApi(api).getEpisodes({
 							seriesId: itemId,
 							limit: 1,
-							startIndex: 0,
 							fields: [ItemFields.MediaSources, ItemFields.MediaStreams],
 							enableUserData: true,
+							userId: userId,
 						});
 						break;
 					case BaseItemKind.Playlist:
@@ -129,7 +155,7 @@ const PlayButton = ({
 							userId: userId,
 							fields: [ItemFields.MediaSources, ItemFields.MediaStreams],
 							sortOrder: SortOrder.Ascending,
-							sortBy: "IndexNumber",
+							sortBy: ["IndexNumber"],
 						});
 						break;
 					case BaseItemKind.MusicArtist:
@@ -141,6 +167,15 @@ const PlayButton = ({
 							fields: [ItemFields.MediaSources, ItemFields.MediaStreams],
 							sortOrder: SortOrder.Ascending,
 							sortBy: ["PremiereDate", "ProductionYear", "SortName"],
+						});
+						break;
+					case BaseItemKind.BoxSet:
+						result = await getItemsApi(api).getItems({
+							parentId: itemId,
+							userId,
+							fields: [ItemFields.MediaSources, ItemFields.MediaStreams],
+							sortOrder: SortOrder.Ascending,
+							sortBy: "IndexNumber",
 						});
 						break;
 					default:
@@ -156,51 +191,51 @@ const PlayButton = ({
 			}
 			return result.data;
 		},
-		onSuccess: (item) => {
-			console.log(item.Items[0].MediaSources);
+		onSuccess: (result) => {
+			console.log(result.Items[0].MediaSources);
 			if (trackIndex) {
 				setPlaylistItemId(playlistItemId);
 				setCurrentTrack(trackIndex);
-				setAudioTracks(item.Items);
+				setAudioTracks(result.Items);
 				setAudioUrl(
-					`${api.basePath}/Audio/${item.Items[trackIndex].Id}/universal?deviceId=${api.deviceInfo.id}&userId=${userId}&api_key=${api.accessToken}`,
+					`${api.basePath}/Audio/${result.Items[trackIndex].Id}/universal?deviceId=${api.deviceInfo.id}&userId=${userId}&api_key=${api.accessToken}`,
 				);
-				setAudioItem(item.Items[trackIndex]);
+				setAudioItem(result.Items[trackIndex]);
 				setAudioDisplay(true);
 			} else if (audio) {
-				setAudioItem(item.Items[0]);
-				setAudioTracks(item.Items);
+				setAudioItem(result.Items[0]);
+				setAudioTracks(result.Items);
 				setAudioUrl(
-					`${api.basePath}/Audio/${item.Items[0].Id}/universal?deviceId=${api.deviceInfo.id}&userId=${userId}&api_key=${api.accessToken}`,
+					`${api.basePath}/Audio/${result.Items[0].Id}/universal?deviceId=${api.deviceInfo.id}&userId=${userId}&api_key=${api.accessToken}`,
 				);
 				setAudioDisplay(true);
 			} else {
 				setUserId(userId);
-				setItemId(item.Items[0].Id);
-				setDuration(item.Items[0].RunTimeTicks);
+				setItemId(result.Items[0].Id);
+				setDuration(result.Items[0].RunTimeTicks);
 
-				if (item.Items[0].Type === BaseItemKind.Episode) {
-					setSeriesId(item.Items[0].SeriesId);
-					// setEpisodeIndex(item.Ite)
+				if (result.Items[0].Type === BaseItemKind.Episode) {
+					setSeriesId(result.Items[0].SeriesId);
+					// setEpisodeIndex(result.Ite)
 				}
 
-				setMediaContainer(item.Items[0].MediaSources[0].Container);
+				setMediaContainer(result.Items[0].MediaSources[0].Container);
 				// Set all required stream index
 				setAudioStreamIndex(currentAudioTrack);
 				setVideoStreamIndex(currentVideoTrack);
 				setSubtitleStreamIndex(currentSubTrack);
 
-				setMediaSourceId(item.Items[0].Id);
-				setItem(item.Items[0]);
+				setMediaSourceId(result.Items[0].Id);
+				setItem(result.Items[0]);
 
-				switch (item.Items[0].Type) {
+				switch (result.Items[0].Type) {
 					case BaseItemKind.Movie:
-						if (item.Items[0].ImageBlurHashes.Logo) {
+						if (result.Items[0].ImageBlurHashes.Logo) {
 							setItemName(
 								<div className="video-osd-name">
 									<img
-										alt={item.Items[0].Name}
-										src={`${api.basePath}/Items/${item.Items[0].Id}/Images/Logo`}
+										alt={result.Items[0].Name}
+										src={`${api.basePath}/Items/${result.Items[0].Id}/Images/Logo`}
 										className="video-osd-name-logo"
 										onLoad={(e) => {
 											e.target.style.opacity = 1;
@@ -211,27 +246,27 @@ const PlayButton = ({
 						} else {
 							setItemName(
 								<div className="video-osd-name">
-									<Typography variant="h6">{item.Items[0].Name}</Typography>
+									<Typography variant="h6">{result.Items[0].Name}</Typography>
 								</div>,
 							);
 						}
 						break;
 					case BaseItemKind.Episode:
-						if (item.Items[0].ImageBlurHashes.Logo) {
+						if (result.Items[0].ImageBlurHashes.Logo) {
 							setItemName(
 								<div className="video-osd-name">
 									<img
-										alt={item.Items[0].SeriesName}
-										src={`${api.basePath}/Items/${item.Items[0].SeriesId}/Images/Logo`}
+										alt={result.Items[0].SeriesName}
+										src={`${api.basePath}/Items/${result.Items[0].SeriesId}/Images/Logo`}
 										className="video-osd-name-logo"
 										onLoad={(e) => {
 											e.target.style.opacity = 1;
 										}}
 									/>
 									<Typography variant="subtitle1">
-										S{item.Items[0].ParentIndexNumber}
+										S{result.Items[0].ParentIndexNumber}
 										:E
-										{item.Items[0].IndexNumber} {item.Items[0].Name}
+										{result.Items[0].IndexNumber} {result.Items[0].Name}
 									</Typography>
 								</div>,
 							);
@@ -239,12 +274,12 @@ const PlayButton = ({
 							setItemName(
 								<div className="video-osd-name">
 									<Typography variant="h6">
-										{item.Items[0].SeriesName}
+										{result.Items[0].SeriesName}
 									</Typography>
 									<Typography variant="subtitle1">
-										S{item.Items[0].ParentIndexNumber}
+										S{result.Items[0].ParentIndexNumber}
 										:E
-										{item.Items[0].IndexNumber} {item.Items[0].Name}
+										{result.Items[0].IndexNumber} {result.Items[0].Name}
 									</Typography>
 								</div>,
 							);
@@ -254,17 +289,17 @@ const PlayButton = ({
 					default:
 						setItemName(
 							<div className="video-osd-name">
-								<Typography variant="h6">{item.Items[0].Name}</Typography>
+								<Typography variant="h6">{result.Items[0].Name}</Typography>
 							</div>,
 						);
 						break;
 				}
-				setPosition(item.Items[0].UserData?.PlaybackPositionTicks);
+				setPosition(result.Items[0].UserData?.PlaybackPositionTicks);
 
 				setUrl(
-					`${api.basePath}/Videos/${item.Items[0].Id}/stream.
-									${item.Items[0].MediaSources[0].Container}
-								?Static=true&mediaSourceId=${item.Items[0].Id}&deviceId=${api.deviceInfo.id}&api_key=${api.accessToken}&Tag=${item.Items[0].MediaSources[0].ETag}&videoStreamIndex=${currentVideoTrack}&audioStreamIndex=${currentAudioTrack}`,
+					`${api.basePath}/Videos/${result.Items[0].Id}/stream.
+									${result.Items[0].MediaSources[0].Container}
+								?Static=true&mediaSourceId=${result.Items[0].Id}&deviceId=${api.deviceInfo.id}&api_key=${api.accessToken}&Tag=${result.Items[0].MediaSources[0].ETag}&videoStreamIndex=${currentVideoTrack}&audioStreamIndex=${currentAudioTrack}`,
 				);
 
 				navigate("/player");
@@ -281,7 +316,7 @@ const PlayButton = ({
 	});
 	const handleClick = (e) => {
 		e.stopPropagation();
-		item.mutate();
+		itemQuery.mutate();
 	};
 	if (iconOnly) {
 		return (

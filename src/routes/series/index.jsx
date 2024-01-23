@@ -336,7 +336,7 @@ const SeriesTitlePage = () => {
 								className="item-hero-logo"
 							/>
 						) : (
-							<Typography variant="h3">{item.data.Name}</Typography>
+							<Typography variant="h2">{item.data.Name}</Typography>
 						)}
 						<Stack
 							direction="row"
@@ -446,6 +446,7 @@ const SeriesTitlePage = () => {
 							<div className="flex flex-row">
 								<PlayButton
 									itemId={item.data.Id}
+									item={item.data}
 									itemType={item.data.Type}
 									itemUserData={item.data.UserData}
 									currentAudioTrack={0}

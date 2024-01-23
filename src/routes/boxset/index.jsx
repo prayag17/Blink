@@ -1,9 +1,13 @@
 import PropTypes from "prop-types";
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useLayoutEffect } from "react";
 
 import Box from "@mui/material/Box";
+import Chip from "@mui/material/Chip";
 import CircularProgress from "@mui/material/CircularProgress";
-import { useNavigate, useParams } from "react-router-dom";
+import Divider from "@mui/material/Divider";
+import Stack from "@mui/material/Stack";
+import Typography from "@mui/material/Typography";
+import { Link, useNavigate, useParams } from "react-router-dom";
 
 import { motion } from "framer-motion";
 
@@ -22,9 +26,18 @@ import { Card } from "../../components/card/card";
 import { CardScroller } from "../../components/cardScroller/cardScroller";
 import Hero from "../../components/layouts/item/hero";
 
+import { Blurhash } from "react-blurhash";
 import { ErrorNotice } from "../../components/notices/errorNotice/errorNotice";
+import ShowMoreText from "../../components/showMoreText";
+import { endsAt, getRuntime } from "../../utils/date/time";
 import { useApi } from "../../utils/store/api";
-import { useBackdropStore } from "../../utils/store/backdrop";
+import { setBackdrop, useBackdropStore } from "../../utils/store/backdrop";
+
+import LikeButton from "../../components/buttons/likeButton";
+import MarkPlayedButton from "../../components/buttons/markPlayedButton";
+import PlayButton from "../../components/buttons/playButton";
+
+import meshBg from "../../assets/heroBg.png";
 import "./boxset.module.scss";
 function TabPanel(props) {
 	const { children, value, index, ...other } = props;
@@ -109,26 +122,11 @@ const BoxSetTitlePage = () => {
 		refetchOnWindowFocus: true,
 	});
 
-	const [setAppBackdrop] = useBackdropStore((state) => [state.setBackdrop]);
-
-	const [directors, setDirectors] = useState([]);
-	const [writers, setWriters] = useState([]);
-
 	useEffect(() => {
 		if (item.isSuccess) {
-			setAppBackdrop(
-				item.data.Type === BaseItemKind.MusicAlbum ||
-					item.data.Type === BaseItemKind.Episode
-					? `${api.basePath}/Items/${item.data.ParentBackdropItemId}/Images/Backdrop`
-					: `${api.basePath}/Items/${item.data.Id}/Images/Backdrop`,
-				item.data.Id,
-			);
-			const direTp = item.data.People.filter((itm) => itm.Type === "Director");
-			setDirectors(direTp);
-			const writeTp = item.data.People.filter((itm) => itm.Type === "Writer");
-			setWriters(writeTp);
+			setBackdrop("", "");
 		}
-	});
+	}, [item.isSuccess]);
 
 	if (item.isPending || similarItems.isPending) {
 		return (
@@ -159,41 +157,260 @@ const BoxSetTitlePage = () => {
 					duration: 0.25,
 					ease: "easeInOut",
 				}}
-				className="scrollY"
-				style={{
-					padding: "5em 2em 2em 1em",
-					display: "flex",
-					flexDirection: "column",
-					gap: "0.5em",
-				}}
+				className="scrollY item item-boxset padded-top"
 			>
-				<Hero
-					item={item.data}
-					userId={user.data.Id}
-					queryKey={["item", id]}
-					writers={writers}
-					directors={directors}
-					studios={item.data.Studios}
-				/>
-				{item.data.People.length > 0 && (
-					<CardScroller title="Cast & Crew" displayCards={8} disableDecoration>
-						{item.data.People.map((person, index) => {
-							return (
-								<Card
-									key={person.Id}
-									item={person}
-									cardTitle={person.Name}
-									cardCaption={person.Role}
-									cardType="square"
-									userId={user.data.Id}
-									imageBlurhash={person.ImageBlurHashes?.Primary[0]}
-									overrideIcon="Person"
-									disableOverlay
+				<div className="item-hero flex flex-row">
+					<div className="item-hero-backdrop-container">
+						{item.data.BackdropImageTags ? (
+							<img
+								alt={item.data.Name}
+								src={meshBg}
+								className="item-hero-backdrop"
+								onLoad={(e) => {
+									e.currentTarget.style.opacity = 1;
+								}}
+							/>
+						) : (
+							<></>
+						)}
+					</div>
+					<div
+						className="item-hero-image-container"
+						style={{
+							aspectRatio: item.data.PrimaryImageAspectRatio ?? 1,
+						}}
+					>
+						{Object.keys(item.data.ImageTags).includes("Primary") ? (
+							<>
+								<Blurhash
+									hash={
+										item.data.ImageBlurHashes.Primary[
+											item.data.ImageTags.Primary
+										]
+									}
+									className="item-hero-image-blurhash"
 								/>
-							);
-						})}
-					</CardScroller>
-				)}
+								<img
+									alt={item.data.Name}
+									src={api.getItemImageUrl(item.data.Id, "Primary", {
+										quality: 90,
+										tag: item.data.ImageTags.Primary,
+									})}
+									onLoad={(e) => {
+										e.currentTarget.style.opacity = 1;
+									}}
+									className="item-hero-image"
+								/>
+							</>
+						) : (
+							<></>
+						)}
+					</div>
+					<div className="item-hero-detail flex flex-column">
+						{Object.keys(item.data.ImageTags).includes("Logo") ? (
+							<img
+								alt={item.data.Name}
+								src={api.getItemImageUrl(item.data.Id, "Logo", {
+									quality: 90,
+									fillWidth: 592,
+									fillHeight: 592,
+								})}
+								onLoad={(e) => {
+									e.currentTarget.style.opacity = 1;
+								}}
+								className="item-hero-logo"
+							/>
+						) : (
+							<Typography variant="h2">{item.data.Name}</Typography>
+						)}
+
+						<Stack
+							direction="row"
+							gap={2}
+							justifyItems="flex-start"
+							alignItems="center"
+						>
+							<Typography style={{ opacity: "0.8" }} variant="subtitle1">
+								{item.data.ProductionYear ?? ""}
+							</Typography>
+							{item.data.OfficialRating && (
+								<Chip variant="filled" label={item.data.OfficialRating} />
+							)}
+
+							{item.data.CommunityRating && (
+								<div
+									style={{
+										display: "flex",
+										gap: "0.25em",
+										alignItems: "center",
+									}}
+									className="hero-carousel-info-rating"
+								>
+									<div
+										className="material-symbols-rounded "
+										style={{
+											// fontSize: "2.2em",
+											color: yellow[400],
+											fontVariationSettings:
+												'"FILL" 1, "wght" 300, "GRAD" 25, "opsz" 40',
+										}}
+									>
+										star
+									</div>
+									<Typography
+										style={{
+											opacity: "0.8",
+										}}
+										variant="subtitle1"
+									>
+										{Math.round(item.data.CommunityRating * 10) / 10}
+									</Typography>
+								</div>
+							)}
+							{item.data.CriticRating && (
+								<div
+									style={{
+										display: "flex",
+										gap: "0.25em",
+										alignItems: "center",
+									}}
+									className="hero-carousel-info-rating"
+								>
+									<div
+										className="material-symbols-rounded "
+										style={{
+											color:
+												item.data.CriticRating > 50 ? green[400] : red[400],
+											fontVariationSettings:
+												'"FILL" 1, "wght" 300, "GRAD" 25, "opsz" 40',
+										}}
+									>
+										{item.data.CriticRating > 50 ? "thumb_up" : "thumb_down"}
+									</div>
+									<Typography
+										style={{
+											opacity: "0.8",
+										}}
+										variant="subtitle1"
+									>
+										{item.data.CriticRating}
+									</Typography>
+								</div>
+							)}
+
+							{item.data.RunTimeTicks && (
+								<Typography style={{ opacity: "0.8" }} variant="subtitle1">
+									{getRuntime(item.data.RunTimeTicks)}
+								</Typography>
+							)}
+							{item.data.RunTimeTicks && (
+								<Typography style={{ opacity: "0.8" }} variant="subtitle1">
+									{endsAt(
+										item.data.RunTimeTicks -
+											item.data.UserData.PlaybackPositionTicks,
+									)}
+								</Typography>
+							)}
+						</Stack>
+						<Typography variant="subtitle1" style={{ opacity: 0.8 }}>
+							{item.data.Genres.join(", ")}
+						</Typography>
+
+						<div className="item-hero-buttons-container flex flex-row">
+							<div className="flex flex-row">
+								<PlayButton
+									itemId={item.data.Id}
+									itemType={item.data.Type}
+									itemUserData={item.data.UserData}
+									currentVideoTrack={0}
+									currentAudioTrack={0}
+									currentSubTrack={0}
+									userId={user.data.Id}
+									sx={{
+										background: "hsl(195.56deg 29.03% 18.24%) !important",
+									}}
+								/>
+							</div>
+							<div className="flex flex-row" style={{ gap: "1em" }}>
+								<LikeButton
+									itemName={item.data.Name}
+									itemId={item.data.Id}
+									queryKey={["item", id]}
+									isFavorite={item.data.UserData.IsFavorite}
+									userId={user.data.Id}
+								/>
+								<MarkPlayedButton
+									itemName={item.data.Name}
+									itemId={item.data.Id}
+									queryKey={["item", id]}
+									isPlayed={item.data.UserData.Played}
+									userId={user.data.Id}
+								/>
+							</div>
+						</div>
+					</div>
+				</div>
+				<div className="item-detail">
+					<div style={{ width: "100%" }}>
+						{item.data.UserData.PlaybackPositionTicks > 0 && (
+							<div
+								style={{
+									width: "40%",
+									marginBottom: "1em",
+								}}
+							>
+								<Typography>
+									{getRuntime(
+										item.data.RunTimeTicks -
+											item.data.UserData.PlaybackPositionTicks,
+									)}{" "}
+									left
+								</Typography>
+								<LinearProgress
+									color="white"
+									variant="determinate"
+									value={item.data.UserData.PlayedPercentage}
+									style={{
+										borderRadius: "10px",
+									}}
+								/>
+							</div>
+						)}
+						<Typography variant="h5" fontStyle="italic" mb={1}>
+							{item.data.Taglines[0] ?? ""}
+						</Typography>
+						<ShowMoreText
+							content={item.data.Overview ?? ""}
+							collapsedLines={4}
+						/>
+					</div>
+					<Divider flexItem orientation="vertical" />
+					<div
+						style={{
+							width: "100%",
+						}}
+					>
+						<div
+							style={{
+								display: "flex",
+								gap: "0.6em",
+								alignSelf: "end",
+								marginTop: "1em",
+							}}
+						>
+							{item.data.ExternalUrls.map((url) => (
+								<Link
+									key={url.Url}
+									target="_blank"
+									to={url.Url}
+									className="item-detail-link"
+								>
+									<Typography>{url.Name}</Typography>
+								</Link>
+							))}
+						</div>
+					</div>
+				</div>
 				{collectionItems.data.TotalRecordCount > 0 && (
 					<CardScroller title="Items" displayCards={8} disableDecoration>
 						{collectionItems.data.Items.map((similar, index) => {
