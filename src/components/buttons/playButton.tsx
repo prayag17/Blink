@@ -24,6 +24,9 @@ import { useSnackbar } from "notistack";
 import { useNavigate } from "react-router-dom";
 import { useApi } from "../../utils/store/api";
 import { useAudioPlayback } from "../../utils/store/audioPlayback";
+
+import useQueue, { setQueue } from "../../utils/store/queue";
+
 import {
 	setItem,
 	usePlaybackDataLoadStore,
@@ -195,13 +198,15 @@ const PlayButton = ({
 			console.log(result.Items[0].MediaSources);
 			if (trackIndex) {
 				setPlaylistItemId(playlistItemId);
-				setCurrentTrack(trackIndex);
-				setAudioTracks(result.Items);
+				// setCurrentTrack(trackIndex);
+				// setAudioTracks(result.Items);
 				setAudioUrl(
 					`${api.basePath}/Audio/${result.Items[trackIndex].Id}/universal?deviceId=${api.deviceInfo.id}&userId=${userId}&api_key=${api.accessToken}`,
 				);
 				setAudioItem(result.Items[trackIndex]);
 				setAudioDisplay(true);
+
+				setQueue(result.Items, trackIndex);
 			} else if (audio) {
 				setAudioItem(result.Items[0]);
 				setAudioTracks(result.Items);
@@ -209,6 +214,7 @@ const PlayButton = ({
 					`${api.basePath}/Audio/${result.Items[0].Id}/universal?deviceId=${api.deviceInfo.id}&userId=${userId}&api_key=${api.accessToken}`,
 				);
 				setAudioDisplay(true);
+				setQueue(result.Items, 0);
 			} else {
 				setUserId(userId);
 				setItemId(result.Items[0].Id);

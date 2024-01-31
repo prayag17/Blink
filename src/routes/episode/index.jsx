@@ -213,6 +213,12 @@ const EpisodeTitlePage = () => {
 		if (audioTracks[0]?.DisplayTitle.toLocaleLowerCase().includes("truehd")) {
 			return "TrueHD";
 		}
+		if (
+			audioTracks[0]?.DisplayTitle.toLocaleLowerCase().includes("ddp") ||
+			audioTracks[0]?.DisplayTitle.toLocaleLowerCase().includes("digital+")
+		) {
+			return "Dolby Digital+";
+		}
 		return "";
 	};
 

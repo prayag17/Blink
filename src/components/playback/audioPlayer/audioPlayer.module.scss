@@ -1,3 +1,4 @@
+$image-size: 4em;
 
 .audio-player {
 	position: fixed;
@@ -6,16 +7,16 @@
 	background: rgb(0 0 0 / 0.6);
 	z-index: 10;
 	display: grid;
-	padding: 1em;
+	padding: 0.5em 1em;
 	// margin: 1em;
 	backdrop-filter: blur(10px);
 	// border-radius: 10px;
-	overflow: hidden;
+	// overflow: hidden;
 	gap: 1em;
 	box-shadow: 0 0 20px rgb(0 0 0 / 0.25);
-
+	border-top: 1.2px solid rgb(255 255 255 / 0.2);
 	grid-template-columns: 25% 1fr 25%;
-
+	
 	#waveform {
 		width: 100%;
 		transform: scaleY(0);
@@ -28,13 +29,14 @@
 		display: flex;
 		align-items: center;
 		justify-content: center;
-		gap: 1em;
+		gap: 0.5em;
+		padding: 0.5em 0;
 		flex-flow: column;
 	}
 	&-info {
 		display: grid;
 		gap: 0.5em;
-		grid-template-columns: minmax(0, 4.5em) minmax(0, 1fr);
+		grid-template-columns: minmax(0, $image-size) minmax(0, 1fr);
 		width: fit-content;
 		align-items: center;
 		flex-grow: 1;
@@ -42,21 +44,23 @@
 		overflow: hidden;
 	}
 	&-image {
-		width: 4.5em;
+		width: $image-size;
 		aspect-ratio: 1;
 		object-fit: cover;
 		z-index: 1;
 		flex-shrink: 0;
 		flex-grow: 1;
-
+		
 		position: relative;
 		&-container {
-			border-radius: $border-radius-default;
+			border-radius: 5px;
 			position: relative;
 			overflow: hidden;
-			background: $clr-gradient-dark;
 			height: fit-content;
 			aspect-ratio: 1;
+			background: rgb(255 255 255 / 0.1);
+			
+			border: 1.2px solid rgb(255 255 255 / 0.1);
 		}
 		&-icon {
 			position: absolute;
@@ -64,11 +68,49 @@
 			top: 50%;
 			transform: translate(-50%, -50%);
 			font-size: 2em !important;
-			fill: url(#clr-gradient-default) !important;
 			z-index: 0;
 		}
 	}
 	&-track {
-		grid-template-columns: 4.5em 60% 0.5fr 0.5fr !important;
+		grid-template-columns: $image-size 60% 0.5fr 0.5fr !important;
+	}
+	&-playlist{
+		background: $clr-background-dark !important;
+		border: 1.2px solid rgb(255 255 255 / 0.2);
+		display: flex;
+		flex-direction: column;
+		gap: 1em;
+		// Magic scrollbar
+		&::-webkit-scrollbar {
+			&-thumb {
+				height: 150px;
+				max-height: 33%;
+			}
+			&-track {
+				margin-top: 20px;
+				margin-bottom: 20px;
+				background: transparent !important;
+			}
+		}
+		
+		&-track{
+			display: grid;
+			gap: 1em;
+			grid-template-columns: 4em 1fr 4em;
+			cursor: pointer;
+			&.active{
+				color: $clr-accent-default;
+			}
+			&-image{
+				background: rgb(255 255 255 / 0.1);
+				border: 1.2px solid rgb(255 255 255 / 0.1);
+				overflow: hidden;
+				border-radius:5px;
+				width: 100%;
+				aspect-ratio: 1;
+				height: 4em;
+			}
+		}
+		
 	}
 }

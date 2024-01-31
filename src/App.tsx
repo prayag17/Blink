@@ -440,7 +440,7 @@ function AppReady() {
 					<CssBaseline />
 					{/* <SideMenu />  */}
 					<AppBar />
-					<AudioPlayer key={audioPlayerVisible} />
+					{audioPlayerVisible && <AudioPlayer />}
 					<ErrorBoundary FallbackComponent={ErrorNotice} key={location.key}>
 						<Routes location={location}>
 							{/* <Route
@@ -510,7 +510,7 @@ function AppReady() {
 						</Routes>
 					</ErrorBoundary>
 				</div>
-				<ReactQueryDevtools buttonPosition="bottom-left" />
+				<ReactQueryDevtools buttonPosition="top-left" />
 			</ThemeProvider>
 		</SnackbarProvider>
 	);
