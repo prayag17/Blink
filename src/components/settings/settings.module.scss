@@ -4,8 +4,11 @@
     height: 60vh;
     overflow: hidden !important;
     
+    .MuiTabs-flexContainerVertical{
+        height: 100%;
+    }
     &-container{
-        margin: 14px 0em 14px 14px;
+        margin: 14px 0 14px 14px;
     }
     &-tab{
         display: grid !important;
@@ -21,6 +24,7 @@
     &-scroll{
         overflow-y: auto;
         mask-image: linear-gradient(to top, transparent, black 15px calc(100% - 15px), transparent);
+        scrollbar-gutter:stable ;
         // Magic scrollbar
         &::-webkit-scrollbar {
             &-thumb {
@@ -75,7 +79,58 @@
         width: 100%;
         padding: 0 !important;
         margin: 0  0 0.4em 0!important;
+    }
 
+    //serverList
+    &-server{
+        &-container{
+            display: flex;
+            flex-direction: column;
+            gap: 1em;
+            align-items: center;
+            padding-bottom: 4.6em;
+        }
+
+        display: grid;
+		grid-template-columns: 3.4em 1fr auto;
+		justify-items: start;
+		align-items: center;
+		gap: 0.8em;
+        background: rgb(0 0 0 / 0.3);
+        padding: 1em;
+        width: 100%;
+        border-radius: $border-radius-default;
+
+        &-icon {
+			font-size: 3.4em !important;
+	font-variation-settings: "FILL" 1, "wght" 500, "GRAD" 10, "opsz" 40;
+
+		}
+		&-info {
+			display: flex;
+			flex-direction: column;
+			// width: 100%;
+            &-version {
+                display: flex;
+                align-items: center;
+                gap:0.4em;
+            }
+		}
+		&-buttons {
+			display: flex;
+			flex-direction: row;
+			gap: 0.5em;
+			// width: 100%;
+			overflow: hidden;
+		}
+
+        // Dialog
+        &-add {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 1em;
+        }
     }
 }
 

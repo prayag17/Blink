@@ -35,6 +35,7 @@ import { useApi } from "../../utils/store/api";
 
 import { getTypeIcon } from "../utils/iconsCollection";
 
+import { Divider } from "@mui/material";
 import logo from "../../assets/icon.svg";
 import {
 	setSettingsDialogOpen,
@@ -386,8 +387,21 @@ export const AppBar = () => {
 						>
 							<MenuItem
 								onClick={() => {
+									handleLogout();
+									handleMenuClose();
+								}}
+							>
+								<ListItemIcon>
+									<div className="material-symbols-rounded">logout</div>
+								</ListItemIcon>
+								Logout
+							</MenuItem>
+							<Divider />
+							<MenuItem
+								onClick={() => {
 									setSettingsDialogOpen(true);
 									setSettingsTabValue(1);
+									handleMenuClose();
 								}}
 							>
 								<ListItemIcon>
@@ -399,30 +413,13 @@ export const AppBar = () => {
 								onClick={() => {
 									setSettingsDialogOpen(true);
 									setSettingsTabValue(10);
+									handleMenuClose();
 								}}
 							>
 								<ListItemIcon>
 									<div className="material-symbols-rounded">info</div>
 								</ListItemIcon>
 								About
-							</MenuItem>
-							<MenuItem onClick={handleLogout}>
-								<ListItemIcon>
-									<div className="material-symbols-rounded">logout</div>
-								</ListItemIcon>
-								Logout
-							</MenuItem>
-							<MenuItem
-								onClick={async () => {
-									navigate("/servers/list");
-								}}
-							>
-								<ListItemIcon>
-									<div className="material-symbols-rounded appBar-icon">
-										dns
-									</div>
-								</ListItemIcon>
-								Select Server
 							</MenuItem>
 						</Menu>
 					</div>
