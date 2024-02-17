@@ -17,8 +17,8 @@
 	&-icon {
 		height: 100%;
 		padding: 0.2em;
-		background: $clr-gradient-dark;
-		fill: url(#clr-gradient-default) !important;
+		background: rgb(255 255 255 / 0.1);
+		color: white;
 		font-size: 7em !important;
 	}
 }

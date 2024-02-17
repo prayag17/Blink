@@ -8,9 +8,9 @@
 		backdrop-filter: blur(10px);
 	}
 	&-avatar {
-		background: $clr-gradient-dark;
+		background: rgb(255 255 255 / 0.1) !important;
 		&-icon {
-			fill: url(#clr-gradient-default) !important;
+			color: white;
 		}
 	}
 	&-text {

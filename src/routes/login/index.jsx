@@ -33,7 +33,7 @@ import { useSnackbar } from "notistack";
 
 import { AppBarBackOnly } from "../../components/appBar/backOnly.jsx";
 import { AvatarImage } from "../../components/avatar/avatar.jsx";
-import { Card } from "../../components/card/card.jsx";
+import { Card } from "../../components/card/card";
 
 import { getBrandingApi } from "@jellyfin/sdk/lib/utils/api/branding-api";
 import { getQuickConnectApi } from "@jellyfin/sdk/lib/utils/api/quick-connect-api";
@@ -117,7 +117,14 @@ export const LoginWithImage = () => {
 			);
 			return auth;
 		} catch (error) {
-			enqueueSnackbar("Incorrect Password!", { variant: "error" });
+			if (error.response.status === 500) {
+				enqueueSnackbar(
+					"Unable to connect to server. Please try again after some time.",
+					{ variant: "error" },
+				);
+			} else {
+				enqueueSnackbar("Incorrect Password.", { variant: "error" });
+			}
 			setLoading(false);
 			console.error(error);
 		}
@@ -175,12 +182,22 @@ export const LoginWithImage = () => {
 					elevation={2}
 				>
 					<Typography
-						textAlign="left"
+						textAlign="center"
 						variant="h5"
 						sx={{ opacity: 0.8 }}
 						mb={2}
 					>
-						Login as {userName}:
+						Login as{" "}
+						<Typography
+							variant="h5"
+							style={{
+								display: "inline",
+							}}
+							fontWeight={700}
+							className="gradient-text"
+						>
+							{userName}
+						</Typography>
 					</Typography>
 					<FormGroup
 						sx={{

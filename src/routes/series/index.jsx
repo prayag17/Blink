@@ -1,5 +1,5 @@
 import PropTypes from "prop-types";
-import React, { useState, useEffect, useLayoutEffect } from "react";
+import React, { useState, useEffect, useLayoutEffect, useRef } from "react";
 
 import Box from "@mui/material/Box";
 import MuiCard from "@mui/material/Card";
@@ -16,7 +16,8 @@ import TextField from "@mui/material/TextField";
 import Typography from "@mui/material/Typography";
 import { green, red, yellow } from "@mui/material/colors";
 
-import { motion } from "framer-motion";
+import { motion, useScroll } from "framer-motion";
+import useParallax from "../../utils/hooks/useParallax";
 
 import { useParams } from "react-router-dom";
 
@@ -240,6 +241,13 @@ const SeriesTitlePage = () => {
 		}
 	}, [seasons.isSuccess]);
 
+	const pageRef = useRef(null);
+	const { scrollYProgress } = useScroll({
+		target: pageRef,
+		offset: ["start start", "60vh start"],
+	});
+	const parallax = useParallax(scrollYProgress, 50);
+
 	if (item.isPending || similarItems.isPending) {
 		return (
 			<Box
@@ -271,11 +279,12 @@ const SeriesTitlePage = () => {
 					ease: "easeInOut",
 				}}
 				className="scrollY padded-top flex flex-column item item-series"
+				ref={pageRef}
 			>
 				<div className="item-hero flex flex-row">
 					<div className="item-hero-backdrop-container">
 						{item.data.BackdropImageTags ? (
-							<img
+							<motion.img
 								alt={item.data.Name}
 								src={api.getItemImageUrl(item.data.Id, "Backdrop", {
 									tag: item.data.BackdropImageTags[0],
@@ -283,6 +292,9 @@ const SeriesTitlePage = () => {
 								className="item-hero-backdrop"
 								onLoad={(e) => {
 									e.currentTarget.style.opacity = 1;
+								}}
+								style={{
+									y: parallax,
 								}}
 							/>
 						) : (

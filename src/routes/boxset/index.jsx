@@ -1,5 +1,5 @@
 import PropTypes from "prop-types";
-import React, { useState, useEffect, useLayoutEffect } from "react";
+import React, { useState, useEffect, useLayoutEffect, useRef } from "react";
 
 import Box from "@mui/material/Box";
 import Chip from "@mui/material/Chip";
@@ -9,7 +9,8 @@ import Stack from "@mui/material/Stack";
 import Typography from "@mui/material/Typography";
 import { Link, useNavigate, useParams } from "react-router-dom";
 
-import { motion } from "framer-motion";
+import { motion, useScroll } from "framer-motion";
+import useParallax from "../../utils/hooks/useParallax";
 
 import {
 	BaseItemKind,
@@ -128,6 +129,13 @@ const BoxSetTitlePage = () => {
 		}
 	}, [item.isSuccess]);
 
+	const pageRef = useRef(null);
+	const { scrollYProgress } = useScroll({
+		target: pageRef,
+		offset: ["start start", "60vh start"],
+	});
+	const parallax = useParallax(scrollYProgress, 50);
+
 	if (item.isPending || similarItems.isPending) {
 		return (
 			<Box
@@ -158,16 +166,20 @@ const BoxSetTitlePage = () => {
 					ease: "easeInOut",
 				}}
 				className="scrollY item item-boxset padded-top"
+				ref={pageRef}
 			>
 				<div className="item-hero flex flex-row">
 					<div className="item-hero-backdrop-container">
 						{item.data.BackdropImageTags ? (
-							<img
+							<motion.img
 								alt={item.data.Name}
 								src={meshBg}
 								className="item-hero-backdrop"
 								onLoad={(e) => {
 									e.currentTarget.style.opacity = 1;
+								}}
+								style={{
+									y: parallax,
 								}}
 							/>
 						) : (

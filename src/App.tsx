@@ -5,6 +5,7 @@ import { AnimatePresence, motion } from "framer-motion";
 import { SnackbarProvider } from "notistack";
 import {
 	Navigate,
+	Outlet,
 	Route,
 	Routes,
 	useLocation,
@@ -60,7 +61,6 @@ import { VideoPlayer } from "./routes/player/videoPlayer.jsx";
 import PlaylistTitlePage from "./routes/playlist/index.jsx";
 import SearchPage from "./routes/search";
 import SeriesTitlePage from "./routes/series/index.jsx";
-import Settings from "./routes/settings";
 import { ServerSetup } from "./routes/setup/server";
 import ServerList from "./routes/setup/serverList/index.jsx";
 
@@ -108,6 +108,7 @@ import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 import { useSnackbar } from "notistack";
 import { ErrorBoundary } from "react-error-boundary";
 
+import Settings from "./components/settings";
 import { EasterEgg } from "./components/utils/easterEgg.jsx";
 import { handleRelaunch } from "./utils/misc/relaunch";
 import {
@@ -240,10 +241,6 @@ function AppReady() {
 		undefined,
 	);
 
-	useEffect(() => {
-		window.scrollTo(0, 0);
-	}, [location.key]);
-
 	useLayoutEffect(() => {
 		async function checkForUpdates() {
 			try {
@@ -280,6 +277,8 @@ function AppReady() {
 	return (
 		<SnackbarProvider maxSnack={5}>
 			<ThemeProvider theme={theme}>
+				<CssBaseline />
+
 				{playbackDataLoading && (
 					<LinearProgress
 						sx={{
@@ -392,6 +391,8 @@ function AppReady() {
 						</>
 					)}
 				</Dialog>
+
+				<Settings />
 				<EasterEgg />
 
 				{/* Show Dialog if server not reachable */}
@@ -437,16 +438,11 @@ function AppReady() {
 						transition: "padding 250ms",
 					}}
 				>
-					<CssBaseline />
 					{/* <SideMenu />  */}
 					<AppBar />
 					{audioPlayerVisible && <AudioPlayer />}
 					<ErrorBoundary FallbackComponent={ErrorNotice} key={location.key}>
 						<Routes location={location}>
-							{/* <Route
-								// key={location.key}
-								element={<AnimationWrapper />}
-							> */}
 							<Route path="/" element={<Navigate to={initialRoute} />} />
 							<Route
 								path="/error"
@@ -503,14 +499,13 @@ function AppReady() {
 							<Route path="/series/:id" element={<SeriesTitlePage />} />
 							<Route path="/search" element={<SearchPage />} />
 							<Route path="/favorite" element={<FavoritePage />} />
-							<Route path="/settings" element={<Settings />} />
 							<Route path="/about" element={<About />} />
 							<Route path="/player" element={<VideoPlayer />} />
-							{/* </Route> */}
 						</Routes>
 					</ErrorBoundary>
 				</div>
-				<ReactQueryDevtools buttonPosition="top-left" />
+
+				<ReactQueryDevtools buttonPosition="bottom-right" />
 			</ThemeProvider>
 		</SnackbarProvider>
 	);

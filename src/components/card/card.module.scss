@@ -30,12 +30,21 @@
 			overflow: hidden;
 			height: auto;
 			z-index: 0;
+			&.thumb{
+				aspect-ratio: 1.777777;
+			}
+			&.portrait{
+				aspect-ratio: 0.666666;
+			}
+			&.square {
+				aspect-ratio: 1;
+			}
 		}
+
 		&-icon {
 			font-size: 5.4em !important;
-			fill: url(#clr-gradient-default) !important;
 			&-container {
-				background: rgb(255 255 255 / 0.1);
+				background: linear-gradient(45deg, rgb(255 255 255 / 0.05), rgb(255 255 255 / 0.1));
 				height: 100%;
 				width: 100%;
 				position: absolute;

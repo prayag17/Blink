@@ -1,5 +1,5 @@
 import PropTypes from "prop-types";
-import React, { useState, useEffect, useLayoutEffect } from "react";
+import React, { useState, useEffect, useLayoutEffect, useRef } from "react";
 
 import Box from "@mui/material/Box";
 import CircularProgress from "@mui/material/CircularProgress";
@@ -8,7 +8,8 @@ import Tab from "@mui/material/Tab";
 import Tabs from "@mui/material/Tabs";
 import Typography from "@mui/material/Typography";
 
-import { AnimatePresence, motion } from "framer-motion";
+import { AnimatePresence, motion, useScroll } from "framer-motion";
+import useParallax from "../../utils/hooks/useParallax";
 
 import { Link, useParams } from "react-router-dom";
 
@@ -242,6 +243,13 @@ const PersonTitlePage = () => {
 
 	const [animationDirection, setAnimationDirection] = useState("forward");
 
+	const pageRef = useRef(null);
+	const { scrollYProgress } = useScroll({
+		target: pageRef,
+		offset: ["start start", "60vh start"],
+	});
+	const parallax = useParallax(scrollYProgress, 50);
+
 	if (item.isPending) {
 		return (
 			<Box
@@ -273,15 +281,19 @@ const PersonTitlePage = () => {
 					ease: "easeInOut",
 				}}
 				className="scrollY padded-top item item-person flex flex-column"
+				ref={pageRef}
 			>
 				<div className="item-hero flex flex-row">
 					<div className="item-hero-backdrop-container">
-						<img
+						<motion.img
 							alt={item.data.Name}
 							src={meshBg}
 							className="item-hero-backdrop"
 							onLoad={(e) => {
 								e.currentTarget.style.opacity = 1;
+							}}
+							style={{
+								y: parallax,
 							}}
 						/>
 					</div>

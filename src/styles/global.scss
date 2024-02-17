@@ -231,3 +231,10 @@ h1 {
 		opacity: 0.1;
 	}
 }
+
+.gradient-text{
+	background: $clr-gradient-default;
+	color: transparent;
+	-webkit-background-clip: text;
+	background-clip: text;
+}

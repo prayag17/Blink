@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 
 import { useNavigate } from "react-router-dom";
 
@@ -8,7 +8,7 @@ import Typography from "@mui/material/Typography";
 import { getTypeIcon } from "../utils/iconsCollection";
 import "./card.module.scss";
 
-import { BaseItemKind } from "@jellyfin/sdk/lib/generated-client";
+import { BaseItemDto, BaseItemKind } from "@jellyfin/sdk/lib/generated-client";
 import { useApi } from "../../utils/store/api";
 import LikeButton from "../buttons/likeButton";
 import MarkPlayedButton from "../buttons/markPlayedButton";
@@ -29,43 +29,32 @@ const availableSpecialRoutes = [
 	BaseItemKind.Playlist,
 ];
 
-/**
- * @typedef {Object} Props
- * @property {import("@jellyfin/sdk/lib/generated-client/models").BaseItemDto} item
- * @property {string}  cardTitle
- * @property {string | number}  cardCaption
- * @property {string} imageType
- * @property {string} imageBlurhash
- * @property {'thumb' | 'portrait' | 'square'} cardType
- * @property {Array} queryKey
- * @property {string} userId
- * @property {string} seriesId
- * @property {boolean} hideText
- * @property {() => {}} onClick
- * @property {boolean} disableOverlay
- * @property {boolean} disablePadding
- * @property {any} overrideIcon
- */
-
-/**
- * @description Hero section for item pages
- * @param {Props}
- * @returns {React.Component}
- */
-
 export const Card = ({
 	item,
 	cardTitle,
 	cardCaption,
 	imageType = "Primary",
-	cardType,
+	cardType = "square",
 	queryKey,
 	userId,
 	seriesId,
-	hideText,
+	hideText = false,
 	onClick,
 	disableOverlay = false,
 	overrideIcon,
+}: {
+	item: BaseItemDto;
+	cardTitle: string | null;
+	cardCaption: string | null;
+	imageType: string;
+	cardType: string;
+	queryKey: [];
+	userId: string;
+	seriesId: string | null;
+	hideText: boolean;
+	onClick: Function | null;
+	disableOverlay: boolean;
+	overrideIcon: React.Component | null;
 }) => {
 	const [api] = useApi((state) => [state.api]);
 	const navigate = useNavigate();
@@ -80,18 +69,14 @@ export const Card = ({
 			navigate(`/item/${item.Id}`);
 		}
 	};
+
 	return (
 		<div
 			className="card"
 			elevation={0}
 			onClick={onClick ? onClick : defaultOnClick}
 		>
-			<div
-				className="card-image-container"
-				style={{
-					aspectRatio: cardImageAspectRatios[cardType],
-				}}
-			>
+			<div className={`card-image-container ${cardType}`}>
 				<ErrorBoundary fallback>
 					<div
 						className="card-indicator check"
@@ -157,8 +142,9 @@ export const Card = ({
 					}}
 					loading="lazy"
 					onLoad={(e) => {
-						e.target.style.opacity = 1;
+						e.currentTarget.style.setProperty("opacity", "1");
 					}}
+					onLoadStart={(e) => console.log(e)}
 					className="card-image"
 				/>
 				<div className="card-overlay">

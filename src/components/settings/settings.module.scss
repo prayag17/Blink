@@ -1,0 +1,85 @@
+.settings{
+    display: grid !important;
+    grid-template-columns: 20% 1fr;
+    height: 60vh;
+    overflow: hidden !important;
+    
+    &-container{
+        margin: 14px 0em 14px 14px;
+    }
+    &-tab{
+        display: grid !important;
+        grid-template-columns: 2em 1fr;
+        align-items: center;
+        justify-items: start !important;
+        gap:1em;
+        & .material-symbols-rounded{
+            justify-self: center !important;
+        }
+
+    }
+    &-scroll{
+        overflow-y: auto;
+        mask-image: linear-gradient(to top, transparent, black 15px calc(100% - 15px), transparent);
+        // Magic scrollbar
+        &::-webkit-scrollbar {
+            &-thumb {
+                height: 150px;
+                max-height: 33%;
+            }
+            &-track {
+                margin-top: 15px;
+                margin-bottom: 15px;
+                background: transparent !important;
+            }
+        }
+    }
+    
+    // About page
+    &-grid{
+        display: grid;
+        grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+        gap:1em;
+    }
+    &-logo{
+        width: 100%;
+        background: rgb(255 255 255 / 1);
+        padding: 2em;
+        margin-bottom: 1em;
+        border-radius: $border-radius-default;
+    }
+    &-info{
+        display: grid;
+        grid-template-columns: 40% 1fr;
+        gap: 1em;
+        justify-items: start;
+        align-items: center;
+        
+        &-container{
+            background: rgb(0 0 0 / 0.3);
+            border: 1px solid rgb(255 255 255 / 0.1);
+            padding: 1em;
+            border-radius: $border-radius-default;
+            display: flex;
+            flex-direction: column;
+            gap:0.4em;
+            width: 100%;
+        }
+    }
+    
+    //settings
+    &-option{
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        width: 100%;
+        padding: 0 !important;
+        margin: 0  0 0.4em 0!important;
+
+    }
+}
+
+.Mui-selected .material-symbols-rounded{
+	font-variation-settings: "FILL" 1, "wght" 300, "GRAD" 25, "opsz" 40;
+    
+}

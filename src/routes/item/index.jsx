@@ -1,5 +1,5 @@
 import PropTypes from "prop-types";
-import React, { useState, useLayoutEffect } from "react";
+import React, { useState, useLayoutEffect, useRef } from "react";
 
 import Box from "@mui/material/Box";
 import Chip from "@mui/material/Chip";
@@ -16,7 +16,8 @@ import { Blurhash } from "react-blurhash";
 
 import { Link, NavLink, useParams } from "react-router-dom";
 
-import { motion } from "framer-motion";
+import { motion, useScroll } from "framer-motion";
+import useParallax from "../../utils/hooks/useParallax";
 
 import {
 	BaseItemKind,
@@ -46,6 +47,8 @@ import { getTypeIcon } from "../../components/utils/iconsCollection";
 import { endsAt, getRuntime } from "../../utils/date/time";
 import { useApi } from "../../utils/store/api";
 import { useBackdropStore } from "../../utils/store/backdrop";
+
+import ItemSkeleton from "../../components/skeleton/item";
 
 function TabPanel(props) {
 	const { children, value, index, ...other } = props;
@@ -245,6 +248,9 @@ const ItemDetail = () => {
 		) {
 			return "Dolby Digital+";
 		}
+		if (audioTracks[0]?.DisplayTitle.toLocaleLowerCase().includes("dd")) {
+			return "Dolby Digital";
+		}
 		return "";
 	};
 
@@ -258,19 +264,28 @@ const ItemDetail = () => {
 		return "2.0";
 	};
 
+	const pageRef = useRef(null);
+	const { scrollYProgress } = useScroll({
+		layoutEffect: false,
+		target: pageRef,
+		offset: ["start start", "60vh start"],
+	});
+	const parallax = useParallax(scrollYProgress, 50);
+
 	if (item.isPending || similarItems.isPending) {
 		return (
-			<Box
-				sx={{
-					width: "100%",
-					height: "100vh",
-					display: "flex",
-					alignItems: "center",
-					justifyContent: "center",
-				}}
-			>
-				<CircularProgress />
-			</Box>
+			// <Box
+			// 	sx={{
+			// 		width: "100%",
+			// 		height: "100vh",
+			// 		display: "flex",
+			// 		alignItems: "center",
+			// 		justifyContent: "center",
+			// 	}}
+			// >
+			// 	<CircularProgress />
+			// </Box>
+			<ItemSkeleton />
 		);
 	}
 
@@ -289,11 +304,12 @@ const ItemDetail = () => {
 					ease: "easeInOut",
 				}}
 				className="scrollY padded-top flex flex-column item item-default"
+				ref={pageRef}
 			>
 				<div className="item-hero flex flex-row">
 					<div className="item-hero-backdrop-container">
 						{item.data.BackdropImageTags ? (
-							<img
+							<motion.img
 								alt={item.data.Name}
 								src={api.getItemImageUrl(item.data.Id, "Backdrop", {
 									tag: item.data.BackdropImageTags[0],
@@ -301,6 +317,9 @@ const ItemDetail = () => {
 								className="item-hero-backdrop"
 								onLoad={(e) => {
 									e.currentTarget.style.opacity = 1;
+								}}
+								style={{
+									y: parallax,
 								}}
 							/>
 						) : (

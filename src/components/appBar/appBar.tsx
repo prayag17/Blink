@@ -18,7 +18,7 @@ import useScrollTrigger from "@mui/material/useScrollTrigger";
 
 import { red } from "@mui/material/colors";
 
-import { NavLink, useLocation, useNavigate } from "react-router-dom";
+import { Link, NavLink, useLocation, useNavigate } from "react-router-dom";
 
 import { getUserApi } from "@jellyfin/sdk/lib/utils/api/user-api";
 import { getUserViewsApi } from "@jellyfin/sdk/lib/utils/api/user-views-api";
@@ -33,9 +33,13 @@ import "./appBar.module.scss";
 import { EventEmitter as event } from "../../eventEmitter";
 import { useApi } from "../../utils/store/api";
 
-import { getTypeIcon } from "../../components/utils/iconsCollection";
+import { getTypeIcon } from "../utils/iconsCollection";
 
 import logo from "../../assets/icon.svg";
+import {
+	setSettingsDialogOpen,
+	setSettingsTabValue,
+} from "../../utils/store/settings";
 
 const forwardRefNavLink = React.forwardRef({
 	displayName: "NavLink",
@@ -380,13 +384,23 @@ export const AppBar = () => {
 							sx={{ mt: 2 }}
 							disableScrollLock
 						>
-							<MenuItem onClick={() => navigate("/settings")} disabled>
+							<MenuItem
+								onClick={() => {
+									setSettingsDialogOpen(true);
+									setSettingsTabValue(1);
+								}}
+							>
 								<ListItemIcon>
 									<div className="material-symbols-rounded">settings</div>
 								</ListItemIcon>
 								Settings
 							</MenuItem>
-							<MenuItem onClick={() => navigate("/about")}>
+							<MenuItem
+								onClick={() => {
+									setSettingsDialogOpen(true);
+									setSettingsTabValue(10);
+								}}
+							>
 								<ListItemIcon>
 									<div className="material-symbols-rounded">info</div>
 								</ListItemIcon>

@@ -1,5 +1,5 @@
 import PropTypes from "prop-types";
-import React, { useEffect, useLayoutEffect } from "react";
+import React, { useEffect, useLayoutEffect, useRef } from "react";
 
 import Box from "@mui/material/Box";
 import Chip from "@mui/material/Chip";
@@ -11,7 +11,8 @@ import Typography from "@mui/material/Typography";
 
 import { Link, NavLink, useParams } from "react-router-dom";
 
-import { motion } from "framer-motion";
+import { motion, useScroll } from "framer-motion";
+import useParallax from "../../utils/hooks/useParallax";
 
 import {
 	BaseItemKind,
@@ -170,6 +171,13 @@ const MusicAlbumTitlePage = () => {
 		}
 	}, [item.isSuccess]);
 
+	const pageRef = useRef(null);
+	const { scrollYProgress } = useScroll({
+		target: pageRef,
+		offset: ["start start", "60vh start"],
+	});
+	const parallax = useParallax(scrollYProgress, 50);
+
 	if (item.isPending || similarItems.isPending) {
 		return (
 			<Box
@@ -200,11 +208,12 @@ const MusicAlbumTitlePage = () => {
 					ease: "easeInOut",
 				}}
 				className="scrollY padded-top item item-album"
+				ref={pageRef}
 			>
 				<div className="item-hero flex flex-row">
 					<div className="item-hero-backdrop-container">
 						{item.data.BackdropImageTags ? (
-							<img
+							<motion.img
 								alt={item.data.Name}
 								src={api.getItemImageUrl(
 									item.data.ParentBackdropItemId,
@@ -216,6 +225,9 @@ const MusicAlbumTitlePage = () => {
 								className="item-hero-backdrop"
 								onLoad={(e) => {
 									e.currentTarget.style.opacity = 1;
+								}}
+								style={{
+									y: parallax,
 								}}
 							/>
 						) : (

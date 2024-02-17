@@ -1,11 +1,19 @@
-
 import { defineConfig } from "vite";
 import react from "@vitejs/plugin-react";
 import svgr from "vite-plugin-svgr";
+import million from "million/compiler";
 
 // https://vitejs.dev/config/
 export default defineConfig({
-	plugins: [react(), svgr()],
+	plugins: [
+		react(),
+		svgr(),
+		// million.vite({
+		// 	auto: {
+		// 		skip: [/ReactQueryDevtools/g],
+		// 	},
+		// }),
+	],
 	css: {
 		modules: {
 			scopeBehaviour: "global",
@@ -28,14 +36,11 @@ export default defineConfig({
 	envPrefix: ["VITE_", "TAURI_"],
 	build: {
 		// Tauri uses Chromium on Windows and WebKit on macOS and Linux
-		target:
-			process.env.TAURI_PLATFORM == "windows"
-				? "chrome105"
-				: "safari13",
+		target: process.env.TAURI_PLATFORM == "windows" ? "chrome105" : "safari13",
 		// don't minify for debug builds
 		minify: !process.env.TAURI_DEBUG ? "esbuild" : false,
 		// produce sourcemaps for debug builds
 		sourcemap: !!process.env.TAURI_DEBUG,
-		cssCodeSplit: true
+		cssCodeSplit: true,
 	},
 });
