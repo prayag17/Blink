@@ -60,8 +60,8 @@ dependencies:
     specifier: ^11.0.2
     version: 11.0.2(react-dom@18.2.0)(react@18.2.0)
   material-symbols:
-    specifier: ^0.14.5
-    version: 0.14.5
+    specifier: ^0.15.0
+    version: 0.15.0
   notistack:
     specifier: ^3.0.1
     version: 3.0.1(csstype@3.1.3)(react-dom@18.2.0)(react@18.2.0)
@@ -3020,8 +3020,8 @@ packages:
     resolution: {integrity: sha512-Z1NL3Tb1M9wH4XESsCDEksWoKTdlUafKc4pt0GRwjUyXaCFZ+dc3g2erqB6zm3szA2IUSi7VnPI+o/9jnxh9hw==}
     dev: false
 
-  /material-symbols@0.14.5:
-    resolution: {integrity: sha512-3fB0MEG93k8C7D7sI0HSQWlKy3rgIQ6HPICkEPs9blsod/nWofSBdDPvUa9XpNRIqciqLA+hZF8DVnA4J19BlQ==}
+  /material-symbols@0.15.0:
+    resolution: {integrity: sha512-216LRlmN8fZb0CoIOaQBmRZ55BptWcd7z//0v7dXQA6aogsvI9Qp1nMQ5jZ44dbgBXntUQzWdB5Q2D+6bJXioA==}
     dev: false
 
   /mdast-util-find-and-replace@3.0.1:

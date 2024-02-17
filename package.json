@@ -30,7 +30,7 @@
 		"blurhash": "^2.0.5",
 		"events": "^3.3.0",
 		"framer-motion": "^11.0.2",
-		"material-symbols": "^0.14.5",
+		"material-symbols": "^0.15.0",
 		"notistack": "^3.0.1",
 		"react": "^18.2.0",
 		"react-blurhash": "^0.3.0",
