@@ -24,6 +24,7 @@ import PlayButton from "../buttons/playButton";
  * @property {string} imageBlurhash
  * @property {Array} queryKey
  * @property {string} userId
+ * @property {boolean} disableRunTime
  * @property {() => {}} onClick
  */
 
@@ -40,6 +41,7 @@ export const EpisodeCard = ({
 	imageBlurhash,
 	queryKey,
 	userId,
+	disableRunTime = false,
 	onClick,
 }) => {
 	const [api] = useApi((state) => [state.api]);
@@ -126,7 +128,7 @@ export const EpisodeCard = ({
 						<MarkPlayedButton
 							itemId={item.Id}
 							itemName={item.Name}
-							isPlayed={item.UserData.Played}
+							isPlayed={item.UserData?.Played}
 							queryKey={queryKey}
 							userId={userId}
 						/>
@@ -172,15 +174,17 @@ export const EpisodeCard = ({
 						>
 							{cardTitle}
 						</Typography>
-						<Typography
-							variant="subtitle1"
-							fontWeight={500}
-							noWrap
-							textAlign="start"
-							style={{ opacity: 0.8, flexShrink: 0 }}
-						>
-							{getRuntimeCompact(item.RunTimeTicks)}
-						</Typography>
+						{!disableRunTime && (
+							<Typography
+								variant="subtitle1"
+								fontWeight={500}
+								noWrap
+								textAlign="start"
+								style={{ opacity: 0.8, flexShrink: 0 }}
+							>
+								{getRuntimeCompact(item.RunTimeTicks)}
+							</Typography>
+						)}
 					</div>
 
 					<Typography

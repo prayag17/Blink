@@ -120,11 +120,7 @@ export const Card = ({
 						overrideIcon === "User"
 							? `${api.basePath}/Users/${item.Id}/Images/Primary`
 							: api.getItemImageUrl(
-									seriesId
-										? item.SeriesId
-										: item.AlbumId
-										  ? item.AlbumId
-										  : item.Id,
+									seriesId ? item.SeriesId : item.AlbumId ?? item.Id,
 									imageType,
 									{
 										quality: 90,

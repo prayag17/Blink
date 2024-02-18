@@ -16,7 +16,9 @@ import useDebounce from "../../utils/hooks/useDebounce";
 import { BaseItemKind } from "@jellyfin/sdk/lib/generated-client";
 import { getItemsApi } from "@jellyfin/sdk/lib/utils/api/items-api";
 import { getPersonsApi } from "@jellyfin/sdk/lib/utils/api/persons-api";
+import { getSearchApi } from "@jellyfin/sdk/lib/utils/api/search-api";
 import { Card } from "../../components/card/card";
+import { EpisodeCard } from "../../components/card/episodeCard";
 import { CardScroller } from "../../components/cardScroller/cardScroller";
 import { useApi } from "../../utils/store/api";
 import "./search.module.scss";
@@ -136,6 +138,20 @@ const SearchPage = () => {
 				userId: user.data.Id,
 				searchTerm,
 				limit: itemLimit,
+			});
+			return result.data;
+		},
+		enabled: user.isSuccess,
+		cacheTime: 0,
+	});
+	const episodes = useQuery({
+		queryKey: ["search", "items", "Episodes", searchParam],
+		queryFn: async () => {
+			const result = await getSearchApi(api).get({
+				userId: user.data.Id,
+				searchTerm,
+				limit: itemLimit,
+				includeItemTypes: ["Episode"],
 			});
 			return result.data;
 		},
@@ -267,6 +283,23 @@ const SearchPage = () => {
 								}
 							/>
 						))}
+					</CardScroller>
+				)}
+				{episodes.isSuccess && episodes.data.TotalRecordCount > 0 && (
+					<CardScroller title="Episodes" displayCards={4} disableDecoration>
+						{episodes.data.SearchHints.map((episode) => {
+							return (
+								<EpisodeCard
+									key={episode.Id}
+									item={episode}
+									cardTitle={episode.Series}
+									cardCaption={`S${episode.ParentIndexNumber}:E${episode.IndexNumber} - ${episode.Name}`}
+									queryKey={["search", "items", "Episodes", searchParam]}
+									userId={user.data.Id}
+									disableRunTime
+								/>
+							);
+						})}
 					</CardScroller>
 				)}
 				{audio.isSuccess && audio.data.Items.length > 0 && (
