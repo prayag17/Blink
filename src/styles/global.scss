@@ -199,6 +199,19 @@ h1 {
 	}
 }
 
+.animate-rotate{
+	animation: rotation linear 1s infinite;
+}
+
+@keyframes rotation {
+	0%{
+		transform: rotate(0deg);
+	}
+	100%{
+		transform: rotate(360deg);
+	}
+}
+
 @keyframes iconAnimation {
 	0% {
 		opacity: 1;

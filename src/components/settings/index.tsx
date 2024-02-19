@@ -8,6 +8,7 @@ import {
 	Fab,
 	FormControlLabel,
 	IconButton,
+	LinearProgress,
 	Link,
 	Skeleton,
 	Switch,
@@ -19,7 +20,7 @@ import {
 	withStyles,
 } from "@mui/material";
 import { AnimatePresence, motion, transform } from "framer-motion";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import useSettingsStore, {
 	setSettingsDialogOpen,
 	setSettingsTabValue,
@@ -154,9 +155,12 @@ const Settings = () => {
 			if (bestServer) {
 				setServer(bestServer.systemInfo.Id, bestServer);
 				setAddServerDialog(false);
-				enqueueSnackbar("Client added successfully", {
-					variant: "success",
-				});
+				enqueueSnackbar(
+					"Client added successfully. You might need to refresh client list.",
+					{
+						variant: "success",
+					},
+				);
 			}
 		},
 		onError: (err) => {
@@ -587,28 +591,38 @@ const Settings = () => {
 										</div>
 									);
 								})}
-
-							<Fab
-								variant="extended"
-								onClick={() => setAddServerDialog(true)}
-								style={{
-									position: "absolute",
-									bottom: "20px",
-									right: "20px",
-								}}
-							>
-								<span
-									className="material-symbols-rounded"
-									style={{
-										marginRight: "0.25em",
-										fontVariationSettings:
-											'"FILL" 1, "wght" 300, "GRAD" 25, "opsz" 40',
-									}}
+							<div className="settings-server-fab-container">
+								<Fab
+									onClick={() => serversOnDisk.refetch()}
+									size="medium"
+									color="info"
+									disabled={serversOnDisk.isFetching}
 								>
-									add_circle
-								</span>
-								Add server
-							</Fab>
+									<span
+										className={
+											serversOnDisk.isFetching
+												? "material-symbols-rounded animate-rotate"
+												: "material-symbols-rounded"
+										}
+									>
+										autorenew
+									</span>
+								</Fab>
+								<Fab
+									variant="extended"
+									onClick={() => setAddServerDialog(true)}
+								>
+									<span
+										className="material-symbols-rounded fill"
+										style={{
+											marginRight: "0.25em",
+										}}
+									>
+										add_circle
+									</span>
+									Add server
+								</Fab>
+							</div>
 						</div>
 					)}
 
