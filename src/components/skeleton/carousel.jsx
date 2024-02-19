@@ -11,9 +11,10 @@ export const CarouselSkeleton = () => {
 			elevation={0}
 			sx={{
 				height: "70vh",
-				margin: "4.4em 1.6em 1.6em 1.6em",
+				margin: "0.6em 1.6em 1.6em 1.6em",
 				position: "relative",
-				background: theme.palette.primary.background.main,
+				background: "black",
+				border: "1px solid rgb(255 255 255 / 0.2)",
 				borderRadius: "10px",
 				overflow: "hidden",
 			}}
@@ -24,23 +25,31 @@ export const CarouselSkeleton = () => {
 						variant="text"
 						sx={{ fontSize: "8rem" }}
 						width={300}
-						animation="wave"
+						// animation="wave"
 					/>
 				</Typography>
-				<Typography variant="p" className="hero-carousel-text">
+				<Typography
+					variant="p"
+					className="hero-carousel-text"
+					style={{ display: "flex", flexDirection: "column" }}
+				>
 					<Skeleton
 						variant="text"
-						sx={{ fontSize: "3rem" }}
+						sx={{ fontSize: "2rem" }}
 						width={400}
-						animation="wave"
+						// animation="wave"
 					/>
-				</Typography>
-				<Typography variant="p" className="hero-carousel-text">
 					<Skeleton
 						variant="text"
-						sx={{ fontSize: "3rem" }}
+						sx={{ fontSize: "2rem" }}
 						width={400}
-						animation="wave"
+						// animation="wave"
+					/>
+					<Skeleton
+						variant="text"
+						sx={{ fontSize: "2rem" }}
+						width={400}
+						// animation="wave"
 					/>
 				</Typography>
 			</div>
