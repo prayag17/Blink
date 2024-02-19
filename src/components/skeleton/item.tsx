@@ -10,14 +10,6 @@ const ItemSkeleton = () => {
 				width: "100vw",
 			}}
 		>
-			<LinearProgress
-				sx={{
-					position: "fixed",
-					top: "0",
-					left: 0,
-					right: 0,
-				}}
-			/>
 			<div
 				className="item-hero flex flex-row"
 				style={{

@@ -108,6 +108,12 @@ import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 import { useSnackbar } from "notistack";
 import { ErrorBoundary } from "react-error-boundary";
 
+import {
+	useIsFetching,
+	useIsMutating,
+	useQueryClient,
+} from "@tanstack/react-query";
+import NProgress from "./components/nProgress";
 import Settings from "./components/settings";
 import { EasterEgg } from "./components/utils/easterEgg.jsx";
 import { handleRelaunch } from "./utils/misc/relaunch";
@@ -241,6 +247,11 @@ function AppReady() {
 		undefined,
 	);
 
+	const isQueryFetching = useIsFetching();
+	const isMutating = useIsMutating();
+
+	console.info(location.pathname + "----" + isQueryFetching);
+
 	useLayoutEffect(() => {
 		async function checkForUpdates() {
 			try {
@@ -278,19 +289,10 @@ function AppReady() {
 		<SnackbarProvider maxSnack={5}>
 			<ThemeProvider theme={theme}>
 				<CssBaseline />
-
-				{playbackDataLoading && (
-					<LinearProgress
-						sx={{
-							position: "fixed",
-							top: 0,
-							left: 0,
-							right: 0,
-							width: "100vw",
-							zIndex: 100000,
-						}}
-					/>
-				)}
+				<NProgress
+					isAnimating={isQueryFetching}
+					key={isQueryFetching || isMutating ? "fetching" : "notFetching"}
+				/>
 				<Dialog
 					open={updateDialog}
 					fullWidth
