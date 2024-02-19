@@ -11,8 +11,8 @@ export const useCentralStore = create(() => ({
 		const a = await getDefaultServer();
 		return await getServer(a);
 	},
-	allServersOnDisk: async () => getAllServers(),
-	userOnDisk: async () => getUser(),
+	allServersOnDisk: async () => await getAllServers(),
+	userOnDisk: async () => await getUser(),
 	/** This is the initial route that app goes to just after app startups */
 	initialRoute: null,
 	clientVersion: version,

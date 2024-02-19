@@ -55,6 +55,9 @@ import TextLink from "../../components/textLink";
 import { getTypeIcon } from "../../components/utils/iconsCollection";
 import { useApi } from "../../utils/store/api";
 import { useBackdropStore } from "../../utils/store/backdrop";
+
+import IconLink from "../../components/iconLink";
+
 function TabPanel(props) {
 	const { children, value, index, ...other } = props;
 
@@ -598,14 +601,7 @@ const SeriesTitlePage = () => {
 							}}
 						>
 							{item.data.ExternalUrls.map((url) => (
-								<Link
-									key={url.Url}
-									target="_blank"
-									to={url.Url}
-									className="item-detail-link"
-								>
-									<Typography>{url.Name}</Typography>
-								</Link>
+								<IconLink url={url.Url} name={url.Name} />
 							))}
 						</div>
 					</div>

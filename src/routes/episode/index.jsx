@@ -46,6 +46,9 @@ import { useApi } from "../../utils/store/api";
 import { useBackdropStore } from "../../utils/store/backdrop";
 import "./episode.module.scss";
 
+import dolbyIcon from "../../assets/icons/dolby.svg";
+import IconLink from "../../components/iconLink";
+
 function TabPanel(props) {
 	const { children, value, index, ...other } = props;
 
@@ -218,10 +221,10 @@ const EpisodeTitlePage = () => {
 			audioTracks[0]?.DisplayTitle.toLocaleLowerCase().includes("ddp") ||
 			audioTracks[0]?.DisplayTitle.toLocaleLowerCase().includes("digital+")
 		) {
-			return "Dolby Digital+";
+			return "Digital+";
 		}
 		if (audioTracks[0]?.DisplayTitle.toLocaleLowerCase().includes("dd")) {
-			return "Dolby Digital";
+			return "Digital";
 		}
 		return "";
 	};
@@ -406,6 +409,13 @@ const EpisodeTitlePage = () => {
 									variant="filled"
 									label={
 										<Typography variant="caption" fontWeight={600}>
+											<img
+												alt="Dolby"
+												src={dolbyIcon}
+												style={{
+													height: "1.6em",
+												}}
+											/>
 											{atmosLabel()}
 										</Typography>
 									}
@@ -742,14 +752,7 @@ const EpisodeTitlePage = () => {
 							}}
 						>
 							{item.data.ExternalUrls.map((url) => (
-								<Link
-									key={url.Url}
-									target="_blank"
-									to={url.Url}
-									className="item-detail-link"
-								>
-									<Typography>{url.Name}</Typography>
-								</Link>
+								<IconLink url={url.Url} name={url.Name} />
 							))}
 						</div>
 					</div>

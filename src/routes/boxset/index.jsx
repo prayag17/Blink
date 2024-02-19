@@ -40,6 +40,9 @@ import PlayButton from "../../components/buttons/playButton";
 
 import meshBg from "../../assets/herobg.png";
 import "./boxset.module.scss";
+
+import IconLink from "../../components/iconLink";
+
 function TabPanel(props) {
 	const { children, value, index, ...other } = props;
 
@@ -411,14 +414,7 @@ const BoxSetTitlePage = () => {
 							}}
 						>
 							{item.data.ExternalUrls.map((url) => (
-								<Link
-									key={url.Url}
-									target="_blank"
-									to={url.Url}
-									className="item-detail-link"
-								>
-									<Typography>{url.Name}</Typography>
-								</Link>
+								<IconLink url={url.Url} name={url.Name} />
 							))}
 						</div>
 					</div>

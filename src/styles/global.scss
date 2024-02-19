@@ -151,6 +151,10 @@ h1 {
 	font-variation-settings: "FILL" 0, "wght" 300, "GRAD" 25, "opsz" 40;
 	font-size: 1.1em;
 	transition: all $transition-time-default;
+	&.fill{
+	font-variation-settings: "FILL" 1, "wght" 700, "GRAD" 200, "opsz" 48;
+
+	}
 }
 
 .audio-playing .scrollY {

@@ -46,6 +46,8 @@ import { useAudioPlayback } from "../../utils/store/audioPlayback";
 import { useBackdropStore } from "../../utils/store/backdrop";
 import "./album.module.scss";
 
+import IconLink from "../../components/iconLink";
+
 function TabPanel(props) {
 	const { children, value, index, ...other } = props;
 
@@ -358,14 +360,7 @@ const MusicAlbumTitlePage = () => {
 							}}
 						>
 							{item.data.ExternalUrls.map((url) => (
-								<Link
-									key={url.Url}
-									target="_blank"
-									to={url.Url}
-									className="item-detail-link"
-								>
-									<Typography>{url.Name}</Typography>
-								</Link>
+								<IconLink url={url.Url} name={url.Name} />
 							))}
 						</div>
 					</div>

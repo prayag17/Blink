@@ -41,6 +41,7 @@ import { enqueueSnackbar, useSnackbar } from "notistack";
 import { useNavigate } from "react-router-dom";
 import {
 	delServer,
+	getAllServers,
 	getDefaultServer,
 	setDefaultServer,
 	setServer,
@@ -76,7 +77,7 @@ const Settings = () => {
 
 	const serversOnDisk = useQuery({
 		queryKey: ["settings", "serversOnDisk"],
-		queryFn: serversOnDiskFn,
+		queryFn: async () => await getAllServers(),
 	});
 
 	const updateInfo = useQuery({
@@ -153,7 +154,6 @@ const Settings = () => {
 			if (bestServer) {
 				setServer(bestServer.systemInfo.Id, bestServer);
 				setAddServerDialog(false);
-				serversOnDisk.refetch();
 				enqueueSnackbar("Client added successfully", {
 					variant: "success",
 				});
@@ -165,7 +165,7 @@ const Settings = () => {
 			enqueueSnackbar("Something went wrong", { variant: "error" });
 		},
 		onSettled: (bestServer) => {
-			console.log(bestServer);
+			serversOnDisk.refetch();
 			if (!bestServer) {
 				enqueueSnackbar("Provided server address is not a Jellyfin server.", {
 					variant: "error",

@@ -50,6 +50,11 @@ import { useBackdropStore } from "../../utils/store/backdrop";
 
 import ItemSkeleton from "../../components/skeleton/item";
 
+import dolbyAtmosIcon from "../../assets/icons/dolby-atmos.svg";
+import dolbyIcon from "../../assets/icons/dolby.svg";
+
+import IconLink from "../../components/iconLink";
+
 function TabPanel(props) {
 	const { children, value, index, ...other } = props;
 
@@ -218,15 +223,15 @@ const ItemDetail = () => {
 			videoTracks[0]?.DisplayTitle.toLocaleLowerCase().includes("2160p") ||
 			videoTracks[0]?.DisplayTitle.toLocaleLowerCase().includes("4k")
 		) {
-			return <span className="material-symbols-rounded">4k</span>;
+			return <span className="material-symbols-rounded fill">4k</span>;
 		}
 		if (
 			videoTracks[0]?.DisplayTitle.toLocaleLowerCase().includes("1080p") ||
 			videoTracks[0]?.DisplayTitle.toLocaleLowerCase().includes("hd")
 		) {
-			return <span className="material-symbols-rounded">full_hd</span>;
+			return <span className="material-symbols-rounded fill">full_hd</span>;
 		}
-		return <span className="material-symbols-rounded">hd</span>;
+		return <span className="material-symbols-rounded fill">hd</span>;
 	};
 
 	const atmosLabel = () => {
@@ -246,10 +251,10 @@ const ItemDetail = () => {
 			audioTracks[0]?.DisplayTitle.toLocaleLowerCase().includes("ddp") ||
 			audioTracks[0]?.DisplayTitle.toLocaleLowerCase().includes("digital+")
 		) {
-			return "Dolby Digital+";
+			return "Digital+";
 		}
 		if (audioTracks[0]?.DisplayTitle.toLocaleLowerCase().includes("dd")) {
-			return "Dolby Digital";
+			return "Digital";
 		}
 		return "";
 	};
@@ -359,13 +364,14 @@ const ItemDetail = () => {
 						)}
 					</div>
 					<div className="item-hero-detail flex flex-column">
-						{Object.keys(item.data.ImageTags).includes("Logo") ? (
+						{item.data.ImageTags?.Logo ? (
 							<img
 								alt={item.data.Name}
 								src={api.getItemImageUrl(item.data.Id, "Logo", {
 									quality: 90,
 									fillWidth: 592,
 									fillHeight: 592,
+									tag: item.data.ImageTags.Logo,
 								})}
 								onLoad={(e) => {
 									e.currentTarget.style.opacity = 1;
@@ -424,7 +430,23 @@ const ItemDetail = () => {
 								<Chip
 									variant="filled"
 									label={
-										<Typography variant="caption" fontWeight={600}>
+										<Typography
+											variant="caption"
+											fontWeight={600}
+											style={{
+												display: "flex",
+												alignItems: "center",
+												justifyContent: "center",
+												gap: "0.5em",
+											}}
+										>
+											<img
+												alt="Dolby"
+												src={dolbyIcon}
+												style={{
+													height: "1.6em",
+												}}
+											/>
 											{atmosLabel()}
 										</Typography>
 									}
@@ -447,8 +469,8 @@ const ItemDetail = () => {
 										// >
 										// 	CC
 										// </Typography>
-										<span className="material-symbols-rounded">
-											closed_caption
+										<span className="material-symbols-rounded fill">
+											subtitles
 										</span>
 									}
 									sx={{
@@ -483,12 +505,10 @@ const ItemDetail = () => {
 									className="hero-carousel-info-rating"
 								>
 									<div
-										className="material-symbols-rounded "
+										className="material-symbols-rounded fill"
 										style={{
 											// fontSize: "2.2em",
 											color: yellow[400],
-											fontVariationSettings:
-												'"FILL" 1, "wght" 300, "GRAD" 25, "opsz" 40',
 										}}
 									>
 										star
@@ -513,12 +533,10 @@ const ItemDetail = () => {
 									className="hero-carousel-info-rating"
 								>
 									<div
-										className="material-symbols-rounded "
+										className="material-symbols-rounded fill"
 										style={{
 											color:
 												item.data.CriticRating > 50 ? green[400] : red[400],
-											fontVariationSettings:
-												'"FILL" 1, "wght" 300, "GRAD" 25, "opsz" 40',
 										}}
 									>
 										{item.data.CriticRating > 50 ? "thumb_up" : "thumb_down"}
@@ -769,14 +787,7 @@ const ItemDetail = () => {
 							}}
 						>
 							{item.data.ExternalUrls.map((url) => (
-								<Link
-									key={url.Url}
-									target="_blank"
-									to={url.Url}
-									className="item-detail-link"
-								>
-									<Typography>{url.Name}</Typography>
-								</Link>
+								<IconLink url={url.Url} name={url.Name} />
 							))}
 						</div>
 					</div>
