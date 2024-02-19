@@ -8,6 +8,7 @@ import {
 	Outlet,
 	Route,
 	Routes,
+	ScrollRestoration,
 	useLocation,
 	useNavigate,
 } from "react-router-dom";
@@ -250,8 +251,6 @@ function AppReady() {
 	const isQueryFetching = useIsFetching();
 	const isMutating = useIsMutating();
 
-	console.info(location.pathname + "----" + isQueryFetching);
-
 	useLayoutEffect(() => {
 		async function checkForUpdates() {
 			try {
@@ -289,6 +288,7 @@ function AppReady() {
 		<SnackbarProvider maxSnack={5}>
 			<ThemeProvider theme={theme}>
 				<CssBaseline />
+				<ScrollRestoration />
 				<NProgress
 					isAnimating={isQueryFetching}
 					key={isQueryFetching || isMutating ? "fetching" : "notFetching"}
