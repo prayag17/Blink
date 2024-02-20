@@ -2,119 +2,119 @@
 
 name: Continuous Integration
 on:
-  push:
-    branches:
-      - main
-  pull_request:
-    types: [opened, synchronize, reopened, ready_for_review]
+     push:
+          branches:
+               - main
+     pull_request:
+          types: [opened, synchronize, reopened, ready_for_review]
 
 jobs:
-  build_web:
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
+     build_web:
+          runs-on: ubuntu-latest
+          steps:
+               - name: Checkout repository
+                 uses: actions/checkout@v4
 
-      - uses: pnpm/action-setup@v2
-        name: Install pnpm
-        with:
-          version: 7
-          run_install: false
+               - uses: pnpm/action-setup@v3
+                 name: Install pnpm
+                 with:
+                      version: 7
+                      run_install: false
 
-      - name: Get pnpm store directory
-        shell: bash
-        run: |
-          echo "STORE_PATH=$(pnpm store path --silent)" >> $GITHUB_ENV
+               - name: Get pnpm store directory
+                 shell: bash
+                 run: |
+                      echo "STORE_PATH=$(pnpm store path --silent)" >> $GITHUB_ENV
 
-      - uses: actions/cache@v4
-        name: Setup pnpm cache
-        with:
-          path: ${{ env.STORE_PATH }}
-          key: ${{ runner.os }}-pnpm-store-${{ hashFiles('**/pnpm-lock.yaml') }}
-          restore-keys: |
-            ${{ runner.os }}-pnpm-store-
+               - uses: actions/cache@v4
+                 name: Setup pnpm cache
+                 with:
+                      path: ${{ env.STORE_PATH }}
+                      key: ${{ runner.os }}-pnpm-store-${{ hashFiles('**/pnpm-lock.yaml') }}
+                      restore-keys: |
+                           ${{ runner.os }}-pnpm-store-
 
-      - name: Sync node version and setup cache
-        uses: actions/setup-node@v4
-        with:
-          node-version: "lts/*"
-          cache: "pnpm"
+               - name: Sync node version and setup cache
+                 uses: actions/setup-node@v4
+                 with:
+                      node-version: "lts/*"
+                      cache: "pnpm"
 
-      - name: Install dependencies
-        run: pnpm install --no-frozen-lockfile
+               - name: Install dependencies
+                 run: pnpm install --no-frozen-lockfile
 
-      # - name: Lint
-      #   run: pnpm run lint
+               # - name: Lint
+               #   run: pnpm run lint
 
-      - name: Build
-        run: pnpm run build
+               - name: Build
+                 run: pnpm run build
 
-  build:
-    needs: build_web
-    # Prevent forked PRs from running the build job which is expensive
-    if: github.repository == 'prayag17/JellyPlayer'
-    strategy:
-      fail-fast: false
-      matrix:
-        platform: [macos-latest, ubuntu-22.04, windows-latest]
-    runs-on: ${{ matrix.platform }}
-    environment: TAURI
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
+     build:
+          needs: build_web
+          # Prevent forked PRs from running the build job which is expensive
+          if: github.repository == 'prayag17/JellyPlayer'
+          strategy:
+               fail-fast: false
+               matrix:
+                    platform: [macos-latest, ubuntu-22.04, windows-latest]
+          runs-on: ${{ matrix.platform }}
+          environment: TAURI
+          steps:
+               - name: Checkout repository
+                 uses: actions/checkout@v4
 
-      - name: Install dependencies (ubuntu only)
-        if: matrix.platform == 'ubuntu-22.04'
-        # You can remove libayatana-appindicator3-dev if you don't use the system tray feature.
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y libgtk-3-dev libwebkit2gtk-4.0-dev librsvg2-dev
+               - name: Install dependencies (ubuntu only)
+                 if: matrix.platform == 'ubuntu-22.04'
+                 # You can remove libayatana-appindicator3-dev if you don't use the system tray feature.
+                 run: |
+                      sudo apt-get update
+                      sudo apt-get install -y libgtk-3-dev libwebkit2gtk-4.0-dev librsvg2-dev
 
-      - name: Rust setup
-        uses: dtolnay/rust-toolchain@stable
+               - name: Rust setup
+                 uses: dtolnay/rust-toolchain@stable
 
-      - name: Rust cache
-        uses: swatinem/rust-cache@v2
-        with:
-          workspaces: "./src-tauri -> target"
+               - name: Rust cache
+                 uses: swatinem/rust-cache@v2
+                 with:
+                      workspaces: "./src-tauri -> target"
 
-      - uses: pnpm/action-setup@v2
-        name: Install pnpm
-        with:
-          version: 7
-          run_install: false
+               - uses: pnpm/action-setup@v3
+                 name: Install pnpm
+                 with:
+                      version: 7
+                      run_install: false
 
-      - name: Get pnpm store directory
-        shell: bash
-        run: |
-          echo "STORE_PATH=$(pnpm store path --silent)" >> $GITHUB_ENV
+               - name: Get pnpm store directory
+                 shell: bash
+                 run: |
+                      echo "STORE_PATH=$(pnpm store path --silent)" >> $GITHUB_ENV
 
-      - uses: actions/cache@v4
-        name: Setup pnpm cache
-        with:
-          path: ${{ env.STORE_PATH }}
-          key: ${{ runner.os }}-pnpm-store-${{ hashFiles('**/pnpm-lock.yaml') }}
-          restore-keys: |
-            ${{ runner.os }}-pnpm-store-
+               - uses: actions/cache@v4
+                 name: Setup pnpm cache
+                 with:
+                      path: ${{ env.STORE_PATH }}
+                      key: ${{ runner.os }}-pnpm-store-${{ hashFiles('**/pnpm-lock.yaml') }}
+                      restore-keys: |
+                           ${{ runner.os }}-pnpm-store-
 
-      - name: Sync node version and setup cache
-        uses: actions/setup-node@v4
-        with:
-          node-version: "lts/*"
-          cache: "pnpm"
+               - name: Sync node version and setup cache
+                 uses: actions/setup-node@v4
+                 with:
+                      node-version: "lts/*"
+                      cache: "pnpm"
 
-      - name: Install dependencies
-        run: pnpm install --no-frozen-lockfile
+               - name: Install dependencies
+                 run: pnpm install --no-frozen-lockfile
 
-      - name: Build app
-        run: pnpm run tauri build --bundles "deb" "appimage" "nsis" "app" "dmg"
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          TAURI_PRIVATE_KEY: ${{ secrets.TAURI_PRIVATE_KEY }}
-          TAURI_KEY_PASSWORD: ${{ secrets.TAURI_KEY_PASSWORD }}
+               - name: Build app
+                 run: pnpm run tauri build --bundles "deb" "appimage" "nsis" "app" "dmg"
+                 env:
+                      GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+                      TAURI_PRIVATE_KEY: ${{ secrets.TAURI_PRIVATE_KEY }}
+                      TAURI_KEY_PASSWORD: ${{ secrets.TAURI_KEY_PASSWORD }}
 
-      - name: Upload build Artifacts
-        uses: actions/upload-artifact@v4
-        with: 
-          name: JellyPlayer-${{ matrix.platform }}-dev${{ github.sha }}
-          path: src-tauri/target/release/bundle/*
+               - name: Upload build Artifacts
+                 uses: actions/upload-artifact@v4
+                 with:
+                      name: JellyPlayer-${{ matrix.platform }}-dev${{ github.sha }}
+                      path: src-tauri/target/release/bundle/*
