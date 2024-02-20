@@ -24,6 +24,7 @@ const NProgress: React.FC<{ isAnimating: boolean | number }> = ({
 		>
 			<LinearProgress
 				sx={{
+					height: 3,
 					transitionDuration: animationDuration,
 				}}
 				value={progress * 100}

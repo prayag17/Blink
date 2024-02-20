@@ -63,6 +63,7 @@ export const SeasonSelectorSkeleton = () => {
 										animationDelay: `${index * 0.2}s`,
 										animationDuration: "1.4s",
 										animationName: "pulse",
+										opacity: 0.1,
 									}}
 								/>
 							</CardMedia>
@@ -80,6 +81,7 @@ export const SeasonSelectorSkeleton = () => {
 											animationDelay: `${index * 0.2}s`,
 											animationDuration: "1.4s",
 											animationName: "pulse",
+											opacity: 0.1,
 										}}
 									/>
 								</Typography>
@@ -91,6 +93,7 @@ export const SeasonSelectorSkeleton = () => {
 											animationDelay: `${index * 0.2}s`,
 											animationDuration: "1.4s",
 											animationName: "pulse",
+											opacity: 0.1,
 										}}
 									/>
 									<Skeleton
@@ -99,6 +102,7 @@ export const SeasonSelectorSkeleton = () => {
 											animationDelay: `${index * 0.2}s`,
 											animationDuration: "1.4s",
 											animationName: "pulse",
+											opacity: 0.1,
 										}}
 									/>
 
@@ -108,6 +112,7 @@ export const SeasonSelectorSkeleton = () => {
 											animationDelay: `${index * 0.2}s`,
 											animationDuration: "1.4s",
 											animationName: "pulse",
+											opacity: 0.1,
 										}}
 									/>
 								</Typography>

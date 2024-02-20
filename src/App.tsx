@@ -5,10 +5,8 @@ import { AnimatePresence, motion } from "framer-motion";
 import { SnackbarProvider } from "notistack";
 import {
 	Navigate,
-	Outlet,
 	Route,
 	Routes,
-	ScrollRestoration,
 	useLocation,
 	useNavigate,
 } from "react-router-dom";
@@ -224,7 +222,6 @@ function App() {
 
 	return <AppReady />;
 }
-
 function AppReady() {
 	const [audioPlayerVisible] = useAudioPlayback((state) => [state.display]);
 	const { enqueueSnackbar } = useSnackbar();
@@ -250,6 +247,8 @@ function AppReady() {
 
 	const isQueryFetching = useIsFetching();
 	const isMutating = useIsMutating();
+
+	useEffect(() => window.scrollTo(0, 0), [location.key]);
 
 	useLayoutEffect(() => {
 		async function checkForUpdates() {
@@ -288,7 +287,6 @@ function AppReady() {
 		<SnackbarProvider maxSnack={5}>
 			<ThemeProvider theme={theme}>
 				<CssBaseline />
-				<ScrollRestoration />
 				<NProgress
 					isAnimating={isQueryFetching}
 					key={isQueryFetching || isMutating ? "fetching" : "notFetching"}
