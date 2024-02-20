@@ -438,7 +438,6 @@ function AppReady() {
 						transition: "padding 250ms",
 					}}
 				>
-					{/* <SideMenu />  */}
 					<AppBar />
 					{audioPlayerVisible && <AudioPlayer />}
 					<ErrorBoundary FallbackComponent={ErrorNotice} key={location.key}>
@@ -505,7 +504,7 @@ function AppReady() {
 					</ErrorBoundary>
 				</div>
 
-				<ReactQueryDevtools buttonPosition="bottom-right" position="right" />
+				<ReactQueryDevtools buttonPosition="bottom-right" position="left" />
 			</ThemeProvider>
 		</SnackbarProvider>
 	);

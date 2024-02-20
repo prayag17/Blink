@@ -3,7 +3,7 @@
 # 📝 Prerequisites
 
 - Nodejs (≥19.1.0)
-- Rust (≥1.66.1)
+- Rust (≥1.76.0)
 - Visual Studio C++ Build tools
 - [pnpm](https://pnpm.io/)
 

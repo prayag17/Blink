@@ -33,6 +33,7 @@ const getUser = async () => {
  * Delete user from storage
  */
 const delUser = async () => {
+	sessionStorage.removeItem("accessToken");
 	await user.clear();
 	await user.save();
 };

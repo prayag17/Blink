@@ -30,12 +30,13 @@ import logo from "../../assets/logoBlack.png";
 
 import { getSystemApi } from "@jellyfin/sdk/lib/utils/api/system-api";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { useApi } from "../../utils/store/api";
+import { createApi, useApi } from "../../utils/store/api";
 import { useCentralStore } from "../../utils/store/central";
 import "./settings.module.scss";
 
+import { RecommendedServerInfo } from "@jellyfin/sdk";
 import { LoadingButton } from "@mui/lab";
-import { red } from "@mui/material/colors";
+import { red, yellow } from "@mui/material/colors";
 import { relaunch } from "@tauri-apps/api/process";
 import { checkUpdate, installUpdate } from "@tauri-apps/api/updater";
 import { enqueueSnackbar, useSnackbar } from "notistack";
@@ -59,6 +60,10 @@ const motionConfig = {
 };
 
 const Settings = () => {
+	const [open, tabValue] = useSettingsStore((state) => [
+		state.dialogOpen,
+		state.tabValue,
+	]);
 	const [api, jellyfin] = useApi((state) => [state.api, state.jellyfin]);
 	const systemInfo = useQuery({
 		queryKey: ["about", "systemInfo"],
@@ -66,10 +71,11 @@ const Settings = () => {
 			const result = await getSystemApi(api).getSystemInfo();
 			return result.data;
 		},
-		enabled: Boolean(api),
+		enabled: Boolean(api) && open,
 	});
 
 	const navigate = useNavigate();
+	const { enqueueSnackbar } = useSnackbar();
 
 	const [applicationVersion, serversOnDiskFn] = useCentralStore((state) => [
 		state.clientVersion,
@@ -79,33 +85,25 @@ const Settings = () => {
 	const serversOnDisk = useQuery({
 		queryKey: ["settings", "serversOnDisk"],
 		queryFn: async () => await getAllServers(),
+		enabled: open,
 	});
 
 	const updateInfo = useQuery({
 		queryKey: ["about", "updater"],
-		queryFn: async () => {
-			const result = await checkUpdate();
-			return result;
-		},
+		queryFn: async () => await checkUpdate(),
+		enabled: open,
 	});
 
 	const defaultServer = useQuery({
 		queryKey: ["settings", "default-server"],
 		queryFn: async () => await getDefaultServer(),
+		enabled: open,
 	});
-
-	const { enqueueSnackbar } = useSnackbar();
-
-	const [open, tabValue] = useSettingsStore((state) => [
-		state.dialogOpen,
-		state.tabValue,
-	]);
 
 	const queryClient = useQueryClient();
 
 	const [updating, setUpdating] = useState(false);
-	const [animDirection, setAnimDirection] = useState("forward");
-	const [serverState, setServerState] = useState("");
+	const [serverState, setServerState] = useState();
 	const [ask, setAsk] = useState(false);
 	const [action, setAction] = useState(null);
 	const [addServerDialog, setAddServerDialog] = useState(false);
@@ -114,11 +112,15 @@ const Settings = () => {
 	const handleServerChange = useMutation({
 		mutationFn: async () => {
 			await delUser();
-			localStorage.clear();
-			await setDefaultServer(serverState);
+			await setDefaultServer(serverState.id);
+			await defaultServer.refetch();
+			createApi(serverState.address, null);
+			queryClient.removeQueries();
 		},
 		onSuccess: async () => {
-			await relaunch();
+			setAsk(false);
+			setSettingsDialogOpen(false);
+			navigate("/login/index");
 		},
 		onError: (error) => {
 			console.error(error);
@@ -128,32 +130,40 @@ const Settings = () => {
 		},
 	});
 
-	const handleDelete = async (serverId: string) => {
-		await delServer(serverId);
+	const handleDelete = async (server: RecommendedServerInfo) => {
+		await delServer(server.id);
 
-		if (serverId === defaultServer.data) {
+		if (server.id === defaultServer.data) {
 			await delUser();
 			await serversOnDisk.refetch();
 
-			if (serversOnDisk.data?.length > 0) {
+			if (serversOnDisk.data.length > 0) {
 				setDefaultServer(serversOnDisk.data[0].id);
+				createApi(serversOnDisk.data[0].address, null);
+			} else {
+				// Reset Api as no server is present on disk
+				useApi.setState(useApi.getInitialState());
 			}
+			setSettingsDialogOpen(false);
+			queryClient.removeQueries();
+			navigate("/");
 		}
-
-		setSettingsDialogOpen(false);
-		await relaunch();
+		enqueueSnackbar("Server deleted successfully!", { variant: "success" });
+		setAsk(false);
+		await serversOnDisk.refetch();
+		await defaultServer.refetch();
 	};
 
-	const checkServer = useMutation({
+	const addServer = useMutation({
 		mutationFn: async () => {
 			const servers =
 				await jellyfin.discovery.getRecommendedServerCandidates(serverIp);
 			const bestServer = jellyfin.discovery.findBestServer(servers);
 			return bestServer;
 		},
-		onSuccess: (bestServer) => {
+		onSuccess: async (bestServer) => {
 			if (bestServer) {
-				setServer(bestServer.systemInfo.Id, bestServer);
+				await setServer(bestServer.systemInfo.Id, bestServer);
 				setAddServerDialog(false);
 				enqueueSnackbar(
 					"Client added successfully. You might need to refresh client list.",
@@ -161,6 +171,7 @@ const Settings = () => {
 						variant: "success",
 					},
 				);
+				await serversOnDisk.refetch();
 			}
 		},
 		onError: (err) => {
@@ -168,8 +179,7 @@ const Settings = () => {
 			enqueueSnackbar(`${err}`, { variant: "error" });
 			enqueueSnackbar("Something went wrong", { variant: "error" });
 		},
-		onSettled: (bestServer) => {
-			serversOnDisk.refetch();
+		onSettled: async (bestServer) => {
 			if (!bestServer) {
 				enqueueSnackbar("Provided server address is not a Jellyfin server.", {
 					variant: "error",
@@ -192,15 +202,6 @@ const Settings = () => {
 				orientation="vertical"
 				value={tabValue}
 				onChange={(e, newValue) => {
-					console.log(`NewValue: ${newValue}`);
-					console.log(`TabValue: ${tabValue}`);
-					if (newValue > tabValue) {
-						console.log("forward");
-						setAnimDirection("forward");
-					} else {
-						console.log("backward");
-						setAnimDirection("backward");
-					}
 					setSettingsTabValue(newValue);
 				}}
 				style={{
@@ -502,13 +503,29 @@ const Settings = () => {
 
 					{/* Server */}
 					{tabValue === 2 && (
-						<div className="settings-container settings-server-container">
+						<motion.div
+							layoutScroll
+							className="settings-container settings-server-container"
+						>
 							{serversOnDisk.isSuccess &&
-								serversOnDisk.data.map((server) => {
+								serversOnDisk.data.map((server, index) => {
 									return (
-										<div className="settings-server">
+										<motion.div
+											key={server.id}
+											className="settings-server"
+											initial={{
+												transform: "translateY(10px)",
+												opacity: 0,
+											}}
+											animate={{ transform: "translateY(0px)", opacity: 1 }}
+											exit={{ transform: "translateY(-10px)", opacity: 1 }}
+											transition={{
+												delay: 0.1 * index,
+												duration: 0.15,
+											}}
+										>
 											<span className="material-symbols-rounded settings-server-icon">
-												dns
+												hard_drive
 											</span>
 											<div className="settings-server-info">
 												<Typography
@@ -564,7 +581,7 @@ const Settings = () => {
 													onClick={() => {
 														setAsk(true);
 														setAction("change-server");
-														setServerState(server.id);
+														setServerState(server);
 													}}
 													disabled={handleServerChange.isPending}
 												>
@@ -580,7 +597,7 @@ const Settings = () => {
 													onClick={() => {
 														setAsk(true);
 														setAction("delete-server");
-														setServerState(server.id);
+														setServerState(server);
 													}}
 												>
 													<div className="material-symbols-rounded">
@@ -588,7 +605,7 @@ const Settings = () => {
 													</div>
 												</IconButton>
 											</div>
-										</div>
+										</motion.div>
 									);
 								})}
 							<div className="settings-server-fab-container">
@@ -623,7 +640,7 @@ const Settings = () => {
 									Add server
 								</Fab>
 							</div>
-						</div>
+						</motion.div>
 					)}
 
 					{/* About */}
@@ -766,9 +783,6 @@ const Settings = () => {
 			{/* Show dialog before deleting or changing server */}
 			<Dialog open={ask} fullWidth maxWidth="xs">
 				<DialogTitle>Are you sure?</DialogTitle>
-				<DialogContent style={{ opacity: 0.8 }}>
-					JellyPlayer will relaunch.
-				</DialogContent>
 				<DialogActions
 					style={{
 						alignItems: "center",
@@ -857,9 +871,9 @@ const Settings = () => {
 							</span>
 						}
 						variant="contained"
-						loading={checkServer.isPending}
+						loading={addServer.isPending}
 						loadingPosition="start"
-						onClick={checkServer.mutate}
+						onClick={addServer.mutate}
 						color="success"
 					>
 						Add

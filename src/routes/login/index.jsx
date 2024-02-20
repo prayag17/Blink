@@ -40,7 +40,7 @@ import { getQuickConnectApi } from "@jellyfin/sdk/lib/utils/api/quick-connect-ap
 import { getUserApi } from "@jellyfin/sdk/lib/utils/api/user-api";
 
 import { ErrorNotice } from "../../components/notices/errorNotice/errorNotice.jsx";
-import { useApi } from "../../utils/store/api";
+import { createApi, useApi } from "../../utils/store/api";
 import "./login.module.scss";
 
 import { setBackdrop } from "../../utils/store/backdrop.js";
@@ -134,10 +134,10 @@ export const LoginWithImage = () => {
 		setLoading(true);
 		const user = await authUser();
 		sessionStorage.setItem("accessToken", user.data.AccessToken);
+		createApi(api.basePath, user.data.AccessToken);
 		if (rememberMe === true) {
 			await saveUser(userName, user.data.AccessToken);
 		}
-		event.emit("set-api-accessToken", api.basePath);
 		setLoading(false);
 		navigate("/home");
 	};
@@ -225,11 +225,11 @@ export const LoginWithImage = () => {
 										>
 											{password.showpass ? (
 												<span className="material-symbols-rounded">
-													visibility_off
+													visibility
 												</span>
 											) : (
 												<span className="material-symbols-rounded">
-													visibility
+													visibility_off
 												</span>
 											)}
 										</IconButton>
@@ -369,12 +369,12 @@ export const UserLogin = () => {
 			}
 
 			sessionStorage.setItem("accessToken", auth.data.AccessToken);
+			createApi(api.basePath, auth.data.AccessToken);
 
 			if (rememberMe === true) {
 				await saveUser(auth.data.User.Name, auth.data.AccessToken);
 			}
 
-			event.emit("set-api-accessToken", api.basePath);
 			setQuickConnectLoading(-1);
 			enqueueSnackbar(`Logged in as ${auth.data.User.Name}!`, {
 				variant: "success",
@@ -629,10 +629,10 @@ export const UserLoginManual = () => {
 		setLoading(true);
 		const user = await authUser();
 		sessionStorage.setItem("accessToken", user.data.AccessToken);
+		createApi(api.basePath, user.data.AccessToken);
 		if (rememberMe === true) {
 			await saveUser(userName, user.data.AccessToken);
 		}
-		event.emit("set-api-accessToken", api.basePath);
 		setLoading(false);
 		navigate("/home");
 	};
@@ -713,12 +713,12 @@ export const UserLoginManual = () => {
 			}
 
 			sessionStorage.setItem("accessToken", auth.data.AccessToken);
+			createApi(api.basePath, auth.data.AccessToken);
 
 			if (rememberMe === true) {
 				await saveUser(userName, auth.data.AccessToken);
 			}
 
-			event.emit("set-api-accessToken", api.basePath);
 			setQuickConnectLoading(-1);
 			enqueueSnackbar(`Logged in as ${auth.data.User.Name}!`, {
 				variant: "success",

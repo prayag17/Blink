@@ -8,7 +8,7 @@ import Paper from "@mui/material/Paper";
 import Typography from "@mui/material/Typography";
 import { red } from "@mui/material/colors";
 
-import { useMutation, useQuery } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useSnackbar } from "notistack";
 import { useNavigate } from "react-router-dom";
 import { AppBarBackOnly } from "../../../components/appBar/backOnly";
@@ -19,6 +19,7 @@ import {
 	setDefaultServer,
 } from "../../../utils/storage/servers";
 import { delUser } from "../../../utils/storage/user";
+import { createApi, useApi } from "../../../utils/store/api";
 import { setBackdrop } from "../../../utils/store/backdrop";
 import "./serverList.module.scss";
 
@@ -26,6 +27,9 @@ const ServerList = () => {
 	const navigate = useNavigate();
 	const [serverState, setServerState] = useState(null);
 	const { enqueueSnackbar } = useSnackbar();
+
+	const queryClient = useQueryClient();
+
 	const servers = useQuery({
 		queryKey: ["servers-list"],
 		queryFn: async () => await getAllServers(),
@@ -39,8 +43,11 @@ const ServerList = () => {
 	const handleServerChange = useMutation({
 		mutationFn: async () => {
 			await delUser();
-			console.log(serverState);
-			await setDefaultServer(serverState);
+			await setDefaultServer(serverState.id);
+			queryClient.clear();
+			await defaultServer.refetch();
+			createApi(serverState.address);
+			queryClient.removeQueries();
 		},
 		onSuccess: async () => {
 			navigate("/login/index");
@@ -53,22 +60,26 @@ const ServerList = () => {
 		},
 	});
 
-	const handleDelete = async (serverId) => {
-		await delServer(serverId);
+	const handleDelete = async (server) => {
+		await delServer(server.id);
 
-		if (serverId === defaultServer.data) {
+		if (server.id === defaultServer.data) {
 			await delUser();
 			await servers.refetch();
 
 			if (servers.length > 0) {
 				setDefaultServer(servers[0].id);
+				createApi(servers[0].address);
 			} else {
-				navigate("/login/index");
+				useApi.setState(useApi.getInitialState());
 			}
+			queryClient.removeQueries();
+			navigate("/");
 		}
+		enqueueSnackbar("Server deleted successfully!", { variant: "success" });
 
-		servers.refetch();
-		defaultServer.refetch();
+		await servers.refetch();
+		await defaultServer.refetch();
 	};
 
 	useLayoutEffect(() => {
@@ -161,7 +172,7 @@ const ServerList = () => {
 										fontSize: "1.64em",
 									}}
 									onClick={() => {
-										setServerState(server.id);
+										setServerState(server);
 										handleServerChange.mutate();
 									}}
 									disabled={handleServerChange.isPending}
@@ -176,7 +187,7 @@ const ServerList = () => {
 									}}
 									disabled={handleServerChange.isPending}
 									onClick={() => {
-										handleDelete(server.id);
+										handleDelete(server);
 									}}
 								>
 									<div className="material-symbols-rounded">delete_forever</div>

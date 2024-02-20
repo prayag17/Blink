@@ -52,7 +52,7 @@ const Home = () => {
 			});
 			return libs.data;
 		},
-		enabled: !!user.data,
+		enabled: !!user.data && !!api.accessToken,
 		networkMode: "always",
 	});
 

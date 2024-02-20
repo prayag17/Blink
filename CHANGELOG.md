@@ -5,3 +5,4 @@
     - feat(search): Add Episode to search by @prayag17
     - feat(settings-server): Add a refretch button by @prayag17
     - feat(web): Add a global query fetch/mutation status by @prayag17
+    - fix(server): Use redirect instead of relaunch when changing or deleting a server by @prayag17
