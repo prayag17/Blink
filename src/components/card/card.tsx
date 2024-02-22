@@ -184,6 +184,7 @@ export const Card = ({
 						</>
 					)}
 				</div>
+				{/*
 				{item.UserData?.PlaybackPositionTicks > 0 && (
 					<LinearProgress
 						variant="determinate"
@@ -200,7 +201,7 @@ export const Card = ({
 						}}
 						color="primary"
 					/>
-				)}
+				)} */}
 			</div>
 			<div
 				className="card-text-container"

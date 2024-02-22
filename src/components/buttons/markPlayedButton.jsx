@@ -20,12 +20,12 @@ const MarkPlayedButton = ({ itemId, isPlayed, queryKey, userId, itemName }) => {
 
 	const handleMarking = async () => {
 		if (!isPlayed) {
-			await getPlaystateApi(api).markPlayedItem({
+			return await getPlaystateApi(api).markPlayedItem({
 				userId: userId,
 				itemId: itemId,
 			});
 		} else if (isPlayed) {
-			await getPlaystateApi(api).markUnplayedItem({
+			return await getPlaystateApi(api).markUnplayedItem({
 				userId: userId,
 				itemId: itemId,
 			});
@@ -50,49 +50,33 @@ const MarkPlayedButton = ({ itemId, isPlayed, queryKey, userId, itemName }) => {
 		mutationKey: ["markPlayedButton", itemId],
 	});
 	return (
-		<div
+		<IconButton
+			onClick={(e) => {
+				if (!mutation.isPending) {
+					mutation.mutate();
+					e.stopPropagation();
+				}
+			}}
 			style={{
+				opacity: mutation.isPending ? 0.5 : 1,
 				transition: "opacity 250ms",
-				position: "relative",
-				display: "inline-flex",
 			}}
 		>
-			<CircularProgress
+			<div
+				className="material-symbols-rounded"
 				style={{
-					opacity: mutation.isPending ? 1 : 0,
-					transition: "opacity 200ms",
-				}}
-				thickness={2}
-			/>
-			<IconButton
-				onClick={(e) => {
-					if (!mutation.isPending) {
-						e.stopPropagation();
-						mutation.mutate();
-					}
-				}}
-				style={{
-					position: "absolute",
-					top: 0,
-					left: 0,
-					right: 0,
-					bottom: 0,
-					display: "flex",
-					alignItems: "center",
-					justifyContent: "center",
-					opacity: mutation.isPending ? 0.5 : 1,
+					color: isPlayed
+						? mutation.isPending
+							? "white"
+							: green.A700
+						: mutation.isPending
+						  ? green.A700
+						  : "white",
 				}}
 			>
-				<div
-					className="material-symbols-rounded"
-					style={{
-						color: isPlayed ? green[400] : "white",
-					}}
-				>
-					done
-				</div>
-			</IconButton>
-		</div>
+				done
+			</div>
+		</IconButton>
 	);
 };
 

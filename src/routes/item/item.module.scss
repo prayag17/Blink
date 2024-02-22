@@ -148,3 +148,13 @@
 		transition: filter $transition-time-default;
 	}
 }
+
+.item {
+	&-hero-image{
+		box-sizing: border-box;
+		&-container{
+			box-sizing: content-box;
+			border: 1.2px solid rgb(255 255 255 / 0.1);
+		}
+	}
+}
