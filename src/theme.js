@@ -56,14 +56,24 @@ export const theme = createTheme({
 			styleOverrides: {
 				paper: {
 					borderRadius: "10px",
-					// boxShadow: "0 0 5px  hsl(273, 100%, 36%)",
 					background: "hsl(256, 100%, 2%, 40%)",
 					backdropFilter: "blur(20px)",
-					// border: "1.8px solid hsl(273, 100%, 36%)",
+					border: "1px solid rgb(255 255 255 / 0.1)",
+				},
+				list: {
+					padding: "8px",
 				},
 			},
 			defaultProps: {
 				disableScrollLock: true,
+			},
+		},
+		MuiMenuItem: {
+			styleOverrides: {
+				root: {
+					borderRadius: "4px",
+					transition: "250ms",
+				},
 			},
 		},
 		MuiDialog: {

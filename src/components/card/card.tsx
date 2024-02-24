@@ -184,6 +184,16 @@ export const Card = ({
 						</>
 					)}
 				</div>
+				{item.UserData?.PlaybackPositionTicks > 0 && (
+					<div className="card-progress-container">
+						<div
+							className="card-progress"
+							style={{
+								width: `${item.UserData?.PlayedPercentage}%`,
+							}}
+						/>
+					</div>
+				)}
 				{/*
 				{item.UserData?.PlaybackPositionTicks > 0 && (
 					<LinearProgress

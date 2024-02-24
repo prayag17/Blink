@@ -25,8 +25,9 @@
 		&-container {
 			position: relative;
 			width: 100%;
-			border-radius: 8px;
 			box-shadow: 0 4px 8px rgb(0 0 0 / 0.2);
+			border-radius: 5px;
+			border: 1px solid rgb(255 255 255 / 0.1);
 			overflow: hidden;
 			height: auto;
 			z-index: 0;
@@ -44,7 +45,7 @@
 		&-icon {
 			font-size: 5.4em !important;
 			&-container {
-				background: linear-gradient(45deg, rgb(255 255 255 / 0.05), rgb(255 255 255 / 0.1));
+				background: linear-gradient(45deg, rgb(255 255 255 / 0.05), rgb(255 255 255 / 0.15));
 				height: 100%;
 				width: 100%;
 				position: absolute;
@@ -139,5 +140,28 @@
 		.card-image-container {
 			border-radius: 100% !important;
 		}
+	}
+
+	&-progress{
+		width: attr('data-progress');
+		height: 100%;
+		background: white;
+		transition: width $transition-time-default ease-in-out;
+		&-container{
+			$padding: 12px;
+			position: absolute;
+			bottom: $padding;
+			left: $padding;
+			right: $padding;
+			height: 4.5px;
+			background: rgb(255 255 255 / 0.5);
+			backdrop-filter: blur(10px);
+			box-shadow: 0 0 10px rgb(20 20 20 / 0.5);
+			z-index: 1;
+			overflow: hidden;
+			box-sizing: content-box;
+			border-radius: 10px;
+		}
+
 	}
 }

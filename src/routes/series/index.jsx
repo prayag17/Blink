@@ -158,7 +158,10 @@ const SeriesTitlePage = () => {
 		refetchOnWindowFocus: true,
 	});
 
-	const [currentSeason, setCurrentSeason] = useState(0);
+	const [currentSeason, setCurrentSeason] = useState(() => {
+		const result = sessionStorage.getItem(`season-${item.data?.Id}`);
+		return result ?? 0;
+	});
 
 	const currentSeasonItem = useQuery({
 		queryKey: ["item", id, "season", currentSeason],
@@ -232,7 +235,10 @@ const SeriesTitlePage = () => {
 	}, [item.isSuccess]);
 
 	useLayoutEffect(() => {
-		if (seasons.isSuccess) {
+		if (
+			seasons.isSuccess &&
+			!sessionStorage.getItem(`season-${item.data?.Id}`)
+		) {
 			if (
 				seasons.data.TotalRecordCount > 1 &&
 				seasons.data.Items[0].Name.toLowerCase().includes("special")
@@ -890,7 +896,13 @@ const SeriesTitlePage = () => {
 								)}
 								<TextField
 									value={currentSeason}
-									onChange={(e) => setCurrentSeason(e.target.value)}
+									onChange={(e) => {
+										setCurrentSeason(e.target.value);
+										sessionStorage.setItem(
+											`season-${item.data?.Id}`,
+											e.target.value,
+										);
+									}}
 									select
 									SelectProps={{
 										MenuProps: {

@@ -42,8 +42,9 @@
 	flex-direction: column;
 	align-items: stretch;
 	&-grid {
+		--number-of-cols:8;
 		display: grid;
-		grid-template-columns: repeat(8, minmax(0, 1fr));
+		grid-template-columns: repeat(var(--number-of-cols), minmax(0, 1fr));
 		justify-items: center;
 		align-items: start;
 	}
