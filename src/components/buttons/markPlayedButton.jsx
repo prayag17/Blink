@@ -19,17 +19,19 @@ const MarkPlayedButton = ({ itemId, isPlayed, queryKey, userId, itemName }) => {
 	const { enqueueSnackbar } = useSnackbar();
 
 	const handleMarking = async () => {
+		let result = null;
 		if (!isPlayed) {
-			return await getPlaystateApi(api).markPlayedItem({
+			result = await getPlaystateApi(api).markPlayedItem({
 				userId: userId,
 				itemId: itemId,
 			});
 		} else if (isPlayed) {
-			return await getPlaystateApi(api).markUnplayedItem({
+			result = await getPlaystateApi(api).markUnplayedItem({
 				userId: userId,
 				itemId: itemId,
 			});
 		}
+		return result;
 	};
 	const mutation = useMutation({
 		mutationFn: handleMarking,

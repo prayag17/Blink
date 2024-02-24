@@ -288,7 +288,7 @@ function AppReady() {
 			<ThemeProvider theme={theme}>
 				<CssBaseline />
 				<NProgress
-					isAnimating={isQueryFetching}
+					isAnimating={isQueryFetching || isMutating}
 					key={isQueryFetching || isMutating ? "fetching" : "notFetching"}
 				/>
 				<Dialog
