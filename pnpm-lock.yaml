@@ -91,7 +91,7 @@ dependencies:
     version: 2.8.4
   react-player:
     specifier: ^2.14.1
-    version: 2.14.1(react@18.2.0)
+    version: 2.15.0(react@18.2.0)
   react-router-dom:
     specifier: ^6.22.1
     version: 6.22.1(react-dom@18.2.0)(react@18.2.0)
@@ -3900,8 +3900,8 @@ packages:
     engines: {node: '>=8'}
     dev: false
 
-  /react-player@2.14.1(react@18.2.0):
-    resolution: {integrity: sha512-jILj7F9o+6NHzrJ1GqZIxfJgskvGmKeJ05FNhPvgiCpvMZFmFneKEkukywHcULDO2lqITm+zcEkLSq42mX0FbA==}
+  /react-player@2.15.0(react@18.2.0):
+    resolution: {integrity: sha512-wo7LM3CwxkjW9WdvGrQ3I0PhIl5xY1h+9EdpSnCRaQhE4dRMGmfH60RITPaauUhd2uJkGpzAj27kWYHT1j/dBw==}
     peerDependencies:
       react: '>=16.6.0'
     dependencies:
