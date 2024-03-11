@@ -26,8 +26,7 @@
 			position: relative;
 			width: 100%;
 			box-shadow: 0 4px 8px rgb(0 0 0 / 0.2);
-			border-radius: 5px;
-			border: 1px solid rgb(255 255 255 / 0.1);
+			border-radius: $border-radius-default;
 			overflow: hidden;
 			height: auto;
 			z-index: 0;

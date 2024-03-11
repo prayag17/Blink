@@ -44,6 +44,8 @@
 		"react-router-dom": "^6.22.1",
 		"react-use-konami": "^1.1.0",
 		"remark-gfm": "^4.0.0",
+		"rx-player": "^4.0.0",
+		"shaka-player": "^4.7.11",
 		"tauri-plugin-log-api": "github:tauri-apps/tauri-plugin-log#v1",
 		"tauri-plugin-store-api": "github:tauri-apps/tauri-plugin-store",
 		"typescript": "^5.3.3",

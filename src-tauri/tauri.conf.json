@@ -19,6 +19,7 @@
 				"relaunchDangerousAllowSymlinkMacos": false
 			},
 			"window": {
+				"all": true,
 				"setFullscreen": true
 			},
 			"shell": {
@@ -46,7 +47,7 @@
 				"icons/icon.ico"
 			],
 			"identifier": "com.jellyplayer.prayag17",
-			"longDescription": "A Modern Jellyfin Client for Jellyfin",
+			"longDescription": "A modern desktop client for Jellyfin",
 			"macOS": {
 				"entitlements": null,
 				"exceptionDomain": "",
@@ -55,7 +56,7 @@
 				"signingIdentity": null
 			},
 			"resources": [],
-			"shortDescription": "A Modern Jellyfin Client for Jellyfin",
+			"shortDescription": "JellyPlayer",
 			"targets": ["deb", "appimage", "nsis", "app", "dmg", "updater"],
 			"windows": {
 				"certificateThumbprint": null,
@@ -107,7 +108,8 @@
 				"title": "JellyPlayer",
 				"visible": true,
 				"center": true,
-				"label": "main"
+				"label": "main",
+				"decorations": false
 			}
 		]
 	}

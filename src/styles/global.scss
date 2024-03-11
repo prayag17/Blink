@@ -152,7 +152,7 @@ h1 {
 	--wght: 300;
 	--grad: 25;
 	--opsz: 40;
-
+	
 	font-variation-settings: "FILL" var(--fill, 0), "wght" var(--wght, 300), "GRAD" var(--grad, 25), "opsz" var(--opsz, 40);
 	font-size: 1.1em;
 	transition: all $transition-time-default;
@@ -238,6 +238,12 @@ h1 {
 	&-center {
 		align-items: center;
 		justify-content: center;
+	}
+	&-align-center {
+		align-items: center;
+	}
+	&-justify-spaced-between {
+		justify-content: space-between;
 	}
 }
 

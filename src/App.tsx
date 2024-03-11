@@ -56,7 +56,7 @@ import {
 	UserLoginManual,
 } from "./routes/login";
 import PersonTitlePage from "./routes/person/index.jsx";
-import { VideoPlayer } from "./routes/player/videoPlayer.jsx";
+import VideoPlayer from "./routes/player/videoPlayer";
 import PlaylistTitlePage from "./routes/playlist/index.jsx";
 import SearchPage from "./routes/search";
 import SeriesTitlePage from "./routes/series/index.jsx";
@@ -107,6 +107,7 @@ import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 import { useSnackbar } from "notistack";
 import { ErrorBoundary } from "react-error-boundary";
 
+import { getSystemApi } from "@jellyfin/sdk/lib/utils/api/system-api";
 import {
 	useIsFetching,
 	useIsMutating,
@@ -124,7 +125,7 @@ import {
 	setDefaultServer,
 } from "./utils/storage/servers";
 import { UserStore, delUser, getUser } from "./utils/storage/user";
-import { createApi, useApi } from "./utils/store/api";
+import { axiosClient, createApi, useApi } from "./utils/store/api";
 
 const handleAuthError = async () => {
 	await delUser();
@@ -164,6 +165,15 @@ const init = async () => {
 
 		const userOnDisk = await getUser();
 		createApi(defaultServerInfo.address, "");
+		try {
+			const api = useApi.getState();
+			const ping = await getSystemApi(api.api).getPingSystem();
+			// const ping = await fetch("http://192.168.29.60:8096/System/Ping");
+		} catch (error) {
+			console.error(error);
+			setInitialRoute("/error");
+			return;
+		}
 
 		if (userOnDisk) {
 			try {
@@ -287,10 +297,7 @@ function AppReady() {
 		<SnackbarProvider maxSnack={5}>
 			<ThemeProvider theme={theme}>
 				<CssBaseline />
-				<NProgress
-					isAnimating={isQueryFetching || isMutating}
-					key={isQueryFetching || isMutating ? "fetching" : "notFetching"}
-				/>
+				<NProgress isAnimating={isQueryFetching || isMutating} />
 				<Dialog
 					open={updateDialog}
 					fullWidth
@@ -462,10 +469,18 @@ function AppReady() {
 											</DialogContentText>
 										</DialogContent>
 										<DialogActions>
-											<Button onClick={() => navigate("/servers/list")}>
+											<Button
+												color="secondary"
+												variant="contained"
+												onClick={() => navigate("/servers/list")}
+											>
 												Change Server
 											</Button>
-											<Button variant="outlined" onClick={handleRelaunch}>
+											<Button
+												variant="contained"
+												color="primary"
+												onClick={handleRelaunch}
+											>
 												Restart JellyPlayer
 											</Button>
 										</DialogActions>
@@ -504,7 +519,7 @@ function AppReady() {
 					</ErrorBoundary>
 				</div>
 
-				<ReactQueryDevtools buttonPosition="bottom-right" position="left" />
+				<ReactQueryDevtools buttonPosition="top-right" position="left" />
 			</ThemeProvider>
 		</SnackbarProvider>
 	);

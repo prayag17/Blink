@@ -11,6 +11,7 @@ import Typography from "@mui/material/Typography";
 
 import {
 	BaseItemDto,
+	BaseItemDtoQueryResult,
 	BaseItemKind,
 	ItemFields,
 	SortOrder,
@@ -28,6 +29,7 @@ import { useAudioPlayback } from "../../utils/store/audioPlayback";
 import useQueue, { setQueue } from "../../utils/store/queue";
 
 import {
+	playItem,
 	setItem,
 	usePlaybackDataLoadStore,
 	usePlaybackStore,
@@ -75,35 +77,35 @@ const PlayButton = ({
 	const [api] = useApi((state) => [state.api]);
 
 	const navigate = useNavigate();
-	const [
-		setUrl,
-		setPosition,
-		setDuration,
-		setItemId,
-		setItemName,
-		setAudioStreamIndex,
-		setVideoStreamIndex,
-		setSubtitleStreamIndex,
-		setMediaSourceId,
-		setUserId,
-		setMediaContainer,
-		setSeriesId,
-		setEpisodeIndex,
-	] = usePlaybackStore((state) => [
-		state.setUrl,
-		state.setPosition,
-		state.setDuration,
-		state.setItemId,
-		state.setItemName,
-		state.setAudioStreamIndex,
-		state.setVideoStreamIndex,
-		state.setSubtitleStreamIndex,
-		state.setMediaSourceId,
-		state.setUserId,
-		state.setMediaContainer,
-		state.setSeriesId,
-		state.setEpisodeIndex,
-	]);
+	// const [
+	// 	setUrl,
+	// 	setPosition,
+	// 	setDuration,
+	// 	setItemId,
+	// 	setItemName,
+	// 	setAudioStreamIndex,
+	// 	setVideoStreamIndex,
+	// 	setSubtitleStreamIndex,
+	// 	setMediaSourceId,
+	// 	setUserId,
+	// 	setMediaContainer,
+	// 	setSeriesId,
+	// 	setEpisodeIndex,
+	// ] = usePlaybackStore((state) => [
+	// 	state.setUrl,
+	// 	state.setPosition,
+	// 	state.setDuration,
+	// 	state.setItemId,
+	// 	state.setItemName,
+	// 	state.setAudioStreamIndex,
+	// 	state.setVideoStreamIndex,
+	// 	state.setSubtitleStreamIndex,
+	// 	state.setMediaSourceId,
+	// 	state.setUserId,
+	// 	state.setMediaContainer,
+	// 	state.setSeriesId,
+	// 	state.setEpisodeIndex,
+	// ]);
 	const [
 		setAudioUrl,
 		setAudioDisplay,
@@ -194,8 +196,7 @@ const PlayButton = ({
 			}
 			return result.data;
 		},
-		onSuccess: (result) => {
-			console.log(result.Items[0].MediaSources);
+		onSuccess: (result: BaseItemDtoQueryResult | null) => {
 			if (trackIndex) {
 				setPlaylistItemId(playlistItemId);
 				// setCurrentTrack(trackIndex);
@@ -216,98 +217,31 @@ const PlayButton = ({
 				setAudioDisplay(true);
 				setQueue(result.Items, 0);
 			} else {
-				setUserId(userId);
-				setItemId(result.Items[0].Id);
-				setDuration(result.Items[0].RunTimeTicks);
+				// Movie / Series Playback
+				const queue = result.Items;
 
-				if (result.Items[0].Type === BaseItemKind.Episode) {
-					setSeriesId(result.Items[0].SeriesId);
-					// setEpisodeIndex(result.Ite)
+				let itemName = result.Items[0].Name;
+				let episodeTitle = "";
+				if (result.Items[0].SeriesId) {
+					itemName = result.Items[0].SeriesName;
+					episodeTitle = `S${result?.Items[0].ParentIndexNumber}:E${result?.Items[0].IndexNumber} ${result?.Items[0].Name}`;
 				}
-
-				setMediaContainer(result.Items[0].MediaSources[0].Container);
-				// Set all required stream index
-				setAudioStreamIndex(currentAudioTrack);
-				setVideoStreamIndex(currentVideoTrack);
-				setSubtitleStreamIndex(currentSubTrack);
-
-				setMediaSourceId(result.Items[0].Id);
-				setItem(result.Items[0]);
-
-				switch (result.Items[0].Type) {
-					case BaseItemKind.Movie:
-						if (result.Items[0].ImageBlurHashes.Logo) {
-							setItemName(
-								<div className="video-osd-name">
-									<img
-										alt={result.Items[0].Name}
-										src={`${api.basePath}/Items/${result.Items[0].Id}/Images/Logo`}
-										className="video-osd-name-logo"
-										onLoad={(e) => {
-											e.target.style.opacity = 1;
-										}}
-									/>
-								</div>,
-							);
-						} else {
-							setItemName(
-								<div className="video-osd-name">
-									<Typography variant="h6">{result.Items[0].Name}</Typography>
-								</div>,
-							);
-						}
-						break;
-					case BaseItemKind.Episode:
-						if (result.Items[0].ImageBlurHashes.Logo) {
-							setItemName(
-								<div className="video-osd-name">
-									<img
-										alt={result.Items[0].SeriesName}
-										src={`${api.basePath}/Items/${result.Items[0].SeriesId}/Images/Logo`}
-										className="video-osd-name-logo"
-										onLoad={(e) => {
-											e.target.style.opacity = 1;
-										}}
-									/>
-									<Typography variant="subtitle1">
-										S{result.Items[0].ParentIndexNumber}
-										:E
-										{result.Items[0].IndexNumber} {result.Items[0].Name}
-									</Typography>
-								</div>,
-							);
-						} else {
-							setItemName(
-								<div className="video-osd-name">
-									<Typography variant="h6">
-										{result.Items[0].SeriesName}
-									</Typography>
-									<Typography variant="subtitle1">
-										S{result.Items[0].ParentIndexNumber}
-										:E
-										{result.Items[0].IndexNumber} {result.Items[0].Name}
-									</Typography>
-								</div>,
-							);
-						}
-
-						break;
-					default:
-						setItemName(
-							<div className="video-osd-name">
-								<Typography variant="h6">{result.Items[0].Name}</Typography>
-							</div>,
-						);
-						break;
-				}
-				setPosition(result.Items[0].UserData?.PlaybackPositionTicks);
-
-				setUrl(
-					`${api.basePath}/Videos/${result.Items[0].Id}/stream.
-									${result.Items[0].MediaSources[0].Container}
-								?Static=true&mediaSourceId=${result.Items[0].Id}&deviceId=${api.deviceInfo.id}&api_key=${api.accessToken}&Tag=${result.Items[0].MediaSources[0].ETag}&videoStreamIndex=${currentVideoTrack}&audioStreamIndex=${currentAudioTrack}`,
+				playItem(
+					itemName,
+					episodeTitle,
+					currentVideoTrack,
+					currentAudioTrack,
+					currentSubTrack,
+					result.Items[0].Container,
+					true,
+					`${api.basePath}/Videos/${result.Items[0].Id}/stream.${result.Items[0].Container}?Static=true&mediaSourceId=${result.Items[0].Id}&deviceId=${api.deviceInfo.id}&api_key=${api.accessToken}&Tag=${result.Items[0].MediaSources[0].ETag}&videoStreamIndex=${currentVideoTrack}&audioStreamIndex=${currentAudioTrack}`,
+					userId,
+					result?.Items[0].UserData?.PlaybackPositionTicks,
+					result.Items[0].RunTimeTicks,
+					result.Items[0],
+					queue,
+					0,
 				);
-
 				navigate("/player");
 			}
 		},

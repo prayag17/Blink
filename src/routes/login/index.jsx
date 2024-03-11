@@ -117,7 +117,7 @@ export const LoginWithImage = () => {
 			);
 			return auth;
 		} catch (error) {
-			if (error.response.status === 500) {
+			if (error.response?.status === 500) {
 				enqueueSnackbar(
 					"Unable to connect to server. Please try again after some time.",
 					{ variant: "error" },
