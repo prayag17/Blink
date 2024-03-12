@@ -31,7 +31,7 @@ const TrailerButton = (props: TrailerButtonType) => {
 			>
 				<ReactPlayer
 					playing={false}
-					url={props.trailerItem[0].Url}
+					url={props.trailerItem[0]?.Url}
 					width="100%"
 					height="auto"
 					style={{
