@@ -62,6 +62,9 @@ dependencies:
   framer-motion:
     specifier: ^11.0.6
     version: 11.0.6(react-dom@18.2.0)(react@18.2.0)
+  jassub:
+    specifier: ^1.7.15
+    version: 1.7.15
   material-symbols:
     specifier: ^0.15.0
     version: 0.15.0
@@ -3021,6 +3024,12 @@ packages:
       set-function-name: 2.0.2
     dev: true
 
+  /jassub@1.7.15:
+    resolution: {integrity: sha512-8yKAJc++Y1gNfATOPRo3APk0JUhshKl5l7bRkT6WkJ8XP4RvYfVPb6ieH6WDxsMq523exwGzNvjjPEEWT+Z1nQ==}
+    dependencies:
+      rvfc-polyfill: 1.0.7
+    dev: false
+
   /js-tokens@4.0.0:
     resolution: {integrity: sha512-RdJUflcE3cUzKiMqQgsCu06FPu9UdIJO0beYbPhHN4k6apgJtifcoCtT9bcxOpYBtpD2kCM6Sbzg4CausW/PKQ==}
 
@@ -4122,6 +4131,10 @@ packages:
     dependencies:
       queue-microtask: 1.2.3
     dev: true
+
+  /rvfc-polyfill@1.0.7:
+    resolution: {integrity: sha512-seBl7J1J3/k0LuzW2T9fG6JIOpni5AbU+/87LA+zTYKgTVhsfShmS8K/yOo1eeEjGJHnAdkVAUUM+PEjN9Mpkw==}
+    dev: false
 
   /rx-player@4.0.0:
     resolution: {integrity: sha512-Ye36kPOvsGY67DIhkuciYLXI1VCc2i+YOLB5KpnQGt+3+E1igxIqQ3zx6UJjy2yNuhXzXjqKWMFxnxdvqf4+Ng==}

@@ -37,6 +37,10 @@ import useDebounce from "../../utils/hooks/useDebounce";
 import { useApi } from "../../utils/store/api";
 import { setBackdrop } from "../../utils/store/backdrop";
 
+import JASSUB from "jassub";
+import workerUrl from "jassub/dist/jassub-worker.js?url";
+import wasmUrl from "jassub/dist/jassub-worker.wasm?url";
+
 // export const VideoPlayer = () => {
 // 	const navigate = useNavigate();
 // 	const [api] = useApi((state) => [state.api]);
@@ -894,18 +898,27 @@ const ticksDisplay = (ticks: number) => {
 
 const VideoPlayer = () => {
 	const navigate = useNavigate();
+	const [api] = useApi((state) => [state.api]);
 
 	const [hoveringOsd, setHoveringOsd] = useState(false);
 
-	const [hlsStream, item, itemName, itemDuration, startPosition, episodeTitle] =
-		usePlaybackStore((state) => [
-			state.hlsStream,
-			state.item,
-			state.itemName,
-			state.itemDuration,
-			state.startPosition,
-			state.episodeTitle,
-		]);
+	const [
+		hlsStream,
+		item,
+		itemName,
+		itemDuration,
+		startPosition,
+		episodeTitle,
+		mediaSource,
+	] = usePlaybackStore((state) => [
+		state.hlsStream,
+		state.item,
+		state.itemName,
+		state.itemDuration,
+		state.startPosition,
+		state.episodeTitle,
+		state.mediaSource,
+	]);
 
 	const [loading, setLoading] = useState(true);
 
@@ -919,9 +932,18 @@ const VideoPlayer = () => {
 
 	useEffect(() => setBackdrop("", ""), []);
 
+	console.log(
+		`${api.basePath}/Videos/${item.Id}/${item.Id}/Subtitles/${mediaSource.subtitleTrack}/Stream.ass?api_key=${api.accessToken}`,
+	);
 	const handleReady = async () => {
 		if (!isReady) {
-			console.log(startPosition);
+			const subtitleRenderer = new JASSUB({
+				video: player.current.getInternalPlayer(),
+				subUrl: `${api.basePath}/Videos/${item.Id}/${item.Id}/Subtitles/${mediaSource.subtitleTrack}/Stream.ass?api_key=${api.accessToken}`,
+				workerUrl,
+				wasmUrl,
+			});
+
 			player.current.seekTo(ticksToSec(startPosition), "seconds");
 			setIsReady(true);
 		}

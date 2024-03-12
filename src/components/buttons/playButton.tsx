@@ -224,14 +224,26 @@ const PlayButton = ({
 				let episodeTitle = "";
 				if (result.Items[0].SeriesId) {
 					itemName = result.Items[0].SeriesName;
-					episodeTitle = `S${result?.Items[0].ParentIndexNumber}:E${result?.Items[0].IndexNumber} ${result?.Items[0].Name}`;
+					episodeTitle = `S${result?.Items[0].ParentIndexNumber ?? 0}:E${
+						result?.Items[0].IndexNumber ?? 0
+					} ${result?.Items[0].Name}`;
 				}
+
+				let selectedSubtitleTrack: number | undefined = currentSubTrack;
+				if (!currentSubTrack) {
+					const subtitles =
+						result?.Items[0].MediaSources[0].MediaStreams?.filter(
+							(value) => value.Type === "Subtitle",
+						);
+					selectedSubtitleTrack = subtitles[0].Index;
+				}
+
 				playItem(
 					itemName,
 					episodeTitle,
 					currentVideoTrack,
 					currentAudioTrack,
-					currentSubTrack,
+					selectedSubtitleTrack,
 					result.Items[0].Container,
 					true,
 					`${api.basePath}/Videos/${result.Items[0].Id}/stream.${result.Items[0].Container}?Static=true&mediaSourceId=${result.Items[0].Id}&deviceId=${api.deviceInfo.id}&api_key=${api.accessToken}&Tag=${result.Items[0].MediaSources[0].ETag}&videoStreamIndex=${currentVideoTrack}&audioStreamIndex=${currentAudioTrack}`,

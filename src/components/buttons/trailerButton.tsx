@@ -37,6 +37,7 @@ const TrailerButton = (props: TrailerButtonType) => {
 					style={{
 						aspectRatio: "16/9",
 					}}
+					controls
 				/>
 			</Dialog>
 		</>
