@@ -39,7 +39,7 @@ fn main() {
                 .build(),
         )
         .plugin(tauri_plugin_store::Builder::default().build())
-        .plugin(tauri_plugin_window_state::Builder::default().build())
+        // .plugin(tauri_plugin_window_state::Builder::default().build())
         .run(context)
         .expect("error while running JellyPlayer");
 }

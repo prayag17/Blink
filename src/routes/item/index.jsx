@@ -41,6 +41,7 @@ import { ErrorNotice } from "../../components/notices/errorNotice/errorNotice";
 import LikeButton from "../../components/buttons/likeButton";
 import MarkPlayedButton from "../../components/buttons/markPlayedButton";
 import PlayButton from "../../components/buttons/playButton";
+import TrailerButton from "../../components/buttons/trailerButton";
 import ShowMoreText from "../../components/showMoreText";
 import TextLink from "../../components/textLink";
 import { getTypeIcon } from "../../components/utils/iconsCollection";
@@ -586,6 +587,10 @@ const ItemDetail = () => {
 								/>
 							</div>
 							<div className="flex flex-row" style={{ gap: "1em" }}>
+								<TrailerButton
+									trailerItem={item.data.RemoteTrailers}
+									disabled={item.data.RemoteTrailers?.length === 0}
+								/>
 								<LikeButton
 									itemName={item.data.Name}
 									itemId={item.data.Id}

@@ -108,8 +108,7 @@
 				"title": "JellyPlayer",
 				"visible": true,
 				"center": true,
-				"label": "main",
-				"decorations": false
+				"label": "main"
 			}
 		]
 	}

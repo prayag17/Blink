@@ -932,6 +932,7 @@ const VideoPlayer = () => {
 	};
 
 	const handleExitPlayer = () => {
+		appWindow.setFullscreen(false);
 		navigate(-1);
 		usePlaybackStore.setState(usePlaybackStore.getInitialState());
 	};

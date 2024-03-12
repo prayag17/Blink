@@ -46,9 +46,11 @@ import "./series.module.scss";
 
 import { Link } from "react-router-dom";
 import { NavLink } from "react-router-dom";
+
 import LikeButton from "../../components/buttons/likeButton";
 import MarkPlayedButton from "../../components/buttons/markPlayedButton";
 import PlayButton from "../../components/buttons/playButton";
+import TrailerButton from "../../components/buttons/trailerButton";
 import ShowMoreText from "../../components/showMoreText";
 import { SeasonSelectorSkeleton } from "../../components/skeleton/seasonSelector";
 import TextLink from "../../components/textLink";
@@ -477,6 +479,10 @@ const SeriesTitlePage = () => {
 								/>
 							</div>
 							<div className="flex flex-row" style={{ gap: "1em" }}>
+								<TrailerButton
+									trailerItem={item.data.RemoteTrailers}
+									disabled={item.data.RemoteTrailers?.length === 0}
+								/>
 								<LikeButton
 									itemName={item.data.Name}
 									itemId={item.data.Id}
