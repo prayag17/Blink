@@ -160,6 +160,11 @@ const SeriesTitlePage = () => {
 		refetchOnWindowFocus: true,
 	});
 
+	const [backdropImage, setBackdropImage] = useState(() => {
+		const result = sessionStorage.getItem(`backdrop-${item.data?.Id}`);
+		return result ?? "0";
+	});
+
 	const [currentSeason, setCurrentSeason] = useState(() => {
 		const result = sessionStorage.getItem(`season-${item.data?.Id}`);
 		return result ?? 0;
@@ -216,11 +221,15 @@ const SeriesTitlePage = () => {
 
 	useLayoutEffect(() => {
 		if (item.isSuccess) {
+			setBackdropImage(
+				api.getItemImageUrl(item.data?.Id, "Backdrop", {
+					tag: item.data?.BackdropImageTags[0],
+				}),
+			);
 			setAppBackdrop(
-				item.data.Type === BaseItemKind.MusicAlbum ||
-					item.data.Type === BaseItemKind.Episode
-					? `${api.basePath}/Items/${item.data.ParentBackdropItemId}/Images/Backdrop`
-					: `${api.basePath}/Items/${item.data.Id}/Images/Backdrop`,
+				api.getItemImageUrl(item.data?.Id, "Backdrop", {
+					tag: item.data?.BackdropImageTags[0],
+				}),
 				item.data.Id,
 			);
 			const direTp = item.data.People.filter((itm) => itm.Type === "Director");
@@ -251,6 +260,34 @@ const SeriesTitlePage = () => {
 			}
 		}
 	}, [seasons.isSuccess]);
+
+	useEffect(() => {
+		if (
+			currentSeasonItem.isSuccess &&
+			currentSeasonItem.data?.BackdropImageTags?.length > 0
+		) {
+			sessionStorage.setItem(
+				`backdrop-${item.data?.Id}`,
+				api.getItemImageUrl(currentSeasonItem.data.Id, "Backdrop", {
+					tag: currentSeasonItem.data.BackdropImageTags[0],
+				}),
+			);
+			setBackdropImage(
+				api.getItemImageUrl(currentSeasonItem.data.Id, "Backdrop", {
+					tag: currentSeasonItem.data.BackdropImageTags[0],
+				}),
+				currentSeasonItem.data.Id,
+			);
+			setAppBackdrop(
+				api.getItemImageUrl(currentSeasonItem.data.Id, "Backdrop", {
+					tag: currentSeasonItem.data.BackdropImageTags[0],
+				}),
+				currentSeasonItem.data.Id,
+			);
+		}
+	}, [currentSeasonItem.dataUpdatedAt]);
+
+	console.log(backdropImage);
 
 	const pageRef = useRef(null);
 	const { scrollYProgress } = useScroll({
@@ -296,10 +333,9 @@ const SeriesTitlePage = () => {
 					<div className="item-hero-backdrop-container">
 						{item.data.BackdropImageTags ? (
 							<motion.img
+								key={currentSeason}
 								alt={item.data.Name}
-								src={api.getItemImageUrl(item.data.Id, "Backdrop", {
-									tag: item.data.BackdropImageTags[0],
-								})}
+								src={backdropImage}
 								className="item-hero-backdrop"
 								onLoad={(e) => {
 									e.currentTarget.style.opacity = 1;

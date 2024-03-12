@@ -429,7 +429,8 @@ const SearchPage = () => {
 				musicAlbum.data.Items.length === 0 &&
 				book.data.Items.length === 0 &&
 				musicArtists.data.Items.length === 0 &&
-				person.data.Items.length === 0 && (
+				person.data.Items.length === 0 &&
+				episodes.data.SearchHints.length === 0 && (
 					<div
 						style={{
 							height: "calc(100vh - 12em)",
