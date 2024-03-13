@@ -8,3 +8,4 @@
     - fix(server): Use redirect instead of relaunch when changing or deleting a server by @prayag17
     - refactor(player): Rewrite and improve video playback by @prayag17
     - feat(web): Use season backdrop in series page if available by @prayag17
+    - feat(player): Allow selecting subtitles during playback by @prayag17
