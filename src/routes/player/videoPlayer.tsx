@@ -37,6 +37,7 @@ import useDebounce from "../../utils/hooks/useDebounce";
 import { useApi } from "../../utils/store/api";
 import { setBackdrop } from "../../utils/store/backdrop";
 
+import { FormControl, TextField } from "@mui/material";
 import JASSUB from "jassub";
 import workerUrl from "jassub/dist/jassub-worker.js?url";
 import wasmUrl from "jassub/dist/jassub-worker.wasm?url";
@@ -910,6 +911,7 @@ const VideoPlayer = () => {
 		startPosition,
 		episodeTitle,
 		mediaSource,
+		enableSubtitle,
 	] = usePlaybackStore((state) => [
 		state.hlsStream,
 		state.item,
@@ -918,9 +920,12 @@ const VideoPlayer = () => {
 		state.startPosition,
 		state.episodeTitle,
 		state.mediaSource,
+		state.enableSubtitle,
 	]);
 
 	const [loading, setLoading] = useState(true);
+	const [settingsMenu, setSettingsMenu] = useState(null);
+	const settingsMenuOpen = Boolean(settingsMenu);
 
 	// Control States
 	const [isReady, setIsReady] = useState(false);
@@ -929,20 +934,25 @@ const VideoPlayer = () => {
 	const [sliderProgress, setSliderProgress] = useState(startPosition);
 	const [progress, setProgress] = useState(startPosition);
 	const [appFullscreen, setAppFullscreen] = useState(false);
+	const [showSubtitles, setShowSubtitles] = useState(enableSubtitle);
+	const [selectedSubtitle, setSelectedSubtitle] = useState(
+		mediaSource.subtitleTrack,
+	);
 
 	useEffect(() => setBackdrop("", ""), []);
 
-	console.log(
-		`${api.basePath}/Videos/${item.Id}/${item.Id}/Subtitles/${mediaSource.subtitleTrack}/Stream.ass?api_key=${api.accessToken}`,
-	);
+	const [subtitleRenderer, setSubtitleRenderer] = useState<JASSUB>(null);
+
 	const handleReady = async () => {
 		if (!isReady) {
-			const subtitleRenderer = new JASSUB({
+			const subtitleRendererRaw = new JASSUB({
 				video: player.current.getInternalPlayer(),
 				subUrl: `${api.basePath}/Videos/${item.Id}/${item.Id}/Subtitles/${mediaSource.subtitleTrack}/Stream.ass?api_key=${api.accessToken}`,
 				workerUrl,
 				wasmUrl,
 			});
+
+			setSubtitleRenderer(subtitleRendererRaw);
 
 			player.current.seekTo(ticksToSec(startPosition), "seconds");
 			setIsReady(true);
@@ -961,7 +971,73 @@ const VideoPlayer = () => {
 
 	const player = useRef(null);
 
-	// console.log(hlsStream);
+	const handleShowOsd = () => {
+		let timer = null;
+		if (hoveringOsd) {
+			return;
+		}
+		setHoveringOsd(true);
+		if (timer) {
+			clearTimeout(timer);
+		}
+		timer = setTimeout(() => setHoveringOsd(false), 5000);
+	};
+
+	const handleKeyPress = useCallback((event) => {
+		switch (event.key) {
+			case "ArrowRight":
+				player.current.seekTo(player.current.getCurrentTime() + 10);
+				break;
+			case "ArrowLeft":
+				player.current.seekTo(player.current.getCurrentTime() - 10);
+				break;
+			case " ":
+				setPlaying((state) => !state);
+				break;
+			case "ArrowUp":
+				// setVolume((state) => (state <= 0.9 ? state + 0.1 : state));
+				break;
+			case "ArrowDown":
+				// setVolume((state) => (state >= 0.1 ? state - 0.1 : state));
+				break;
+			case "F":
+			case "f":
+				setAppFullscreen((state) => !state);
+				break;
+			case "P":
+			case "p":
+				// setIsPIP((state) => !state);
+				break;
+			case "M":
+			case "m":
+				// setIsMuted((state) => !state);
+				break;
+			default:
+				console.log(event.key);
+				break;
+		}
+	}, []);
+
+	useEffect(() => {
+		// attach the event listener
+		document.addEventListener("keydown", handleKeyPress);
+
+		// remove the event listener
+		return () => {
+			document.removeEventListener("keydown", handleKeyPress);
+		};
+	}, [handleKeyPress]);
+
+	useEffect(() => {
+		if (subtitleRenderer)
+			if (showSubtitles) {
+				subtitleRenderer.setTrackByUrl(
+					`${api.basePath}/Videos/${item.Id}/${item.Id}/Subtitles/${selectedSubtitle}/Stream.ass?api_key=${api.accessToken}`,
+				);
+			} else {
+				subtitleRenderer.freeTrack();
+			}
+	}, [showSubtitles, selectedSubtitle]);
 
 	return (
 		<div className="video-player">
@@ -995,17 +1071,7 @@ const VideoPlayer = () => {
 			</AnimatePresence>
 			<motion.div
 				className="video-player-osd"
-				onMouseMove={() => {
-					let timer = null;
-					if (hoveringOsd) {
-						return;
-					}
-					setHoveringOsd(true);
-					if (timer) {
-						clearTimeout(timer);
-					}
-					timer = setTimeout(() => setHoveringOsd(false), 5000);
-				}}
+				onMouseMove={handleShowOsd}
 				initial={{
 					opacity: 0,
 				}}
@@ -1016,10 +1082,48 @@ const VideoPlayer = () => {
 					zIndex: 2,
 				}}
 			>
-				<div className="video-player-osd-header">
+				<div className="video-player-osd-header flex flex-justify-spaced-between flex-align-center">
 					<IconButton onClick={handleExitPlayer}>
 						<span className="material-symbols-rounded">arrow_back</span>
 					</IconButton>
+					<IconButton
+						onClick={(e: MouseEvent) => setSettingsMenu(e.currentTarget)}
+					>
+						<span className="material-symbols-rounded">settings</span>
+					</IconButton>
+					<Menu
+						anchorEl={settingsMenu}
+						open={settingsMenuOpen}
+						onClose={() => setSettingsMenu(null)}
+						slotProps={{
+							paper: {
+								style: {
+									maxHeight: "20em",
+								},
+							},
+						}}
+						MenuListProps={{
+							style: {
+								display: "flex",
+								flexDirection: "column",
+								gap: "1em",
+							},
+						}}
+					>
+						<TextField
+							select
+							label="Subtitles"
+							variant="outlined"
+							value={selectedSubtitle}
+							onChange={(e) => setSelectedSubtitle(e.target.value)}
+						>
+							{mediaSource.availableSubtitleTracks.map((sub) => (
+								<MenuItem key={sub.Index} value={sub.Index}>
+									{sub.DisplayTitle}
+								</MenuItem>
+							))}
+						</TextField>
+					</Menu>
 				</div>
 				<div className="video-player-osd-info">
 					<Typography variant="h4" fontWeight={500} mb={2}>
@@ -1076,18 +1180,18 @@ const VideoPlayer = () => {
 						<div className="flex flex-row flex-justify-spaced-between">
 							<div className="video-player-osd-controls-buttons">
 								<IconButton disabled>
-									<div className="material-symbols-rounded fill">
+									<span className="material-symbols-rounded fill">
 										skip_previous
-									</div>
+									</span>
 								</IconButton>
 								<IconButton
 									onClick={() =>
 										player.current.seekTo(player.current.getCurrentTime() - 15)
 									}
 								>
-									<div className="material-symbols-rounded fill">
+									<span className="material-symbols-rounded fill">
 										fast_rewind
-									</div>
+									</span>
 								</IconButton>
 								<IconButton onClick={() => setPlaying((state) => !state)}>
 									<span className="material-symbols-rounded fill">
@@ -1099,12 +1203,14 @@ const VideoPlayer = () => {
 										player.current.seekTo(player.current.getCurrentTime() + 15)
 									}
 								>
-									<div className="material-symbols-rounded fill">
+									<span className="material-symbols-rounded fill">
 										fast_forward
-									</div>
+									</span>
 								</IconButton>
 								<IconButton disabled>
-									<div className="material-symbols-rounded fill">skip_next</div>
+									<span className="material-symbols-rounded fill">
+										skip_next
+									</span>
 								</IconButton>
 								<Typography variant="subtitle1">
 									{isSeeking
@@ -1113,6 +1219,13 @@ const VideoPlayer = () => {
 								</Typography>
 							</div>
 							<div className="video-player-osd-controls-buttons">
+								<IconButton onClick={() => setShowSubtitles((state) => !state)}>
+									<span className={"material-symbols-rounded"}>
+										{showSubtitles
+											? "closed_caption"
+											: "closed_caption_disabled"}
+									</span>
+								</IconButton>
 								<IconButton
 									onClick={async () => {
 										setAppFullscreen((state) => {
@@ -1121,9 +1234,9 @@ const VideoPlayer = () => {
 										});
 									}}
 								>
-									<div className="material-symbols-rounded">
+									<span className="material-symbols-rounded fill">
 										{appFullscreen ? "fullscreen_exit" : "fullscreen"}
-									</div>
+									</span>
 								</IconButton>
 							</div>
 						</div>

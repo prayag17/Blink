@@ -409,7 +409,16 @@ const EpisodeTitlePage = () => {
 								<Chip
 									variant="filled"
 									label={
-										<Typography variant="caption" fontWeight={600}>
+										<Typography
+											variant="caption"
+											fontWeight={600}
+											style={{
+												display: "flex",
+												alignItems: "center",
+												justifyContent: "center",
+												gap: "0.5em",
+											}}
+										>
 											<img
 												alt="Dolby"
 												src={dolbyIcon}

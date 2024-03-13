@@ -519,7 +519,7 @@ function AppReady() {
 					</ErrorBoundary>
 				</div>
 
-				<ReactQueryDevtools buttonPosition="top-right" position="left" />
+				<ReactQueryDevtools buttonPosition="bottom-right" position="left" />
 			</ThemeProvider>
 		</SnackbarProvider>
 	);

@@ -230,11 +230,10 @@ const PlayButton = ({
 				}
 
 				let selectedSubtitleTrack: number | undefined = currentSubTrack;
+				const subtitles = result?.Items[0].MediaSources[0].MediaStreams?.filter(
+					(value) => value.Type === "Subtitle",
+				);
 				if (!currentSubTrack) {
-					const subtitles =
-						result?.Items[0].MediaSources[0].MediaStreams?.filter(
-							(value) => value.Type === "Subtitle",
-						);
 					selectedSubtitleTrack = subtitles[0].Index;
 				}
 
@@ -253,6 +252,7 @@ const PlayButton = ({
 					result.Items[0],
 					queue,
 					0,
+					subtitles,
 				);
 				navigate("/player");
 			}
