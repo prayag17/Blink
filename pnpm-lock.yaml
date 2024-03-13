@@ -16,7 +16,7 @@ dependencies:
     version: 5.0.20
   '@fontsource/noto-sans':
     specifier: ^5.0.20
-    version: 5.0.20
+    version: 5.0.21
   '@jellyfin/sdk':
     specifier: 0.8.2
     version: 0.8.2(axios@1.6.7)
@@ -834,8 +834,8 @@ packages:
     resolution: {integrity: sha512-IWJnmY9vT5Olcac1vzA7FMdnojCrZWMq+g7SqC2jsFpY0LQTjIgp9gBjjw9kUOkNbLw37/evZO4w6rdPeMA68A==}
     dev: false
 
-  /@fontsource/noto-sans@5.0.20:
-    resolution: {integrity: sha512-1I5NhR9x905PbvWOrPz7Gqh2PWCJhWChNhkCWQKTOmYYXPEw35c/9Np+tyFWmC6/XzYlNhavzI+2l5dvP+PceQ==}
+  /@fontsource/noto-sans@5.0.21:
+    resolution: {integrity: sha512-1rIZsv6nObjg0rNY0EBBTta5lujmQ1agKn6HN5rY3L2pVvHJqK5n/cNO2HTqfqK837f9PEE/yowVm9mjniDhuw==}
     dev: false
 
   /@humanwhocodes/config-array@0.11.14:
