@@ -42,6 +42,8 @@ import JASSUB from "jassub";
 import workerUrl from "jassub/dist/jassub-worker.js?url";
 import wasmUrl from "jassub/dist/jassub-worker.wasm?url";
 
+import subtitleFont from "./Noto-Sans-Indosphere.ttf";
+
 // export const VideoPlayer = () => {
 // 	const navigate = useNavigate();
 // 	const [api] = useApi((state) => [state.api]);
@@ -942,29 +944,37 @@ const VideoPlayer = () => {
 	useEffect(() => setBackdrop("", ""), []);
 
 	const [subtitleRenderer, setSubtitleRenderer] = useState<JASSUB>(null);
-
+	
 	const handleReady = async () => {
 		if (!isReady) {
+			const jet = await fetch(subtitleFont).then(r => r.arrayBuffer());
+			const uint8 = new Uint8Array(jet);
+			console.log(uint8)
 			const subtitleRendererRaw = new JASSUB({
 				video: player.current.getInternalPlayer(),
 				subUrl: `${api.basePath}/Videos/${item.Id}/${item.Id}/Subtitles/${mediaSource.subtitleTrack}/Stream.ass?api_key=${api.accessToken}`,
 				workerUrl,
 				wasmUrl,
+				availableFonts: { "noto sans": uint8 },
+				fallbackFont: "Noto Sans",
+				debug:true
 			});
-
+			window.subInst = subtitleRendererRaw;
 			setSubtitleRenderer(subtitleRendererRaw);
 
 			player.current.seekTo(ticksToSec(startPosition), "seconds");
 			setIsReady(true);
+
 		}
 	};
-
+``
 	const handleProgress = (event) => {
 		setProgress(secToTicks(event.playedSeconds));
 	};
 
 	const handleExitPlayer = () => {
 		appWindow.setFullscreen(false);
+		subtitleRenderer.destroy();
 		navigate(-1);
 		usePlaybackStore.setState(usePlaybackStore.getInitialState());
 	};
@@ -1002,7 +1012,10 @@ const VideoPlayer = () => {
 				break;
 			case "F":
 			case "f":
-				setAppFullscreen((state) => !state);
+				setAppFullscreen((state) => {
+					appWindow.setFullscreen(!state)
+					return !state
+				});
 				break;
 			case "P":
 			case "p":
