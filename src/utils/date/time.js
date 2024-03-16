@@ -101,7 +101,7 @@ export const getRuntimeFull = (ticks) => {
 /**
  * @format
  * @param {number} ticks - C# ticks of a particular item
- * @return {number} Converted ticks to Hhr Mmin formate
+ * @return {number} Converted ticks to Hh Mm formate
  */
 export const getRuntimeCompact = (ticks) => {
 	const time = ticksToMs(ticks);

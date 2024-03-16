@@ -265,3 +265,11 @@ h1 {
 	-webkit-background-clip: text;
 	background-clip: text;
 }
+
+.divider-circle{
+	width: 4px;
+	height: 4px;
+	aspect-ratio: 1;
+	border-radius: 10px;
+	background: white;
+}

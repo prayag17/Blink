@@ -19,7 +19,7 @@ import { green, red, yellow } from "@mui/material/colors";
 import { AnimatePresence, motion, useScroll } from "framer-motion";
 import useParallax from "../../utils/hooks/useParallax";
 
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 
 import { Blurhash } from "react-blurhash";
 
@@ -35,7 +35,7 @@ import { getUserLibraryApi } from "@jellyfin/sdk/lib/utils/api/user-library-api"
 
 import { useQuery } from "@tanstack/react-query";
 
-import { endsAt, getRuntime, getRuntimeMusic } from "../../utils/date/time";
+import { endsAt, getRuntime, getRuntimeCompact, getRuntimeMusic } from "../../utils/date/time";
 
 import { Card } from "../../components/card/card";
 import { EpisodeCard } from "../../components/card/episodeCard";
@@ -59,6 +59,7 @@ import { useApi } from "../../utils/store/api";
 import { useBackdropStore } from "../../utils/store/backdrop";
 
 import IconLink from "../../components/iconLink";
+import EpisodeSkeleton from "../../components/skeleton/episode";
 
 function TabPanel(props) {
 	const { children, value, index, ...other } = props;
@@ -82,6 +83,13 @@ TabPanel.propTypes = {
 	index: PropTypes.number.isRequired,
 	value: PropTypes.number.isRequired,
 };
+
+const getEpisodeDateString = (date: Date) => {
+	const formatter = new Intl.DateTimeFormat(navigator.language ?? "en-US", {
+		dateStyle: "full",
+	})
+	return formatter.format(date).toString();
+}
 
 const SeriesTitlePage = () => {
 	const { id } = useParams();
@@ -164,7 +172,7 @@ const SeriesTitlePage = () => {
 		const result = sessionStorage.getItem(`backdrop-${item.data?.Id}`);
 		return result ?? "0";
 	});
-	const [backdropImageLoaded , setBackdropImageLoaded] = useState(false);
+	const [backdropImageLoaded, setBackdropImageLoaded] = useState(false);
 
 	const [currentSeason, setCurrentSeason] = useState(() => {
 		const result = sessionStorage.getItem(`season-${item.data?.Id}`);
@@ -286,7 +294,7 @@ const SeriesTitlePage = () => {
 				currentSeasonItem.data.Id,
 			);
 			setBackdropImageLoaded(false)
-		} else if (item.isSuccess && item.data?.BackdropImageTags?.length > 0 ){
+		} else if (item.isSuccess && item.data?.BackdropImageTags?.length > 0) {
 			sessionStorage.setItem(
 				`backdrop-${item.data?.Id}`,
 				api.getItemImageUrl(item.data.Id, "Backdrop", {
@@ -309,14 +317,14 @@ const SeriesTitlePage = () => {
 		}
 	}, [currentSeasonItem.dataUpdatedAt]);
 
-	console.log(backdropImage);
-
 	const pageRef = useRef(null);
 	const { scrollYProgress } = useScroll({
 		target: pageRef,
 		offset: ["start start", "60vh start"],
 	});
 	const parallax = useParallax(scrollYProgress, 50);
+
+	const navigate = useNavigate();
 
 	if (item.isPending || similarItems.isPending) {
 		return (
@@ -355,34 +363,34 @@ const SeriesTitlePage = () => {
 					<div className="item-hero-backdrop-container">
 						<AnimatePresence mode="wait">
 
-						{item.data.BackdropImageTags ? (
-							<motion.img
-								key={currentSeasonItem.dataUpdatedAt}
-								alt={item.data.Name}
-								src={backdropImage}
-								className="item-hero-backdrop"
-								initial={{
-									opacity: 0
-								}}
-								onLoad={() => {
-									setBackdropImageLoaded(true)
-								}}
-								animate={{
-									opacity: backdropImageLoaded ? 1 : 0
-								}}
-								exit={{
-									opacity:0
-								}}
-								transition={{
-									duration: 0.2
-								}}
-								style={{
-									y: parallax,
-								}}
-							/>
-						) : (
-							<></>
-						)}
+							{item.data.BackdropImageTags ? (
+								<motion.img
+									key={currentSeasonItem.dataUpdatedAt}
+									alt={item.data.Name}
+									src={backdropImage}
+									className="item-hero-backdrop"
+									initial={{
+										opacity: 0
+									}}
+									onLoad={() => {
+										setBackdropImageLoaded(true)
+									}}
+									animate={{
+										opacity: backdropImageLoaded ? 1 : 0
+									}}
+									exit={{
+										opacity: 0
+									}}
+									transition={{
+										duration: 0.2
+									}}
+									style={{
+										y: parallax,
+									}}
+								/>
+							) : (
+								<></>
+							)}
 						</AnimatePresence>
 					</div>
 					<div
@@ -396,7 +404,7 @@ const SeriesTitlePage = () => {
 								<Blurhash
 									hash={
 										item.data.ImageBlurHashes.Primary[
-											item.data.ImageTags.Primary
+										item.data.ImageTags.Primary
 										]
 									}
 									className="item-hero-image-blurhash"
@@ -445,7 +453,7 @@ const SeriesTitlePage = () => {
 								{item.data.Status === "Continuing"
 									? " - Present"
 									: item.data.EndDate &&
-									  ` - ${new Date(item.data.EndDate).getFullYear()}`}
+									` - ${new Date(item.data.EndDate).getFullYear()}`}
 							</Typography>
 							{item.data.OfficialRating && (
 								<Chip variant="filled" label={item.data.OfficialRating} />
@@ -529,7 +537,7 @@ const SeriesTitlePage = () => {
 								<Typography style={{ opacity: "0.8" }} variant="subtitle1">
 									{endsAt(
 										item.data.RunTimeTicks -
-											item.data.UserData.PlaybackPositionTicks,
+										item.data.UserData.PlaybackPositionTicks,
 									)}
 								</Typography>
 							)}
@@ -586,7 +594,7 @@ const SeriesTitlePage = () => {
 								<Typography>
 									{getRuntime(
 										item.data.RunTimeTicks -
-											item.data.UserData.PlaybackPositionTicks,
+										item.data.UserData.PlaybackPositionTicks,
 									)}{" "}
 									left
 								</Typography>
@@ -892,7 +900,7 @@ const SeriesTitlePage = () => {
 									cardCaption={episode.Overview}
 									imageBlurhash={
 										episode.ImageBlurHashes?.Primary[
-											Object.keys(episode.ImageBlurHashes.Primary)[0]
+										Object.keys(episode.ImageBlurHashes.Primary)[0]
 										]
 									}
 									queryKey={[
@@ -1001,91 +1009,15 @@ const SeriesTitlePage = () => {
 							</div>
 						</div>
 						<Divider />
-						<div className="item-detail-episodes-container">
+						<div className="item-detail-episode-container">
 							{episodes.isPending
-								? Array.from(new Array(4)).map((a, index) => {
-										return (
-											<MuiCard
-												key={a}
-												sx={{
-													background: "transparent",
-													width: "100%",
-												}}
-												elevation={0}
-											>
-												<CardMedia>
-													<Skeleton
-														// animation="wave"
-														variant="rectangular"
-														sx={{
-															aspectRatio: "1.777",
-															height: "auto",
-															m: 1,
-															borderRadius: "10px",
-															animationDelay: `${index * 0.2}s`,
-															animationDuration: "1.4s",
-															animationName: "pulse",
-															opacity: 0.1,
-														}}
-													/>
-												</CardMedia>
-												<CardContent
-													sx={{
-														padding: "0 0.5em",
-														alignItems: "flex-start",
-														backgroundColor: "transparent",
-													}}
-												>
-													<Typography variant="h6">
-														<Skeleton
-															variant="text"
-															sx={{
-																animationDelay: `${index * 0.2}s`,
-																animationDuration: "1.4s",
-																animationName: "pulse",
-																opacity: 0.1,
-															}}
-														/>
-													</Typography>
-
-													<Typography variant="body2">
-														<Skeleton
-															variant="text"
-															sx={{
-																animationDelay: `${index * 0.2}s`,
-																animationDuration: "1.4s",
-																animationName: "pulse",
-																opacity: 0.1,
-															}}
-														/>
-														<Skeleton
-															variant="text"
-															sx={{
-																animationDelay: `${index * 0.2}s`,
-																animationDuration: "1.4s",
-																animationName: "pulse",
-																opacity: 0.1,
-															}}
-														/>
-
-														<Skeleton
-															variant="text"
-															sx={{
-																animationDelay: `${index * 0.2}s`,
-																animationDuration: "1.4s",
-																animationName: "pulse",
-																opacity: 0.1,
-															}}
-														/>
-													</Typography>
-												</CardContent>
-											</MuiCard>
-										);
-								  })
-								: episodes.data.Items.map((episode) => {
-										return (
+								? <EpisodeSkeleton />
+								: episodes.data.Items.map((episode, index) => {
+									return (
+										<>
 											<motion.div
 												key={episode.Id}
+												onClick={() => navigate(`/episode/${episode.Id}`)}
 												initial={{
 													transform: "translateY(10px)",
 													opacity: 0,
@@ -1104,34 +1036,76 @@ const SeriesTitlePage = () => {
 												style={{
 													width: "100%",
 												}}
+												className="item-detail-episode"
 											>
-												<EpisodeCard
-													item={episode}
-													cardTitle={
-														episode.ParentIndexNumber === 0
-															? `${episode.SeasonName} - ${episode.Name}`
-															: episode.IndexNumberEnd
-															  ? `${episode.IndexNumber}-${episode.IndexNumberEnd}. ${episode.Name}`
-															  : `${episode.IndexNumber}. ${episode.Name}`
+												<Typography variant="h6">{episode.IndexNumber ?? 0}</Typography>
+												<div className="item-detail-episode-image-container">
+													<div className="item-detail-episode-image-overlay">
+														<PlayButton item={episode} itemId={episode.Id} itemType="Episode" itemUserData={episode.UserData} userId={user.data.Id} currentAudioTrack={0} currentVideoTrack={0} currentSubTrack={0} size="medium" buttonProps={{
+															color: "white",
+															style: {
+																color: "black ",
+															},
+														}} iconOnly />
+													</div>
+													<div className="item-detail-episode-image-icon-container">
+														<span className="material-symbols-rounded item-detail-episode-image-icon">tv_gen</span>
+													</div>
+													<img alt={episode.Name} src={api.getItemImageUrl(episode.Id, "Primary", {
+														tag: episode.ImageTags.Primary
+													})} className="item-detail-episode-image" onLoad={(e) => {
+														e.target.style.opacity = 1;
+													}} />
+													{episode.UserData?.PlaybackPositionTicks > 0 &&
+														<div className="card-progress-container">
+															<div
+																className="card-progress"
+																style={{
+																	width: `${episode.UserData?.PlayedPercentage}%`,
+																}}
+															/>
+														</div>
 													}
-													cardCaption={episode.Overview}
-													imageBlurhash={
-														!!episode.ImageBlurHashes?.Primary &&
-														episode.ImageBlurHashes?.Primary[
-															Object.keys(episode.ImageBlurHashes.Primary)[0]
-														]
-													}
-													queryKey={[
-														"item",
-														id,
-														`season ${currentSeason + 1}`,
-														"episodes",
-													]}
-													userId={user.data.Id}
-												/>
+												</div>
+												<div className="item-detail-episode-info">
+													<Typography variant="h6">{episode.Name}</Typography>
+													<div className="flex flex-row flex-align-center" style={{
+														gap: "0.5em",
+													}}>
+														<Chip variant="filled" label={getEpisodeDateString(new Date(episode.PremiereDate))} size="small" />
+														<Typography variant="subtitle1" >{getRuntimeCompact(episode.RunTimeTicks)}</Typography>
+													</div>
+													<Typography style={{
+														display: "-webkit-box",
+														textOverflow: "ellipsis",
+														overflow: "hidden",
+														WebkitLineClamp: 2,
+														WebkitBoxOrient: "vertical",
+														width: "100%",
+														opacity: 0.7
+													}}>{episode.Overview}</Typography>
+													<div className="item-detail-episode-info-buttons">
+														<LikeButton
+															itemId={episode.Id}
+															itemName={episode.Name}
+															isFavorite={episode.UserData?.IsFavorite}
+															queryKey={["item", id, `season ${currentSeason + 1}`, "episodes"]}
+															userId={user.data.Id}
+														/>
+														<MarkPlayedButton
+															itemId={episode.Id}
+															itemName={episode.Name}
+															isPlayed={episode.UserData?.Played}
+															queryKey={["item", id, `season ${currentSeason + 1}`, "episodes"]}
+															userId={user.data.Id}
+														/>
+													</div>
+												</div>
 											</motion.div>
-										);
-								  })}
+											{index + 1 !== episodes.data?.Items?.length && <Divider orientation="horizontal" flexItem />}
+										</>
+									);
+								})}
 						</div>
 					</div>
 				)}
@@ -1155,42 +1129,16 @@ const SeriesTitlePage = () => {
 									imageBlurhash={
 										!!special.ImageBlurHashes?.Primary &&
 										special.ImageBlurHashes.Primary[
-											Object.keys(special.ImageBlurHashes.Primary)[0]
+										Object.keys(special.ImageBlurHashes.Primary)[0]
 										]
 									}
 									userId={user.data.Id}
-									onClick={() => {}}
+									onClick={() => { }}
 								/>
 							);
 						})}
 					</CardScroller>
 				)}
-				{/* {item.data.People.length > 0 && (
-					<CardScroller
-						title="Cast & Crew"
-						displayCards={8}
-						disableDecoration
-					>
-						{item.data.People.map((person) => {
-							return (
-								<ActorCard
-									key={person.Id}
-									item={person}
-									cardTitle={person.Name}
-									cardCaption={person.Role}
-									cardType="square"
-									userId={user.data.Id}
-									imageBlurhash={
-										person.ImageBlurHashes
-											?.Primary[0]
-									}
-									overrideIcon="Person"
-									disableOverlay
-								/>
-							);
-						})}
-					</CardScroller>
-				)} */}
 				{similarItems.data.TotalRecordCount > 0 && (
 					<CardScroller
 						title="You might also like"
@@ -1213,18 +1161,17 @@ const SeriesTitlePage = () => {
 										similar.Type === BaseItemKind.Episode
 											? `S${similar.ParentIndexNumber}:E${similar.IndexNumber} - ${similar.Name}`
 											: similar.Type === BaseItemKind.Series
-											  ? `${similar.ProductionYear} - ${
-														similar.EndDate
-															? new Date(similar.EndDate).toLocaleString([], {
-																	year: "numeric",
-															  })
-															: "Present"
-												  }`
-											  : similar.ProductionYear
+												? `${similar.ProductionYear} - ${similar.EndDate
+													? new Date(similar.EndDate).toLocaleString([], {
+														year: "numeric",
+													})
+													: "Present"
+												}`
+												: similar.ProductionYear
 									}
 									cardType={
 										similar.Type === BaseItemKind.MusicAlbum ||
-										similar.Type === BaseItemKind.Audio
+											similar.Type === BaseItemKind.Audio
 											? "square"
 											: "portrait"
 									}
@@ -1233,7 +1180,7 @@ const SeriesTitlePage = () => {
 									imageBlurhash={
 										!!similar.ImageBlurHashes?.Primary &&
 										similar.ImageBlurHashes?.Primary[
-											Object.keys(similar.ImageBlurHashes.Primary)[0]
+										Object.keys(similar.ImageBlurHashes.Primary)[0]
 										]
 									}
 								/>

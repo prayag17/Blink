@@ -142,7 +142,7 @@
 	}
 
 	&-progress{
-		width: attr('data-progress');
+		// width: attr('data-progress');
 		height: 100%;
 		background: white;
 		transition: width $transition-time-default ease-in-out;

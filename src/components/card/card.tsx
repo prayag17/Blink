@@ -1,19 +1,24 @@
-import React, { useState } from "react";
+/** @format */
+
+import React from "react";
+import { Component, useState } from "react";
 
 import { useNavigate } from "react-router-dom";
 
 import LinearProgress from "@mui/material/LinearProgress";
 import Typography from "@mui/material/Typography";
 
-import { getTypeIcon } from "../utils/iconsCollection";
-import "./card.module.scss";
-
-import { BaseItemDto, BaseItemKind } from "@jellyfin/sdk/lib/generated-client";
+import {
+	type BaseItemDto,
+	BaseItemKind,
+} from "@jellyfin/sdk/lib/generated-client";
 import { useApi } from "../../utils/store/api";
 import LikeButton from "../buttons/likeButton";
 import MarkPlayedButton from "../buttons/markPlayedButton";
 import PlayButton from "../buttons/playButton";
 import ErrorBoundary from "../errorBoundary";
+import { getTypeIcon } from "../utils/iconsCollection";
+import "./card.module.scss";
 
 const cardImageAspectRatios = {
 	thumb: 1.777,
@@ -54,7 +59,7 @@ export const Card = ({
 	hideText: boolean;
 	onClick: Function | null;
 	disableOverlay: boolean;
-	overrideIcon: React.Component | null;
+	overrideIcon: any;
 }) => {
 	const [api] = useApi((state) => [state.api]);
 	const navigate = useNavigate();
@@ -84,12 +89,16 @@ export const Card = ({
 							opacity: item.UserData?.Played ? 1 : 0,
 						}}
 					>
-						<div className="material-symbols-rounded">done</div>
+						<div className="material-symbols-rounded">
+							done
+						</div>
 					</div>
 					<div
 						className={"card-indicator text"}
 						style={{
-							opacity: item.UserData?.UnplayedItemCount ? 1 : 0,
+							opacity: item.UserData?.UnplayedItemCount
+								? 1
+								: 0,
 						}}
 					>
 						<Typography
@@ -112,7 +121,9 @@ export const Card = ({
 						/>
 					)} */}
 				<div className="card-image-icon-container">
-					{overrideIcon ? getTypeIcon(overrideIcon) : getTypeIcon(item.Type)}
+					{overrideIcon
+						? getTypeIcon(overrideIcon)
+						: getTypeIcon(item.Type)}
 				</div>
 				<img
 					alt={item.Name}
@@ -120,14 +131,13 @@ export const Card = ({
 						overrideIcon === "User"
 							? `${api.basePath}/Users/${item.Id}/Images/Primary`
 							: api.getItemImageUrl(
-									seriesId ? item.SeriesId : item.AlbumId ?? item.Id,
+									seriesId
+										? item.SeriesId
+										: item.AlbumId ?? item.Id,
 									imageType,
 									{
 										quality: 90,
-										fillHeight: 226,
-										fillWidth: Math.floor(
-											226 / cardImageAspectRatios[cardType],
-										),
+										fillWidth: 400,
 									},
 							  )
 					}
@@ -159,12 +169,16 @@ export const Card = ({
 								}}
 								iconOnly
 								audio={
-									item.Type === BaseItemKind.MusicAlbum ||
+									item.Type ===
+										BaseItemKind.MusicAlbum ||
 									item.Type === BaseItemKind.Audio ||
-									item.Type === BaseItemKind.AudioBook ||
+									item.Type ===
+										BaseItemKind.AudioBook ||
 									item.Type === BaseItemKind.Playlist
 								}
-								playlistItem={item.Type === BaseItemKind.Playlist}
+								playlistItem={
+									item.Type === BaseItemKind.Playlist
+								}
 								playlistItemId={item.Id}
 							/>
 							<LikeButton
