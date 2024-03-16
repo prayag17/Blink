@@ -59,7 +59,7 @@
 		"@tauri-apps/cli": "^1.5.11",
 		"@vitejs/plugin-react": "^4.2.1",
 		"eslint": "^8.57.0",
-		"eslint-plugin-react": "^7.34.0",
+		"eslint-plugin-react": "^7.34.1",
 		"eslint-plugin-react-refresh": "^0.4.6",
 		"prop-types": "^15.8.1",
 		"sass": "^1.72.0",
