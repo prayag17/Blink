@@ -9,3 +9,4 @@
     - refactor(player): Rewrite and improve video playback by @prayag17
     - feat(web): Use season backdrop in series page if available by @prayag17
     - feat(player): Allow selecting subtitles during playback by @prayag17
+    - feat(ui): Add new episode layout by @prayag17

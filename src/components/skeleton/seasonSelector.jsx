@@ -45,7 +45,9 @@ export const SeasonSelectorSkeleton = () => {
 					paddingBottom: " 0.5em",
 				}}
 			/>
-			<EpisodeSkeleton/>
+			<div className="item-detail-episode-container">
+				<EpisodeSkeleton/>
+			</div>
 		</Grid>
 	);
 };
