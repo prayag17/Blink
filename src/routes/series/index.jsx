@@ -357,7 +357,7 @@ const SeriesTitlePage = () => {
 
 						{item.data.BackdropImageTags ? (
 							<motion.img
-								key={currentSeason}
+								key={currentSeasonItem.dataUpdatedAt}
 								alt={item.data.Name}
 								src={backdropImage}
 								className="item-hero-backdrop"
