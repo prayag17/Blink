@@ -16,7 +16,7 @@ import TextField from "@mui/material/TextField";
 import Typography from "@mui/material/Typography";
 import { green, red, yellow } from "@mui/material/colors";
 
-import { motion, useScroll } from "framer-motion";
+import { AnimatePresence, motion, useScroll } from "framer-motion";
 import useParallax from "../../utils/hooks/useParallax";
 
 import { useParams } from "react-router-dom";
@@ -164,6 +164,7 @@ const SeriesTitlePage = () => {
 		const result = sessionStorage.getItem(`backdrop-${item.data?.Id}`);
 		return result ?? "0";
 	});
+	const [backdropImageLoaded , setBackdropImageLoaded] = useState(false);
 
 	const [currentSeason, setCurrentSeason] = useState(() => {
 		const result = sessionStorage.getItem(`season-${item.data?.Id}`);
@@ -284,6 +285,27 @@ const SeriesTitlePage = () => {
 				}),
 				currentSeasonItem.data.Id,
 			);
+			setBackdropImageLoaded(false)
+		} else if (item.isSuccess && item.data?.BackdropImageTags?.length > 0 ){
+			sessionStorage.setItem(
+				`backdrop-${item.data?.Id}`,
+				api.getItemImageUrl(item.data.Id, "Backdrop", {
+					tag: item.data.BackdropImageTags[0],
+				}),
+			);
+			setBackdropImage(
+				api.getItemImageUrl(item.data.Id, "Backdrop", {
+					tag: item.data.BackdropImageTags[0],
+				}),
+				item.data.Id,
+			);
+			setAppBackdrop(
+				api.getItemImageUrl(item.data.Id, "Backdrop", {
+					tag: item.data.BackdropImageTags[0],
+				}),
+				item.data.Id,
+			);
+			setBackdropImageLoaded(false)
 		}
 	}, [currentSeasonItem.dataUpdatedAt]);
 
@@ -331,14 +353,28 @@ const SeriesTitlePage = () => {
 			>
 				<div className="item-hero flex flex-row">
 					<div className="item-hero-backdrop-container">
+						<AnimatePresence mode="wait">
+
 						{item.data.BackdropImageTags ? (
 							<motion.img
 								key={currentSeason}
 								alt={item.data.Name}
 								src={backdropImage}
 								className="item-hero-backdrop"
-								onLoad={(e) => {
-									e.currentTarget.style.opacity = 1;
+								initial={{
+									opacity: 0
+								}}
+								onLoad={() => {
+									setBackdropImageLoaded(true)
+								}}
+								animate={{
+									opacity: backdropImageLoaded ? 1 : 0
+								}}
+								exit={{
+									opacity:0
+								}}
+								transition={{
+									duration: 0.2
 								}}
 								style={{
 									y: parallax,
@@ -347,6 +383,7 @@ const SeriesTitlePage = () => {
 						) : (
 							<></>
 						)}
+						</AnimatePresence>
 					</div>
 					<div
 						className="item-hero-image-container"
