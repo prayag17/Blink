@@ -224,7 +224,7 @@
 				padding-right: 2em;
 			}
 
-			&:hover .item-detail-episode-image-overlay{
+			&:hover .item-detail-episode-image-overlay, &:focus-within .item-detail-episode-image-overlay{
 				opacity: 1;
 			}
 		}

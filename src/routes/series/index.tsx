@@ -1052,7 +1052,8 @@ const SeriesTitlePage = () => {
 														<span className="material-symbols-rounded item-detail-episode-image-icon">tv_gen</span>
 													</div>
 													<img alt={episode.Name} src={api.getItemImageUrl(episode.Id, "Primary", {
-														tag: episode.ImageTags.Primary
+														tag: episode.ImageTags.Primary,
+														fillHeight: 300, 
 													})} className="item-detail-episode-image" onLoad={(e) => {
 														e.target.style.opacity = 1;
 													}} />
