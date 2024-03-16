@@ -1072,7 +1072,7 @@ const SeriesTitlePage = () => {
 													<div className="flex flex-row flex-align-center" style={{
 														gap: "0.5em",
 													}}>
-														<Chip variant="filled" label={getEpisodeDateString(new Date(episode.PremiereDate))} size="small" />
+														{episode.PremiereDate && <Chip variant="filled" label={getEpisodeDateString(new Date(episode.PremiereDate))} size="small" />}
 														<Typography variant="subtitle1" >{getRuntimeCompact(episode.RunTimeTicks)}</Typography>
 													</div>
 													<Typography style={{
