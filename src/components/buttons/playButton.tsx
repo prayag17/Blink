@@ -2,20 +2,20 @@ import PropTypes from "prop-types";
 import React from "react";
 
 import Button, {
-	ButtonProps,
-	ButtonPropsSizeOverrides,
+	type ButtonProps,
+	type ButtonPropsSizeOverrides,
 } from "@mui/material/Button";
 import Fab from "@mui/material/Fab";
 import LinearProgress from "@mui/material/LinearProgress";
 import Typography from "@mui/material/Typography";
 
 import {
-	BaseItemDto,
-	BaseItemDtoQueryResult,
+	type BaseItemDto,
+	type BaseItemDtoQueryResult,
 	BaseItemKind,
 	ItemFields,
 	SortOrder,
-	UserItemDataDto,
+	type UserItemDataDto,
 } from "@jellyfin/sdk/lib/generated-client";
 import { getItemsApi } from "@jellyfin/sdk/lib/utils/api/items-api";
 import { getPlaylistsApi } from "@jellyfin/sdk/lib/utils/api/playlists-api";
@@ -35,7 +35,7 @@ import {
 	usePlaybackStore,
 } from "../../utils/store/playback";
 
-import { SxProps } from "@mui/material";
+import type { SxProps } from "@mui/material";
 
 const PlayButton = ({
 	item,
@@ -253,6 +253,7 @@ const PlayButton = ({
 					queue,
 					0,
 					subtitles,
+					result?.Items[0].MediaSources[0].Id
 				);
 				navigate("/player");
 			}

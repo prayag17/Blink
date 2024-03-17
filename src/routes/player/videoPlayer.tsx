@@ -30,7 +30,7 @@ import { endsAt } from "../../utils/date/time";
 
 import { useQuery } from "@tanstack/react-query";
 
-import { ItemFields, LocationType } from "@jellyfin/sdk/lib/generated-client";
+import { ItemFields, LocationType, PlayMethod, RepeatMode } from "@jellyfin/sdk/lib/generated-client";
 import { AnimatePresence, motion } from "framer-motion";
 
 import useDebounce from "../../utils/hooks/useDebounce";
@@ -42,6 +42,7 @@ import JASSUB from "jassub";
 import workerUrl from "jassub/dist/jassub-worker.js?url";
 import wasmUrl from "jassub/dist/jassub-worker.wasm?url";
 
+import { getUserApi } from "@jellyfin/sdk/lib/utils/api/user-api";
 import subtitleFont from "./Noto-Sans-Indosphere.ttf";
 
 // export const VideoPlayer = () => {
@@ -925,9 +926,30 @@ const VideoPlayer = () => {
 		state.enableSubtitle,
 	]);
 
+	const user = useQuery({
+		queryKey: ['user'],
+		queryFn: async () => {
+			const result = await getUserApi(api).getCurrentUser();
+			return result.data;
+		}
+	})
+
+	const mediaInfo = useQuery({
+		queryKey: ['videoPlayer', 'mediaInfo'],
+		queryFn: async () =>  {
+			const result = await getMediaInfoApi(api).getPlaybackInfo({
+			itemId: item?.Id,
+			userId: user.data?.Id
+			}); 
+			return result.data
+		},
+		enabled: user.isSuccess
+	})
+
 	const [loading, setLoading] = useState(true);
 	const [settingsMenu, setSettingsMenu] = useState(null);
 	const settingsMenuOpen = Boolean(settingsMenu);
+	const [showVolumeControl, setShowVolumeControl] = useState(false);
 
 	// Control States
 	const [isReady, setIsReady] = useState(false);
@@ -940,6 +962,8 @@ const VideoPlayer = () => {
 	const [selectedSubtitle, setSelectedSubtitle] = useState(
 		mediaSource.subtitleTrack,
 	);
+	const [volume, setVolume] = useState(1);
+	const [muted, setMuted]= useState(false)
 
 	useEffect(() => setBackdrop("", ""), []);
 
@@ -957,25 +981,74 @@ const VideoPlayer = () => {
 				wasmUrl,
 				availableFonts: { "noto sans": uint8 },
 				fallbackFont: "Noto Sans",
-				debug:true
 			});
-			window.subInst = subtitleRendererRaw;
 			setSubtitleRenderer(subtitleRendererRaw);
 
 			player.current.seekTo(ticksToSec(startPosition), "seconds");
 			setIsReady(true);
 
+			// Report Jellyfin server: Playback has begin 
+			await getPlaystateApi(api).reportPlaybackStart({
+				playbackStartInfo: {
+					AudioStreamIndex: mediaSource.audioTrack,
+					CanSeek: true,
+					IsMuted: false,
+					IsPaused: false,
+					Item: item,
+					ItemId: item?.Id,
+					MediaSourceId: mediaSource.id,
+					PlayMethod: PlayMethod.DirectPlay,
+					PlaySessionId: mediaInfo.data?.PlaySessionId,
+					PlaybackStartTimeTicks: startPosition,
+					PositionTicks: startPosition,
+					RepeatMode: RepeatMode.RepeatNone,
+					VolumeLevel: volume,
+				}
+			})
+
+
 		}
 	};
 ``
-	const handleProgress = (event) => {
+	const handleProgress = async (event) => {
 		setProgress(secToTicks(event.playedSeconds));
+
+		// Report Jellyfin server: Playback progress  
+		await getPlaystateApi(api).reportPlaybackProgress({
+			playbackProgressInfo: {
+				AudioStreamIndex: mediaSource.audioTrack,
+				CanSeek: true,
+				IsMuted: muted,
+				IsPaused: !playing,
+				ItemId: item?.Id,
+				MediaSourceId: mediaSource.id,
+				PlayMethod: PlayMethod.DirectPlay,
+				PlaySessionId: mediaInfo.data?.PlaySessionId,
+				PlaybackStartTimeTicks: startPosition,
+				PositionTicks: progress,
+				RepeatMode: RepeatMode.RepeatNone,
+				VolumeLevel: volume * 100,
+			}
+		})
 	};
 
-	const handleExitPlayer = () => {
+	const handleExitPlayer = async () => {
 		appWindow.setFullscreen(false);
 		subtitleRenderer.destroy();
 		navigate(-1);
+		// Report Jellyfin server: Playback has ended/stopped 
+		await getPlaystateApi(api).reportPlaybackStopped({
+			playbackStopInfo: {
+				Failed: false,
+				Item: item,
+				ItemId: item?.Id,
+				MediaSourceId: mediaSource.id,
+				PlayMethod: PlayMethod.DirectPlay,
+				PlaySessionId: mediaInfo.data?.PlaySessionId,
+				PlaybackStartTimeTicks: startPosition,
+				PositionTicks: progress,
+			}
+		})
 		usePlaybackStore.setState(usePlaybackStore.getInitialState());
 	};
 
@@ -1232,6 +1305,41 @@ const VideoPlayer = () => {
 								</Typography>
 							</div>
 							<div className="video-player-osd-controls-buttons">
+								<motion.div style={{
+									width: "13em",
+									padding: "0.5em 1.5em",
+									paddingLeft: "0.8em",
+									gap:"0.4em",
+									background: "black",
+									borderRadius: "100px",
+									display: 'grid',
+									justifyContent: "center",
+									alignItems: "center",
+									gridTemplateColumns: "2em 1fr",
+									opacity:0,
+								}}
+									animate={{
+										opacity: showVolumeControl ? 1:0
+									}}
+									whileHover={{
+										opacity:1
+									}}
+									onMouseLeave={()=> setShowVolumeControl(false)}
+								>
+									<Typography textAlign="center">{muted ? 0 : Math.round(volume*100)}</Typography>
+									<Slider step={0.01} max={1} size="small" value={muted ? 0 : volume} onChange={(e, newVal) => {
+										setVolume(newVal);
+										if (newVal === 0) setMuted(true) 
+										else setMuted(false)
+									}} />
+								</motion.div>
+								<IconButton onClick={() => setMuted((state) => !state)} onMouseMoveCapture={() => {
+									setShowVolumeControl(true)
+								}}>
+									<span className="material-symbols-rounded">{muted ? "volume_off" :
+										volume < 0.4 ? "volume_down" :
+										"volume_up"}</span>
+								</IconButton>
 								<IconButton onClick={() => setShowSubtitles((state) => !state)}>
 									<span className={"material-symbols-rounded"}>
 										{showSubtitles
@@ -1278,6 +1386,7 @@ const VideoPlayer = () => {
 				// onReady={(playerRef) => {
 				// 	playerRef.seekTo(ticksToSec(startPosition));
 				// }}
+				volume={muted ? 0 : volume}
 				onReady={handleReady}
 				onBuffer={() => setLoading(true)}
 				onBufferEnd={() => setLoading(false)}

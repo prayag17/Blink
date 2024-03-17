@@ -1,4 +1,4 @@
-import { BaseItemDto, MediaStream } from "@jellyfin/sdk/lib/generated-client";
+import type { BaseItemDto, MediaStream } from "@jellyfin/sdk/lib/generated-client";
 import { create } from "zustand";
 import { setQueue, setTrackIndex } from "./queue";
 
@@ -112,6 +112,7 @@ type PlaybackStore = {
 		subtitleTrack: number;
 		container: string;
 		availableSubtitleTracks: MediaStream[];
+		id: string | undefined;
 	};
 	enableSubtitle: boolean;
 	hlsStream: string;
@@ -130,6 +131,7 @@ export const usePlaybackStore = create<PlaybackStore>(() => ({
 		subtitleTrack: 0,
 		container: "",
 		availableSubtitleTracks: [],
+		id: undefined
 	},
 	enableSubtitle: true,
 	hlsStream: "",
@@ -155,6 +157,7 @@ export const playItem = (
 	queue,
 	queueItemIndex,
 	availableSubtitleTracks,
+	mediaSourceId
 ) => {
 	usePlaybackStore.setState({
 		itemName,
@@ -165,6 +168,7 @@ export const playItem = (
 			subtitleTrack,
 			container,
 			availableSubtitleTracks,
+			id: mediaSourceId,
 		},
 		enableSubtitle,
 		hlsStream,

@@ -91,6 +91,7 @@ const Home = () => {
 			return resumeItems.data;
 		},
 		enabled: !!user.data,
+		refetchOnMount: true
 	});
 
 	const resumeItemsAudio = useQuery({
@@ -126,6 +127,7 @@ const Home = () => {
 			return upNext.data;
 		},
 		enabled: !!user.data,
+		refetchOnMount: true
 	});
 
 	const [latestMediaLibs, setLatestMediaLibs] = useState([]);

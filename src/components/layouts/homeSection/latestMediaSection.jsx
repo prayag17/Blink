@@ -35,7 +35,7 @@ export const LatestMediaSection = ({ latestMediaLib }) => {
 		queryKey: ["homeSection, latestMedia", latestMediaLib],
 		queryFn: () => fetchLatestMedia(latestMediaLib[0]),
 		enabled: !!user.data,
-		networkMode: "always",
+		refetchOnMount: true
 	});
 	if (data.isPending) {
 		return <CardsSkeleton />;
