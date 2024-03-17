@@ -1,7 +1,7 @@
 {
 	"name": "jellyplayer",
 	"private": true,
-	"version": "0.0.4-dev",
+	"version": "0.0.5-dev",
 	"type": "module",
 	"scripts": {
 		"dev": "vite",
