@@ -1,19 +1,19 @@
 {
-  "version": "0.0.4-dev",
-  "notes": "![banner](https://imgur.com/w3l4WFh.png)\n## What's Changed\n* refactor(web): update to typescript, cleanup small bugs + workspace by @dan-online in [#244](https://github.com/prayag17/JellyPlayer/pull/244)\n* feat(user): store `accessToken` over password by @dan-online in [#247](https://github.com/prayag17/JellyPlayer/pull/247)\n* fix(queries): staleTime and invalidating cache by @dan-online in [#248](https://github.com/prayag17/JellyPlayer/pull/248)\n* refactor: use `crypto.randomUUID` vs `uuid.v4` by @dan-online in [#249](https://github.com/prayag17/JellyPlayer/pull/249)\n* style(icons): only use the rounded css by @dan-online in [#250](https://github.com/prayag17/JellyPlayer/pull/250)\n* feat: quick connect by @dan-online in [#251](https://github.com/prayag17/JellyPlayer/pull/251)\n* feat: add new itemDetail Pages by @prayag17 in [#243](https://github.com/prayag17/issue/243)\n* feat: Auto focus search input in search route when opened initially by @prayag17\n* feat: Improved Login page ui by @prayag17\n* refactor: improve error boundary component\n## New Contributors\n* @dan-online made their first contribution in [#244](https://github.com/prayag17/JellyPlayer/pull/244)\n**Full Changelog**: [v0.0.3-dev...v0.0.4-dev](https://github.com/prayag17/JellyPlayer/compare/v0.0.3-dev...v0.0.4-dev)",
-  "pub_date": "2024-01-23T17:12:09.705Z",
+  "version": "0.0.5-dev",
+  "notes": "![banner](https://i.imgur.com/bv4WBCC.png)\n- feat(web): Add new About page (#258) by @prayag17\n- feat(web): Allow managing servers from settings dialog by @prayag17\n- feat(search): Add Episode to search by @prayag17\n- feat(settings-server): Add a refretch button by @prayag17\n- feat(web): Add a global query fetch/mutation status by @prayag17\n- fix(server): Use redirect instead of relaunch when changing or deleting a server by @prayag17\n- refactor(player): Rewrite and improve video playback by @prayag17\n- feat(web): Use season backdrop in series page if available by @prayag17\n- feat(player): Allow selecting subtitles during playback by @prayag17\n- feat(ui): Add new episode layout by @prayag17",
+  "pub_date": "2024-03-17T11:50:31.121Z",
   "platforms": {
-    "linux-x86_64": {
-      "signature": "dW50cnVzdGVkIGNvbW1lbnQ6IHNpZ25hdHVyZSBmcm9tIHRhdXJpIHNlY3JldCBrZXkKUlVROHVTNk5NMHU2bVordkFWa21Fa2ZJTUFRcElHbmxFWlJFY29IdHg2WTZaeTRxbXNuUy9lMmI1MWEwSEtIa0FUN09WTjlKZDZiMHVWUEFPV0lneE9TWG53dis0K0hpdUFVPQp0cnVzdGVkIGNvbW1lbnQ6IHRpbWVzdGFtcDoxNzA2MDI5NjgxCWZpbGU6amVsbHktcGxheWVyXzAuMC40LWRldl9hbWQ2NC5BcHBJbWFnZS50YXIuZ3oKeDFiSzBtalVnYjlweUV5RElYeHlrZDRxS2tMQXFLZ3RmUkkveUVEQjhoSkp5ZmJCdEJlKzMza3lBdFRvMzVJZUhkUmdMejVBZGFvSEgwL2h2VnRZRHc9PQo=",
-      "url": "https://github.com/prayag17/JellyPlayer/releases/download/v0.0.4-dev/jelly-player_0.0.4-dev_amd64.AppImage.tar.gz"
-    },
     "darwin-x86_64": {
-      "signature": "dW50cnVzdGVkIGNvbW1lbnQ6IHNpZ25hdHVyZSBmcm9tIHRhdXJpIHNlY3JldCBrZXkKUlVROHVTNk5NMHU2bVRxQlpMUGxUcjhZYWVmSWllK2JQYXFTVnVaZGxCQnNaL1J5ekVnSitUOVhWdjVBeEFQUHJXOER4bTI2Q0ZsWFYvSWNVK0FOSFE4M0U1VjNTRzFVOEF3PQp0cnVzdGVkIGNvbW1lbnQ6IHRpbWVzdGFtcDoxNzA2MDI5Nzg0CWZpbGU6SmVsbHlQbGF5ZXIuYXBwLnRhci5negpkT2VmTmNjRG1hWjBYNUV3UUh4OG1KM1BRdHVvUTBrZWZ5NlhMOWx5U0YvZURZcUUzeVVFbFNDV2JzaDAyVThtZk9NV1lwSXozQjYyekNKY2hXVjdCdz09Cg==",
-      "url": "https://github.com/prayag17/JellyPlayer/releases/download/v0.0.4-dev/JellyPlayer_x64.app.tar.gz"
+      "signature": "dW50cnVzdGVkIGNvbW1lbnQ6IHNpZ25hdHVyZSBmcm9tIHRhdXJpIHNlY3JldCBrZXkKUlVROHVTNk5NMHU2bVZjYWVCcmxtUk5tRTV0bC9acGxUQkdGMlMrVFdkOVJCS3ZsMlY1aXR0M3BvdnBVTnl6MUVpcWsxUzdFbVNXbHF5S1pQbTZIM0JXallCeklYaUdyWFFBPQp0cnVzdGVkIGNvbW1lbnQ6IHRpbWVzdGFtcDoxNzEwNjc1OTMxCWZpbGU6SmVsbHlQbGF5ZXIuYXBwLnRhci5negpGM2xCQnR1YWhDWi9mMCtLZjFHQ0twMUNub3VBTHE2SHZSMnpGOVRWVGVncE42ODZ5Q2M1bm9aa3VGUFhpM245eVhIMDZWWkRyQnVMaWY4c1Z2WE5Edz09Cg==",
+      "url": "https://github.com/prayag17/JellyPlayer/releases/download/v0.0.5-dev/JellyPlayer_x64.app.tar.gz"
+    },
+    "linux-x86_64": {
+      "signature": "dW50cnVzdGVkIGNvbW1lbnQ6IHNpZ25hdHVyZSBmcm9tIHRhdXJpIHNlY3JldCBrZXkKUlVROHVTNk5NMHU2bVMvOXE1SGNiWmRDVWVMYVBLTnU4MXJheTd4NmY2WWszRjdUcnRySnl5TkdEVThYa1lHNHRXT1FIUzFwelhMZ3U4S2lJTjI4Y1IrV05iOVRmZWgzS1FrPQp0cnVzdGVkIGNvbW1lbnQ6IHRpbWVzdGFtcDoxNzEwNjc2MDE4CWZpbGU6amVsbHktcGxheWVyXzAuMC41LWRldl9hbWQ2NC5BcHBJbWFnZS50YXIuZ3oKcko3VUZFZVcwcVVZK0IwY3lZUlk5WThySjI2NEptY1BFb1dYYlRDMTQxZzFJekovS2tHVFMwK0pTS01JV3NSMWxvL2QwNEVqb2VTZVE2MmQ2UFhXQ1E9PQo=",
+      "url": "https://github.com/prayag17/JellyPlayer/releases/download/v0.0.5-dev/jelly-player_0.0.5-dev_amd64.AppImage.tar.gz"
     },
     "windows-x86_64": {
-      "signature": "dW50cnVzdGVkIGNvbW1lbnQ6IHNpZ25hdHVyZSBmcm9tIHRhdXJpIHNlY3JldCBrZXkKUlVROHVTNk5NMHU2bWVHdGR2NTB1SDF5Vk5rN3ZyTXpybW5rMktsZmlwbVAxK2ZEMHltWndCdG9qUmpQNlNnaGcwdUdRVW1NeUJ3VmRPK1hFTFdLcWpINWZrdzBBYlBFUkFNPQp0cnVzdGVkIGNvbW1lbnQ6IHRpbWVzdGFtcDoxNzA2MDI5OTIyCWZpbGU6SmVsbHlQbGF5ZXJfMC4wLjQtZGV2X3g2NC1zZXR1cC5uc2lzLnppcApDWlpoYVd2enE5dDRhblV4R1g3djJtSzBTTlR1MXRIMHFVbTRYb3dIalZ0U0ozRlg1eXdjcHMrU1gwWGtuL24vNnI5UWRZdVNKSnF5Z0JycDNwcy9DQT09Cg==",
-      "url": "https://github.com/prayag17/JellyPlayer/releases/download/v0.0.4-dev/JellyPlayer_0.0.4-dev_x64-setup.nsis.zip"
+      "signature": "dW50cnVzdGVkIGNvbW1lbnQ6IHNpZ25hdHVyZSBmcm9tIHRhdXJpIHNlY3JldCBrZXkKUlVROHVTNk5NMHU2bVZyK3o0d0FWVURRcDg3QnorYzNDUVNwamJIZ2JDTTNwUjdFUS9jMXN2cVFiVXNKdFNoaVNUUFlSaVI2Z3dyeEdqWmRCekFqSkYwa09xTFZSaG5mb1FRPQp0cnVzdGVkIGNvbW1lbnQ6IHRpbWVzdGFtcDoxNzEwNjc2MjIxCWZpbGU6SmVsbHlQbGF5ZXJfMC4wLjUtZGV2X3g2NC1zZXR1cC5uc2lzLnppcApPdGxzdk1aU0pJSC80a2xvYk5TbWhJeUNvVjNDa2piYkNQOTF0bmFWVTJ6TFVNc0trRkhqeUNxdGNNNUQvUXd4TUpXTzNoRHd1QUN2YnN5Y1BUTGVDQT09Cg==",
+      "url": "https://github.com/prayag17/JellyPlayer/releases/download/v0.0.5-dev/JellyPlayer_0.0.5-dev_x64-setup.nsis.zip"
     }
   }
 }
