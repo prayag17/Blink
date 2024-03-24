@@ -67,7 +67,7 @@ dependencies:
     version: 1.7.15
   material-symbols:
     specifier: ^0.17.0
-    version: 0.17.0
+    version: 0.17.1
   million:
     specifier: ^3.0.6
     version: 3.0.6
@@ -3179,8 +3179,8 @@ packages:
     resolution: {integrity: sha512-Z1NL3Tb1M9wH4XESsCDEksWoKTdlUafKc4pt0GRwjUyXaCFZ+dc3g2erqB6zm3szA2IUSi7VnPI+o/9jnxh9hw==}
     dev: false
 
-  /material-symbols@0.17.0:
-    resolution: {integrity: sha512-CwDddz58cIH/svt8/wjAegQTp9bfNNIkIPjkkr0MAmA1oMlmUkG+C2ss2/yR22mlDzUX4DnXIq5MrgcpKTXoyA==}
+  /material-symbols@0.17.1:
+    resolution: {integrity: sha512-1kJan8t3U3Fmuu/YPu2MVsL/ODSja71o+J7ODROQfMaCzzal0izY4SATafEKgXUXU+jL0zIiBQdyzsno7vXBvA==}
     dev: false
 
   /mdast-util-find-and-replace@3.0.1:
