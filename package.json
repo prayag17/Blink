@@ -17,7 +17,7 @@
 		"@fontsource-variable/jetbrains-mono": "^5.0.20",
 		"@fontsource/noto-sans": "^5.0.21",
 		"@jellyfin/sdk": "0.8.2",
-		"@mui/lab": "5.0.0-alpha.168",
+		"@mui/lab": "5.0.0-alpha.169",
 		"@mui/material": "^5.15.13",
 		"@tanem/react-nprogress": "^5.0.51",
 		"@tanstack/react-query": "^5.28.4",
