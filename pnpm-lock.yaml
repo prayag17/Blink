@@ -61,7 +61,7 @@ dependencies:
     version: 3.3.0
   framer-motion:
     specifier: ^11.0.14
-    version: 11.0.14(react-dom@18.2.0)(react@18.2.0)
+    version: 11.0.15(react-dom@18.2.0)(react@18.2.0)
   jassub:
     specifier: ^1.7.15
     version: 1.7.15
@@ -2571,8 +2571,8 @@ packages:
       mime-types: 2.1.35
     dev: false
 
-  /framer-motion@11.0.14(react-dom@18.2.0)(react@18.2.0):
-    resolution: {integrity: sha512-RFjo2hB1MTW0EWsHQaXgVn0AEUDGxAs0ZL2vVjTTJJu3N7wFiLkmqTn5ysLjL+qKZ9jvfpKXDb9waN9AyLqk8g==}
+  /framer-motion@11.0.15(react-dom@18.2.0)(react@18.2.0):
+    resolution: {integrity: sha512-bQzPYHL66lO4SLoAHqWy5v1Pd4TDwYs8I16+ZlsoZjRn2MdUiygb8nyl9kcI/JjhcErSBq2XLaha4F5knn72ow==}
     peerDependencies:
       '@emotion/is-prop-valid': '*'
       react: ^18.0.0
