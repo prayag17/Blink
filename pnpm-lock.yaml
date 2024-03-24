@@ -40,7 +40,7 @@ dependencies:
     version: 1.5.3
   '@types/node':
     specifier: ^20.11.28
-    version: 20.11.28
+    version: 20.11.29
   '@types/react':
     specifier: ^18.2.66
     version: 18.2.66
@@ -156,7 +156,7 @@ devDependencies:
     version: 1.72.0
   vite:
     specifier: ^5.1.6
-    version: 5.1.6(@types/node@20.11.28)(sass@1.72.0)
+    version: 5.1.6(@types/node@20.11.29)(sass@1.72.0)
   vite-plugin-compression:
     specifier: ^0.5.1
     version: 0.5.1(vite@5.1.6)
@@ -1559,8 +1559,8 @@ packages:
     resolution: {integrity: sha512-nG96G3Wp6acyAgJqGasjODb+acrI7KltPiRxzHPXnP3NgI28bpQDRv53olbqGXbfcgF5aiiHmO3xpwEpS5Ld9g==}
     dev: false
 
-  /@types/node@20.11.28:
-    resolution: {integrity: sha512-M/GPWVS2wLkSkNHVeLkrF2fD5Lx5UC4PxA0uZcKc6QqbIQUJyW1jVjueJYi1z8n0I5PxYrtpnPnWglE+y9A0KA==}
+  /@types/node@20.11.29:
+    resolution: {integrity: sha512-P99thMkD/1YkCvAtOd6/zGedKNA0p2fj4ZpjCzcNiSCBWgm3cNRTBfa/qjFnsKkkojxu4vVLtWpesnZ9+ap+gA==}
     dependencies:
       undici-types: 5.26.5
 
@@ -1618,7 +1618,7 @@ packages:
       '@babel/plugin-transform-react-jsx-source': 7.23.3(@babel/core@7.24.0)
       '@types/babel__core': 7.20.5
       react-refresh: 0.14.0
-      vite: 5.1.6(@types/node@20.11.28)(sass@1.72.0)
+      vite: 5.1.6(@types/node@20.11.29)(sass@1.72.0)
     transitivePeerDependencies:
       - supports-color
     dev: true
@@ -4597,7 +4597,7 @@ packages:
       chalk: 4.1.2
       debug: 4.3.4
       fs-extra: 10.1.0
-      vite: 5.1.6(@types/node@20.11.28)(sass@1.72.0)
+      vite: 5.1.6(@types/node@20.11.29)(sass@1.72.0)
     transitivePeerDependencies:
       - supports-color
     dev: true
@@ -4610,14 +4610,14 @@ packages:
       '@rollup/pluginutils': 5.1.0
       '@svgr/core': 8.1.0(typescript@5.4.3)
       '@svgr/plugin-jsx': 8.1.0(@svgr/core@8.1.0)
-      vite: 5.1.6(@types/node@20.11.28)(sass@1.72.0)
+      vite: 5.1.6(@types/node@20.11.29)(sass@1.72.0)
     transitivePeerDependencies:
       - rollup
       - supports-color
       - typescript
     dev: false
 
-  /vite@5.1.6(@types/node@20.11.28)(sass@1.72.0):
+  /vite@5.1.6(@types/node@20.11.29)(sass@1.72.0):
     resolution: {integrity: sha512-yYIAZs9nVfRJ/AiOLCA91zzhjsHUgMjB+EigzFb6W2XTLO8JixBCKCjvhKZaye+NKYHCrkv3Oh50dH9EdLU2RA==}
     engines: {node: ^18.0.0 || >=20.0.0}
     hasBin: true
@@ -4645,7 +4645,7 @@ packages:
       terser:
         optional: true
     dependencies:
-      '@types/node': 20.11.28
+      '@types/node': 20.11.29
       esbuild: 0.19.12
       postcss: 8.4.35
       rollup: 4.13.0
