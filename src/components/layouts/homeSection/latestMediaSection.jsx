@@ -42,7 +42,7 @@ export const LatestMediaSection = ({ latestMediaLib }) => {
 	}
 	if (data.isSuccess && data.data.length >= 1) {
 		return (
-			<CardScroller displayCards={8} title={`Latest ${latestMediaLib[1]}`}>
+			<CardScroller displayCards={7} title={`Latest ${latestMediaLib[1]}`}>
 				{data.data.map((item) => {
 					return (
 						<Card

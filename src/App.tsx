@@ -449,7 +449,6 @@ function AppReady() {
 					{audioPlayerVisible && <AudioPlayer />}
 					<ErrorBoundary FallbackComponent={ErrorNotice} key={location.key}>
 						<Routes location={location}>
-							<Route key={location.key}>
 								<Route path="/" element={<Navigate to={initialRoute} />} />
 								<Route
 									path="/error"
@@ -516,7 +515,6 @@ function AppReady() {
 								<Route path="/favorite" element={<FavoritePage />} />
 								<Route path="/about" element={<About />} />
 								<Route path="/player" element={<VideoPlayer />} />
-							</Route>
 						</Routes>
 					</ErrorBoundary>
 				</div>

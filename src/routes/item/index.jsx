@@ -570,42 +570,41 @@ const ItemDetail = () => {
 						<Typography variant="subtitle1" style={{ opacity: 0.8 }}>
 							{item.data.Genres.join(", ")}
 						</Typography>
-
-						<div className="item-hero-buttons-container flex flex-row">
-							<div className="flex flex-row">
-								<PlayButton
-									itemId={item.data.Id}
-									itemType={item.data.Type}
-									itemUserData={item.data.UserData}
-									currentVideoTrack={selectedVideoTrack}
-									currentAudioTrack={selectedAudioTrack}
-									currentSubTrack={selectedSubtitleTrack}
-									userId={user.data.Id}
-									sx={{
-										background: "hsl(195.56deg 29.03% 18.24%) !important",
-									}}
-								/>
-							</div>
-							<div className="flex flex-row" style={{ gap: "1em" }}>
-								<TrailerButton
-									trailerItem={item.data.RemoteTrailers}
-									disabled={item.data.RemoteTrailers?.length === 0}
-								/>
-								<LikeButton
-									itemName={item.data.Name}
-									itemId={item.data.Id}
-									queryKey={["item", id]}
-									isFavorite={item.data.UserData.IsFavorite}
-									userId={user.data.Id}
-								/>
-								<MarkPlayedButton
-									itemName={item.data.Name}
-									itemId={item.data.Id}
-									queryKey={["item", id]}
-									isPlayed={item.data.UserData.Played}
-									userId={user.data.Id}
-								/>
-							</div>
+					</div>
+					<div className="item-hero-buttons-container flex flex-row">
+						<div className="flex flex-row">
+							<PlayButton
+								itemId={item.data.Id}
+								itemType={item.data.Type}
+								itemUserData={item.data.UserData}
+								currentVideoTrack={selectedVideoTrack}
+								currentAudioTrack={selectedAudioTrack}
+								currentSubTrack={selectedSubtitleTrack}
+								userId={user.data.Id}
+								sx={{
+									background: "hsl(195.56deg 29.03% 18.24%) !important",
+								}}
+							/>
+						</div>
+						<div className="flex flex-row" style={{ gap: "1em" }}>
+							<TrailerButton
+								trailerItem={item.data.RemoteTrailers}
+								disabled={item.data.RemoteTrailers?.length === 0}
+							/>
+							<LikeButton
+								itemName={item.data.Name}
+								itemId={item.data.Id}
+								queryKey={["item", id]}
+								isFavorite={item.data.UserData.IsFavorite}
+								userId={user.data.Id}
+							/>
+							<MarkPlayedButton
+								itemName={item.data.Name}
+								itemId={item.data.Id}
+								queryKey={["item", id]}
+								isPlayed={item.data.UserData.Played}
+								userId={user.data.Id}
+							/>
 						</div>
 					</div>
 				</div>
@@ -635,83 +634,10 @@ const ItemDetail = () => {
 								/>
 							</div>
 						)}
-						<Typography variant="h5" fontStyle="italic" mb={1}>
-							{item.data.Taglines[0] ?? ""}
-						</Typography>
 						<ShowMoreText
 							content={item.data.Overview ?? ""}
 							collapsedLines={4}
 						/>
-						{writers.length > 0 && (
-							<div className="hero-grid">
-								<Typography
-									variant="subtitle1"
-									style={{
-										opacity: 0.6,
-									}}
-									noWrap
-								>
-									Written by
-								</Typography>
-								<div className="hero-text-container">
-									{writers.map((writer, index) => (
-										<>
-											<TextLink
-												key={writer.Id}
-												variant={"subtitle1"}
-												location={`/person/${writer.Id}`}
-											>
-												{writer.Name}
-											</TextLink>
-											{index !== writers.length - 1 && (
-												<span
-													style={{
-														whiteSpace: "pre",
-													}}
-												>
-													,{" "}
-												</span>
-											)}
-										</>
-									))}
-								</div>
-							</div>
-						)}
-						{directors.length > 0 && (
-							<div className="hero-grid">
-								<Typography
-									variant="subtitle1"
-									style={{
-										opacity: 0.6,
-									}}
-									noWrap
-								>
-									Directed by
-								</Typography>
-								<div className="hero-text-container">
-									{directors.map((director, index) => (
-										<>
-											<TextLink
-												key={director.Id}
-												variant={"subtitle1"}
-												location={`/person/${director.Id}`}
-											>
-												{director.Name}
-											</TextLink>
-											{index !== directors.length - 1 && (
-												<span
-													style={{
-														whiteSpace: "pre",
-													}}
-												>
-													,{" "}
-												</span>
-											)}
-										</>
-									))}
-								</div>
-							</div>
-						)}
 					</div>
 					<Divider flexItem orientation="vertical" />
 					<div
@@ -976,36 +902,10 @@ const ItemDetail = () => {
 						)}
 					</div>
 				)}
-				{/* {item.data.People.length > 0 && (
-					<CardScroller
-						title="Cast & Crew"
-						displayCards={8}
-						disableDecoration
-					>
-						{item.data.People.map((person) => {
-							return (
-								<ActorCard
-									key={person.Id}
-									item={person}
-									cardTitle={person.Name}
-									cardCaption={person.Role}
-									cardType="square"
-									userId={user.data.Id}
-									imageBlurhash={
-										person.ImageBlurHashes
-											?.Primary[0]
-									}
-									overrideIcon="Person"
-									disableOverlay
-								/>
-							);
-						})}
-					</CardScroller>
-				)} */}
 				{similarItems.data.TotalRecordCount > 0 && (
 					<CardScroller
 						title="You might also like"
-						displayCards={8}
+						displayCards={7}
 						disableDecoration
 					>
 						{similarItems.data.Items.map((similar) => {
@@ -1024,14 +924,14 @@ const ItemDetail = () => {
 										similar.Type === BaseItemKind.Episode
 											? `S${similar.ParentIndexNumber}:E${similar.IndexNumber} - ${similar.Name}`
 											: similar.Type === BaseItemKind.Series
-											  ? `${similar.ProductionYear} - ${
+												? `${similar.ProductionYear} - ${
 														similar.EndDate
 															? new Date(similar.EndDate).toLocaleString([], {
 																	year: "numeric",
-															  })
+																})
 															: "Present"
-												  }`
-											  : similar.ProductionYear
+													}`
+												: similar.ProductionYear
 									}
 									cardType={
 										similar.Type === BaseItemKind.MusicAlbum ||

@@ -3,7 +3,8 @@
 	overflow: visible !important;
 	align-items: flex-start;
 	background: transparent !important;
-	padding: 0.4em;
+	margin-right: 1.5em;
+	margin-bottom: .8em;
 	&-box {
 		display: flex;
 		width: 100%;
@@ -30,6 +31,8 @@
 			overflow: hidden;
 			height: auto;
 			z-index: 0;
+			border: 1.2px solid rgb(255 255 255 / 0.05);
+
 			&.thumb{
 				aspect-ratio: 1.777777;
 			}
@@ -85,7 +88,7 @@
 		align-items: flex-end;
 		justify-content: flex-end;
 		padding: 0.5em;
-		background: rgb(0 0 0 / 0.4);
+		background: rgb(0 0 0 / 0.6);
 	}
 	&:hover,
 	&:focus,
@@ -161,6 +164,10 @@
 			box-sizing: content-box;
 			border-radius: 10px;
 		}
+	}
 
+	&-text-container {
+		display: flex !important;
+		flex-direction: column;
 	}
 }

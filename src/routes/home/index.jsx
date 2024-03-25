@@ -203,8 +203,9 @@ const Home = () => {
 				<div
 					className="padded-container"
 					style={{
-						padding: "1.6em",
+						padding: "2.8em",
 						scrollPadding: "4.4em",
+						paddingTop: "1em"
 					}}
 					id="libraries"
 				>

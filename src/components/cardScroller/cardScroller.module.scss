@@ -6,7 +6,23 @@
 		display: flex;
 	}
 	&-button {
-		aspect-ratio: 1;
+		position: absolute !important;
+		height: 100%;
+		font-size: 1em !important;
+		width: 3.2em;
+		&.right{
+			border-radius: $border-radius-default 0 0 $border-radius-default !important;
+			right: -3.2em;
+		}
+		&.left{
+			border-radius: 0 $border-radius-default $border-radius-default 0 !important;
+			left: -3.2em;
+		}
+		.material-symbols-rounded{
+			font-size: 3.2em;
+			--wght: 200;
+			--opsz: 48;
+		}
 	}
 	&-header-container {
 		display: flex;
@@ -26,6 +42,9 @@
 			height: 2px;
 			background: white;
 		}
+	}
+	&-container .MuiButtonGroup-outlined{
+		gap: 1em;
 	}
 }
 

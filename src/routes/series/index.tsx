@@ -1038,26 +1038,55 @@ const SeriesTitlePage = () => {
 												}}
 												className="item-detail-episode"
 											>
-												<Typography variant="h6">{episode.IndexNumber ?? 0}</Typography>
-												<div className="item-detail-episode-image-container">
+												<Typography variant="subtitle1" textAlign="center">
+													{episode.IndexNumberEnd
+														? `${episode.IndexNumber} / ${episode.IndexNumberEnd}`
+														: episode.IndexNumber ?? 0}
+												</Typography>
+												<div
+													className={
+														episode.UserData?.Played
+															? "item-detail-episode-image-container watched"
+															: "item-detail-episode-image-container"
+													}
+												>
 													<div className="item-detail-episode-image-overlay">
-														<PlayButton item={episode} itemId={episode.Id} itemType="Episode" itemUserData={episode.UserData} userId={user.data.Id} currentAudioTrack={0} currentVideoTrack={0} currentSubTrack={0} size="medium" buttonProps={{
-															color: "white",
-															style: {
-																color: "black ",
-															},
-														}} iconOnly />
+														<PlayButton
+															item={episode}
+															itemId={episode.Id}
+															itemType="Episode"
+															itemUserData={episode.UserData}
+															userId={user.data.Id}
+															currentAudioTrack={0}
+															currentVideoTrack={0}
+															currentSubTrack={0}
+															size="medium"
+															buttonProps={{
+																color: "white",
+																style: {
+																	color: "black ",
+																},
+															}}
+															iconOnly
+														/>
 													</div>
 													<div className="item-detail-episode-image-icon-container">
-														<span className="material-symbols-rounded item-detail-episode-image-icon">tv_gen</span>
+														<span className="material-symbols-rounded item-detail-episode-image-icon">
+															tv_gen
+														</span>
 													</div>
-													<img alt={episode.Name} src={api.getItemImageUrl(episode.Id, "Primary", {
-														tag: episode.ImageTags.Primary,
-														fillHeight: 300, 
-													})} className="item-detail-episode-image" onLoad={(e) => {
-														e.target.style.opacity = 1;
-													}} />
-													{episode.UserData?.PlaybackPositionTicks > 0 &&
+													<img
+														alt={episode.Name}
+														src={api.getItemImageUrl(episode.Id, "Primary", {
+															tag: episode.ImageTags.Primary,
+															fillHeight: 300,
+														})}
+														className="item-detail-episode-image"
+														onLoad={(e) => {
+															e.target.style.opacity = 1;
+														}}
+													/>
+													{episode.UserData?.PlaybackPositionTicks > 0 && (
 														<div className="card-progress-container">
 															<div
 																className="card-progress"
@@ -1066,44 +1095,73 @@ const SeriesTitlePage = () => {
 																}}
 															/>
 														</div>
-													}
+													)}
 												</div>
 												<div className="item-detail-episode-info">
-													<Typography variant="h6">{episode.Name}</Typography>
-													<div className="flex flex-row flex-align-center" style={{
-														gap: "0.5em",
-													}}>
-														{episode.PremiereDate && <Chip variant="filled" label={getEpisodeDateString(new Date(episode.PremiereDate))} size="small" />}
-														<Typography variant="subtitle1" >{getRuntimeCompact(episode.RunTimeTicks)}</Typography>
+													<Typography variant="subtitle1">
+														{episode.Name}
+													</Typography>
+													<div
+														className="flex flex-row flex-align-center"
+														style={{
+															gap: "0.5em",
+														}}
+													>
+														{episode.PremiereDate && (
+															<Chip
+																variant="filled"
+																label={getEpisodeDateString(
+																	new Date(episode.PremiereDate),
+																)}
+																size="small"
+															/>
+														)}
+														<Typography variant="caption">
+															{getRuntimeCompact(episode.RunTimeTicks)}
+														</Typography>
 													</div>
-													<Typography style={{
-														display: "-webkit-box",
-														textOverflow: "ellipsis",
-														overflow: "hidden",
-														WebkitLineClamp: 2,
-														WebkitBoxOrient: "vertical",
-														width: "100%",
-														opacity: 0.7
-													}}>{episode.Overview}</Typography>
-													<div className="item-detail-episode-info-buttons">
-														<LikeButton
-															itemId={episode.Id}
-															itemName={episode.Name}
-															isFavorite={episode.UserData?.IsFavorite}
-															queryKey={["item", id, `season ${currentSeason + 1}`, "episodes"]}
-															userId={user.data.Id}
-														/>
-														<MarkPlayedButton
-															itemId={episode.Id}
-															itemName={episode.Name}
-															isPlayed={episode.UserData?.Played}
-															queryKey={["item", id, `season ${currentSeason + 1}`, "episodes"]}
-															userId={user.data.Id}
-														/>
-													</div>
+													<Typography
+														variant="caption"
+														style={{
+															display: "-webkit-box",
+															textOverflow: "ellipsis",
+															overflow: "hidden",
+															WebkitLineClamp: 2,
+															WebkitBoxOrient: "vertical",
+															width: "100%",
+															opacity: 0.7,
+														}}
+													>
+														{episode.Overview}
+													</Typography>
+												</div>
+												<div className="item-detail-episode-buttons">
+													<LikeButton
+														itemId={episode.Id}
+														itemName={episode.Name}
+														isFavorite={episode.UserData?.IsFavorite}
+														queryKey={[
+															"item",
+															id,
+															`season ${currentSeason + 1}`,
+															"episodes",
+														]}
+														userId={user.data.Id}
+													/>
+													<MarkPlayedButton
+														itemId={episode.Id}
+														itemName={episode.Name}
+														isPlayed={episode.UserData?.Played}
+														queryKey={[
+															"item",
+															id,
+															`season ${currentSeason + 1}`,
+															"episodes",
+														]}
+														userId={user.data.Id}
+													/>
 												</div>
 											</motion.div>
-											{index + 1 !== episodes.data?.Items?.length && <Divider orientation="horizontal" flexItem />}
 										</>
 									);
 								})}

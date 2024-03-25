@@ -95,7 +95,7 @@ const CarouselSlide = ({ item }) => {
 								resolutionX={64}
 								resolutionY={45}
 								className="hero-carousel-background-blurhash"
-								punch={1.2}
+								punch={1.4}
 							/>
 						)}
 						<img
@@ -104,7 +104,7 @@ const CarouselSlide = ({ item }) => {
 							src={
 								item.ParentBackdropItemId
 									? `${api.basePath}/Items/${item.ParentBackdropItemId}/Images/Backdrop?quality=80`
-									: `${api.basePath}/Items/${item.Id}/Images/Backdrop?quality=80`
+									: `${api.basePath}/Items/${item.Id}/Images/Backdrop?quality=80&fillHeight=1400`
 							}
 							style={{
 								opacity: 0,

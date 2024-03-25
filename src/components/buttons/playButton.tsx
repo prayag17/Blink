@@ -283,7 +283,7 @@ const PlayButton = ({
 				{...buttonProps}
 			>
 				<div
-					className="material-symbols-rounded em-4"
+					className="material-symbols-rounded em-4 fill"
 					style={{
 						fontSize: "3em",
 					}}
@@ -300,7 +300,7 @@ const PlayButton = ({
 			onClick={handleClick}
 			startIcon={
 				<div
-					className="material-symbols-rounded"
+					className="material-symbols-rounded fill"
 					style={{
 						fontSize: "2em",
 					}}
@@ -335,7 +335,14 @@ const PlayButton = ({
 				}}
 				color="white"
 			/>
-			{itemUserData.PlaybackPositionTicks > 0 ? "Resume" : "Play"}
+			{itemUserData.PlaybackPositionTicks > 0
+				? "Continue Watching"
+				: item?.Type === "MusicAlbum" ||
+						item?.Type === "Audio" ||
+						item?.Type === "AudioBook" ||
+						item?.Type === "Playlist"
+					? "Play Now"
+					: "Watch Now"}
 		</Button>
 	);
 };

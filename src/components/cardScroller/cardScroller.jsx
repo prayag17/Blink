@@ -10,6 +10,7 @@ import IconButton from "@mui/material/IconButton";
 import Typography from "@mui/material/Typography";
 
 import "./cardScroller.module.scss";
+
 export const CardScroller = ({
 	children,
 	displayCards,
@@ -72,30 +73,26 @@ export const CardScroller = ({
 				>
 					<div className="card-scroller-heading-decoration" /> {title}
 				</Typography>
-				<ButtonGroup className="card-scroller-button-group">
-					<IconButton
-						className="card-scroller-button"
-						onClick={() => carouselRef.previous()}
-					>
-						<div className="material-symbols-rounded">chevron_left</div>
-					</IconButton>
-					<IconButton
-						className="card-scroller-button"
-						onClick={() => carouselRef.next()}
-					>
-						<div className="material-symbols-rounded">chevron_right</div>
-					</IconButton>
-				</ButtonGroup>
 			</Box>
 			<Carousel
-				swipeable={false}
-				draggable={false}
+				swipeable
+				draggable
 				responsive={responsive}
-				arrows={false}
+				arrows
 				ref={(el) => setCarouselRef(el)}
 				className="card-scroller"
 				customTransition="all .6s"
 				transitionDuration={600}
+				customRightArrow={
+					<IconButton className="card-scroller-button right">
+						<div className="material-symbols-rounded">chevron_right</div>
+					</IconButton>
+				}
+				customLeftArrow={
+					<IconButton className="card-scroller-button left">
+						<div className="material-symbols-rounded">chevron_left</div>
+					</IconButton>
+				}
 			>
 				{children}
 			</Carousel>

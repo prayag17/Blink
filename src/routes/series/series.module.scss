@@ -60,7 +60,7 @@
 				filter: brightness(0.8);
 				position: absolute;
 				top: -4.4em;
-				left: -1.6em;
+				left: -$page-margin;
 				width: 100vw;
 				height: calc(50vh + 4.4em);
 				z-index: -1;
@@ -153,14 +153,15 @@
 		}
 		&-episode{
 			display:grid;
-			grid-template-columns: 1.4em 16em 1fr;
+			grid-template-columns: 3.2em 12em 1fr 6em;
 			flex-direction: row;
 			width: 100%;
-			gap:1em;
+			gap:1.8em;
 			align-items: center;
 			justify-content: center;
 			cursor: pointer;
-
+			padding: 1em 0;
+			
 			&-container {
 				display: flex;
 				flex-direction: column;
@@ -182,12 +183,26 @@
 				left: 0;
 				z-index: 0;
 				&-container{
-					width: 16em;
+					width: 100%;
 					aspect-ratio: 1.66666;
 					position: relative;
 					overflow: hidden;
 					border-radius: $border-radius-default;
 					flex-shrink: 0;
+					&::after{
+						content: "";
+						position: absolute;
+						top: 0;
+						right: 0;
+						border: 0.85em solid #00c853;
+						border-bottom-color: transparent;
+						border-left-color: transparent;
+						opacity: 0;
+						transition: opacity $transition-time-default;
+					}
+					&.watched::after {
+						opacity: 1;
+					}
 				}
 				&-overlay{
 					position: absolute;
@@ -223,7 +238,11 @@
 				width: 100%;
 				padding-right: 2em;
 			}
-
+			&-buttons{
+				display: flex;
+				gap: 1em;
+			}
+			
 			&:hover .item-detail-episode-image-overlay, &:focus-within .item-detail-episode-image-overlay{
 				opacity: 1;
 			}

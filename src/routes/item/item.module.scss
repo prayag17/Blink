@@ -4,7 +4,8 @@
 		height: 50vh;
 		gap: 2em;
 		position: relative;
-		align-items: center;
+		align-items: flex-end;
+		margin-bottom: 5vh;
 		&-image {
 			opacity: 0;
 			width: 100%;
@@ -59,9 +60,9 @@
 				filter: brightness(0.8);
 				position: absolute;
 				top: -4.4em;
-				left: -1.6em;
+				left: -$page-margin;
 				width: 100vw;
-				height: calc(50vh + 4.4em);
+				height: calc(60vh + 4.4em);
 				z-index: -1;
 				mask-image: linear-gradient(to top, transparent, black);
 				-webkit-mask-image: linear-gradient(

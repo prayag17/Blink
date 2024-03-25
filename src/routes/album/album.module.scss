@@ -167,7 +167,7 @@ $border-radius: 20px;
 				filter: brightness(0.8);
 				position: absolute;
 				top: -4.4em;
-				left: -1.6em;
+				left: -$page-margin;
 				width: 100vw;
 				height: calc(50vh + 4.4em);
 				z-index: -1;
