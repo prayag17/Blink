@@ -136,8 +136,8 @@ export const Card = ({
 										: item.AlbumId ?? item.Id,
 									imageType,
 									{
-										quality: 90,
-										fillWidth: 400,
+										quality: 80,
+										fillWidth: cardType === "thumb" ? 560 : 280,
 									},
 							  )
 					}
@@ -232,18 +232,16 @@ export const Card = ({
 				style={{ display: hideText ? "none" : "block" }}
 			>
 				<Typography
-					variant="subtitle1"
-					fontWeight={500}
+					mt={1}
+					variant="subtitle2"
 					noWrap
-					textAlign="center"
 					style={{ opacity: 0.9 }}
 				>
 					{cardTitle}
 				</Typography>
 				<Typography
-					variant="subtitle2"
+					variant="caption"
 					noWrap
-					textAlign="center"
 					style={{ opacity: 0.6 }}
 					lineHeight="auto"
 				>
