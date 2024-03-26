@@ -65,7 +65,9 @@
 				"nsis": {
 					"sidebarImage": "../public/installerSideBarImage.bmp",
 					"headerImage": "../public/installerHeaderImage.bmp",
-					"installerIcon": "icons/icon.ico"
+					"installerIcon": "icons/icon.ico",
+					"displayLanguageSelector": true,
+					"license": "../LICENSE"
 				},
 				"webviewInstallMode": {
 					"silent": true,

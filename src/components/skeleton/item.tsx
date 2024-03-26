@@ -10,12 +10,7 @@ const ItemSkeleton = () => {
 				width: "100vw",
 			}}
 		>
-			<div
-				className="item-hero flex flex-row"
-				style={{
-					height: "50vh",
-				}}
-			>
+			<div className="item-hero">
 				<div
 					className="item-hero-image-container"
 					style={{
@@ -89,7 +84,6 @@ const ItemSkeleton = () => {
 					<Skeleton variant="text" />
 					<Skeleton variant="text" />
 				</div>
-				<Divider flexItem orientation="vertical" />
 				<div
 					style={{
 						width: "100%",

@@ -280,7 +280,7 @@ const EpisodeTitlePage = () => {
 				className="scrollY padded-top flex flex-column item item-episode"
 				ref={pageRef}
 			>
-				<div className="item-hero flex flex-row">
+				<div className="item-hero">
 					<div className="item-hero-backdrop-container">
 						{item.data.BackdropImageTags ? (
 							<motion.img
@@ -333,11 +333,20 @@ const EpisodeTitlePage = () => {
 								/>
 							</>
 						) : (
-							<></>
+							<div className="item-hero-image-icon">
+								{getTypeIcon(item.data.Type)}
+							</div>
 						)}
 					</div>
-					<div className="item-hero-detail flex flex-column">
-						<TextLink variant={"h2"} location={`/series/${item.data.SeriesId}`}>
+					<div className="item-hero-detail">
+						<TextLink
+							otherProps={{
+								fontWeight: 200,
+								mb: 2,
+							}}
+							variant={"h2"}
+							location={`/series/${item.data.SeriesId}`}
+						>
 							{item.data.ParentLogoItemId.length > 0 ? (
 								<img
 									alt={item.data.SeriesName}
@@ -355,123 +364,33 @@ const EpisodeTitlePage = () => {
 								item.data.SeriesName
 							)}
 						</TextLink>
-						<Typography variant="h4">
+						<Typography variant="h4" fontWeight={300} mb={2}>
 							S{item.data.ParentIndexNumber ?? 0}:E
-							{item.data.IndexNumber} {item.data.Name}
+							{item.data.IndexNumberEnd
+								? `${item.data.IndexNumber ?? 0} / ${
+										item.data.IndexNumberEnd ?? 0
+									}`
+								: `${item.data.IndexNumber ?? 0}`}{" "}
+							{item.data.Name}
 						</Typography>
 
-						<Stack direction="row" gap={1}>
-							{!!qualityLabel() && (
-								<Chip
-									variant="filled"
-									label={qualityLabel()}
-									sx={{
-										borderRadius: "8px !important",
-										"& .MuiChip-label": {
-											fontSize: "2.2em",
-										},
-									}}
-								/>
-							)}
-							{!!surroundSoundLabel() && (
-								<Chip
-									variant="filled"
-									label={
-										<Typography variant="caption" fontWeight={600}>
-											{surroundSoundLabel()}
-										</Typography>
-									}
-									sx={{
-										borderRadius: "8px !important",
-										"& .MuiChip-label": {
-											fontSize: "2.2em",
-										},
-									}}
-								/>
-							)}
-							{!!videoTracks[0]?.VideoRangeType && (
-								<Chip
-									variant="filled"
-									label={
-										<Typography variant="caption" fontWeight={600}>
-											{videoTracks[0].VideoRangeType}
-										</Typography>
-									}
-									sx={{
-										borderRadius: "8px !important",
-										"& .MuiChip-label": {
-											fontSize: "2.2em",
-										},
-									}}
-								/>
-							)}
-							{!!atmosLabel() && (
-								<Chip
-									variant="filled"
-									label={
-										<Typography
-											variant="caption"
-											fontWeight={600}
-											style={{
-												display: "flex",
-												alignItems: "center",
-												justifyContent: "center",
-												gap: "0.5em",
-											}}
-										>
-											<img
-												alt="Dolby"
-												src={dolbyIcon}
-												style={{
-													height: "1.6em",
-												}}
-											/>
-											{atmosLabel()}
-										</Typography>
-									}
-									sx={{
-										borderRadius: "8px !important",
-										"& .MuiChip-label": {
-											fontSize: "2.2em",
-										},
-									}}
-								/>
-							)}
-							{!!subtitleTracks.length > 0 && (
-								<Chip
-									variant="filled"
-									label={
-										// <Typography
-										// 	variant="caption"
-										// 	fontWeight={600}
-										// 	fontFamily="JetBrains Mono Variable"
-										// >
-										// 	CC
-										// </Typography>
-										<span className="material-symbols-rounded">
-											closed_caption
-										</span>
-									}
-									sx={{
-										borderRadius: "8px !important",
-										"& .MuiChip-label": {
-											fontSize: "2.2em",
-										},
-									}}
-								/>
-							)}
-						</Stack>
 						<Stack
 							direction="row"
 							gap={2}
 							justifyItems="flex-start"
 							alignItems="center"
 						>
-							<Typography style={{ opacity: "0.8" }} variant="subtitle1">
-								{item.data.ProductionYear ?? ""}
-							</Typography>
+							{item.data.PremiereDate && (
+								<Typography style={{ opacity: "0.8" }} variant="subtitle2">
+									{item.data.ProductionYear ?? ""}
+								</Typography>
+							)}
 							{item.data.OfficialRating && (
-								<Chip variant="filled" label={item.data.OfficialRating} />
+								<Chip
+									variant="filled"
+									size="small"
+									label={item.data.OfficialRating}
+								/>
 							)}
 
 							{item.data.CommunityRating && (
@@ -484,12 +403,10 @@ const EpisodeTitlePage = () => {
 									className="hero-carousel-info-rating"
 								>
 									<div
-										className="material-symbols-rounded "
+										className="material-symbols-rounded fill"
 										style={{
 											// fontSize: "2.2em",
 											color: yellow[400],
-											fontVariationSettings:
-												'"FILL" 1, "wght" 300, "GRAD" 25, "opsz" 40',
 										}}
 									>
 										star
@@ -498,7 +415,7 @@ const EpisodeTitlePage = () => {
 										style={{
 											opacity: "0.8",
 										}}
-										variant="subtitle1"
+										variant="subtitle2"
 									>
 										{Math.round(item.data.CommunityRating * 10) / 10}
 									</Typography>
@@ -514,12 +431,10 @@ const EpisodeTitlePage = () => {
 									className="hero-carousel-info-rating"
 								>
 									<div
-										className="material-symbols-rounded "
+										className="material-symbols-rounded fill"
 										style={{
 											color:
 												item.data.CriticRating > 50 ? green[400] : red[400],
-											fontVariationSettings:
-												'"FILL" 1, "wght" 300, "GRAD" 25, "opsz" 40',
 										}}
 									>
 										{item.data.CriticRating > 50 ? "thumb_up" : "thumb_down"}
@@ -528,7 +443,7 @@ const EpisodeTitlePage = () => {
 										style={{
 											opacity: "0.8",
 										}}
-										variant="subtitle1"
+										variant="subtitle2"
 									>
 										{item.data.CriticRating}
 									</Typography>
@@ -536,163 +451,60 @@ const EpisodeTitlePage = () => {
 							)}
 
 							{item.data.RunTimeTicks && (
-								<Typography style={{ opacity: "0.8" }} variant="subtitle1">
+								<Typography style={{ opacity: "0.8" }} variant="subtitle2">
 									{getRuntime(item.data.RunTimeTicks)}
 								</Typography>
 							)}
 							{item.data.RunTimeTicks && (
-								<Typography style={{ opacity: "0.8" }} variant="subtitle1">
+								<Typography style={{ opacity: "0.8" }} variant="subtitle2">
 									{endsAt(
 										item.data.RunTimeTicks -
 											item.data.UserData.PlaybackPositionTicks,
 									)}
 								</Typography>
 							)}
+							<Typography variant="subtitle2" style={{ opacity: 0.8 }}>
+								{item.data.Genres?.slice(0, 4).join(" / ")}
+							</Typography>
 						</Stack>
-						<Typography variant="subtitle1" style={{ opacity: 0.8 }}>
-							{item.data.Genres.join(", ")}
-						</Typography>
-
-						<div className="item-hero-buttons-container flex flex-row">
-							<div className="flex flex-row">
-								<PlayButton
-									itemId={item.data.Id}
-									itemType={item.data.Type}
-									itemUserData={item.data.UserData}
-									currentVideoTrack={selectedVideoTrack}
-									currentAudioTrack={selectedAudioTrack}
-									currentSubTrack={selectedSubtitleTrack}
-									userId={user.data.Id}
-								/>
-							</div>
-							<div className="flex flex-row" style={{ gap: "1em" }}>
-								<TrailerButton
-									trailerItem={item.data.RemoteTrailers}
-									disabled={item.data.RemoteTrailers?.length === 0}
-								/>
-								<LikeButton
-									itemName={item.data.Name}
-									itemId={item.data.Id}
-									queryKey={["item", id]}
-									isFavorite={item.data.UserData.IsFavorite}
-									userId={user.data.Id}
-								/>
-								<MarkPlayedButton
-									itemName={item.data.Name}
-									itemId={item.data.Id}
-									queryKey={["item", id]}
-									isPlayed={item.data.UserData.Played}
-									userId={user.data.Id}
-								/>
-							</div>
+					</div>
+					<div className="item-hero-buttons-container">
+						<div className="flex flex-row">
+							<PlayButton
+								item={item.data}
+								itemId={item.data.Id}
+								itemType={item.data.Type}
+								itemUserData={item.data.UserData}
+								currentVideoTrack={selectedVideoTrack}
+								currentAudioTrack={selectedAudioTrack}
+								currentSubTrack={selectedSubtitleTrack}
+								userId={user.data.Id}
+							/>
+						</div>
+						<div className="flex flex-row" style={{ gap: "1em" }}>
+							<TrailerButton
+								trailerItem={item.data.RemoteTrailers}
+								disabled={item.data.RemoteTrailers?.length === 0}
+							/>
+							<LikeButton
+								itemName={item.data.Name}
+								itemId={item.data.Id}
+								queryKey={["item", id]}
+								isFavorite={item.data.UserData.IsFavorite}
+								userId={user.data.Id}
+							/>
+							<MarkPlayedButton
+								itemName={item.data.Name}
+								itemId={item.data.Id}
+								queryKey={["item", id]}
+								isPlayed={item.data.UserData.Played}
+								userId={user.data.Id}
+							/>
 						</div>
 					</div>
 				</div>
 				<div className="item-detail">
-					<div style={{ width: "100%" }}>
-						{item.data.UserData.PlaybackPositionTicks > 0 && (
-							<div
-								style={{
-									width: "40%",
-									marginBottom: "1em",
-								}}
-							>
-								<Typography>
-									{getRuntime(
-										item.data.RunTimeTicks -
-											item.data.UserData.PlaybackPositionTicks,
-									)}{" "}
-									left
-								</Typography>
-								<LinearProgress
-									color="white"
-									variant="determinate"
-									value={item.data.UserData.PlayedPercentage}
-									style={{
-										borderRadius: "10px",
-									}}
-								/>
-							</div>
-						)}
-						<Typography variant="h5" fontStyle="italic" mb={1}>
-							{item.data.Taglines[0] ?? ""}
-						</Typography>
-						<ShowMoreText
-							content={item.data.Overview ?? ""}
-							collapsedLines={4}
-						/>
-						{writers.length > 0 && (
-							<div className="hero-grid">
-								<Typography
-									variant="subtitle1"
-									style={{
-										opacity: 0.6,
-									}}
-									noWrap
-								>
-									Written by
-								</Typography>
-								<div className="hero-text-container">
-									{writers.map((writer, index) => (
-										<>
-											<TextLink
-												key={writer.Id}
-												variant={"subtitle1"}
-												location={`/person/${writer.Id}`}
-											>
-												{writer.Name}
-											</TextLink>
-											{index !== writers.length - 1 && (
-												<span
-													style={{
-														whiteSpace: "pre",
-													}}
-												>
-													,{" "}
-												</span>
-											)}
-										</>
-									))}
-								</div>
-							</div>
-						)}
-						{directors.length > 0 && (
-							<div className="hero-grid">
-								<Typography
-									variant="subtitle1"
-									style={{
-										opacity: 0.6,
-									}}
-									noWrap
-								>
-									Directed by
-								</Typography>
-								<div className="hero-text-container">
-									{directors.map((director, index) => (
-										<>
-											<TextLink
-												key={director.Id}
-												variant={"subtitle1"}
-												location={`/person/${director.Id}`}
-											>
-												{director.Name}
-											</TextLink>
-											{index !== directors.length - 1 && (
-												<span
-													style={{
-														whiteSpace: "pre",
-													}}
-												>
-													,{" "}
-												</span>
-											)}
-										</>
-									))}
-								</div>
-							</div>
-						)}
-					</div>
-					<Divider flexItem orientation="vertical" />
+					<ShowMoreText content={item.data.Overview ?? ""} collapsedLines={4} />
 					<div
 						style={{
 							width: "100%",

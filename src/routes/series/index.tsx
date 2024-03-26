@@ -359,10 +359,9 @@ const SeriesTitlePage = () => {
 				className="scrollY padded-top flex flex-column item item-series"
 				ref={pageRef}
 			>
-				<div className="item-hero flex flex-row">
+				<div className="item-hero">
 					<div className="item-hero-backdrop-container">
 						<AnimatePresence mode="wait">
-
 							{item.data.BackdropImageTags ? (
 								<motion.img
 									key={currentSeasonItem.dataUpdatedAt}
@@ -370,19 +369,19 @@ const SeriesTitlePage = () => {
 									src={backdropImage}
 									className="item-hero-backdrop"
 									initial={{
-										opacity: 0
+										opacity: 0,
 									}}
 									onLoad={() => {
-										setBackdropImageLoaded(true)
+										setBackdropImageLoaded(true);
 									}}
 									animate={{
-										opacity: backdropImageLoaded ? 1 : 0
+										opacity: backdropImageLoaded ? 1 : 0,
 									}}
 									exit={{
-										opacity: 0
+										opacity: 0,
 									}}
 									transition={{
-										duration: 0.2
+										duration: 0.2,
 									}}
 									style={{
 										y: parallax,
@@ -404,7 +403,7 @@ const SeriesTitlePage = () => {
 								<Blurhash
 									hash={
 										item.data.ImageBlurHashes.Primary[
-										item.data.ImageTags.Primary
+											item.data.ImageTags.Primary
 										]
 									}
 									className="item-hero-image-blurhash"
@@ -425,7 +424,7 @@ const SeriesTitlePage = () => {
 							<></>
 						)}
 					</div>
-					<div className="item-hero-detail flex flex-column">
+					<div className="item-hero-detail">
 						{Object.keys(item.data.ImageTags).includes("Logo") ? (
 							<img
 								alt={item.data.Name}
@@ -440,7 +439,9 @@ const SeriesTitlePage = () => {
 								className="item-hero-logo"
 							/>
 						) : (
-							<Typography variant="h2">{item.data.Name}</Typography>
+							<Typography variant="h2" mb={2} fontWeight={200}>
+								{item.data.Name}
+							</Typography>
 						)}
 						<Stack
 							direction="row"
@@ -448,15 +449,28 @@ const SeriesTitlePage = () => {
 							justifyItems="flex-start"
 							alignItems="center"
 						>
-							<Typography style={{ opacity: "0.8" }} variant="subtitle1">
+							<Typography style={{ opacity: "0.8" }} variant="subtitle2">
 								{item.data.ProductionYear ?? ""}
 								{item.data.Status === "Continuing"
 									? " - Present"
 									: item.data.EndDate &&
-									` - ${new Date(item.data.EndDate).getFullYear()}`}
+										` - ${new Date(item.data.EndDate).getFullYear()}`}
 							</Typography>
+
+							{seasons.data?.TotalRecordCount && (
+								<Typography style={{ opacity: "0.8" }} variant="subtitle2">
+									{seasons.data.TotalRecordCount > 1
+										? `${seasons.data.TotalRecordCount} Seasons`
+										: `${seasons.data.TotalRecordCount} Season`}
+								</Typography>
+							)}
+
 							{item.data.OfficialRating && (
-								<Chip variant="filled" label={item.data.OfficialRating} />
+								<Chip
+									variant="filled"
+									size="small"
+									label={item.data.OfficialRating}
+								/>
 							)}
 
 							{item.data.CommunityRating && (
@@ -469,12 +483,10 @@ const SeriesTitlePage = () => {
 									className="hero-carousel-info-rating"
 								>
 									<div
-										className="material-symbols-rounded "
+										className="material-symbols-rounded fill"
 										style={{
 											// fontSize: "2.2em",
 											color: yellow[400],
-											fontVariationSettings:
-												'"FILL" 1, "wght" 300, "GRAD" 25, "opsz" 40',
 										}}
 									>
 										star
@@ -483,7 +495,7 @@ const SeriesTitlePage = () => {
 										style={{
 											opacity: "0.8",
 										}}
-										variant="subtitle1"
+										variant="subtitle2"
 									>
 										{Math.round(item.data.CommunityRating * 10) / 10}
 									</Typography>
@@ -499,12 +511,10 @@ const SeriesTitlePage = () => {
 									className="hero-carousel-info-rating"
 								>
 									<div
-										className="material-symbols-rounded "
+										className="material-symbols-rounded fill"
 										style={{
 											color:
 												item.data.CriticRating > 50 ? green[400] : red[400],
-											fontVariationSettings:
-												'"FILL" 1, "wght" 300, "GRAD" 25, "opsz" 40',
 										}}
 									>
 										{item.data.CriticRating > 50 ? "thumb_up" : "thumb_down"}
@@ -513,72 +523,72 @@ const SeriesTitlePage = () => {
 										style={{
 											opacity: "0.8",
 										}}
-										variant="subtitle1"
+										variant="subtitle2"
 									>
 										{item.data.CriticRating}
 									</Typography>
 								</div>
 							)}
 
-							{seasons.data?.TotalRecordCount && (
-								<Typography style={{ opacity: "0.8" }} variant="subtitle1">
-									{seasons.data.TotalRecordCount > 1
-										? `${seasons.data.TotalRecordCount} Seasons`
-										: `${seasons.data.TotalRecordCount} Season`}
-								</Typography>
-							)}
-
 							{item.data.RunTimeTicks && (
-								<Typography style={{ opacity: "0.8" }} variant="subtitle1">
+								<Typography style={{ opacity: "0.8" }} variant="subtitle2">
 									{getRuntime(item.data.RunTimeTicks)}
 								</Typography>
 							)}
 							{item.data.RunTimeTicks && (
-								<Typography style={{ opacity: "0.8" }} variant="subtitle1">
+								<Typography style={{ opacity: "0.8" }} variant="subtitle2">
 									{endsAt(
 										item.data.RunTimeTicks -
-										item.data.UserData.PlaybackPositionTicks,
+											item.data.UserData.PlaybackPositionTicks,
 									)}
 								</Typography>
 							)}
+							<Typography variant="subtitle2" style={{ opacity: 0.8 }}>
+								{item.data.Genres?.slice(0, 5).join(" / ")}
+							</Typography>
 						</Stack>
-						<Typography variant="subtitle1" style={{ opacity: 0.8 }}>
-							{item.data.Genres.join(", ")}
-						</Typography>
+					</div>
 
-						<div className="item-hero-buttons-container flex flex-row">
-							<div className="flex flex-row">
-								<PlayButton
-									itemId={item.data.Id}
-									item={item.data}
-									itemType={item.data.Type}
-									itemUserData={item.data.UserData}
-									currentAudioTrack={0}
-									currentVideoTrack={0}
-									currentSubTrack={0}
-									userId={user.data.Id}
-								/>
-							</div>
-							<div className="flex flex-row" style={{ gap: "1em" }}>
-								<TrailerButton
-									trailerItem={item.data.RemoteTrailers}
-									disabled={item.data.RemoteTrailers?.length === 0}
-								/>
-								<LikeButton
-									itemName={item.data.Name}
-									itemId={item.data.Id}
-									queryKey={["item", id]}
-									isFavorite={item.data.UserData.IsFavorite}
-									userId={user.data.Id}
-								/>
-								<MarkPlayedButton
-									itemName={item.data.Name}
-									itemId={item.data.Id}
-									queryKey={["item", id]}
-									isPlayed={item.data.UserData.Played}
-									userId={user.data.Id}
-								/>
-							</div>
+					<div className="item-hero-buttons-container">
+						<div
+							className="flex flex-row"
+							style={{
+								width: "100%",
+							}}
+						>
+							<PlayButton
+								itemId={item.data.Id}
+								item={item.data}
+								itemType={item.data.Type}
+								itemUserData={item.data.UserData}
+								currentAudioTrack={0}
+								currentVideoTrack={0}
+								currentSubTrack={0}
+								userId={user.data.Id}
+								buttonProps={{
+									fullWidth: true,
+								}}
+							/>
+						</div>
+						<div className="flex flex-row" style={{ gap: "1em" }}>
+							<TrailerButton
+								trailerItem={item.data.RemoteTrailers}
+								disabled={item.data.RemoteTrailers?.length === 0}
+							/>
+							<LikeButton
+								itemName={item.data.Name}
+								itemId={item.data.Id}
+								queryKey={["item", id]}
+								isFavorite={item.data.UserData.IsFavorite}
+								userId={user.data.Id}
+							/>
+							<MarkPlayedButton
+								itemName={item.data.Name}
+								itemId={item.data.Id}
+								queryKey={["item", id]}
+								isPlayed={item.data.UserData.Played}
+								userId={user.data.Id}
+							/>
 						</div>
 					</div>
 				</div>
@@ -594,7 +604,7 @@ const SeriesTitlePage = () => {
 								<Typography>
 									{getRuntime(
 										item.data.RunTimeTicks -
-										item.data.UserData.PlaybackPositionTicks,
+											item.data.UserData.PlaybackPositionTicks,
 									)}{" "}
 									left
 								</Typography>
@@ -698,7 +708,6 @@ const SeriesTitlePage = () => {
 							))}
 						</div>
 					</div>
-					<Divider flexItem orientation="vertical" />
 					<div
 						style={{
 							width: "100%",
@@ -900,7 +909,7 @@ const SeriesTitlePage = () => {
 									cardCaption={episode.Overview}
 									imageBlurhash={
 										episode.ImageBlurHashes?.Primary[
-										Object.keys(episode.ImageBlurHashes.Primary)[0]
+											Object.keys(episode.ImageBlurHashes.Primary)[0]
 										]
 									}
 									queryKey={[
@@ -1010,9 +1019,10 @@ const SeriesTitlePage = () => {
 						</div>
 						<Divider />
 						<div className="item-detail-episode-container">
-							{episodes.isPending
-								? <EpisodeSkeleton />
-								: episodes.data.Items.map((episode, index) => {
+							{episodes.isPending ? (
+								<EpisodeSkeleton />
+							) : (
+								episodes.data.Items.map((episode, index) => {
 									return (
 										<>
 											<motion.div
@@ -1164,14 +1174,15 @@ const SeriesTitlePage = () => {
 											</motion.div>
 										</>
 									);
-								})}
+								})
+							)}
 						</div>
 					</div>
 				)}
 				{specialFeatures.isSuccess && specialFeatures.data.length > 0 && (
 					<CardScroller
 						title="Special Features"
-						displayCards={8}
+						displayCards={7}
 						disableDecoration
 					>
 						{specialFeatures.data.map((special) => {
@@ -1188,11 +1199,11 @@ const SeriesTitlePage = () => {
 									imageBlurhash={
 										!!special.ImageBlurHashes?.Primary &&
 										special.ImageBlurHashes.Primary[
-										Object.keys(special.ImageBlurHashes.Primary)[0]
+											Object.keys(special.ImageBlurHashes.Primary)[0]
 										]
 									}
 									userId={user.data.Id}
-									onClick={() => { }}
+									onClick={() => {}}
 								/>
 							);
 						})}
@@ -1201,7 +1212,7 @@ const SeriesTitlePage = () => {
 				{similarItems.data.TotalRecordCount > 0 && (
 					<CardScroller
 						title="You might also like"
-						displayCards={8}
+						displayCards={7}
 						disableDecoration
 					>
 						{similarItems.data.Items.map((similar) => {
@@ -1220,17 +1231,18 @@ const SeriesTitlePage = () => {
 										similar.Type === BaseItemKind.Episode
 											? `S${similar.ParentIndexNumber}:E${similar.IndexNumber} - ${similar.Name}`
 											: similar.Type === BaseItemKind.Series
-												? `${similar.ProductionYear} - ${similar.EndDate
-													? new Date(similar.EndDate).toLocaleString([], {
-														year: "numeric",
-													})
-													: "Present"
-												}`
+												? `${similar.ProductionYear} - ${
+														similar.EndDate
+															? new Date(similar.EndDate).toLocaleString([], {
+																	year: "numeric",
+																})
+															: "Present"
+													}`
 												: similar.ProductionYear
 									}
 									cardType={
 										similar.Type === BaseItemKind.MusicAlbum ||
-											similar.Type === BaseItemKind.Audio
+										similar.Type === BaseItemKind.Audio
 											? "square"
 											: "portrait"
 									}
@@ -1239,7 +1251,7 @@ const SeriesTitlePage = () => {
 									imageBlurhash={
 										!!similar.ImageBlurHashes?.Primary &&
 										similar.ImageBlurHashes?.Primary[
-										Object.keys(similar.ImageBlurHashes.Primary)[0]
+											Object.keys(similar.ImageBlurHashes.Primary)[0]
 										]
 									}
 								/>

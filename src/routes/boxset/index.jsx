@@ -218,10 +218,12 @@ const BoxSetTitlePage = () => {
 								/>
 							</>
 						) : (
-							<></>
+							<div className="item-hero-image-icon">
+								{getTypeIcon(item.data.Type)}
+							</div>
 						)}
 					</div>
-					<div className="item-hero-detail flex flex-column">
+					<div className="item-hero-detail">
 						{Object.keys(item.data.ImageTags).includes("Logo") ? (
 							<img
 								alt={item.data.Name}
@@ -236,7 +238,9 @@ const BoxSetTitlePage = () => {
 								className="item-hero-logo"
 							/>
 						) : (
-							<Typography variant="h2">{item.data.Name}</Typography>
+							<Typography variant="h2" fontWeight={200} mb={2}>
+								{item.data.Name}
+							</Typography>
 						)}
 
 						<Stack
@@ -245,11 +249,17 @@ const BoxSetTitlePage = () => {
 							justifyItems="flex-start"
 							alignItems="center"
 						>
-							<Typography style={{ opacity: "0.8" }} variant="subtitle1">
-								{item.data.ProductionYear ?? ""}
-							</Typography>
+							{item.data.PremiereDate && (
+								<Typography style={{ opacity: "0.8" }} variant="subtitle2">
+									{item.data.ProductionYear ?? ""}
+								</Typography>
+							)}
 							{item.data.OfficialRating && (
-								<Chip variant="filled" label={item.data.OfficialRating} />
+								<Chip
+									variant="filled"
+									size="small"
+									label={item.data.OfficialRating}
+								/>
 							)}
 
 							{item.data.CommunityRating && (
@@ -262,12 +272,10 @@ const BoxSetTitlePage = () => {
 									className="hero-carousel-info-rating"
 								>
 									<div
-										className="material-symbols-rounded "
+										className="material-symbols-rounded fill"
 										style={{
 											// fontSize: "2.2em",
 											color: yellow[400],
-											fontVariationSettings:
-												'"FILL" 1, "wght" 300, "GRAD" 25, "opsz" 40',
 										}}
 									>
 										star
@@ -276,7 +284,7 @@ const BoxSetTitlePage = () => {
 										style={{
 											opacity: "0.8",
 										}}
-										variant="subtitle1"
+										variant="subtitle2"
 									>
 										{Math.round(item.data.CommunityRating * 10) / 10}
 									</Typography>
@@ -292,12 +300,10 @@ const BoxSetTitlePage = () => {
 									className="hero-carousel-info-rating"
 								>
 									<div
-										className="material-symbols-rounded "
+										className="material-symbols-rounded fill"
 										style={{
 											color:
 												item.data.CriticRating > 50 ? green[400] : red[400],
-											fontVariationSettings:
-												'"FILL" 1, "wght" 300, "GRAD" 25, "opsz" 40',
 										}}
 									>
 										{item.data.CriticRating > 50 ? "thumb_up" : "thumb_down"}
@@ -306,7 +312,7 @@ const BoxSetTitlePage = () => {
 										style={{
 											opacity: "0.8",
 										}}
-										variant="subtitle1"
+										variant="subtitle2"
 									>
 										{item.data.CriticRating}
 									</Typography>
@@ -314,92 +320,59 @@ const BoxSetTitlePage = () => {
 							)}
 
 							{item.data.RunTimeTicks && (
-								<Typography style={{ opacity: "0.8" }} variant="subtitle1">
+								<Typography style={{ opacity: "0.8" }} variant="subtitle2">
 									{getRuntime(item.data.RunTimeTicks)}
 								</Typography>
 							)}
 							{item.data.RunTimeTicks && (
-								<Typography style={{ opacity: "0.8" }} variant="subtitle1">
+								<Typography style={{ opacity: "0.8" }} variant="subtitle2">
 									{endsAt(
 										item.data.RunTimeTicks -
 											item.data.UserData.PlaybackPositionTicks,
 									)}
 								</Typography>
 							)}
+							<Typography variant="subtitle2" style={{ opacity: 0.8 }}>
+								{item.data.Genres?.slice(0, 4).join(" / ")}
+							</Typography>
 						</Stack>
-						<Typography variant="subtitle1" style={{ opacity: 0.8 }}>
-							{item.data.Genres.join(", ")}
-						</Typography>
-
-						<div className="item-hero-buttons-container flex flex-row">
-							<div className="flex flex-row">
-								<PlayButton
-									itemId={item.data.Id}
-									itemType={item.data.Type}
-									itemUserData={item.data.UserData}
-									currentVideoTrack={0}
-									currentAudioTrack={0}
-									currentSubTrack={0}
-									userId={user.data.Id}
-									sx={{
-										background: "hsl(195.56deg 29.03% 18.24%) !important",
-									}}
-								/>
-							</div>
-							<div className="flex flex-row" style={{ gap: "1em" }}>
-								<LikeButton
-									itemName={item.data.Name}
-									itemId={item.data.Id}
-									queryKey={["item", id]}
-									isFavorite={item.data.UserData.IsFavorite}
-									userId={user.data.Id}
-								/>
-								<MarkPlayedButton
-									itemName={item.data.Name}
-									itemId={item.data.Id}
-									queryKey={["item", id]}
-									isPlayed={item.data.UserData.Played}
-									userId={user.data.Id}
-								/>
-							</div>
+					</div>
+					<div className="item-hero-buttons-container flex flex-row">
+						<div className="flex flex-row fullWidth">
+							<PlayButton
+								item={item.data}
+								itemId={item.data.Id}
+								itemType={item.data.Type}
+								itemUserData={item.data.UserData}
+								currentVideoTrack={0}
+								currentAudioTrack={0}
+								currentSubTrack={0}
+								userId={user.data.Id}
+								buttonProps={{
+									fullWidth: true,
+								}}
+							/>
+						</div>
+						<div className="flex flex-row" style={{ gap: "1em" }}>
+							<LikeButton
+								itemName={item.data.Name}
+								itemId={item.data.Id}
+								queryKey={["item", id]}
+								isFavorite={item.data.UserData.IsFavorite}
+								userId={user.data.Id}
+							/>
+							<MarkPlayedButton
+								itemName={item.data.Name}
+								itemId={item.data.Id}
+								queryKey={["item", id]}
+								isPlayed={item.data.UserData.Played}
+								userId={user.data.Id}
+							/>
 						</div>
 					</div>
 				</div>
 				<div className="item-detail">
-					<div style={{ width: "100%" }}>
-						{item.data.UserData.PlaybackPositionTicks > 0 && (
-							<div
-								style={{
-									width: "40%",
-									marginBottom: "1em",
-								}}
-							>
-								<Typography>
-									{getRuntime(
-										item.data.RunTimeTicks -
-											item.data.UserData.PlaybackPositionTicks,
-									)}{" "}
-									left
-								</Typography>
-								<LinearProgress
-									color="white"
-									variant="determinate"
-									value={item.data.UserData.PlayedPercentage}
-									style={{
-										borderRadius: "10px",
-									}}
-								/>
-							</div>
-						)}
-						<Typography variant="h5" fontStyle="italic" mb={1}>
-							{item.data.Taglines[0] ?? ""}
-						</Typography>
-						<ShowMoreText
-							content={item.data.Overview ?? ""}
-							collapsedLines={4}
-						/>
-					</div>
-					<Divider flexItem orientation="vertical" />
+					<ShowMoreText content={item.data.Overview ?? ""} collapsedLines={4} />
 					<div
 						style={{
 							width: "100%",
@@ -420,7 +393,7 @@ const BoxSetTitlePage = () => {
 					</div>
 				</div>
 				{collectionItems.data.TotalRecordCount > 0 && (
-					<CardScroller title="Items" displayCards={8} disableDecoration>
+					<CardScroller title="Items" displayCards={7} disableDecoration>
 						{collectionItems.data.Items.map((similar, index) => {
 							return (
 								<Card
@@ -451,7 +424,7 @@ const BoxSetTitlePage = () => {
 				{similarItems.data.TotalRecordCount > 0 && (
 					<CardScroller
 						title="You might also like"
-						displayCards={8}
+						displayCards={7}
 						disableDecoration
 					>
 						{similarItems.data.Items.map((similar, index) => {
@@ -470,14 +443,14 @@ const BoxSetTitlePage = () => {
 										similar.Type === BaseItemKind.Episode
 											? `S${similar.ParentIndexNumber}:E${similar.IndexNumber} - ${similar.Name}`
 											: similar.Type === BaseItemKind.Series
-											  ? `${similar.ProductionYear} - ${
+												? `${similar.ProductionYear} - ${
 														similar.EndDate
 															? new Date(similar.EndDate).toLocaleString([], {
 																	year: "numeric",
-															  })
+																})
 															: "Present"
-												  }`
-											  : similar.ProductionYear
+													}`
+												: similar.ProductionYear
 									}
 									cardType={
 										similar.Type === BaseItemKind.MusicAlbum ||

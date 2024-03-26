@@ -285,7 +285,7 @@ const PersonTitlePage = () => {
 				className="scrollY padded-top item item-person flex flex-column"
 				ref={pageRef}
 			>
-				<div className="item-hero flex flex-row">
+				<div className="item-hero">
 					<div className="item-hero-backdrop-container">
 						<motion.img
 							alt={item.data.Name}
@@ -332,7 +332,9 @@ const PersonTitlePage = () => {
 						)}
 					</div>
 					<div className="item-hero-detail flex flex-column">
-						<Typography variant="h2">{item.data.Name}</Typography>
+						<Typography variant="h2" fontWeight={200} mb={2}>
+							{item.data.Name}
+						</Typography>
 
 						<LikeButton
 							itemName={item.data.Name}
@@ -362,7 +364,6 @@ const PersonTitlePage = () => {
 							))}
 						</div>
 					</div>
-					<Divider flexItem orientation="vertical" />
 					<div
 						style={{
 							width: "100%",
@@ -370,18 +371,18 @@ const PersonTitlePage = () => {
 					>
 						{item.data.PremiereDate && (
 							<>
-								<Typography variant="h5">Born</Typography>
-								<Typography sx={{ opacity: 0.8 }}>
+								<Typography variant="h6">Birth</Typography>
+								<Typography variant="subtitle1" sx={{ opacity: 0.8 }}>
 									{new Date(item.data.PremiereDate).toDateString()}
 								</Typography>
 							</>
 						)}
 						{item.data.EndDate && (
 							<>
-								<Typography variant="h5" mt={2}>
+								<Typography variant="h6" mt={2}>
 									Death
 								</Typography>
-								<Typography sx={{ opacity: 0.8 }}>
+								<Typography variant="subtitle2" sx={{ opacity: 0.8 }}>
 									{new Date(item.data.EndDate).toDateString()}
 								</Typography>
 							</>
@@ -424,7 +425,7 @@ const PersonTitlePage = () => {
 											tab.title === "Movies" ||
 											tab.title === "TV Shows" ||
 											tab.title === "Books"
-												? "col-8"
+												? "col-7"
 												: "col-4"
 										}`}
 										key={tab.queryKey}
@@ -460,16 +461,16 @@ const PersonTitlePage = () => {
 															tabitem.Type === BaseItemKind.Episode
 																? `S${tabitem.ParentIndexNumber}:E${tabitem.IndexNumber} - ${tabitem.Name}`
 																: tabitem.Type === BaseItemKind.Series
-																  ? `${tabitem.ProductionYear} - ${
+																	? `${tabitem.ProductionYear} - ${
 																			tabitem.EndDate
 																				? new Date(
 																						tabitem.EndDate,
-																				  ).toLocaleString([], {
+																					).toLocaleString([], {
 																						year: "numeric",
-																				  })
+																					})
 																				: "Present"
-																	  }`
-																  : tabitem.ProductionYear
+																		}`
+																	: tabitem.ProductionYear
 														}
 														cardType={
 															tabitem.Type === BaseItemKind.Episode

@@ -1156,7 +1156,11 @@ const VideoPlayer = () => {
 				)}
 			</AnimatePresence>
 			<motion.div
-				className="video-player-osd"
+				className={
+					hoveringOsd || !playing || isSeeking
+						? "video-player-osd hovering"
+						: "video-player-osd"
+				}
 				onMouseMove={handleShowOsd}
 				initial={{
 					opacity: 0,
@@ -1305,40 +1309,56 @@ const VideoPlayer = () => {
 								</Typography>
 							</div>
 							<div className="video-player-osd-controls-buttons">
-								<motion.div style={{
-									width: "13em",
-									padding: "0.5em 1.5em",
-									paddingLeft: "0.8em",
-									gap:"0.4em",
-									background: "black",
-									borderRadius: "100px",
-									display: 'grid',
-									justifyContent: "center",
-									alignItems: "center",
-									gridTemplateColumns: "2em 1fr",
-									opacity:0,
-								}}
+								<motion.div
+									style={{
+										width: "13em",
+										padding: "0.5em 1.5em",
+										paddingLeft: "0.8em",
+										gap: "0.4em",
+										background: "black",
+										borderRadius: "100px",
+										display: "grid",
+										justifyContent: "center",
+										alignItems: "center",
+										gridTemplateColumns: "2em 1fr",
+										opacity: 0,
+									}}
 									animate={{
-										opacity: showVolumeControl ? 1:0
+										opacity: showVolumeControl ? 1 : 0,
 									}}
 									whileHover={{
-										opacity:1
+										opacity: 1,
 									}}
-									onMouseLeave={()=> setShowVolumeControl(false)}
+									onMouseLeave={() => setShowVolumeControl(false)}
 								>
-									<Typography textAlign="center">{muted ? 0 : Math.round(volume*100)}</Typography>
-									<Slider step={0.01} max={1} size="small" value={muted ? 0 : volume} onChange={(e, newVal) => {
-										setVolume(newVal);
-										if (newVal === 0) setMuted(true) 
-										else setMuted(false)
-									}} />
+									<Typography textAlign="center">
+										{muted ? 0 : Math.round(volume * 100)}
+									</Typography>
+									<Slider
+										step={0.01}
+										max={1}
+										size="small"
+										value={muted ? 0 : volume}
+										onChange={(e, newVal) => {
+											setVolume(newVal);
+											if (newVal === 0) setMuted(true);
+											else setMuted(false);
+										}}
+									/>
 								</motion.div>
-								<IconButton onClick={() => setMuted((state) => !state)} onMouseMoveCapture={() => {
-									setShowVolumeControl(true)
-								}}>
-									<span className="material-symbols-rounded">{muted ? "volume_off" :
-										volume < 0.4 ? "volume_down" :
-										"volume_up"}</span>
+								<IconButton
+									onClick={() => setMuted((state) => !state)}
+									onMouseMoveCapture={() => {
+										setShowVolumeControl(true);
+									}}
+								>
+									<span className="material-symbols-rounded">
+										{muted
+											? "volume_off"
+											: volume < 0.4
+												? "volume_down"
+												: "volume_up"}
+									</span>
 								</IconButton>
 								<IconButton onClick={() => setShowSubtitles((state) => !state)}>
 									<span className={"material-symbols-rounded"}>

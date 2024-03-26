@@ -285,3 +285,7 @@ h1 {
 @function neg($var) {
 	@return $var * -1;
 }
+
+.fullWidth {
+	width: 100%;
+}

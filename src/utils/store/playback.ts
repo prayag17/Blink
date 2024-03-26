@@ -159,6 +159,24 @@ export const playItem = (
 	availableSubtitleTracks,
 	mediaSourceId
 ) => {
+	console.log({
+		itemName,
+		episodeTitle,
+		mediaSource: {
+			videoTrack,
+			audioTrack,
+			subtitleTrack,
+			container,
+			availableSubtitleTracks,
+			id: mediaSourceId,
+		},
+		enableSubtitle,
+		hlsStream,
+		userId,
+		startPosition,
+		itemDuration,
+		item,
+	});
 	usePlaybackStore.setState({
 		itemName,
 		episodeTitle,

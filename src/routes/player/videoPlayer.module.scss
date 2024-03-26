@@ -60,12 +60,16 @@ video {
 		height: 100vh;
 		top: 0;
 		left: 0;
+		cursor: none;
 		display: flex;
 		flex-direction: column;
 		align-self: stretch;
 		justify-content: space-between;
 		padding: 1em 2em;
 		background: linear-gradient(to top, rgb(0 0 0 / 0.7) 5vh, transparent 26vh 90vh, rgb(0 0 0 / 0.7));
+		&.hovering{
+			cursor: default;
+		}
 		&-controls{
 			&-progress{
 				display: flex;

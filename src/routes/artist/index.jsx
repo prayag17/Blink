@@ -38,6 +38,7 @@ import { setBackdrop, useBackdropStore } from "../../utils/store/backdrop";
 import "./artist.module.scss";
 
 import IconLink from "../../components/iconLink";
+import { getTypeIcon } from "../../components/utils/iconsCollection";
 
 function TabPanel(props) {
 	const { children, value, index, ...other } = props;
@@ -263,7 +264,9 @@ const ArtistTitlePage = () => {
 								/>
 							</>
 						) : (
-							<></>
+							<div className="item-hero-image-icon">
+								{getTypeIcon(item.data.Type)}
+							</div>
 						)}
 					</div>
 					<div className="item-hero-detail flex flex-column">
@@ -281,7 +284,9 @@ const ArtistTitlePage = () => {
 								className="item-hero-logo"
 							/>
 						) : (
-							<Typography variant="h3">{item.data.Name}</Typography>
+							<Typography variant="h2" fontWeight={200}>
+								{item.data.Name}
+							</Typography>
 						)}
 
 						<LikeButton
@@ -312,7 +317,6 @@ const ArtistTitlePage = () => {
 							))}
 						</div>
 					</div>
-					<Divider flexItem orientation="vertical" />
 					<div
 						style={{
 							width: "100%",

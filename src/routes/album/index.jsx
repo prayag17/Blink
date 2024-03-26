@@ -8,6 +8,7 @@ import Divider from "@mui/material/Divider";
 import Paper from "@mui/material/Paper";
 import Stack from "@mui/material/Stack";
 import Typography from "@mui/material/Typography";
+import heroBg from "../../assets/herobg.png";
 
 import { Link, NavLink, useParams } from "react-router-dom";
 
@@ -233,7 +234,17 @@ const MusicAlbumTitlePage = () => {
 								}}
 							/>
 						) : (
-							<></>
+							<motion.img
+								alt={item.data.Name}
+								src={heroBg}
+								className="item-hero-backdrop"
+								onLoad={(e) => {
+									e.currentTarget.style.opacity = 1;
+								}}
+								style={{
+									y: parallax,
+								}}
+							/>
 						)}
 					</div>
 					<div
@@ -265,77 +276,87 @@ const MusicAlbumTitlePage = () => {
 								/>
 							</>
 						) : (
-							<></>
+							<div className="item-hero-image-icon">
+								{getTypeIcon(item.data.Type)}
+							</div>
 						)}
 					</div>
 					<div className="item-hero-detail flex flex-column">
-						<Typography variant="h2">{item.data.Name}</Typography>
+						<Typography variant="h2" fontWeight={200} mb={2}>
+							{item.data.Name}
+						</Typography>
 
-						<Chip
-							label={item.data.AlbumArtist}
-							icon={
-								<span
-									className="material-symbols-rounded"
-									style={{
-										padding: "0.2em",
-
-										fontVariationSettings:
-											'"FILL" 1, "wght" 300, "GRAD" 25, "opsz" 40',
-									}}
-								>
-									artist
-								</span>
-							}
-							size="large"
-							sx={{
-								"& .MuiChip-label": {
-									marginLeft: 0.5,
-								},
-							}}
-						/>
 						<Stack
 							direction="row"
 							gap={2}
 							justifyItems="flex-start"
 							alignItems="center"
 						>
-							<Typography style={{ opacity: "0.8" }} variant="subtitle1">
-								{item.data.ProductionYear ?? ""}
-							</Typography>
-							<Typography style={{ opacity: "0.8" }} variant="subtitle1">
+							<Chip
+								size="small"
+								label={item.data.AlbumArtist}
+								icon={
+									<span
+										className="material-symbols-rounded"
+										style={{
+											padding: "0.2em",
+
+											fontVariationSettings:
+												'"FILL" 1, "wght" 300, "GRAD" 25, "opsz" 40',
+										}}
+									>
+										artist
+									</span>
+								}
+								sx={{
+									"& .MuiChip-label": {
+										marginLeft: 0.5,
+									},
+								}}
+							/>
+							{item.data.PremiereDate && (
+								<Typography style={{ opacity: "0.8" }} variant="subtitle2">
+									{item.data.ProductionYear ?? ""}
+								</Typography>
+							)}
+							<Typography style={{ opacity: "0.8" }} variant="subtitle2">
 								{item.data.ChildCount > 1
 									? `${item.data.ChildCount} Tracks`
-									: `${item.data.ChildCount}`}
+									: `${item.data.ChildCount} Track`}
 							</Typography>
 							{item.data.RunTimeTicks && (
-								<Typography style={{ opacity: "0.8" }} variant="subtitle1">
+								<Typography style={{ opacity: "0.8" }} variant="subtitle2">
 									{getRuntime(item.data.RunTimeTicks)}
 								</Typography>
 							)}
+							<Typography variant="subtitle2" style={{ opacity: 0.8 }}>
+								{item.data.Genres?.slice(0, 4).join(" / ")}
+							</Typography>
 						</Stack>
-						<Typography variant="subtitle1" style={{ opacity: 0.8 }}>
-							{item.data.Genres.join(", ")}
-						</Typography>
+					</div>
 
-						<div className="item-hero-buttons-container flex flex-row">
-							<div className="flex flex-row">
-								<PlayButton
-									audio
-									itemId={item.data.Id}
-									itemType={item.data.Type}
-									itemUserData={item.data.UserData}
-									userId={user.data.Id}
-								/>
-							</div>
-							<div className="flex flex-row" style={{ gap: "1em" }}>
-								<LikeButton
-									itemName={item.data.Name}
-									itemId={item.data.Id}
-									queryKey={["item", id]}
-									isFavorite={item.data.UserData.IsFavorite}
-									userId={user.data.Id}
-								/>
-							</div>
+					<div className="item-hero-buttons-container">
+						<div className="flex flex-row fullWidth">
+							<PlayButton
+								audio
+								item={item.data}
+								itemId={item.data.Id}
+								itemType={item.data.Type}
+								itemUserData={item.data.UserData}
+								userId={user.data.Id}
+								buttonProps={{
+									fullWidth: true,
+								}}
+							/>
+						</div>
+						<div className="flex flex-row" style={{ gap: "1em" }}>
+							<LikeButton
+								itemName={item.data.Name}
+								itemId={item.data.Id}
+								queryKey={["item", id]}
+								isFavorite={item.data.UserData.IsFavorite}
+								userId={user.data.Id}
+							/>
 						</div>
 					</div>
 				</div>
@@ -364,7 +385,6 @@ const MusicAlbumTitlePage = () => {
 							))}
 						</div>
 					</div>
-					<Divider flexItem orientation="vertical" />
 					<div
 						style={{
 							width: "100%",
@@ -436,7 +456,7 @@ const MusicAlbumTitlePage = () => {
 				{similarItems.data.TotalRecordCount > 0 && (
 					<CardScroller
 						title="You might also like"
-						displayCards={8}
+						displayCards={7}
 						disableDecoration
 					>
 						{similarItems.data.Items.map((similar, index) => {
@@ -455,14 +475,14 @@ const MusicAlbumTitlePage = () => {
 										similar.Type === BaseItemKind.Episode
 											? `S${similar.ParentIndexNumber}:E${similar.IndexNumber} - ${similar.Name}`
 											: similar.Type === BaseItemKind.Series
-											  ? `${similar.ProductionYear} - ${
+												? `${similar.ProductionYear} - ${
 														similar.EndDate
 															? new Date(similar.EndDate).toLocaleString([], {
 																	year: "numeric",
-															  })
+																})
 															: "Present"
-												  }`
-											  : similar.ProductionYear
+													}`
+												: similar.ProductionYear
 									}
 									cardType={
 										similar.Type === BaseItemKind.MusicAlbum ||

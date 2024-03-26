@@ -30,9 +30,9 @@ import { getUserLibraryApi } from "@jellyfin/sdk/lib/utils/api/user-library-api"
 
 import { useQuery } from "@tanstack/react-query";
 
+import heroBg from "../../assets/herobg.png";
 import { Card } from "../../components/card/card";
 import { CardScroller } from "../../components/cardScroller/cardScroller";
-import Hero from "../../components/layouts/item/hero";
 
 import "./item.module.scss";
 
@@ -312,9 +312,9 @@ const ItemDetail = () => {
 				className="scrollY padded-top flex flex-column item item-default"
 				ref={pageRef}
 			>
-				<div className="item-hero flex flex-row">
+				<div className="item-hero">
 					<div className="item-hero-backdrop-container">
-						{item.data.BackdropImageTags ? (
+						{item.data.BackdropImageTags?.length ? (
 							<motion.img
 								alt={item.data.Name}
 								src={api.getItemImageUrl(item.data.Id, "Backdrop", {
@@ -329,7 +329,17 @@ const ItemDetail = () => {
 								}}
 							/>
 						) : (
-							<></>
+							<motion.img
+								alt={item.data.Name}
+								src={heroBg}
+								className="item-hero-backdrop"
+								onLoad={(e) => {
+									e.currentTarget.style.opacity = 1;
+								}}
+								style={{
+									y: parallax,
+								}}
+							/>
 						)}
 					</div>
 					<div
@@ -361,7 +371,9 @@ const ItemDetail = () => {
 								/>
 							</>
 						) : (
-							<></>
+							<div className="item-hero-image-icon">
+								{getTypeIcon(item.data.Type)}
+							</div>
 						)}
 					</div>
 					<div className="item-hero-detail flex flex-column">
@@ -380,120 +392,27 @@ const ItemDetail = () => {
 								className="item-hero-logo"
 							/>
 						) : (
-							<Typography variant="h2">{item.data.Name}</Typography>
+							<Typography mb={2} fontWeight={200} variant="h2">
+								{item.data.Name}
+							</Typography>
 						)}
-						<Stack direction="row" gap={1}>
-							{!!qualityLabel() && (
-								<Chip
-									variant="filled"
-									label={qualityLabel()}
-									sx={{
-										borderRadius: "8px !important",
-										"& .MuiChip-label": {
-											fontSize: "2.2em",
-										},
-									}}
-								/>
-							)}
-							{!!surroundSoundLabel() && (
-								<Chip
-									variant="filled"
-									label={
-										<Typography variant="caption" fontWeight={600}>
-											{surroundSoundLabel()}
-										</Typography>
-									}
-									sx={{
-										borderRadius: "8px !important",
-										"& .MuiChip-label": {
-											fontSize: "2.2em",
-										},
-									}}
-								/>
-							)}
-							{!!videoTracks[0]?.VideoRangeType && (
-								<Chip
-									variant="filled"
-									label={
-										<Typography variant="caption" fontWeight={600}>
-											{videoTracks[0].VideoRangeType}
-										</Typography>
-									}
-									sx={{
-										borderRadius: "8px !important",
-										"& .MuiChip-label": {
-											fontSize: "2.2em",
-										},
-									}}
-								/>
-							)}
-							{!!atmosLabel() && (
-								<Chip
-									variant="filled"
-									label={
-										<Typography
-											variant="caption"
-											fontWeight={600}
-											style={{
-												display: "flex",
-												alignItems: "center",
-												justifyContent: "center",
-												gap: "0.5em",
-											}}
-										>
-											<img
-												alt="Dolby"
-												src={dolbyIcon}
-												style={{
-													height: "1.6em",
-												}}
-											/>
-											{atmosLabel()}
-										</Typography>
-									}
-									sx={{
-										borderRadius: "8px !important",
-										"& .MuiChip-label": {
-											fontSize: "2.2em",
-										},
-									}}
-								/>
-							)}
-							{!!subtitleTracks.length > 0 && (
-								<Chip
-									variant="filled"
-									label={
-										// <Typography
-										// 	variant="caption"
-										// 	fontWeight={600}
-										// 	fontFamily="JetBrains Mono Variable"
-										// >
-										// 	CC
-										// </Typography>
-										<span className="material-symbols-rounded fill">
-											subtitles
-										</span>
-									}
-									sx={{
-										borderRadius: "8px !important",
-										"& .MuiChip-label": {
-											fontSize: "2.2em",
-										},
-									}}
-								/>
-							)}
-						</Stack>
 						<Stack
 							direction="row"
 							gap={2}
 							justifyItems="flex-start"
 							alignItems="center"
 						>
-							<Typography style={{ opacity: "0.8" }} variant="subtitle1">
-								{item.data.ProductionYear ?? ""}
-							</Typography>
+							{item.data.PremiereDate && (
+								<Typography style={{ opacity: "0.8" }} variant="subtitle2">
+									{item.data.ProductionYear ?? ""}
+								</Typography>
+							)}
 							{item.data.OfficialRating && (
-								<Chip variant="filled" label={item.data.OfficialRating} />
+								<Chip
+									variant="filled"
+									size="small"
+									label={item.data.OfficialRating}
+								/>
 							)}
 
 							{item.data.CommunityRating && (
@@ -518,7 +437,7 @@ const ItemDetail = () => {
 										style={{
 											opacity: "0.8",
 										}}
-										variant="subtitle1"
+										variant="subtitle2"
 									>
 										{Math.round(item.data.CommunityRating * 10) / 10}
 									</Typography>
@@ -546,7 +465,7 @@ const ItemDetail = () => {
 										style={{
 											opacity: "0.8",
 										}}
-										variant="subtitle1"
+										variant="subtitle2"
 									>
 										{item.data.CriticRating}
 									</Typography>
@@ -554,26 +473,32 @@ const ItemDetail = () => {
 							)}
 
 							{item.data.RunTimeTicks && (
-								<Typography style={{ opacity: "0.8" }} variant="subtitle1">
+								<Typography style={{ opacity: "0.8" }} variant="subtitle2">
 									{getRuntime(item.data.RunTimeTicks)}
 								</Typography>
 							)}
 							{item.data.RunTimeTicks && (
-								<Typography style={{ opacity: "0.8" }} variant="subtitle1">
+								<Typography style={{ opacity: "0.8" }} variant="subtitle2">
 									{endsAt(
 										item.data.RunTimeTicks -
 											item.data.UserData.PlaybackPositionTicks,
 									)}
 								</Typography>
 							)}
+							<Typography variant="subtitle2" style={{ opacity: 0.8 }}>
+								{item.data.Genres?.slice(0, 4).join(" / ")}
+							</Typography>
 						</Stack>
-						<Typography variant="subtitle1" style={{ opacity: 0.8 }}>
-							{item.data.Genres.join(", ")}
-						</Typography>
 					</div>
-					<div className="item-hero-buttons-container flex flex-row">
-						<div className="flex flex-row">
+					<div className="item-hero-buttons-container">
+						<div
+							className="flex flex-row"
+							style={{
+								width: "100%",
+							}}
+						>
 							<PlayButton
+								item={item.data}
 								itemId={item.data.Id}
 								itemType={item.data.Type}
 								itemUserData={item.data.UserData}
@@ -581,8 +506,8 @@ const ItemDetail = () => {
 								currentAudioTrack={selectedAudioTrack}
 								currentSubTrack={selectedSubtitleTrack}
 								userId={user.data.Id}
-								sx={{
-									background: "hsl(195.56deg 29.03% 18.24%) !important",
+								buttonProps={{
+									fullWidth: true,
 								}}
 							/>
 						</div>
@@ -610,36 +535,11 @@ const ItemDetail = () => {
 				</div>
 				<div className="item-detail">
 					<div style={{ width: "100%" }}>
-						{item.data.UserData.PlaybackPositionTicks > 0 && (
-							<div
-								style={{
-									width: "40%",
-									marginBottom: "1em",
-								}}
-							>
-								<Typography>
-									{getRuntime(
-										item.data.RunTimeTicks -
-											item.data.UserData.PlaybackPositionTicks,
-									)}{" "}
-									left
-								</Typography>
-								<LinearProgress
-									color="white"
-									variant="determinate"
-									value={item.data.UserData.PlayedPercentage}
-									style={{
-										borderRadius: "10px",
-									}}
-								/>
-							</div>
-						)}
 						<ShowMoreText
 							content={item.data.Overview ?? ""}
 							collapsedLines={4}
 						/>
 					</div>
-					<Divider flexItem orientation="vertical" />
 					<div
 						style={{
 							width: "100%",

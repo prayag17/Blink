@@ -36,6 +36,7 @@ import {
 } from "../../utils/store/playback";
 
 import type { SxProps } from "@mui/material";
+import { getRuntimeCompact } from "../../utils/date/time";
 
 const PlayButton = ({
 	item,
@@ -294,56 +295,85 @@ const PlayButton = ({
 		);
 	}
 	return (
-		<Button
-			className={className}
-			variant="contained"
-			onClick={handleClick}
-			startIcon={
-				<div
-					className="material-symbols-rounded fill"
-					style={{
-						fontSize: "2em",
-					}}
-				>
-					play_arrow
-				</div>
-			}
-			{...buttonProps}
-			sx={{
+		<div
+			className="play-button"
+			style={{
+				width: "auto",
 				position: "relative",
-				overflow: "hidden",
 			}}
-			size={size}
 		>
-			<LinearProgress
-				variant="determinate"
-				value={
-					100 > itemUserData.PlayedPercentage > 0
-						? itemUserData.PlayedPercentage
-						: 0
+			<Button
+				className={className ?? "play-button"}
+				variant="contained"
+				onClick={handleClick}
+				startIcon={
+					<div
+						className="material-symbols-rounded fill"
+						style={{
+							zIndex: 1,
+							fontSize: "2em",
+						}}
+					>
+						play_arrow
+					</div>
 				}
+				{...buttonProps}
 				sx={{
-					position: "absolute",
-					top: 0,
-					left: 0,
-					right: 0,
-					bottom: 0,
-					height: "100%",
-					background: "transparent",
-					opacity: 0.2,
-					zIndex: 0,
+					position: "relative",
+					overflow: "hidden",
 				}}
 				color="white"
-			/>
-			{itemUserData.PlaybackPositionTicks > 0
-				? "Continue Watching"
-				: item?.Type === "MusicAlbum" ||
-						item?.Type === "Audio" ||
-						item?.Type === "AudioBook" ||
-						item?.Type === "Playlist"
-					? "Play Now"
-					: "Watch Now"}
-		</Button>
+				size={size}
+			>
+				{itemUserData.PlaybackPositionTicks > 0
+					? "Continue Watching"
+					: item?.Type === "MusicAlbum" ||
+							item?.Type === "Audio" ||
+							item?.Type === "AudioBook" ||
+							item?.Type === "Playlist" ||
+							audio
+						? "Play Now"
+						: "Watch Now"}
+				<LinearProgress
+					variant="determinate"
+					value={
+						100 > itemUserData.PlayedPercentage > 0
+							? itemUserData.PlayedPercentage
+							: 0
+					}
+					sx={{
+						position: "absolute",
+						top: 0,
+						left: 0,
+						right: 0,
+						bottom: 0,
+						height: "100%",
+						background: "transparent",
+						opacity: 0.2,
+						zIndex: 0,
+						mixBlendMode: "difference",
+					}}
+					color="white"
+				/>
+			</Button>
+			{itemUserData.PlaybackPositionTicks > 0 && (
+				<Typography
+					sx={{
+						opacity: 0.8,
+						position: "absolute",
+						bottom: "-1.8em",
+						left: "50%",
+						transform: "translate(-50%)",
+					}}
+					variant="caption"
+				>
+					{getRuntimeCompact(
+						item.RunTimeTicks - itemUserData.PlaybackPositionTicks,
+					)}{" "}
+					left
+				</Typography>
+			)}
+		</div>
 	);
 };
 

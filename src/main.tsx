@@ -10,7 +10,6 @@ const queryClient = new QueryClient({
 	defaultOptions: {
 		queries: {
 			networkMode: "always",
-			staleTime: 1 * 60 * 1000, // 1 minute
 		},
 		mutations: {
 			networkMode: "always",

@@ -205,6 +205,8 @@ const AudioPlayer = () => {
 		setShowWaveform(false);
 	};
 
+	console.log(tracks);
+
 	const info = useMemo(
 		() => (
 			<div
@@ -221,10 +223,10 @@ const AudioPlayer = () => {
 			>
 				<div className="audio-player-image-container">
 					<img
-						alt={tracks[currentTrack].Name}
+						alt={tracks[currentTrack]?.Name}
 						className="audio-player-image"
 						src={api.getItemImageUrl(
-							Object.keys(tracks[currentTrack].ImageTags).length === 0
+							Object.keys(tracks[currentTrack]?.ImageTags).length === 0
 								? item.AlbumId
 								: item.Id,
 							"Primary",
