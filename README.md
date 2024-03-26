@@ -39,6 +39,28 @@
 - Add features or fix bugs
 - Create a pull request
 
+# ✨ Features
+
+- Play any media supported by the system (DirectPlay most files on windows, mac and linux)
+- Clean and minimal UI.
+- Multiple Jellyfin server support
+  and more...
+
+# 📷 Screenshots
+
+- Home
+  ![home](https://github.com/prayag17/JellyPlayer/assets/55829513/fb24d07a-02d5-4ae0-8d59-cdef068625f8)
+- Title Page - Movie
+  ![title-movie](https://github.com/prayag17/JellyPlayer/assets/55829513/0fdfe3b3-a692-4909-b88d-e0269182a626)
+- Title Page - Show
+  ![title-show](https://github.com/prayag17/JellyPlayer/assets/55829513/066c4080-e873-4d30-986f-5e8ec2121210)
+- Episode List
+  ![show-episodes](https://github.com/prayag17/JellyPlayer/assets/55829513/9fe69ddd-ffa3-4a6b-a2a7-c2e639b6b2e4)
+- Video Player
+  ![playback-video](https://github.com/prayag17/JellyPlayer/assets/55829513/a84850e6-3be7-41c5-8cf7-e14c3cd0df29)
+- About Dialog
+  ![about](https://github.com/prayag17/JellyPlayer/assets/55829513/fc3adf83-87fd-4901-8abd-39b148418f8d)
+
 # 📃 Roadmap
 
 - Checkout [GitHub Project](https://github.com/users/prayag17/projects/3)
