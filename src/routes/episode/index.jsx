@@ -30,9 +30,9 @@ import { getUserLibraryApi } from "@jellyfin/sdk/lib/utils/api/user-library-api"
 
 import { useQuery } from "@tanstack/react-query";
 
+import heroBg from "../../assets/herobg.png";
 import { Card } from "../../components/card/card";
 import { CardScroller } from "../../components/cardScroller/cardScroller";
-import Hero from "../../components/layouts/item/hero";
 
 import LikeButton from "../../components/buttons/likeButton";
 import MarkPlayedButton from "../../components/buttons/markPlayedButton";
@@ -282,7 +282,7 @@ const EpisodeTitlePage = () => {
 			>
 				<div className="item-hero">
 					<div className="item-hero-backdrop-container">
-						{item.data.BackdropImageTags ? (
+						{item.data.ParentBackdropImageTags?.length ? (
 							<motion.img
 								alt={item.data.Name}
 								src={api.getItemImageUrl(
@@ -301,7 +301,17 @@ const EpisodeTitlePage = () => {
 								}}
 							/>
 						) : (
-							<></>
+							<motion.img
+								alt={item.data.Name}
+								src={heroBg}
+								className="item-hero-backdrop"
+								onLoad={(e) => {
+									e.currentTarget.style.opacity = 1;
+								}}
+								style={{
+									y: parallax,
+								}}
+							/>
 						)}
 					</div>
 					<div

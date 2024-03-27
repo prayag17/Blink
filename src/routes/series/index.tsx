@@ -46,7 +46,7 @@ import "./series.module.scss";
 
 import { Link } from "react-router-dom";
 import { NavLink } from "react-router-dom";
-
+import heroBg from "../../assets/herobg.png";
 import LikeButton from "../../components/buttons/likeButton";
 import MarkPlayedButton from "../../components/buttons/markPlayedButton";
 import PlayButton from "../../components/buttons/playButton";
@@ -388,7 +388,17 @@ const SeriesTitlePage = () => {
 									}}
 								/>
 							) : (
-								<></>
+								<motion.img
+									alt={item.data.Name}
+									src={heroBg}
+									className="item-hero-backdrop"
+									onLoad={(e) => {
+										e.currentTarget.style.opacity = 1;
+									}}
+									style={{
+										y: parallax,
+									}}
+								/>
 							)}
 						</AnimatePresence>
 					</div>
@@ -421,7 +431,9 @@ const SeriesTitlePage = () => {
 								/>
 							</>
 						) : (
-							<></>
+							<div className="item-hero-image-icon">
+								{getTypeIcon(item.data.Type)}
+							</div>
 						)}
 					</div>
 					<div className="item-hero-detail">

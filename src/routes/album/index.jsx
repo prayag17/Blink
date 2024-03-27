@@ -215,7 +215,7 @@ const MusicAlbumTitlePage = () => {
 			>
 				<div className="item-hero flex flex-row">
 					<div className="item-hero-backdrop-container">
-						{item.data.BackdropImageTags ? (
+						{item.data.ParentBackdropImageTags?.length ? (
 							<motion.img
 								alt={item.data.Name}
 								src={api.getItemImageUrl(
