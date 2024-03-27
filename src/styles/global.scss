@@ -126,7 +126,7 @@ h1 {
 	width: 100%;
 	box-sizing: border-box;
 	min-height: 100vh;
-	padding: $page-margin;
+	padding: ($page-margin - 1.2em) $page-margin;
 	scrollbar-gutter: stable;
 	&.padded-top {
 		padding-top: 4.4em;

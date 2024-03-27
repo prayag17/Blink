@@ -1,13 +1,23 @@
 import React from "react";
 
 import { Divider, LinearProgress, Skeleton } from "@mui/material";
+import { motion } from "framer-motion";
 
 const ItemSkeleton = () => {
 	return (
-		<div
+		<motion.div
 			className="item item-default scrollY padded-top flex flex-column"
 			style={{
 				width: "100vw",
+			}}
+			initial={{
+				opacity: 0,
+			}}
+			animate={{
+				opacity: 1,
+			}}
+			exit={{
+				opacity: 0,
 			}}
 		>
 			<div className="item-hero">
@@ -111,7 +121,7 @@ const ItemSkeleton = () => {
 					/>
 				</div>
 			</div>
-		</div>
+		</motion.div>
 	);
 };
 

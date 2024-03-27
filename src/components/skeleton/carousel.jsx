@@ -11,7 +11,7 @@ export const CarouselSkeleton = () => {
 			elevation={0}
 			sx={{
 				height: "70vh",
-				margin: "0.6em 1.6em 1.6em 1.6em",
+				marginBottom: "3.2em",
 				position: "relative",
 				background: "black",
 				border: "1px solid rgb(255 255 255 / 0.2)",

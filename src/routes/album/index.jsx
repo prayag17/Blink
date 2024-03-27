@@ -308,11 +308,6 @@ const MusicAlbumTitlePage = () => {
 										artist
 									</span>
 								}
-								sx={{
-									"& .MuiChip-label": {
-										marginLeft: 0.5,
-									},
-								}}
 							/>
 							{item.data.PremiereDate && (
 								<Typography style={{ opacity: "0.8" }} variant="subtitle2">

@@ -200,225 +200,215 @@ const Home = () => {
 					)}
 				</ErrorBoundary>
 
-				<div
-					className="padded-container"
-					style={{
-						padding: "2.8em",
-						scrollPadding: "4.4em",
-						paddingTop: "1em"
-					}}
-					id="libraries"
+				<ErrorBoundary
+					fallback={
+						<div className="error">
+							<Typography>Error with Carousel</Typography>
+						</div>
+					}
 				>
-					<ErrorBoundary
-						fallback={
-							<div className="error">
-								<Typography>Error with Carousel</Typography>
-							</div>
-						}
-					>
-						{libraries.isPending ? (
-							<CardsSkeleton />
-						) : (
-							<CardScroller displayCards={4} title="Libraries">
-								{libraries.status === "success" &&
-									libraries.data.Items.map((item) => {
-										return (
-											<Card
-												key={item.Id}
-												item={item}
-												cardTitle={item.Name}
-												imageType="Primary"
-												cardType="thumb"
-												disableOverlay
-												onClick={() => navigate(`/library/${item.Id}`)}
-												imageBlurhash={
-													!!item.ImageBlurHashes?.Primary &&
-													item.ImageBlurHashes?.Primary[
-														Object.keys(item.ImageBlurHashes.Primary)[0]
-													]
-												}
-												overrideIcon={item.CollectionType}
-											/>
-										);
-									})}
-							</CardScroller>
-						)}
-					</ErrorBoundary>
-					<ErrorBoundary
-						fallback={
-							<div className="error">
-								<Typography>Error with Libraries</Typography>
-							</div>
-						}
-					>
-						{upNextItems.isPending ? (
-							<CardsSkeleton />
-						) : upNextItems.isSuccess && upNextItems.data.Items.length === 0 ? (
-							<></>
-						) : (
-							<CardScroller displayCards={4} title="Up Next">
-								{upNextItems.data.Items.map((item) => {
-									return (
-										<Card
-											key={item.Id}
-											item={item}
-											cardTitle={
-												item.Type === BaseItemKind.Episode
-													? item.SeriesName
-													: item.Name
-											}
-											imageType={
-												item.Type === BaseItemKind.Episode
-													? "Primary"
-													: Object.keys(item.ImageTags).includes("Thumb")
-													  ? "Thumb"
-													  : "Backdrop"
-											}
-											cardCaption={
-												item.Type === BaseItemKind.Episode
-													? item.ParentIndexNumber === 0
-														? `${item.SeasonName} - ${item.Name}`
-														: item.IndexNumberEnd
-														  ? `${item.IndexNumber}-${item.IndexNumberEnd}. ${item.Name}`
-														  : `${item.IndexNumber}. ${item.Name}`
-													: item.Type === BaseItemKind.Series
-													  ? `${item.ProductionYear} - ${
-																item.EndDate
-																	? new Date(item.EndDate).toLocaleString([], {
-																			year: "numeric",
-																	  })
-																	: "Present"
-														  }`
-													  : item.ProductionYear
-											}
-											cardType="thumb"
-											queryKey={["home", "upNext"]}
-											userId={user.data.Id}
-											imageBlurhash={
-												!!item.ImageBlurHashes?.Primary &&
-												item.ImageBlurHashes?.Primary[
-													Object.keys(item.ImageBlurHashes.Primary)[0]
-												]
-											}
-										/>
-									);
-								})}
-							</CardScroller>
-						)}
-					</ErrorBoundary>
-					<ErrorBoundary
-						fallback={
-							<div className="error">
-								<Typography>Error with resumeItemsVideo</Typography>
-							</div>
-						}
-					>
-						{resumeItemsVideo.isPending ? (
-							<CardsSkeleton />
-						) : resumeItemsVideo.isSuccess &&
-						  resumeItemsVideo.data.Items.length === 0 ? (
-							<></>
-						) : (
-							<CardScroller displayCards={4} title="Continue Watching">
-								{resumeItemsVideo.data.Items.map((item) => {
-									return (
-										<Card
-											key={item.Id}
-											item={item}
-											cardTitle={
-												item.Type === BaseItemKind.Episode
-													? item.SeriesName
-													: item.Name
-											}
-											imageType={
-												item.Type === BaseItemKind.Episode
-													? "Primary"
-													: Object.keys(item.ImageTags).includes("Thumb")
-													  ? "Thumb"
-													  : "Backdrop"
-											}
-											cardCaption={
-												item.Type === BaseItemKind.Episode
-													? `S${item.ParentIndexNumber}:E${item.IndexNumber} - ${item.Name}`
-													: item.Type === BaseItemKind.Series
-													  ? `${item.ProductionYear} - ${
-																item.EndDate
-																	? new Date(item.EndDate).toLocaleString([], {
-																			year: "numeric",
-																	  })
-																	: "Present"
-														  }`
-													  : item.ProductionYear
-											}
-											cardType="thumb"
-											queryKey={["home", "resume", "video"]}
-											userId={user.data.Id}
-											imageBlurhash={
-												!!item.ImageBlurHashes?.Primary &&
-												item.ImageBlurHashes?.Primary[
-													Object.keys(item.ImageBlurHashes.Primary)[0]
-												]
-											}
-										/>
-									);
-								})}
-							</CardScroller>
-						)}
-					</ErrorBoundary>
-					<ErrorBoundary
-						fallback={
-							<div className="error">
-								<Typography>Error with resumeItemsAudio</Typography>
-							</div>
-						}
-					>
-						{resumeItemsAudio.isPending ? (
-							<CardsSkeleton />
-						) : resumeItemsAudio.isSuccess &&
-						  resumeItemsAudio.data.Items.length === 0 ? (
-							<></>
-						) : (
-							<CardScroller displayCards={4} title="Continue Listening">
-								{resumeItemsAudio.data.Items.map((item) => {
+					{libraries.isPending ? (
+						<CardsSkeleton />
+					) : (
+						<CardScroller displayCards={4} title="Libraries">
+							{libraries.status === "success" &&
+								libraries.data.Items.map((item) => {
 									return (
 										<Card
 											key={item.Id}
 											item={item}
 											cardTitle={item.Name}
-											imageType={
-												item.Type === BaseItemKind.Episode
-													? "Primary"
-													: Object.keys(item.ImageTags).includes("Thumb")
-													  ? "Thumb"
-													  : "Backdrop"
-											}
-											cardCaption={item.ProductionYear}
+											imageType="Primary"
 											cardType="thumb"
-											queryKey={["home", "resume", "audio"]}
-											userId={user.data.Id}
+											disableOverlay
+											onClick={() => navigate(`/library/${item.Id}`)}
 											imageBlurhash={
-												item.ImageBlurHashes?.Primary?.[
+												!!item.ImageBlurHashes?.Primary &&
+												item.ImageBlurHashes?.Primary[
 													Object.keys(item.ImageBlurHashes.Primary)[0]
 												]
 											}
+											overrideIcon={item.CollectionType}
 										/>
 									);
 								})}
-							</CardScroller>
-						)}
-					</ErrorBoundary>
-					<ErrorBoundary
-						fallback={
-							<div className="error">
-								<Typography>Error with LatestMediaSections</Typography>
-							</div>
-						}
-					>
-						{latestMediaLibs.map((lib) => {
-							return <LatestMediaSection key={lib[0]} latestMediaLib={lib} />;
-						})}
-					</ErrorBoundary>
-				</div>
+						</CardScroller>
+					)}
+				</ErrorBoundary>
+				<ErrorBoundary
+					fallback={
+						<div className="error">
+							<Typography>Error with Libraries</Typography>
+						</div>
+					}
+				>
+					{upNextItems.isPending ? (
+						<CardsSkeleton />
+					) : upNextItems.isSuccess && upNextItems.data.Items.length === 0 ? (
+						<></>
+					) : (
+						<CardScroller displayCards={4} title="Up Next">
+							{upNextItems.data.Items.map((item) => {
+								return (
+									<Card
+										key={item.Id}
+										item={item}
+										cardTitle={
+											item.Type === BaseItemKind.Episode
+												? item.SeriesName
+												: item.Name
+										}
+										imageType={
+											item.Type === BaseItemKind.Episode
+												? "Primary"
+												: Object.keys(item.ImageTags).includes("Thumb")
+													? "Thumb"
+													: "Backdrop"
+										}
+										cardCaption={
+											item.Type === BaseItemKind.Episode
+												? item.ParentIndexNumber === 0
+													? `${item.SeasonName} - ${item.Name}`
+													: item.IndexNumberEnd
+														? `${item.IndexNumber}-${item.IndexNumberEnd}. ${item.Name}`
+														: `${item.IndexNumber}. ${item.Name}`
+												: item.Type === BaseItemKind.Series
+													? `${item.ProductionYear} - ${
+															item.EndDate
+																? new Date(item.EndDate).toLocaleString([], {
+																		year: "numeric",
+																	})
+																: "Present"
+														}`
+													: item.ProductionYear
+										}
+										cardType="thumb"
+										queryKey={["home", "upNext"]}
+										userId={user.data.Id}
+										imageBlurhash={
+											!!item.ImageBlurHashes?.Primary &&
+											item.ImageBlurHashes?.Primary[
+												Object.keys(item.ImageBlurHashes.Primary)[0]
+											]
+										}
+									/>
+								);
+							})}
+						</CardScroller>
+					)}
+				</ErrorBoundary>
+				<ErrorBoundary
+					fallback={
+						<div className="error">
+							<Typography>Error with resumeItemsVideo</Typography>
+						</div>
+					}
+				>
+					{resumeItemsVideo.isPending ? (
+						<CardsSkeleton />
+					) : resumeItemsVideo.isSuccess &&
+						resumeItemsVideo.data.Items.length === 0 ? (
+						<></>
+					) : (
+						<CardScroller displayCards={4} title="Continue Watching">
+							{resumeItemsVideo.data.Items.map((item) => {
+								return (
+									<Card
+										key={item.Id}
+										item={item}
+										cardTitle={
+											item.Type === BaseItemKind.Episode
+												? item.SeriesName
+												: item.Name
+										}
+										imageType={
+											item.Type === BaseItemKind.Episode
+												? "Primary"
+												: Object.keys(item.ImageTags).includes("Thumb")
+													? "Thumb"
+													: "Backdrop"
+										}
+										cardCaption={
+											item.Type === BaseItemKind.Episode
+												? `S${item.ParentIndexNumber}:E${item.IndexNumber} - ${item.Name}`
+												: item.Type === BaseItemKind.Series
+													? `${item.ProductionYear} - ${
+															item.EndDate
+																? new Date(item.EndDate).toLocaleString([], {
+																		year: "numeric",
+																	})
+																: "Present"
+														}`
+													: item.ProductionYear
+										}
+										cardType="thumb"
+										queryKey={["home", "resume", "video"]}
+										userId={user.data.Id}
+										imageBlurhash={
+											!!item.ImageBlurHashes?.Primary &&
+											item.ImageBlurHashes?.Primary[
+												Object.keys(item.ImageBlurHashes.Primary)[0]
+											]
+										}
+									/>
+								);
+							})}
+						</CardScroller>
+					)}
+				</ErrorBoundary>
+				<ErrorBoundary
+					fallback={
+						<div className="error">
+							<Typography>Error with resumeItemsAudio</Typography>
+						</div>
+					}
+				>
+					{resumeItemsAudio.isPending ? (
+						<CardsSkeleton />
+					) : resumeItemsAudio.isSuccess &&
+						resumeItemsAudio.data.Items.length === 0 ? (
+						<></>
+					) : (
+						<CardScroller displayCards={4} title="Continue Listening">
+							{resumeItemsAudio.data.Items.map((item) => {
+								return (
+									<Card
+										key={item.Id}
+										item={item}
+										cardTitle={item.Name}
+										imageType={
+											item.Type === BaseItemKind.Episode
+												? "Primary"
+												: Object.keys(item.ImageTags).includes("Thumb")
+													? "Thumb"
+													: "Backdrop"
+										}
+										cardCaption={item.ProductionYear}
+										cardType="thumb"
+										queryKey={["home", "resume", "audio"]}
+										userId={user.data.Id}
+										imageBlurhash={
+											item.ImageBlurHashes?.Primary?.[
+												Object.keys(item.ImageBlurHashes.Primary)[0]
+											]
+										}
+									/>
+								);
+							})}
+						</CardScroller>
+					)}
+				</ErrorBoundary>
+				<ErrorBoundary
+					fallback={
+						<div className="error">
+							<Typography>Error with LatestMediaSections</Typography>
+						</div>
+					}
+				>
+					{latestMediaLibs.map((lib) => {
+						return <LatestMediaSection key={lib[0]} latestMediaLib={lib} />;
+					})}
+				</ErrorBoundary>
 			</main>
 		</>
 	);

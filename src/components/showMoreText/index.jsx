@@ -37,7 +37,8 @@ const ShowMoreText = ({ content, collapsedLines, extraProps }) => {
 					WebkitBoxOrient: "vertical",
 					width: "100%",
 				}}
-				variant="subtitle1"
+				variant="subtitle2"
+				fontWeight={300}
 			>
 				{content}
 			</Typography>

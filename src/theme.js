@@ -10,17 +10,16 @@ const { palette } = createTheme({});
 const { augmentColor } = palette;
 export const theme = createTheme({
 	palette: {
-		primary: {
-			main: clrAccentDefault,
-			background: {
-				main: clrBackgroundDefault,
-				light: clrBackgroundLight,
-				dark: clrBackgroundDark,
+		primary: augmentColor({
+			color: {
+				main: clrAccentDefault,
 			},
-		},
-		secondary: {
-			main: clrSecondaryDefault,
-		},
+		}),
+		secondary: augmentColor({
+			color: {
+				main: clrSecondaryDefault,
+			},
+		}),
 		background: {
 			default: clrBackgroundDefault,
 			paper: clrBackgroundDark,

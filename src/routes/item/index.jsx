@@ -306,7 +306,7 @@ const ItemDetail = () => {
 					opacity: 1,
 				}}
 				transition={{
-					duration: 0.25,
+					duration: 0.35,
 					ease: "easeInOut",
 				}}
 				className="scrollY padded-top flex flex-column item item-default"

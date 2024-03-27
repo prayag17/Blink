@@ -9,14 +9,14 @@
 		position: absolute !important;
 		height: 100%;
 		font-size: 1em !important;
-		width: 3.2em;
+		width: $page-margin;
 		&.right{
 			border-radius: $border-radius-default 0 0 $border-radius-default !important;
-			right: -3.2em;
+			right: -$page-margin;
 		}
 		&.left{
 			border-radius: 0 $border-radius-default $border-radius-default 0 !important;
-			left: -3.2em;
+			left: -$page-margin;
 		}
 		.material-symbols-rounded{
 			font-size: 3.2em;
