@@ -234,8 +234,11 @@ const PlayButton = ({
 				const subtitles = result?.Items[0].MediaSources[0].MediaStreams?.filter(
 					(value) => value.Type === "Subtitle",
 				);
-				if (!currentSubTrack) {
+				let enableSubtitles = true;
+				if (!currentSubTrack && subtitles?.length > 0) {
 					selectedSubtitleTrack = subtitles[0].Index;
+				} else {
+					enableSubtitles = false;
 				}
 
 				playItem(
@@ -245,7 +248,7 @@ const PlayButton = ({
 					currentAudioTrack,
 					selectedSubtitleTrack,
 					result.Items[0].Container,
-					true,
+					enableSubtitles,
 					`${api.basePath}/Videos/${result.Items[0].Id}/stream.${result.Items[0].Container}?Static=true&mediaSourceId=${result.Items[0].Id}&deviceId=${api.deviceInfo.id}&api_key=${api.accessToken}&Tag=${result.Items[0].MediaSources[0].ETag}&videoStreamIndex=${currentVideoTrack}&audioStreamIndex=${currentAudioTrack}`,
 					userId,
 					result?.Items[0].UserData?.PlaybackPositionTicks,
@@ -254,7 +257,7 @@ const PlayButton = ({
 					queue,
 					0,
 					subtitles,
-					result?.Items[0].MediaSources[0].Id
+					result?.Items[0].MediaSources[0].Id,
 				);
 				navigate("/player");
 			}

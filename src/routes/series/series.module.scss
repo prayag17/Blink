@@ -102,6 +102,7 @@ $cardWidth: 18%;
 		&-cast {
 			max-height: 50vh;
 			overflow-y: auto;
+			overflow-x: hidden;
 			mask-image: linear-gradient(to top, transparent, black 1.2em);
 			-webkit-mask-image: linear-gradient(to top, transparent, black 1.2em);
 			&-title {
