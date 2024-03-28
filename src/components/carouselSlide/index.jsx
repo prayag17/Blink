@@ -151,6 +151,7 @@ const CarouselSlide = ({ item }) => {
 					sx={{
 						mb: "5px",
 					}}
+					fontWeight={200}
 					overflow="visible"
 				>
 					{!item.ImageTags.Logo ? (
@@ -328,6 +329,7 @@ const CarouselSlide = ({ item }) => {
 					alignItems="center"
 				>
 					<PlayButton
+						item={item}
 						itemId={item.Id}
 						userId={user.data.Id}
 						itemType={item.Type}
