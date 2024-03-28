@@ -89,16 +89,12 @@ export const Card = ({
 							opacity: item.UserData?.Played ? 1 : 0,
 						}}
 					>
-						<div className="material-symbols-rounded">
-							done
-						</div>
+						<div className="material-symbols-rounded">done</div>
 					</div>
 					<div
 						className={"card-indicator text"}
 						style={{
-							opacity: item.UserData?.UnplayedItemCount
-								? 1
-								: 0,
+							opacity: item.UserData?.UnplayedItemCount ? 1 : 0,
 						}}
 					>
 						<Typography
@@ -121,9 +117,7 @@ export const Card = ({
 						/>
 					)} */}
 				<div className="card-image-icon-container">
-					{overrideIcon
-						? getTypeIcon(overrideIcon)
-						: getTypeIcon(item.Type)}
+					{overrideIcon ? getTypeIcon(overrideIcon) : getTypeIcon(item.Type)}
 				</div>
 				<img
 					alt={item.Name}
@@ -131,15 +125,13 @@ export const Card = ({
 						overrideIcon === "User"
 							? `${api.basePath}/Users/${item.Id}/Images/Primary`
 							: api.getItemImageUrl(
-									seriesId
-										? item.SeriesId
-										: item.AlbumId ?? item.Id,
+									seriesId ? item.SeriesId : item.AlbumId ?? item.Id,
 									imageType,
 									{
-										quality: 80,
+										quality: 90,
 										fillWidth: cardType === "thumb" ? 560 : 280,
 									},
-							  )
+								)
 					}
 					style={{
 						height: "100%",
@@ -169,16 +161,12 @@ export const Card = ({
 								}}
 								iconOnly
 								audio={
-									item.Type ===
-										BaseItemKind.MusicAlbum ||
+									item.Type === BaseItemKind.MusicAlbum ||
 									item.Type === BaseItemKind.Audio ||
-									item.Type ===
-										BaseItemKind.AudioBook ||
+									item.Type === BaseItemKind.AudioBook ||
 									item.Type === BaseItemKind.Playlist
 								}
-								playlistItem={
-									item.Type === BaseItemKind.Playlist
-								}
+								playlistItem={item.Type === BaseItemKind.Playlist}
 								playlistItemId={item.Id}
 							/>
 							<LikeButton
@@ -231,12 +219,7 @@ export const Card = ({
 				className="card-text-container"
 				style={{ display: hideText ? "none" : "block" }}
 			>
-				<Typography
-					mt={1}
-					variant="subtitle2"
-					noWrap
-					style={{ opacity: 0.9 }}
-				>
+				<Typography mt={1} variant="subtitle2" noWrap style={{ opacity: 0.9 }}>
 					{cardTitle}
 				</Typography>
 				<Typography

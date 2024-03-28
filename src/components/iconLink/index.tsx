@@ -5,6 +5,7 @@ import anidbIcon from "../../assets/icons/anidb.png";
 import anilistIcon from "../../assets/icons/anilist.svg";
 import audioDBIcon from "../../assets/icons/audioDB.png";
 import imdbIcon from "../../assets/icons/imdb.svg";
+import kitsuIcon from "../../assets/icons/kitsu.svg";
 import musicBrainzIcon from "../../assets/icons/musicbrainz.svg";
 import tvDbIcon from "../../assets/icons/the-tvdb.svg";
 import tmdbIcon from "../../assets/icons/themoviedatabase.svg";
@@ -21,6 +22,7 @@ const knownIcons = [
 	"anilist",
 	"tvmaze",
 	"theaudiodb",
+	"kitsu",
 ];
 
 const IconLink = ({ name, url }: { name: string; url: string }) => {
@@ -50,6 +52,9 @@ const IconLink = ({ name, url }: { name: string; url: string }) => {
 			)}
 			{name.toLocaleLowerCase() === "theaudiodb" && (
 				<img src={audioDBIcon} alt="TheAudioDB" />
+			)}
+			{name.toLocaleLowerCase() === "kitsu" && (
+				<img src={kitsuIcon} alt="Kitsu" />
 			)}
 			{!knownIcons.includes(name.toLocaleLowerCase()) && (
 				<Typography>{name}</Typography>
