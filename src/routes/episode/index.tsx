@@ -263,7 +263,9 @@ const EpisodeTitlePage = () => {
 					(video) => video.VideoRangeType === "HDR10",
 				);
 				const checkHDR10Plus = videos.filter(
-					(video) => video.VideoRangeType === "HDR10+",
+					(video) =>
+						video.VideoRangeType === "HDR10+" ||
+						video.DisplayTitle?.toLocaleLowerCase().includes("hdr10+"),
 				);
 				const checkTrueHD = audios.filter((audio) =>
 					audio.DisplayTitle?.toLocaleLowerCase().includes("truehd"),
