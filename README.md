@@ -49,11 +49,11 @@
 # 📷 Screenshots
 
 - Home
-  ![home](https://github.com/prayag17/JellyPlayer/assets/55829513/fb24d07a-02d5-4ae0-8d59-cdef068625f8)
+  ![home](https://github.com/prayag17/JellyPlayer/assets/55829513/ffda4dc5-c147-4278-a232-bb58b1051501)
 - Title Page - Movie
-  ![title-movie](https://github.com/prayag17/JellyPlayer/assets/55829513/0fdfe3b3-a692-4909-b88d-e0269182a626)
+  ![title-movie](https://github.com/prayag17/JellyPlayer/assets/55829513/51b8a3ef-d581-4e70-807a-86ff594b7500)
 - Title Page - Show
-  ![title-show](https://github.com/prayag17/JellyPlayer/assets/55829513/066c4080-e873-4d30-986f-5e8ec2121210)
+  ![title-show](https://github.com/prayag17/JellyPlayer/assets/55829513/23b42d4a-2892-497b-aa32-0ae73e300655)
 - Episode List
   ![show-episodes](https://github.com/prayag17/JellyPlayer/assets/55829513/9fe69ddd-ffa3-4a6b-a2a7-c2e639b6b2e4)
 - Video Player
