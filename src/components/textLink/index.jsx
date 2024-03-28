@@ -9,7 +9,7 @@ const TextLink = ({ children, location, variant, otherProps }) => {
 	return (
 		<Typography
 			variant={variant}
-			className="link"
+			className="link flex"
 			onClick={() => navigate(location)}
 			{...otherProps}
 		>

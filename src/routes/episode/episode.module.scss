@@ -2,7 +2,7 @@ $cardWidth: 30%;
 .item-episode.item {
 	gap: 1em;
 	.item-hero {
-		height: 50vh;
+		height: 55vh;
 		gap: 2em;
 		row-gap: 1.2em;
 		position: relative;
@@ -81,7 +81,7 @@ $cardWidth: 30%;
 				top: -4.4em;
 				left: -$page-margin;
 				width: 100vw;
-				height: calc(44vh + 4.4em);
+				height: calc(49vh + 4.4em);
 				z-index: -1;
 				mask-image: linear-gradient(to top, transparent, black);
 				-webkit-mask-image: linear-gradient(

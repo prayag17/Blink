@@ -44,7 +44,7 @@ import About from "./routes/about";
 import MusicAlbumTitlePage from "./routes/album/index.jsx";
 import ArtistTitlePage from "./routes/artist/index.jsx";
 import BoxSetTitlePage from "./routes/boxset/index.jsx";
-import EpisodeTitlePage from "./routes/episode/index.jsx";
+import EpisodeTitlePage from "./routes/episode/index";
 import FavoritePage from "./routes/favorite/index.jsx";
 import Home from "./routes/home";
 import ItemDetail from "./routes/item";

@@ -38,6 +38,26 @@ import {
 import type { SxProps } from "@mui/material";
 import { getRuntimeCompact } from "../../utils/date/time";
 
+type PlayButtonProps = {
+	item: BaseItemDto;
+	itemId: string;
+	itemUserData: UserItemDataDto;
+	userId: string;
+	itemType: BaseItemKind;
+	currentAudioTrack: number;
+	currentVideoTrack: number;
+	currentSubTrack: number | "nosub";
+	className: string;
+	sx: SxProps;
+	buttonProps: ButtonProps;
+	iconOnly: boolean;
+	audio: boolean;
+	size: ButtonPropsSizeOverrides;
+	playlistItem: BaseItemDto;
+	playlistItemId: string;
+	trackIndex: number;
+};
+
 const PlayButton = ({
 	item,
 	itemId,
@@ -56,25 +76,7 @@ const PlayButton = ({
 	playlistItem,
 	playlistItemId = "",
 	trackIndex,
-}: {
-	item: BaseItemDto;
-	itemId: string;
-	itemUserData: UserItemDataDto;
-	userId: string;
-	itemType: BaseItemKind;
-	currentAudioTrack: number;
-	currentVideoTrack: number;
-	currentSubTrack: number;
-	className: string;
-	sx: SxProps;
-	buttonProps: ButtonProps;
-	iconOnly: boolean;
-	audio: boolean;
-	size: ButtonPropsSizeOverrides;
-	playlistItem: BaseItemDto;
-	playlistItemId: string;
-	trackIndex: number;
-}) => {
+}: PlayButtonProps) => {
 	const [api] = useApi((state) => [state.api]);
 
 	const navigate = useNavigate();
@@ -235,7 +237,10 @@ const PlayButton = ({
 					(value) => value.Type === "Subtitle",
 				);
 				let enableSubtitles = true;
-				if (!currentSubTrack && subtitles?.length > 0) {
+				if (currentSubTrack === "nosub") {
+					enableSubtitles = false;
+					selectedSubtitleTrack = "nosub";
+				} else if (!currentSubTrack && subtitles?.length > 0) {
 					selectedSubtitleTrack = subtitles[0].Index;
 				} else {
 					enableSubtitles = false;

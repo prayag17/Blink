@@ -1,13 +1,27 @@
 import { Link, Typography } from "@mui/material";
 import React from "react";
 
+import anidbIcon from "../../assets/icons/anidb.png";
+import anilistIcon from "../../assets/icons/anilist.svg";
+import audioDBIcon from "../../assets/icons/audioDB.png";
 import imdbIcon from "../../assets/icons/imdb.svg";
 import musicBrainzIcon from "../../assets/icons/musicbrainz.svg";
 import tvDbIcon from "../../assets/icons/the-tvdb.svg";
 import tmdbIcon from "../../assets/icons/themoviedatabase.svg";
 import traktIcon from "../../assets/icons/trakt.svg";
+import tvMazeIcon from "../../assets/icons/tvmaze.png";
 
-const knownIcons = ["imdb", "themoviedb", "trakt", "musicbrainz", "thetvdb"];
+const knownIcons = [
+	"imdb",
+	"themoviedb",
+	"trakt",
+	"musicbrainz",
+	"thetvdb",
+	"anidb",
+	"anilist",
+	"tvmaze",
+	"theaudiodb",
+];
 
 const IconLink = ({ name, url }: { name: string; url: string }) => {
 	return (
@@ -23,7 +37,19 @@ const IconLink = ({ name, url }: { name: string; url: string }) => {
 				<img src={musicBrainzIcon} alt="MusicBrainz" />
 			)}
 			{name.toLocaleLowerCase() === "thetvdb" && (
-				<img src={tvDbIcon} alt="THeTVDB" />
+				<img src={tvDbIcon} alt="TheTVDB" />
+			)}
+			{name.toLocaleLowerCase() === "anidb" && (
+				<img src={anidbIcon} alt="AniDB" />
+			)}
+			{name.toLocaleLowerCase() === "anilist" && (
+				<img src={anilistIcon} alt="AniList" />
+			)}
+			{name.toLocaleLowerCase() === "tvmaze" && (
+				<img src={tvMazeIcon} alt="TVMaze" />
+			)}
+			{name.toLocaleLowerCase() === "theaudiodb" && (
+				<img src={audioDBIcon} alt="TheAudioDB" />
 			)}
 			{!knownIcons.includes(name.toLocaleLowerCase()) && (
 				<Typography>{name}</Typography>

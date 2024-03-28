@@ -606,29 +606,10 @@ const SeriesTitlePage = () => {
 				</div>
 				<div className="item-detail">
 					<div style={{ width: "100%" }}>
-						{item.data.UserData.PlaybackPositionTicks > 0 && (
-							<div
-								style={{
-									width: "40%",
-									marginBottom: "1em",
-								}}
-							>
-								<Typography>
-									{getRuntime(
-										item.data.RunTimeTicks -
-											item.data.UserData.PlaybackPositionTicks,
-									)}{" "}
-									left
-								</Typography>
-								<LinearProgress
-									color="white"
-									variant="determinate"
-									value={item.data.UserData.PlayedPercentage}
-									style={{
-										borderRadius: "10px",
-									}}
-								/>
-							</div>
+						{item.data.Taglines?.length > 0 && (
+							<Typography variant="h5" mb={2}>
+								{item.data.Taglines[0]}
+							</Typography>
 						)}
 						<Typography variant="h5" fontStyle="italic" mb={1}>
 							{item.data.Taglines[0] ?? ""}
@@ -637,82 +618,11 @@ const SeriesTitlePage = () => {
 							content={item.data.Overview ?? ""}
 							collapsedLines={4}
 						/>
-						{writers.length > 0 && (
-							<div className="hero-grid">
-								<Typography
-									variant="subtitle1"
-									style={{
-										opacity: 0.6,
-									}}
-									noWrap
-								>
-									Written by
-								</Typography>
-								<div className="hero-text-container">
-									{writers.map((writer, index) => (
-										<>
-											<TextLink
-												key={writer.Id}
-												variant={"subtitle1"}
-												location={`/person/${writer.Id}`}
-											>
-												{writer.Name}
-											</TextLink>
-											{index !== writers.length - 1 && (
-												<span
-													style={{
-														whiteSpace: "pre",
-													}}
-												>
-													,{" "}
-												</span>
-											)}
-										</>
-									))}
-								</div>
-							</div>
-						)}
-						{directors.length > 0 && (
-							<div className="hero-grid">
-								<Typography
-									variant="subtitle1"
-									style={{
-										opacity: 0.6,
-									}}
-									noWrap
-								>
-									Directed by
-								</Typography>
-								<div className="hero-text-container">
-									{directors.map((director, index) => (
-										<>
-											<TextLink
-												key={director.Id}
-												variant={"subtitle1"}
-												location={`/person/${director.Id}`}
-											>
-												{director.Name}
-											</TextLink>
-											{index !== directors.length - 1 && (
-												<span
-													style={{
-														whiteSpace: "pre",
-													}}
-												>
-													,{" "}
-												</span>
-											)}
-										</>
-									))}
-								</div>
-							</div>
-						)}
 						<div
 							style={{
 								display: "flex",
 								gap: "0.6em",
 								alignSelf: "end",
-								marginTop: "1em",
 							}}
 						>
 							{item.data.ExternalUrls.map((url) => (

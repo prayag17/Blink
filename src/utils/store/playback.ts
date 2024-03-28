@@ -109,7 +109,7 @@ type PlaybackStore = {
 	mediaSource: {
 		videoTrack: number;
 		audioTrack: number;
-		subtitleTrack: number;
+		subtitleTrack: number | "nosub";
 		container: string;
 		availableSubtitleTracks: MediaStream[];
 		id: string | undefined;

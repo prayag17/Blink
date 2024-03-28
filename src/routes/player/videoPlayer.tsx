@@ -971,23 +971,24 @@ const VideoPlayer = () => {
 	
 	const handleReady = async () => {
 		if (!isReady) {
-			const jet = await fetch(subtitleFont).then(r => r.arrayBuffer());
-			const uint8 = new Uint8Array(jet);
-			console.log(uint8)
-			const subtitleRendererRaw = new JASSUB({
-				video: player.current.getInternalPlayer(),
-				subUrl: `${api.basePath}/Videos/${item.Id}/${item.Id}/Subtitles/${mediaSource.subtitleTrack}/Stream.ass?api_key=${api.accessToken}`,
-				workerUrl,
-				wasmUrl,
-				availableFonts: { "noto sans": uint8 },
-				fallbackFont: "Noto Sans",
-			});
-			setSubtitleRenderer(subtitleRendererRaw);
+			if (selectedSubtitle !== "nosub") {
+				const font = await fetch(subtitleFont).then((r) => r.arrayBuffer());
+				const uint8 = new Uint8Array(font);
+				const subtitleRendererRaw = new JASSUB({
+					video: player.current.getInternalPlayer(),
+					subUrl: `${api.basePath}/Videos/${item.Id}/${item.Id}/Subtitles/${mediaSource.subtitleTrack}/Stream.ass?api_key=${api.accessToken}`,
+					workerUrl,
+					wasmUrl,
+					availableFonts: { "noto sans": uint8 },
+					fallbackFont: "Noto Sans",
+				});
+				setSubtitleRenderer(subtitleRendererRaw);
+			}
 
 			player.current.seekTo(ticksToSec(startPosition), "seconds");
 			setIsReady(true);
 
-			// Report Jellyfin server: Playback has begin 
+			// Report Jellyfin server: Playback has begin
 			await getPlaystateApi(api).reportPlaybackStart({
 				playbackStartInfo: {
 					AudioStreamIndex: mediaSource.audioTrack,
@@ -1003,8 +1004,8 @@ const VideoPlayer = () => {
 					PositionTicks: startPosition,
 					RepeatMode: RepeatMode.RepeatNone,
 					VolumeLevel: volume,
-				}
-			})
+				},
+			});
 
 
 		}
@@ -1115,6 +1116,11 @@ const VideoPlayer = () => {
 	}, [handleKeyPress]);
 
 	useEffect(() => {
+		async function fetchFonts() {
+			const font = await fetch(subtitleFont).then((r) => r.arrayBuffer());
+			const uint8 = new Uint8Array(font);
+			return uint8;
+		}
 		if (subtitleRenderer)
 			if (showSubtitles) {
 				subtitleRenderer.setTrackByUrl(
@@ -1123,6 +1129,23 @@ const VideoPlayer = () => {
 			} else {
 				subtitleRenderer.freeTrack();
 			}
+		else if (
+			!subtitleRenderer &&
+			selectedSubtitle !== "nosub" &&
+			showSubtitles
+		) {
+			fetchFonts().then((uint8) => {
+				const subtitleRendererRaw = new JASSUB({
+					video: player.current.getInternalPlayer(),
+					subUrl: `${api.basePath}/Videos/${item.Id}/${item.Id}/Subtitles/${selectedSubtitle}/Stream.ass?api_key=${api.accessToken}`,
+					workerUrl,
+					wasmUrl,
+					availableFonts: { "noto sans": uint8 },
+					fallbackFont: "Noto Sans",
+				});
+				setSubtitleRenderer(subtitleRendererRaw);
+			});
+		}
 	}, [showSubtitles, selectedSubtitle]);
 
 	return (
@@ -1197,8 +1220,10 @@ const VideoPlayer = () => {
 								display: "flex",
 								flexDirection: "column",
 								gap: "1em",
+								width: "24em",
 							},
 						}}
+						style={{}}
 					>
 						<TextField
 							select
@@ -1206,7 +1231,11 @@ const VideoPlayer = () => {
 							variant="outlined"
 							value={selectedSubtitle}
 							onChange={(e) => setSelectedSubtitle(e.target.value)}
+							fullWidth
 						>
+							<MenuItem key={-1} value={"nosub"}>
+								No Subtitle
+							</MenuItem>
 							{mediaSource.availableSubtitleTracks.map((sub) => (
 								<MenuItem key={sub.Index} value={sub.Index}>
 									{sub.DisplayTitle}

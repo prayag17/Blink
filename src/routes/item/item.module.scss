@@ -163,23 +163,35 @@ $cardWidth: 18%;
 
 // Global item-detail
 .item-detail-link{
+	margin-top: 0.85em !important;
 	&:hover > img{
-		filter: grayscale(0);
+		filter: brightness(1);
 	}
 	& > img {
-		width: 2.5em;
+		width: 2em;
 		aspect-ratio: 1;
-		filter: grayscale(1);
+		filter: brightness(0.5);
 		transition: filter $transition-time-default;
 	}
 }
 
 .item {
-	&-hero-image{
-		box-sizing: border-box;
-		&-container{
-			box-sizing: content-box;
-			box-shadow: 0px 10px 20px -10px rgb(0 0 0 / 0.5) !important;
+	&-hero{
+		&-image{
+			box-sizing: border-box;
+			&-container{
+				box-sizing: content-box;
+				box-shadow: 0px 10px 20px -10px rgb(0 0 0 / 0.5) !important;
+			}
+		}
+		&-mediaInfo{
+			margin-top: 1em;
+			height: 1.1em;
+			opacity: 0.8;
+			&.badge{
+				margin: 0;
+				height: 1.2em;
+			}
 		}
 	}
 }

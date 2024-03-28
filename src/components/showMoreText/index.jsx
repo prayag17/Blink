@@ -24,6 +24,7 @@ const ShowMoreText = ({ content, collapsedLines, extraProps }) => {
 			style={{
 				alignItems: "flex-end",
 				gap: "1em",
+				opacity: 0.8,
 			}}
 		>
 			<Typography
