@@ -47,7 +47,7 @@ import TextLink from "../../components/textLink";
 import { getTypeIcon } from "../../components/utils/iconsCollection";
 import { endsAt, getRuntime } from "../../utils/date/time";
 import { useApi } from "../../utils/store/api";
-import { useBackdropStore } from "../../utils/store/backdrop";
+import { setBackdrop, useBackdropStore } from "../../utils/store/backdrop";
 
 import ItemSkeleton from "../../components/skeleton/item";
 
@@ -199,13 +199,16 @@ const ItemDetail = () => {
 
 	useLayoutEffect(() => {
 		if (item.isSuccess) {
-			setAppBackdrop(
-				item.data.Type === BaseItemKind.MusicAlbum ||
-					item.data.Type === BaseItemKind.Episode
-					? `${api.basePath}/Items/${item.data.ParentBackdropItemId}/Images/Backdrop`
-					: `${api.basePath}/Items/${item.data.Id}/Images/Backdrop`,
-				item.data.Id,
-			);
+			if (item.data.BackdropImageTags?.length > 0) {
+				setBackdrop(
+					api?.getItemImageUrl(item.data.Id, "Backdrop", {
+						tag: item.data.BackdropImageTags[0],
+					}),
+					item.data.Id,
+				);
+			} else {
+				setBackdrop("", "");
+			}
 			const direTp = item.data.People.filter((itm) => itm.Type === "Director");
 			setDirectors(direTp);
 			const writeTp = item.data.People.filter((itm) => itm.Type === "Writer");
@@ -687,7 +690,7 @@ const ItemDetail = () => {
 				<div className="item-detail">
 					<div style={{ width: "100%" }}>
 						{item.data.Taglines?.length > 0 && (
-							<Typography variant="h5" mb={2}>
+							<Typography variant="h5" mb={2} fontWeight={300}>
 								{item.data.Taglines[0]}
 							</Typography>
 						)}

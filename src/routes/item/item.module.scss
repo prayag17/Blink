@@ -1,14 +1,12 @@
 $cardWidth: 18%;
 
 .item-default.item {
-	gap: 1em;
 	.item-hero {
 		height: 60vh;
 		gap: 2em;
 		row-gap: 1.2em;
 		position: relative;
 		align-items: flex-end;
-		margin-bottom: 1em;
 		display: grid;
 		grid-template-columns: $cardWidth 1fr;
 		grid-template-rows: 1fr auto;
@@ -176,7 +174,9 @@ $cardWidth: 18%;
 }
 
 .item {
+	gap: 1.5em;
 	&-hero{
+		// margin-bottom: 1em;
 		&-image{
 			box-sizing: border-box;
 			&-container{

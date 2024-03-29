@@ -38,7 +38,7 @@ import LikeButton from "../../components/buttons/likeButton";
 import MarkPlayedButton from "../../components/buttons/markPlayedButton";
 import PlayButton from "../../components/buttons/playButton";
 
-import meshBg from "../../assets/herobg.png";
+import heroBg from "../../assets/herobg.png";
 import "./boxset.module.scss";
 
 import IconLink from "../../components/iconLink";
@@ -128,7 +128,16 @@ const BoxSetTitlePage = () => {
 
 	useEffect(() => {
 		if (item.isSuccess) {
-			setBackdrop("", "");
+			if (item.data.BackdropImageTags?.length > 0) {
+				setBackdrop(
+					api?.getItemImageUrl(item.data.Id, "Backdrop", {
+						tag: item.data.BackdropImageTags[0],
+					}),
+					item.data.Id,
+				);
+			} else {
+				setBackdrop("", "");
+			}
 		}
 	}, [item.isSuccess]);
 
@@ -173,10 +182,12 @@ const BoxSetTitlePage = () => {
 			>
 				<div className="item-hero flex flex-row">
 					<div className="item-hero-backdrop-container">
-						{item.data.BackdropImageTags ? (
+						{item.data.BackdropImageTags?.length ? (
 							<motion.img
 								alt={item.data.Name}
-								src={meshBg}
+								src={api.getItemImageUrl(item.data.Id, "Backdrop", {
+									tag: item.data.BackdropImageTags[0],
+								})}
 								className="item-hero-backdrop"
 								onLoad={(e) => {
 									e.currentTarget.style.opacity = 1;
@@ -186,7 +197,17 @@ const BoxSetTitlePage = () => {
 								}}
 							/>
 						) : (
-							<></>
+							<motion.img
+								alt={item.data.Name}
+								src={heroBg}
+								className="item-hero-backdrop"
+								onLoad={(e) => {
+									e.currentTarget.style.opacity = 1;
+								}}
+								style={{
+									y: parallax,
+								}}
+							/>
 						)}
 					</div>
 					<div
@@ -371,7 +392,12 @@ const BoxSetTitlePage = () => {
 						</div>
 					</div>
 				</div>
-				<div className="item-detail">
+				<div
+					className="item-detail"
+					style={{
+						marginBottom: "2em",
+					}}
+				>
 					<ShowMoreText content={item.data.Overview ?? ""} collapsedLines={4} />
 					<div
 						style={{
@@ -393,7 +419,7 @@ const BoxSetTitlePage = () => {
 					</div>
 				</div>
 				{collectionItems.data.TotalRecordCount > 0 && (
-					<CardScroller title="Items" displayCards={7} disableDecoration>
+					<CardScroller title="" displayCards={7} disableDecoration>
 						{collectionItems.data.Items.map((similar, index) => {
 							return (
 								<Card
