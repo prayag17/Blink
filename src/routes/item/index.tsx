@@ -241,7 +241,8 @@ const ItemDetail = () => {
 				const checkDolbyVision = videos.filter(
 					(video) =>
 						video.DisplayTitle?.toLocaleLowerCase().includes("dv") ||
-						video.DisplayTitle?.toLocaleLowerCase().includes("dolby vision"),
+						video.DisplayTitle?.toLocaleLowerCase().includes("dolby vision") ||
+						!!video.VideoDoViTitle,
 				);
 				const checkDD = audios.filter(
 					(audio) =>

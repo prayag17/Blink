@@ -1035,7 +1035,9 @@ const VideoPlayer = () => {
 
 	const handleExitPlayer = async () => {
 		appWindow.setFullscreen(false);
-		subtitleRenderer.destroy();
+		if (subtitleRenderer) {
+			subtitleRenderer.destroy();
+		}
 		navigate(-1);
 		// Report Jellyfin server: Playback has ended/stopped 
 		await getPlaystateApi(api).reportPlaybackStopped({
