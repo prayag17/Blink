@@ -269,7 +269,7 @@ const SearchPage = () => {
 									item.EndDate
 										? new Date(item.EndDate).toLocaleString([], {
 												year: "numeric",
-										  })
+											})
 										: "Present"
 								}`}
 								cardType="portrait"
@@ -430,7 +430,7 @@ const SearchPage = () => {
 				book.data.Items.length === 0 &&
 				musicArtists.data.Items.length === 0 &&
 				person.data.Items.length === 0 &&
-				episodes.data.SearchHints.length === 0 && (
+				episodes.data.SearchHints?.length === 0 && (
 					<div
 						style={{
 							height: "calc(100vh - 12em)",
