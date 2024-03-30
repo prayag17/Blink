@@ -91,7 +91,7 @@ dependencies:
     version: 9.0.1(@types/react@18.2.67)(react@18.2.0)
   react-multi-carousel:
     specifier: ^2.8.4
-    version: 2.8.4
+    version: 2.8.5
   react-player:
     specifier: ^2.15.1
     version: 2.15.1(react@18.2.0)
@@ -3954,8 +3954,8 @@ packages:
       - supports-color
     dev: false
 
-  /react-multi-carousel@2.8.4:
-    resolution: {integrity: sha512-7Is5Wr+m2ebkR+oq2Su2tjUdBwpVtB2O6Tjb74KDNfxWe/FrsTQwezTJTk/r9cKCrRp9Li308v822/5bZm7XKg==}
+  /react-multi-carousel@2.8.5:
+    resolution: {integrity: sha512-C5DAvJkfzR2JK9YixZ3oyF9x6R4LW6nzTpIXrl9Oujxi4uqP9SzVVCjl+JLM3tSdqdjAx/oWZK3dTVBSR73Q+w==}
     engines: {node: '>=8'}
     dev: false
 
