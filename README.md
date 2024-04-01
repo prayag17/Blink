@@ -51,7 +51,7 @@
 - Home
   ![home](https://github.com/prayag17/JellyPlayer/assets/55829513/ffda4dc5-c147-4278-a232-bb58b1051501)
 - Title Page - Movie
-  ![title-movie](https://github.com/prayag17/JellyPlayer/assets/55829513/51b8a3ef-d581-4e70-807a-86ff594b7500)
+  ![title-movie](https://github.com/prayag17/JellyPlayer/assets/55829513/1086f51b-a743-46e4-a761-c9f70a0d21bd)
 - Title Page - Show
   ![title-show](https://github.com/prayag17/JellyPlayer/assets/55829513/23b42d4a-2892-497b-aa32-0ae73e300655)
 - Episode List
