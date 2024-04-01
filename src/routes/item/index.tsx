@@ -230,7 +230,8 @@ const ItemDetail = () => {
 					item.data.MediaSources[0].DefaultAudioStreamIndex ?? null,
 				);
 				setSelectedSubtitleTrack(
-					item.data.MediaSources[0].DefaultSubtitleStreamIndex === -1
+					item.data.MediaSources[0].DefaultSubtitleStreamIndex === -1 ||
+						!item.data.MediaSources[0].DefaultSubtitleStreamIndex
 						? "nosub"
 						: item.data.MediaSources[0].DefaultSubtitleStreamIndex,
 				);
