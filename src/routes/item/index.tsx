@@ -477,13 +477,6 @@ const ItemDetail = () => {
 									className="item-hero-mediaInfo badge"
 								/>
 							)}
-							{mediaQualityInfo?.isHDR10Plus && (
-								<img
-									src={hdr10PlusIcon}
-									alt="hdr10+"
-									className="item-hero-mediaInfo badge"
-								/>
-							)}
 							{item.data.PremiereDate && (
 								<Typography style={{ opacity: "0.8" }} variant="subtitle2">
 									{item.data.ProductionYear ?? ""}
@@ -578,6 +571,13 @@ const ItemDetail = () => {
 								justifyItems="flex-start"
 								alignItems="center"
 							>
+								{mediaQualityInfo?.isHDR10Plus && (
+									<img
+										src={hdr10PlusIcon}
+										alt="hdr10+"
+										className="item-hero-mediaInfo"
+									/>
+								)}
 								{mediaQualityInfo.isDts && (
 									<img
 										src={dtsIcon}
