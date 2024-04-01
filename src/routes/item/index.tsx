@@ -61,10 +61,12 @@ import dolbyVisionIcon from "../../assets/icons/dolby-vision.svg";
 import dtsHdMaIcon from "../../assets/icons/dts-hd-ma.svg";
 import dtsIcon from "../../assets/icons/dts.svg";
 import hdIcon from "../../assets/icons/hd.svg";
+import hdrIcon from "../../assets/icons/hdr.svg";
 import hdr10PlusIcon from "../../assets/icons/hdr10-plus.svg";
 import hdr10Icon from "../../assets/icons/hdr10.svg";
 import imaxIcon from "../../assets/icons/imax.svg";
 import sdIcon from "../../assets/icons/sd.svg";
+import sdrIcon from "../../assets/icons/sdr.svg";
 
 import type MediaQualityInfo from "../../utils/types/mediaQualityInfo";
 
@@ -248,7 +250,8 @@ const ItemDetail = () => {
 					(video) =>
 						video.DisplayTitle?.toLocaleLowerCase().includes("dv") ||
 						video.DisplayTitle?.toLocaleLowerCase().includes("dolby vision") ||
-						!!video.VideoDoViTitle,
+						!!video.VideoDoViTitle ||
+						video.VideoRangeType === "DOVI",
 				);
 				const checkDD = audios.filter(
 					(audio) =>
@@ -296,6 +299,14 @@ const ItemDetail = () => {
 							!video.DisplayTitle?.toLocaleLowerCase().includes("sdr")) ||
 						video.DisplayTitle?.toLocaleLowerCase().includes("720p"),
 				);
+				const checkSDR = videos.filter(
+					(video) => video.VideoRangeType === "SDR",
+				);
+				const checkHDR = videos.filter(
+					(video) =>
+						video.VideoRange === "HDR" ||
+						video.DisplayTitle?.toLocaleLowerCase().includes("dv"),
+				);
 				const checkHDR10 = videos.filter(
 					(video) =>
 						video.VideoRangeType === "HDR10" &&
@@ -322,6 +333,8 @@ const ItemDetail = () => {
 					isUHD: checkUHD.length > 0,
 					isHD: checkHD.length > 0,
 					isSD: checkSD.length > 0,
+					isSDR: checkSDR.length > 0,
+					isHDR: checkHDR.length > 0,
 					isHDR10: checkHDR10.length > 0,
 					isHDR10Plus: checkHDR10Plus.length > 0,
 					isTrueHD: checkTrueHD.length > 0,
@@ -471,6 +484,22 @@ const ItemDetail = () => {
 									className="item-hero-mediaInfo badge"
 								/>
 							)}
+							{mediaQualityInfo?.isSDR && (
+								<img
+									src={sdrIcon}
+									alt="sdr"
+									className="item-hero-mediaInfo badge"
+								/>
+							)}
+							{mediaQualityInfo?.isHDR &&
+								!mediaQualityInfo?.isHDR10 &&
+								!mediaQualityInfo?.isHDR10Plus && (
+									<img
+										src={hdrIcon}
+										alt="hdr"
+										className="item-hero-mediaInfo badge"
+									/>
+								)}
 							{mediaQualityInfo?.isHDR10 && (
 								<img
 									src={hdr10Icon}

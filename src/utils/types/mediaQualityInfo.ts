@@ -8,6 +8,8 @@ type MediaQualityInfo = {
 	isUHD: boolean;
 	isHD: boolean;
 	isSD: boolean;
+	isSDR: boolean;
+	isHDR: boolean;
 	isHDR10: boolean;
 	isHDR10Plus: boolean;
 	isTrueHD: boolean;
