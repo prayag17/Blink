@@ -205,7 +205,7 @@ const Settings = () => {
 					setSettingsTabValue(newValue);
 				}}
 				style={{
-					background: "rgb(0 0 0 / 0.6)",
+					background: "rgb(0 0 0 / 0.4)",
 				}}
 			>
 				<Tab
