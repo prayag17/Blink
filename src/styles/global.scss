@@ -226,7 +226,7 @@ h1 {
 .flex {
 	display: flex;
 	&-row {
-		flex-direction: row;
+		flex-direction: row !important;
 	}
 	&-column {
 		flex-direction: column;
@@ -288,4 +288,9 @@ h1 {
 
 .fullWidth {
 	width: 100%;
+}
+
+.glass {
+	background: rgb(0 0 0 / 0.4) !important;
+	backdrop-filter: blur(40px);
 }

@@ -34,7 +34,7 @@ import { createApi, useApi } from "../../utils/store/api";
 import { useCentralStore } from "../../utils/store/central";
 import "./settings.module.scss";
 
-import { RecommendedServerInfo } from "@jellyfin/sdk";
+import type { RecommendedServerInfo } from "@jellyfin/sdk";
 import { LoadingButton } from "@mui/lab";
 import { red, yellow } from "@mui/material/colors";
 import { relaunch } from "@tauri-apps/api/process";
@@ -194,7 +194,7 @@ const Settings = () => {
 			fullWidth
 			maxWidth="md"
 			PaperProps={{
-				className: "settings",
+				className: "settings glass",
 			}}
 			onClose={() => setSettingsDialogOpen(false)}
 		>
@@ -205,7 +205,7 @@ const Settings = () => {
 					setSettingsTabValue(newValue);
 				}}
 				style={{
-					borderRight: "1.2px solid rgb(255 255 255 / 0.1)",
+					background: "rgb(0 0 0 / 0.6)",
 				}}
 			>
 				<Tab
@@ -679,8 +679,8 @@ const Settings = () => {
 											{updateInfo.isFetching
 												? "Checking for new updates..."
 												: updateInfo.data?.shouldUpdate
-												  ? updateInfo.data.manifest?.version
-												  : "No update found."}
+													? updateInfo.data.manifest?.version
+													: "No update found."}
 										</Typography>
 									</div>
 									<LoadingButton
@@ -708,8 +708,8 @@ const Settings = () => {
 										{updateInfo.isFetching
 											? "Checking for Update..."
 											: updateInfo.data?.shouldUpdate
-											  ? "Update"
-											  : "No Update Found"}
+												? "Update"
+												: "No Update Found"}
 									</LoadingButton>
 								</div>
 								{systemInfo.isSuccess ? (

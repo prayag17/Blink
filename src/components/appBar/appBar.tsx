@@ -18,7 +18,13 @@ import useScrollTrigger from "@mui/material/useScrollTrigger";
 
 import { red } from "@mui/material/colors";
 
-import { Link, NavLink, useLocation, useNavigate } from "react-router-dom";
+import {
+	NavLink as NavLinkBase,
+	Link as RouterLink,
+	type LinkProps as RouterLinkProps,
+	useLocation,
+	useNavigate,
+} from "react-router-dom";
 
 import { getUserApi } from "@jellyfin/sdk/lib/utils/api/user-api";
 import { getUserViewsApi } from "@jellyfin/sdk/lib/utils/api/user-views-api";
@@ -35,27 +41,63 @@ import { useApi } from "../../utils/store/api";
 
 import { getTypeIcon } from "../utils/iconsCollection";
 
-import { Divider } from "@mui/material";
-import logo from "../../assets/icon.svg";
 import {
+	Divider,
+	Drawer,
+	List,
+	ListItem,
+	ListItemButton,
+	ListItemText,
+} from "@mui/material";
+import logo from "../../assets/icon.svg";
+import useSettingsStore, {
 	setSettingsDialogOpen,
 	setSettingsTabValue,
 } from "../../utils/store/settings";
 
-const forwardRefNavLink = React.forwardRef({
-	displayName: "NavLink",
-	render: (props, ref) => (
-		<NavLink
-			ref={ref}
-			to={props.to}
-			className={({ isActive }) =>
-				`${props.className} ${isActive ? props.activeClassName : ""}`
-			}
-		>
-			{props.children}
-		</NavLink>
-	),
-});
+interface ListItemLinkProps {
+	icon?: React.ReactElement;
+	primary: string;
+	to: string;
+}
+
+const NavLink = React.forwardRef((props, ref) => (
+	<NavLinkBase
+		ref={ref}
+		{...props}
+		style={{ textDecoration: "none" }}
+		className={({ isActive }) =>
+			`${props.className} ${isActive ? props.activeClassName : ""}`
+		}
+	/>
+));
+
+function ListItemLink(props: ListItemLinkProps) {
+	const { icon, primary, to } = props;
+
+	return (
+		<li>
+			<ListItem
+				component={NavLink}
+				activeClassName="active"
+				className="library-drawer-item"
+				to={to}
+			>
+				<ListItemButton
+					style={{
+						borderRadius: "100px",
+						gap: "0.85em",
+						color: "white",
+						textDecoration: "none",
+					}}
+				>
+					<div className="material-symbols-rounded">{icon}</div>
+					<ListItemText primary={primary} />
+				</ListItemButton>
+			</ListItem>
+		</li>
+	);
+}
 
 export const AppBar = () => {
 	const [api] = useApi((state) => [state.api]);
@@ -108,11 +150,8 @@ export const AppBar = () => {
 
 	const queryClient = useQueryClient();
 
-	const [setDrawerOpen] = useDrawerStore((state) => [state.setOpen]);
+	const [tabValue] = useSettingsStore((state) => [state.tabValue]);
 
-	const handleDrawerOpen = () => {
-		setDrawerOpen(true);
-	};
 	const handleLogout = async () => {
 		console.log("Logging out user...");
 		await api.logout();
@@ -123,19 +162,6 @@ export const AppBar = () => {
 		setAnchorEl(null);
 		navigate("/login/index");
 	};
-
-	const [librariesPopper, setLibrariesPopper] = useState(false);
-	const librariesText = useRef(null);
-
-	const handlePopper = (event) => {
-		if (librariesPopper) {
-			setLibrariesPopper(null);
-		} else {
-			setLibrariesPopper(event.currentTarget);
-		}
-	};
-
-	const [isBrowsingLibrary, setIsBrowsingLibrary] = useState(false);
 
 	useEffect(() => {
 		if (
@@ -156,202 +182,53 @@ export const AppBar = () => {
 		} else {
 			setBackButtonVisible(true);
 		}
-
-		if (location.pathname.includes("library")) {
-			setIsBrowsingLibrary(true);
-		} else {
-			setIsBrowsingLibrary(false);
-		}
 	}, [location]);
+
+	const [showDrawer, setShowDrawer] = useState(false);
 
 	if (!display) {
 		return <></>;
 	}
 	if (display) {
 		return (
-			<MuiAppBar
-				style={{
-					backgroundColor: "transparent",
-					paddingRight: "0 !important",
-				}}
-				className={trigger ? "appBar backdropVisible" : "appBar"}
-				elevation={trigger ? 4 : 0}
-				color="transparent"
-			>
-				<Toolbar
-					sx={{
-						display: "grid",
-						gap: "0.6em",
-						gridTemplateColumns: "30% 1fr 30%",
+			<>
+				<MuiAppBar
+					style={{
+						backgroundColor: "transparent",
+						paddingRight: "0 !important",
 					}}
+					className={
+						trigger
+							? "appBar flex flex-row flex-justify-spaced-between elevated"
+							: "appBar flex flex-row flex-justify-spaced-between"
+					}
+					elevation={0}
+					color="transparent"
 				>
-					<IconButton
-						onClick={() => navigate(-1)}
-						disabled={!backButtonVisible}
-						style={{
-							justifySelf: "left",
-						}}
-					>
-						<div className="material-symbols-rounded">arrow_back</div>
-					</IconButton>
-
-					<div
-						className="flex flex-row flex-center"
-						style={{
-							gap: "2.6em",
-						}}
-					>
-						<NavLink to="/home">
-							{({ isActive }) =>
-								isActive ? (
-									<Button
-										style={{
-											textTransform: "none",
-										}}
-										size="large"
-										className="appBar-text active"
-									>
-										<Typography variant="subtitle1" fontWeight={600}>
-											Home
-										</Typography>
-									</Button>
-								) : (
-									<Button
-										style={{
-											textTransform: "none",
-										}}
-										className="appBar-text"
-										size="large"
-										color="white"
-									>
-										<Typography variant="subtitle1" fontWeight={600}>
-											Home
-										</Typography>
-									</Button>
-								)
-							}
-						</NavLink>
-						<Button
-							variant="text"
-							// disableRipple
-							disableElevation
-							onClick={handlePopper}
-							style={{ textTransform: "none" }}
-							size="large"
-							disableFocusRipple={false}
-							color={isBrowsingLibrary ? "primary" : "white"}
-							className={
-								isBrowsingLibrary ? "appBar-text active" : "appBar-text"
-							}
+					<div className="flex flex-row" style={{ gap: "0.6em" }}>
+						<IconButton onClick={() => setShowDrawer(true)}>
+							<div className="material-symbols-rounded">menu</div>
+						</IconButton>
+						<IconButton
+							disabled={!backButtonVisible}
+							onClick={() => navigate(-1)}
 						>
-							<Typography variant="subtitle1" fontWeight={600}>
-								Libraries
-							</Typography>
-						</Button>
-						{/* <Typography
-							variant="subtitle1"
-							fontWeight={600}
-							onMouseEnter={popoverEnter}
-							onFocus={popoverEnter}
-							tabIndex={0}
-							className={
-								isBrowsingLibrary
-									? "appBar-text active"
-									: "appBar-text"
-							}
-							// onMouseLeave={popoverLeave}
-						></Typography> */}
-
-						<Popper
-							open={Boolean(librariesPopper)}
-							anchorEl={librariesPopper}
-							placement="bottom"
-							disablePortal
-							modifiers={[
-								{
-									name: "flip",
-									enabled: true,
-									options: {
-										altBoundary: true,
-										rootBoundary: "document",
-										padding: 8,
-									},
-								},
-								{
-									name: "preventOverflow",
-									enabled: true,
-									options: {
-										altAxis: true,
-										altBoundary: true,
-										tether: true,
-										rootBoundary: "document",
-										padding: 8,
-									},
-								},
-							]}
-							transition
-						>
-							{({ TransitionProps }) => (
-								<Grow
-									{...TransitionProps}
-									style={{
-										transformOrigin: "50% 0 0",
-									}}
-									timeout={250}
-								>
-									<Paper
-										sx={{
-											mt: "1.1em",
-											maxHeight: "72em",
-										}}
-										style={{
-											boxShadow:
-												"0px 5px 5px -3px rgba(0,0,0,0.2), 0px 8px 10px 1px rgba(0,0,0,0.14), 0px 3px 14px 2px rgba(0,0,0,0.12)",
-											overflow: "hidden",
-											borderRadius: "25px",
-										}}
-									>
-										<div className="appBar-library-scrollContainer">
-											{libraries.isPending
-												? "loading..."
-												: libraries.data.Items.map((library) => (
-														<NavLink
-															key={library.Id}
-															className="appBar-library"
-															to={`library/${library.Id}`}
-															style={{
-																borderRadius: "10px",
-															}}
-														>
-															{Object.keys(library.ImageTags).includes(
-																"Primary",
-															) ? (
-																<img
-																	alt={library.Name}
-																	src={`${api.basePath}/Items/${library.Id}/Images/Primary?quality=90&fillHeight=226&fillWidth=127`}
-																/>
-															) : (
-																<div className="appBar-library-icon">
-																	{" "}
-																	{getTypeIcon(library.CollectionType)}{" "}
-																	<Typography variant="h6">
-																		{library.Name}
-																	</Typography>
-																</div>
-															)}
-														</NavLink>
-												  ))}
-										</div>
-									</Paper>
-								</Grow>
-							)}
-						</Popper>
+							<div className="material-symbols-rounded">arrow_back</div>
+						</IconButton>
+						<IconButton onClick={() => navigate("/home")}>
+							<div
+								className={
+									location.pathname === "/home"
+										? "material-symbols-rounded fill"
+										: "material-symbols-rounded"
+								}
+							>
+								home
+							</div>
+						</IconButton>
 					</div>
 
-					<div
-						className="flex flex-row"
-						style={{ justifySelf: "right", gap: "0.6em" }}
-					>
+					<div className="flex flex-row" style={{ gap: "0.6em" }}>
 						<IconButton onClick={() => navigate("/search")}>
 							<div className="material-symbols-rounded">search</div>
 						</IconButton>
@@ -423,8 +300,101 @@ export const AppBar = () => {
 							</MenuItem>
 						</Menu>
 					</div>
-				</Toolbar>
-			</MuiAppBar>
+				</MuiAppBar>
+				<Drawer
+					open={showDrawer}
+					PaperProps={{
+						className: "glass library-drawer",
+						style: {
+							width: "20em",
+							margin: "1.4em",
+							height: "calc(100vh - 2.8em)",
+							borderRadius: "20px",
+							overflowX: "hidden",
+							overflowY: "auto",
+							border: "1.2px solid rgb(255 255 255 / 0.2)",
+						},
+					}}
+					className="library-drawer"
+					onClose={() => setShowDrawer(false)}
+				>
+					<List>
+						<ListItem>
+							<ListItemButton
+								onClick={() => setShowDrawer(false)}
+								style={{
+									borderRadius: "100px",
+									gap: "0.85em",
+								}}
+							>
+								<span className="material-symbols-rounded">menu_open</span>
+								Close
+							</ListItemButton>
+						</ListItem>
+					</List>
+					<Divider variant="middle" />
+					<List>
+						<ListItemLink to="/home" icon="home" primary="Home" />
+						{libraries.isSuccess &&
+							libraries.data.Items?.map((library, index) => (
+								<ListItemLink
+									key={library.Id}
+									to={`/library/${library.Id}`}
+									icon={getTypeIcon(library.CollectionType)}
+									primary={library.Name}
+								/>
+							))}
+					</List>
+					<Divider variant="middle" />
+					<List>
+						<ListItem>
+							<ListItemButton
+								onClick={() => {
+									setSettingsDialogOpen(true);
+									setSettingsTabValue(1);
+								}}
+								style={{
+									borderRadius: "100px",
+									gap: "0.85em",
+								}}
+							>
+								<span className="material-symbols-rounded">settings</span>
+								Settings
+							</ListItemButton>
+						</ListItem>
+						<ListItem>
+							<ListItemButton
+								onClick={() => {
+									setSettingsDialogOpen(true);
+									setSettingsTabValue(2);
+								}}
+								style={{
+									borderRadius: "100px",
+									gap: "0.85em",
+								}}
+							>
+								<span className="material-symbols-rounded">dns</span>
+								Change Server
+							</ListItemButton>
+						</ListItem>
+						<ListItem>
+							<ListItemButton
+								onClick={() => {
+									setSettingsDialogOpen(true);
+									setSettingsTabValue(10);
+								}}
+								style={{
+									borderRadius: "100px",
+									gap: "0.85em",
+								}}
+							>
+								<span className="material-symbols-rounded">info</span>
+								About
+							</ListItemButton>
+						</ListItem>
+					</List>
+				</Drawer>
+			</>
 		);
 	}
 };

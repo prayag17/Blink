@@ -55,8 +55,6 @@ export const theme = createTheme({
 			styleOverrides: {
 				paper: {
 					borderRadius: "10px",
-					background: "hsl(256, 100%, 2%, 40%)",
-					backdropFilter: "blur(20px)",
 					border: "1px solid rgb(255 255 255 / 0.1)",
 				},
 				list: {
@@ -65,6 +63,11 @@ export const theme = createTheme({
 			},
 			defaultProps: {
 				disableScrollLock: true,
+				slotProps: {
+					paper: {
+						className: "glass",
+					},
+				},
 			},
 		},
 		MuiMenuItem: {
@@ -79,9 +82,11 @@ export const theme = createTheme({
 			styleOverrides: {
 				paper: {
 					borderRadius: "20px",
-					background: "rgb(0 0 0 / 0.5)",
-					backdropFilter: "blur(10px)",
-					border: "1px solid rgb(255 255 255 / 0.2)",
+				},
+			},
+			defaultProps: {
+				PaperProps: {
+					className: "glass",
 				},
 			},
 		},

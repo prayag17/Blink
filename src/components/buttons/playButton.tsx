@@ -17,6 +17,7 @@ import {
 	SortOrder,
 	type UserItemDataDto,
 } from "@jellyfin/sdk/lib/generated-client";
+import { getDlnaApi } from "@jellyfin/sdk/lib/utils/api/dlna-api";
 import { getItemsApi } from "@jellyfin/sdk/lib/utils/api/items-api";
 import { getPlaylistsApi } from "@jellyfin/sdk/lib/utils/api/playlists-api";
 import { getTvShowsApi } from "@jellyfin/sdk/lib/utils/api/tv-shows-api";
@@ -135,6 +136,8 @@ const PlayButton = ({
 		mutationFn: async () => {
 			setPlaybackDataLoading(true);
 			let result: any;
+			const deviceProfile = await getDlnaApi(api).getDefaultProfile();
+			console.log(deviceProfile);
 			if (playlistItem) {
 				result = await getPlaylistsApi(api).getPlaylistItems({
 					userId: userId,
@@ -246,31 +249,32 @@ const PlayButton = ({
 					enableSubtitles = false;
 				}
 
-				playItem(
-					itemName,
-					episodeTitle,
-					currentVideoTrack,
-					currentAudioTrack,
-					selectedSubtitleTrack,
-					result.Items[0].Container,
-					enableSubtitles,
-					`${api.basePath}/Videos/${result.Items[0].Id}/stream.${result.Items[0].Container}?Static=true&mediaSourceId=${result.Items[0].Id}&deviceId=${api.deviceInfo.id}&api_key=${api.accessToken}&Tag=${result.Items[0].MediaSources[0].ETag}&videoStreamIndex=${currentVideoTrack}&audioStreamIndex=${currentAudioTrack}`,
-					userId,
-					result?.Items[0].UserData?.PlaybackPositionTicks,
-					result.Items[0].RunTimeTicks,
-					result.Items[0],
-					queue,
-					0,
-					subtitles,
-					result?.Items[0].MediaSources[0].Id,
-				);
-				navigate("/player");
+				// playItem(
+				// 	itemName,
+				// 	episodeTitle,
+				// 	currentVideoTrack,
+				// 	currentAudioTrack,
+				// 	selectedSubtitleTrack,
+				// 	result.Items[0].Container,
+				// 	enableSubtitles,
+				// 	`${api.basePath}/Videos/${result.Items[0].Id}/stream.${result.Items[0].Container}?Static=true&mediaSourceId=${result.Items[0].Id}&deviceId=${api.deviceInfo.id}&api_key=${api.accessToken}&Tag=${result.Items[0].MediaSources[0].ETag}&videoStreamIndex=${currentVideoTrack}&audioStreamIndex=${currentAudioTrack}`,
+				// 	userId,
+				// 	result?.Items[0].UserData?.PlaybackPositionTicks,
+				// 	result.Items[0].RunTimeTicks,
+				// 	result.Items[0],
+				// 	queue,
+				// 	0,
+				// 	subtitles,
+				// 	result?.Items[0].MediaSources[0].Id,
+				// );
+				// navigate("/player");
 			}
 		},
 		onSettled: () => {
 			setPlaybackDataLoading(false);
 		},
 		onError: (error) => {
+			console.error(error);
 			enqueueSnackbar(`${error}`, {
 				variant: "error",
 			});
