@@ -43,6 +43,7 @@ import { ErrorNotice } from "../../components/notices/errorNotice/errorNotice.js
 import { createApi, useApi } from "../../utils/store/api";
 import "./login.module.scss";
 
+import { blue } from "@mui/material/colors";
 import { setBackdrop } from "../../utils/store/backdrop.js";
 
 export const LoginRoute = () => {
@@ -938,9 +939,33 @@ export const UserLoginManual = () => {
 						</DialogActions>
 					</Dialog>
 					<Grid sx={{ width: "100%" }}>
-						<Typography variant="subtitle2">
-							{server.isSuccess && server.data.LoginDisclaimer}
-						</Typography>
+						<Paper
+							elevation={5}
+							style={{
+								marginTop: "1em",
+								padding: "1em",
+								borderRadius: "15px",
+							}}
+						>
+							<div
+								className="flex flex-row flex-align-center"
+								style={{ gap: "0.5em", marginBottom: "0.5em" }}
+							>
+								<span
+									className="material-symbols-rounded"
+									style={{
+										color: blue[700],
+										"--fill": 1,
+									}}
+								>
+									info
+								</span>
+								Notice
+							</div>
+							<Typography variant="subtitle2" style={{ opacity: 0.8 }}>
+								{server.isSuccess && server.data.LoginDisclaimer}
+							</Typography>
+						</Paper>
 					</Grid>
 				</Grid>
 			</Container>
