@@ -157,6 +157,19 @@ const PlayButton = ({
 							enableUserData: true,
 							userId: userId,
 						});
+						mediaSource = await getMediaInfoApi(api).getPostedPlaybackInfo({
+							audioStreamIndex: currentAudioTrack,
+							subtitleStreamIndex:
+								currentSubTrack === "nosub" ? -1 : currentSubTrack,
+							itemId: result.data.Items[0].Id,
+							startTimeTicks:
+								result.data.Items[0].UserData?.PlaybackPositionTicks,
+							userId: userId,
+							mediaSourceId: result.data.Items[0].MediaSources[0].Id,
+							playbackInfoDto: {
+								DeviceProfile: playbackProfile,
+							},
+						});
 						break;
 					case BaseItemKind.Playlist:
 						result = await getPlaylistsApi(api).getPlaylistItems({
@@ -250,6 +263,8 @@ const PlayButton = ({
 						result?.item.Items[0].IndexNumber ?? 0
 					} ${result?.item.Items[0].Name}`;
 				}
+
+				console.log(result);
 
 				// Select correct subtitle track, this is useful if item is played with playbutton from card since that does not provide coorect default subtitle track index.
 				let selectedSubtitleTrack: number | "nosub" | undefined =

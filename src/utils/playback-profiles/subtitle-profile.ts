@@ -16,19 +16,19 @@ export function getSubtitleProfiles(): SubtitleProfile[] {
   const SubtitleProfiles: SubtitleProfile[] = [];
 
   SubtitleProfiles.push(
-    {
-      Format: 'vtt',
-      Method: SubtitleDeliveryMethod.External
-    },
-    {
-      Format: 'ass',
-      Method: SubtitleDeliveryMethod.External
-    },
-    {
-      Format: 'ssa',
-      Method: SubtitleDeliveryMethod.External
-    }
-  );
+			{
+				Format: "vtt",
+				Method: SubtitleDeliveryMethod.External,
+			},
+			{
+				Format: "ass",
+				Method: SubtitleDeliveryMethod.External,
+			},
+			{
+				Format: "ssa",
+				Method: SubtitleDeliveryMethod.External,
+			},
+		);
 
   return SubtitleProfiles;
 }
