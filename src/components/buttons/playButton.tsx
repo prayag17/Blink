@@ -14,6 +14,7 @@ import {
 	type BaseItemDtoQueryResult,
 	BaseItemKind,
 	ItemFields,
+	type PlaybackInfoResponse,
 	SortOrder,
 	type UserItemDataDto,
 } from "@jellyfin/sdk/lib/generated-client";
@@ -36,8 +37,12 @@ import {
 	usePlaybackStore,
 } from "../../utils/store/playback";
 
+import { getMediaInfoApi } from "@jellyfin/sdk/lib/utils/api/media-info-api";
 import type { SxProps } from "@mui/material";
+import type { AxiosResponse } from "axios";
+import type PlayResult from "src/utils/types/playResult";
 import { getRuntimeCompact } from "../../utils/date/time";
+import playbackProfile from "../../utils/playback-profiles";
 
 type PlayButtonProps = {
 	item: BaseItemDto;
@@ -135,9 +140,8 @@ const PlayButton = ({
 		mutationKey: ["playButton", itemId, userId],
 		mutationFn: async () => {
 			setPlaybackDataLoading(true);
-			let result: any;
-			const deviceProfile = await getDlnaApi(api).getDefaultProfile();
-			console.log(deviceProfile);
+			let result: undefined | AxiosResponse<BaseItemDtoQueryResult, any>;
+			let mediaSource: undefined | AxiosResponse<PlaybackInfoResponse, any>;
 			if (playlistItem) {
 				result = await getPlaylistsApi(api).getPlaylistItems({
 					userId: userId,
@@ -165,7 +169,7 @@ const PlayButton = ({
 							parentId: itemId,
 							userId: userId,
 							fields: [ItemFields.MediaSources, ItemFields.MediaStreams],
-							sortOrder: SortOrder.Ascending,
+							sortOrder: [SortOrder.Ascending],
 							sortBy: ["IndexNumber"],
 						});
 						break;
@@ -176,7 +180,7 @@ const PlayButton = ({
 							includeItemTypes: [BaseItemKind.Audio],
 							userId: userId,
 							fields: [ItemFields.MediaSources, ItemFields.MediaStreams],
-							sortOrder: SortOrder.Ascending,
+							sortOrder: [SortOrder.Ascending],
 							sortBy: ["PremiereDate", "ProductionYear", "SortName"],
 						});
 						break;
@@ -185,8 +189,8 @@ const PlayButton = ({
 							parentId: itemId,
 							userId,
 							fields: [ItemFields.MediaSources, ItemFields.MediaStreams],
-							sortOrder: SortOrder.Ascending,
-							sortBy: "IndexNumber",
+							sortOrder: [SortOrder.Ascending],
+							sortBy: ["IndexNumber"],
 						});
 						break;
 					default:
@@ -194,15 +198,27 @@ const PlayButton = ({
 							ids: [itemId],
 							userId: userId,
 							fields: [ItemFields.MediaSources, ItemFields.MediaStreams],
-							sortOrder: SortOrder.Ascending,
-							sortBy: "IndexNumber",
+							sortOrder: [SortOrder.Ascending],
+							sortBy: ["IndexNumber"],
+						});
+						mediaSource = await getMediaInfoApi(api).getPostedPlaybackInfo({
+							audioStreamIndex: currentAudioTrack,
+							subtitleStreamIndex:
+								currentSubTrack === "nosub" ? -1 : currentSubTrack,
+							itemId: itemId,
+							startTimeTicks: item.UserData.PlaybackPositionTicks,
+							userId: userId,
+							mediaSourceId: item.MediaSources[0].Id,
+							playbackInfoDto: {
+								DeviceProfile: playbackProfile,
+							},
 						});
 						break;
 				}
 			}
-			return result.data;
+			return { item: result?.data, mediaSource: mediaSource?.data };
 		},
-		onSuccess: (result: BaseItemDtoQueryResult | null) => {
+		onSuccess: (result: PlayResult | null) => {
 			if (trackIndex) {
 				setPlaylistItemId(playlistItemId);
 				// setCurrentTrack(trackIndex);
@@ -223,22 +239,25 @@ const PlayButton = ({
 				setAudioDisplay(true);
 				setQueue(result.Items, 0);
 			} else {
-				// Movie / Series Playback
-				const queue = result.Items;
+				// Creates a queue containing all Episodes for a particular season(series) or collection of movies
+				const queue = result?.item.Items;
 
-				let itemName = result.Items[0].Name;
+				let itemName = item.Name;
 				let episodeTitle = "";
-				if (result.Items[0].SeriesId) {
-					itemName = result.Items[0].SeriesName;
-					episodeTitle = `S${result?.Items[0].ParentIndexNumber ?? 0}:E${
-						result?.Items[0].IndexNumber ?? 0
-					} ${result?.Items[0].Name}`;
+				if (result?.item.Items[0].SeriesId) {
+					itemName = result?.item.Items[0].SeriesName;
+					episodeTitle = `S${result?.item.Items[0].ParentIndexNumber ?? 0}:E${
+						result?.item.Items[0].IndexNumber ?? 0
+					} ${result?.item.Items[0].Name}`;
 				}
 
-				let selectedSubtitleTrack: number | undefined = currentSubTrack;
-				const subtitles = result?.Items[0].MediaSources[0].MediaStreams?.filter(
-					(value) => value.Type === "Subtitle",
-				);
+				// Select correct subtitle track, this is useful if item is played with playbutton from card since that does not provide coorect default subtitle track index.
+				let selectedSubtitleTrack: number | "nosub" | undefined =
+					currentSubTrack;
+				const subtitles =
+					result?.mediaSource.MediaSources[0].MediaStreams?.filter(
+						(value) => value.Type === "Subtitle",
+					);
 				let enableSubtitles = true;
 				if (currentSubTrack === "nosub") {
 					enableSubtitles = false;
@@ -249,25 +268,45 @@ const PlayButton = ({
 					enableSubtitles = false;
 				}
 
-				// playItem(
-				// 	itemName,
-				// 	episodeTitle,
-				// 	currentVideoTrack,
-				// 	currentAudioTrack,
-				// 	selectedSubtitleTrack,
-				// 	result.Items[0].Container,
-				// 	enableSubtitles,
-				// 	`${api.basePath}/Videos/${result.Items[0].Id}/stream.${result.Items[0].Container}?Static=true&mediaSourceId=${result.Items[0].Id}&deviceId=${api.deviceInfo.id}&api_key=${api.accessToken}&Tag=${result.Items[0].MediaSources[0].ETag}&videoStreamIndex=${currentVideoTrack}&audioStreamIndex=${currentAudioTrack}`,
-				// 	userId,
-				// 	result?.Items[0].UserData?.PlaybackPositionTicks,
-				// 	result.Items[0].RunTimeTicks,
-				// 	result.Items[0],
-				// 	queue,
-				// 	0,
-				// 	subtitles,
-				// 	result?.Items[0].MediaSources[0].Id,
-				// );
-				// navigate("/player");
+				const urlOptions = {
+					Static: true,
+					tag: result?.mediaSource.MediaSources[0].Etag,
+					mediaSourceId: result?.mediaSource.MediaSources[0].Id,
+					deviceId: api?.deviceInfo.id,
+					api_key: api?.accessToken,
+				};
+
+				const urlParams = new URLSearchParams(urlOptions).toString();
+				let playbackUrl = `${api?.basePath}/Videos/${result?.mediaSource.MediaSources[0].Id}/stream.${result?.mediaSource.MediaSources[0].Container}?${urlParams}`;
+
+				if (
+					result?.mediaSource.MediaSources[0].SupportsTranscoding &&
+					result?.mediaSource.MediaSources[0].TranscodingUrl
+				) {
+					playbackUrl = `${api.basePath}${result.mediaSource.MediaSources[0].TranscodingUrl}`;
+				} else if (result?.mediaSource.MediaSources[0].hlsStream) {
+					playbackUrl = result.mediaSource.MediaSources[0].hlsStream;
+				}
+
+				playItem(
+					itemName,
+					episodeTitle,
+					currentVideoTrack,
+					currentAudioTrack,
+					selectedSubtitleTrack,
+					result?.mediaSource?.MediaSources[0].Container ?? "mkv",
+					enableSubtitles,
+					playbackUrl,
+					userId,
+					item.UserData?.PlaybackPositionTicks,
+					item.RunTimeTicks,
+					item,
+					queue,
+					0,
+					subtitles,
+					result?.mediaSource.MediaSources[0].Id,
+				);
+				navigate("/player");
 			}
 		},
 		onSettled: () => {

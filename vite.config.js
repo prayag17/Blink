@@ -16,6 +16,11 @@ export default defineConfig({
 			},
 		},
 	},
+	resolve: {
+		alias: {
+			src: "/src",
+		},
+	},
 	// prevent vite from obscuring rust errors
 	clearScreen: false,
 	// Tauri expects a fixed port, fail if that port is not available

@@ -104,9 +104,6 @@ dependencies:
   remark-gfm:
     specifier: ^4.0.0
     version: 4.0.0
-  rx-player:
-    specifier: ^4.0.0
-    version: 4.0.0
   shaka-player:
     specifier: ^4.7.11
     version: 4.7.11
@@ -4174,10 +4171,6 @@ packages:
 
   /rvfc-polyfill@1.0.7:
     resolution: {integrity: sha512-seBl7J1J3/k0LuzW2T9fG6JIOpni5AbU+/87LA+zTYKgTVhsfShmS8K/yOo1eeEjGJHnAdkVAUUM+PEjN9Mpkw==}
-    dev: false
-
-  /rx-player@4.0.0:
-    resolution: {integrity: sha512-Ye36kPOvsGY67DIhkuciYLXI1VCc2i+YOLB5KpnQGt+3+E1igxIqQ3zx6UJjy2yNuhXzXjqKWMFxnxdvqf4+Ng==}
     dev: false
 
   /safe-array-concat@1.1.2:

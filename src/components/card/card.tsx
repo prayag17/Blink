@@ -150,6 +150,7 @@ export const Card = ({
 						<>
 							<PlayButton
 								itemId={item.Id}
+								item={item}
 								userId={userId}
 								itemType={item.Type}
 								currentAudioTrack={0}
