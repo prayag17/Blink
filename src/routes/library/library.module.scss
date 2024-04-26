@@ -18,7 +18,7 @@
 	&-icon {
 		font-size: 3em;
 		fill: url(#clr-gradient-default) !important;
-
+		
 		&-container {
 			position: absolute;
 			top: 0;
@@ -49,27 +49,34 @@
 		align-items: start;
 	}
 	&-items {
-		height: calc(100vh - 8.4em);
+		height: fit-content;
 		overflow-y: auto;
 		overflow-x: hidden;
-		padding: 1.5em 1em;
+		padding: 1.5em $page-margin;
+		padding-top: 4em;
 		&-header {
-			position: absolute;
+			position: fixed;
 			top: 4.4em;
 			z-index: 10;
 			display: flex;
 			align-items: center;
 			justify-content: center;
-			width: 100%;
-			height: 4em;
+			height: fit-content;
+			left: 50%;
+			transform: translate(-50%);
+			border-radius: 100px;
+			overflow: hidden;
+			transition: $transition-time-default;
+			z-index: 1000;
+			&.scrolling {
+				background: rgb(0 0 0 / 0.4) !important;
+				top: 1em;
+			}
 		}
 		&-options {
 			padding: 0.5em 1.2em;
 			gap: 0.5em;
-			background: $clr-background-opacity-0_5;
-			border-radius: 100px;
 			overflow: hidden;
-			backdrop-filter: blur(10px);
 			display: flex;
 			align-items: center;
 			justify-content: center;
@@ -82,15 +89,14 @@
 			max-height: 32em;
 			background: rgb(0 0 0 / 0.65);
 			border-radius: $border-radius-default;
-			box-shadow: 0 0 10px rgb(0 0 0 / 0.4);
 			backdrop-filter: blur(10px);
 			overflow-y: overlay;
 		}
-
+		
 		width: 100%;
 		justify-content: space-between;
 		margin: 0 0.5em !important;
-
+		
 		&-title {
 			justify-self: start;
 		}
@@ -115,4 +121,29 @@
 			}
 		}
 	}
+	
+	// Fix card width with virtual rows
+	.card {
+		width: 100%;
+		height: fit-content;
+		margin: 0;
+	}
+	// Layout css for dynamic virtual rows
+	&-virtual-item{
+		&-row{
+			display: flex;
+			flex-direction: row;
+			justify-content: center;
+			align-items: center;
+			flex-basis: 14%;
+		}	
+		width: 14%;
+		height: fit-content;
+		display: inline-flex;
+		flex-direction: row;
+		justify-content: center;
+		align-items: center;
+		padding: 0.75em;
+	}
+	
 }

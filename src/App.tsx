@@ -407,7 +407,7 @@ function AppReady() {
 				<div className="app-backdrop-container">
 					<AnimatePresence>
 						<motion.img
-							key={backdropId}
+							key={`${backdropId}${backdropLoading}`}
 							src={backdropUrl}
 							alt=""
 							className="app-backdrop"
@@ -421,7 +421,7 @@ function AppReady() {
 								opacity: 0,
 							}}
 							transition={{
-								duration: 0.8,
+								duration: 1.2,
 								ease: "easeInOut",
 							}}
 							onLoadCapture={() => {
@@ -430,9 +430,9 @@ function AppReady() {
 							onLoad={() => {
 								setBackdropLoading(false);
 							}}
-							loading="eager"
+							loading="lazy"
 							style={{
-								transition: "opacity 0.8s",
+								transition: "opacity 1.2s",
 							}}
 						/>
 					</AnimatePresence>
@@ -449,72 +449,72 @@ function AppReady() {
 					{audioPlayerVisible && <AudioPlayer />}
 					<ErrorBoundary FallbackComponent={ErrorNotice} key={location.key}>
 						<Routes location={location}>
-								<Route path="/" element={<Navigate to={initialRoute} />} />
-								<Route
-									path="/error"
-									element={
-										<Dialog
-											open
-											onClose={handleRelaunch}
-											aria-labelledby="alert-dialog-text"
-											aria-describedby="alert-dialog-desc"
-											maxWidth="md"
-										>
-											<DialogTitle id="alert-dialog-text">
-												Unable to reach server
-											</DialogTitle>
-											<DialogContent>
-												<DialogContentText id="alert-dialog-desc">
-													Unable to connect to the jellyfin server.
-												</DialogContentText>
-											</DialogContent>
-											<DialogActions>
-												<Button
-													color="secondary"
-													variant="contained"
-													onClick={() => navigate("/servers/list")}
-												>
-													Change Server
-												</Button>
-												<Button
-													variant="contained"
-													color="primary"
-													onClick={handleRelaunch}
-												>
-													Restart JellyPlayer
-												</Button>
-											</DialogActions>
-										</Dialog>
-									}
-								/>
-								<Route path="/login/index" element={<LoginRoute />} />
+							<Route path="/" element={<Navigate to={initialRoute} />} />
+							<Route
+								path="/error"
+								element={
+									<Dialog
+										open
+										onClose={handleRelaunch}
+										aria-labelledby="alert-dialog-text"
+										aria-describedby="alert-dialog-desc"
+										maxWidth="md"
+									>
+										<DialogTitle id="alert-dialog-text">
+											Unable to reach server
+										</DialogTitle>
+										<DialogContent>
+											<DialogContentText id="alert-dialog-desc">
+												Unable to connect to the jellyfin server.
+											</DialogContentText>
+										</DialogContent>
+										<DialogActions>
+											<Button
+												color="secondary"
+												variant="contained"
+												onClick={() => navigate("/servers/list")}
+											>
+												Change Server
+											</Button>
+											<Button
+												variant="contained"
+												color="primary"
+												onClick={handleRelaunch}
+											>
+												Restart JellyPlayer
+											</Button>
+										</DialogActions>
+									</Dialog>
+								}
+							/>
+							<Route path="/login/index" element={<LoginRoute />} />
 
-								<Route path="/home" element={<Home />} />
-								<Route path="/setup/server" element={<ServerSetup />} />
-								<Route path="/servers/list" element={<ServerList />} />
-								<Route
-									path="/login/withImg/:userName/:userId/"
-									element={<LoginWithImage />}
-								/>
-								<Route path="/login/users" element={<UserLogin />} />
-								<Route path="/login/manual" element={<UserLoginManual />} />
-								<Route path="/library/:id" element={<LibraryView />} />
-								<Route path="/item/:id" element={<ItemDetail />} />
-								<Route
-									path="/musicalbum/:id"
-									element={<MusicAlbumTitlePage />}
-									errorElement={<div>Error</div>}
-								/>
-								<Route path="/artist/:id" element={<ArtistTitlePage />} />
-								<Route path="/boxset/:id" element={<BoxSetTitlePage />} />
-								<Route path="/episode/:id" element={<EpisodeTitlePage />} />
-								<Route path="/person/:id" element={<PersonTitlePage />} />
-								<Route path="/playlist/:id" element={<PlaylistTitlePage />} />
-								<Route path="/series/:id" element={<SeriesTitlePage />} />
-								<Route path="/search" element={<SearchPage />} />
-								<Route path="/favorite" element={<FavoritePage />} />
-								<Route path="/about" element={<About />} />
-								<Route path="/player" element={<VideoPlayer />} />
+							<Route path="/home" element={<Home />} />
+							<Route path="/setup/server" element={<ServerSetup />} />
+							<Route path="/servers/list" element={<ServerList />} />
+							<Route
+								path="/login/withImg/:userName/:userId/"
+								element={<LoginWithImage />}
+							/>
+							<Route path="/login/users" element={<UserLogin />} />
+							<Route path="/login/manual" element={<UserLoginManual />} />
+							<Route path="/library/:id" element={<LibraryView />} />
+							<Route path="/item/:id" element={<ItemDetail />} />
+							<Route
+								path="/musicalbum/:id"
+								element={<MusicAlbumTitlePage />}
+								errorElement={<div>Error</div>}
+							/>
+							<Route path="/artist/:id" element={<ArtistTitlePage />} />
+							<Route path="/boxset/:id" element={<BoxSetTitlePage />} />
+							<Route path="/episode/:id" element={<EpisodeTitlePage />} />
+							<Route path="/person/:id" element={<PersonTitlePage />} />
+							<Route path="/playlist/:id" element={<PlaylistTitlePage />} />
+							<Route path="/series/:id" element={<SeriesTitlePage />} />
+							<Route path="/search" element={<SearchPage />} />
+							<Route path="/favorite" element={<FavoritePage />} />
+							<Route path="/about" element={<About />} />
+							<Route path="/player" element={<VideoPlayer />} />
 						</Routes>
 					</ErrorBoundary>
 				</div>

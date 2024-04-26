@@ -2,7 +2,7 @@ import { motion } from "framer-motion";
 import React, { useState, useEffect, useLayoutEffect } from "react";
 import { useParams } from "react-router-dom";
 
-import { useQuery } from "@tanstack/react-query";
+import { useInfiniteQuery, useQuery } from "@tanstack/react-query";
 
 import Accordion from "@mui/material/Accordion";
 import AccordionDetails from "@mui/material/AccordionDetails";
@@ -35,6 +35,7 @@ import { Card } from "../../components/card/card";
 import { EmptyNotice } from "../../components/notices/emptyNotice/emptyNotice";
 
 import {
+	type BaseItemDtoQueryResult,
 	BaseItemKind,
 	ItemFields,
 	SortOrder,
@@ -42,15 +43,37 @@ import {
 import GenreView from "../../components/layouts/library/genreView";
 import MusicTrack from "../../components/musicTrack";
 import { ErrorNotice } from "../../components/notices/errorNotice/errorNotice";
-import { useBackdropStore } from "../../utils/store/backdrop";
+import { setBackdrop, useBackdropStore } from "../../utils/store/backdrop";
 
 import { getUserLibraryApi } from "@jellyfin/sdk/lib/utils/api/user-library-api";
+import { useScrollTrigger } from "@mui/material";
+import { useVirtualizer, useWindowVirtualizer } from "@tanstack/react-virtual";
+import type { AxiosResponse } from "axios";
+import { enqueueSnackbar } from "notistack";
 import { useApi } from "../../utils/store/api";
 import "./library.module.scss";
 
+const useWindowWidth = () => {
+	const [width, setWidth] = React.useState(window.innerWidth);
+
+	React.useEffect(() => {
+		const onResize = () => setWidth(window.innerWidth);
+
+		window.addEventListener("resize", onResize, {
+			capture: false,
+			passive: true,
+		});
+
+		return () => {
+			window.removeEventListener("resize", onResize);
+		};
+	}, []);
+
+	return width;
+};
+
 const LibraryView = () => {
 	const [api] = useApi((state) => [state.api]);
-	const [page, setPage] = useState(1);
 	const maxDisplayItems = 100;
 
 	const { id } = useParams();
@@ -221,7 +244,6 @@ const LibraryView = () => {
 			"libraryView",
 			"currentLibItems",
 			id,
-			`page: ${page}`,
 			{
 				currentViewType: currentViewType,
 				sortAscending: sortAscending,
@@ -244,41 +266,31 @@ const LibraryView = () => {
 			},
 		],
 		queryFn: async () => {
-			let result;
+			let result: AxiosResponse<BaseItemDtoQueryResult, any>;
 			if (currentViewType === "MusicArtist") {
 				result = await getArtistsApi(api).getAlbumArtists({
 					userId: user.data.Id,
 					parentId: id,
-					startIndex: maxDisplayItems * (page - 1),
-					limit: maxDisplayItems,
 				});
 			} else if (currentViewType === "Person") {
 				result = await getPersonsApi(api).getPersons({
 					userId: user.data.Id,
 					personTypes: ["Actor"],
-					startIndex: maxDisplayItems * (page - 1),
-					limit: maxDisplayItems,
 				});
 			} else if (currentViewType === "Genre") {
 				result = await getGenresApi(api).getGenres({
 					userId: user.data.Id,
 					parentId: id,
-					startIndex: maxDisplayItems * (page - 1),
-					limit: maxDisplayItems,
 				});
 			} else if (currentViewType === "MusicGenre") {
 				result = await getMusicGenresApi(api).getMusicGenres({
 					userId: user.data.Id,
 					parentId: id,
-					startIndex: maxDisplayItems * (page - 1),
-					limit: maxDisplayItems,
 				});
 			} else if (currentViewType === "Studio") {
 				result = await getStudiosApi(api).getStudios({
 					userId: user.data.Id,
 					parentId: id,
-					startIndex: maxDisplayItems * (page - 1),
-					limit: maxDisplayItems,
 				});
 			} else {
 				result = await getItemsApi(api).getItems({
@@ -301,8 +313,6 @@ const LibraryView = () => {
 					isHd: isHD || undefined,
 					is4K: is4K || undefined,
 					is3D: is3D || undefined,
-					startIndex: maxDisplayItems * (page - 1),
-					limit: maxDisplayItems,
 					enableUserData: true,
 				});
 			}
@@ -312,6 +322,27 @@ const LibraryView = () => {
 		enabled: user.isSuccess && Boolean(currentViewType) && currentLib.isSuccess,
 		networkMode: "always",
 		// gcTime: 0,
+	});
+
+	const cardSize =
+		items.data?.Items[0].Type === BaseItemKind.MusicAlbum ||
+		items.data?.Items[0].Type === BaseItemKind.Audio ||
+		items.data?.Items[0].Type === BaseItemKind.Genre ||
+		items.data?.Items[0].Type === BaseItemKind.MusicGenre ||
+		items.data?.Items[0].Type === BaseItemKind.Studio ||
+		items.data?.Items[0].Type === BaseItemKind.Playlist
+			? 260
+			: 356; // This is going to be approx height of each card in libraryView
+	const windowWidth = useWindowWidth();
+	const itemsPerRow = Math.max(1, Math.floor(windowWidth / 200));
+
+	const count = Math.ceil(
+		Number.parseInt(items.data?.TotalRecordCount) / itemsPerRow,
+	);
+	const virtualizer = useWindowVirtualizer({
+		count,
+		estimateSize: () => cardSize,
+		overscan: 7,
 	});
 
 	const disabledSortViews = [
@@ -327,13 +358,38 @@ const LibraryView = () => {
 	const [filterButtonAnchorEl, setFilterButtonAnchorEl] = useState(null);
 	const [filterMenuOpen, setFilterMenuOpen] = useState(false);
 
-	const [setAppBackdrop] = useBackdropStore((state) => [state.setBackdrop]);
+	const scrollTrigger = useScrollTrigger({
+		disableHysteresis: true,
+		threshold: 20,
+	});
+
+	const [backdropItems, setBackdropItems] = useState([]);
+	useEffect(() => {
+		// Filter all items having backdrop images for library backdrop
+		if (items.isSuccess) {
+			const backdropItemsTemp = items.data.Items?.filter(
+				(item) => item.BackdropImageTags?.length > 0,
+			);
+			setBackdropItems(backdropItemsTemp);
+		}
+	}, [items.dataUpdatedAt]);
 
 	useEffect(() => {
-		// Remove App backdrop in library page
-		setAppBackdrop("", "");
-		// console.log(items.isSuccess);
-	}, []);
+		if (backdropItems.length > 0) {
+			const intervalId = setInterval(() => {
+				const itemIndex = Math.floor(Math.random() * backdropItems?.length);
+				const backdropItem = backdropItems[itemIndex];
+				// enqueueSnackbar("Running");
+				setBackdrop(
+					api?.getItemImageUrl(backdropItem.Id, "Backdrop", {
+						tag: backdropItem.BackdropImageTags[0],
+					}),
+					backdropItem.Id,
+				);
+			}, 10000); // Update backdrop every 10s
+			return () => clearInterval(intervalId);
+		}
+	}, [backdropItems]);
 
 	if (items.isError) {
 		console.error(items.error);
@@ -358,12 +414,15 @@ const LibraryView = () => {
 				<div
 					style={{
 						padding: "1em 1em 1em 0.6em",
-						height: "4em",
-						boxShadow: "0 0px 10px 12px hsl(256, 100%, 6%)",
-						zIndex: 10,
+						height: "4.4em",
+						zIndex: "10",
 						display: "flex",
 						alignItems: "center",
 						justifyContent: "flex-start",
+						position: "absolute",
+						top: "0px",
+						left: "50%",
+						transform: "translate(-50%)",
 					}}
 				>
 					<div
@@ -393,7 +452,13 @@ const LibraryView = () => {
 					</div>
 				</div>
 				<div className="library-items">
-					<div className="library-items-header">
+					<div
+						className={
+							scrollTrigger
+								? "library-items-header glass scrolling"
+								: "library-items-header"
+						}
+					>
 						<div className="library-items-options">
 							{disabledSortViews.includes(currentViewType) ? (
 								<></>
@@ -963,7 +1028,7 @@ const LibraryView = () => {
 							</Popper>
 						</div>
 					</div>
-					{!items.isSuccess ? (
+					{items.isPending ? (
 						<Box
 							sx={{
 								position: "absolute",
@@ -1002,14 +1067,131 @@ const LibraryView = () => {
 							);
 						})
 					) : currentViewType !== BaseItemKind.Audio ? (
-						<div className="library-grid">
-							{items.data.Items.map((item) => {
+						<div
+							style={{
+								height: virtualizer.getTotalSize(),
+								width: "100%",
+								position: "relative",
+							}}
+						>
+							{virtualizer.getVirtualItems().map((virtualRow) => {
+								const index = virtualRow.index;
+								const displayItems = [];
+								const fromIndex = index * itemsPerRow;
+								const toIndex = Math.min(
+									fromIndex + itemsPerRow,
+									items.data?.TotalRecordCount,
+								);
+								for (let i = fromIndex; i < toIndex; i++) {
+									const item = items.data?.Items[i];
+									displayItems.push(
+										<div
+											className="library-virtual-item"
+											key={i}
+											data-index={virtualRow.index}
+											ref={virtualizer.measureElement}
+										>
+											<Card
+												item={item}
+												seriesId={item.SeriesId}
+												cardTitle={
+													item.Type === BaseItemKind.Episode
+														? item.SeriesName
+														: item.Name
+												}
+												imageType={"Primary"}
+												cardCaption={
+													item.Type === BaseItemKind.Episode
+														? `S${item.ParentIndexNumber}:E${item.IndexNumber} - ${item.Name}`
+														: item.Type === BaseItemKind.Series
+															? `${item.ProductionYear} - ${
+																	item.EndDate
+																		? new Date(item.EndDate).toLocaleString(
+																				[],
+																				{
+																					year: "numeric",
+																				},
+																			)
+																		: "Present"
+																}`
+															: item.ProductionYear
+												}
+												disableOverlay={
+													item.Type === BaseItemKind.Person ||
+													item.Type === BaseItemKind.Genre ||
+													item.Type === BaseItemKind.MusicGenre ||
+													item.Type === BaseItemKind.Studio
+												}
+												cardType={
+													item.Type === BaseItemKind.MusicAlbum ||
+													item.Type === BaseItemKind.Audio ||
+													item.Type === BaseItemKind.Genre ||
+													item.Type === BaseItemKind.MusicGenre ||
+													item.Type === BaseItemKind.Studio ||
+													item.Type === BaseItemKind.Playlist
+														? "square"
+														: "portrait"
+												}
+												queryKey={[
+													"libraryView",
+													"currentLibItems",
+													id,
+													{
+														currentViewType: currentViewType,
+														sortAscending: sortAscending,
+														sortBy: sortBy,
+														playbackFilters: filterArray,
+														extraFilters: {
+															hasSubtitles: hasSubtitles,
+															hasTrailer: hasTrailer,
+															hasSpecialFeature: hasSpecialFeature,
+															hasThemeSong: hasThemeSong,
+															hasThemeVideo: hasThemeVideo,
+														},
+														qualityFilters: {
+															isBluRay: isBluRay,
+															isDVD: isDVD,
+															isHD: isHD,
+															is4K: is4K,
+															is3D: is3D,
+														},
+													},
+												]}
+												userId={user.data.Id}
+												imageBlurhash={
+													!!item.ImageBlurHashes?.Primary &&
+													item.ImageBlurHashes?.Primary[
+														Object.keys(item.ImageBlurHashes.Primary)[0]
+													]
+												}
+											/>
+										</div>,
+									);
+								}
+								return (
+									<div
+										className="library-virtual-item-row"
+										key={virtualRow.key}
+										style={{
+											position: "absolute",
+											top: 0,
+											left: 0,
+											width: "100%",
+											height: virtualRow.size,
+											transform: `translateY(${virtualRow.start}px)`,
+										}}
+									>
+										{displayItems}
+									</div>
+								);
+							})}
+							{/* {items.data?.Items?.map((item) => {
 								return (
 									<motion.div
 										style={{
 											width: "100%",
 										}}
-										key={`${item.Id}${page}`}
+										key={`${item.Id}`}
 										initial={{
 											opacity: 0,
 											transform: "scale(0.9)",
@@ -1039,14 +1221,14 @@ const LibraryView = () => {
 												item.Type === BaseItemKind.Episode
 													? `S${item.ParentIndexNumber}:E${item.IndexNumber} - ${item.Name}`
 													: item.Type === BaseItemKind.Series
-													  ? `${item.ProductionYear} - ${
+														? `${item.ProductionYear} - ${
 																item.EndDate
 																	? new Date(item.EndDate).toLocaleString([], {
 																			year: "numeric",
-																	  })
+																		})
 																	: "Present"
-														  }`
-													  : item.ProductionYear
+															}`
+														: item.ProductionYear
 											}
 											disableOverlay={
 												item.Type === BaseItemKind.Person ||
@@ -1068,7 +1250,6 @@ const LibraryView = () => {
 												"libraryView",
 												"currentLibItems",
 												id,
-												`page: ${page}`,
 												{
 													currentViewType: currentViewType,
 													sortAscending: sortAscending,
@@ -1100,7 +1281,7 @@ const LibraryView = () => {
 										/>
 									</motion.div>
 								);
-							})}
+							})} */}
 						</div>
 					) : (
 						<div
@@ -1117,7 +1298,6 @@ const LibraryView = () => {
 										"libraryView",
 										"currentLibItems",
 										id,
-										`page: ${page}`,
 										{
 											currentViewType: currentViewType,
 											sortAscending: sortAscending,
@@ -1143,33 +1323,6 @@ const LibraryView = () => {
 								/>
 							))}
 						</div>
-					)}
-
-					{items.isSuccess && items.data.TotalRecordCount > maxDisplayItems && (
-						<Stack
-							alignItems="center"
-							justifyContent="center"
-							paddingTop={2}
-							direction="row"
-						>
-							<Typography variant="subtitle2" sx={{ opacity: 0.5 }}>
-								{maxDisplayItems * (page - 1)} -{" "}
-								{items.data.TotalRecordCount <= maxDisplayItems * page
-									? items.data.TotalRecordCount
-									: maxDisplayItems * page}{" "}
-								of {items.data.TotalRecordCount}
-							</Typography>
-							<Pagination
-								page={page}
-								onChange={(e, val) => {
-									setPage(val);
-								}}
-								count={Math.ceil(items.data.TotalRecordCount / maxDisplayItems)}
-								sx={{
-									width: "fit-content",
-								}}
-							/>
-						</Stack>
 					)}
 				</div>
 

@@ -4,6 +4,7 @@
 	backdrop-filter $transition-time-fast,
 	box-shadow $transition-time-default !important;
 	padding: 0.8em ($page-margin - 1.7em);
+	z-index: 999 !important;
 	.flex {
 		transition: $transition-time-fast;
 		border-radius: 1000px;
