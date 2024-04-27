@@ -14,7 +14,7 @@
 			padding: 0.5em;
 			background: rgb(0 0 0  / 0.4);
 			backdrop-filter: blur(40px);
-			box-shadow: 0 0 15px rgb(0 0 0  / 0.2);
+			box-shadow: 0 0 25px rgb(0 0 0 / 0.45);
 		}
 	}
 	&-avatar {
@@ -63,6 +63,12 @@
 }
 
 .library-drawer{
+	width: 20em;
+	margin: 1.4em;
+	height: calc(100vh - 2.8em) !important;
+	border-radius: 20px;
+	overflow-x: hidden;
+	overflow-y: auto;
 	.library-drawer-item{
 		position: relative;
 		overflow: hidden;

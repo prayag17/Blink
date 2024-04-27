@@ -305,15 +305,7 @@ export const AppBar = () => {
 					open={showDrawer}
 					PaperProps={{
 						className: "glass library-drawer",
-						style: {
-							width: "20em",
-							margin: "1.4em",
-							height: "calc(100vh - 2.8em)",
-							borderRadius: "20px",
-							overflowX: "hidden",
-							overflowY: "auto",
-							border: "1.2px solid rgb(255 255 255 / 0.2)",
-						},
+						elevation: 6,
 					}}
 					className="library-drawer"
 					onClose={() => setShowDrawer(false)}

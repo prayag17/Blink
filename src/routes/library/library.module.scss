@@ -70,11 +70,12 @@
 			z-index: 1000;
 			&.scrolling {
 				background: rgb(0 0 0 / 0.4) !important;
+				box-shadow: 0 0 25px rgb(0 0 0 / 0.45);
 				top: 1em;
 			}
 		}
 		&-options {
-			padding: 0.5em 1.2em;
+			padding: 0.5em 0.75em;
 			gap: 0.5em;
 			overflow: hidden;
 			display: flex;
