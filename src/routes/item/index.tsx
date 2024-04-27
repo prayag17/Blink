@@ -34,7 +34,7 @@ import heroBg from "../../assets/herobg.png";
 import { Card } from "../../components/card/card";
 import { CardScroller } from "../../components/cardScroller/cardScroller";
 
-import "./item.module.scss";
+import "./item.scss";
 
 import { ErrorNotice } from "../../components/notices/errorNotice/errorNotice";
 

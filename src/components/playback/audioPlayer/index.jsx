@@ -23,7 +23,7 @@ import { useAudioPlayback } from "../../../utils/store/audioPlayback";
 import useQueue, { setTrackIndex } from "../../../utils/store/queue";
 
 import { AnimatePresence } from "framer-motion";
-import "./audioPlayer.module.scss";
+import "./audioPlayer.scss";
 
 import { getUserApi } from "@jellyfin/sdk/lib/utils/api/user-api";
 import { useQuery } from "@tanstack/react-query";

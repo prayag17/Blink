@@ -8,7 +8,7 @@ export default defineConfig({
 	plugins: [react(), svgr()],
 	css: {
 		modules: {
-			scopeBehaviour: "global",
+			scopeBehaviour: "global"
 		},
 		preprocessorOptions: {
 			scss: {

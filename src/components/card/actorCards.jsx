@@ -7,7 +7,7 @@ import Typography from "@mui/material/Typography";
 
 import { Blurhash } from "react-blurhash";
 import { useApi } from "../../utils/store/api";
-import "./card.module.scss";
+import "./card.scss";
 
 /**
  * @typedef {Object} Props

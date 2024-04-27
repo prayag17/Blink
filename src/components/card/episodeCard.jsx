@@ -8,7 +8,7 @@ import Typography from "@mui/material/Typography";
 
 import { Blurhash } from "react-blurhash";
 
-import "./card.module.scss";
+import "./card.scss";
 
 import { getRuntimeCompact } from "../../utils/date/time";
 import { useApi } from "../../utils/store/api";

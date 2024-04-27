@@ -1,13 +1,5 @@
-import Box from "@mui/material/Box";
 import CircularProgress from "@mui/material/CircularProgress";
-import Link from "@mui/material/Link";
-import Paper from "@mui/material/Paper";
 import Stack from "@mui/material/Stack";
-import Table from "@mui/material/Table";
-import TableBody from "@mui/material/TableBody";
-import TableCell from "@mui/material/TableCell";
-import TableHead from "@mui/material/TableHead";
-import TableRow from "@mui/material/TableRow";
 import Typography from "@mui/material/Typography";
 import React, { useEffect } from "react";
 
@@ -17,10 +9,10 @@ import { useQuery } from "@tanstack/react-query";
 
 import { getSystemApi } from "@jellyfin/sdk/lib/utils/api/system-api";
 
-import { axiosClient, useApi } from "../../utils/store/api";
+import { useApi } from "../../utils/store/api";
 import { useBackdropStore } from "../../utils/store/backdrop";
 import { useCentralStore } from "../../utils/store/central";
-import "./about.module.scss";
+import "./about.scss";
 
 const About = () => {
 	const [api] = useApi((state) => [state.api]);

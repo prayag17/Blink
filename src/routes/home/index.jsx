@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 
 import { useQuery } from "@tanstack/react-query";
 
-import "./home.module.scss";
+import "./home.scss";
 
 import Carousel from "../../components/carousel";
 

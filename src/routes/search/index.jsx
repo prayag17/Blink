@@ -21,7 +21,7 @@ import { Card } from "../../components/card/card";
 import { EpisodeCard } from "../../components/card/episodeCard";
 import { CardScroller } from "../../components/cardScroller/cardScroller";
 import { useApi } from "../../utils/store/api";
-import "./search.module.scss";
+import "./search.scss";
 
 const SearchPage = () => {
 	const [api] = useApi((state) => [state.api]);

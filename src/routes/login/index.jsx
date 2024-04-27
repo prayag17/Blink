@@ -41,7 +41,7 @@ import { getUserApi } from "@jellyfin/sdk/lib/utils/api/user-api";
 
 import { ErrorNotice } from "../../components/notices/errorNotice/errorNotice.jsx";
 import { createApi, useApi } from "../../utils/store/api";
-import "./login.module.scss";
+import "./login.scss";
 
 import { blue } from "@mui/material/colors";
 import { setBackdrop } from "../../utils/store/backdrop.js";

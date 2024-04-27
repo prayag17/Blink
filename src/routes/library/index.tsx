@@ -51,7 +51,7 @@ import { useVirtualizer, useWindowVirtualizer } from "@tanstack/react-virtual";
 import type { AxiosResponse } from "axios";
 import { enqueueSnackbar } from "notistack";
 import { useApi } from "../../utils/store/api";
-import "./library.module.scss";
+import "./library.scss";
 
 const useWindowWidth = () => {
 	const [width, setWidth] = React.useState(window.innerWidth);

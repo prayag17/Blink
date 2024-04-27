@@ -9,7 +9,7 @@ import ButtonGroup from "@mui/material/ButtonGroup";
 import IconButton from "@mui/material/IconButton";
 import Typography from "@mui/material/Typography";
 
-import "./cardScroller.module.scss";
+import "./cardScroller.scss";
 
 export const CardScroller = ({
 	children,

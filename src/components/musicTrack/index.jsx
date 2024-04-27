@@ -6,7 +6,7 @@ import { useAudioPlayback } from "../../utils/store/audioPlayback";
 import LikeButton from "../buttons/likeButton";
 import PlayButton from "../buttons/playButton";
 import TextLink from "../textLink";
-import "./musicTrack.module.scss";
+import "./musicTrack.scss";
 
 /**
  * @typedef {Object} Props

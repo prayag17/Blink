@@ -34,7 +34,7 @@ import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { delServer } from "../../utils/storage/servers";
 import { delUser } from "../../utils/storage/user";
 import { useDrawerStore } from "../../utils/store/drawer";
-import "./appBar.module.scss";
+import "./appBar.scss";
 
 import { EventEmitter as event } from "../../eventEmitter";
 import { useApi } from "../../utils/store/api";

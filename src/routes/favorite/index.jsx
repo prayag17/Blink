@@ -4,7 +4,7 @@ import { useBackdropStore } from "../../utils/store/backdrop";
 
 import Typography from "@mui/material/Typography";
 import { useQuery } from "@tanstack/react-query";
-import "./favorite.module.scss";
+import "./favorite.scss";
 
 import { BaseItemKind } from "@jellyfin/sdk/lib/generated-client";
 import { getItemsApi } from "@jellyfin/sdk/lib/utils/api/items-api";

@@ -1,7 +1,7 @@
 import Typography from "@mui/material/Typography";
 import { useNavigate } from "react-router-dom";
 
-import "./textLink.module.scss";
+import "./textLink.scss";
 
 const TextLink = ({ children, location, variant, otherProps }) => {
 	const navigate = useNavigate();

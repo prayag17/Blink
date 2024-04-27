@@ -24,7 +24,7 @@ import { getMediaInfoApi } from "@jellyfin/sdk/lib/utils/api/media-info-api";
 import { getPlaystateApi } from "@jellyfin/sdk/lib/utils/api/playstate-api";
 import { getTvShowsApi } from "@jellyfin/sdk/lib/utils/api/tv-shows-api";
 
-import "./videoPlayer.module.scss";
+import "./videoPlayer.scss";
 
 import { endsAt } from "../../utils/date/time";
 

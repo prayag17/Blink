@@ -21,7 +21,7 @@ import {
 import { delUser } from "../../../utils/storage/user";
 import { createApi, useApi } from "../../../utils/store/api";
 import { setBackdrop } from "../../../utils/store/backdrop";
-import "./serverList.module.scss";
+import "./serverList.scss";
 
 const ServerList = () => {
 	const navigate = useNavigate();

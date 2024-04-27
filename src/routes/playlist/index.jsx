@@ -22,7 +22,7 @@ import MusicTrack from "../../components/musicTrack";
 import { ErrorNotice } from "../../components/notices/errorNotice/errorNotice";
 import { useApi } from "../../utils/store/api";
 import { useBackdropStore } from "../../utils/store/backdrop";
-import "./playlist.module.scss";
+import "./playlist.scss";
 function TabPanel(props) {
 	const { children, value, index, ...other } = props;
 

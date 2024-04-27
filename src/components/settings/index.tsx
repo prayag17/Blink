@@ -32,7 +32,7 @@ import { getSystemApi } from "@jellyfin/sdk/lib/utils/api/system-api";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { createApi, useApi } from "../../utils/store/api";
 import { useCentralStore } from "../../utils/store/central";
-import "./settings.module.scss";
+import "./settings.scss";
 
 import type { RecommendedServerInfo } from "@jellyfin/sdk";
 import { LoadingButton } from "@mui/lab";

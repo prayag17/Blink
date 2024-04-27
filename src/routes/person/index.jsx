@@ -34,7 +34,7 @@ import { setBackdrop } from "../../utils/store/backdrop";
 
 import meshBg from "../../assets/herobg.png";
 import ShowMoreText from "../../components/showMoreText";
-import "./person.module.scss";
+import "./person.scss";
 
 import IconLink from "../../components/iconLink";
 

@@ -45,7 +45,7 @@ import { getTypeIcon } from "../../components/utils/iconsCollection";
 import { endsAt, getRuntime } from "../../utils/date/time";
 import { useApi } from "../../utils/store/api";
 import { useBackdropStore } from "../../utils/store/backdrop";
-import "./episode.module.scss";
+import "./episode.scss";
 
 import ultraHdIcon from "../../assets/icons/4k.svg";
 import dolbyAtmosIcon from "../../assets/icons/dolby-atmos.svg";

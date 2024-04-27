@@ -45,7 +45,7 @@ import { getTypeIcon } from "../../components/utils/iconsCollection";
 import { useApi } from "../../utils/store/api";
 import { useAudioPlayback } from "../../utils/store/audioPlayback";
 import { useBackdropStore } from "../../utils/store/backdrop";
-import "./album.module.scss";
+import "./album.scss";
 
 import IconLink from "../../components/iconLink";
 

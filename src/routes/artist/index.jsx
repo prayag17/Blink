@@ -35,7 +35,7 @@ import { ErrorNotice } from "../../components/notices/errorNotice/errorNotice";
 import ShowMoreText from "../../components/showMoreText";
 import { useApi } from "../../utils/store/api";
 import { setBackdrop, useBackdropStore } from "../../utils/store/backdrop";
-import "./artist.module.scss";
+import "./artist.scss";
 
 import IconLink from "../../components/iconLink";
 import { getTypeIcon } from "../../components/utils/iconsCollection";

@@ -39,7 +39,7 @@ import MarkPlayedButton from "../../components/buttons/markPlayedButton";
 import PlayButton from "../../components/buttons/playButton";
 
 import heroBg from "../../assets/herobg.png";
-import "./boxset.module.scss";
+import "./boxset.scss";
 
 import IconLink from "../../components/iconLink";
 

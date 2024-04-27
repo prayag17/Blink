@@ -42,7 +42,7 @@ import { EpisodeCard } from "../../components/card/episodeCard";
 import { CardScroller } from "../../components/cardScroller/cardScroller";
 
 import { ErrorNotice } from "../../components/notices/errorNotice/errorNotice";
-import "./series.module.scss";
+import "./series.scss";
 
 import { Link } from "react-router-dom";
 import { NavLink } from "react-router-dom";

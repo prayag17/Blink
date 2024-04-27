@@ -20,7 +20,7 @@ import { Card } from "../../card/card";
 
 import { Blurhash } from "react-blurhash";
 import TextLink from "../../textLink";
-import "./hero.module.scss";
+import "./hero.scss";
 
 import { ErrorBoundary } from "react-error-boundary";
 import { useApi } from "../../../utils/store/api";

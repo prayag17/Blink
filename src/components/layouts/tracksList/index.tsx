@@ -2,13 +2,13 @@ import Typography from "@mui/material/Typography";
 import React from "react";
 
 // Types
-import { BaseItemDto, UserDto } from "@jellyfin/sdk/lib/generated-client";
+import type { BaseItemDto, UserDto } from "@jellyfin/sdk/lib/generated-client";
 
 import { getRuntimeMusic } from "../../../utils/date/time";
 import { useApi } from "../../../utils/store/api";
 import { useAudioPlayback } from "../../../utils/store/audioPlayback";
 import LikeButton from "../../buttons/likeButton";
-import "./tracksList.module.scss";
+import "./tracksList.scss";
 
 export default function TracksList({
 	tracks,

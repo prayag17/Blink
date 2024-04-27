@@ -18,7 +18,7 @@ import MarkPlayedButton from "../buttons/markPlayedButton";
 import PlayButton from "../buttons/playButton";
 import ErrorBoundary from "../errorBoundary";
 import { getTypeIcon } from "../utils/iconsCollection";
-import "./card.module.scss";
+import "./card.scss";
 
 const cardImageAspectRatios = {
 	thumb: 1.777,

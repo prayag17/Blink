@@ -18,7 +18,7 @@ import { yellow } from "@mui/material/colors";
 import { useMutation } from "@tanstack/react-query";
 import { createApi, useApi } from "../../../utils/store/api";
 // SCSS
-import "./server.module.scss";
+import "./server.scss";
 
 export const ServerSetup = () => {
 	const [jellyfin] = useApi((state) => [state.jellyfin]);
