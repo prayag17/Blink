@@ -260,6 +260,12 @@ function AppReady() {
 
 	useEffect(() => window.scrollTo(0, 0), [location.key]);
 
+	// Reset BakcdropImageLoading for every new image
+	useEffect(() => {
+		setBackdropLoading(true);
+		console.debug("Image loading");
+	}, [backdropId]);
+
 	useLayoutEffect(() => {
 		async function checkForUpdates() {
 			try {
@@ -407,7 +413,7 @@ function AppReady() {
 				<div className="app-backdrop-container">
 					<AnimatePresence>
 						<motion.img
-							key={`${backdropId}${backdropLoading}`}
+							key={backdropId}
 							src={backdropUrl}
 							alt=""
 							className="app-backdrop"
@@ -421,19 +427,12 @@ function AppReady() {
 								opacity: 0,
 							}}
 							transition={{
-								duration: 1.2,
-								ease: "easeInOut",
+								opacity: {
+									duration: 1.2,
+								},
 							}}
-							onLoadCapture={() => {
-								setBackdropLoading(true);
-							}}
-							onLoad={() => {
-								setBackdropLoading(false);
-							}}
+							onLoad={() => setBackdropLoading(false)}
 							loading="lazy"
-							style={{
-								transition: "opacity 1.2s",
-							}}
 						/>
 					</AnimatePresence>
 				</div>

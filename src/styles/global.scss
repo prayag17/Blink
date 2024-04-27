@@ -46,6 +46,7 @@ body {
 }
 
 .app-backdrop {
+	transition: 1.2s;
 	object-fit: cover;
 	width: calc(100% + 160px);
 	height: calc(100% + 160px);

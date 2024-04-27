@@ -360,7 +360,7 @@ const LibraryView = () => {
 
 	const scrollTrigger = useScrollTrigger({
 		disableHysteresis: true,
-		threshold: 20,
+		threshold: 0,
 	});
 
 	const [backdropItems, setBackdropItems] = useState([]);
@@ -372,7 +372,7 @@ const LibraryView = () => {
 			);
 			setBackdropItems(backdropItemsTemp);
 		}
-	}, [items.dataUpdatedAt]);
+	}, [items.isSuccess]);
 
 	useEffect(() => {
 		if (backdropItems.length > 0) {
