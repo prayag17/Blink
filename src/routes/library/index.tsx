@@ -360,7 +360,7 @@ const LibraryView = () => {
 
 	const scrollTrigger = useScrollTrigger({
 		disableHysteresis: true,
-		threshold: 50,
+		threshold: 20,
 	});
 
 	const [backdropItems, setBackdropItems] = useState([]);
