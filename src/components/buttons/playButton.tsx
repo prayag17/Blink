@@ -155,6 +155,7 @@ const PlayButton = ({
 							fields: [ItemFields.MediaSources, ItemFields.MediaStreams],
 							enableUserData: true,
 							userId: userId,
+							startItemId: item.Id,
 						});
 						mediaSource = await getMediaInfoApi(api).getPostedPlaybackInfo({
 							audioStreamIndex: currentAudioTrack,
