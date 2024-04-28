@@ -4,8 +4,6 @@ import Typography from "@mui/material/Typography";
 import Grid from "@mui/material/Unstable_Grid2";
 import EpisodeSkeleton from "./episode";
 
-import { borderRadiusDefault } from "../../palette.module.scss";
-
 export const SeasonSelectorSkeleton = () => {
 	return (
 		<Grid

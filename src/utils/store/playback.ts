@@ -120,6 +120,7 @@ type PlaybackStore = {
 	startPosition: number;
 	itemDuration: number;
 	item: BaseItemDto | null;
+	playsessionId: string | undefined | null;
 };
 
 export const usePlaybackStore = create<PlaybackStore>(() => ({
@@ -131,7 +132,7 @@ export const usePlaybackStore = create<PlaybackStore>(() => ({
 		subtitleTrack: 0,
 		container: "",
 		availableSubtitleTracks: [],
-		id: undefined
+		id: undefined,
 	},
 	enableSubtitle: true,
 	hlsStream: "",
@@ -139,6 +140,7 @@ export const usePlaybackStore = create<PlaybackStore>(() => ({
 	startPosition: 0,
 	itemDuration: 0,
 	item: null,
+	playsessionId: "",
 }));
 
 export const playItem = (
@@ -157,7 +159,8 @@ export const playItem = (
 	queue,
 	queueItemIndex,
 	availableSubtitleTracks,
-	mediaSourceId
+	mediaSourceId,
+	playsessionId,
 ) => {
 	console.log({
 		itemName,
@@ -176,6 +179,7 @@ export const playItem = (
 		startPosition,
 		itemDuration,
 		item,
+		playsessionId,
 	});
 	usePlaybackStore.setState({
 		itemName,
@@ -194,6 +198,7 @@ export const playItem = (
 		startPosition,
 		itemDuration,
 		item,
+		playsessionId,
 	});
 	setQueue(queue, queueItemIndex);
 };

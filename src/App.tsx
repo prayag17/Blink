@@ -98,7 +98,10 @@ import AudioPlayer from "./components/playback/audioPlayer/index.jsx";
 import { useAudioPlayback } from "./utils/store/audioPlayback.js";
 import { useBackdropStore } from "./utils/store/backdrop.js";
 import { setInitialRoute, useCentralStore } from "./utils/store/central.js";
-import { usePlaybackDataLoadStore } from "./utils/store/playback";
+import {
+	usePlaybackDataLoadStore,
+	usePlaybackStore,
+} from "./utils/store/playback";
 
 // 3rd Party
 import { getUserApi } from "@jellyfin/sdk/lib/utils/api/user-api";
@@ -260,10 +263,11 @@ function AppReady() {
 
 	useEffect(() => window.scrollTo(0, 0), [location.key]);
 
+	const [videoPlaybackItem] = usePlaybackStore((state) => [state.item]);
+
 	// Reset BakcdropImageLoading for every new image
 	useEffect(() => {
 		setBackdropLoading(true);
-		console.debug("Image loading");
 	}, [backdropId]);
 
 	useLayoutEffect(() => {
@@ -513,7 +517,11 @@ function AppReady() {
 							<Route path="/search" element={<SearchPage />} />
 							<Route path="/favorite" element={<FavoritePage />} />
 							<Route path="/about" element={<About />} />
-							<Route path="/player" element={<VideoPlayer />} />
+							<Route
+								path="/player"
+								element={<VideoPlayer />}
+								key={videoPlaybackItem?.Id ?? "noplayback"}
+							/>
 						</Routes>
 					</ErrorBoundary>
 				</div>

@@ -5,8 +5,6 @@ import Skeleton from "@mui/material/Skeleton";
 import Typography from "@mui/material/Typography";
 import Grid from "@mui/material/Unstable_Grid2";
 
-import { borderRadiusDefault } from "../../palette.module.scss";
-
 export const EpisodeCardsSkeleton = () => {
 	return (
 		<Grid
@@ -30,7 +28,7 @@ export const EpisodeCardsSkeleton = () => {
 										aspectRatio: "1.777",
 										height: "auto",
 										m: 1,
-										borderRadius: borderRadiusDefault,
+										borderRadius: "8px",
 									}}
 								/>
 							</CardMedia>

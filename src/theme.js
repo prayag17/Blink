@@ -5,7 +5,7 @@ import {
 	clrBackgroundDefault,
 	clrBackgroundLight,
 	clrSecondaryDefault,
-} from "./palette.scss";
+} from "./palette.module.scss";
 const { palette } = createTheme({});
 const { augmentColor } = palette;
 export const theme = createTheme({

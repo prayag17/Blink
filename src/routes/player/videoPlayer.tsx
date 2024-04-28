@@ -1,5 +1,5 @@
 import { appWindow } from "@tauri-apps/api/window";
-import React from "react";
+import React, { useLayoutEffect } from "react";
 
 import Backdrop from "@mui/material/Backdrop";
 import Box from "@mui/material/Box";
@@ -43,6 +43,7 @@ import workerUrl from "jassub/dist/jassub-worker.js?url";
 import wasmUrl from "jassub/dist/jassub-worker.wasm?url";
 
 import { getUserApi } from "@jellyfin/sdk/lib/utils/api/user-api";
+import QueueButton from "src/components/buttons/queueButton";
 import subtitleFont from "./Noto-Sans-Indosphere.ttf";
 
 // export const VideoPlayer = () => {
@@ -915,6 +916,7 @@ const VideoPlayer = () => {
 		episodeTitle,
 		mediaSource,
 		enableSubtitle,
+		playsessionId,
 	] = usePlaybackStore((state) => [
 		state.hlsStream,
 		state.item,
@@ -924,27 +926,8 @@ const VideoPlayer = () => {
 		state.episodeTitle,
 		state.mediaSource,
 		state.enableSubtitle,
+		state.playsessionId,
 	]);
-
-	const user = useQuery({
-		queryKey: ['user'],
-		queryFn: async () => {
-			const result = await getUserApi(api).getCurrentUser();
-			return result.data;
-		}
-	})
-
-	const mediaInfo = useQuery({
-		queryKey: ['videoPlayer', 'mediaInfo'],
-		queryFn: async () =>  {
-			const result = await getMediaInfoApi(api).getPlaybackInfo({
-			itemId: item?.Id,
-			userId: user.data?.Id
-			}); 
-			return result.data
-		},
-		enabled: user.isSuccess
-	})
 
 	const [loading, setLoading] = useState(true);
 	const [settingsMenu, setSettingsMenu] = useState(null);
@@ -974,15 +957,15 @@ const VideoPlayer = () => {
 			if (selectedSubtitle !== "nosub") {
 				const font = await fetch(subtitleFont).then((r) => r.arrayBuffer());
 				const uint8 = new Uint8Array(font);
-				const subtitleRendererRaw = new JASSUB({
-					video: player.current.getInternalPlayer(),
-					subUrl: `${api.basePath}/Videos/${item.Id}/${item.Id}/Subtitles/${mediaSource.subtitleTrack}/Stream.ass?api_key=${api.accessToken}`,
-					workerUrl,
-					wasmUrl,
-					availableFonts: { "noto sans": uint8 },
-					fallbackFont: "Noto Sans",
-				});
-				setSubtitleRenderer(subtitleRendererRaw);
+				// const subtitleRendererRaw = new JASSUB({
+				// 	video: player.current.getInternalPlayer(),
+				// 	subUrl: `${api.basePath}/Videos/${item.Id}/${item.Id}/Subtitles/${mediaSource.subtitleTrack}/Stream.ass?api_key=${api.accessToken}`,
+				// 	workerUrl,
+				// 	wasmUrl,
+				// 	availableFonts: { "noto sans": uint8 },
+				// 	fallbackFont: "Noto Sans",
+				// });
+				// setSubtitleRenderer(subtitleRendererRaw);
 			}
 
 			player.current.seekTo(ticksToSec(startPosition), "seconds");
@@ -999,7 +982,7 @@ const VideoPlayer = () => {
 					ItemId: item?.Id,
 					MediaSourceId: mediaSource.id,
 					PlayMethod: PlayMethod.DirectPlay,
-					PlaySessionId: mediaInfo.data?.PlaySessionId,
+					PlaySessionId: playsessionId,
 					PlaybackStartTimeTicks: startPosition,
 					PositionTicks: startPosition,
 					RepeatMode: RepeatMode.RepeatNone,
@@ -1014,7 +997,7 @@ const VideoPlayer = () => {
 	const handleProgress = async (event) => {
 		setProgress(secToTicks(event.playedSeconds));
 
-		// Report Jellyfin server: Playback progress  
+		// Report Jellyfin server: Playback progress
 		await getPlaystateApi(api).reportPlaybackProgress({
 			playbackProgressInfo: {
 				AudioStreamIndex: mediaSource.audioTrack,
@@ -1024,13 +1007,13 @@ const VideoPlayer = () => {
 				ItemId: item?.Id,
 				MediaSourceId: mediaSource.id,
 				PlayMethod: PlayMethod.DirectPlay,
-				PlaySessionId: mediaInfo.data?.PlaySessionId,
+				PlaySessionId: playsessionId,
 				PlaybackStartTimeTicks: startPosition,
 				PositionTicks: progress,
 				RepeatMode: RepeatMode.RepeatNone,
 				VolumeLevel: volume * 100,
-			}
-		})
+			},
+		});
 	};
 
 	const handleExitPlayer = async () => {
@@ -1039,7 +1022,7 @@ const VideoPlayer = () => {
 			subtitleRenderer.destroy();
 		}
 		navigate(-1);
-		// Report Jellyfin server: Playback has ended/stopped 
+		// Report Jellyfin server: Playback has ended/stopped
 		await getPlaystateApi(api).reportPlaybackStopped({
 			playbackStopInfo: {
 				Failed: false,
@@ -1047,11 +1030,11 @@ const VideoPlayer = () => {
 				ItemId: item?.Id,
 				MediaSourceId: mediaSource.id,
 				PlayMethod: PlayMethod.DirectPlay,
-				PlaySessionId: mediaInfo.data?.PlaySessionId,
+				PlaySessionId: playsessionId,
 				PlaybackStartTimeTicks: startPosition,
 				PositionTicks: progress,
-			}
-		})
+			},
+		});
 		usePlaybackStore.setState(usePlaybackStore.getInitialState());
 	};
 
@@ -1150,6 +1133,10 @@ const VideoPlayer = () => {
 		}
 	}, [showSubtitles, selectedSubtitle]);
 
+	useLayoutEffect(() => {
+		setPlaying(true);
+	}, [item.Id]);
+
 	return (
 		<div className="video-player">
 			<AnimatePresence>
@@ -1162,21 +1149,17 @@ const VideoPlayer = () => {
 						exit={{ opacity: 0 }}
 						style={{
 							zIndex: 2,
-							position: "relative",
+							position: "absolute",
 							height: "100vh",
 							width: "100vw",
+							top: 0,
+							left: 0,
+							display: "flex",
+							justifyContent: "center",
+							alignItems: "center",
 						}}
 					>
-						<CircularProgress
-							size={72}
-							thickness={1.4}
-							style={{
-								position: "absolute",
-								top: "50%",
-								left: "50%",
-								transform: "translate(-50%,-50%)",
-							}}
-						/>
+						<CircularProgress size={72} thickness={1.4} />
 					</motion.div>
 				)}
 			</AnimatePresence>
@@ -1391,6 +1374,7 @@ const VideoPlayer = () => {
 												: "volume_up"}
 									</span>
 								</IconButton>
+								<QueueButton />
 								<IconButton onClick={() => setShowSubtitles((state) => !state)}>
 									<span className={"material-symbols-rounded"}>
 										{showSubtitles

@@ -149,10 +149,30 @@ const PlayButton = ({
 				});
 			} else {
 				switch (itemType) {
+					case BaseItemKind.Episode:
+						result = await getTvShowsApi(api).getEpisodes({
+							seriesId: item.SeriesId,
+							fields: [ItemFields.MediaSources, ItemFields.MediaStreams],
+							enableUserData: true,
+							userId: userId,
+						});
+						mediaSource = await getMediaInfoApi(api).getPostedPlaybackInfo({
+							audioStreamIndex: currentAudioTrack,
+							subtitleStreamIndex:
+								currentSubTrack === "nosub" ? -1 : currentSubTrack,
+							itemId: result.data.Items[0].Id,
+							startTimeTicks:
+								result.data.Items[0].UserData?.PlaybackPositionTicks,
+							userId: userId,
+							mediaSourceId: result.data.Items[0].MediaSources[0].Id,
+							playbackInfoDto: {
+								DeviceProfile: playbackProfile,
+							},
+						});
+						break;
 					case BaseItemKind.Series:
 						result = await getTvShowsApi(api).getEpisodes({
 							seriesId: itemId,
-							limit: 1,
 							fields: [ItemFields.MediaSources, ItemFields.MediaStreams],
 							enableUserData: true,
 							userId: userId,
@@ -219,9 +239,10 @@ const PlayButton = ({
 							subtitleStreamIndex:
 								currentSubTrack === "nosub" ? -1 : currentSubTrack,
 							itemId: itemId,
-							startTimeTicks: item.UserData.PlaybackPositionTicks,
+							startTimeTicks:
+								result.data.Items[0].UserData.PlaybackPositionTicks,
 							userId: userId,
-							mediaSourceId: item.MediaSources[0].Id,
+							mediaSourceId: result.data.Items[0].MediaSources[0].Id,
 							playbackInfoDto: {
 								DeviceProfile: playbackProfile,
 							},
@@ -264,8 +285,6 @@ const PlayButton = ({
 					} ${result?.item.Items[0].Name}`;
 				}
 
-				console.log(result);
-
 				// Select correct subtitle track, this is useful if item is played with playbutton from card since that does not provide coorect default subtitle track index.
 				let selectedSubtitleTrack: number | "nosub" | undefined =
 					currentSubTrack;
@@ -285,7 +304,7 @@ const PlayButton = ({
 
 				const urlOptions = {
 					Static: true,
-					tag: result?.mediaSource.MediaSources[0].Etag,
+					tag: result?.mediaSource.MediaSources[0].ETag,
 					mediaSourceId: result?.mediaSource.MediaSources[0].Id,
 					deviceId: api?.deviceInfo.id,
 					api_key: api?.accessToken,
@@ -320,6 +339,7 @@ const PlayButton = ({
 					0,
 					subtitles,
 					result?.mediaSource.MediaSources[0].Id,
+					result?.mediaSource.PlaySessionId,
 				);
 				navigate("/player");
 			}
