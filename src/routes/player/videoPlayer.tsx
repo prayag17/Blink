@@ -38,7 +38,7 @@ import { useApi } from "../../utils/store/api";
 import { setBackdrop } from "../../utils/store/backdrop";
 
 import { FormControl, TextField } from "@mui/material";
-import JASSUB from "jassub";
+import type JASSUB from "jassub";
 import workerUrl from "jassub/dist/jassub-worker.js?url";
 import wasmUrl from "jassub/dist/jassub-worker.wasm?url";
 
@@ -1121,22 +1121,23 @@ const VideoPlayer = () => {
 			selectedSubtitle !== "nosub" &&
 			showSubtitles
 		) {
-			fetchFonts().then((uint8) => {
-				const subtitleRendererRaw = new JASSUB({
-					video: player.current.getInternalPlayer(),
-					subUrl: `${api.basePath}/Videos/${item?.Id}/${item?.Id}/Subtitles/${selectedSubtitle}/Stream.ass?api_key=${api.accessToken}`,
-					workerUrl,
-					wasmUrl,
-					availableFonts: { "noto sans": uint8 },
-					fallbackFont: "Noto Sans",
-				});
-				setSubtitleRenderer(subtitleRendererRaw);
-			});
+			// fetchFonts().then((uint8) => {
+			// 	const subtitleRendererRaw = new JASSUB({
+			// 		video: player.current.getInternalPlayer(),
+			// 		subUrl: `${api.basePath}/Videos/${item?.Id}/${item?.Id}/Subtitles/${selectedSubtitle}/Stream.ass?api_key=${api.accessToken}`,
+			// 		workerUrl,
+			// 		wasmUrl,
+			// 		availableFonts: { "noto sans": uint8 },
+			// 		fallbackFont: "Noto Sans",
+			// 	});
+			// 	setSubtitleRenderer(subtitleRendererRaw);
+			// });
 		}
 	}, [showSubtitles, selectedSubtitle]);
 
 	useLayoutEffect(() => {
 		setPlaying(true);
+		console.log(progress);
 	}, [item?.Id]);
 
 	return (

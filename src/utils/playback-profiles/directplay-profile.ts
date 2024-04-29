@@ -6,12 +6,12 @@ import {
   type DirectPlayProfile,
   DlnaProfileType
 } from '@jellyfin/sdk/lib/generated-client';
-import { getSupportedMP4VideoCodecs } from './helpers/mp4-video-formats';
-import { getSupportedMP4AudioCodecs } from './helpers/mp4-audio-formats';
+import { getSupportedAudioCodecs } from "./helpers/audio-formats";
+import { getSupportedMP4AudioCodecs } from "./helpers/mp4-audio-formats";
+import { getSupportedMP4VideoCodecs } from "./helpers/mp4-video-formats";
 import { hasMkvSupport } from './helpers/transcoding-formats';
 import { getSupportedWebMAudioCodecs } from './helpers/webm-audio-formats';
-import { getSupportedWebMVideoCodecs } from './helpers/webm-video-formats';
-import { getSupportedAudioCodecs } from './helpers/audio-formats';
+import { getSupportedWebMVideoCodecs } from "./helpers/webm-video-formats";
 
 /**
  * Returns a valid DirectPlayProfile for the current platform.
@@ -58,18 +58,19 @@ export function getDirectPlayProfiles(
   }
 
   const supportedAudio = [
-    'opus',
-    'mp3',
-    'mp2',
-    'aac',
-    'flac',
-    'alac',
-    'webma',
-    'wma',
-    'wav',
-    'ogg',
-    'oga'
-  ];
+			"opus",
+			"mp3",
+			"mp2",
+			"aac",
+			"flac",
+			"alac",
+			"webma",
+			"wma",
+			"wav",
+			"ogg",
+			"oga",
+			"eac3",
+		];
 
   for (const audioFormat of supportedAudio.filter(format =>
     getSupportedAudioCodecs(format)
