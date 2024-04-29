@@ -129,8 +129,6 @@ const Settings = () => {
 	const handleDelete = useMutation({
 		mutationKey: ["server-delete"],
 		mutationFn: async (server: RecommendedServerInfo) => {
-			const ab = server.id === defaultServer.data;
-			enqueueSnackbar(`${ab}`);
 			await delServer(server.id);
 
 			if (server.id === defaultServer.data) {

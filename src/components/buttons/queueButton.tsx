@@ -91,7 +91,6 @@ const QueueButton = () => {
 						return (
 							<MenuItem
 								className="queue-item"
-								key={item.Id}
 								disabled={index === currentItemIndex}
 								onClick={() => handlePlay.mutate({ index })}
 								key={virtualItem.key}
@@ -109,7 +108,7 @@ const QueueButton = () => {
 										: `S${item.ParentIndexNumber}:E${item.IndexNumber}`}
 								</Typography>
 								<div className="queue-item-image-container">
-									{item.ImageTags.Primary ? (
+									{item.ImageTags?.Primary ? (
 										<img
 											className="queue-item-image"
 											src={api?.getItemImageUrl(item?.Id, "Primary", {
