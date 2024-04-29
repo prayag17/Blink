@@ -103,22 +103,18 @@ const Settings = () => {
 	const queryClient = useQueryClient();
 
 	const [updating, setUpdating] = useState(false);
-	const [serverState, setServerState] = useState();
-	const [ask, setAsk] = useState(false);
-	const [action, setAction] = useState(null);
 	const [addServerDialog, setAddServerDialog] = useState(false);
 	const [serverIp, setServerIp] = useState("");
 
 	const handleServerChange = useMutation({
-		mutationFn: async () => {
+		mutationFn: async (server: RecommendedServerInfo) => {
 			await delUser();
-			await setDefaultServer(serverState.id);
+			await setDefaultServer(server.id);
 			await defaultServer.refetch();
-			createApi(serverState.address, null);
+			createApi(server.address, undefined);
 			queryClient.removeQueries();
 		},
 		onSuccess: async () => {
-			setAsk(false);
 			setSettingsDialogOpen(false);
 			navigate("/login/index");
 		},
@@ -130,29 +126,33 @@ const Settings = () => {
 		},
 	});
 
-	const handleDelete = async (server: RecommendedServerInfo) => {
-		await delServer(server.id);
+	const handleDelete = useMutation({
+		mutationKey: ["server-delete"],
+		mutationFn: async (server: RecommendedServerInfo) => {
+			const ab = server.id === defaultServer.data;
+			enqueueSnackbar(`${ab}`);
+			await delServer(server.id);
 
-		if (server.id === defaultServer.data) {
-			await delUser();
-			await serversOnDisk.refetch();
+			if (server.id === defaultServer.data) {
+				await delUser();
+				await serversOnDisk.refetch();
 
-			if (serversOnDisk.data.length > 0) {
-				setDefaultServer(serversOnDisk.data[0].id);
-				createApi(serversOnDisk.data[0].address, null);
-			} else {
-				// Reset Api as no server is present on disk
-				useApi.setState(useApi.getInitialState());
+				if (serversOnDisk.data.length > 0) {
+					setDefaultServer(serversOnDisk.data[0].id);
+					createApi(serversOnDisk.data[0].address, null);
+				} else {
+					// Reset Api as no server is present on disk
+					useApi.setState(useApi.getInitialState());
+				}
+				setSettingsDialogOpen(false);
+				await queryClient.removeQueries();
+				navigate("/");
 			}
-			setSettingsDialogOpen(false);
-			queryClient.removeQueries();
-			navigate("/");
-		}
-		enqueueSnackbar("Server deleted successfully!", { variant: "success" });
-		setAsk(false);
-		await serversOnDisk.refetch();
-		await defaultServer.refetch();
-	};
+			enqueueSnackbar("Server deleted successfully!", { variant: "success" });
+			await serversOnDisk.refetch();
+			await defaultServer.refetch();
+		},
+	});
 
 	const addServer = useMutation({
 		mutationFn: async () => {
@@ -579,9 +579,7 @@ const Settings = () => {
 														fontSize: "1.64em",
 													}}
 													onClick={() => {
-														setAsk(true);
-														setAction("change-server");
-														setServerState(server);
+														handleServerChange.mutate(server);
 													}}
 													disabled={handleServerChange.isPending}
 												>
@@ -595,9 +593,7 @@ const Settings = () => {
 													}}
 													disabled={handleServerChange.isPending}
 													onClick={() => {
-														setAsk(true);
-														setAction("delete-server");
-														setServerState(server);
+														handleDelete.mutate(server);
 													}}
 												>
 													<div className="material-symbols-rounded">
@@ -780,44 +776,6 @@ const Settings = () => {
 					)}
 				</motion.div>
 			</AnimatePresence>
-			{/* Show dialog before deleting or changing server */}
-			<Dialog open={ask} fullWidth maxWidth="xs">
-				<DialogTitle>Are you sure?</DialogTitle>
-				<DialogActions
-					style={{
-						alignItems: "center",
-						justifyContent: "center",
-						padding: "1em",
-						gap: "1em",
-					}}
-				>
-					<Button
-						variant="contained"
-						color="error"
-						fullWidth
-						onClick={() => setAsk(false)}
-					>
-						No
-					</Button>
-					<Button
-						variant="contained"
-						color="success"
-						fullWidth
-						style={{
-							margin: 0,
-						}}
-						onClick={() => {
-							if (action === "change-server") {
-								handleServerChange.mutate();
-							} else if (action === "delete-server") {
-								handleDelete(serverState);
-							}
-						}}
-					>
-						yes
-					</Button>
-				</DialogActions>
-			</Dialog>
 
 			{/* Add Server */}
 			<Dialog open={addServerDialog} fullWidth>
