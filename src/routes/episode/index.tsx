@@ -423,11 +423,14 @@ const EpisodeTitlePage = () => {
 							otherProps={{
 								fontWeight: 200,
 								mb: 2,
+								style: {
+									textDecoration: "none",
+								},
 							}}
 							variant={"h2"}
 							location={`/series/${item.data.SeriesId}`}
 						>
-							{item.data.ParentLogoItemId.length > 0 ? (
+							{item.data.ParentLogoItemId?.length > 0 ? (
 								<img
 									alt={item.data.SeriesName}
 									src={api.getItemImageUrl(item.data.ParentLogoItemId, "Logo", {
@@ -791,13 +794,13 @@ const EpisodeTitlePage = () => {
 				</div>
 
 				{upcomingEpisodes.isSuccess &&
-					upcomingEpisodes.data.Items.length > 0 && (
+					upcomingEpisodes.data.Items?.length > 0 && (
 						<CardScroller
 							title="Upcoming Episodes"
 							displayCards={4}
 							disableDecoration
 						>
-							{upcomingEpisodes.data.Items.map((episode) => {
+							{upcomingEpisodes.data.Items?.map((episode) => {
 								return (
 									<Card
 										key={episode.Id}

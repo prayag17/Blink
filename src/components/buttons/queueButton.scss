@@ -1,24 +1,26 @@
+$image-size: 5em;
+
 .queue{
     &-item{
         width: 32em;
         padding: 1em;
-        display: grid;
+        display: grid !important;
         opacity: 1 !important;
         gap: 1em;
-        grid-template-columns: 4.5em 5em 1fr;
+        grid-template-columns: 3em $image-size 1fr;
         justify-items: center;
         align-items: center;
         &-image{
-            max-height: 5em;
-            max-width: 5em;
+            max-height: $image-size;
+            max-width: $image-size;
             object-fit: cover;
             border-radius: $border-radius_04;
             overflow: hidden;
             &-container {
                 aspect-ratio: 1;
                 overflow: hidden;
-                width: 5em;
-                height: 5em;
+                width: $image-size;
+                height: $image-size;
                 display: flex;
                 justify-content: center;
                 align-items: center;    

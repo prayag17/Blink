@@ -43,6 +43,8 @@ import workerUrl from "jassub/dist/jassub-worker.js?url";
 import wasmUrl from "jassub/dist/jassub-worker.wasm?url";
 
 import { getUserApi } from "@jellyfin/sdk/lib/utils/api/user-api";
+import PlayNextButton from "src/components/buttons/playNextButton";
+import PlayPreviousButton from "src/components/buttons/playPreviousButtom";
 import QueueButton from "src/components/buttons/queueButton";
 import subtitleFont from "./Noto-Sans-Indosphere.ttf";
 
@@ -1023,7 +1025,7 @@ const VideoPlayer = () => {
 		}
 		navigate(-1);
 		// Report Jellyfin server: Playback has ended/stopped
-		await getPlaystateApi(api).reportPlaybackStopped({
+		getPlaystateApi(api).reportPlaybackStopped({
 			playbackStopInfo: {
 				Failed: false,
 				Item: item,
@@ -1109,7 +1111,7 @@ const VideoPlayer = () => {
 		if (subtitleRenderer)
 			if (showSubtitles) {
 				subtitleRenderer.setTrackByUrl(
-					`${api.basePath}/Videos/${item.Id}/${item.Id}/Subtitles/${selectedSubtitle}/Stream.ass?api_key=${api.accessToken}`,
+					`${api.basePath}/Videos/${item?.Id}/${item?.Id}/Subtitles/${selectedSubtitle}/Stream.ass?api_key=${api.accessToken}`,
 				);
 			} else {
 				subtitleRenderer.freeTrack();
@@ -1122,7 +1124,7 @@ const VideoPlayer = () => {
 			fetchFonts().then((uint8) => {
 				const subtitleRendererRaw = new JASSUB({
 					video: player.current.getInternalPlayer(),
-					subUrl: `${api.basePath}/Videos/${item.Id}/${item.Id}/Subtitles/${selectedSubtitle}/Stream.ass?api_key=${api.accessToken}`,
+					subUrl: `${api.basePath}/Videos/${item?.Id}/${item?.Id}/Subtitles/${selectedSubtitle}/Stream.ass?api_key=${api.accessToken}`,
 					workerUrl,
 					wasmUrl,
 					availableFonts: { "noto sans": uint8 },
@@ -1135,7 +1137,7 @@ const VideoPlayer = () => {
 
 	useLayoutEffect(() => {
 		setPlaying(true);
-	}, [item.Id]);
+	}, [item?.Id]);
 
 	return (
 		<div className="video-player">
@@ -1283,11 +1285,7 @@ const VideoPlayer = () => {
 						</div>
 						<div className="flex flex-row flex-justify-spaced-between">
 							<div className="video-player-osd-controls-buttons">
-								<IconButton disabled>
-									<span className="material-symbols-rounded fill">
-										skip_previous
-									</span>
-								</IconButton>
+								<PlayPreviousButton />
 								<IconButton
 									onClick={() =>
 										player.current.seekTo(player.current.getCurrentTime() - 15)
@@ -1311,11 +1309,7 @@ const VideoPlayer = () => {
 										fast_forward
 									</span>
 								</IconButton>
-								<IconButton disabled>
-									<span className="material-symbols-rounded fill">
-										skip_next
-									</span>
-								</IconButton>
+								<PlayNextButton />
 								<Typography variant="subtitle1">
 									{isSeeking
 										? endsAt(itemDuration - sliderProgress)

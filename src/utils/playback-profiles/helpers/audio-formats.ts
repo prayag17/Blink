@@ -8,9 +8,12 @@ import { isApple, isTizen, isTv, isWebOS } from "src/utils/browser-detection";
  * Determines if audio codec is supported
  */
 export function getSupportedAudioCodecs(format: string): boolean {
-	let typeString;
+	let typeString: string | undefined;
 
 	if (format === "flac" && isTv()) {
+		return true;
+	} else if (format === "eac3") {
+		// This is specific to JellyPlayer
 		return true;
 	} else if (format === "wma" && isTizen()) {
 		return true;
