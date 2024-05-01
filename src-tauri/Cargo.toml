@@ -23,7 +23,7 @@ tauri-plugin-localhost = { git = "https://github.com/tauri-apps/plugins-workspac
 tauri-plugin-store = { git = "https://github.com/tauri-apps/plugins-workspace", branch = "v1" }
 tauri-plugin-log = { git = "https://github.com/tauri-apps/plugins-workspace", branch = "v1", features = ["colored"] }
 tauri-plugin-window-state = { git = "https://github.com/tauri-apps/plugins-workspace", branch = "v1" }
-portpicker = "0.1" # used in the example to pick a random free port
+portpicker = "0.1.1" # used in the example to pick a random free port
 
 [features]
 # by default Tauri runs in production mode
