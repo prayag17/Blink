@@ -121,7 +121,7 @@ dependencies:
     version: 4.2.0(typescript@5.4.5)(vite@5.2.10)
   wavesurfer.js:
     specifier: ^7.7.11
-    version: 7.7.11
+    version: 7.7.12
   zustand:
     specifier: ^4.5.2
     version: 4.5.2(@types/react@18.3.1)(react@18.3.1)
@@ -3340,8 +3340,8 @@ packages:
     optionalDependencies:
       fsevents: 2.3.3
 
-  /wavesurfer.js@7.7.11:
-    resolution: {integrity: sha512-27otJlDBcUSbMh/YkxEZN0yXTHINQNYSOl5aJplYlIaHw2u3BrABUzOmUZV3dKIy8udOLJXS/67y5pOIzgAg+w==}
+  /wavesurfer.js@7.7.12:
+    resolution: {integrity: sha512-Xh2izQlYVE2WKfhOxCgQkNVMXFoiwFTyxr/WGo5hHVA0dHmDP8jN6Jmg6538tjJq86g4X67zI8+LpDk2juIFyg==}
     dev: false
 
   /webpack-sources@3.2.3:
