@@ -120,6 +120,8 @@ const VideoPlayer = () => {
 	useEffect(() => setBackdrop("", ""), []);
 
 	const [subtitleRenderer, setSubtitleRenderer] = useState<JASSUB>(null);
+  
+  const [clickTimeout, setClickTimeout] = useState<NodeJS.Timeout>(null)
 	
 	const handleReady = async () => {
 		if (!isReady) {
@@ -344,6 +346,24 @@ const VideoPlayer = () => {
 				style={{
 					zIndex: 2,
 				}}
+        onClick={(event) => {
+          if (event.currentTarget !== event.target) { 
+            return
+          }
+
+          if (event.detail === 1) {
+            setClickTimeout(
+              setTimeout(() => {
+                setPlaying((state) => !state);
+              }, 200))
+          } else if (event.detail === 2){
+            clearTimeout(clickTimeout)
+            setAppFullscreen((state) => {
+              appWindow.setFullscreen(!state)
+              return !state
+            });
+          }
+        }}
 			>
 				<div className="video-player-osd-header flex flex-justify-spaced-between flex-align-center">
 					<IconButton onClick={handleExitPlayer}>
