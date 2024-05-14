@@ -69,6 +69,7 @@ const ticksDisplay = (ticks: number) => {
 	})}`;
 	return formatedTime;
 };
+const VOLUME_SCROLL_INTERVAL = 0.05
 
 const VideoPlayer = () => {
 	const navigate = useNavigate();
@@ -263,6 +264,28 @@ const VideoPlayer = () => {
 			document.removeEventListener("keydown", handleKeyPress);
 		};
 	}, [handleKeyPress]);
+
+  useEffect(() => {
+    const handleMouseWheel = (event: WheelEvent) => {
+      console.log(event.deltaY);
+      
+      if (event.deltaY < 0) {
+        // increase volume 
+        setVolume((state) => Math.min(1, state + VOLUME_SCROLL_INTERVAL))
+      } else if (event.deltaY > 0) {
+        // decrease volume
+        setVolume((state) => Math.max(0, state - VOLUME_SCROLL_INTERVAL))  
+      }
+    }
+
+		// attach the event listener
+    document.addEventListener("wheel", handleMouseWheel);
+
+		// remove the event listener
+    return () => {
+      document.removeEventListener("wheel", handleMouseWheel);
+    }
+  }, [])
 
 	useEffect(() => {
 		async function fetchFonts() {
