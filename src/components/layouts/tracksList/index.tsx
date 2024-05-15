@@ -5,17 +5,17 @@ import React from "react";
 import type { BaseItemDto, UserDto } from "@jellyfin/sdk/lib/generated-client";
 
 import { getRuntimeMusic } from "../../../utils/date/time";
-import { useApi } from "../../../utils/store/api";
 import { useAudioPlayback } from "../../../utils/store/audioPlayback";
 import LikeButton from "../../buttons/likeButton";
 import "./tracksList.scss";
+import { useRouteContext } from "@tanstack/react-router";
 
 export default function TracksList({
 	tracks,
 	user,
 	queryKey,
 }: { tracks: BaseItemDto[]; user: UserDto; queryKey: [] }) {
-	const [api] = useApi((state) => [state.api]);
+	const api = useRouteContext({ from: "/" }).api;
 
 	const [
 		currentItem,

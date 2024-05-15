@@ -7,13 +7,13 @@ import { CardsSkeleton } from "../../skeleton/cards";
 import { BaseItemKind } from "@jellyfin/sdk/lib/generated-client";
 import { getUserApi } from "@jellyfin/sdk/lib/utils/api/user-api";
 import { getUserLibraryApi } from "@jellyfin/sdk/lib/utils/api/user-library-api";
-import { useApi } from "../../../utils/store/api";
+import { useRouteContext } from "@tanstack/react-router";
 
 /**
  * @description Latest Media Section
  */
 export const LatestMediaSection = ({ latestMediaLib }) => {
-	const [api] = useApi((state) => [state.api]);
+	const api = useRouteContext({ from: "/" }).api;
 	const user = useQuery({
 		queryKey: ["user"],
 		queryFn: async () => {

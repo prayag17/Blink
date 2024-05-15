@@ -2,7 +2,7 @@
  * @deprecated - Check @/utils/playback-profiles/index
  */
 
-import { isTv } from "src/utils/browser-detection";
+import { isTv } from "@/utils/browser-detection";
 import { getSupportedAudioCodecs } from "./audio-formats";
 import { hasAacSupport, hasEac3Support } from "./mp4-audio-formats";
 import { hasH264Support, hasH265Support } from "./mp4-video-formats";

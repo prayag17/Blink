@@ -1,7 +1,7 @@
-import { RecommendedServerInfo } from "@jellyfin/sdk";
+import type { RecommendedServerInfo } from "@jellyfin/sdk";
 import { Store } from "tauri-plugin-store-api";
 
-interface ServerInfo extends RecommendedServerInfo {
+export interface ServerInfo extends RecommendedServerInfo {
 	id: string;
 }
 
@@ -41,7 +41,7 @@ export const setDefaultServer = async (
 /**
  * Get a Server
  */
-export const getServer = async (serverId: string) => {
+export const getServer = async (serverId: string | null) => {
 	const servers = await getAllServers();
 
 	return servers.find((server) => server.id === serverId);

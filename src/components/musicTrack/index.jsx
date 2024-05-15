@@ -1,12 +1,12 @@
 import Typography from "@mui/material/Typography";
 import React from "react";
 import { getRuntimeMusic } from "../../utils/date/time";
-import { useApi } from "../../utils/store/api";
 import { useAudioPlayback } from "../../utils/store/audioPlayback";
 import LikeButton from "../buttons/likeButton";
 import PlayButton from "../buttons/playButton";
 import TextLink from "../textLink";
 import "./musicTrack.scss";
+import { useRouteContext } from "@tanstack/react-router";
 
 /**
  * @typedef {Object} Props
@@ -33,7 +33,7 @@ const MusicTrack = ({
 	trackIndex,
 	className = "",
 }) => {
-	const [api] = useApi((state) => [state.api]);
+	const api = useRouteContext({ from: "/" }).api;
 	const [currentTrackItem] = useAudioPlayback((state) => [state.item]);
 
 	return (

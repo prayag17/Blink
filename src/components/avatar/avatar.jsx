@@ -4,11 +4,10 @@ import React from "react";
 import Box from "@mui/material/Box";
 
 import "./avatar.module.scss";
-
-import { useApi } from "../../utils/store/api";
+import { useRouteContext } from "@tanstack/react-router";
 
 export const AvatarImage = ({ userId }) => {
-	const [api] = useApi((state) => [state.api]);
+	const api = useRouteContext({ from: "/_api" }).api;
 	return (
 		<Box className="avatar-image-container">
 			<div

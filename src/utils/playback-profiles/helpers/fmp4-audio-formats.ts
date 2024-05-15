@@ -2,7 +2,7 @@
  * @deprecated - Check @/utils/playback-profiles/index
  */
 
-import { isEdge } from "src/utils/browser-detection";
+import { isEdge } from "@/utils/browser-detection";
 import { getSupportedAudioCodecs } from "./audio-formats";
 import {
 	hasAacSupport,
