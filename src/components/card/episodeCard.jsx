@@ -1,5 +1,4 @@
 import React from "react";
-import { useNavigate } from "react-router-dom";
 
 import MuiCard from "@mui/material/Card";
 import CardActionArea from "@mui/material/CardActionArea";
@@ -10,8 +9,8 @@ import { Blurhash } from "react-blurhash";
 
 import "./card.scss";
 
-import { getRuntimeCompact } from "../../utils/date/time";
-import { useApi } from "../../utils/store/api";
+import { getRuntimeCompact } from "@/utils/date/time";
+import { useNavigate, useRouteContext } from "@tanstack/react-router";
 import LikeButton from "../buttons/likeButton";
 import MarkPlayedButton from "../buttons/markPlayedButton";
 import PlayButton from "../buttons/playButton";
@@ -44,10 +43,10 @@ export const EpisodeCard = ({
 	disableRunTime = false,
 	onClick,
 }) => {
-	const [api] = useApi((state) => [state.api]);
+	const api = useRouteContext({ from: "/" }).api;
 	const navigate = useNavigate();
 	const defaultOnClick = () => {
-		navigate(`/episode/${item.Id}`);
+		navigate({ to: `/episode/${item.Id}` });
 	};
 	return (
 		<div

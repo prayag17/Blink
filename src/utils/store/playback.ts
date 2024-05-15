@@ -6,109 +6,9 @@ import type {
 import { getMediaInfoApi } from "@jellyfin/sdk/lib/utils/api/media-info-api";
 import { create } from "zustand";
 import playbackProfile from "../playback-profiles";
-import { useApi } from "./api";
+import { useApiInContext } from "./api";
+import { playAudio } from "./audioPlayback";
 import useQueue, { setQueue, setTrackIndex } from "./queue";
-
-// export interface PlaybackState {
-// 	url: string;
-// 	startPosition: number;
-// 	duration: number;
-// 	itemId: string;
-// 	itemName: string | Element;
-// 	subtitleTracks: unknown[];
-// 	selectedSubtitleTrack: number;
-// 	mediaSourceId: string;
-// 	audioStreamIndex: number;
-// 	videoStreamIndex: number;
-// 	subtitleStreamIndex: number;
-// 	userId: string;
-// 	mediaContainer: string;
-// 	seriesId: string;
-// 	queue: unknown[];
-// 	episodeIndex: number;
-// 	item: BaseItemDto;
-// 	setUrl: (aurl: string) => void;
-// 	setPosition: (apos: number) => void;
-// 	setDuration: (adur: number) => void;
-// 	setItemId: (aid: string) => void;
-// 	setItemName: (anm: string | Element) => void;
-// 	setUserId: (anm: string) => void;
-// 	setSeriesId: (anm: string) => void;
-// 	setMediaContainer: (anm: string) => void;
-// 	setMediaSourceId: (anm: string) => void;
-// 	setAudioStreamIndex: (anm: number) => void;
-// 	setVideoStreamIndex: (anm: number) => void;
-// 	setSubtitleStreamIndex: (anm: number) => void;
-// 	setSubtitleTracks: (asub: unknown[]) => void;
-// 	setSelectedSubtitleTrack: (asub: number) => void;
-// 	setQueue: (qitem: unknown[]) => void;
-// 	setEpisodeIndex: (aitem: number) => void;
-// }
-
-// export const usePlaybackStore = create<PlaybackState>((set) => ({
-// 	url: "",
-// 	startPosition: 0,
-// 	duration: 0,
-// 	itemId: "",
-// 	itemName: "",
-// 	subtitleTracks: [],
-// 	selectedSubtitleTrack: 0,
-// 	mediaSourceId: "",
-// 	audioStreamIndex: 0,
-// 	videoStreamIndex: 0,
-// 	subtitleStreamIndex: 0,
-// 	userId: "",
-// 	mediaContainer: "",
-// 	seriesId: "",
-// 	queue: [],
-// 	episodeIndex: 0,
-
-// 	item: {} as BaseItemDto,
-// 	setUrl: (aurl: string) =>
-// 		set((state: PlaybackState) => ({ ...state, url: aurl })),
-// 	setPosition: (apos: number) =>
-// 		set((state: PlaybackState) => ({ ...state, startPosition: apos })),
-// 	setDuration: (adur: number) =>
-// 		set((state: PlaybackState) => ({ ...state, duration: adur })),
-// 	setItemId: (aid: string) =>
-// 		set((state: PlaybackState) => ({ ...state, itemId: aid })),
-// 	setItemName: (anm: string | Element) =>
-// 		set((state: PlaybackState) => ({ ...state, itemName: anm })),
-// 	setUserId: (anm: string) =>
-// 		set((state: PlaybackState) => ({ ...state, userId: anm })),
-// 	setSeriesId: (anm: string) =>
-// 		set((state: PlaybackState) => ({ ...state, seriesId: anm })),
-// 	setMediaContainer: (anm: string) =>
-// 		set((state: PlaybackState) => ({ ...state, mediaContainer: anm })),
-// 	setMediaSourceId: (anm: string) =>
-// 		set((state: PlaybackState) => ({ ...state, mediaSourceId: anm })),
-// 	setAudioStreamIndex: (anm: number) =>
-// 		set((state: PlaybackState) => ({ ...state, audioStreamIndex: anm })),
-// 	setVideoStreamIndex: (anm: number) =>
-// 		set((state: PlaybackState) => ({ ...state, videoStreamIndex: anm })),
-// 	setSubtitleStreamIndex: (anm: number) =>
-// 		set((state: PlaybackState) => ({ ...state, subtitleStreamIndex: anm })),
-// 	setSubtitleTracks: (asub: unknown[]) =>
-// 		set((state: PlaybackState) => ({
-// 			...state,
-// 			subtitleTracks: asub,
-// 		})),
-// 	setSelectedSubtitleTrack: (asub: number) =>
-// 		set((state: PlaybackState) => ({
-// 			...state,
-// 			selectedSubtitleTrack: asub,
-// 		})),
-// 	setQueue: (qitem: unknown[]) =>
-// 		set((state: PlaybackState) => ({ ...state, queue: qitem })),
-// 	setEpisodeIndex: (aitem: number) =>
-// 		set((state: PlaybackState) => ({ ...state, episodeIndex: aitem })),
-// }));
-
-// export const setItem = (item: BaseItemDto) =>
-// 	usePlaybackStore.setState((state: PlaybackState) => ({
-// 		...state,
-// 		item: item,
-// 	}));
 
 type PlaybackStore = {
 	itemName: string | React.Component;
@@ -223,85 +123,98 @@ export const playItemFromQueue = async (
 				? currentItemIndex - 1
 				: index;
 	const item = queueItems[requestedItemIndex];
-	const api = useApi.getState().api;
-	const mediaInfo = await getMediaInfoApi(api).getPostedPlaybackInfo({
-		audioStreamIndex: item.MediaSources[0].DefaultAudioStreamIndex ?? 0,
-		subtitleStreamIndex: item.MediaSources[0].DefaultSubtitleStreamIndex ?? 0,
-		itemId: item.Id,
-		startTimeTicks: item.UserData?.PlaybackPositionTicks,
-		userId: userId,
-		mediaSourceId: item.MediaSources[0].Id,
-		playbackInfoDto: {
-			DeviceProfile: playbackProfile,
-		},
-	});
-	console.log(mediaInfo);
-	let itemName = item.Name;
-	let episodeTitle = "";
-	if (item.SeriesId) {
-		itemName = item.SeriesName;
-		episodeTitle = `S${item.ParentIndexNumber ?? 0}:E${item.IndexNumber ?? 0} ${
-			item.Name
-		}`;
-	}
+	const api = useApiInContext((s) => s.api);
+	if (item.Type === "Audio") {
+		const urlOptions = {
+			deviceId: api?.deviceInfo.id,
+			userId,
+			api_key: api?.accessToken,
+		};
+		const urlParams = new URLSearchParams(urlOptions).toString();
 
-	// Select correct subtitle track, this is useful if item is played with playbutton from card since that does not provide coorect default subtitle track index.
-	let selectedSubtitleTrack: number | "nosub" | undefined = -1;
-	const subtitles = mediaInfo.data.MediaSources[0].MediaStreams?.filter(
-		(value) => value.Type === "Subtitle",
-	);
-	let enableSubtitles = true;
-	if (mediaInfo.data.MediaSources[0].DefaultSubtitleStreamIndex) {
-		selectedSubtitleTrack =
-			mediaInfo.data.MediaSources[0].DefaultSubtitleStreamIndex;
-	} else if (subtitles?.length > 0) {
-		selectedSubtitleTrack = subtitles[0].Index;
+		const playbackUrl = `${api.basePath}/Audio/${item?.Id}/universal?${urlParams}`;
+		console.log(item);
+		playAudio(playbackUrl, item, undefined, queueItems, requestedItemIndex);
 	} else {
-		enableSubtitles = false;
+		const mediaInfo = await getMediaInfoApi(api).getPostedPlaybackInfo({
+			audioStreamIndex: item.MediaSources[0].DefaultAudioStreamIndex ?? 0,
+			subtitleStreamIndex: item.MediaSources[0].DefaultSubtitleStreamIndex ?? 0,
+			itemId: item.Id,
+			startTimeTicks: item.UserData?.PlaybackPositionTicks,
+			userId: userId,
+			mediaSourceId: item.MediaSources[0].Id,
+			playbackInfoDto: {
+				DeviceProfile: playbackProfile,
+			},
+		});
+		console.log(mediaInfo);
+		let itemName = item.Name;
+		let episodeTitle = "";
+		if (item.SeriesId) {
+			itemName = item.SeriesName;
+			episodeTitle = `S${item.ParentIndexNumber ?? 0}:E${
+				item.IndexNumber ?? 0
+			} ${item.Name}`;
+		}
+
+		// Select correct subtitle track, this is useful if item is played with playbutton from card since that does not provide coorect default subtitle track index.
+		let selectedSubtitleTrack: number | "nosub" | undefined = -1;
+		const subtitles = mediaInfo.data.MediaSources[0].MediaStreams?.filter(
+			(value) => value.Type === "Subtitle",
+		);
+		let enableSubtitles = true;
+		if (mediaInfo.data.MediaSources[0].DefaultSubtitleStreamIndex) {
+			selectedSubtitleTrack =
+				mediaInfo.data.MediaSources[0].DefaultSubtitleStreamIndex;
+		} else if (subtitles?.length > 0) {
+			selectedSubtitleTrack = subtitles[0].Index;
+		} else {
+			enableSubtitles = false;
+		}
+		const videoTrack = mediaInfo.data.MediaSources[0].MediaStreams?.filter(
+			(value) => value.Type === "Subtitle",
+		);
+
+		const urlOptions = {
+			Static: true,
+			tag: mediaInfo.data.MediaSources[0].ETag,
+			mediaSourceId: mediaInfo.data.MediaSources[0].Id,
+			deviceId: api?.deviceInfo.id,
+			api_key: api?.accessToken,
+			startTimeTicks: item.UserData?.PlaybackPositionTicks,
+		};
+
+		const urlParams = new URLSearchParams(urlOptions).toString();
+		let playbackUrl = `${api?.basePath}/Videos/${mediaInfo.data.MediaSources[0].Id}/stream.${mediaInfo.data.MediaSources[0].Container}?${urlParams}`;
+
+		if (
+			mediaInfo.data.MediaSources[0].SupportsTranscoding &&
+			mediaInfo.data.MediaSources[0].TranscodingUrl
+		) {
+			playbackUrl = `${api.basePath}${mediaInfo.data.MediaSources[0].TranscodingUrl}`;
+		} else if (mediaInfo.data.MediaSources[0].hlsStream) {
+			playbackUrl = mediaInfo.data.MediaSources[0].hlsStream;
+		}
+		playItem(
+			itemName,
+			episodeTitle,
+			videoTrack[0].Index,
+			mediaInfo.data.MediaSources[0].DefaultAudioStreamIndex ?? 0,
+			selectedSubtitleTrack,
+			mediaInfo.data?.MediaSources[0].Container ?? "mkv",
+			enableSubtitles,
+			playbackUrl,
+			userId,
+			item.UserData?.PlaybackPositionTicks,
+			item.RunTimeTicks,
+			item,
+			queueItems,
+			requestedItemIndex,
+			subtitles,
+			mediaInfo.data.MediaSources[0].Id,
+			mediaInfo.data.PlaySessionId,
+		);
 	}
-	const videoTrack = mediaInfo.data.MediaSources[0].MediaStreams?.filter(
-		(value) => value.Type === "Subtitle",
-	);
-
-	const urlOptions = {
-		Static: true,
-		tag: mediaInfo.data.MediaSources[0].ETag,
-		mediaSourceId: mediaInfo.data.MediaSources[0].Id,
-		deviceId: api?.deviceInfo.id,
-		api_key: api?.accessToken,
-		startTimeTicks: item.UserData?.PlaybackPositionTicks,
-	};
-
-	const urlParams = new URLSearchParams(urlOptions).toString();
-	let playbackUrl = `${api?.basePath}/Videos/${mediaInfo.data.MediaSources[0].Id}/stream.${mediaInfo.data.MediaSources[0].Container}?${urlParams}`;
-
-	if (
-		mediaInfo.data.MediaSources[0].SupportsTranscoding &&
-		mediaInfo.data.MediaSources[0].TranscodingUrl
-	) {
-		playbackUrl = `${api.basePath}${mediaInfo.data.MediaSources[0].TranscodingUrl}`;
-	} else if (mediaInfo.data.MediaSources[0].hlsStream) {
-		playbackUrl = mediaInfo.data.MediaSources[0].hlsStream;
-	}
-	playItem(
-		itemName,
-		episodeTitle,
-		videoTrack[0].Index,
-		mediaInfo.data.MediaSources[0].DefaultAudioStreamIndex ?? 0,
-		selectedSubtitleTrack,
-		mediaInfo.data?.MediaSources[0].Container ?? "mkv",
-		enableSubtitles,
-		playbackUrl,
-		userId,
-		item.UserData?.PlaybackPositionTicks,
-		item.RunTimeTicks,
-		item,
-		queueItems,
-		requestedItemIndex,
-		subtitles,
-		mediaInfo.data.MediaSources[0].Id,
-		mediaInfo.data.PlaySessionId,
-	);
 
 	return "playing"; // Return any value to end mutation pending status
 };

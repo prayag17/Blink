@@ -3,7 +3,7 @@
 import React from "react";
 import { Component, useState } from "react";
 
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useRouteContext } from "@tanstack/react-router";
 
 import LinearProgress from "@mui/material/LinearProgress";
 import Typography from "@mui/material/Typography";
@@ -12,7 +12,6 @@ import {
 	type BaseItemDto,
 	BaseItemKind,
 } from "@jellyfin/sdk/lib/generated-client";
-import { useApi } from "../../utils/store/api";
 import LikeButton from "../buttons/likeButton";
 import MarkPlayedButton from "../buttons/markPlayedButton";
 import PlayButton from "../buttons/playButton";
@@ -57,21 +56,21 @@ export const Card = ({
 	userId: string;
 	seriesId: string | null;
 	hideText: boolean;
-	onClick: Function | null;
+	onClick: () => null | null;
 	disableOverlay: boolean;
 	overrideIcon: any;
 }) => {
-	const [api] = useApi((state) => [state.api]);
+	const api = useRouteContext({ from: "/" }).api;
 	const navigate = useNavigate();
 	const defaultOnClick = () => {
 		if (availableSpecialRoutes.includes(item.Type)) {
-			navigate(`/${item.Type.toLocaleLowerCase()}/${item.Id}`);
+			navigate({ to: `/${item.Type.toLocaleLowerCase()}/${item.Id}` });
 		} else if (!!item.Role || item.Type === BaseItemKind.Person) {
-			navigate(`/person/${item.Id}`);
+			navigate({ to: `/person/${item.Id}` });
 		} else if (item.Type === BaseItemKind.MusicArtist) {
-			navigate(`/artist/${item.Id}`);
+			navigate({ to: `/artist/${item.Id}` });
 		} else {
-			navigate(`/item/${item.Id}`);
+			navigate({ to: `/item/${item.Id}` });
 		}
 	};
 

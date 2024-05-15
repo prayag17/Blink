@@ -1,5 +1,10 @@
 {
   "compilerOptions": {
+    "paths": {
+      "@/*": [
+        "./src/*"
+      ]
+    },
     "target": "ESNext", // Specify ECMAScript target version
     "lib": [
       "dom",
@@ -33,5 +38,5 @@
   "exclude": [
     "node_modules",
     "build"
-  ] // *** The files to not type check ***
+  ]
 }

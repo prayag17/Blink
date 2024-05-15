@@ -4,8 +4,8 @@ import Typography from "@mui/material/Typography";
 import { red } from "@mui/material/colors";
 import React from "react";
 
-export const ErrorNotice = ({ error, resetErrorBoundary }) => {
-	console.error(error);
+export const ErrorNotice = ({ error }) => {
+	console.log(error);
 	return (
 		<Box
 			sx={{
@@ -46,7 +46,7 @@ export const ErrorNotice = ({ error, resetErrorBoundary }) => {
 					// opacity: 0.6,
 				}}
 			>
-				{error.message}
+				{JSON.stringify(error.message)}
 			</Typography>
 		</Box>
 	);

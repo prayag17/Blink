@@ -16,6 +16,7 @@ export const useCentralStore = create(() => ({
 	/** This is the initial route that app goes to just after app startups */
 	initialRoute: null,
 	clientVersion: version,
+	appReady: false,
 }));
 
 /**
@@ -24,4 +25,8 @@ export const useCentralStore = create(() => ({
  */
 export const setInitialRoute = (route) => {
 	useCentralStore.setState((state) => ({ ...state, initialRoute: route }));
+};
+
+export const setAppReady = (appReady) => {
+	useCentralStore.setState((state) => ({ ...state, appReady }));
 };

@@ -9,7 +9,7 @@ import {
 	isFirefox,
 	isTizen,
 	isWebOS,
-} from "src/utils/browser-detection";
+} from "@/utils/browser-detection";
 import { hasH264Support, hasHevcSupport } from "./mp4-video-formats";
 
 /**
