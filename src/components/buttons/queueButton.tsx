@@ -15,7 +15,7 @@ import { useMutation, useQuery } from "@tanstack/react-query";
 import "./queueButton.scss";
 import { useRouteContext } from "@tanstack/react-router";
 const QueueButton = () => {
-	const api = useRouteContext({ from: "/" }).api;
+	const api = useApiInContext((s) => s.api);
 	const [queueItems, currentItemIndex] = useQueue((state) => [
 		state.tracks,
 		state.currentItemIndex,

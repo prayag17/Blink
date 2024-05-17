@@ -115,9 +115,8 @@ function ItemDetail() {
 		queryKey: ["item", id],
 		queryFn: async () => {
 			const result = await getUserLibraryApi(api).getItem({
-				userId: user.data.Id,
+				userId: user.data?.Id,
 				itemId: id,
-				fields: Object.values(ItemFields),
 			});
 			return result.data;
 		},

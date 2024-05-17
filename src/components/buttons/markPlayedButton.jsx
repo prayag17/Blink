@@ -8,12 +8,13 @@ import IconButton from "@mui/material/IconButton";
 import { green } from "@mui/material/colors";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 
+import { useApiInContext } from "@/utils/store/api";
 import { getPlaystateApi } from "@jellyfin/sdk/lib/utils/api/playstate-api";
 import { useRouteContext } from "@tanstack/react-router";
 import { useSnackbar } from "notistack";
 
 const MarkPlayedButton = ({ itemId, isPlayed, queryKey, userId, itemName }) => {
-	const api = useRouteContext({ from: "/" }).api;
+	const api = useApiInContext((s) => s.api);
 
 	const queryClient = useQueryClient();
 	const { enqueueSnackbar } = useSnackbar();

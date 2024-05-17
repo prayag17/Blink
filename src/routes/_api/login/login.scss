@@ -29,3 +29,35 @@
 		flex: 1 1 0 !important;
 	}
 }
+
+.login {
+	width: 100vw;
+	height: 100vh;
+	display: flex;
+	flex-direction: column;
+	justify-content: center;
+	align-items: center;
+
+	&-form {
+		width: 28em;
+		display: flex;
+		flex-direction: column;
+		justify-content: center;
+		align-items: stretch;
+		gap:1em;
+		&-container{
+			display: flex;
+			flex-direction: column;
+			justify-content: center;
+			align-items: center;
+			gap:2em;
+			background: rgb(255 255 255 / 0.05);
+			padding: 2em;
+			border-radius: 20px;
+			border: 1px solid rgb(255 255 255 / 0.1);
+			&.padded-top {
+				margin-top: 25vh;
+			}
+		}
+	}
+}

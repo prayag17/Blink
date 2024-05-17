@@ -53,6 +53,7 @@ import {
 	ListItemButton,
 	ListItemText,
 } from "@mui/material";
+import BackButton from "../buttons/backButton";
 
 interface ListItemLinkProps {
 	icon?: React.ReactElement;
@@ -103,24 +104,18 @@ export const AppBar = () => {
 			return usr.data;
 		},
 		enabled: display,
-		networkMode: "always",
 	});
 	const libraries = useQuery({
 		queryKey: ["libraries"],
 		queryFn: async () => {
 			const libs = await getUserViewsApi(api).getUserViews({
-				userId: user.data.Id,
+				userId: user.data?.Id,
 			});
 			return libs.data;
 		},
 		enabled: !!user.data && !!api.accessToken,
 		networkMode: "always",
 	});
-	useEffect(() => {
-		if (user.isError) {
-			console.error(user.error);
-		}
-	}, [user]);
 
 	const trigger = useScrollTrigger({
 		disableHysteresis: true,
@@ -197,13 +192,8 @@ export const AppBar = () => {
 						<IconButton onClick={() => setShowDrawer(true)}>
 							<div className="material-symbols-rounded">menu</div>
 						</IconButton>
-						<IconButton
-							disabled={!backButtonVisible}
-							onClick={() => navigate(-1)}
-						>
-							<div className="material-symbols-rounded">arrow_back</div>
-						</IconButton>
-						<IconButton onClick={() => navigate("/home")}>
+						<BackButton />
+						<IconButton onClick={() => navigate({ to: "/home/" })}>
 							<div
 								className={
 									location.pathname === "/home"

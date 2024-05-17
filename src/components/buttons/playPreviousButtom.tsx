@@ -7,7 +7,7 @@ import { useRouteContext } from "@tanstack/react-router";
 import React from "react";
 
 const PlayPreviousButton = () => {
-	const api = useRouteContext({ from: "/" }).api;
+	const api = useApiInContext((s) => s.api);
 	const user = useQuery({
 		queryKey: ["user"],
 		queryFn: async () => {

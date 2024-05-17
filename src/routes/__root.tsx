@@ -8,6 +8,7 @@ import { LoadingButton } from "@mui/lab";
 import {
 	Button,
 	Chip,
+	CircularProgress,
 	CssBaseline,
 	Dialog,
 	DialogActions,
@@ -24,6 +25,7 @@ import {
 	createRootRoute,
 	createRootRouteWithContext,
 	useNavigate,
+	useRouterState,
 } from "@tanstack/react-router";
 import { TanStackRouterDevtools } from "@tanstack/router-devtools";
 import { relaunch } from "@tauri-apps/api/process";
@@ -46,7 +48,6 @@ import "@fontsource-variable/jetbrains-mono";
 import "@fontsource-variable/noto-sans";
 
 import "material-symbols/rounded.scss";
-import { ErrorNotice } from "@/components/notices/errorNotice/errorNotice";
 import type { Api } from "@jellyfin/sdk";
 import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 
@@ -65,6 +66,7 @@ export const Route = createRootRouteWithContext<ApiContext>()({
 	component: () => {
 		const isQueryFetching = useIsFetching();
 		const isMutating = useIsMutating();
+		const routeIsLoading = useRouterState().isLoading;
 		const [updateDialog, setUpdateDialog] = useState(false);
 		const [updateDialogButton, setUpdateDialogButton] = useState(false);
 		const [updateInfo, setUpdateInfo] = useState<UpdateManifest | undefined>(
@@ -107,7 +109,29 @@ export const Route = createRootRouteWithContext<ApiContext>()({
 						<CssBaseline />
 						<Settings />
 						<EasterEgg />
-						<NProgress isAnimating={isQueryFetching || isMutating} />
+						<NProgress
+							isAnimating={isQueryFetching || isMutating || routeIsLoading}
+						/>
+
+						{routeIsLoading && (
+							<motion.div
+								initial={{ opacity: 0 }}
+								animate={{ opacity: 1 }}
+								style={{
+									width: "100vw",
+									height: "100vh",
+									display: "flex",
+									justifyContent: "center",
+									alignItems: "center",
+									background: "rgb(0 0 0 / 0.35)",
+									position: "fixed",
+									zIndex: 10000,
+								}}
+							>
+								<CircularProgress size={72} thickness={2} />
+							</motion.div>
+						)}
+
 						<Dialog
 							open={updateDialog}
 							fullWidth

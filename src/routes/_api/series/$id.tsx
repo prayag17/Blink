@@ -59,7 +59,7 @@ import { useBackdropStore } from "@/utils/store/backdrop";
 
 import IconLink from "@/components/iconLink";
 import EpisodeSkeleton from "@/components/skeleton/episode";
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { Link } from "@tanstack/react-router";
 
 function TabPanel(props) {
@@ -963,155 +963,153 @@ function SeriesTitlePage() {
 							) : (
 								episodes.data.Items.map((episode, index) => {
 									return (
-										<>
-											<motion.div
-												key={episode.Id}
-												onClick={() => navigate(`/episode/${episode.Id}`)}
-												initial={{
-													transform: "translateY(10px)",
-													opacity: 0,
-												}}
-												whileInView={{
-													opacity: 1,
-													transform: "translateY(0px)",
-												}}
-												viewport={{
-													once: true,
-												}}
-												transition={{
-													duration: 0.2,
-													ease: "backInOut",
-												}}
-												style={{
-													width: "100%",
-												}}
-												className="item-detail-episode"
+										<motion.div
+											key={episode.Id}
+											onClick={() => navigate(`/episode/${episode.Id}`)}
+											initial={{
+												transform: "translateY(10px)",
+												opacity: 0,
+											}}
+											whileInView={{
+												opacity: 1,
+												transform: "translateY(0px)",
+											}}
+											viewport={{
+												once: true,
+											}}
+											transition={{
+												duration: 0.2,
+												ease: "backInOut",
+											}}
+											style={{
+												width: "100%",
+											}}
+											className="item-detail-episode"
+										>
+											<Typography variant="subtitle1" textAlign="center">
+												{episode.IndexNumberEnd
+													? `${episode.IndexNumber} / ${episode.IndexNumberEnd}`
+													: episode.IndexNumber ?? 0}
+											</Typography>
+											<div
+												className={
+													episode.UserData?.Played
+														? "item-detail-episode-image-container watched"
+														: "item-detail-episode-image-container"
+												}
 											>
-												<Typography variant="subtitle1" textAlign="center">
-													{episode.IndexNumberEnd
-														? `${episode.IndexNumber} / ${episode.IndexNumberEnd}`
-														: episode.IndexNumber ?? 0}
-												</Typography>
-												<div
-													className={
-														episode.UserData?.Played
-															? "item-detail-episode-image-container watched"
-															: "item-detail-episode-image-container"
-													}
-												>
-													<div className="item-detail-episode-image-overlay">
-														<PlayButton
-															item={episode}
-															itemId={episode.Id}
-															itemType="Episode"
-															itemUserData={episode.UserData}
-															userId={user.data.Id}
-															currentAudioTrack={0}
-															currentVideoTrack={0}
-															currentSubTrack={0}
-															size="medium"
-															buttonProps={{
-																color: "white",
-																style: {
-																	color: "black ",
-																},
+												<div className="item-detail-episode-image-overlay">
+													<PlayButton
+														item={episode}
+														itemId={episode.Id}
+														itemType="Episode"
+														itemUserData={episode.UserData}
+														userId={user.data.Id}
+														currentAudioTrack={0}
+														currentVideoTrack={0}
+														currentSubTrack={0}
+														size="medium"
+														buttonProps={{
+															color: "white",
+															style: {
+																color: "black ",
+															},
+														}}
+														iconOnly
+													/>
+												</div>
+												<div className="item-detail-episode-image-icon-container">
+													<span className="material-symbols-rounded item-detail-episode-image-icon">
+														tv_gen
+													</span>
+												</div>
+												<img
+													alt={episode.Name}
+													src={api.getItemImageUrl(episode.Id, "Primary", {
+														tag: episode.ImageTags.Primary,
+														fillHeight: 300,
+													})}
+													className="item-detail-episode-image"
+													onLoad={(e) => {
+														e.target.style.opacity = 1;
+													}}
+												/>
+												{episode.UserData?.PlaybackPositionTicks > 0 && (
+													<div className="card-progress-container">
+														<div
+															className="card-progress"
+															style={{
+																width: `${episode.UserData?.PlayedPercentage}%`,
 															}}
-															iconOnly
 														/>
 													</div>
-													<div className="item-detail-episode-image-icon-container">
-														<span className="material-symbols-rounded item-detail-episode-image-icon">
-															tv_gen
-														</span>
-													</div>
-													<img
-														alt={episode.Name}
-														src={api.getItemImageUrl(episode.Id, "Primary", {
-															tag: episode.ImageTags.Primary,
-															fillHeight: 300,
-														})}
-														className="item-detail-episode-image"
-														onLoad={(e) => {
-															e.target.style.opacity = 1;
-														}}
-													/>
-													{episode.UserData?.PlaybackPositionTicks > 0 && (
-														<div className="card-progress-container">
-															<div
-																className="card-progress"
-																style={{
-																	width: `${episode.UserData?.PlayedPercentage}%`,
-																}}
-															/>
-														</div>
+												)}
+											</div>
+											<div className="item-detail-episode-info">
+												<Typography variant="subtitle1">
+													{episode.Name}
+												</Typography>
+												<div
+													className="flex flex-row flex-align-center"
+													style={{
+														gap: "0.5em",
+													}}
+												>
+													{episode.PremiereDate && (
+														<Chip
+															variant="filled"
+															label={getEpisodeDateString(
+																new Date(episode.PremiereDate),
+															)}
+															size="small"
+														/>
 													)}
-												</div>
-												<div className="item-detail-episode-info">
-													<Typography variant="subtitle1">
-														{episode.Name}
-													</Typography>
-													<div
-														className="flex flex-row flex-align-center"
-														style={{
-															gap: "0.5em",
-														}}
-													>
-														{episode.PremiereDate && (
-															<Chip
-																variant="filled"
-																label={getEpisodeDateString(
-																	new Date(episode.PremiereDate),
-																)}
-																size="small"
-															/>
-														)}
-														<Typography variant="caption">
-															{getRuntimeCompact(episode.RunTimeTicks)}
-														</Typography>
-													</div>
-													<Typography
-														variant="caption"
-														style={{
-															display: "-webkit-box",
-															textOverflow: "ellipsis",
-															overflow: "hidden",
-															WebkitLineClamp: 2,
-															WebkitBoxOrient: "vertical",
-															width: "100%",
-															opacity: 0.7,
-														}}
-													>
-														{episode.Overview}
+													<Typography variant="caption">
+														{getRuntimeCompact(episode.RunTimeTicks)}
 													</Typography>
 												</div>
-												<div className="item-detail-episode-buttons">
-													<LikeButton
-														itemId={episode.Id}
-														itemName={episode.Name}
-														isFavorite={episode.UserData?.IsFavorite}
-														queryKey={[
-															"item",
-															id,
-															`season ${currentSeason + 1}`,
-															"episodes",
-														]}
-														userId={user.data.Id}
-													/>
-													<MarkPlayedButton
-														itemId={episode.Id}
-														itemName={episode.Name}
-														isPlayed={episode.UserData?.Played}
-														queryKey={[
-															"item",
-															id,
-															`season ${currentSeason + 1}`,
-															"episodes",
-														]}
-														userId={user.data.Id}
-													/>
-												</div>
-											</motion.div>
-										</>
+												<Typography
+													variant="caption"
+													style={{
+														display: "-webkit-box",
+														textOverflow: "ellipsis",
+														overflow: "hidden",
+														WebkitLineClamp: 2,
+														WebkitBoxOrient: "vertical",
+														width: "100%",
+														opacity: 0.7,
+													}}
+												>
+													{episode.Overview}
+												</Typography>
+											</div>
+											<div className="item-detail-episode-buttons">
+												<LikeButton
+													itemId={episode.Id}
+													itemName={episode.Name}
+													isFavorite={episode.UserData?.IsFavorite}
+													queryKey={[
+														"item",
+														id,
+														`season ${currentSeason + 1}`,
+														"episodes",
+													]}
+													userId={user.data.Id}
+												/>
+												<MarkPlayedButton
+													itemId={episode.Id}
+													itemName={episode.Name}
+													isPlayed={episode.UserData?.Played}
+													queryKey={[
+														"item",
+														id,
+														`season ${currentSeason + 1}`,
+														"episodes",
+													]}
+													userId={user.data.Id}
+												/>
+											</div>
+										</motion.div>
 									);
 								})
 							)}
