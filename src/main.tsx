@@ -46,7 +46,8 @@ function ProviderWrapper() {
 ReactDOM.createRoot(document.getElementById("root")!).render(
 	<React.StrictMode>
 		<QueryClientProvider client={queryClient}>
-			<Suspense fallback={<h1>Fuck react</h1>}>
+			{/* TODO: Create a proper loading fallback component */}
+			<Suspense fallback={<h1>Loading in main.tsx</h1>}>
 				<ApiProvider>
 					<ProviderWrapper />
 				</ApiProvider>

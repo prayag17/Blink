@@ -17,6 +17,7 @@ import { useQuery } from "@tanstack/react-query";
 import { useNavigate, useRouteContext } from "@tanstack/react-router";
 import { getTypeIcon } from "../utils/iconsCollection";
 
+import { useApiInContext } from "@/utils/store/api";
 import { useCarouselStore } from "@/utils/store/carousel";
 import { BaseItemKind } from "@jellyfin/sdk/lib/generated-client";
 import { getUserApi } from "@jellyfin/sdk/lib/utils/api/user-api";
@@ -41,7 +42,7 @@ const availableSpecialRoutes = [
  * @returns {React.Component}
  */
 const CarouselSlide = ({ item }) => {
-	const api = useRouteContext({ from: "/" }).api;
+	const api = useApiInContext((s) => s.api);
 	const navigate = useNavigate();
 
 	const user = useQuery({

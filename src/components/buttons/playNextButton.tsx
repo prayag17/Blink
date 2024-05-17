@@ -1,3 +1,4 @@
+import { useApiInContext } from "@/utils/store/api";
 import { playItemFromQueue } from "@/utils/store/playback";
 import useQueue from "@/utils/store/queue";
 import { getUserApi } from "@jellyfin/sdk/lib/utils/api/user-api";
@@ -7,7 +8,7 @@ import { useRouteContext } from "@tanstack/react-router";
 import React from "react";
 
 const PlayNextButton = () => {
-	const api = useRouteContext({ from: "/" }).api;
+	const api = useApiInContext((s) => s.api);
 	const user = useQuery({
 		queryKey: ["user"],
 		queryFn: async () => {

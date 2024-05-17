@@ -1,5 +1,5 @@
 import { type Api, Jellyfin } from "@jellyfin/sdk";
-import React, { createContext, useContext, useRef } from "react";
+import React, { createContext, useContext, useRef, useState } from "react";
 import { type StoreApi, createStore, useStore } from "zustand";
 import { version as appVer } from "../../../package.json";
 
@@ -55,27 +55,19 @@ export const jellyfin = new Jellyfin({
 const ApiContext = createContext(null);
 
 export const ApiProvider = ({ children }) => {
-	const storeRef = useRef<StoreApi<ApiStore>>();
-
-	if (!storeRef.current) {
-		storeRef.current = createStore<ApiStore>()((set) => ({
+	const [store] = useState(() =>
+		createStore<ApiStore>()((set) => ({
 			api: undefined,
 			deviceId: deviceId,
 			jellyfin: jellyfin,
-			createApi: async (serverAddress, accessToken?) => {
+			createApi: (serverAddress, accessToken?) =>
 				set((state) => ({
 					...state,
 					api: jellyfin.createApi(serverAddress, accessToken, axiosClient),
-				}));
-				await Promise.resolve();
-			},
-		}));
-	}
-	return (
-		<ApiContext.Provider value={storeRef.current}>
-			{children}
-		</ApiContext.Provider>
-	);
+				})),
+		})),
+	)
+	return <ApiContext.Provider value={store}>{children}</ApiContext.Provider>;
 };
 
 export function useApiInContext<T>(selector?: (state: ApiStore) => T) {

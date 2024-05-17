@@ -25,6 +25,7 @@ import { setBackdrop, useBackdropStore } from "@/utils/store/backdrop";
 
 import CarouselSlide from "@/components/carouselSlide";
 import { ErrorNotice } from "@/components/notices/errorNotice/errorNotice";
+import { useApiInContext } from "@/utils/store/api";
 import { BaseItemKind, ItemFields } from "@jellyfin/sdk/lib/generated-client";
 import Typography from "@mui/material/Typography";
 import { useSnackbar } from "notistack";

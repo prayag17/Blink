@@ -34,6 +34,7 @@ import { playItem, usePlaybackDataLoadStore } from "@/utils/store/playback";
 import type PlayResult from "@//utils/types/playResult";
 import { getRuntimeCompact } from "@/utils/date/time";
 import playbackProfile from "@/utils/playback-profiles";
+import { useApiInContext } from "@/utils/store/api";
 import { getMediaInfoApi } from "@jellyfin/sdk/lib/utils/api/media-info-api";
 import type { SxProps } from "@mui/material";
 import type { AxiosResponse } from "axios";
@@ -77,7 +78,7 @@ const PlayButton = ({
 	playlistItemId = "",
 	trackIndex,
 }: PlayButtonProps) => {
-	const api = useRouteContext({ from: "/" }).api;
+	const api = useApiInContext((s) => s.api);
 
 	const navigate = useNavigate();
 	const setPlaybackDataLoading = usePlaybackDataLoadStore(

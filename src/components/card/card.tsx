@@ -18,6 +18,7 @@ import PlayButton from "../buttons/playButton";
 import ErrorBoundary from "../errorBoundary";
 import { getTypeIcon } from "../utils/iconsCollection";
 import "./card.scss";
+import { useApiInContext } from "@/utils/store/api";
 
 const cardImageAspectRatios = {
 	thumb: 1.777,
@@ -60,7 +61,7 @@ export const Card = ({
 	disableOverlay: boolean;
 	overrideIcon: any;
 }) => {
-	const api = useRouteContext({ from: "/" }).api;
+	const api = useApiInContext((s) => s.api);
 	const navigate = useNavigate();
 	const defaultOnClick = () => {
 		if (availableSpecialRoutes.includes(item.Type)) {

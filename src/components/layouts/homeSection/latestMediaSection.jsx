@@ -4,6 +4,7 @@ import { Card } from "../../card/card";
 import { CardScroller } from "../../cardScroller/cardScroller";
 import { CardsSkeleton } from "../../skeleton/cards";
 
+import { useApiInContext } from "@/utils/store/api";
 import { BaseItemKind } from "@jellyfin/sdk/lib/generated-client";
 import { getUserApi } from "@jellyfin/sdk/lib/utils/api/user-api";
 import { getUserLibraryApi } from "@jellyfin/sdk/lib/utils/api/user-library-api";
@@ -13,7 +14,7 @@ import { useRouteContext } from "@tanstack/react-router";
  * @description Latest Media Section
  */
 export const LatestMediaSection = ({ latestMediaLib }) => {
-	const api = useRouteContext({ from: "/" }).api;
+	const api = useApiInContext((s) => s.api);
 	const user = useQuery({
 		queryKey: ["user"],
 		queryFn: async () => {
