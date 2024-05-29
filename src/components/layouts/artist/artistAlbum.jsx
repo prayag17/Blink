@@ -17,10 +17,11 @@ import PlayButton from "../../buttons/playButton";
 
 import TrackList from "../tracksList/index";
 import "./albumArtist.scss";
+import { useApiInContext } from "@/utils/store/api";
 import { Link, useRouteContext } from "@tanstack/react-router";
 
 export const ArtistAlbum = ({ user, album, boxProps }) => {
-	const api = useRouteContext({ from: "/" }).api;
+	const api = useApiInContext((s) => s.api);
 	const albumTracks = useQuery({
 		queryKey: ["artist", "album", album.Id],
 		queryFn: async () => {

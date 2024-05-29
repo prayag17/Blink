@@ -29,22 +29,23 @@ export const Route = createFileRoute("/_api")({
 			try {
 				await getSystemApi(context.api).getPingSystem(); // Verify server status
 			} catch (error) {
+				console.error(error);
 				throw redirect({
 					to: "/setup/server/error",
-					search: {
-						redirect: location.href,
-					},
 				});
 			}
-			try {
-				await getUserApi(context.api).getCurrentUser(); // Verify user is able to authenticate
-			} catch (error) {
-				throw redirect({
-					to: "/login/manual",
-					search: {
-						redirect: location.href,
-					},
-				});
+			if (context.api.accessToken) {
+				try {
+					await getUserApi(context.api).getCurrentUser(); // Verify user is able to authenticate
+				} catch (error) {
+					console.error(error);
+					throw redirect({
+						to: "/login/manual",
+						search: {
+							redirect: location.href,
+						},
+					});
+				}
 			}
 		}
 	},

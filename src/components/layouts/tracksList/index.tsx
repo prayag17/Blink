@@ -8,6 +8,7 @@ import { getRuntimeMusic } from "../../../utils/date/time";
 import { useAudioPlayback } from "../../../utils/store/audioPlayback";
 import LikeButton from "../../buttons/likeButton";
 import "./tracksList.scss";
+import { useApiInContext } from "@/utils/store/api";
 import { useRouteContext } from "@tanstack/react-router";
 
 export default function TracksList({
@@ -15,7 +16,7 @@ export default function TracksList({
 	user,
 	queryKey,
 }: { tracks: BaseItemDto[]; user: UserDto; queryKey: [] }) {
-	const api = useRouteContext({ from: "/" }).api;
+	const api = useApiInContext((s) => s.api);
 
 	const [
 		currentItem,
@@ -58,11 +59,11 @@ export default function TracksList({
 			</div>
 			{tracks.map((track, index) => (
 				<div
-					className={currentItem.Id === track.Id ? "track playing" : "track"}
+					className={currentItem?.Id === track.Id ? "track playing" : "track"}
 					key={track.Id}
 					onClick={() => playTrack(index)}
 				>
-					{currentItem.Id === track.Id ? (
+					{currentItem?.Id === track.Id ? (
 						<span className="material-symbols-rounded ">equalizer</span>
 					) : (
 						<Typography>{track.IndexNumber ?? "-"}</Typography>
@@ -81,7 +82,7 @@ export default function TracksList({
 					>
 						{track.Name}
 					</Typography>
-					<Typography>{getRuntimeMusic(track.RunTimeTicks)}</Typography>
+					<Typography>{getRuntimeMusic(track?.RunTimeTicks)}</Typography>
 				</div>
 			))}
 		</div>

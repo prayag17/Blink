@@ -432,10 +432,13 @@ const Settings = () => {
 										<Typography variant="subtitle2">Client Version:</Typography>
 										<Chip
 											icon={
-												<span className="material-symbols-rounded">
+												<span
+													className="material-symbols-rounded"
+													style={{ "--wght": 500 }}
+												>
 													{updateInfo.data?.shouldUpdate
-														? "update"
-														: "update_disabled"}
+														? "new_release"
+														: "new_releases"}
 												</span>
 											}
 											label={
@@ -443,7 +446,9 @@ const Settings = () => {
 													{applicationVersion}
 												</Typography>
 											}
-											color={updateInfo.data?.shouldUpdate ? "error" : "info"}
+											color={
+												updateInfo.data?.shouldUpdate ? "error" : "success"
+											}
 											size="small"
 											style={{
 												width: "fit-content !important",
@@ -461,7 +466,7 @@ const Settings = () => {
 												<Chip
 													icon={
 														<span className="material-symbols-rounded">
-															update
+															new_releases
 														</span>
 													}
 													label={

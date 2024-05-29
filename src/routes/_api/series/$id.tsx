@@ -965,7 +965,12 @@ function SeriesTitlePage() {
 									return (
 										<motion.div
 											key={episode.Id}
-											onClick={() => navigate(`/episode/${episode.Id}`)}
+											onClick={() =>
+												navigate({
+													to: "/episode/$id",
+													params: { id: episode.Id },
+												})
+											}
 											initial={{
 												transform: "translateY(10px)",
 												opacity: 0,

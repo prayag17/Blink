@@ -56,16 +56,18 @@ export const LatestMediaSection = ({ latestMediaLib }) => {
 							imageType={"Primary"}
 							cardCaption={
 								item.Type === BaseItemKind.Episode
-									? `S${item.ParentIndexNumber}:E${item.IndexNumber} - ${item.Name}`
+									? `S${item.ParentIndexNumber ?? 0}:E${
+											item.IndexNumber ?? 0
+										} - ${item.Name ?? "Unknown"}`
 									: item.Type === BaseItemKind.Series
-									  ? `${item.ProductionYear} - ${
+										? `${item.ProductionYear} - ${
 												item.EndDate
 													? new Date(item.EndDate).toLocaleString([], {
 															year: "numeric",
-													  })
+														})
 													: "Present"
-										  }`
-									  : item.ProductionYear
+											}`
+										: item.ProductionYear
 							}
 							cardType={
 								item.Type === BaseItemKind.MusicAlbum ||

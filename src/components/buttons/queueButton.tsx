@@ -13,6 +13,7 @@ import { getTypeIcon } from "../utils/iconsCollection";
 import { getUserApi } from "@jellyfin/sdk/lib/utils/api/user-api";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import "./queueButton.scss";
+import { useApiInContext } from "@/utils/store/api";
 import { useRouteContext } from "@tanstack/react-router";
 const QueueButton = () => {
 	const api = useApiInContext((s) => s.api);

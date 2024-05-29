@@ -93,7 +93,6 @@ export const AppBar = () => {
 	const navigate = useNavigate();
 
 	const [display, setDisplay] = useState(false);
-	const [backButtonVisible, setBackButtonVisible] = useState(false);
 
 	const location = useLocation();
 
@@ -133,8 +132,6 @@ export const AppBar = () => {
 
 	const queryClient = useQueryClient();
 
-	const [tabValue] = useSettingsStore((state) => [state.tabValue]);
-
 	const handleLogout = async () => {
 		console.log("Logging out user...");
 		await api.logout();
@@ -160,11 +157,6 @@ export const AppBar = () => {
 			setDisplay(true);
 		}
 
-		if (location.pathname === "/home") {
-			setBackButtonVisible(false);
-		} else {
-			setBackButtonVisible(true);
-		}
 	}, [location]);
 
 	const [showDrawer, setShowDrawer] = useState(false);
@@ -207,10 +199,10 @@ export const AppBar = () => {
 					</div>
 
 					<div className="flex flex-row" style={{ gap: "0.6em" }}>
-						<IconButton onClick={() => navigate("/search")}>
+						<IconButton onClick={() => navigate({ to: "/search" })}>
 							<div className="material-symbols-rounded">search</div>
 						</IconButton>
-						<IconButton onClick={() => navigate("/favorite")}>
+						<IconButton onClick={() => navigate({ to: "/favorite" })}>
 							<div className="material-symbols-rounded">favorite</div>
 						</IconButton>
 						<IconButton sx={{ p: 0 }} onClick={handleMenuOpen}>
