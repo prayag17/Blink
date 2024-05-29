@@ -64,14 +64,32 @@ export const Card = ({
 	const api = useApiInContext((s) => s.api);
 	const navigate = useNavigate();
 	const defaultOnClick = () => {
-		if (availableSpecialRoutes.includes(item.Type)) {
-			navigate({ to: `/${item.Type.toLocaleLowerCase()}/${item.Id}` });
-		} else if (!!item.Role || item.Type === BaseItemKind.Person) {
-			navigate({ to: `/person/${item.Id}` });
-		} else if (item.Type === BaseItemKind.MusicArtist) {
-			navigate({ to: `/artist/${item.Id}` });
-		} else {
-			navigate({ to: `/item/${item.Id}` });
+
+		switch (item.Type) {
+			case BaseItemKind.BoxSet:
+				navigate({ to: "/boxset/$id", params: { id: item.Id } });
+				break;
+			case BaseItemKind.Episode:
+				navigate({ to: "/episode/$id", params: { id: item.Id } });
+				break;
+			case BaseItemKind.MusicAlbum:
+				navigate({ to: "/album/$id", params: { id: item.Id } });
+				break;
+			case BaseItemKind.MusicArtist:
+				navigate({ to: "/artist/$id", params: { id: item.Id } });
+				break;
+			case BaseItemKind.Person:
+				navigate({ to: "/person/$id", params: { id: item.Id } });
+				break;
+			case BaseItemKind.Series:
+				navigate({ to: "/series/$id", params: { id: item.Id } });
+				break;
+			case BaseItemKind.Playlist:
+				navigate({ to: "/playlist/$id", params: { id: item.Id } });
+				break;
+			default:
+				navigate({ to: "/item/$id", params: { id: item.Id } });
+				break;
 		}
 	};
 

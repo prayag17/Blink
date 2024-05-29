@@ -5,7 +5,8 @@ import { TanStackRouterVite } from '@tanstack/router-vite-plugin'
 import MillionLint from '@million/lint';
 import path from "path";
 
-// https://vitejs.dev/config/
+// const ReactCompilerConfig = {compilationMode: "annotation"}
+
 const plugins = [MillionLint.vite(),react(), svgr(), TanStackRouterVite()];
 export default defineConfig({
   plugins: plugins,

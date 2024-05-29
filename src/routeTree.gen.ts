@@ -264,36 +264,36 @@ declare module '@tanstack/react-router' {
     }
     '/_api/favorite/': {
       id: '/_api/favorite/'
-      path: '/favorite/'
-      fullPath: '/favorite/'
+      path: '/favorite'
+      fullPath: '/favorite'
       preLoaderRoute: typeof ApiFavoriteIndexImport
       parentRoute: typeof ApiImport
     }
     '/_api/home/': {
       id: '/_api/home/'
-      path: '/home/'
-      fullPath: '/home/'
+      path: '/home'
+      fullPath: '/home'
       preLoaderRoute: typeof ApiHomeIndexImport
       parentRoute: typeof ApiImport
     }
     '/_api/login/': {
       id: '/_api/login/'
-      path: '/login/'
-      fullPath: '/login/'
+      path: '/login'
+      fullPath: '/login'
       preLoaderRoute: typeof ApiLoginIndexImport
       parentRoute: typeof ApiImport
     }
     '/_api/player/': {
       id: '/_api/player/'
-      path: '/player/'
-      fullPath: '/player/'
+      path: '/player'
+      fullPath: '/player'
       preLoaderRoute: typeof ApiPlayerIndexImport
       parentRoute: typeof ApiImport
     }
     '/_api/search/': {
       id: '/_api/search/'
-      path: '/search/'
-      fullPath: '/search/'
+      path: '/search'
+      fullPath: '/search'
       preLoaderRoute: typeof ApiSearchIndexImport
       parentRoute: typeof ApiImport
     }
@@ -336,3 +336,122 @@ export const routeTree = rootRoute.addChildren({
 })
 
 /* prettier-ignore-end */
+
+/* ROUTE_MANIFEST_START
+{
+  "routes": {
+    "__root__": {
+      "filePath": "__root.tsx",
+      "children": [
+        "/",
+        "/_api",
+        "/setup/server/add",
+        "/setup/server/error",
+        "/setup/server/list"
+      ]
+    },
+    "/": {
+      "filePath": "index.tsx"
+    },
+    "/_api": {
+      "filePath": "_api.tsx",
+      "children": [
+        "/_api/album/$id",
+        "/_api/artist/$id",
+        "/_api/boxset/$id",
+        "/_api/episode/$id",
+        "/_api/item/$id",
+        "/_api/library/$id",
+        "/_api/login/list",
+        "/_api/login/manual",
+        "/_api/person/$id",
+        "/_api/playlist/$id",
+        "/_api/series/$id",
+        "/_api/favorite/",
+        "/_api/home/",
+        "/_api/login/",
+        "/_api/player/",
+        "/_api/search/",
+        "/_api/login/$userId/$userName"
+      ]
+    },
+    "/_api/album/$id": {
+      "filePath": "_api/album/$id.tsx",
+      "parent": "/_api"
+    },
+    "/_api/artist/$id": {
+      "filePath": "_api/artist/$id.tsx",
+      "parent": "/_api"
+    },
+    "/_api/boxset/$id": {
+      "filePath": "_api/boxset/$id.tsx",
+      "parent": "/_api"
+    },
+    "/_api/episode/$id": {
+      "filePath": "_api/episode/$id.tsx",
+      "parent": "/_api"
+    },
+    "/_api/item/$id": {
+      "filePath": "_api/item/$id.tsx",
+      "parent": "/_api"
+    },
+    "/_api/library/$id": {
+      "filePath": "_api/library/$id.tsx",
+      "parent": "/_api"
+    },
+    "/_api/login/list": {
+      "filePath": "_api/login/list.tsx",
+      "parent": "/_api"
+    },
+    "/_api/login/manual": {
+      "filePath": "_api/login/manual.tsx",
+      "parent": "/_api"
+    },
+    "/_api/person/$id": {
+      "filePath": "_api/person/$id.tsx",
+      "parent": "/_api"
+    },
+    "/_api/playlist/$id": {
+      "filePath": "_api/playlist/$id.jsx",
+      "parent": "/_api"
+    },
+    "/_api/series/$id": {
+      "filePath": "_api/series/$id.tsx",
+      "parent": "/_api"
+    },
+    "/setup/server/add": {
+      "filePath": "setup/server.add.tsx"
+    },
+    "/setup/server/error": {
+      "filePath": "setup/server.error.tsx"
+    },
+    "/setup/server/list": {
+      "filePath": "setup/server.list.tsx"
+    },
+    "/_api/favorite/": {
+      "filePath": "_api/favorite/index.tsx",
+      "parent": "/_api"
+    },
+    "/_api/home/": {
+      "filePath": "_api/home/index.tsx",
+      "parent": "/_api"
+    },
+    "/_api/login/": {
+      "filePath": "_api/login/index.tsx",
+      "parent": "/_api"
+    },
+    "/_api/player/": {
+      "filePath": "_api/player/index.tsx",
+      "parent": "/_api"
+    },
+    "/_api/search/": {
+      "filePath": "_api/search/index.jsx",
+      "parent": "/_api"
+    },
+    "/_api/login/$userId/$userName": {
+      "filePath": "_api/login/$userId.$userName.tsx",
+      "parent": "/_api"
+    }
+  }
+}
+ROUTE_MANIFEST_END */

@@ -6,6 +6,7 @@ import LikeButton from "../buttons/likeButton";
 import PlayButton from "../buttons/playButton";
 import TextLink from "../textLink";
 import "./musicTrack.scss";
+import { useApiInContext } from "@/utils/store/api";
 import { useRouteContext } from "@tanstack/react-router";
 
 /**
@@ -33,7 +34,7 @@ const MusicTrack = ({
 	trackIndex,
 	className = "",
 }) => {
-	const api = useRouteContext({ from: "/" }).api;
+	const api = useApiInContext((s) => s.api);
 	const [currentTrackItem] = useAudioPlayback((state) => [state.item]);
 
 	return (
@@ -87,7 +88,7 @@ const MusicTrack = ({
 					variant="subtitle1"
 					style={{
 						color:
-							item.Id === currentTrackItem.Id ? "hsl(337, 96%, 56%)" : "white",
+							item.Id === currentTrackItem?.Id ? "hsl(337, 96%, 56%)" : "white",
 					}}
 				>
 					{item.Name}

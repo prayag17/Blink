@@ -22,6 +22,7 @@ import {
 import { useIsFetching, useIsMutating } from "@tanstack/react-query";
 import {
 	Outlet,
+	ScrollRestoration,
 	createRootRoute,
 	createRootRouteWithContext,
 	useNavigate,
@@ -64,6 +65,7 @@ export const Route = createRootRouteWithContext<ApiContext>()({
 		console.error(error.error);
 	},
 	component: () => {
+		"use memo";
 		const isQueryFetching = useIsFetching();
 		const isMutating = useIsMutating();
 		const routeIsLoading = useRouterState().isLoading;
@@ -107,6 +109,7 @@ export const Route = createRootRouteWithContext<ApiContext>()({
 				<ThemeProvider theme={theme}>
 					<SnackbarProvider maxSnack={5}>
 						<CssBaseline />
+						<ScrollRestoration />
 						<Settings />
 						<EasterEgg />
 						<NProgress

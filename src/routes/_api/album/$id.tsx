@@ -38,7 +38,7 @@ import { useBackdropStore } from "@/utils/store/backdrop";
 import "./album.scss";
 
 import IconLink from "@/components/iconLink";
-import { createFileRoute } from "@tanstack/react-router";
+import { Link, createFileRoute } from "@tanstack/react-router";
 
 function TabPanel(props) {
 	const { children, value, index, ...other } = props;
@@ -387,10 +387,13 @@ function MusicAlbumTitlePage() {
 									</Typography>
 									<div className="item-detail-cast-grid">
 										{item.data.ArtistItems.map((artist) => (
-											<NavLink
+											<Link
 												className="item-detail-cast-card"
 												key={artist.Id}
-												to={`/artist/${artist.Id}`}
+												to="/artist/$id"
+												params={{
+													id: artist.Id,
+												}}
 											>
 												<div
 													style={{
@@ -430,7 +433,7 @@ function MusicAlbumTitlePage() {
 														{artist.Role}
 													</Typography>
 												</div>
-											</NavLink>
+											</Link>
 										))}
 									</div>
 								</div>

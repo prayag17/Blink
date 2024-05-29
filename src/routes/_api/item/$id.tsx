@@ -97,6 +97,7 @@ export const Route = createFileRoute("/_api/item/$id")({
 });
 
 function ItemDetail() {
+	"use memo";
 	const { id } = Route.useParams();
 
 	const api = Route.useRouteContext().api;

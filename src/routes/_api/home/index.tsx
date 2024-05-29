@@ -36,7 +36,7 @@ export const Route = createFileRoute("/_api/home/")({
 });
 
 function Home() {
-	const api = Route.useRouteContext().api;
+	const api = useApiInContext((s) => s.api);
 
 	const user = useQuery({
 		queryKey: ["user"],

@@ -1,3 +1,4 @@
+import { useApiInContext } from "@/utils/store/api";
 import { playItemFromQueue } from "@/utils/store/playback";
 import useQueue from "@/utils/store/queue";
 import { getUserApi } from "@jellyfin/sdk/lib/utils/api/user-api";
