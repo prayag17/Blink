@@ -2,13 +2,14 @@ import { BaseItemKind } from "@jellyfin/sdk/lib/generated-client";
 import { getItemsApi } from "@jellyfin/sdk/lib/utils/api/items-api";
 import Typography from "@mui/material/Typography";
 import { useQuery } from "@tanstack/react-query";
+import { useRouteContext } from "@tanstack/react-router";
 import React from "react";
-import { useApi } from "../../../../utils/store/api";
 import { Card } from "../../../card/card";
 import { CardScroller } from "../../../cardScroller/cardScroller";
 
 const GenreView = ({ libraryId, genreId, genreName, userId }) => {
-	const [api] = useApi((state) => [state.api]);
+	const api = useRouteContext({ from: "/" }).api;
+
 	const items = useQuery({
 		queryKey: ["library", "genreItem", genreId],
 		queryFn: async () => {

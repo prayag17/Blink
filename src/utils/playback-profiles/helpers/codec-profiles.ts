@@ -3,13 +3,6 @@
  */
 
 import {
-	type CodecProfile,
-	CodecType,
-	type ProfileCondition,
-	ProfileConditionType,
-	ProfileConditionValue,
-} from "@jellyfin/sdk/lib/generated-client";
-import {
 	isApple,
 	isChromiumBased,
 	isEdge,
@@ -20,7 +13,14 @@ import {
 	isWebOS,
 	isXbox,
 	safariVersion,
-} from "src/utils/browser-detection";
+} from "@/utils/browser-detection";
+import {
+	type CodecProfile,
+	CodecType,
+	type ProfileCondition,
+	ProfileConditionType,
+	ProfileConditionValue,
+} from "@jellyfin/sdk/lib/generated-client";
 
 /**
  * Gets the max video bitrate

@@ -1,4 +1,5 @@
-import React, { useEffect, useRef, useState } from "react";
+import type React from "react";
+import { useEffect, useRef, useState } from "react";
 
 import { relaunch } from "@tauri-apps/api/process";
 
@@ -19,28 +20,31 @@ import useScrollTrigger from "@mui/material/useScrollTrigger";
 import { red } from "@mui/material/colors";
 
 import {
-	NavLink as NavLinkBase,
-	Link as RouterLink,
-	type LinkProps as RouterLinkProps,
+	Link,
 	useLocation,
 	useNavigate,
-} from "react-router-dom";
+	useRouteContext,
+} from "@tanstack/react-router";
 
 import { getUserApi } from "@jellyfin/sdk/lib/utils/api/user-api";
 import { getUserViewsApi } from "@jellyfin/sdk/lib/utils/api/user-views-api";
 
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 
-import { delServer } from "../../utils/storage/servers";
-import { delUser } from "../../utils/storage/user";
-import { useDrawerStore } from "../../utils/store/drawer";
+import { delServer } from "@/utils/storage/servers";
+import { delUser } from "@/utils/storage/user";
+import { useDrawerStore } from "@/utils/store/drawer";
 import "./appBar.scss";
 
-import { EventEmitter as event } from "../../eventEmitter";
-import { useApi } from "../../utils/store/api";
+import { EventEmitter as event } from "@/eventEmitter";
 
 import { getTypeIcon } from "../utils/iconsCollection";
 
+import { useApiInContext } from "@/utils/store/api";
+import useSettingsStore, {
+	setSettingsDialogOpen,
+	setSettingsTabValue,
+} from "@/utils/store/settings";
 import {
 	Divider,
 	Drawer,
@@ -49,11 +53,7 @@ import {
 	ListItemButton,
 	ListItemText,
 } from "@mui/material";
-import logo from "../../assets/icon.svg";
-import useSettingsStore, {
-	setSettingsDialogOpen,
-	setSettingsTabValue,
-} from "../../utils/store/settings";
+import BackButton from "../buttons/backButton";
 
 interface ListItemLinkProps {
 	icon?: React.ReactElement;
@@ -61,24 +61,13 @@ interface ListItemLinkProps {
 	to: string;
 }
 
-const NavLink = React.forwardRef((props, ref) => (
-	<NavLinkBase
-		ref={ref}
-		{...props}
-		style={{ textDecoration: "none" }}
-		className={({ isActive }) =>
-			`${props.className} ${isActive ? props.activeClassName : ""}`
-		}
-	/>
-));
-
 function ListItemLink(props: ListItemLinkProps) {
 	const { icon, primary, to } = props;
 
 	return (
 		<li>
 			<ListItem
-				component={NavLink}
+				component={Link}
 				activeClassName="active"
 				className="library-drawer-item"
 				to={to}
@@ -100,11 +89,10 @@ function ListItemLink(props: ListItemLinkProps) {
 }
 
 export const AppBar = () => {
-	const [api] = useApi((state) => [state.api]);
+	const api = useApiInContext((s) => s.api);
 	const navigate = useNavigate();
 
 	const [display, setDisplay] = useState(false);
-	const [backButtonVisible, setBackButtonVisible] = useState(false);
 
 	const location = useLocation();
 
@@ -115,24 +103,18 @@ export const AppBar = () => {
 			return usr.data;
 		},
 		enabled: display,
-		networkMode: "always",
 	});
 	const libraries = useQuery({
 		queryKey: ["libraries"],
 		queryFn: async () => {
 			const libs = await getUserViewsApi(api).getUserViews({
-				userId: user.data.Id,
+				userId: user.data?.Id,
 			});
 			return libs.data;
 		},
 		enabled: !!user.data && !!api.accessToken,
 		networkMode: "always",
 	});
-	useEffect(() => {
-		if (user.isError) {
-			console.error(user.error);
-		}
-	}, [user]);
 
 	const trigger = useScrollTrigger({
 		disableHysteresis: true,
@@ -149,8 +131,6 @@ export const AppBar = () => {
 	};
 
 	const queryClient = useQueryClient();
-
-	const [tabValue] = useSettingsStore((state) => [state.tabValue]);
 
 	const handleLogout = async () => {
 		console.log("Logging out user...");
@@ -177,11 +157,6 @@ export const AppBar = () => {
 			setDisplay(true);
 		}
 
-		if (location.pathname === "/home") {
-			setBackButtonVisible(false);
-		} else {
-			setBackButtonVisible(true);
-		}
 	}, [location]);
 
 	const [showDrawer, setShowDrawer] = useState(false);
@@ -209,13 +184,8 @@ export const AppBar = () => {
 						<IconButton onClick={() => setShowDrawer(true)}>
 							<div className="material-symbols-rounded">menu</div>
 						</IconButton>
-						<IconButton
-							disabled={!backButtonVisible}
-							onClick={() => navigate(-1)}
-						>
-							<div className="material-symbols-rounded">arrow_back</div>
-						</IconButton>
-						<IconButton onClick={() => navigate("/home")}>
+						<BackButton />
+						<IconButton onClick={() => navigate({ to: "/home/" })}>
 							<div
 								className={
 									location.pathname === "/home"
@@ -229,10 +199,10 @@ export const AppBar = () => {
 					</div>
 
 					<div className="flex flex-row" style={{ gap: "0.6em" }}>
-						<IconButton onClick={() => navigate("/search")}>
+						<IconButton onClick={() => navigate({ to: "/search" })}>
 							<div className="material-symbols-rounded">search</div>
 						</IconButton>
-						<IconButton onClick={() => navigate("/favorite")}>
+						<IconButton onClick={() => navigate({ to: "/favorite" })}>
 							<div className="material-symbols-rounded">favorite</div>
 						</IconButton>
 						<IconButton sx={{ p: 0 }} onClick={handleMenuOpen}>

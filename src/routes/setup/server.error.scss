@@ -1,0 +1,16 @@
+.server-error {
+    &-container {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-direction: column;
+
+        gap: 1em;
+
+        .material-symbols-rounded {
+            font-size: 10em;
+            // --wght: 500;
+            // --opsz: 40
+        }
+    }
+}

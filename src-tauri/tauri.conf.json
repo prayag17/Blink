@@ -7,7 +7,7 @@
 		"distDir": "../dist"
 	},
 	"package": {
-		"productName": "JellyPlayer",
+		"productName": "Blink",
 		"version": "../package.json"
 	},
 	"tauri": {
@@ -46,7 +46,7 @@
 				"icons/icon.icns",
 				"icons/icon.ico"
 			],
-			"identifier": "com.jellyplayer.prayag17",
+			"identifier": "com.blink.prayag17",
 			"longDescription": "A modern desktop client for Jellyfin",
 			"macOS": {
 				"entitlements": null,
@@ -56,7 +56,7 @@
 				"signingIdentity": null
 			},
 			"resources": [],
-			"shortDescription": "JellyPlayer",
+			"shortDescription": "Blink",
 			"targets": ["deb", "appimage", "nsis", "app", "dmg", "updater"],
 			"windows": {
 				"certificateThumbprint": null,
@@ -68,10 +68,6 @@
 					"installerIcon": "icons/icon.ico",
 					"displayLanguageSelector": true,
 					"license": "../LICENSE"
-				},
-				"webviewInstallMode": {
-					"silent": true,
-					"type": "offlineInstaller"
 				}
 			},
 			"appimage": {
@@ -107,7 +103,7 @@
 				"height": 600,
 				"width": 800,
 				"resizable": true,
-				"title": "JellyPlayer",
+				"title": "Blink",
 				"visible": true,
 				"center": true,
 				"label": "main"

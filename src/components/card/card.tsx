@@ -3,7 +3,7 @@
 import React from "react";
 import { Component, useState } from "react";
 
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useRouteContext } from "@tanstack/react-router";
 
 import LinearProgress from "@mui/material/LinearProgress";
 import Typography from "@mui/material/Typography";
@@ -12,13 +12,13 @@ import {
 	type BaseItemDto,
 	BaseItemKind,
 } from "@jellyfin/sdk/lib/generated-client";
-import { useApi } from "../../utils/store/api";
 import LikeButton from "../buttons/likeButton";
 import MarkPlayedButton from "../buttons/markPlayedButton";
 import PlayButton from "../buttons/playButton";
 import ErrorBoundary from "../errorBoundary";
 import { getTypeIcon } from "../utils/iconsCollection";
 import "./card.scss";
+import { useApiInContext } from "@/utils/store/api";
 
 const cardImageAspectRatios = {
 	thumb: 1.777,
@@ -57,21 +57,39 @@ export const Card = ({
 	userId: string;
 	seriesId: string | null;
 	hideText: boolean;
-	onClick: Function | null;
+	onClick: () => null | null;
 	disableOverlay: boolean;
 	overrideIcon: any;
 }) => {
-	const [api] = useApi((state) => [state.api]);
+	const api = useApiInContext((s) => s.api);
 	const navigate = useNavigate();
 	const defaultOnClick = () => {
-		if (availableSpecialRoutes.includes(item.Type)) {
-			navigate(`/${item.Type.toLocaleLowerCase()}/${item.Id}`);
-		} else if (!!item.Role || item.Type === BaseItemKind.Person) {
-			navigate(`/person/${item.Id}`);
-		} else if (item.Type === BaseItemKind.MusicArtist) {
-			navigate(`/artist/${item.Id}`);
-		} else {
-			navigate(`/item/${item.Id}`);
+
+		switch (item.Type) {
+			case BaseItemKind.BoxSet:
+				navigate({ to: "/boxset/$id", params: { id: item.Id } });
+				break;
+			case BaseItemKind.Episode:
+				navigate({ to: "/episode/$id", params: { id: item.Id } });
+				break;
+			case BaseItemKind.MusicAlbum:
+				navigate({ to: "/album/$id", params: { id: item.Id } });
+				break;
+			case BaseItemKind.MusicArtist:
+				navigate({ to: "/artist/$id", params: { id: item.Id } });
+				break;
+			case BaseItemKind.Person:
+				navigate({ to: "/person/$id", params: { id: item.Id } });
+				break;
+			case BaseItemKind.Series:
+				navigate({ to: "/series/$id", params: { id: item.Id } });
+				break;
+			case BaseItemKind.Playlist:
+				navigate({ to: "/playlist/$id", params: { id: item.Id } });
+				break;
+			default:
+				navigate({ to: "/item/$id", params: { id: item.Id } });
+				break;
 		}
 	};
 

@@ -9,6 +9,7 @@ import Fab from "@mui/material/Fab";
 import LinearProgress from "@mui/material/LinearProgress";
 import Typography from "@mui/material/Typography";
 
+import { playAudio } from "@/utils/store/audioPlayback";
 import {
 	type BaseItemDto,
 	type BaseItemDtoQueryResult,
@@ -23,26 +24,20 @@ import { getItemsApi } from "@jellyfin/sdk/lib/utils/api/items-api";
 import { getPlaylistsApi } from "@jellyfin/sdk/lib/utils/api/playlists-api";
 import { getTvShowsApi } from "@jellyfin/sdk/lib/utils/api/tv-shows-api";
 import { useMutation } from "@tanstack/react-query";
+import { useNavigate, useRouteContext } from "@tanstack/react-router";
 import { useSnackbar } from "notistack";
-import { useNavigate } from "react-router-dom";
-import { useApi } from "../../utils/store/api";
-import { useAudioPlayback } from "../../utils/store/audioPlayback";
 
-import useQueue, { setQueue } from "../../utils/store/queue";
+import useQueue, { setQueue } from "@/utils/store/queue";
 
-import {
-	playItem,
-	setItem,
-	usePlaybackDataLoadStore,
-	usePlaybackStore,
-} from "../../utils/store/playback";
+import { playItem, usePlaybackDataLoadStore } from "@/utils/store/playback";
 
+import type PlayResult from "@//utils/types/playResult";
+import { getRuntimeCompact } from "@/utils/date/time";
+import playbackProfile from "@/utils/playback-profiles";
+import { useApiInContext } from "@/utils/store/api";
 import { getMediaInfoApi } from "@jellyfin/sdk/lib/utils/api/media-info-api";
 import type { SxProps } from "@mui/material";
 import type { AxiosResponse } from "axios";
-import type PlayResult from "src/utils/types/playResult";
-import { getRuntimeCompact } from "../../utils/date/time";
-import playbackProfile from "../../utils/playback-profiles";
 
 type PlayButtonProps = {
 	item: BaseItemDto;
@@ -83,53 +78,9 @@ const PlayButton = ({
 	playlistItemId = "",
 	trackIndex,
 }: PlayButtonProps) => {
-	const [api] = useApi((state) => [state.api]);
+	const api = useApiInContext((s) => s.api);
 
 	const navigate = useNavigate();
-	// const [
-	// 	setUrl,
-	// 	setPosition,
-	// 	setDuration,
-	// 	setItemId,
-	// 	setItemName,
-	// 	setAudioStreamIndex,
-	// 	setVideoStreamIndex,
-	// 	setSubtitleStreamIndex,
-	// 	setMediaSourceId,
-	// 	setUserId,
-	// 	setMediaContainer,
-	// 	setSeriesId,
-	// 	setEpisodeIndex,
-	// ] = usePlaybackStore((state) => [
-	// 	state.setUrl,
-	// 	state.setPosition,
-	// 	state.setDuration,
-	// 	state.setItemId,
-	// 	state.setItemName,
-	// 	state.setAudioStreamIndex,
-	// 	state.setVideoStreamIndex,
-	// 	state.setSubtitleStreamIndex,
-	// 	state.setMediaSourceId,
-	// 	state.setUserId,
-	// 	state.setMediaContainer,
-	// 	state.setSeriesId,
-	// 	state.setEpisodeIndex,
-	// ]);
-	const [
-		setAudioUrl,
-		setAudioDisplay,
-		setAudioItem,
-		setAudioTracks,
-		setCurrentTrack,
-		setPlaylistItemId,
-	] = useAudioPlayback((state) => [
-		state.setUrl,
-		state.setDisplay,
-		state.setItem,
-		state.setTracks,
-		state.setCurrentTrack,
-		state.setPlaylistItemId,
-	]);
 	const setPlaybackDataLoading = usePlaybackDataLoadStore(
 		(state) => state.setisPending,
 	);
@@ -255,24 +206,20 @@ const PlayButton = ({
 		},
 		onSuccess: (result: PlayResult | null) => {
 			if (trackIndex) {
-				setPlaylistItemId(playlistItemId);
-				// setCurrentTrack(trackIndex);
-				// setAudioTracks(result.Items);
-				setAudioUrl(
-					`${api.basePath}/Audio/${result.Items[trackIndex].Id}/universal?deviceId=${api.deviceInfo.id}&userId=${userId}&api_key=${api.accessToken}`,
-				);
-				setAudioItem(result.Items[trackIndex]);
-				setAudioDisplay(true);
-
-				setQueue(result.Items, trackIndex);
+				// Playlist Playback
+				enqueueSnackbar("Playlist playback is WIP", { variant: "info" });
 			} else if (audio) {
-				setAudioItem(result.Items[0]);
-				setAudioTracks(result.Items);
-				setAudioUrl(
-					`${api.basePath}/Audio/${result.Items[0].Id}/universal?deviceId=${api.deviceInfo.id}&userId=${userId}&api_key=${api.accessToken}`,
-				);
-				setAudioDisplay(true);
-				setQueue(result.Items, 0);
+				// Album/Individual audio track playback
+				const urlOptions = {
+					deviceId: api?.deviceInfo.id,
+					userId,
+					api_key: api?.accessToken,
+				};
+				const urlParams = new URLSearchParams(urlOptions).toString();
+
+				const playbackUrl = `${api.basePath}/Audio/${result?.item.Items[0].Id}/universal?${urlParams}`;
+				playAudio(playbackUrl, result?.item.Items[0], undefined);
+				setQueue(result?.item.Items ?? [], 0);
 			} else {
 				// Creates a queue containing all Episodes for a particular season(series) or collection of movies
 				const queue = result?.item.Items;
@@ -342,7 +289,7 @@ const PlayButton = ({
 					result?.mediaSource.MediaSources[0].Id,
 					result?.mediaSource.PlaySessionId,
 				);
-				navigate("/player");
+				navigate({ to: "/player" });
 			}
 		},
 		onSettled: () => {

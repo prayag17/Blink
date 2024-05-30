@@ -3,18 +3,18 @@
  */
 
 import {
-	DlnaProfileType,
-	EncodingContext,
-	type TranscodingProfile,
-} from "@jellyfin/sdk/lib/generated-client";
-import {
 	isAndroid,
 	isApple,
 	isChromiumBased,
 	isEdge,
 	isTizen,
 	isTv,
-} from "src/utils/browser-detection";
+} from "@/utils/browser-detection";
+import {
+	DlnaProfileType,
+	EncodingContext,
+	type TranscodingProfile,
+} from "@jellyfin/sdk/lib/generated-client";
 import { getSupportedAudioCodecs } from "./helpers/audio-formats";
 import { getSupportedMP4AudioCodecs } from "./helpers/mp4-audio-formats";
 import {

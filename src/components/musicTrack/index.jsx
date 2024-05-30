@@ -1,12 +1,13 @@
 import Typography from "@mui/material/Typography";
 import React from "react";
 import { getRuntimeMusic } from "../../utils/date/time";
-import { useApi } from "../../utils/store/api";
 import { useAudioPlayback } from "../../utils/store/audioPlayback";
 import LikeButton from "../buttons/likeButton";
 import PlayButton from "../buttons/playButton";
 import TextLink from "../textLink";
 import "./musicTrack.scss";
+import { useApiInContext } from "@/utils/store/api";
+import { useRouteContext } from "@tanstack/react-router";
 
 /**
  * @typedef {Object} Props
@@ -33,7 +34,7 @@ const MusicTrack = ({
 	trackIndex,
 	className = "",
 }) => {
-	const [api] = useApi((state) => [state.api]);
+	const api = useApiInContext((s) => s.api);
 	const [currentTrackItem] = useAudioPlayback((state) => [state.item]);
 
 	return (
@@ -87,7 +88,7 @@ const MusicTrack = ({
 					variant="subtitle1"
 					style={{
 						color:
-							item.Id === currentTrackItem.Id ? "hsl(337, 96%, 56%)" : "white",
+							item.Id === currentTrackItem?.Id ? "hsl(337, 96%, 56%)" : "white",
 					}}
 				>
 					{item.Name}

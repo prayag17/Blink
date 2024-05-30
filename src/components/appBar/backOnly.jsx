@@ -1,13 +1,13 @@
 import AppBar from "@mui/material/AppBar";
 import IconButton from "@mui/material/IconButton";
 import Toolbar from "@mui/material/Toolbar";
-import { useNavigate } from "react-router-dom";
+import { useRouter } from "@tanstack/react-router";
 
 export const AppBarBackOnly = () => {
-	const navigate = useNavigate();
+	const { history } = useRouter();
 
 	const handleBack = () => {
-		navigate(-1);
+		history.go(-1);
 	};
 
 	return (

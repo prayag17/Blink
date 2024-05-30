@@ -1,3 +1,5 @@
+import { playItemFromQueue } from "@/utils/store/playback";
+import useQueue from "@/utils/store/queue";
 import {
 	IconButton,
 	Menu,
@@ -5,18 +7,16 @@ import {
 	MenuList,
 	Typography,
 } from "@mui/material";
-import React, { useRef, useState } from "react";
-import { useApi } from "src/utils/store/api";
-import { playItemFromQueue } from "src/utils/store/playback";
-import useQueue from "src/utils/store/queue";
+import React, { useState } from "react";
 import { getTypeIcon } from "../utils/iconsCollection";
 
 import { getUserApi } from "@jellyfin/sdk/lib/utils/api/user-api";
 import { useMutation, useQuery } from "@tanstack/react-query";
-import { useVirtualizer } from "@tanstack/react-virtual";
 import "./queueButton.scss";
+import { useApiInContext } from "@/utils/store/api";
+import { useRouteContext } from "@tanstack/react-router";
 const QueueButton = () => {
-	const [api] = useApi((state) => [state.api]);
+	const api = useApiInContext((s) => s.api);
 	const [queueItems, currentItemIndex] = useQueue((state) => [
 		state.tracks,
 		state.currentItemIndex,
@@ -45,14 +45,6 @@ const QueueButton = () => {
 		},
 	});
 
-	const menuRef = useRef(null);
-	const virtualizer = useVirtualizer({
-		count: queueItems.length,
-		estimateSize: () => 86,
-		getScrollElement: () => menuRef.current,
-		overscan: 3,
-	});
-
 	return (
 		<>
 			<Menu
@@ -69,7 +61,6 @@ const QueueButton = () => {
 				}}
 				slotProps={{
 					paper: {
-						ref: menuRef,
 						style: {
 							maxHeight: "30em",
 							overflowX: "hidden",
@@ -80,32 +71,25 @@ const QueueButton = () => {
 			>
 				<MenuList
 					style={{
-						height: `${virtualizer.getTotalSize()}px`,
+						height: "fit-content",
 						width: " 32em",
 						position: "relative",
 					}}
 				>
-					{virtualizer.getVirtualItems().map((virtualItem) => {
-						const index = virtualItem.index;
-						const item = queueItems[index];
+					{queueItems.map((item, index) => {
 						return (
 							<MenuItem
 								className="queue-item"
 								disabled={index === currentItemIndex}
 								onClick={() => handlePlay.mutate({ index })}
-								key={virtualItem.key}
-								style={{
-									position: "absolute",
-									top: 0,
-									left: 0,
-									height: `${virtualItem.size}px`,
-									transform: `translateY(${virtualItem.start}px)`,
-								}}
+								key={item.Id}
 							>
 								<Typography variant="subtitle2">
-									{item.IndexNumberEnd
-										? `S${item.ParentIndexNumber}:E${item.IndexNumber} / ${item.IndexNumberEnd}`
-										: `S${item.ParentIndexNumber}:E${item.IndexNumber}`}
+									{item.Type === "Audio"
+										? item.IndexNumber ?? 0
+										: item.IndexNumberEnd
+											? `S${item.ParentIndexNumber}:E${item.IndexNumber} / ${item.IndexNumberEnd}`
+											: `S${item.ParentIndexNumber}:E${item.IndexNumber}`}
 								</Typography>
 								<div className="queue-item-image-container">
 									{item.ImageTags?.Primary ? (
@@ -113,6 +97,14 @@ const QueueButton = () => {
 											className="queue-item-image"
 											src={api?.getItemImageUrl(item?.Id, "Primary", {
 												tag: item.ImageTags?.Primary,
+											})}
+											alt={item.Name}
+										/>
+									) : item.AlbumPrimaryImageTag?.length > 0 ? (
+										<img
+											className="queue-item-image"
+											src={api?.getItemImageUrl(item?.AlbumId, "Primary", {
+												tag: item.AlbumPrimaryImageTag[0],
 											})}
 											alt={item.Name}
 										/>

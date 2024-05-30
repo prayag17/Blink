@@ -4,19 +4,13 @@ $image-size: 4em;
 	position: fixed;
 	bottom: 0;
 	right: 0;
-	background: rgb(0 0 0 / 0.6);
 	z-index: 10;
 	display: grid;
-	padding: 0.5em 1em;
-	// margin: 1em;
-	backdrop-filter: blur(10px);
-	// border-radius: 10px;
-	// overflow: hidden;
+	padding: 0.5em 1.5em;
 	gap: 1em;
 	box-shadow: 0 0 20px rgb(0 0 0 / 0.25);
-	border-top: 1.2px solid rgb(255 255 255 / 0.2);
-	grid-template-columns: 25% 1fr 25%;
-	
+	grid-template-columns: 30% 1fr 30%;
+	background: rgb(0 0 0 / 0.8) !important;
 	#waveform {
 		width: 100%;
 		transform: scaleY(0);
@@ -35,7 +29,7 @@ $image-size: 4em;
 	}
 	&-info {
 		display: grid;
-		gap: 0.5em;
+		gap: 1em;
 		grid-template-columns: minmax(0, $image-size) minmax(0, 1fr);
 		width: fit-content;
 		align-items: center;
@@ -53,14 +47,12 @@ $image-size: 4em;
 		
 		position: relative;
 		&-container {
-			border-radius: 5px;
+			border-radius: $border-radius_04;
 			position: relative;
 			overflow: hidden;
 			height: fit-content;
 			aspect-ratio: 1;
 			background: rgb(255 255 255 / 0.1);
-			
-			border: 1.2px solid rgb(255 255 255 / 0.1);
 		}
 		&-icon {
 			position: absolute;

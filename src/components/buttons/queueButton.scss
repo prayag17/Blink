@@ -7,24 +7,36 @@ $image-size: 5em;
         display: grid !important;
         opacity: 1 !important;
         gap: 1em;
+        height: 5em;
         grid-template-columns: 3em $image-size 1fr;
         justify-items: center;
         align-items: center;
         &-image{
-            max-height: $image-size;
-            max-width: $image-size;
+            max-height: 100%;
+            max-width: 100%;
             object-fit: cover;
             border-radius: $border-radius_04;
             overflow: hidden;
             &-container {
                 aspect-ratio: 1;
                 overflow: hidden;
-                width: $image-size;
-                height: $image-size;
+                height: 100%;
                 display: flex;
                 justify-content: center;
                 align-items: center;    
                 position: relative;
+            }
+            &-icon {
+                width: 100%;
+                height: 100%;
+                display: grid;
+                place-items: center;
+                background: rgb(255 255 255 / 0.2);
+                border-radius: 10px;
+                .material-symbols-rounded {
+                    font-size: 2em;
+                }
+                
             }
         }
         &-info{
@@ -35,7 +47,7 @@ $image-size: 5em;
         }
     }
     &-item.Mui-disabled {
-        .queue-item-image{
+        .queue-item-image,.queue-item-image-icon{
             opacity: 0.5 !important;
         }
     } 

@@ -29,7 +29,7 @@ export const theme = createTheme({
 		mode: "dark",
 	},
 	typography: {
-		fontFamily: "Noto Sans",
+		fontFamily: "Noto Sans Variable",
 	},
 	components: {
 		MuiButton: {

@@ -5,24 +5,23 @@ import Paper from "@mui/material/Paper";
 import Stack from "@mui/material/Stack";
 import Typography from "@mui/material/Typography";
 
-import { Link } from "react-router-dom";
-
 import { getItemsApi } from "@jellyfin/sdk/lib/utils/api/items-api";
 import { useQuery } from "@tanstack/react-query";
 
 import { getRuntimeMusic } from "../../../utils/date/time";
 
 import { SortOrder } from "@jellyfin/sdk/lib/generated-client";
-import { useApi } from "../../../utils/store/api";
 import { useAudioPlayback } from "../../../utils/store/audioPlayback";
 import LikeButton from "../../buttons/likeButton";
 import PlayButton from "../../buttons/playButton";
 
 import TrackList from "../tracksList/index";
 import "./albumArtist.scss";
+import { useApiInContext } from "@/utils/store/api";
+import { Link, useRouteContext } from "@tanstack/react-router";
 
 export const ArtistAlbum = ({ user, album, boxProps }) => {
-	const [api] = useApi((state) => [state.api]);
+	const api = useApiInContext((s) => s.api);
 	const albumTracks = useQuery({
 		queryKey: ["artist", "album", album.Id],
 		queryFn: async () => {
@@ -117,7 +116,7 @@ export const ArtistAlbum = ({ user, album, boxProps }) => {
 						</Typography>
 						<MuiLink
 							component={Link}
-							to={`/musicalbum/${album.Id}`}
+							to="/album/$Id"
 							variant="h2"
 							color="inherit"
 							underline="hover"
