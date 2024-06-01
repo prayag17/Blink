@@ -33,7 +33,7 @@
 		"@types/react-dom": "^18.3.0",
 		"axios": "^1.7.2",
 		"axios-tauri-api-adapter": "^0.2.1",
-		"babel-plugin-react-compiler": "0.0.0-experimental-592953e-20240517",
+		"babel-plugin-react-compiler": "0.0.0-experimental-938cd9a-20240601",
 		"blurhash": "^2.0.5",
 		"events": "^3.3.0",
 		"framer-motion": "^11.2.7",
