@@ -24,8 +24,8 @@ importers:
         specifier: ^5.0.22
         version: 5.0.22
       '@jellyfin/sdk':
-        specifier: 0.9.0
-        version: 0.9.0(axios@1.7.2)
+        specifier: 0.10.0
+        version: 0.10.0(axios@1.7.2)
       '@million/lint':
         specifier: 1.0.0-rc.13
         version: 1.0.0-rc.13(react@18.3.1)(rollup@4.18.0)
@@ -121,10 +121,10 @@ importers:
         version: 4.0.0
       tauri-plugin-log-api:
         specifier: github:tauri-apps/tauri-plugin-log#v1
-        version: https://codeload.github.com/tauri-apps/tauri-plugin-log/tar.gz/752531f21f626c9f9f1716a28c4a37054c679657
+        version: https://codeload.github.com/tauri-apps/tauri-plugin-log/tar.gz/60f1517c265a069234042bf1f695cc108c9e8e07
       tauri-plugin-store-api:
         specifier: github:tauri-apps/tauri-plugin-store
-        version: https://codeload.github.com/tauri-apps/tauri-plugin-store/tar.gz/b1ce9b38662a2990dddb30de1af88509a45e4625
+        version: https://codeload.github.com/tauri-apps/tauri-plugin-store/tar.gz/eb0d047ce88bdbe4e5fa232222a50eb8b81445b6
       typescript:
         specifier: ^5.4.5
         version: 5.4.5
@@ -626,8 +626,8 @@ packages:
     resolution: {integrity: sha512-GW1Iomhmm1o4Z+X57xGby8A35Cu9UZLL7pSMdqDBkD99U5cywff8F+8hLk5aBTzNubnsFAvWQ/fZjNwPsEn9lA==}
     engines: {node: '>=18.14.1'}
 
-  '@jellyfin/sdk@0.9.0':
-    resolution: {integrity: sha512-C8XmAE1LFIAJRYC8F9umlkjWW1lKrcQhCiILme5Da3XYhA8fvu57I1cucuOyFc5NqVPKeaQEOcoJMkuiNMejJw==}
+  '@jellyfin/sdk@0.10.0':
+    resolution: {integrity: sha512-fUUwiPOGQEFYxnS9olYkv7GXIX5N9JYdRBR8bapN86OhbHWzL1JHgWf/sAUcNTQGlCWMKTJqve4KFOQB1FlMAQ==}
     peerDependencies:
       axios: ^1.3.4
 
@@ -2136,12 +2136,12 @@ packages:
   svg-parser@2.0.4:
     resolution: {integrity: sha512-e4hG1hRwoOdRb37cIMSgzNsxyzKfayW6VOflrwvR+/bzrkyxY/31WkbgnQpgtrNp1SdpJvpUAGTa/ZoiPNDuRQ==}
 
-  tauri-plugin-log-api@https://codeload.github.com/tauri-apps/tauri-plugin-log/tar.gz/752531f21f626c9f9f1716a28c4a37054c679657:
-    resolution: {tarball: https://codeload.github.com/tauri-apps/tauri-plugin-log/tar.gz/752531f21f626c9f9f1716a28c4a37054c679657}
+  tauri-plugin-log-api@https://codeload.github.com/tauri-apps/tauri-plugin-log/tar.gz/60f1517c265a069234042bf1f695cc108c9e8e07:
+    resolution: {tarball: https://codeload.github.com/tauri-apps/tauri-plugin-log/tar.gz/60f1517c265a069234042bf1f695cc108c9e8e07}
     version: 0.0.0
 
-  tauri-plugin-store-api@https://codeload.github.com/tauri-apps/tauri-plugin-store/tar.gz/b1ce9b38662a2990dddb30de1af88509a45e4625:
-    resolution: {tarball: https://codeload.github.com/tauri-apps/tauri-plugin-store/tar.gz/b1ce9b38662a2990dddb30de1af88509a45e4625}
+  tauri-plugin-store-api@https://codeload.github.com/tauri-apps/tauri-plugin-store/tar.gz/eb0d047ce88bdbe4e5fa232222a50eb8b81445b6:
+    resolution: {tarball: https://codeload.github.com/tauri-apps/tauri-plugin-store/tar.gz/eb0d047ce88bdbe4e5fa232222a50eb8b81445b6}
     version: 0.0.0
 
   tiny-invariant@1.3.3:
@@ -2799,7 +2799,7 @@ snapshots:
 
   '@hono/node-server@1.11.1': {}
 
-  '@jellyfin/sdk@0.9.0(axios@1.7.2)':
+  '@jellyfin/sdk@0.10.0(axios@1.7.2)':
     dependencies:
       axios: 1.7.2
 
@@ -4573,11 +4573,11 @@ snapshots:
 
   svg-parser@2.0.4: {}
 
-  tauri-plugin-log-api@https://codeload.github.com/tauri-apps/tauri-plugin-log/tar.gz/752531f21f626c9f9f1716a28c4a37054c679657:
+  tauri-plugin-log-api@https://codeload.github.com/tauri-apps/tauri-plugin-log/tar.gz/60f1517c265a069234042bf1f695cc108c9e8e07:
     dependencies:
       '@tauri-apps/api': 1.5.3
 
-  tauri-plugin-store-api@https://codeload.github.com/tauri-apps/tauri-plugin-store/tar.gz/b1ce9b38662a2990dddb30de1af88509a45e4625:
+  tauri-plugin-store-api@https://codeload.github.com/tauri-apps/tauri-plugin-store/tar.gz/eb0d047ce88bdbe4e5fa232222a50eb8b81445b6:
     dependencies:
       '@tauri-apps/api': 1.5.3
 
