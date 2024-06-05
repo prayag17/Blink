@@ -19,7 +19,7 @@
 		"@fontsource-variable/noto-sans": "^5.0.5",
 		"@fontsource/noto-sans": "^5.0.22",
 		"@jellyfin/sdk": "0.9.0",
-		"@million/lint": "1.0.0-rc.13",
+		"@million/lint": "1.0.0-rc.26",
 		"@mui/lab": "5.0.0-alpha.170",
 		"@mui/material": "6.0.0-alpha.6",
 		"@tanem/react-nprogress": "^5.0.51",
