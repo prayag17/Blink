@@ -65,7 +65,6 @@ export const Route = createRootRouteWithContext<ApiContext>()({
 		console.error(error.error);
 	},
 	component: () => {
-		"use memo";
 		const isQueryFetching = useIsFetching();
 		const isMutating = useIsMutating();
 		const routeIsLoading = useRouterState().isLoading;

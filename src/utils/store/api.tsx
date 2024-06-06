@@ -52,7 +52,7 @@ export const jellyfin = new Jellyfin({
 // 	jellyfin: jellyfin,
 // }));
 
-const ApiContext = createContext(null);
+export const ApiContext = createContext(null);
 
 export const ApiProvider = ({ children }) => {
 	const [store] = useState(() =>
@@ -61,10 +61,18 @@ export const ApiProvider = ({ children }) => {
 			deviceId: deviceId,
 			jellyfin: jellyfin,
 			createApi: (serverAddress, accessToken?) =>
-				set((state) => ({
-					...state,
-					api: jellyfin.createApi(serverAddress, accessToken, axiosClient),
-				})),
+				set((state) => {
+					const apiTemp = state.jellyfin.createApi(
+						serverAddress,
+						accessToken,
+						axiosClient,
+					);
+					console.info(apiTemp);
+					return {
+						...state,
+						api: apiTemp,
+					};
+				}),
 		})),
 	)
 	return <ApiContext.Provider value={store}>{children}</ApiContext.Provider>;

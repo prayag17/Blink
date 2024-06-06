@@ -25,19 +25,22 @@ import { setBackdrop, useBackdropStore } from "@/utils/store/backdrop";
 
 import CarouselSlide from "@/components/carouselSlide";
 import { ErrorNotice } from "@/components/notices/errorNotice/errorNotice";
-import { useApiInContext } from "@/utils/store/api";
+import { ApiContext, useApiInContext } from "@/utils/store/api";
 import { BaseItemKind, ItemFields } from "@jellyfin/sdk/lib/generated-client";
 import Typography from "@mui/material/Typography";
 import { useSnackbar } from "notistack";
 import { ErrorBoundary } from "react-error-boundary";
+import { useStore } from "zustand";
 
 export const Route = createFileRoute("/_api/home/")({
 	component: Home,
+	onError: (err) => {
+		console.log(err);
+	},
 });
 
 function Home() {
 	const api = useApiInContext((s) => s.api);
-
 	const user = useQuery({
 		queryKey: ["user"],
 		queryFn: async () => {

@@ -1,18 +1,11 @@
-import {
-	getAllServers,
-	getDefaultServer,
-	getServer,
-} from "@/utils/storage/servers";
+import { getDefaultServer, getServer } from "@/utils/storage/servers";
 import { getUser } from "@/utils/storage/user";
-import { axiosClient, useApiInContext } from "@/utils/store/api";
 import { getSystemApi } from "@jellyfin/sdk/lib/utils/api/system-api";
 import { getUserApi } from "@jellyfin/sdk/lib/utils/api/user-api";
-import { Outlet, createFileRoute, redirect } from "@tanstack/react-router";
-import React from "react";
-import { Suspense } from "react";
+import { createFileRoute, redirect } from "@tanstack/react-router";
 
 export const Route = createFileRoute("/_api")({
-	beforeLoad: async ({ context, location }) => {
+	beforeLoad: async ({ context }) => {
 		console.log(context.api);
 		if (!context.api) {
 			const currentServerId = await getDefaultServer();
@@ -26,14 +19,6 @@ export const Route = createFileRoute("/_api")({
 				}
 			}
 		} else if (context.api) {
-			try {
-				await getSystemApi(context.api).getPingSystem(); // Verify server status
-			} catch (error) {
-				console.error(error);
-				throw redirect({
-					to: "/setup/server/error",
-				});
-			}
 			if (context.api.accessToken) {
 				try {
 					await getUserApi(context.api).getCurrentUser(); // Verify user is able to authenticate

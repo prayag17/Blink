@@ -38,8 +38,7 @@ export const queryClient = new QueryClient({
 });
 
 function ProviderWrapper() {
-	const api = useApiInContext((s) => s.api);
-	const createApi = useApiInContext((s) => s.createApi);
+	const [api, createApi] = useApiInContext((s) => [s.api, s.createApi]);
 	return <RouterProvider router={router} context={{ api, createApi }} />;
 }
 
