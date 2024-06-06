@@ -84,8 +84,8 @@ importers:
         specifier: ^1.7.15
         version: 1.7.15
       material-symbols:
-        specifier: ^0.18.0
-        version: 0.18.0
+        specifier: ^0.20.0
+        version: 0.20.0
       million:
         specifier: ^3.1.6
         version: 3.1.6(rollup@4.18.0)
@@ -121,10 +121,10 @@ importers:
         version: 4.0.0
       tauri-plugin-log-api:
         specifier: github:tauri-apps/tauri-plugin-log#v1
-        version: https://codeload.github.com/tauri-apps/tauri-plugin-log/tar.gz/752531f21f626c9f9f1716a28c4a37054c679657
+        version: https://codeload.github.com/tauri-apps/tauri-plugin-log/tar.gz/7b35a594d70ed6ea68573507920f451e8e1cd9c5
       tauri-plugin-store-api:
         specifier: github:tauri-apps/tauri-plugin-store
-        version: https://codeload.github.com/tauri-apps/tauri-plugin-store/tar.gz/b1ce9b38662a2990dddb30de1af88509a45e4625
+        version: https://codeload.github.com/tauri-apps/tauri-plugin-store/tar.gz/51717bbde4101f44d3e2191907419f6f7085e2ef
       typescript:
         specifier: ^5.4.5
         version: 5.4.5
@@ -1064,10 +1064,6 @@ packages:
   '@tanstack/virtual-core@3.5.0':
     resolution: {integrity: sha512-KnPRCkQTyqhanNC0K63GBG3wA8I+D1fQuVnAvcBF8f13akOKeQp1gSbu6f77zCxhEk727iV5oQnbHLYzHrECLg==}
 
-  '@tauri-apps/api@1.5.3':
-    resolution: {integrity: sha512-zxnDjHHKjOsrIzZm6nO5Xapb/BxqUq1tc7cGkFXsFkGTsSWgCPH1D8mm0XS9weJY2OaR73I3k3S+b7eSzJDfqA==}
-    engines: {node: '>= 14.6.0', npm: '>= 6.6.0', yarn: '>= 1.19.1'}
-
   '@tauri-apps/api@1.5.6':
     resolution: {integrity: sha512-LH5ToovAHnDVe5Qa9f/+jW28I6DeMhos8bNDtBOmmnaDpPmJmYLyHdeDblAWWWYc7KKRDg9/66vMuKyq0WIeFA==}
     engines: {node: '>= 14.6.0', npm: '>= 6.6.0', yarn: '>= 1.19.1'}
@@ -1692,8 +1688,8 @@ packages:
   markdown-table@3.0.3:
     resolution: {integrity: sha512-Z1NL3Tb1M9wH4XESsCDEksWoKTdlUafKc4pt0GRwjUyXaCFZ+dc3g2erqB6zm3szA2IUSi7VnPI+o/9jnxh9hw==}
 
-  material-symbols@0.18.0:
-    resolution: {integrity: sha512-U+b96KpXsN+sA9Y3b/50t6Z1rJPfh2UvHCvwsZRJtB6IlbYMhZw6E6kvfelhlOhm32qX43SSlVIemqDFkPjh/Q==}
+  material-symbols@0.20.0:
+    resolution: {integrity: sha512-bTxLbVDimYqe1+iY0qcWXJSqoxKfQhzfdVLlvi8DegHAuSJ93oXhMjHY95zOVcgKUsLjszR2heIYhLWjobE1BQ==}
 
   mdast-util-find-and-replace@3.0.1:
     resolution: {integrity: sha512-SG21kZHGC3XRTSUhtofZkBzZTJNM5ecCi0SK2IMKmSXR8vO3peL+kb1O0z7Zl83jKtutG4k5Wv/W7V3/YHvzPA==}
@@ -2136,12 +2132,12 @@ packages:
   svg-parser@2.0.4:
     resolution: {integrity: sha512-e4hG1hRwoOdRb37cIMSgzNsxyzKfayW6VOflrwvR+/bzrkyxY/31WkbgnQpgtrNp1SdpJvpUAGTa/ZoiPNDuRQ==}
 
-  tauri-plugin-log-api@https://codeload.github.com/tauri-apps/tauri-plugin-log/tar.gz/752531f21f626c9f9f1716a28c4a37054c679657:
-    resolution: {tarball: https://codeload.github.com/tauri-apps/tauri-plugin-log/tar.gz/752531f21f626c9f9f1716a28c4a37054c679657}
+  tauri-plugin-log-api@https://codeload.github.com/tauri-apps/tauri-plugin-log/tar.gz/7b35a594d70ed6ea68573507920f451e8e1cd9c5:
+    resolution: {tarball: https://codeload.github.com/tauri-apps/tauri-plugin-log/tar.gz/7b35a594d70ed6ea68573507920f451e8e1cd9c5}
     version: 0.0.0
 
-  tauri-plugin-store-api@https://codeload.github.com/tauri-apps/tauri-plugin-store/tar.gz/b1ce9b38662a2990dddb30de1af88509a45e4625:
-    resolution: {tarball: https://codeload.github.com/tauri-apps/tauri-plugin-store/tar.gz/b1ce9b38662a2990dddb30de1af88509a45e4625}
+  tauri-plugin-store-api@https://codeload.github.com/tauri-apps/tauri-plugin-store/tar.gz/51717bbde4101f44d3e2191907419f6f7085e2ef:
+    resolution: {tarball: https://codeload.github.com/tauri-apps/tauri-plugin-store/tar.gz/51717bbde4101f44d3e2191907419f6f7085e2ef}
     version: 0.0.0
 
   tiny-invariant@1.3.3:
@@ -3269,8 +3265,6 @@ snapshots:
 
   '@tanstack/virtual-core@3.5.0': {}
 
-  '@tauri-apps/api@1.5.3': {}
-
   '@tauri-apps/api@1.5.6': {}
 
   '@tauri-apps/cli-darwin-arm64@1.5.14':
@@ -3873,7 +3867,7 @@ snapshots:
 
   markdown-table@3.0.3: {}
 
-  material-symbols@0.18.0: {}
+  material-symbols@0.20.0: {}
 
   mdast-util-find-and-replace@3.0.1:
     dependencies:
@@ -4573,13 +4567,13 @@ snapshots:
 
   svg-parser@2.0.4: {}
 
-  tauri-plugin-log-api@https://codeload.github.com/tauri-apps/tauri-plugin-log/tar.gz/752531f21f626c9f9f1716a28c4a37054c679657:
+  tauri-plugin-log-api@https://codeload.github.com/tauri-apps/tauri-plugin-log/tar.gz/7b35a594d70ed6ea68573507920f451e8e1cd9c5:
     dependencies:
-      '@tauri-apps/api': 1.5.3
+      '@tauri-apps/api': 1.5.6
 
-  tauri-plugin-store-api@https://codeload.github.com/tauri-apps/tauri-plugin-store/tar.gz/b1ce9b38662a2990dddb30de1af88509a45e4625:
+  tauri-plugin-store-api@https://codeload.github.com/tauri-apps/tauri-plugin-store/tar.gz/51717bbde4101f44d3e2191907419f6f7085e2ef:
     dependencies:
-      '@tauri-apps/api': 1.5.3
+      '@tauri-apps/api': 1.5.6
 
   tiny-invariant@1.3.3: {}
 
