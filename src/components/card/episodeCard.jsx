@@ -10,6 +10,7 @@ import { Blurhash } from "react-blurhash";
 import "./card.scss";
 
 import { getRuntimeCompact } from "@/utils/date/time";
+import { useApiInContext } from "@/utils/store/api";
 import { useNavigate, useRouteContext } from "@tanstack/react-router";
 import LikeButton from "../buttons/likeButton";
 import MarkPlayedButton from "../buttons/markPlayedButton";
@@ -43,7 +44,7 @@ export const EpisodeCard = ({
 	disableRunTime = false,
 	onClick,
 }) => {
-	const api = useRouteContext({ from: "/" }).api;
+	const api = useApiInContext((s) => s.api);
 	const navigate = useNavigate();
 	const defaultOnClick = () => {
 		navigate({ to: `/episode/${item.Id}` });

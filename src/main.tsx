@@ -12,6 +12,7 @@ const router = createRouter({
 		api: undefined!,
 		createApi: undefined!,
 	},
+	defaultPreload: "intent",
 });
 
 // Register the router instance for type safety
@@ -21,9 +22,6 @@ declare module "@tanstack/react-router" {
 	}
 }
 
-import { ThemeProvider } from "@mui/material";
-import { SnackbarProvider } from "notistack";
-import { theme } from "./theme";
 import { ApiProvider, useApiInContext } from "./utils/store/api";
 
 export const queryClient = new QueryClient({

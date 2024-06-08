@@ -11,6 +11,7 @@ import Typography from "@mui/material/Typography";
 import {
 	type BaseItemDto,
 	BaseItemKind,
+	type ImageType,
 } from "@jellyfin/sdk/lib/generated-client";
 import LikeButton from "../buttons/likeButton";
 import MarkPlayedButton from "../buttons/markPlayedButton";
@@ -49,22 +50,21 @@ export const Card = ({
 	overrideIcon,
 }: {
 	item: BaseItemDto;
-	cardTitle: string | null;
-	cardCaption: string | null;
-	imageType: string;
+	cardTitle: string | undefined | null;
+	cardCaption?: string | null | number;
+	imageType: ImageType;
 	cardType: string;
-	queryKey: [];
-	userId: string;
-	seriesId: string | null;
-	hideText: boolean;
-	onClick: () => null | null;
-	disableOverlay: boolean;
-	overrideIcon: any;
+	queryKey?: string[];
+	userId?: string;
+	seriesId?: string | null;
+	hideText?: boolean;
+	onClick?: () => void;
+	disableOverlay?: boolean;
+	overrideIcon?: any;
 }) => {
 	const api = useApiInContext((s) => s.api);
 	const navigate = useNavigate();
 	const defaultOnClick = () => {
-
 		switch (item.Type) {
 			case BaseItemKind.BoxSet:
 				navigate({ to: "/boxset/$id", params: { id: item.Id } });

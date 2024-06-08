@@ -103,6 +103,7 @@ export const AppBar = () => {
 			return usr.data;
 		},
 		enabled: display,
+		throwOnError: true,
 	});
 	const libraries = useQuery({
 		queryKey: ["libraries"],

@@ -14,12 +14,12 @@ import {
 	setDefaultServer,
 } from "@/utils/storage/servers";
 import { delUser } from "@/utils/storage/user";
-import { createApi } from "@/utils/store/api";
 import { setBackdrop } from "@/utils/store/backdrop";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useSnackbar } from "notistack";
 import "./serverList.scss";
+import { useApiInContext } from "@/utils/store/api";
 
 export const Route = createFileRoute("/setup/server/list")({
 	component: ServerList,
@@ -29,6 +29,8 @@ function ServerList() {
 	const navigate = useNavigate();
 	const [serverState, setServerState] = useState(null);
 	const { enqueueSnackbar } = useSnackbar();
+
+	const createApi = useApiInContext((s) => s.createApi);
 
 	const queryClient = useQueryClient();
 

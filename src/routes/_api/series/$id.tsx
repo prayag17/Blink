@@ -55,7 +55,7 @@ import TrailerButton from "@/components/buttons/trailerButton";
 import ShowMoreText from "@/components/showMoreText";
 import { SeasonSelectorSkeleton } from "@/components/skeleton/seasonSelector";
 import { getTypeIcon } from "@/components/utils/iconsCollection";
-import { useBackdropStore } from "@/utils/store/backdrop";
+import { setBackdrop, useBackdropStore } from "@/utils/store/backdrop";
 
 import IconLink from "@/components/iconLink";
 import EpisodeSkeleton from "@/components/skeleton/episode";
@@ -173,9 +173,10 @@ function SeriesTitlePage() {
 		refetchOnWindowFocus: true,
 	});
 
-	const [backdropImage, setBackdropImage] = useState(() => {
-		const result = sessionStorage.getItem(`backdrop-${item.data?.Id}`);
-		return result ?? "0";
+	const [backdropImage, setBackdropImage] = useState<SeriesBackdropImage>(() => {
+		const url = sessionStorage.getItem(`backdrop-${item.data?.Id}`);
+		const key = sessionStorage.getItem(`backdrop-${item.data?.Id}-key`);
+		return { url, key };
 	});
 	const [backdropImageLoaded, setBackdropImageLoaded] = useState(false);
 
@@ -226,7 +227,6 @@ function SeriesTitlePage() {
 		},
 		enabled: item.isSuccess,
 	});
-	const [setAppBackdrop] = useBackdropStore((state) => [state.setBackdrop]);
 
 	const [directors, setDirectors] = useState([]);
 	const [writers, setWriters] = useState([]);
@@ -235,17 +235,18 @@ function SeriesTitlePage() {
 
 	useLayoutEffect(() => {
 		if (item.isSuccess) {
-			setBackdropImage(
-				api.getItemImageUrl(item.data?.Id, "Backdrop", {
-					tag: item.data?.BackdropImageTags[0],
-				}),
-			);
-			setAppBackdrop(
-				api.getItemImageUrl(item.data?.Id, "Backdrop", {
-					tag: item.data?.BackdropImageTags[0],
-				}),
-				item.data.Id,
-			);
+			// setBackdropImage({
+			// 	url: api.getItemImageUrl(item.data?.Id, "Backdrop", {
+			// 		tag: item.data?.BackdropImageTags[0],
+			// 	}),
+			// 	key: item.data?.BackdropImageTags[0],
+			// });
+			// setBackdrop(
+			// 	api.getItemImageUrl(item.data?.Id, "Backdrop", {
+			// 		tag: item.data?.BackdropImageTags[0],
+			// 	}),
+			// 	item.data.Id,
+			// );
 			const direTp = item.data.People.filter((itm) => itm.Type === "Director");
 			setDirectors(direTp);
 			const writeTp = item.data.People.filter((itm) => itm.Type === "Writer");
@@ -286,13 +287,17 @@ function SeriesTitlePage() {
 					tag: currentSeasonItem.data.BackdropImageTags[0],
 				}),
 			);
-			setBackdropImage(
-				api.getItemImageUrl(currentSeasonItem.data.Id, "Backdrop", {
-					tag: currentSeasonItem.data.BackdropImageTags[0],
-				}),
-				currentSeasonItem.data.Id,
+			sessionStorage.setItem(
+				`backdrop-${item.data?.Id}-key`,
+				currentSeasonItem.data.BackdropImageTags[0],
 			);
-			setAppBackdrop(
+			setBackdropImage({
+				url: api.getItemImageUrl(item.data?.Id, "Backdrop", {
+					tag: item.data?.BackdropImageTags[0],
+				}),
+				key: item.data?.BackdropImageTags[0],
+			});
+			setBackdrop(
 				api.getItemImageUrl(currentSeasonItem.data.Id, "Backdrop", {
 					tag: currentSeasonItem.data.BackdropImageTags[0],
 				}),
@@ -306,13 +311,17 @@ function SeriesTitlePage() {
 					tag: item.data.BackdropImageTags[0],
 				}),
 			);
-			setBackdropImage(
-				api.getItemImageUrl(item.data.Id, "Backdrop", {
-					tag: item.data.BackdropImageTags[0],
-				}),
-				item.data.Id,
+			sessionStorage.setItem(
+				`backdrop-${item.data?.Id}-key`,
+				currentSeasonItem.data.BackdropImageTags[0],
 			);
-			setAppBackdrop(
+			setBackdropImage({
+				url: api.getItemImageUrl(item.data?.Id, "Backdrop", {
+					tag: item.data?.BackdropImageTags[0],
+				}),
+				key: item.data?.BackdropImageTags[0],
+			});
+			setBackdrop(
 				api.getItemImageUrl(item.data.Id, "Backdrop", {
 					tag: item.data.BackdropImageTags[0],
 				}),
@@ -369,9 +378,9 @@ function SeriesTitlePage() {
 						<AnimatePresence mode="wait">
 							{item.data.BackdropImageTags ? (
 								<motion.img
-									key={currentSeasonItem.dataUpdatedAt}
+									key={backdropImage.key}
 									alt={item.data.Name}
-									src={backdropImage}
+									src={backdropImage.url}
 									className="item-hero-backdrop"
 									initial={{
 										opacity: 0,

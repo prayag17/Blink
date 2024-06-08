@@ -28,7 +28,7 @@ import React, { useEffect, useState } from "react";
 
 import logo from "@/assets/logo.png";
 
-import { createApi, jellyfin, useApiInContext } from "@/utils/store/api";
+import { jellyfin, useApiInContext } from "@/utils/store/api";
 import { useCentralStore } from "@/utils/store/central";
 import { getSystemApi } from "@jellyfin/sdk/lib/utils/api/system-api";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
@@ -64,7 +64,9 @@ const Settings = () => {
 		state.dialogOpen,
 		state.tabValue,
 	]);
-		const api = useApiInContext((s) => s.api);
+	
+	const api = useApiInContext((s) => s.api);
+	const createApi = useApiInContext((s) => s.createApi);
 
 	const systemInfo = useQuery({
 		queryKey: ["about", "systemInfo"],

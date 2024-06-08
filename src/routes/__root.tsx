@@ -23,9 +23,7 @@ import { useIsFetching, useIsMutating } from "@tanstack/react-query";
 import {
 	Outlet,
 	ScrollRestoration,
-	createRootRoute,
 	createRootRouteWithContext,
-	useNavigate,
 	useRouterState,
 } from "@tanstack/react-router";
 import { TanStackRouterDevtools } from "@tanstack/router-devtools";

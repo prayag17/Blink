@@ -12,10 +12,10 @@ import { useSnackbar } from "notistack";
 
 import { AppBarBackOnly } from "@/components/appBar/backOnly.jsx";
 import { AvatarImage } from "@/components/avatar/avatar.jsx";
-import { createApi } from "@/utils/store/api.js";
 import "./login.scss";
 
 import { saveUser } from "@/utils/storage/user";
+import { useApiInContext } from "@/utils/store/api";
 import { setBackdrop } from "@/utils/store/backdrop.js";
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import React, { useLayoutEffect, useState } from "react";
@@ -27,7 +27,8 @@ export const Route = createFileRoute("/_api/login/$userId/$userName")({
 function LoginUser() {
 	const { userName, userId } = Route.useParams();
 
-	const api = Route.useRouteContext().api;
+	const api = useApiInContext((s) => s.api);
+	const createApi = useApiInContext((s) => s.createApi);
 
 	const [password, setPassword] = useState({
 		showpass: false,

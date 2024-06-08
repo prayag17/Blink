@@ -1,0 +1,31 @@
+.slider {
+    position: relative;
+
+    &-track {
+        overflow-y: hidden;
+        overflow-x: auto;
+        white-space: nowrap;
+        position: relative;
+        overscroll-behavior-x: contain;
+        margin: 0.5em 1em;
+
+        &-item {
+            display: inline-block;
+            // align-self: top;
+            padding: 0.5em 0;
+        }
+    }
+
+    &-button {
+        position: absolute !important;
+        bottom: 1.3em;
+
+        &.left {
+            left: -1.2em;
+        }
+
+        &.right {
+            right: -1.2em;
+        }
+    }
+}
