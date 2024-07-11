@@ -1,4 +1,4 @@
-import { relaunch } from "@tauri-apps/api/process";
+import { relaunch } from "@tauri-apps/plugin-process";
 
 export const handleRelaunch = async (_event: unknown, reason?: string) => {
 	if (reason && reason === "backdropClick") {

@@ -54,7 +54,7 @@ function ServerList() {
 			queryClient.removeQueries();
 		},
 		onSuccess: async () => {
-			navigate({ to: "/login/index" });
+			navigate({ to: "/login" });
 		},
 		onError: (error) => {
 			console.error(error);

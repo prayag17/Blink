@@ -46,9 +46,9 @@ import type { RecommendedServerInfo } from "@jellyfin/sdk";
 import { LoadingButton } from "@mui/lab";
 import { red, yellow } from "@mui/material/colors";
 import { useNavigate, useRouteContext } from "@tanstack/react-router";
-import { relaunch } from "@tauri-apps/api/process";
-import { checkUpdate, installUpdate } from "@tauri-apps/api/updater";
-import { enqueueSnackbar, useSnackbar } from "notistack";
+import { relaunch } from "@tauri-apps/plugin-process";
+import { type Update, check } from "@tauri-apps/plugin-updater";
+import { useSnackbar } from "notistack";
 
 const motionConfig = {
 	initial: {
@@ -93,7 +93,7 @@ const Settings = () => {
 
 	const updateInfo = useQuery({
 		queryKey: ["about", "updater"],
-		queryFn: async () => await checkUpdate(),
+		queryFn: async () => await check(),
 		enabled: open,
 	});
 
@@ -119,7 +119,7 @@ const Settings = () => {
 		},
 		onSuccess: async () => {
 			setSettingsDialogOpen(false);
-			navigate({ to: "/login/index" });
+			navigate({ to: "/login" });
 		},
 		onError: (error) => {
 			console.error(error);
@@ -438,7 +438,7 @@ const Settings = () => {
 													className="material-symbols-rounded"
 													style={{ "--wght": 500 }}
 												>
-													{updateInfo.data?.shouldUpdate
+													{updateInfo.data?.available
 														? "new_release"
 														: "new_releases"}
 												</span>
@@ -448,9 +448,7 @@ const Settings = () => {
 													{applicationVersion}
 												</Typography>
 											}
-											color={
-												updateInfo.data?.shouldUpdate ? "error" : "success"
-											}
+											color={updateInfo.data?.available ? "error" : "success"}
 											size="small"
 											style={{
 												width: "fit-content !important",
@@ -464,7 +462,7 @@ const Settings = () => {
 										<Typography variant="subtitle2">
 											{updateInfo.isFetching ? (
 												"Checking for new updates..."
-											) : updateInfo.data?.shouldUpdate ? (
+											) : updateInfo.data?.available ? (
 												<Chip
 													icon={
 														<span className="material-symbols-rounded">
@@ -493,12 +491,12 @@ const Settings = () => {
 										}}
 										loading={updateInfo.isFetching || updating}
 										variant="contained"
-										disabled={!updateInfo.data?.shouldUpdate}
+										disabled={!updateInfo.data?.available}
 										loadingPosition="start"
 										onClick={async () => {
-											if (updateInfo.data?.shouldUpdate) {
+											if (updateInfo.data?.available) {
 												setUpdating(true);
-												await installUpdate();
+												await updateInfo.data?.downloadAndInstall();
 												enqueueSnackbar(
 													"Update has been installed! You need to relaunch JellyPlayer.",
 													{
@@ -511,7 +509,7 @@ const Settings = () => {
 									>
 										{updateInfo.isFetching
 											? "Checking for Update..."
-											: updateInfo.data?.shouldUpdate
+											: updateInfo.data?.available
 												? "Update"
 												: "No Update Found"}
 									</LoadingButton>

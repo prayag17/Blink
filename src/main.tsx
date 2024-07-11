@@ -1,9 +1,21 @@
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { RouterProvider, createRouter } from "@tanstack/react-router";
+import {
+	RouterProvider,
+	createRouteMask,
+	createRouter,
+} from "@tanstack/react-router";
 import React, { Suspense } from "react";
 import ReactDOM from "react-dom/client";
 // Import the generated route tree
 import { routeTree } from "./routeTree.gen";
+
+//TODO: Need help implementing modal routes in TanStack Router
+// const SearchMask = createRouteMask({
+// 	routeTree,
+// 	from: "/searchModal,
+// 	to: "/search",
+// 	params: true,
+// });
 
 // Create a new router instance
 const router = createRouter({
@@ -11,6 +23,8 @@ const router = createRouter({
 	context: {
 		api: undefined!,
 		createApi: undefined!,
+		user: undefined,
+		jellyfinSDK: undefined!,
 	},
 	defaultPreload: "intent",
 });
@@ -36,8 +50,14 @@ export const queryClient = new QueryClient({
 });
 
 function ProviderWrapper() {
-	const [api, createApi] = useApiInContext((s) => [s.api, s.createApi]);
-	return <RouterProvider router={router} context={{ api, createApi }} />;
+	const [api, createApi, jellyfinSDK] = useApiInContext((s) => [
+		s.api,
+		s.createApi,
+		s.jellyfin,
+	]);
+	return (
+		<RouterProvider router={router} context={{ api, createApi, jellyfinSDK }} />
+	);
 }
 
 ReactDOM.createRoot(document.getElementById("root")!).render(

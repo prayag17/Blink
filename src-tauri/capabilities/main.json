@@ -1,0 +1,17 @@
+{
+	"$schema": "../gen/schemas/desktop-schema.json",
+	"identifier": "main-capabilities",
+	"description": "Capability for desktop window",
+	"windows": ["main"],
+	"permissions": [
+		"store:allow-get",
+		"store:allow-set",
+		"store:allow-save",
+		"store:allow-clear",
+		"store:allow-delete",
+		"store:allow-keys",
+		"store:allow-load",
+		"updater:allow-check",
+		"updater:allow-download-and-install"
+	]
+}

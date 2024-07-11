@@ -19,7 +19,7 @@ import { getUserApi } from "@jellyfin/sdk/lib/utils/api/user-api";
 import { getUserLibraryApi } from "@jellyfin/sdk/lib/utils/api/user-library-api";
 import { getUserViewsApi } from "@jellyfin/sdk/lib/utils/api/user-views-api";
 
-import { createFileRoute, useNavigate } from "@tanstack/react-router";
+import { Outlet, createFileRoute, useNavigate } from "@tanstack/react-router";
 
 import { setBackdrop } from "@/utils/store/backdrop";
 
@@ -182,13 +182,28 @@ function Home() {
 									if (latestMedia.isSuccess && latestMedia.data.length > 0) {
 										if (latestMedia.data[now]?.ParentBackdropImageTags) {
 											setBackdrop(
-												`${api.basePath}/Items/${latestMedia.data[now].ParentBackdropItemId}/Images/Backdrop`,
-												latestMedia.data[now].Id,
+												api.getItemImageUrl(
+													latestMedia.data[now].Id,
+													"Backdrop",
+													{
+														tag: latestMedia.data[now]
+															.ParentBackdropImageTags[0],
+													},
+												),
+												latestMedia.data[now]?.ParentBackdropImageTags[0] ??
+													latestMedia.data[now].Id,
 											);
 										} else {
 											setBackdrop(
-												`${api.basePath}/Items/${latestMedia.data[now].Id}/Images/Backdrop`,
-												latestMedia.data[now].Id,
+												api.getItemImageUrl(
+													latestMedia.data[now].Id,
+													"Backdrop",
+													{
+														tag: latestMedia.data[now].BackdropImageTags[0],
+													},
+												),
+												latestMedia.data[now]?.BackdropImageTags[0] ??
+													latestMedia.data[now].Id,
 											);
 										}
 									}

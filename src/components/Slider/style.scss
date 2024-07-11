@@ -8,6 +8,9 @@
         position: relative;
         overscroll-behavior-x: contain;
         margin: 0.5em 1em;
+        &::-webkit-scrollbar {
+                display: none;
+            }
 
         &-item {
             display: inline-block;

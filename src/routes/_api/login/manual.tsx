@@ -30,7 +30,7 @@ import InputLabel from "@mui/material/InputLabel";
 import { useSnackbar } from "notistack";
 
 import { AppBarBackOnly } from "@/components/appBar/backOnly.jsx";
-import { useApiInContext } from "@/utils/store/api.js";
+import { axiosClient, useApiInContext } from "@/utils/store/api.js";
 import { getBrandingApi } from "@jellyfin/sdk/lib/utils/api/branding-api";
 import { getQuickConnectApi } from "@jellyfin/sdk/lib/utils/api/quick-connect-api";
 import { getUserApi } from "@jellyfin/sdk/lib/utils/api/user-api";
@@ -66,6 +66,15 @@ function UserLoginManual() {
 		queryKey: ["login", "manual", "serverInfo"],
 		queryFn: async () => {
 			return (await getBrandingApi(api).getBrandingOptions()).data;
+		},
+	});
+
+	const ssoProviders = useQuery({
+		queryKey: ["login", "manual", "ssoProviders"],
+		queryFn: async () => {
+			return axiosClient.get(
+				`${api.basePath}/sso/SAML/Get?api_key=${api.accessToken}`,
+			);
 		},
 	});
 
@@ -210,7 +219,7 @@ function UserLoginManual() {
 			enqueueSnackbar(`Logged in as ${auth.data.User.Name}!`, {
 				variant: "success",
 			});
-			navigate("/home");
+			navigate({ to: "/home" });
 		}, 1000);
 
 		setLoading(false);
@@ -303,7 +312,7 @@ function UserLoginManual() {
 								className="userEventButton"
 								// size="large"
 								style={{ flex: 1 }}
-								onClick={() => navigate("/servers/list")}
+								onClick={() => navigate({ to: "/setup/server/list" })}
 							>
 								Change Server
 							</Button>

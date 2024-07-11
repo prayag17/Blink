@@ -1,4 +1,4 @@
-import { appWindow } from "@tauri-apps/api/window";
+import { WebviewWindow as appWindow } from "@tauri-apps/api/webviewWindow";
 import React, { useLayoutEffect } from "react";
 
 import Backdrop from "@mui/material/Backdrop";
@@ -188,7 +188,7 @@ function VideoPlayer() {
 	};
 
 	const handleExitPlayer = async () => {
-		appWindow.setFullscreen(false);
+		appWindow.getCurrent().setFullscreen(false);
 		if (subtitleRenderer) {
 			subtitleRenderer.destroy();
 		}
@@ -240,7 +240,7 @@ function VideoPlayer() {
 			case "F":
 			case "f":
 				setAppFullscreen((state) => {
-					appWindow.setFullscreen(!state);
+					appWindow.getCurrent().setFullscreen(!state);
 					return !state;
 				});
 				break;
@@ -546,7 +546,7 @@ function VideoPlayer() {
 								<IconButton
 									onClick={async () => {
 										setAppFullscreen((state) => {
-											appWindow.setFullscreen(!state);
+											appWindow.getCurrent().setFullscreen(!state);
 											return !state;
 										});
 									}}

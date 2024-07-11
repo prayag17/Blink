@@ -209,7 +209,7 @@ function ItemDetail() {
 					api?.getItemImageUrl(item.data.Id, "Backdrop", {
 						tag: item.data.BackdropImageTags[0],
 					}),
-					item.data.Id,
+					item.data.BackdropImageTags[0],
 				);
 			} else {
 				setBackdrop("", "");

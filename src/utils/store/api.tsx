@@ -16,7 +16,7 @@ type ApiStore = {
 };
 
 export const axiosClient = axios.create({
-	adapter: axiosTauriApiAdapter,
+	// adapter: axiosTauriApiAdapter,
 	headers: {
 		"Access-Control-Allow-Origin": "*",
 	},
