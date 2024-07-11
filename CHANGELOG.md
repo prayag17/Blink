@@ -1,6 +1,72 @@
 - # 0.0.6-dev
     > **Note** : This is an unstable release
-    - 
+    - refactor: add sorting options to library page for Series and BoxSets
+    - style: update hero-carousel styling
+    - chore(deps): update deps
+    - fix(deps): update dependency framer-motion to v11.2.9
+    - refactor: move most routing logic to tanstack
+    - refactor: implement new login logic and verify context.api status
+    - chore(deps): update dependencies
+    - refactor: move to tanstack router
+    - fix: videoPlayer not restoring playback position when queueItem is updated
+    - fix: Slight UI regression when changing servers on latest version #288
+    - fix: eac3 codec support
+    - refactor: queueItem playback
+    - fix(deps): update rust crate tauri to 1.6.2 (#298)
+    - fix: episode playback
+    - feat: add queueButton
+    - Merge branch 'main' of https://github.com/prayag17/JellyPlayer
+    - chore(deps): fix vite 5.2 bundle
+    - fix(deps): update dependency @types/react to v18.3.1 (#295)
+    - fix: scrollTrigger in libraryView
+    - style: improve styling
+    - fix: backdrop flashing
+    - feat: use tanstack virtual for rendering library items
+    - style: improve login notice ui
+    - refactor: fetch mediaSource for series
+    - refactor: implement new playback method for playbutton (wip)
+    - ui: improve glass texture
+    - ui: implement new appBar #284
+    - feat: display sdr and hdr only videoRange
+    - style: improve hdr10 logo spacing
+    - chore: update title-movie screenshot in README.md
+    - chore: update title-movie.png
+    - fix: hdr10 icon height not matching
+    - style: update mediainfo icons
+    - style: update mediainfo icons
+    - fix: no subtitle option not selecting
+    - feat: use brand logo for hdr10plus
+    - fix: default subtitle not being selected properly
+    - style: display backdrops in boxset
+    - fix: videoPlayer not exiting if subtitles are disabled
+    - chore: add kitsu icon to iconLink
+    - fix: carousel not rendering
+    - chore: update readme
+    - chore: update screenshots
+    - fix: improve hdr10+ detection
+    - feat: add quality and audio brand labels
+    - style: improve page-margin
+    - fix(player): unable to play media without subtitles
+    - fix: album not displaying if no parent backdrop is found
+    - chore: add screenshots and some features of JellyPlayer #242
+    - chore: upload screenshots
+    - fix(nsis): nsis setup images not displaying correctly
+    - style: Improve titlePage styling
+    - style: change cardText styling
+    - style: Improve overall app component paddings and margins and rollback vite to 5.1.6
+    - chore(deps): update dependency vite to v5.2.6 (#286)
+    - fix(deps): update material-ui monorepo (#270)
+    - fix(deps): update dependency @types/node to v20.11.29 (#292)
+    - fix(deps): update dependency @types/react to v18.2.67 (#293)
+    - fix(deps): update tanstack-query monorepo to v5.28.6 (#271)
+    - fix(deps): update dependency @types/react to v18.2.67 (#272)
+    - fix(deps): update dependency @types/node to v20.11.29 (#274)
+    - fix(deps): update dependency framer-motion to v11.0.15 (#278)
+    - fix(deps): update dependency typescript to v5.4.3 (#287)
+    - fix(deps): update dependency material-symbols to v0.17.1 (#289)
+    - chore(deps): update dependency @biomejs/biome to v1.6.2 (#290)
+    - fix(deps): update rust crate log to ^0.4.21 (#276)
+    - chore: update latest.json
 
 - # v0.0.5-dev
     > **Note** : This is an unstable release
