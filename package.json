@@ -29,7 +29,7 @@
 		"@tanstack/react-router": "^1.44.1",
 		"@tanstack/react-virtual": "^3.8.2",
 		"@tauri-apps/api": "2.0.0-beta.14",
-		"@tauri-apps/plugin-process": "2.0.0-beta.6",
+		"@tauri-apps/plugin-process": "2.0.0-beta.7",
 		"@tauri-apps/plugin-store": "github:tauri-apps/tauri-plugin-store#v2",
 		"@tauri-apps/plugin-updater": "2.0.0-beta.6",
 		"@types/node": "^20.14.10",
