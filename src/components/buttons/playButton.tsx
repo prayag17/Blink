@@ -255,34 +255,13 @@ const PlayButton = ({
 				) {
 					playbackUrl = `${api.basePath}${result.mediaSource.MediaSources[0].TranscodingUrl}`;
 				}
-
-				let isDirectPlay = true;
-				let isDirectStream = false;
-				let isTranscode = false;
-				if (result?.mediaSource.MediaSources?.[0].SupportsDirectPlay) {
-					isDirectPlay = true;
-				}
-				if (
-					result?.mediaSource.MediaSources?.[0].SupportsDirectStream &&
-					result?.mediaSource.MediaSources?.[0]
-				) {
-					isDirectStream = true;
-				}
-				if (
-					result?.mediaSource.MediaSources?.[0].SupportsTranscoding &&
-					result?.mediaSource.MediaSources?.[0].TranscodingUrl
-				) {
-					isTranscode = true;
-				}
 				
 				playItem(
 					itemName,
 					episodeTitle,
 					currentVideoTrack,
 					currentAudioTrack,
-					currentSubTrack,
-					result?.mediaSource?.MediaSources[0].Container ?? "mkv",
-					false,
+					result?.mediaSource?.MediaSources?.[0].Container ?? "mkv",
 					playbackUrl,
 					userId,
 					item.UserData?.PlaybackPositionTicks,
@@ -290,14 +269,9 @@ const PlayButton = ({
 					item,
 					queue,
 					0,
-					[],
-					result?.mediaSource.MediaSources[0].Id,
+					result?.mediaSource.MediaSources?.[0]?.Id,
 					result?.mediaSource.PlaySessionId,
 					subtitle,
-					isDirectPlay,
-					isDirectStream,
-					isTranscode,
-					result?.mediaSource.MediaSources?.[0].Protocol,
 				);
 				navigate({ to: "/player" });
 			}
@@ -369,7 +343,7 @@ const PlayButton = ({
 				color="white"
 				size={size}
 			>
-				{itemUserData.PlaybackPositionTicks > 0
+				{itemUserData.PlaybackPositionTicks
 					? "Continue Watching"
 					: item?.Type === "MusicAlbum" ||
 							item?.Type === "Audio" ||
@@ -400,7 +374,7 @@ const PlayButton = ({
 					color="white"
 				/>
 			</Button>
-			{itemUserData.PlaybackPositionTicks > 0 && (
+			{itemUserData.PlaybackPositionTicks && (
 				<Typography
 					sx={{
 						opacity: 0.8,

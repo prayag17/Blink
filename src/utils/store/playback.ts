@@ -13,22 +13,15 @@ import { playAudio } from "./audioPlayback";
 import useQueue, { setQueue, setTrackIndex } from "./queue";
 
 type PlaybackStore = {
-	itemName: string | React.Component;
+	itemName: string | React.Component | undefined | null;
 	episodeTitle: string | React.Component;
 	mediaSource: {
 		videoTrack: number;
 		audioTrack: number;
-		subtitleTrack: number | "nosub";
 		container: string;
-		availableSubtitleTracks: MediaStream[];
 		id: string | undefined;
 		subtitle: subtitlePlaybackInfo;
-		isDirectPlay: boolean;
-		isDirectStream: boolean;
-		isTranscode: boolean;
-		playbackProtocol: MediaProtocol;
 	};
-	enableSubtitle: boolean;
 	playbackStream: string;
 	userId: string;
 	startPosition: number;
@@ -38,14 +31,12 @@ type PlaybackStore = {
 };
 
 export const usePlaybackStore = create<PlaybackStore>(() => ({
-	itemName: "",
+	itemName: undefined!,
 	episodeTitle: "",
 	mediaSource: {
 		videoTrack: 0,
 		audioTrack: 0,
-		subtitleTrack: 0,
 		container: "",
-		availableSubtitleTracks: [],
 		id: undefined,
 		subtitle: {
 			enable: false,
@@ -54,10 +45,6 @@ export const usePlaybackStore = create<PlaybackStore>(() => ({
 			allTracks: undefined,
 			url: undefined,
 		},
-		isDirectPlay: true,
-		isDirectStream: false,
-		isTranscode: false,
-		playbackProtocol: undefined!,
 	},
 	enableSubtitle: true,
 	playbackStream: "",
@@ -69,28 +56,21 @@ export const usePlaybackStore = create<PlaybackStore>(() => ({
 }));
 
 export const playItem = (
-	itemName,
-	episodeTitle,
-	videoTrack,
-	audioTrack,
-	subtitleTrack,
-	container,
-	enableSubtitle,
-	playbackStream,
-	userId,
-	startPosition,
-	itemDuration,
-	item,
-	queue,
-	queueItemIndex,
-	availableSubtitleTracks,
-	mediaSourceId,
-	playsessionId,
-	subtitle,
-	isDirectPlay,
-	isDirectStream,
-	isTranscode,
-	playbackProtocol,
+	itemName: string | React.Component | undefined | null,
+	episodeTitle: string,
+	videoTrack: number,
+	audioTrack: number,
+	container: string,
+	playbackStream: string,
+	userId: string,
+	startPosition: number | undefined | null,
+	itemDuration: number | undefined | null,
+	item: BaseItemDto,
+	queue: BaseItemDto[] | undefined | null,
+	queueItemIndex: number,
+	mediaSourceId: string | undefined | null,
+	playsessionId: string | undefined | null,
+	subtitle: subtitlePlaybackInfo,
 ) => {
 	console.log({
 		itemName,
@@ -98,13 +78,10 @@ export const playItem = (
 		mediaSource: {
 			videoTrack,
 			audioTrack,
-			subtitleTrack,
 			container,
-			availableSubtitleTracks,
 			id: mediaSourceId,
 			subtitle,
 		},
-		enableSubtitle,
 		playbackStream,
 		userId,
 		startPosition,
@@ -118,17 +95,10 @@ export const playItem = (
 		mediaSource: {
 			videoTrack,
 			audioTrack,
-			subtitleTrack,
 			container,
-			availableSubtitleTracks,
 			id: mediaSourceId,
 			subtitle,
-			isDirectPlay,
-			isDirectStream,
-			isTranscode,
-			playbackProtocol,
 		},
-		enableSubtitle,
 		playbackStream,
 		userId,
 		startPosition,
@@ -273,9 +243,9 @@ export const changeSubtitleTrack = (
 	);
 	const prevState = usePlaybackStore.getState();
 	prevState.mediaSource.subtitle = {
-		url: requiredSubtitle?.[0].DeliveryUrl,
+		url: requiredSubtitle?.[0]?.DeliveryUrl,
 		track: trackIndex,
-		format: requiredSubtitle?.[0].Codec,
+		format: requiredSubtitle?.[0]?.Codec,
 		allTracks,
 		enable: true,
 	};

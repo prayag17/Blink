@@ -1,6 +1,6 @@
 /** @format */
 
-import React from "react";
+import React, { memo } from "react";
 import { Component, useState } from "react";
 
 import { useNavigate, useRouteContext } from "@tanstack/react-router";
@@ -35,7 +35,7 @@ const availableSpecialRoutes = [
 	BaseItemKind.Playlist,
 ];
 
-export const Card = ({
+const CardComponent = ({
 	item,
 	cardTitle,
 	cardCaption,
@@ -94,11 +94,7 @@ export const Card = ({
 	};
 
 	return (
-		<div
-			className="card"
-			elevation={0}
-			onClick={onClick ? onClick : defaultOnClick}
-		>
+		<div className="card" onClick={onClick ? onClick : defaultOnClick}>
 			<div className={`card-image-container ${cardType}`}>
 				<ErrorBoundary fallback>
 					<div
@@ -124,21 +120,11 @@ export const Card = ({
 						</Typography>
 					</div>
 				</ErrorBoundary>
-				{/* {!!imageBlurhash && (
-						<Blurhash
-							hash={imageBlurhash}
-							width={128}
-							height={128}
-							resolutionX={24}
-							resolutionY={24}
-							className="card-image-blurhash"
-						/>
-					)} */}
 				<div className="card-image-icon-container">
 					{overrideIcon ? getTypeIcon(overrideIcon) : getTypeIcon(item.Type)}
 				</div>
 				<img
-					alt={item.Name}
+					alt={item.Name ?? "blink"}
 					src={
 						overrideIcon === "User"
 							? `${api.basePath}/Users/${item.Id}/Images/Primary`
@@ -215,24 +201,6 @@ export const Card = ({
 						/>
 					</div>
 				)}
-				{/*
-				{item.UserData?.PlaybackPositionTicks > 0 && (
-					<LinearProgress
-						variant="determinate"
-						value={item.UserData?.PlayedPercentage}
-						style={{
-							position: "absolute",
-							left: 0,
-							right: 0,
-							bottom: 0,
-							zIndex: 2,
-							height: "6px",
-							background: "rgb(5 5 5 /  0.5) !important",
-							backdropFilter: "blur(5px)",
-						}}
-						color="primary"
-					/>
-				)} */}
 			</div>
 			<div
 				className="card-text-container"
@@ -253,3 +221,5 @@ export const Card = ({
 		</div>
 	);
 };
+
+export const Card = memo(CardComponent);

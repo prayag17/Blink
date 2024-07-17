@@ -1,5 +1,5 @@
 import { WebviewWindow as appWindow } from "@tauri-apps/api/webviewWindow";
-import type React from "react";
+import React, { type ChangeEventHandler } from "react";
 import { useLayoutEffect, useMemo } from "react";
 
 import CircularProgress from "@mui/material/CircularProgress";
@@ -69,6 +69,7 @@ function VideoPlayer() {
 	const api = Route.useRouteContext().api;
 	const { history } = useRouter();
 	const [hoveringOsd, setHoveringOsd] = useState(false);
+	const player = useRef<ReactPlayer | null>(null);
 
 	const [
 		playbackStream,
@@ -78,7 +79,6 @@ function VideoPlayer() {
 		startPosition,
 		episodeTitle,
 		mediaSource,
-		enableSubtitle,
 		playsessionId,
 	] = usePlaybackStore((state) => [
 		state.playbackStream,
@@ -88,7 +88,6 @@ function VideoPlayer() {
 		state.startPosition,
 		state.episodeTitle,
 		state.mediaSource,
-		state.enableSubtitle,
 		state.playsessionId,
 	]);
 
@@ -104,21 +103,14 @@ function VideoPlayer() {
 	const [sliderProgress, setSliderProgress] = useState(startPosition);
 	const [progress, setProgress] = useState(startPosition);
 	const [appFullscreen, setAppFullscreen] = useState(false);
-	const [showSubtitles, setShowSubtitles] = useState(enableSubtitle);
-	const [selectedSubtitle, setSelectedSubtitle] = useState(
-		mediaSource.subtitleTrack,
-	);
+	const [showSubtitles, setShowSubtitles] = useState(mediaSource.subtitle.enable);
 	const [volume, setVolume] = useState(1);
 	const [muted, setMuted] = useState(false);
 
 	useEffect(() => setBackdrop("", ""), []);
 
 	const handleReady = async () => {
-		console.log("isReady");
 		if (!isReady) {
-			if (selectedSubtitle !== "nosub") {
-			}
-
 			player.current?.seekTo(ticksToSec(startPosition), "seconds");
 			setIsReady(true);
 
@@ -179,9 +171,6 @@ function VideoPlayer() {
 		});
 		usePlaybackStore.setState(usePlaybackStore.getInitialState());
 	};
-
-	const player = useRef<ReactPlayer | null>(null);
-	const hlsPlayer = player.current?.getInternalPlayer("hls");
 
 	const handleShowOsd = () => {
 		let timer = null;
@@ -248,25 +237,6 @@ function VideoPlayer() {
 		setIsReady(false);
 	}, [item?.Id]);
 
-	// const [reactPlayerCaptions, setReactPlayerCaptions] = useState<
-	// 	ReactPlayerCaption[]
-	// >([]);
-	// useEffect(() => {
-	// 	switch (mediaSource.subtitle.format) {
-	// 		case "subrip":
-	// 		case "vtt":
-	// 			setReactPlayerCaptions([
-	// 				{
-	// 					kind: "subtitles",
-	// 					src: mediaSource.subtitle.track,
-	// 					srcLang: "en",
-	// 					default: true,
-	// 				},
-	// 			]);
-	// 			break;
-	// 	}
-	// }, [mediaSource.subtitle.track]);
-
 	const reactPlayerCaptions = useMemo(() => {
 		if (
 			mediaSource.subtitle.format === "vtt" ||
@@ -284,29 +254,13 @@ function VideoPlayer() {
 		}
 		return [];
 	}, [mediaSource.subtitle.track]);
-
 	const handleSubtitleChange = (
-		e: React.ChangeEventHandler<HTMLInputElement | HTMLTextAreaElement>,
+		e: ChangeEventHandler<HTMLInputElement | HTMLTextAreaElement>,
 	) => {
 		changeSubtitleTrack(e.target.value, mediaSource.subtitle.allTracks);
 	};
 
 	useEffect(() => {
-		async function createJASSUB() {
-			if (player.current?.getInternalPlayer()) {
-				const font = await fetch(subtitleFont).then((r) => r.arrayBuffer());
-				const uint8 = new Uint8Array(font);
-				const subtitleRendererRaw = new JASSUB({
-					video: player.current.getInternalPlayer(),
-					subUrl: `${api.basePath}${mediaSource.subtitle.url}`,
-					workerUrl,
-					wasmUrl,
-					availableFonts: { "noto sans": uint8 },
-					fallbackFont: "Noto Sans",
-				});
-				// setJassubRenderer(subtitleRendererRaw);
-			}
-		}
 		if (player.current?.getInternalPlayer()) {
 			if (
 				mediaSource.subtitle.format === "ass" ||
