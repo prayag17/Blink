@@ -1,55 +1,42 @@
 import { WebviewWindow as appWindow } from "@tauri-apps/api/webviewWindow";
-import React, { useLayoutEffect } from "react";
+import type React from "react";
+import { useLayoutEffect, useMemo } from "react";
 
-import Backdrop from "@mui/material/Backdrop";
-import Box from "@mui/material/Box";
 import CircularProgress from "@mui/material/CircularProgress";
 import IconButton from "@mui/material/IconButton";
-import LinearProgress from "@mui/material/LinearProgress";
 import Menu from "@mui/material/Menu";
 import MenuItem from "@mui/material/MenuItem";
 import Slider from "@mui/material/Slider";
-import Stack from "@mui/material/Stack";
 import Typography from "@mui/material/Typography";
 
 import ReactPlayer from "react-player";
 
-import { usePlaybackStore } from "@/utils/store/playback";
+import { changeSubtitleTrack, usePlaybackStore } from "@/utils/store/playback";
 
-import { getRuntimeMusic, secToTicks, ticksToSec } from "@/utils/date/time";
+import { secToTicks, ticksToSec } from "@/utils/date/time";
 import { useCallback, useEffect, useRef, useState } from "react";
-import { Navigate, useNavigate } from "react-router-dom";
 
-import { getMediaInfoApi } from "@jellyfin/sdk/lib/utils/api/media-info-api";
 import { getPlaystateApi } from "@jellyfin/sdk/lib/utils/api/playstate-api";
-import { getTvShowsApi } from "@jellyfin/sdk/lib/utils/api/tv-shows-api";
 
 import "./videoPlayer.scss";
 
 import { endsAt } from "@/utils/date/time";
 
-import { useQuery } from "@tanstack/react-query";
-
-import {
-	ItemFields,
-	LocationType,
-	PlayMethod,
-	RepeatMode,
-} from "@jellyfin/sdk/lib/generated-client";
+import { PlayMethod, RepeatMode } from "@jellyfin/sdk/lib/generated-client";
 import { AnimatePresence, motion } from "framer-motion";
 
 import { setBackdrop } from "@/utils/store/backdrop";
 
-import { FormControl, TextField } from "@mui/material";
-import type JASSUB from "jassub";
+import { TextField } from "@mui/material";
+import JASSUB from "jassub";
 import workerUrl from "jassub/dist/jassub-worker.js?url";
 import wasmUrl from "jassub/dist/jassub-worker.wasm?url";
 
 import PlayNextButton from "@/components/buttons/playNextButton";
 import PlayPreviousButton from "@/components/buttons/playPreviousButtom";
 import QueueButton from "@/components/buttons/queueButton";
-import { getUserApi } from "@jellyfin/sdk/lib/utils/api/user-api";
 import { createFileRoute, useRouter } from "@tanstack/react-router";
+import type { OnProgressProps } from "react-player/base";
 import subtitleFont from "./Noto-Sans-Indosphere.ttf";
 
 const ticksDisplay = (ticks: number) => {
@@ -84,7 +71,7 @@ function VideoPlayer() {
 	const [hoveringOsd, setHoveringOsd] = useState(false);
 
 	const [
-		hlsStream,
+		playbackStream,
 		item,
 		itemName,
 		itemDuration,
@@ -94,7 +81,7 @@ function VideoPlayer() {
 		enableSubtitle,
 		playsessionId,
 	] = usePlaybackStore((state) => [
-		state.hlsStream,
+		state.playbackStream,
 		state.item,
 		state.itemName,
 		state.itemDuration,
@@ -126,22 +113,10 @@ function VideoPlayer() {
 
 	useEffect(() => setBackdrop("", ""), []);
 
-	const [subtitleRenderer, setSubtitleRenderer] = useState<JASSUB>(null);
-
 	const handleReady = async () => {
+		console.log("isReady");
 		if (!isReady) {
 			if (selectedSubtitle !== "nosub") {
-				const font = await fetch(subtitleFont).then((r) => r.arrayBuffer());
-				const uint8 = new Uint8Array(font);
-				// const subtitleRendererRaw = new JASSUB({
-				// 	video: player.current.getInternalPlayer(),
-				// 	subUrl: `${api.basePath}/Videos/${item.Id}/${item.Id}/Subtitles/${mediaSource.subtitleTrack}/Stream.ass?api_key=${api.accessToken}`,
-				// 	workerUrl,
-				// 	wasmUrl,
-				// 	availableFonts: { "noto sans": uint8 },
-				// 	fallbackFont: "Noto Sans",
-				// });
-				// setSubtitleRenderer(subtitleRendererRaw);
 			}
 
 			player.current?.seekTo(ticksToSec(startPosition), "seconds");
@@ -167,7 +142,8 @@ function VideoPlayer() {
 		}
 	};
 
-	const handleProgress = async (event) => {
+	const handleProgress = async (event: OnProgressProps) => {
+		setProgress(secToTicks(event.playedSeconds));
 		// Report Jellyfin server: Playback progress
 		getPlaystateApi(api).reportPlaybackProgress({
 			playbackProgressInfo: {
@@ -180,7 +156,7 @@ function VideoPlayer() {
 				PlayMethod: PlayMethod.DirectPlay,
 				PlaySessionId: playsessionId,
 				PlaybackStartTimeTicks: startPosition,
-				PositionTicks: progress,
+				PositionTicks: secToTicks(event.playedSeconds),
 				RepeatMode: RepeatMode.RepeatNone,
 				VolumeLevel: volume * 100,
 			},
@@ -189,9 +165,7 @@ function VideoPlayer() {
 
 	const handleExitPlayer = async () => {
 		appWindow.getCurrent().setFullscreen(false);
-		if (subtitleRenderer) {
-			subtitleRenderer.destroy();
-		}
+		
 		history.back();
 		// Report Jellyfin server: Playback has ended/stopped
 		getPlaystateApi(api).reportPlaybackStopped({
@@ -206,7 +180,8 @@ function VideoPlayer() {
 		usePlaybackStore.setState(usePlaybackStore.getInitialState());
 	};
 
-	const player = useRef(null);
+	const player = useRef<ReactPlayer | null>(null);
+	const hlsPlayer = player.current?.getInternalPlayer("hls");
 
 	const handleShowOsd = () => {
 		let timer = null;
@@ -268,43 +243,85 @@ function VideoPlayer() {
 		};
 	}, [handleKeyPress]);
 
-	useEffect(() => {
-		async function fetchFonts() {
-			const font = await fetch(subtitleFont).then((r) => r.arrayBuffer());
-			const uint8 = new Uint8Array(font);
-			return uint8;
-		}
-		if (subtitleRenderer)
-			if (showSubtitles) {
-				subtitleRenderer.setTrackByUrl(
-					`${api.basePath}/Videos/${item?.Id}/${item?.Id}/Subtitles/${selectedSubtitle}/Stream.ass?api_key=${api.accessToken}`,
-				);
-			} else {
-				subtitleRenderer.freeTrack();
-			}
-		else if (
-			!subtitleRenderer &&
-			selectedSubtitle !== "nosub" &&
-			showSubtitles
-		) {
-			// fetchFonts().then((uint8) => {
-			// 	const subtitleRendererRaw = new JASSUB({
-			// 		video: player.current.getInternalPlayer(),
-			// 		subUrl: `${api.basePath}/Videos/${item?.Id}/${item?.Id}/Subtitles/${selectedSubtitle}/Stream.ass?api_key=${api.accessToken}`,
-			// 		workerUrl,
-			// 		wasmUrl,
-			// 		availableFonts: { "noto sans": uint8 },
-			// 		fallbackFont: "Noto Sans",
-			// 	});
-			// 	setSubtitleRenderer(subtitleRendererRaw);
-			// });
-		}
-	}, [showSubtitles, selectedSubtitle]);
-
 	useLayoutEffect(() => {
 		setPlaying(true);
 		setIsReady(false);
 	}, [item?.Id]);
+
+	// const [reactPlayerCaptions, setReactPlayerCaptions] = useState<
+	// 	ReactPlayerCaption[]
+	// >([]);
+	// useEffect(() => {
+	// 	switch (mediaSource.subtitle.format) {
+	// 		case "subrip":
+	// 		case "vtt":
+	// 			setReactPlayerCaptions([
+	// 				{
+	// 					kind: "subtitles",
+	// 					src: mediaSource.subtitle.track,
+	// 					srcLang: "en",
+	// 					default: true,
+	// 				},
+	// 			]);
+	// 			break;
+	// 	}
+	// }, [mediaSource.subtitle.track]);
+
+	const reactPlayerCaptions = useMemo(() => {
+		if (
+			mediaSource.subtitle.format === "vtt" ||
+			mediaSource.subtitle.format === "subrip"
+		) {
+			return [
+				{
+					kind: "subtitles",
+					src: `${api.basePath}${mediaSource.subtitle.url}`,
+					srcLang: "en",
+					default: true,
+					label: mediaSource.subtitle.url,
+				},
+			];
+		}
+		return [];
+	}, [mediaSource.subtitle.track]);
+
+	const handleSubtitleChange = (
+		e: React.ChangeEventHandler<HTMLInputElement | HTMLTextAreaElement>,
+	) => {
+		changeSubtitleTrack(e.target.value, mediaSource.subtitle.allTracks);
+	};
+
+	useEffect(() => {
+		async function createJASSUB() {
+			if (player.current?.getInternalPlayer()) {
+				const font = await fetch(subtitleFont).then((r) => r.arrayBuffer());
+				const uint8 = new Uint8Array(font);
+				const subtitleRendererRaw = new JASSUB({
+					video: player.current.getInternalPlayer(),
+					subUrl: `${api.basePath}${mediaSource.subtitle.url}`,
+					workerUrl,
+					wasmUrl,
+					availableFonts: { "noto sans": uint8 },
+					fallbackFont: "Noto Sans",
+				});
+				// setJassubRenderer(subtitleRendererRaw);
+			}
+		}
+		if (player.current?.getInternalPlayer()) {
+			if (
+				mediaSource.subtitle.format === "ass" ||
+				mediaSource.subtitle.format === "ssa"
+			) {
+				const jassubRenderer = new JASSUB({
+					video: player.current?.getInternalPlayer(),
+					workerUrl,
+					wasmUrl,
+					subUrl: `${api.basePath}${mediaSource.subtitle.url}`,
+				});
+				return () => jassubRenderer.destroy(); // Remove JASSUB renderer when track changes to fix duplicate renders
+			}
+		}
+	}, [mediaSource.subtitle.track, player.current?.getInternalPlayer()]);
 
 	return (
 		<div className="video-player">
@@ -383,14 +400,15 @@ function VideoPlayer() {
 							select
 							label="Subtitles"
 							variant="outlined"
-							value={selectedSubtitle}
-							onChange={(e) => setSelectedSubtitle(e.target.value)}
+							value={mediaSource.subtitle.track}
+							onChange={handleSubtitleChange}
 							fullWidth
+							disabled={mediaSource.subtitle.track === -2}
 						>
-							<MenuItem key={-1} value={"nosub"}>
+							<MenuItem key={-1} value={-1}>
 								No Subtitle
 							</MenuItem>
-							{mediaSource.availableSubtitleTracks.map((sub) => (
+							{mediaSource.subtitle.allTracks?.map((sub) => (
 								<MenuItem key={sub.Index} value={sub.Index}>
 									{sub.DisplayTitle}
 								</MenuItem>
@@ -536,7 +554,10 @@ function VideoPlayer() {
 									</span>
 								</IconButton>
 								<QueueButton />
-								<IconButton onClick={() => setShowSubtitles((state) => !state)}>
+								<IconButton
+									disabled={mediaSource.subtitle.track === -2}
+									onClick={() => setShowSubtitles((state) => !state)}
+								>
 									<span className={"material-symbols-rounded"}>
 										{showSubtitles
 											? "closed_caption"
@@ -564,7 +585,7 @@ function VideoPlayer() {
 			<ReactPlayer
 				key={item?.Id}
 				playing={playing}
-				url={hlsStream}
+				url={playbackStream}
 				ref={player}
 				onProgress={handleProgress}
 				onError={(error, data, hls, hlsG) => {
@@ -579,9 +600,14 @@ function VideoPlayer() {
 					position: "fixed",
 					zIndex: 1,
 				}}
-				// onReady={(playerRef) => {
-				// 	playerRef.seekTo(ticksToSec(startPosition));
-				// }}
+				config={{
+					file: {
+						attributes: {
+							crossOrigin: "true",
+						},
+						tracks: reactPlayerCaptions,
+					},
+				}}
 				volume={muted ? 0 : volume}
 				onReady={handleReady}
 				onBuffer={() => setLoading(true)}

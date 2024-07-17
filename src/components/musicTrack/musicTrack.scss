@@ -6,6 +6,7 @@
 	align-items: center;
 	justify-items: center;
 	width: 100%;
+	cursor: pointer;
 	&-icon {
 		position: absolute;
 		top: 0;
@@ -20,7 +21,7 @@
 	}
 	&-image {
 		margin: 0.4em;
-		border-radius: $border-radius-default;
+		border-radius: $border-radius_04;
 		overflow: hidden;
 		aspect-ratio: 1;
 		position: relative;
@@ -43,6 +44,9 @@
 	}
 	&-info {
 		justify-self: start;
+		&-lyrics {
+				margin-right: 0.4em;
+			}
 	}
 
 	&:hover {

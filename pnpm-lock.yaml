@@ -92,6 +92,9 @@ importers:
       framer-motion:
         specifier: ^11.3.0
         version: 11.3.0(@emotion/is-prop-valid@1.2.2)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
+      hls.js:
+        specifier: ^1.5.13
+        version: 1.5.13
       jassub:
         specifier: ^1.7.15
         version: 1.7.15
@@ -1752,6 +1755,9 @@ packages:
 
   hermes-parser@0.21.1:
     resolution: {integrity: sha512-ANsRSBqQHzca7AXbsuwKApSQhAdljPip63MgqLebSVzNUI+A3NDzfiH9Ny4df4fA7Ndso3kPR1V/x1YEc7BYxA==}
+
+  hls.js@1.5.13:
+    resolution: {integrity: sha512-xRgKo84nsC7clEvSfIdgn/Tc0NOT+d7vdiL/wvkLO+0k0juc26NRBPPG1SfB8pd5bHXIjMW/F5VM8VYYkOYYdw==}
 
   hoist-non-react-statics@3.3.2:
     resolution: {integrity: sha512-/gGivxi8JPKWNm/W0jSmzcMPpfpPLc3dY/6GxhX2hQ9iGj3aDfklV4ET7NjKpSinLpJ5vafa9iiGIEZg10SfBw==}
@@ -4137,6 +4143,8 @@ snapshots:
   hermes-parser@0.21.1:
     dependencies:
       hermes-estree: 0.21.1
+
+  hls.js@1.5.13: {}
 
   hoist-non-react-statics@3.3.2:
     dependencies:

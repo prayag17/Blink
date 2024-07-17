@@ -41,6 +41,7 @@
 		"blurhash": "^2.0.5",
 		"events": "^3.3.0",
 		"framer-motion": "^11.3.0",
+		"hls.js": "^1.5.13",
 		"jassub": "^1.7.15",
 		"lodash": "^4.17.21",
 		"material-symbols": "^0.21.0",

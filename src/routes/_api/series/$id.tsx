@@ -200,7 +200,7 @@ function SeriesTitlePage() {
 	});
 
 	const episodes = useQuery({
-		queryKey: ["item", id, `season ${currentSeason + 1}`, "episodes"],
+		queryKey: ["item", id, "season", currentSeason, "episodes"],
 		queryFn: async () => {
 			const result = await getTvShowsApi(api).getEpisodes({
 				userId: user.data.Id,
@@ -284,50 +284,53 @@ function SeriesTitlePage() {
 			sessionStorage.setItem(
 				`backdrop-${item.data?.Id}`,
 				api.getItemImageUrl(currentSeasonItem.data.Id, "Backdrop", {
-					tag: currentSeasonItem.data.BackdropImageTags[0],
+					tag: currentSeasonItem.data.BackdropImageTags?.[0],
 				}),
 			);
 			sessionStorage.setItem(
 				`backdrop-${item.data?.Id}-key`,
-				currentSeasonItem.data.BackdropImageTags[0],
+				currentSeasonItem.data.BackdropImageTags?.[0],
 			);
 			setBackdropImage({
-				url: api.getItemImageUrl(item.data?.Id, "Backdrop", {
-					tag: item.data?.BackdropImageTags[0],
+				url: api.getItemImageUrl(currentSeasonItem.data.Id, "Backdrop", {
+					tag: currentSeasonItem.data.BackdropImageTags?.[0],
 				}),
-				key: item.data?.BackdropImageTags[0],
+				key: currentSeasonItem.data.BackdropImageTags?.[0],
 			});
 			setBackdrop(
 				api.getItemImageUrl(currentSeasonItem.data.Id, "Backdrop", {
-					tag: currentSeasonItem.data.BackdropImageTags[0],
+					tag: currentSeasonItem.data.BackdropImageTags?.[0],
 				}),
-				currentSeasonItem.data.Id,
+				currentSeasonItem.data.BackdropImageTags?.[0],
 			);
 			setBackdropImageLoaded(false);
 		} else if (item.isSuccess && item.data?.BackdropImageTags?.length > 0) {
 			sessionStorage.setItem(
 				`backdrop-${item.data?.Id}`,
 				api.getItemImageUrl(item.data.Id, "Backdrop", {
-					tag: item.data.BackdropImageTags[0],
+					tag: item.data.BackdropImageTags?.[0],
 				}),
 			);
 			sessionStorage.setItem(
 				`backdrop-${item.data?.Id}-key`,
-				currentSeasonItem.data.BackdropImageTags[0],
+				item.data?.BackdropImageTags?.[0],
 			);
+			if (backdropImage.key !== item.data?.BackdropImageTags?.[0]) {
+				setBackdropImageLoaded(false); // Reset Backdrop image load status if previous image is diff then new image
+			}
 			setBackdropImage({
 				url: api.getItemImageUrl(item.data?.Id, "Backdrop", {
-					tag: item.data?.BackdropImageTags[0],
+					tag: item.data?.BackdropImageTags?.[0],
 				}),
-				key: item.data?.BackdropImageTags[0],
+				key: item.data?.BackdropImageTags?.[0],
 			});
 			setBackdrop(
 				api.getItemImageUrl(item.data.Id, "Backdrop", {
-					tag: item.data.BackdropImageTags[0],
+					tag: item.data.BackdropImageTags?.[0],
 				}),
-				item.data.Id,
+				item.data.BackdropImageTags?.[0],
 			);
-			setBackdropImageLoaded(false);
+			// setBackdropImageLoaded(false);
 		}
 	}, [currentSeasonItem.dataUpdatedAt]);
 
@@ -386,6 +389,7 @@ function SeriesTitlePage() {
 										opacity: 0,
 									}}
 									onLoad={() => {
+										console.info("Image Loaded");
 										setBackdropImageLoaded(true);
 									}}
 									animate={{
@@ -589,7 +593,7 @@ function SeriesTitlePage() {
 								itemUserData={item.data.UserData}
 								currentAudioTrack={0}
 								currentVideoTrack={0}
-								currentSubTrack={0}
+								currentSubTrack="nosub"
 								userId={user.data.Id}
 								buttonProps={{
 									fullWidth: true,
@@ -1021,7 +1025,7 @@ function SeriesTitlePage() {
 														userId={user.data.Id}
 														currentAudioTrack={0}
 														currentVideoTrack={0}
-														currentSubTrack={0}
+														currentSubTrack="nosub"
 														size="medium"
 														buttonProps={{
 															color: "white",

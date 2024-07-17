@@ -15,6 +15,7 @@ import {
 	type BaseItemDtoQueryResult,
 	BaseItemKind,
 	ItemFields,
+	MediaProtocol,
 	type PlaybackInfoResponse,
 	SortOrder,
 	type UserItemDataDto,
@@ -33,6 +34,7 @@ import { playItem, usePlaybackDataLoadStore } from "@/utils/store/playback";
 
 import type PlayResult from "@//utils/types/playResult";
 import { getRuntimeCompact } from "@/utils/date/time";
+import getSubtitle from "@/utils/methods/getSubtitles";
 import playbackProfile from "@/utils/playback-profiles";
 import { useApiInContext } from "@/utils/store/api";
 import { getMediaInfoApi } from "@jellyfin/sdk/lib/utils/api/media-info-api";
@@ -112,11 +114,11 @@ const PlayButton = ({
 							audioStreamIndex: currentAudioTrack,
 							subtitleStreamIndex:
 								currentSubTrack === "nosub" ? -1 : currentSubTrack,
-							itemId: result.data.Items[0].Id,
+							itemId: result.data.Items?.[0].Id,
 							startTimeTicks:
-								result.data.Items[0].UserData?.PlaybackPositionTicks,
+								result.data.Items?.[0].UserData?.PlaybackPositionTicks,
 							userId: userId,
-							mediaSourceId: result.data.Items[0].MediaSources[0].Id,
+							mediaSourceId: result.data.Items?.[0].MediaSources?.[0].Id,
 							playbackInfoDto: {
 								DeviceProfile: playbackProfile,
 							},
@@ -192,9 +194,9 @@ const PlayButton = ({
 								currentSubTrack === "nosub" ? -1 : currentSubTrack,
 							itemId: itemId,
 							startTimeTicks:
-								result.data.Items[0].UserData.PlaybackPositionTicks,
+								result.data.Items?.[0].UserData?.PlaybackPositionTicks,
 							userId: userId,
-							mediaSourceId: result.data.Items[0].MediaSources[0].Id,
+							mediaSourceId: result.data.Items?.[0].MediaSources?.[0].Id,
 							playbackInfoDto: {
 								DeviceProfile: playbackProfile,
 							},
@@ -223,61 +225,64 @@ const PlayButton = ({
 			} else {
 				// Creates a queue containing all Episodes for a particular season(series) or collection of movies
 				const queue = result?.item.Items;
-
 				let itemName = item.Name;
 				let episodeTitle = "";
-				if (result?.item.Items[0].SeriesId) {
+				if (result?.item.Items?.[0].SeriesId) {
 					itemName = result?.item.Items[0].SeriesName;
 					episodeTitle = `S${result?.item.Items[0].ParentIndexNumber ?? 0}:E${
 						result?.item.Items[0].IndexNumber ?? 0
 					} ${result?.item.Items[0].Name}`;
 				}
-
-				// Select correct subtitle track, this is useful if item is played with playbutton from card since that does not provide coorect default subtitle track index.
-				let selectedSubtitleTrack: number | "nosub" | undefined =
-					currentSubTrack;
-				const subtitles =
-					result?.mediaSource.MediaSources[0].MediaStreams?.filter(
-						(value) => value.Type === "Subtitle",
-					);
-				let enableSubtitles = true;
-				if (currentSubTrack === "nosub") {
-					enableSubtitles = false;
-					selectedSubtitleTrack = "nosub";
-				} else if (!currentSubTrack && subtitles?.length > 0) {
-					selectedSubtitleTrack = subtitles[0].Index;
-				} else {
-					enableSubtitles = false;
-				}
-
+				// Subtitle
+				const subtitle = getSubtitle(
+					currentSubTrack,
+					result?.mediaSource.MediaSources?.[0].MediaStreams,
+				);
+				console.log(subtitle);
+				// URL generation
 				const urlOptions = {
 					Static: true,
-					tag: result?.mediaSource.MediaSources[0].ETag,
-					mediaSourceId: result?.mediaSource.MediaSources[0].Id,
+					tag: result?.mediaSource.MediaSources?.[0].ETag,
+					mediaSourceId: result?.mediaSource.MediaSources?.[0].Id,
 					deviceId: api?.deviceInfo.id,
 					api_key: api?.accessToken,
 				};
-
 				const urlParams = new URLSearchParams(urlOptions).toString();
-				let playbackUrl = `${api?.basePath}/Videos/${result?.mediaSource.MediaSources[0].Id}/stream.${result?.mediaSource.MediaSources[0].Container}?${urlParams}`;
-
+				let playbackUrl = `${api?.basePath}/Videos/${result?.mediaSource.MediaSources?.[0].Id}/stream.${result?.mediaSource.MediaSources?.[0].Container}?${urlParams}`;
 				if (
-					result?.mediaSource.MediaSources[0].SupportsTranscoding &&
-					result?.mediaSource.MediaSources[0].TranscodingUrl
+					result?.mediaSource.MediaSources?.[0].SupportsTranscoding &&
+					result?.mediaSource.MediaSources?.[0].TranscodingUrl
 				) {
 					playbackUrl = `${api.basePath}${result.mediaSource.MediaSources[0].TranscodingUrl}`;
-				} else if (result?.mediaSource.MediaSources[0].hlsStream) {
-					playbackUrl = result.mediaSource.MediaSources[0].hlsStream;
 				}
 
+				let isDirectPlay = true;
+				let isDirectStream = false;
+				let isTranscode = false;
+				if (result?.mediaSource.MediaSources?.[0].SupportsDirectPlay) {
+					isDirectPlay = true;
+				}
+				if (
+					result?.mediaSource.MediaSources?.[0].SupportsDirectStream &&
+					result?.mediaSource.MediaSources?.[0]
+				) {
+					isDirectStream = true;
+				}
+				if (
+					result?.mediaSource.MediaSources?.[0].SupportsTranscoding &&
+					result?.mediaSource.MediaSources?.[0].TranscodingUrl
+				) {
+					isTranscode = true;
+				}
+				
 				playItem(
 					itemName,
 					episodeTitle,
 					currentVideoTrack,
 					currentAudioTrack,
-					selectedSubtitleTrack,
+					currentSubTrack,
 					result?.mediaSource?.MediaSources[0].Container ?? "mkv",
-					enableSubtitles,
+					false,
 					playbackUrl,
 					userId,
 					item.UserData?.PlaybackPositionTicks,
@@ -285,9 +290,14 @@ const PlayButton = ({
 					item,
 					queue,
 					0,
-					subtitles,
+					[],
 					result?.mediaSource.MediaSources[0].Id,
 					result?.mediaSource.PlaySessionId,
+					subtitle,
+					isDirectPlay,
+					isDirectStream,
+					isTranscode,
+					result?.mediaSource.MediaSources?.[0].Protocol,
 				);
 				navigate({ to: "/player" });
 			}

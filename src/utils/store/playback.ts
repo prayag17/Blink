@@ -1,11 +1,13 @@
 import type {
 	BaseItemDto,
 	BaseItemKind,
+	MediaProtocol,
 	MediaStream,
 } from "@jellyfin/sdk/lib/generated-client";
 import { getMediaInfoApi } from "@jellyfin/sdk/lib/utils/api/media-info-api";
 import { create } from "zustand";
 import playbackProfile from "../playback-profiles";
+import type subtitlePlaybackInfo from "../types/subtitlePlaybackInfo";
 import { useApiInContext } from "./api";
 import { playAudio } from "./audioPlayback";
 import useQueue, { setQueue, setTrackIndex } from "./queue";
@@ -20,9 +22,14 @@ type PlaybackStore = {
 		container: string;
 		availableSubtitleTracks: MediaStream[];
 		id: string | undefined;
+		subtitle: subtitlePlaybackInfo;
+		isDirectPlay: boolean;
+		isDirectStream: boolean;
+		isTranscode: boolean;
+		playbackProtocol: MediaProtocol;
 	};
 	enableSubtitle: boolean;
-	hlsStream: string;
+	playbackStream: string;
 	userId: string;
 	startPosition: number;
 	itemDuration: number;
@@ -40,9 +47,20 @@ export const usePlaybackStore = create<PlaybackStore>(() => ({
 		container: "",
 		availableSubtitleTracks: [],
 		id: undefined,
+		subtitle: {
+			enable: false,
+			track: undefined!,
+			format: "ass",
+			allTracks: undefined,
+			url: undefined,
+		},
+		isDirectPlay: true,
+		isDirectStream: false,
+		isTranscode: false,
+		playbackProtocol: undefined!,
 	},
 	enableSubtitle: true,
-	hlsStream: "",
+	playbackStream: "",
 	userId: "",
 	startPosition: 0,
 	itemDuration: 0,
@@ -58,7 +76,7 @@ export const playItem = (
 	subtitleTrack,
 	container,
 	enableSubtitle,
-	hlsStream,
+	playbackStream,
 	userId,
 	startPosition,
 	itemDuration,
@@ -68,6 +86,11 @@ export const playItem = (
 	availableSubtitleTracks,
 	mediaSourceId,
 	playsessionId,
+	subtitle,
+	isDirectPlay,
+	isDirectStream,
+	isTranscode,
+	playbackProtocol,
 ) => {
 	console.log({
 		itemName,
@@ -79,9 +102,10 @@ export const playItem = (
 			container,
 			availableSubtitleTracks,
 			id: mediaSourceId,
+			subtitle,
 		},
 		enableSubtitle,
-		hlsStream,
+		playbackStream,
 		userId,
 		startPosition,
 		itemDuration,
@@ -98,9 +122,14 @@ export const playItem = (
 			container,
 			availableSubtitleTracks,
 			id: mediaSourceId,
+			subtitle,
+			isDirectPlay,
+			isDirectStream,
+			isTranscode,
+			playbackProtocol,
 		},
 		enableSubtitle,
-		hlsStream,
+		playbackStream,
 		userId,
 		startPosition,
 		itemDuration,
@@ -234,3 +263,21 @@ export const usePlaybackDataLoadStore = create<PlaybackDataLoadState>(
 			})),
 	}),
 );
+
+export const changeSubtitleTrack = (
+	trackIndex: number,
+	allTracks: MediaStream[],
+) => {
+	const requiredSubtitle = allTracks.filter(
+		(track) => track.Index === trackIndex,
+	);
+	const prevState = usePlaybackStore.getState();
+	prevState.mediaSource.subtitle = {
+		url: requiredSubtitle?.[0].DeliveryUrl,
+		track: trackIndex,
+		format: requiredSubtitle?.[0].Codec,
+		allTracks,
+		enable: true,
+	};
+	usePlaybackStore.setState(prevState);
+};

@@ -58,9 +58,6 @@ type ApiContext = {
 };
 
 export const Route = createRootRouteWithContext<ApiContext>()({
-	errorComponent: (error) => {
-		console.error(error.error);
-	},
 	component: () => {
 		const isQueryFetching = useIsFetching();
 		const isMutating = useIsMutating();

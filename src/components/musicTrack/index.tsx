@@ -7,7 +7,9 @@ import PlayButton from "../buttons/playButton";
 import TextLink from "../textLink";
 import "./musicTrack.scss";
 import { useApiInContext } from "@/utils/store/api";
-import { useRouteContext } from "@tanstack/react-router";
+import type { BaseItemDto } from "@jellyfin/sdk/lib/generated-client";
+import type { QueryKey } from "@tanstack/react-query";
+import lyrics_icon from "../../assets/icons/lyrics.svg";
 
 /**
  * @typedef {Object} Props
@@ -33,6 +35,14 @@ const MusicTrack = ({
 	playlistItemId,
 	trackIndex,
 	className = "",
+}: {
+	item: BaseItemDto;
+	queryKey: QueryKey;
+	userId: string | undefined;
+	playlistItem: boolean;
+	playlistItemId: string;
+	trackIndex: number;
+	className: string;
 }) => {
 	const api = useApiInContext((s) => s.api);
 	const [currentTrackItem] = useAudioPlayback((state) => [state.item]);
@@ -100,13 +110,24 @@ const MusicTrack = ({
 						opacity: 0.8,
 					}}
 				>
-					{item.ArtistItems.map((artist, index) => (
+					{item.HasLyrics && (
+						<img
+							src={lyrics_icon}
+							alt="Lyrics"
+							className="music-track-info-lyrics"
+						/>
+					)}
+					{item.ArtistItems?.map((artist, index) => (
 						<>
 							<TextLink
+								key={index}
 								variant={"subtitle2"}
 								location={`/artist/${artist.Id}`}
 								otherProps={{
 									fontWeight: 400,
+									style: {
+										textDecoration: "none",
+									},
 								}}
 							>
 								{artist.Name}
