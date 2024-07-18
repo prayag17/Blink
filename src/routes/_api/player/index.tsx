@@ -1,5 +1,5 @@
 import { WebviewWindow as appWindow } from "@tauri-apps/api/webviewWindow";
-import React, { type ChangeEventHandler } from "react";
+import React, { MouseEventHandler, type ChangeEventHandler } from "react";
 import { useLayoutEffect, useMemo } from "react";
 
 import CircularProgress from "@mui/material/CircularProgress";
@@ -27,7 +27,7 @@ import { AnimatePresence, motion } from "framer-motion";
 
 import { setBackdrop } from "@/utils/store/backdrop";
 
-import { TextField } from "@mui/material";
+import { Button, TextField } from "@mui/material";
 import JASSUB from "jassub";
 import workerUrl from "jassub/dist/jassub-worker.js?url";
 import wasmUrl from "jassub/dist/jassub-worker.wasm?url";
@@ -80,6 +80,7 @@ function VideoPlayer() {
 		episodeTitle,
 		mediaSource,
 		playsessionId,
+		introInfo,
 	] = usePlaybackStore((state) => [
 		state.playbackStream,
 		state.item,
@@ -89,6 +90,7 @@ function VideoPlayer() {
 		state.episodeTitle,
 		state.mediaSource,
 		state.playsessionId,
+		state.intro,
 	]);
 
 	const [loading, setLoading] = useState(true);
@@ -277,6 +279,19 @@ function VideoPlayer() {
 		}
 	}, [mediaSource.subtitle.track, player.current?.getInternalPlayer()]);
 
+	const showSkipIntroButton = useMemo(() => {
+		if (
+			ticksToSec(progress) >= introInfo?.ShowSkipPromptAt &&
+			ticksToSec(progress) < introInfo?.HideSkipPromptAt
+		)
+			return true;
+		return false;
+	}, [progress]);
+
+	const handleSkipIntro = useCallback(() => {
+		player.current?.seekTo(introInfo?.IntroEnd);
+	}, [item?.Id]);
+
 	return (
 		<div className="video-player">
 			<AnimatePresence>
@@ -303,6 +318,22 @@ function VideoPlayer() {
 					</motion.div>
 				)}
 			</AnimatePresence>
+			{showSkipIntroButton && (
+				<Button
+					variant="outlined"
+					size="large"
+					color="white"
+					style={{
+						position: "absolute",
+						bottom: "18vh",
+						right: "2em",
+						zIndex: 10000,
+					}}
+					onClick={handleSkipIntro}
+				>
+					Skip Intro
+				</Button>
+			)}
 			<motion.div
 				className={
 					hoveringOsd || !playing || isSeeking

@@ -36,7 +36,8 @@ import type PlayResult from "@//utils/types/playResult";
 import { getRuntimeCompact } from "@/utils/date/time";
 import getSubtitle from "@/utils/methods/getSubtitles";
 import playbackProfile from "@/utils/playback-profiles";
-import { useApiInContext } from "@/utils/store/api";
+import { axiosClient, useApiInContext } from "@/utils/store/api";
+import type IntroMediaInfo from "@/utils/types/introMediaInfo";
 import { getMediaInfoApi } from "@jellyfin/sdk/lib/utils/api/media-info-api";
 import type { SxProps } from "@mui/material";
 import type { AxiosResponse } from "axios";
@@ -95,6 +96,7 @@ const PlayButton = ({
 			setPlaybackDataLoading(true);
 			let result: undefined | AxiosResponse<BaseItemDtoQueryResult, any>;
 			let mediaSource: undefined | AxiosResponse<PlaybackInfoResponse, any>;
+			let introInfo: undefined | AxiosResponse<IntroMediaInfo, any>;
 			if (playlistItem) {
 				result = await getPlaylistsApi(api).getPlaylistItems({
 					userId: userId,
@@ -123,6 +125,20 @@ const PlayButton = ({
 								DeviceProfile: playbackProfile,
 							},
 						});
+						try {
+							introInfo = (
+								await axiosClient.get(
+									`${api.basePath}/Episode/${result.data.Items?.[0]?.Id}/IntroTimestamps`,
+									{
+										headers: {
+											Authorization: `MediaBrowser Token=${api.accessToken}`,
+										},
+									},
+								)
+							)?.data;
+						} catch (error) {
+							console.error(error);
+						}
 						break;
 					case BaseItemKind.Series:
 						result = await getTvShowsApi(api).getEpisodes({
@@ -144,6 +160,20 @@ const PlayButton = ({
 								DeviceProfile: playbackProfile,
 							},
 						});
+						try {
+							introInfo = (
+								await axiosClient.get(
+									`${api.basePath}/Episode/${result.data.Items?.[0]?.Id}/IntroTimestamps`,
+									{
+										headers: {
+											Authorization: `MediaBrowser Token=${api.accessToken}`,
+										},
+									},
+								)
+							)?.data;
+						} catch (error) {
+							console.error(error);
+						}
 						break;
 					case BaseItemKind.Playlist:
 						result = await getPlaylistsApi(api).getPlaylistItems({
@@ -204,7 +234,7 @@ const PlayButton = ({
 						break;
 				}
 			}
-			return { item: result?.data, mediaSource: mediaSource?.data };
+			return { item: result?.data, mediaSource: mediaSource?.data, introInfo };
 		},
 		onSuccess: (result: PlayResult | null) => {
 			if (trackIndex) {
@@ -255,7 +285,7 @@ const PlayButton = ({
 				) {
 					playbackUrl = `${api.basePath}${result.mediaSource.MediaSources[0].TranscodingUrl}`;
 				}
-				
+
 				playItem(
 					itemName,
 					episodeTitle,
@@ -272,6 +302,7 @@ const PlayButton = ({
 					result?.mediaSource.MediaSources?.[0]?.Id,
 					result?.mediaSource.PlaySessionId,
 					subtitle,
+					result?.introInfo,
 				);
 				navigate({ to: "/player" });
 			}
@@ -374,7 +405,7 @@ const PlayButton = ({
 					color="white"
 				/>
 			</Button>
-			{itemUserData.PlaybackPositionTicks && (
+			{itemUserData.PlaybackPositionTicks > 0 && (
 				<Typography
 					sx={{
 						opacity: 0.8,
@@ -396,18 +427,3 @@ const PlayButton = ({
 };
 
 export default PlayButton;
-
-PlayButton.propTypes = {
-	itemId: PropTypes.string,
-	itemUserData: PropTypes.object,
-	userId: PropTypes.string,
-	itemType: PropTypes.string,
-	currentAudioTrack: PropTypes.number,
-	currentSubTrack: PropTypes.number,
-	currentVideoTrack: PropTypes.number,
-	className: PropTypes.string,
-	sx: PropTypes.any,
-	iconProps: PropTypes.any,
-	buttonProps: PropTypes.any,
-	iconOnly: PropTypes.bool,
-};

@@ -1020,7 +1020,7 @@ function SeriesTitlePage() {
 													<PlayButton
 														item={episode}
 														itemId={episode.Id}
-														itemType="Episode"
+														itemType={BaseItemKind.Episode}
 														itemUserData={episode.UserData}
 														userId={user.data.Id}
 														currentAudioTrack={0}

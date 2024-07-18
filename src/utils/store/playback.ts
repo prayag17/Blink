@@ -1,12 +1,11 @@
 import type {
 	BaseItemDto,
-	BaseItemKind,
-	MediaProtocol,
 	MediaStream,
 } from "@jellyfin/sdk/lib/generated-client";
 import { getMediaInfoApi } from "@jellyfin/sdk/lib/utils/api/media-info-api";
 import { create } from "zustand";
 import playbackProfile from "../playback-profiles";
+import type IntroMediaInfo from "../types/introMediaInfo";
 import type subtitlePlaybackInfo from "../types/subtitlePlaybackInfo";
 import { useApiInContext } from "./api";
 import { playAudio } from "./audioPlayback";
@@ -28,6 +27,7 @@ type PlaybackStore = {
 	itemDuration: number;
 	item: BaseItemDto | null;
 	playsessionId: string | undefined | null;
+	intro: IntroMediaInfo | undefined;
 };
 
 export const usePlaybackStore = create<PlaybackStore>(() => ({
@@ -53,6 +53,7 @@ export const usePlaybackStore = create<PlaybackStore>(() => ({
 	itemDuration: 0,
 	item: null,
 	playsessionId: "",
+	intro: undefined,
 }));
 
 export const playItem = (
@@ -71,6 +72,7 @@ export const playItem = (
 	mediaSourceId: string | undefined | null,
 	playsessionId: string | undefined | null,
 	subtitle: subtitlePlaybackInfo,
+	intro: IntroMediaInfo | undefined,
 ) => {
 	console.log({
 		itemName,
@@ -88,6 +90,7 @@ export const playItem = (
 		itemDuration,
 		item,
 		playsessionId,
+		intro,
 	});
 	usePlaybackStore.setState({
 		itemName,
@@ -105,6 +108,7 @@ export const playItem = (
 		itemDuration,
 		item,
 		playsessionId,
+		intro,
 	});
 	setQueue(queue, queueItemIndex);
 };

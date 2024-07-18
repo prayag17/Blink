@@ -59,6 +59,7 @@
 - Mediainfo recognition (DolbyVision, DolbyAtoms, Dts, Hdr10+, and more...)
 - Sort/Filter library items
 - Queue playback support 
+- Intro Skip button using [jumoog/Intro-Skipper](https://github.com/jumoog/intro-skipper) plugin
 
 ## 📷 Screenshots
 

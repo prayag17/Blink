@@ -41,6 +41,7 @@ import {
 	setDefaultServer,
 	setServer,
 } from "@/utils/storage/servers";
+import { allSettings, getSetting, setSetting } from "@/utils/storage/settings";
 import { delUser } from "@/utils/storage/user";
 import type { RecommendedServerInfo } from "@jellyfin/sdk";
 import { LoadingButton } from "@mui/lab";
@@ -49,6 +50,7 @@ import { useNavigate, useRouteContext } from "@tanstack/react-router";
 import { relaunch } from "@tauri-apps/plugin-process";
 import { type Update, check } from "@tauri-apps/plugin-updater";
 import { useSnackbar } from "notistack";
+import SettingOption from "../settingOption";
 
 const motionConfig = {
 	initial: {
@@ -261,27 +263,8 @@ const Settings = () => {
 					{/* General */}
 					{tabValue === 1 && (
 						<div className="settings-container">
-							{Array.from(new Array(10)).map((i) => (
-								<FormControlLabel
-									key={i}
-									value="start"
-									control={<Switch color="primary" />}
-									label={
-										<div className="settings-option-info">
-											<Typography variant="subtitle1">
-												Some dummy setting
-											</Typography>
-											<Typography
-												variant="caption"
-												className="settings-option-info-caption"
-											>
-												this a test
-											</Typography>
-										</div>
-									}
-									labelPlacement="start"
-									className="settings-option"
-								/>
+							{allSettings.general.map((setting) => (
+								<SettingOption key={setting.key} setting={setting} />
 							))}
 						</div>
 					)}
