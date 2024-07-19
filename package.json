@@ -21,7 +21,7 @@
 		"@jellyfin/sdk": "0.10.0",
 		"@million/lint": "1.0.0-rc.81",
 		"@mui/lab": "5.0.0-alpha.172",
-		"@mui/material": "6.0.0-alpha.14",
+		"@mui/material": "6.0.0-dev.240424162023-9968b4889d",
 		"@react-spring/web": "^9.7.3",
 		"@tanem/react-nprogress": "^5.0.51",
 		"@tanstack/react-query": "^5.51.9",
