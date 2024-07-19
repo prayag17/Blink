@@ -11,7 +11,11 @@ import Typography from "@mui/material/Typography";
 
 import ReactPlayer from "react-player";
 
-import { changeSubtitleTrack, usePlaybackStore } from "@/utils/store/playback";
+import {
+	changeSubtitleTrack,
+	toggleSubtitleTrack,
+	usePlaybackStore,
+} from "@/utils/store/playback";
 
 import { secToTicks, ticksToSec } from "@/utils/date/time";
 import { useCallback, useEffect, useRef, useState } from "react";
@@ -105,11 +109,16 @@ function VideoPlayer() {
 	const [sliderProgress, setSliderProgress] = useState(startPosition);
 	const [progress, setProgress] = useState(startPosition);
 	const [appFullscreen, setAppFullscreen] = useState(false);
-	const [showSubtitles, setShowSubtitles] = useState(mediaSource.subtitle.enable);
+	// const [showSubtitles, setShowSubtitles] = useState(mediaSource.subtitle.enable);
 	const [volume, setVolume] = useState(1);
 	const [muted, setMuted] = useState(false);
 
 	useEffect(() => setBackdrop("", ""), []);
+
+	const showSubtitles = useMemo(
+		() => mediaSource.subtitle.enable,
+		[mediaSource.subtitle],
+	);
 
 	const handleReady = async () => {
 		if (!isReady) {
@@ -241,8 +250,9 @@ function VideoPlayer() {
 
 	const reactPlayerCaptions = useMemo(() => {
 		if (
-			mediaSource.subtitle.format === "vtt" ||
-			mediaSource.subtitle.format === "subrip"
+			(mediaSource.subtitle.format === "vtt" ||
+				mediaSource.subtitle.format === "subrip") &&
+			mediaSource.subtitle.enable
 		) {
 			return [
 				{
@@ -255,7 +265,7 @@ function VideoPlayer() {
 			];
 		}
 		return [];
-	}, [mediaSource.subtitle.track]);
+	}, [mediaSource.subtitle.track, mediaSource.subtitle.enable]);
 	const handleSubtitleChange = (
 		e: ChangeEventHandler<HTMLInputElement | HTMLTextAreaElement>,
 	) => {
@@ -263,7 +273,7 @@ function VideoPlayer() {
 	};
 
 	useEffect(() => {
-		if (player.current?.getInternalPlayer()) {
+		if (player.current?.getInternalPlayer() && mediaSource.subtitle.enable) {
 			if (
 				mediaSource.subtitle.format === "ass" ||
 				mediaSource.subtitle.format === "ssa"
@@ -277,7 +287,11 @@ function VideoPlayer() {
 				return () => jassubRenderer.destroy(); // Remove JASSUB renderer when track changes to fix duplicate renders
 			}
 		}
-	}, [mediaSource.subtitle.track, player.current?.getInternalPlayer()]);
+	}, [
+		mediaSource.subtitle.track,
+		mediaSource.subtitle.enable,
+		player.current?.getInternalPlayer(),
+	]);
 
 	const showSkipIntroButton = useMemo(() => {
 		if (
@@ -541,10 +555,10 @@ function VideoPlayer() {
 								<QueueButton />
 								<IconButton
 									disabled={mediaSource.subtitle.track === -2}
-									onClick={() => setShowSubtitles((state) => !state)}
+									onClick={toggleSubtitleTrack}
 								>
 									<span className={"material-symbols-rounded"}>
-										{showSubtitles
+										{mediaSource.subtitle.enable
 											? "closed_caption"
 											: "closed_caption_disabled"}
 									</span>

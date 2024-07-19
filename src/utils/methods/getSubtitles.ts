@@ -8,23 +8,27 @@ export default function getSubtitle(
 	const availableSubtitles = mediaStreams?.filter(
 		(stream) => stream.Type === "Subtitle",
 	);
-	if (availableSubtitles?.length === 0)
-		return { track: -2, enable: false, format: "vtt" };
-	if (track === "nosub") return { track: -1, enable: false, format: "vtt" };
+	if (!availableSubtitles?.length)
+		return {
+			track: -2,
+			enable: false,
+			format: "vtt",
+			allTracks: availableSubtitles,
+			url: null,
+		};
+	if (track === "nosub")
+		return {
+			track: -1,
+			enable: false,
+			format: "vtt",
+			allTracks: availableSubtitles,
+			url: null,
+		};
 	const requiredSubtitle = availableSubtitles?.filter(
 		(stream) => stream.Index === track,
 	);
 	const url = requiredSubtitle?.[0]?.DeliveryUrl;
 	console.log(track);
-	if (track === "nosub") {
-		return {
-			track,
-			enable: false,
-			format: null,
-			allTracks: availableSubtitles,
-			url: null,
-		};
-	}
 	return {
 		track,
 		enable: true,

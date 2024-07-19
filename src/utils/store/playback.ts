@@ -209,6 +209,7 @@ export const playItemFromQueue = async (
 			console.error(error);
 		}
 
+		// Report playback stop to jellyfin server for previous episode allowing next episode to report playback
 		getPlaystateApi(api).reportPlaybackStopped({
 			playbackStopInfo: {
 				Failed: false,
@@ -273,4 +274,13 @@ export const changeSubtitleTrack = (
 		enable: true,
 	};
 	usePlaybackStore.setState(prevState);
+};
+
+export const toggleSubtitleTrack = () => {
+	const prevState = usePlaybackStore.getState();
+	if (prevState.mediaSource.subtitle.track !== -1) {
+		prevState.mediaSource.subtitle.enable =
+			!prevState.mediaSource.subtitle.enable;
+		usePlaybackStore.setState(prevState);
+	}
 };
