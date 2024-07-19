@@ -115,7 +115,7 @@ function VideoPlayer() {
 		if (!isReady) {
 			player.current?.seekTo(ticksToSec(startPosition), "seconds");
 			setIsReady(true);
-
+			console.log(item);
 			// Report Jellyfin server: Playback has begin
 			getPlaystateApi(api).reportPlaybackStart({
 				playbackStartInfo: {

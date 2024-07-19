@@ -1,13 +1,17 @@
+import type { Api } from "@jellyfin/sdk";
 import type {
 	BaseItemDto,
 	MediaStream,
 } from "@jellyfin/sdk/lib/generated-client";
 import { getMediaInfoApi } from "@jellyfin/sdk/lib/utils/api/media-info-api";
+import { getPlaystateApi } from "@jellyfin/sdk/lib/utils/api/playstate-api";
+import type { AxiosResponse } from "axios";
 import { create } from "zustand";
+import getSubtitle from "../methods/getSubtitles";
 import playbackProfile from "../playback-profiles";
 import type IntroMediaInfo from "../types/introMediaInfo";
 import type subtitlePlaybackInfo from "../types/subtitlePlaybackInfo";
-import { useApiInContext } from "./api";
+import { axiosClient, useApiInContext } from "./api";
 import { playAudio } from "./audioPlayback";
 import useQueue, { setQueue, setTrackIndex } from "./queue";
 
@@ -116,6 +120,7 @@ export const playItem = (
 export const playItemFromQueue = async (
 	index: "next" | "previous" | number,
 	userId: string | undefined,
+	api: Api,
 ) => {
 	const queueItems = useQueue.getState().tracks;
 	const currentItemIndex = useQueue.getState().currentItemIndex;
@@ -126,7 +131,6 @@ export const playItemFromQueue = async (
 				? currentItemIndex - 1
 				: index;
 	const item = queueItems[requestedItemIndex];
-	const api = useApiInContext((s) => s.api);
 	if (item.Type === "Audio") {
 		const urlOptions = {
 			deviceId: api?.deviceInfo.id,
@@ -139,18 +143,21 @@ export const playItemFromQueue = async (
 		console.log(item);
 		playAudio(playbackUrl, item, undefined, queueItems, requestedItemIndex);
 	} else {
-		const mediaInfo = await getMediaInfoApi(api).getPostedPlaybackInfo({
-			audioStreamIndex: item.MediaSources[0].DefaultAudioStreamIndex ?? 0,
-			subtitleStreamIndex: item.MediaSources[0].DefaultSubtitleStreamIndex ?? 0,
-			itemId: item.Id,
-			startTimeTicks: item.UserData?.PlaybackPositionTicks,
-			userId: userId,
-			mediaSourceId: item.MediaSources[0].Id,
-			playbackInfoDto: {
-				DeviceProfile: playbackProfile,
-			},
-		});
-		console.log(mediaInfo);
+		const mediaSource = (
+			await getMediaInfoApi(api).getPostedPlaybackInfo({
+				audioStreamIndex: item.MediaSources?.[0]?.DefaultAudioStreamIndex ?? 0,
+				subtitleStreamIndex:
+					item.MediaSources?.[0]?.DefaultSubtitleStreamIndex ?? 0,
+				itemId: item.Id,
+				startTimeTicks: item.UserData?.PlaybackPositionTicks,
+				userId: userId,
+				mediaSourceId: item.MediaSources?.[0].Id,
+				playbackInfoDto: {
+					DeviceProfile: playbackProfile,
+				},
+			})
+		).data;
+		console.log(mediaSource);
 		let itemName = item.Name;
 		let episodeTitle = "";
 		if (item.SeriesId) {
@@ -159,53 +166,64 @@ export const playItemFromQueue = async (
 				item.IndexNumber ?? 0
 			} ${item.Name}`;
 		}
-
-		// Select correct subtitle track, this is useful if item is played with playbutton from card since that does not provide coorect default subtitle track index.
-		let selectedSubtitleTrack: number | "nosub" | undefined = -1;
-		const subtitles = mediaInfo.data.MediaSources[0].MediaStreams?.filter(
-			(value) => value.Type === "Subtitle",
+		// Subtitle
+		const subtitle = getSubtitle(
+			mediaSource.MediaSources?.[0].DefaultSubtitleStreamIndex ?? "nosub",
+			mediaSource.MediaSources?.[0].MediaStreams,
 		);
-		let enableSubtitles = true;
-		if (mediaInfo.data.MediaSources[0].DefaultSubtitleStreamIndex) {
-			selectedSubtitleTrack =
-				mediaInfo.data.MediaSources[0].DefaultSubtitleStreamIndex;
-		} else if (subtitles?.length > 0) {
-			selectedSubtitleTrack = subtitles[0].Index;
-		} else {
-			enableSubtitles = false;
-		}
-		const videoTrack = mediaInfo.data.MediaSources[0].MediaStreams?.filter(
-			(value) => value.Type === "Subtitle",
-		);
-
+		console.log(subtitle);
+		// URL generation
 		const urlOptions = {
 			Static: true,
-			tag: mediaInfo.data.MediaSources[0].ETag,
-			mediaSourceId: mediaInfo.data.MediaSources[0].Id,
+			tag: mediaSource.MediaSources?.[0].ETag,
+			mediaSourceId: mediaSource.MediaSources?.[0].Id,
 			deviceId: api?.deviceInfo.id,
 			api_key: api?.accessToken,
-			startTimeTicks: item.UserData?.PlaybackPositionTicks,
 		};
-
 		const urlParams = new URLSearchParams(urlOptions).toString();
-		let playbackUrl = `${api?.basePath}/Videos/${mediaInfo.data.MediaSources[0].Id}/stream.${mediaInfo.data.MediaSources[0].Container}?${urlParams}`;
-
+		let playbackUrl = `${api?.basePath}/Videos/${mediaSource.MediaSources?.[0].Id}/stream.${mediaSource.MediaSources?.[0].Container}?${urlParams}`;
 		if (
-			mediaInfo.data.MediaSources[0].SupportsTranscoding &&
-			mediaInfo.data.MediaSources[0].TranscodingUrl
+			mediaSource.MediaSources?.[0].SupportsTranscoding &&
+			mediaSource.MediaSources?.[0].TranscodingUrl
 		) {
-			playbackUrl = `${api.basePath}${mediaInfo.data.MediaSources[0].TranscodingUrl}`;
-		} else if (mediaInfo.data.MediaSources[0].hlsStream) {
-			playbackUrl = mediaInfo.data.MediaSources[0].hlsStream;
+			playbackUrl = `${api.basePath}${mediaSource.MediaSources[0].TranscodingUrl}`;
 		}
+
+		const videoTrack = mediaSource.MediaSources?.[0].MediaStreams?.filter(
+			(value) => value.Type === "Video",
+		);
+
+		let introInfo: undefined | AxiosResponse<IntroMediaInfo, any>;
+		try {
+			introInfo = (
+				await axiosClient.get(
+					`${api.basePath}/Episode/${item.Id}/IntroTimestamps`,
+					{
+						headers: {
+							Authorization: `MediaBrowser Token=${api.accessToken}`,
+						},
+					},
+				)
+			)?.data;
+		} catch (error) {
+			console.error(error);
+		}
+
+		getPlaystateApi(api).reportPlaybackStopped({
+			playbackStopInfo: {
+				Failed: false,
+				ItemId: item?.Id,
+				MediaSourceId: mediaSource.MediaSources?.[0].Id,
+				PlaySessionId: mediaSource.PlaySessionId,
+			},
+		});
+
 		playItem(
 			itemName,
 			episodeTitle,
 			videoTrack[0].Index,
-			mediaInfo.data.MediaSources[0].DefaultAudioStreamIndex ?? 0,
-			selectedSubtitleTrack,
-			mediaInfo.data?.MediaSources[0].Container ?? "mkv",
-			enableSubtitles,
+			mediaSource.MediaSources?.[0].DefaultAudioStreamIndex,
+			mediaSource?.MediaSources?.[0].Container ?? "mkv",
 			playbackUrl,
 			userId,
 			item.UserData?.PlaybackPositionTicks,
@@ -213,9 +231,10 @@ export const playItemFromQueue = async (
 			item,
 			queueItems,
 			requestedItemIndex,
-			subtitles,
-			mediaInfo.data.MediaSources[0].Id,
-			mediaInfo.data.PlaySessionId,
+			mediaSource.MediaSources?.[0]?.Id,
+			mediaSource.PlaySessionId,
+			subtitle,
+			introInfo,
 		);
 	}
 

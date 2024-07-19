@@ -18,7 +18,7 @@ const PlayPreviousButton = () => {
 	});
 	const handlePlayNext = useMutation({
 		mutationKey: ["playPreviousButton"],
-		mutationFn: () => playItemFromQueue("previous", user.data?.Id),
+		mutationFn: () => playItemFromQueue("previous", user.data?.Id, api),
 		onError: (error) => [console.error(error)],
 	});
 	const [queueItems, currentItemIndex] = useQueue((state) => [
