@@ -115,7 +115,6 @@ function VideoPlayer() {
 
 	useEffect(() => setBackdrop("", ""), []);
 
-	const [subtitleRenderer, setSubtitleRenderer] = useState<JASSUB>(null);
   const [clickTimeout, setClickTimeout] = useState<NodeJS.Timeout>(null)
 	
 	const showSubtitles = useMemo(
