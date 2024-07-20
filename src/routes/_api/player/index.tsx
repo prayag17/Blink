@@ -266,38 +266,6 @@ function VideoPlayer() {
     }
   }, [])
 
-	useEffect(() => {
-		async function fetchFonts() {
-			const font = await fetch(subtitleFont).then((r) => r.arrayBuffer());
-			const uint8 = new Uint8Array(font);
-			return uint8;
-		}
-		if (subtitleRenderer)
-			if (showSubtitles) {
-				subtitleRenderer.setTrackByUrl(
-					`${api.basePath}/Videos/${item?.Id}/${item?.Id}/Subtitles/${selectedSubtitle}/Stream.ass?api_key=${api.accessToken}`,
-				);
-			} else {
-				subtitleRenderer.freeTrack();
-			}
-		else if (
-			!subtitleRenderer &&
-			selectedSubtitle !== "nosub" &&
-			showSubtitles
-		) {
-			// fetchFonts().then((uint8) => {
-			// 	const subtitleRendererRaw = new JASSUB({
-			// 		video: player.current.getInternalPlayer(),
-			// 		subUrl: `${api.basePath}/Videos/${item?.Id}/${item?.Id}/Subtitles/${selectedSubtitle}/Stream.ass?api_key=${api.accessToken}`,
-			// 		workerUrl,
-			// 		wasmUrl,
-			// 		availableFonts: { "noto sans": uint8 },
-			// 		fallbackFont: "Noto Sans",
-			// 	});
-			// 	setSubtitleRenderer(subtitleRendererRaw);
-			// });
-		}
-	}, [showSubtitles, selectedSubtitle]);
 
 	useLayoutEffect(() => {
 		setPlaying(true);
