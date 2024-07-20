@@ -5,46 +5,60 @@ import IconButton from "@mui/material/IconButton";
 
 import { useCarouselStore } from "../../utils/store/carousel";
 import "./carousel.scss";
+import { useApiInContext } from "@/utils/store/api";
+import type { BaseItemDto } from "@jellyfin/sdk/lib/generated-client";
+import CarouselSlide from "../carouselSlide";
+
+import ReactMultiCarousel from "react-multi-carousel";
+import Slider from "../Slider";
+import { getTypeIcon } from "../utils/iconsCollection";
 
 const swipeConfidenceThreshold = 8000;
 const swipePower = (offset, velocity) => {
 	return Math.abs(offset) * velocity;
 };
 
-const Carousel = ({ content, onChange }) => {
+const Carousel = ({
+	content,
+	onChange,
+}: {
+	content: BaseItemDto[];
+	onChange: () => void;
+}) => {
 	const [currentSlide, setCurrentSlide] = useState(0);
 
 	const [setDirection, dir] = useCarouselStore((state) => [
 		state.setDirection,
 		state.direction,
 	]);
-
-	// biome-ignore lint/correctness/useExhaustiveDependencies: <explanation>
 	useEffect(() => {
 		onChange(currentSlide);
-	}, [content[currentSlide]?.key]);
+	}, [content[currentSlide]?.Id]);
+
+	const api = useApiInContext((s) => s.api);
+
+	const responsive = {
+		superLargeDesktop: {
+			// the naming can be any, depends on you.
+			breakpoint: { max: 4000, min: 3000 },
+			items: 6,
+		},
+		desktop: {
+			breakpoint: { max: 3000, min: 1024 },
+			items: 6,
+		},
+		tablet: {
+			breakpoint: { max: 1024, min: 464 },
+			items: 4,
+		},
+		mobile: {
+			breakpoint: { max: 464, min: 0 },
+			items: 1,
+		},
+	};
 
 	return (
 		<div className="carousel">
-			<IconButton
-				className="carousel-button left"
-				onClick={() => {
-					if (currentSlide === 0) {
-						setDirection("left");
-						setCurrentSlide(content.length - 1);
-					}
-					if (currentSlide > 0) {
-						setDirection("left");
-						setCurrentSlide((init) => init - 1);
-					}
-				}}
-				sx={{
-					background: " rgb(200 200 200 / 0.05)",
-				}}
-				// disabled={currentSlide == 0}
-			>
-				<div className="material-symbols-rounded">arrow_left</div>
-			</IconButton>
 			<AnimatePresence mode="sync">
 				<motion.div
 					key={currentSlide}
@@ -77,35 +91,31 @@ const Carousel = ({ content, onChange }) => {
 						position: "absolute",
 					}}
 				>
-					{content[currentSlide]}
+					<CarouselSlide
+						item={content[currentSlide]}
+						key={content[currentSlide].Id}
+					/>
 				</motion.div>
 			</AnimatePresence>
-			<IconButton
-				className="carousel-button right"
-				onClick={() => {
-					if (currentSlide === content.length - 1) {
-						setDirection("right");
-						setCurrentSlide(0);
-					} else if (currentSlide < content.length - 1) {
-						setDirection("right");
-						setCurrentSlide((init) => init + 1);
-					}
-				}}
-				// disabled={currentSlide == content.length - 1}
-				sx={{
-					background: " rgb(200 200 200 / 0.05)",
-				}}
-			>
-				<div className="material-symbols-rounded">arrow_right</div>
-			</IconButton>
-			<div className="carousel-indicator-container">
-				{content.map((item, index) => (
-					<div
+			<Slider
+				currentSlide={currentSlide}
+				content={content.map((item, index) => (
+					<motion.div
 						className={
 							currentSlide === index
 								? "carousel-indicator active"
 								: "carousel-indicator"
 						}
+						layout
+						initial={{
+							height: "4.6em",
+						}}
+						whileHover={{
+							height: "5.5em",
+						}}
+						transition={{
+							duration: 0.05,
+						}}
 						key={item.Id}
 						onClick={() => {
 							if (currentSlide > index) {
@@ -115,9 +125,24 @@ const Carousel = ({ content, onChange }) => {
 							}
 							setCurrentSlide(index);
 						}}
-					/>
+					>
+						{item.ImageTags?.Primary ? (
+							<img
+								src={api.getItemImageUrl(item.Id, "Thumb", {
+									tag: item.ImageTags.Primary,
+									fillWidth: 300,
+								})}
+								alt={item.Name ?? "item-image"}
+								className="carousel-indicator-image"
+							/>
+						) : (
+							<div className="carousel-indicator-icon">
+								{getTypeIcon(item.Type)}
+							</div>
+						)}
+					</motion.div>
 				))}
-			</div>
+			/>
 		</div>
 	);
 };

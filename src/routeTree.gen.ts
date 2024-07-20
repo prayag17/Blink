@@ -13,6 +13,7 @@
 import { Route as rootRoute } from './routes/__root'
 import { Route as ApiImport } from './routes/_api'
 import { Route as IndexImport } from './routes/index'
+import { Route as ErrorCodeImport } from './routes/error/$code'
 import { Route as ApiSearchIndexImport } from './routes/_api/search/index'
 import { Route as ApiPlayerIndexImport } from './routes/_api/player/index'
 import { Route as ApiLoginIndexImport } from './routes/_api/login/index'
@@ -43,6 +44,11 @@ const ApiRoute = ApiImport.update({
 
 const IndexRoute = IndexImport.update({
   path: '/',
+  getParentRoute: () => rootRoute,
+} as any)
+
+const ErrorCodeRoute = ErrorCodeImport.update({
+  path: '/error/$code',
   getParentRoute: () => rootRoute,
 } as any)
 
@@ -162,6 +168,13 @@ declare module '@tanstack/react-router' {
       path: ''
       fullPath: ''
       preLoaderRoute: typeof ApiImport
+      parentRoute: typeof rootRoute
+    }
+    '/error/$code': {
+      id: '/error/$code'
+      path: '/error/$code'
+      fullPath: '/error/$code'
+      preLoaderRoute: typeof ErrorCodeImport
       parentRoute: typeof rootRoute
     }
     '/_api/album/$id': {
@@ -330,6 +343,7 @@ export const routeTree = rootRoute.addChildren({
     ApiSearchIndexRoute,
     ApiLoginUserIdUserNameRoute,
   }),
+  ErrorCodeRoute,
   SetupServerAddRoute,
   SetupServerErrorRoute,
   SetupServerListRoute,
@@ -345,6 +359,7 @@ export const routeTree = rootRoute.addChildren({
       "children": [
         "/",
         "/_api",
+        "/error/$code",
         "/setup/server/add",
         "/setup/server/error",
         "/setup/server/list"
@@ -374,6 +389,9 @@ export const routeTree = rootRoute.addChildren({
         "/_api/search/",
         "/_api/login/$userId/$userName"
       ]
+    },
+    "/error/$code": {
+      "filePath": "error/$code.tsx"
     },
     "/_api/album/$id": {
       "filePath": "_api/album/$id.tsx",

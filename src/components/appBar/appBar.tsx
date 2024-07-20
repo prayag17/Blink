@@ -1,39 +1,22 @@
-import type React from "react";
-import { useEffect, useRef, useState } from "react";
-
-import { relaunch } from "@tauri-apps/api/process";
+import React, { type ReactNode } from "react";
+import { useEffect, useState } from "react";
 
 import MuiAppBar from "@mui/material/AppBar";
 import Avatar from "@mui/material/Avatar";
-import Button from "@mui/material/Button";
-import Grow from "@mui/material/Grow";
 import IconButton from "@mui/material/IconButton";
 import ListItemIcon from "@mui/material/ListItemIcon";
 import Menu from "@mui/material/Menu";
 import MenuItem from "@mui/material/MenuItem";
-import Paper from "@mui/material/Paper";
-import Popper from "@mui/material/Popper";
-import Toolbar from "@mui/material/Toolbar";
-import Typography from "@mui/material/Typography";
 import useScrollTrigger from "@mui/material/useScrollTrigger";
 
-import { red } from "@mui/material/colors";
-
-import {
-	Link,
-	useLocation,
-	useNavigate,
-	useRouteContext,
-} from "@tanstack/react-router";
+import { Link, useLocation, useNavigate } from "@tanstack/react-router";
 
 import { getUserApi } from "@jellyfin/sdk/lib/utils/api/user-api";
 import { getUserViewsApi } from "@jellyfin/sdk/lib/utils/api/user-views-api";
 
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 
-import { delServer } from "@/utils/storage/servers";
 import { delUser } from "@/utils/storage/user";
-import { useDrawerStore } from "@/utils/store/drawer";
 import "./appBar.scss";
 
 import { EventEmitter as event } from "@/eventEmitter";
@@ -41,7 +24,7 @@ import { EventEmitter as event } from "@/eventEmitter";
 import { getTypeIcon } from "../utils/iconsCollection";
 
 import { useApiInContext } from "@/utils/store/api";
-import useSettingsStore, {
+import {
 	setSettingsDialogOpen,
 	setSettingsTabValue,
 } from "@/utils/store/settings";
@@ -56,7 +39,7 @@ import {
 import BackButton from "../buttons/backButton";
 
 interface ListItemLinkProps {
-	icon?: React.ReactElement;
+	icon?: ReactNode;
 	primary: string;
 	to: string;
 }
@@ -103,6 +86,7 @@ export const AppBar = () => {
 			return usr.data;
 		},
 		enabled: display,
+		throwOnError: true,
 	});
 	const libraries = useQuery({
 		queryKey: ["libraries"],
@@ -140,7 +124,7 @@ export const AppBar = () => {
 		event.emit("create-jellyfin-api", api.basePath);
 		queryClient.clear();
 		setAnchorEl(null);
-		navigate("/login/index");
+		navigate({ to: "/login" });
 	};
 
 	useEffect(() => {
@@ -156,7 +140,6 @@ export const AppBar = () => {
 		} else {
 			setDisplay(true);
 		}
-
 	}, [location]);
 
 	const [showDrawer, setShowDrawer] = useState(false);
@@ -185,7 +168,7 @@ export const AppBar = () => {
 							<div className="material-symbols-rounded">menu</div>
 						</IconButton>
 						<BackButton />
-						<IconButton onClick={() => navigate({ to: "/home/" })}>
+						<IconButton onClick={() => navigate({ to: "/home" })}>
 							<div
 								className={
 									location.pathname === "/home"
@@ -208,7 +191,10 @@ export const AppBar = () => {
 						<IconButton sx={{ p: 0 }} onClick={handleMenuOpen}>
 							{user.isSuccess &&
 								(user.data.PrimaryImageTag === undefined ? (
-									<Avatar className="appBar-avatar" alt={user.data.Name}>
+									<Avatar
+										className="appBar-avatar"
+										alt={user.data.Name ?? "image"}
+									>
 										<span className="material-symbols-rounded appBar-avatar-icon">
 											account_circle
 										</span>
@@ -217,7 +203,7 @@ export const AppBar = () => {
 									<Avatar
 										className="appBar-avatar"
 										src={`${api.basePath}/Users/${user.data.Id}/Images/Primary`}
-										alt={user.data.Name}
+										alt={user.data.Name ?? "image"}
 									>
 										<span className="material-symbols-rounded appBar-avatar-icon">
 											account_circle

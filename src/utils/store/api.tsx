@@ -1,5 +1,6 @@
 import { type Api, Jellyfin } from "@jellyfin/sdk";
-import React, { createContext, useContext, useRef, useState } from "react";
+import React, { type ReactNode } from "react";
+import { createContext, useContext, useState } from "react";
 import { type StoreApi, createStore, useStore } from "zustand";
 import { version as appVer } from "../../../package.json";
 
@@ -11,14 +12,11 @@ type ApiStore = {
 	api: Api;
 	deviceId: string | null;
 	jellyfin: Jellyfin;
-	createApi: (
-		serverAddress: string | undefined,
-		accessToken?: string | undefined,
-	) => void;
+	createApi: (serverAddress: string, accessToken?: string | undefined) => void;
 };
 
 export const axiosClient = axios.create({
-	adapter: axiosTauriApiAdapter,
+	// adapter: axiosTauriApiAdapter,
 	headers: {
 		"Access-Control-Allow-Origin": "*",
 	},
@@ -42,31 +40,29 @@ export const jellyfin = new Jellyfin({
 	},
 });
 
-// export const useApi = create<{
-// 	api: Api;
-// 	deviceId: string | null;
-// 	jellyfin: Jellyfin;
-// }>(() => ({
-// 	api: undefined,
-// 	deviceId: deviceId,
-// 	jellyfin: jellyfin,
-// }));
+export const ApiContext = createContext<StoreApi<ApiStore>>(undefined!);
 
-const ApiContext = createContext(null);
-
-export const ApiProvider = ({ children }) => {
+export const ApiProvider = ({ children }: { children: ReactNode }) => {
 	const [store] = useState(() =>
 		createStore<ApiStore>()((set) => ({
-			api: undefined,
+			api: undefined!,
 			deviceId: deviceId,
 			jellyfin: jellyfin,
 			createApi: (serverAddress, accessToken?) =>
-				set((state) => ({
-					...state,
-					api: jellyfin.createApi(serverAddress, accessToken, axiosClient),
-				})),
+				set((state) => {
+					const apiTemp = state.jellyfin.createApi(
+						serverAddress,
+						accessToken,
+						axiosClient,
+					);
+					console.info(apiTemp);
+					return {
+						...state,
+						api: apiTemp,
+					};
+				}),
 		})),
-	)
+	);
 	return <ApiContext.Provider value={store}>{children}</ApiContext.Provider>;
 };
 
@@ -77,11 +73,3 @@ export function useApiInContext<T>(selector?: (state: ApiStore) => T) {
 	}
 	return useStore(store, selector!);
 }
-
-export const createApi = (
-	serverAddress: string | undefined,
-	accessToken: string | undefined,
-) => {
-	const createApiFn = useApiInContext((s) => s.createApi);
-	createApiFn(serverAddress, accessToken);
-};

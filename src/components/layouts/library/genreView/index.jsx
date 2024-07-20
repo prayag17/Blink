@@ -1,3 +1,4 @@
+import { useApiInContext } from "@/utils/store/api";
 import { BaseItemKind } from "@jellyfin/sdk/lib/generated-client";
 import { getItemsApi } from "@jellyfin/sdk/lib/utils/api/items-api";
 import Typography from "@mui/material/Typography";
@@ -8,7 +9,7 @@ import { Card } from "../../../card/card";
 import { CardScroller } from "../../../cardScroller/cardScroller";
 
 const GenreView = ({ libraryId, genreId, genreName, userId }) => {
-	const api = useRouteContext({ from: "/" }).api;
+	const api = useApiInContext((s) => s.api);
 
 	const items = useQuery({
 		queryKey: ["library", "genreItem", genreId],

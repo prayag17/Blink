@@ -23,18 +23,12 @@ import { useIsFetching, useIsMutating } from "@tanstack/react-query";
 import {
 	Outlet,
 	ScrollRestoration,
-	createRootRoute,
 	createRootRouteWithContext,
-	useNavigate,
 	useRouterState,
 } from "@tanstack/react-router";
 import { TanStackRouterDevtools } from "@tanstack/router-devtools";
-import { relaunch } from "@tauri-apps/api/process";
-import {
-	type UpdateManifest,
-	checkUpdate,
-	installUpdate,
-} from "@tauri-apps/api/updater";
+import { relaunch } from "@tauri-apps/plugin-process";
+import { type Update, check } from "@tauri-apps/plugin-updater";
 import { AnimatePresence, motion } from "framer-motion";
 import { SnackbarProvider, useSnackbar } from "notistack";
 import React, { Suspense, useEffect, useLayoutEffect, useState } from "react";
@@ -49,7 +43,8 @@ import "@fontsource-variable/jetbrains-mono";
 import "@fontsource-variable/noto-sans";
 
 import "material-symbols/rounded.scss";
-import type { Api } from "@jellyfin/sdk";
+import type { Api, Jellyfin } from "@jellyfin/sdk";
+import type { UserDto } from "@jellyfin/sdk/lib/generated-client";
 import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 
 type ApiContext = {
@@ -58,34 +53,28 @@ type ApiContext = {
 		serverAddress: string | undefined,
 		accessToken: string | undefined,
 	) => void;
+	user: UserDto | null | undefined;
+	jellyfinSDK: Jellyfin;
 };
 
 export const Route = createRootRouteWithContext<ApiContext>()({
-	errorComponent: (error) => {
-		console.error(error.error);
-	},
 	component: () => {
-		"use memo";
 		const isQueryFetching = useIsFetching();
 		const isMutating = useIsMutating();
 		const routeIsLoading = useRouterState().isLoading;
 		const [updateDialog, setUpdateDialog] = useState(false);
 		const [updateDialogButton, setUpdateDialogButton] = useState(false);
-		const [updateInfo, setUpdateInfo] = useState<UpdateManifest | undefined>(
-			undefined,
-		);
+		const [updateInfo, setUpdateInfo] = useState<Update | undefined>(undefined);
 		useLayoutEffect(() => {
 			async function checkForUpdates() {
 				try {
-					const { shouldUpdate, manifest } = await checkUpdate();
+					const update = await check();
 
-					if (shouldUpdate) {
-						setUpdateInfo(manifest);
+					if (update?.available) {
+						setUpdateInfo(update);
 						setUpdateDialog(true);
 
-						console.log(
-							`Update found : ${manifest?.version}, ${manifest?.date}`,
-						);
+						console.log(`Update found : ${update.version}, ${update.date}`);
 					}
 				} catch (error) {
 					console.error(error);
@@ -113,6 +102,11 @@ export const Route = createRootRouteWithContext<ApiContext>()({
 						<Settings />
 						<EasterEgg />
 						<NProgress
+							key={
+								isQueryFetching || isMutating || routeIsLoading
+									? `show${(isQueryFetching ?? 1) * (isMutating ?? 1) * (routeIsLoading ?? 1)}`
+									: "hide"
+							}
 							isAnimating={isQueryFetching || isMutating || routeIsLoading}
 						/>
 
@@ -219,7 +213,7 @@ export const Route = createRootRouteWithContext<ApiContext>()({
 											loadingIndicator="Updating..."
 											onClick={async () => {
 												setUpdateDialogButton(true);
-												await installUpdate();
+												await updateInfo.downloadAndInstall();
 												enqueueSnackbar(
 													"Update has been installed! You need to relaunch JellyPlayer.",
 													{

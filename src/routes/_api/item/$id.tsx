@@ -26,7 +26,7 @@ import { getLibraryApi } from "@jellyfin/sdk/lib/utils/api/library-api";
 import { getUserApi } from "@jellyfin/sdk/lib/utils/api/user-api";
 import { getUserLibraryApi } from "@jellyfin/sdk/lib/utils/api/user-library-api";
 
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useSuspenseQuery } from "@tanstack/react-query";
 
 import heroBg from "@/assets/herobg.png";
 import { Card } from "@/components/card/card";
@@ -67,6 +67,7 @@ import sdrIcon from "@/assets/icons/sdr.svg";
 import type MediaQualityInfo from "@/utils/types/mediaQualityInfo";
 
 import IconLink from "@/components/iconLink";
+import { queryClient } from "@/main";
 import { Link, createFileRoute } from "@tanstack/react-router";
 
 function TabPanel(props) {
@@ -97,7 +98,6 @@ export const Route = createFileRoute("/_api/item/$id")({
 });
 
 function ItemDetail() {
-	"use memo";
 	const { id } = Route.useParams();
 
 	const api = Route.useRouteContext().api;
@@ -125,6 +125,8 @@ function ItemDetail() {
 		networkMode: "always",
 		refetchOnWindowFocus: true,
 	});
+
+	// const item = useSuspenseQuery({ queryKey: ["item", id] });
 
 	const similarItems = useQuery({
 		queryKey: ["item", id, "similarItem"],
@@ -207,7 +209,7 @@ function ItemDetail() {
 					api?.getItemImageUrl(item.data.Id, "Backdrop", {
 						tag: item.data.BackdropImageTags[0],
 					}),
-					item.data.Id,
+					item.data.BackdropImageTags[0],
 				);
 			} else {
 				setBackdrop("", "");

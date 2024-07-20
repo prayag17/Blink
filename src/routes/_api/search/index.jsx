@@ -21,7 +21,8 @@ import { getItemsApi } from "@jellyfin/sdk/lib/utils/api/items-api";
 import { getPersonsApi } from "@jellyfin/sdk/lib/utils/api/persons-api";
 import { getSearchApi } from "@jellyfin/sdk/lib/utils/api/search-api";
 import "./search.scss";
-import { createFileRoute } from "@tanstack/react-router";
+import { Dialog } from "@mui/material";
+import { Outlet, createFileRoute } from "@tanstack/react-router";
 
 export const Route = createFileRoute("/_api/search/")({
 	component: SearchPage,
@@ -48,8 +49,8 @@ function SearchPage() {
 	const movies = useQuery({
 		queryKey: ["search", "items", "Movie", searchParam],
 		queryFn: async () => {
-			const result = await getItemsApi(api).getItemsByUserId({
-				userId: user.data.Id,
+			const result = await getItemsApi(api).getItems({
+				userId: user.data?.Id,
 				searchTerm,
 				includeItemTypes: [BaseItemKind.Movie],
 				recursive: true,
@@ -58,13 +59,12 @@ function SearchPage() {
 			return result.data;
 		},
 		enabled: user.isSuccess,
-		cacheTime: 0,
 	});
 	const series = useQuery({
 		queryKey: ["search", "items", "Series", searchParam],
 		queryFn: async () => {
-			const result = await getItemsApi(api).getItemsByUserId({
-				userId: user.data.Id,
+			const result = await getItemsApi(api).getItems({
+				userId: user.data?.Id,
 				searchTerm,
 				includeItemTypes: [BaseItemKind.Series],
 				recursive: true,
@@ -73,13 +73,12 @@ function SearchPage() {
 			return result.data;
 		},
 		enabled: user.isSuccess,
-		cacheTime: 0,
 	});
 	const musicAlbum = useQuery({
 		queryKey: ["search", "items", "MusicAlbum", searchParam],
 		queryFn: async () => {
-			const result = await getItemsApi(api).getItemsByUserId({
-				userId: user.data.Id,
+			const result = await getItemsApi(api).getItems({
+				userId: user.data?.Id,
 				searchTerm,
 				includeItemTypes: [BaseItemKind.MusicAlbum],
 				recursive: true,
@@ -88,13 +87,12 @@ function SearchPage() {
 			return result.data;
 		},
 		enabled: user.isSuccess,
-		cacheTime: 0,
 	});
 	const audio = useQuery({
 		queryKey: ["search", "items", "Audio", searchParam],
 		queryFn: async () => {
-			const result = await getItemsApi(api).getItemsByUserId({
-				userId: user.data.Id,
+			const result = await getItemsApi(api).getItems({
+				userId: user.data?.Id,
 				searchTerm,
 				includeItemTypes: [BaseItemKind.Audio],
 				recursive: true,
@@ -103,13 +101,12 @@ function SearchPage() {
 			return result.data;
 		},
 		enabled: user.isSuccess,
-		cacheTime: 0,
 	});
 	const book = useQuery({
 		queryKey: ["search", "items", "Book", searchParam],
 		queryFn: async () => {
-			const result = await getItemsApi(api).getItemsByUserId({
-				userId: user.data.Id,
+			const result = await getItemsApi(api).getItems({
+				userId: user.data?.Id,
 				searchTerm,
 				includeItemTypes: [BaseItemKind.Book],
 				recursive: true,
@@ -118,13 +115,12 @@ function SearchPage() {
 			return result.data;
 		},
 		enabled: user.isSuccess,
-		cacheTime: 0,
 	});
 	const musicArtists = useQuery({
 		queryKey: ["search", "items", "MusicArtists", searchParam],
 		queryFn: async () => {
-			const result = await getItemsApi(api).getItemsByUserId({
-				userId: user.data.Id,
+			const result = await getItemsApi(api).getItems({
+				userId: user.data?.Id,
 				searchTerm,
 				includeItemTypes: [BaseItemKind.MusicArtist],
 				recursive: true,
@@ -133,26 +129,24 @@ function SearchPage() {
 			return result.data;
 		},
 		enabled: user.isSuccess,
-		cacheTime: 0,
 	});
 	const person = useQuery({
 		queryKey: ["search", "items", "Person", searchParam],
 		queryFn: async () => {
 			const result = await getPersonsApi(api).getPersons({
-				userId: user.data.Id,
+				userId: user.data?.Id,
 				searchTerm,
 				limit: itemLimit,
 			});
 			return result.data;
 		},
 		enabled: user.isSuccess,
-		cacheTime: 0,
 	});
 	const episodes = useQuery({
 		queryKey: ["search", "items", "Episodes", searchParam],
 		queryFn: async () => {
-			const result = await getSearchApi(api).get({
-				userId: user.data.Id,
+			const result = await getSearchApi(api).getSearchHints({
+				userId: user.data?.Id,
 				searchTerm,
 				limit: itemLimit,
 				includeItemTypes: ["Episode"],
@@ -160,7 +154,6 @@ function SearchPage() {
 			return result.data;
 		},
 		enabled: user.isSuccess,
-		cacheTime: 0,
 	});
 
 	const [setBackdrop] = useBackdropStore((state) => [state.setBackdrop]);
@@ -433,7 +426,7 @@ function SearchPage() {
 				musicAlbum.data.Items.length === 0 &&
 				book.data.Items.length === 0 &&
 				musicArtists.data.Items.length === 0 &&
-				person.data.Items.length === 0 &&
+				person.data.Items?.length === 0 &&
 				episodes.data.SearchHints?.length === 0 && (
 					<div
 						style={{
@@ -443,6 +436,7 @@ function SearchPage() {
 						<EmptyNotice extraMsg={"Try using different search terms."} />
 					</div>
 				)}
+			<Outlet />
 		</div>
 	);
 }

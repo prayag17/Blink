@@ -28,7 +28,7 @@ import React, { useEffect, useState } from "react";
 
 import logo from "@/assets/logo.png";
 
-import { createApi, jellyfin, useApiInContext } from "@/utils/store/api";
+import { jellyfin, useApiInContext } from "@/utils/store/api";
 import { useCentralStore } from "@/utils/store/central";
 import { getSystemApi } from "@jellyfin/sdk/lib/utils/api/system-api";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
@@ -41,14 +41,16 @@ import {
 	setDefaultServer,
 	setServer,
 } from "@/utils/storage/servers";
+import { allSettings, getSetting, setSetting } from "@/utils/storage/settings";
 import { delUser } from "@/utils/storage/user";
 import type { RecommendedServerInfo } from "@jellyfin/sdk";
 import { LoadingButton } from "@mui/lab";
 import { red, yellow } from "@mui/material/colors";
 import { useNavigate, useRouteContext } from "@tanstack/react-router";
-import { relaunch } from "@tauri-apps/api/process";
-import { checkUpdate, installUpdate } from "@tauri-apps/api/updater";
-import { enqueueSnackbar, useSnackbar } from "notistack";
+import { relaunch } from "@tauri-apps/plugin-process";
+import { type Update, check } from "@tauri-apps/plugin-updater";
+import { useSnackbar } from "notistack";
+import SettingOption from "../settingOption";
 
 const motionConfig = {
 	initial: {
@@ -64,7 +66,9 @@ const Settings = () => {
 		state.dialogOpen,
 		state.tabValue,
 	]);
-		const api = useApiInContext((s) => s.api);
+	
+	const api = useApiInContext((s) => s.api);
+	const createApi = useApiInContext((s) => s.createApi);
 
 	const systemInfo = useQuery({
 		queryKey: ["about", "systemInfo"],
@@ -91,7 +95,7 @@ const Settings = () => {
 
 	const updateInfo = useQuery({
 		queryKey: ["about", "updater"],
-		queryFn: async () => await checkUpdate(),
+		queryFn: async () => await check(),
 		enabled: open,
 	});
 
@@ -117,7 +121,7 @@ const Settings = () => {
 		},
 		onSuccess: async () => {
 			setSettingsDialogOpen(false);
-			navigate({ to: "/login/index" });
+			navigate({ to: "/login" });
 		},
 		onError: (error) => {
 			console.error(error);
@@ -259,27 +263,8 @@ const Settings = () => {
 					{/* General */}
 					{tabValue === 1 && (
 						<div className="settings-container">
-							{Array.from(new Array(10)).map((i) => (
-								<FormControlLabel
-									key={i}
-									value="start"
-									control={<Switch color="primary" />}
-									label={
-										<div className="settings-option-info">
-											<Typography variant="subtitle1">
-												Some dummy setting
-											</Typography>
-											<Typography
-												variant="caption"
-												className="settings-option-info-caption"
-											>
-												this a test
-											</Typography>
-										</div>
-									}
-									labelPlacement="start"
-									className="settings-option"
-								/>
+							{allSettings.general.map((setting) => (
+								<SettingOption key={setting.key} setting={setting} />
 							))}
 						</div>
 					)}
@@ -436,7 +421,7 @@ const Settings = () => {
 													className="material-symbols-rounded"
 													style={{ "--wght": 500 }}
 												>
-													{updateInfo.data?.shouldUpdate
+													{updateInfo.data?.available
 														? "new_release"
 														: "new_releases"}
 												</span>
@@ -446,9 +431,7 @@ const Settings = () => {
 													{applicationVersion}
 												</Typography>
 											}
-											color={
-												updateInfo.data?.shouldUpdate ? "error" : "success"
-											}
+											color={updateInfo.data?.available ? "error" : "success"}
 											size="small"
 											style={{
 												width: "fit-content !important",
@@ -462,7 +445,7 @@ const Settings = () => {
 										<Typography variant="subtitle2">
 											{updateInfo.isFetching ? (
 												"Checking for new updates..."
-											) : updateInfo.data?.shouldUpdate ? (
+											) : updateInfo.data?.available ? (
 												<Chip
 													icon={
 														<span className="material-symbols-rounded">
@@ -491,12 +474,12 @@ const Settings = () => {
 										}}
 										loading={updateInfo.isFetching || updating}
 										variant="contained"
-										disabled={!updateInfo.data?.shouldUpdate}
+										disabled={!updateInfo.data?.available}
 										loadingPosition="start"
 										onClick={async () => {
-											if (updateInfo.data?.shouldUpdate) {
+											if (updateInfo.data?.available) {
 												setUpdating(true);
-												await installUpdate();
+												await updateInfo.data?.downloadAndInstall();
 												enqueueSnackbar(
 													"Update has been installed! You need to relaunch JellyPlayer.",
 													{
@@ -509,7 +492,7 @@ const Settings = () => {
 									>
 										{updateInfo.isFetching
 											? "Checking for Update..."
-											: updateInfo.data?.shouldUpdate
+											: updateInfo.data?.available
 												? "Update"
 												: "No Update Found"}
 									</LoadingButton>
