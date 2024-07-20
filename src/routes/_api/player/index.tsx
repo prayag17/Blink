@@ -380,7 +380,7 @@ function VideoPlayer() {
           } else if (event.detail === 2){
             clearTimeout(clickTimeout)
             setAppFullscreen((state) => {
-              appWindow.setFullscreen(!state)
+              appWindow.getCurrent().setFullscreen(!state);
               return !state
             });
           }
