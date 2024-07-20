@@ -1,6 +1,6 @@
 /** @format */
 
-import React from "react";
+import React, { memo } from "react";
 import { Component, useState } from "react";
 
 import { useNavigate, useRouteContext } from "@tanstack/react-router";
@@ -11,6 +11,7 @@ import Typography from "@mui/material/Typography";
 import {
 	type BaseItemDto,
 	BaseItemKind,
+	type ImageType,
 } from "@jellyfin/sdk/lib/generated-client";
 import LikeButton from "../buttons/likeButton";
 import MarkPlayedButton from "../buttons/markPlayedButton";
@@ -34,7 +35,7 @@ const availableSpecialRoutes = [
 	BaseItemKind.Playlist,
 ];
 
-export const Card = ({
+const CardComponent = ({
 	item,
 	cardTitle,
 	cardCaption,
@@ -49,22 +50,21 @@ export const Card = ({
 	overrideIcon,
 }: {
 	item: BaseItemDto;
-	cardTitle: string | null;
-	cardCaption: string | null;
-	imageType: string;
+	cardTitle: string | undefined | null;
+	cardCaption?: string | null | number;
+	imageType: ImageType;
 	cardType: string;
-	queryKey: [];
-	userId: string;
-	seriesId: string | null;
-	hideText: boolean;
-	onClick: () => null | null;
-	disableOverlay: boolean;
-	overrideIcon: any;
+	queryKey?: string[];
+	userId?: string;
+	seriesId?: string | null;
+	hideText?: boolean;
+	onClick?: () => void;
+	disableOverlay?: boolean;
+	overrideIcon?: any;
 }) => {
 	const api = useApiInContext((s) => s.api);
 	const navigate = useNavigate();
 	const defaultOnClick = () => {
-
 		switch (item.Type) {
 			case BaseItemKind.BoxSet:
 				navigate({ to: "/boxset/$id", params: { id: item.Id } });
@@ -94,11 +94,7 @@ export const Card = ({
 	};
 
 	return (
-		<div
-			className="card"
-			elevation={0}
-			onClick={onClick ? onClick : defaultOnClick}
-		>
+		<div className="card" onClick={onClick ? onClick : defaultOnClick}>
 			<div className={`card-image-container ${cardType}`}>
 				<ErrorBoundary fallback>
 					<div
@@ -124,21 +120,11 @@ export const Card = ({
 						</Typography>
 					</div>
 				</ErrorBoundary>
-				{/* {!!imageBlurhash && (
-						<Blurhash
-							hash={imageBlurhash}
-							width={128}
-							height={128}
-							resolutionX={24}
-							resolutionY={24}
-							className="card-image-blurhash"
-						/>
-					)} */}
 				<div className="card-image-icon-container">
 					{overrideIcon ? getTypeIcon(overrideIcon) : getTypeIcon(item.Type)}
 				</div>
 				<img
-					alt={item.Name}
+					alt={item.Name ?? "blink"}
 					src={
 						overrideIcon === "User"
 							? `${api.basePath}/Users/${item.Id}/Images/Primary`
@@ -172,7 +158,7 @@ export const Card = ({
 								userId={userId}
 								itemType={item.Type}
 								currentAudioTrack={0}
-								currentSubTrack={0}
+								currentSubTrack="nosub"
 								currentVideoTrack={0}
 								className="card-play-button"
 								iconProps={{
@@ -215,24 +201,6 @@ export const Card = ({
 						/>
 					</div>
 				)}
-				{/*
-				{item.UserData?.PlaybackPositionTicks > 0 && (
-					<LinearProgress
-						variant="determinate"
-						value={item.UserData?.PlayedPercentage}
-						style={{
-							position: "absolute",
-							left: 0,
-							right: 0,
-							bottom: 0,
-							zIndex: 2,
-							height: "6px",
-							background: "rgb(5 5 5 /  0.5) !important",
-							backdropFilter: "blur(5px)",
-						}}
-						color="primary"
-					/>
-				)} */}
 			</div>
 			<div
 				className="card-text-container"
@@ -253,3 +221,5 @@ export const Card = ({
 		</div>
 	);
 };
+
+export const Card = memo(CardComponent);

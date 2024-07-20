@@ -1,45 +1,72 @@
-
 .carousel {
 	position: relative;
-	height: 70vh;
+	height: 64vh;
+		width: calc(100% + 2*$page-margin);
+		left: -$page-margin;
 	margin-bottom: 3.2em;
+	.slider {
+			position: absolute;
+			bottom: 0;
+			max-width: 35%;
+			right: $page-margin;
+		}
 	&-button {
 		position: absolute !important;
 		top: 50%;
 		transform: translateY(-50%);
 		z-index: 100;
+		
 		&.right {
-			left: calc(100% + 0.5em);
+			right: 0.5em;
 		}
+		
 		&.left {
-			right: calc(100% + 0.5em);
+			left: 0.5em;
 		}
 	}
+	
 	&-indicator {
-		height: 3px;
-		width: 100%;
-		border-radius: 10px;
-		transition: background $transition-time-fast,
-			height $transition-time-fast;
-		background: rgb(255 255 255 / 0.5);
+		aspect-ratio: 1.77777;
+			overflow: hidden;
+			border-radius: 2px;
+			padding: 2px;
+			transition: opacity $transition-time-fast;
+			opacity: 0.5;
+			width: auto;
 		&:hover {
 			cursor: pointer;
-			height: 6px;
-			background: rgb(255 255 255 / 0.8) !important;
+			opacity: 0.8;
 		}
+		
 		&-container {
 			display: flex;
-			position: absolute;
-			bottom: -1.5em;
-			left: 10px;
-			right: 10px;
 			gap: 1em;
 			align-items: center;
 			justify-content: center;
 		}
+&-image {
+	width: 100%;
+	height: 100%;
+	object-fit: cover;
+	border-radius: 4px;
+}
+
+&-icon {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	width: 100%;
+	height: 100%;
+	background: rgb(155 155 155 / 0.4);
+	border-radius: 4px;
+}
 		&.active {
-			height: 6px;
-			background: white !important;
-		}
-	}
+			opacity: 1;
+			
+				.material-symbols-rounded {
+			
+					--fill: 1;
+				}
+			}
+			}
 }

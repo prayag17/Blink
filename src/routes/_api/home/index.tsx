@@ -19,29 +19,35 @@ import { getUserApi } from "@jellyfin/sdk/lib/utils/api/user-api";
 import { getUserLibraryApi } from "@jellyfin/sdk/lib/utils/api/user-library-api";
 import { getUserViewsApi } from "@jellyfin/sdk/lib/utils/api/user-views-api";
 
-import { createFileRoute, useNavigate } from "@tanstack/react-router";
+import { Outlet, createFileRoute, useNavigate } from "@tanstack/react-router";
 
-import { setBackdrop, useBackdropStore } from "@/utils/store/backdrop";
+import { setBackdrop } from "@/utils/store/backdrop";
 
 import CarouselSlide from "@/components/carouselSlide";
 import { ErrorNotice } from "@/components/notices/errorNotice/errorNotice";
 import { useApiInContext } from "@/utils/store/api";
-import { BaseItemKind, ItemFields } from "@jellyfin/sdk/lib/generated-client";
+import {
+	type BaseItemDto,
+	BaseItemKind,
+	ItemFields,
+} from "@jellyfin/sdk/lib/generated-client";
 import Typography from "@mui/material/Typography";
-import { useSnackbar } from "notistack";
 import { ErrorBoundary } from "react-error-boundary";
 
 export const Route = createFileRoute("/_api/home/")({
 	component: Home,
+	onError: (err) => {
+		console.log(err);
+	},
 });
 
 function Home() {
 	const api = useApiInContext((s) => s.api);
-
 	const user = useQuery({
 		queryKey: ["user"],
 		queryFn: async () => {
 			const usr = await getUserApi(api).getCurrentUser();
+			console.log(usr.data);
 			return usr.data;
 		},
 		networkMode: "always",
@@ -52,7 +58,7 @@ function Home() {
 		queryKey: ["libraries"],
 		queryFn: async () => {
 			const libs = await getUserViewsApi(api).getUserViews({
-				userId: user.data.Id,
+				userId: user.data?.Id,
 			});
 			return libs.data;
 		},
@@ -64,11 +70,10 @@ function Home() {
 		queryKey: ["home", "latestMedia"],
 		queryFn: async () => {
 			const media = await getUserLibraryApi(api).getLatestMedia({
-				userId: user.data.Id,
+				userId: user.data?.Id,
 				fields: [
 					ItemFields.Overview,
 					ItemFields.ParentId,
-					"ParentIndexNumber",
 					ItemFields.SeasonUserData,
 					ItemFields.IsHd,
 					ItemFields.MediaStreams,
@@ -86,7 +91,7 @@ function Home() {
 		queryKey: ["home", "resume", "video"],
 		queryFn: async () => {
 			const resumeItems = await getItemsApi(api).getResumeItems({
-				userId: user.data.Id,
+				userId: user.data?.Id,
 				limit: 10,
 				mediaTypes: ["Video"],
 				enableUserData: true,
@@ -102,7 +107,7 @@ function Home() {
 		queryKey: ["home", "resume", "audio"],
 		queryFn: async () => {
 			const resumeItems = await getItemsApi(api).getResumeItems({
-				userId: user.data.Id,
+				userId: user.data?.Id,
 				limit: 10,
 				mediaTypes: ["Audio"],
 				enableUserData: true,
@@ -117,14 +122,12 @@ function Home() {
 		queryKey: ["home", "upNext"],
 		queryFn: async () => {
 			const upNext = await getTvShowsApi(api).getNextUp({
-				userId: user.data.Id,
+				userId: user.data?.Id,
 				fields: [
 					ItemFields.PrimaryImageAspectRatio,
 					ItemFields.MediaStreams,
 					ItemFields.MediaSources,
 					ItemFields.ParentId,
-					"IndexNumber",
-					"ParentIndexNumber",
 				],
 				limit: 10,
 			});
@@ -134,37 +137,30 @@ function Home() {
 		refetchOnMount: true,
 	});
 
-	const [latestMediaLibs, setLatestMediaLibs] = useState([]);
+	const [latestMediaLibs, setLatestMediaLibs] = useState<
+		BaseItemDto[] | undefined
+	>([]);
 
 	const navigate = useNavigate();
 
-	const excludeTypes = ["boxsets", "playlists", "livetv", "channels"];
-
-	let tempData = [];
+	const [excludeTypes] = useState(
+		() => new Set(["boxsets", "playlists", "livetv", "channels"]),
+	);
 
 	useEffect(() => {
 		if (libraries.isSuccess) {
-			libraries.data.Items.map((lib) => {
-				if (excludeTypes.includes(lib.CollectionType)) {
-					return;
-				}
-				tempData = latestMediaLibs;
-				if (
-					!tempData.some(
-						(el) => JSON.stringify(el) === JSON.stringify([lib.Id, lib.Name]),
-					)
-				) {
-					tempData.push([lib.Id, lib.Name]);
-					setLatestMediaLibs(tempData);
-				}
-			});
+			const latestMediaLibsTemp = libraries.data.Items?.reduce(
+				(filteredItems: BaseItemDto[], currentItem) => {
+					if (!excludeTypes.has(currentItem.Type)) {
+						filteredItems.push(currentItem);
+					}
+					return filteredItems;
+				},
+				[],
+			);
+			setLatestMediaLibs(latestMediaLibsTemp);
 		}
 	}, [libraries.isSuccess]);
-
-	if (user.isPaused) {
-		user.refetch();
-		console.log(user.isError);
-	}
 
 	return (
 		<>
@@ -179,22 +175,35 @@ function Home() {
 					{latestMedia.isPending ? (
 						<CarouselSkeleton />
 					) : (
-						latestMedia.data.length > 0 && (
+						latestMedia.data?.length && (
 							<Carousel
-								content={latestMedia.data?.map((item) => (
-									<CarouselSlide item={item} key={item.Id} />
-								))}
-								onChange={(now) => {
+								content={latestMedia.data}
+								onChange={(now: number) => {
 									if (latestMedia.isSuccess && latestMedia.data.length > 0) {
 										if (latestMedia.data[now]?.ParentBackdropImageTags) {
 											setBackdrop(
-												`${api.basePath}/Items/${latestMedia.data[now].ParentBackdropItemId}/Images/Backdrop`,
-												latestMedia.data[now].Id,
+												api.getItemImageUrl(
+													latestMedia.data[now].Id,
+													"Backdrop",
+													{
+														tag: latestMedia.data[now]
+															.ParentBackdropImageTags[0],
+													},
+												),
+												latestMedia.data[now]?.ParentBackdropImageTags[0] ??
+													latestMedia.data[now].Id,
 											);
 										} else {
 											setBackdrop(
-												`${api.basePath}/Items/${latestMedia.data[now].Id}/Images/Backdrop`,
-												latestMedia.data[now].Id,
+												api.getItemImageUrl(
+													latestMedia.data[now].Id,
+													"Backdrop",
+													{
+														tag: latestMedia.data[now].BackdropImageTags[0],
+													},
+												),
+												latestMedia.data[now]?.BackdropImageTags[0] ??
+													latestMedia.data[now].Id,
 											);
 										}
 									}
@@ -216,7 +225,7 @@ function Home() {
 					) : (
 						<CardScroller displayCards={4} title="Libraries">
 							{libraries.status === "success" &&
-								libraries.data.Items.map((item) => {
+								libraries.data.Items?.map((item) => {
 									return (
 										<Card
 											key={item.Id}
@@ -225,12 +234,11 @@ function Home() {
 											imageType="Primary"
 											cardType="thumb"
 											disableOverlay
-											onClick={() => navigate({ to: `/library/${item.Id}` })}
-											imageBlurhash={
-												!!item.ImageBlurHashes?.Primary &&
-												item.ImageBlurHashes?.Primary[
-													Object.keys(item.ImageBlurHashes.Primary)[0]
-												]
+											onClick={() =>
+												navigate({
+													to: "/library/$id",
+													params: { id: item.Id ?? "" },
+												})
 											}
 											overrideIcon={item.CollectionType}
 										/>
@@ -248,11 +256,11 @@ function Home() {
 				>
 					{upNextItems.isPending ? (
 						<CardsSkeleton />
-					) : upNextItems.isSuccess && upNextItems.data.Items.length === 0 ? (
+					) : upNextItems.isSuccess && !upNextItems.data.TotalRecordCount ? (
 						<></>
 					) : (
 						<CardScroller displayCards={4} title="Up Next">
-							{upNextItems.data.Items.map((item) => {
+							{upNextItems.data?.Items?.map((item) => {
 								return (
 									<Card
 										key={item.Id}
@@ -265,7 +273,7 @@ function Home() {
 										imageType={
 											item.Type === BaseItemKind.Episode
 												? "Primary"
-												: Object.keys(item.ImageTags).includes("Thumb")
+												: item.ImageTags?.Thumb
 													? "Thumb"
 													: "Backdrop"
 										}
@@ -288,13 +296,7 @@ function Home() {
 										}
 										cardType="thumb"
 										queryKey={["home", "upNext"]}
-										userId={user.data.Id}
-										imageBlurhash={
-											!!item.ImageBlurHashes?.Primary &&
-											item.ImageBlurHashes?.Primary[
-												Object.keys(item.ImageBlurHashes.Primary)[0]
-											]
-										}
+										userId={user.data?.Id}
 									/>
 								);
 							})}
@@ -311,11 +313,11 @@ function Home() {
 					{resumeItemsVideo.isPending ? (
 						<CardsSkeleton />
 					) : resumeItemsVideo.isSuccess &&
-						resumeItemsVideo.data.Items.length === 0 ? (
+						!resumeItemsVideo.data.TotalRecordCount ? (
 						<></>
 					) : (
 						<CardScroller displayCards={4} title="Continue Watching">
-							{resumeItemsVideo.data.Items.map((item) => {
+							{resumeItemsVideo.data?.Items?.map((item) => {
 								return (
 									<Card
 										key={item.Id}
@@ -328,7 +330,7 @@ function Home() {
 										imageType={
 											item.Type === BaseItemKind.Episode
 												? "Primary"
-												: Object.keys(item.ImageTags).includes("Thumb")
+												: item.ImageTags?.Thumb
 													? "Thumb"
 													: "Backdrop"
 										}
@@ -347,13 +349,7 @@ function Home() {
 										}
 										cardType="thumb"
 										queryKey={["home", "resume", "video"]}
-										userId={user.data.Id}
-										imageBlurhash={
-											!!item.ImageBlurHashes?.Primary &&
-											item.ImageBlurHashes?.Primary[
-												Object.keys(item.ImageBlurHashes.Primary)[0]
-											]
-										}
+										userId={user.data?.Id}
 									/>
 								);
 							})}
@@ -370,32 +366,21 @@ function Home() {
 					{resumeItemsAudio.isPending ? (
 						<CardsSkeleton />
 					) : resumeItemsAudio.isSuccess &&
-						resumeItemsAudio.data.Items.length === 0 ? (
+						!resumeItemsAudio.data.TotalRecordCount ? (
 						<></>
 					) : (
 						<CardScroller displayCards={4} title="Continue Listening">
-							{resumeItemsAudio.data.Items.map((item) => {
+							{resumeItemsAudio.data?.Items?.map((item) => {
 								return (
 									<Card
 										key={item.Id}
 										item={item}
 										cardTitle={item.Name}
-										imageType={
-											item.Type === BaseItemKind.Episode
-												? "Primary"
-												: Object.keys(item.ImageTags).includes("Thumb")
-													? "Thumb"
-													: "Backdrop"
-										}
+										imageType="Primary"
 										cardCaption={item.ProductionYear}
 										cardType="thumb"
 										queryKey={["home", "resume", "audio"]}
-										userId={user.data.Id}
-										imageBlurhash={
-											item.ImageBlurHashes?.Primary?.[
-												Object.keys(item.ImageBlurHashes.Primary)[0]
-											]
-										}
+										userId={user.data?.Id}
 									/>
 								);
 							})}
@@ -409,8 +394,8 @@ function Home() {
 						</div>
 					}
 				>
-					{latestMediaLibs.map((lib) => {
-						return <LatestMediaSection key={lib[0]} latestMediaLib={lib} />;
+					{latestMediaLibs?.map((lib) => {
+						return <LatestMediaSection key={lib.Id} latestMediaLib={lib} />;
 					})}
 				</ErrorBoundary>
 			</main>

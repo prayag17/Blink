@@ -31,9 +31,9 @@ import { getQuickConnectApi } from "@jellyfin/sdk/lib/utils/api/quick-connect-ap
 import { getUserApi } from "@jellyfin/sdk/lib/utils/api/user-api";
 
 import { ErrorNotice } from "@/components/notices/errorNotice/errorNotice.jsx";
-import { createApi } from "@/utils/store/api.js";
 import "./login.scss";
 
+import { useApiInContext } from "@/utils/store/api";
 import { setBackdrop } from "@/utils/store/backdrop.js";
 import { blue } from "@mui/material/colors";
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
@@ -52,7 +52,8 @@ function LoginPublicUsersList() {
 
 	const { enqueueSnackbar } = useSnackbar();
 
-	const api = Route.useRouteContext().api;
+	const api = useApiInContext((s) => s.api);
+	const createApi = useApiInContext((s) => s.createApi);
 
 	const [loading, setLoading] = useState(false);
 	const [rememberMe, setRememberMe] = useState(true);

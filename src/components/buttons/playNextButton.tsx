@@ -4,7 +4,7 @@ import useQueue from "@/utils/store/queue";
 import { getUserApi } from "@jellyfin/sdk/lib/utils/api/user-api";
 import { IconButton } from "@mui/material";
 import { useMutation, useQuery } from "@tanstack/react-query";
-import { useRouteContext } from "@tanstack/react-router";
+import { useNavigate, useRouteContext } from "@tanstack/react-router";
 import React from "react";
 
 const PlayNextButton = () => {
@@ -16,9 +16,10 @@ const PlayNextButton = () => {
 			return result.data;
 		},
 	});
+	const navigate = useNavigate();
 	const handlePlayNext = useMutation({
 		mutationKey: ["playNextButton"],
-		mutationFn: () => playItemFromQueue("next", user.data?.Id),
+		mutationFn: () => playItemFromQueue("next", user.data?.Id, api),
 		onError: (error) => [console.error(error)],
 	});
 	const [queueItems, currentItemIndex] = useQueue((state) => [

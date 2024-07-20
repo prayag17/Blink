@@ -14,12 +14,15 @@ import { yellow } from "@mui/material/colors";
 import { endsAt, getRuntime } from "@/utils/date/time";
 import { green, red } from "@mui/material/colors";
 import { useQuery } from "@tanstack/react-query";
-import { useNavigate, useRouteContext } from "@tanstack/react-router";
+import { useNavigate } from "@tanstack/react-router";
 import { getTypeIcon } from "../utils/iconsCollection";
 
 import { useApiInContext } from "@/utils/store/api";
 import { useCarouselStore } from "@/utils/store/carousel";
-import { BaseItemKind } from "@jellyfin/sdk/lib/generated-client";
+import {
+	type BaseItemDto,
+	BaseItemKind,
+} from "@jellyfin/sdk/lib/generated-client";
 import { getUserApi } from "@jellyfin/sdk/lib/utils/api/user-api";
 import LikeButton from "../buttons/likeButton";
 import MarkPlayedButton from "../buttons/markPlayedButton";
@@ -41,7 +44,7 @@ const availableSpecialRoutes = [
  * @param {Props}
  * @returns {React.Component}
  */
-const CarouselSlide = ({ item }) => {
+const CarouselSlide = ({ item }: { item: BaseItemDto }) => {
 	const api = useApiInContext((s) => s.api);
 	const navigate = useNavigate();
 
@@ -55,19 +58,31 @@ const CarouselSlide = ({ item }) => {
 	});
 
 	const handleMoreInfo = () => {
-		if (availableSpecialRoutes.includes(item.Type)) {
-			navigate({
-				to: `/${item.Type.toLocaleLowerCase()}/$id`,
-				params: { id: item.Id },
-			});
-		} else if (!!item.Role || item.Type === BaseItemKind.Person) {
-			navigate({ to: "/person/$id", params: { id: item.Id } });
-		} else if (item.Type === BaseItemKind.MusicArtist) {
-			navigate({ to: "/artist/$id", params: { id: item.Id } });
-		} else if (item.Type === BaseItemKind.Episode) {
-			navigate({ to: "/episode/$id", params: { id: item.Id } });
-		} else {
-			navigate({ to: "/item/$id", params: { id: item.Id } });
+		switch (item.Type) {
+			case BaseItemKind.BoxSet:
+				navigate({ to: "/boxset/$id", params: { id: item.Id } });
+				break;
+			case BaseItemKind.Episode:
+				navigate({ to: "/episode/$id", params: { id: item.Id } });
+				break;
+			case BaseItemKind.MusicAlbum:
+				navigate({ to: "/album/$id", params: { id: item.Id } });
+				break;
+			case BaseItemKind.MusicArtist:
+				navigate({ to: "/artist/$id", params: { id: item.Id } });
+				break;
+			case BaseItemKind.Person:
+				navigate({ to: "/person/$id", params: { id: item.Id } });
+				break;
+			case BaseItemKind.Series:
+				navigate({ to: "/series/$id", params: { id: item.Id } });
+				break;
+			case BaseItemKind.Playlist:
+				navigate({ to: "/playlist/$id", params: { id: item.Id } });
+				break;
+			default:
+				navigate({ to: "/item/$id", params: { id: item.Id } });
+				break;
 		}
 	};
 
@@ -78,50 +93,33 @@ const CarouselSlide = ({ item }) => {
 			className="hero-carousel-slide"
 			sx={{
 				background: "transparent",
-				px: 3,
+				// px: 3,
 			}}
-			elevation={10}
+			elevation={0}
 		>
 			<div className="hero-carousel-background-container">
-				{!!item.ImageBlurHashes.Backdrop && (
-					<>
-						{Object.keys(item.ImageBlurHashes.Backdrop).length !== 0 && (
-							<Blurhash
-								hash={
-									item.ImageBlurHashes.Backdrop[
-										Object.keys(item.ImageBlurHashes.Backdrop)[0]
-									]
-								}
-								// hash="LEHV6nWB2yk8pyo0adR*.7kCMdnj"
-								width="256"
-								height="179.2"
-								resolutionX={64}
-								resolutionY={45}
-								className="hero-carousel-background-blurhash"
-								punch={1.4}
-							/>
-						)}
-						<img
-							alt={item.Name}
-							className="hero-carousel-background-image"
-							src={
-								item.ParentBackdropItemId
-									? `${api.basePath}/Items/${item.ParentBackdropItemId}/Images/Backdrop?quality=80`
-									: `${api.basePath}/Items/${item.Id}/Images/Backdrop?quality=80&fillHeight=1400`
-							}
-							style={{
-								opacity: 0,
-							}}
-							onLoad={(e) => {
-								e.target.style.opacity = 1;
-							}}
-							loading="eager"
-						/>
-					</>
+				{item.BackdropImageTags?.length ? (
+					<img
+						alt={item.Name}
+						className="hero-carousel-background-image"
+						src={
+							item.ParentBackdropItemId
+								? `${api.basePath}/Items/${item.ParentBackdropItemId}/Images/Backdrop?quality=80`
+								: `${api.basePath}/Items/${item.Id}/Images/Backdrop?quality=80&fillHeight=1400`
+						}
+						style={{
+							opacity: 0,
+						}}
+						onLoad={(e) => {
+							e.target.style.opacity = 1;
+						}}
+						loading="eager"
+					/>
+				) : (
+					<div className="hero-carousel-background-icon-container">
+						{getTypeIcon(item.Type)}
+					</div>
 				)}
-				<div className="hero-carousel-background-icon-container">
-					{getTypeIcon(item.Type)}
-				</div>
 			</div>
 			<div className="hero-carousel-detail">
 				<Typography
@@ -207,10 +205,14 @@ const CarouselSlide = ({ item }) => {
 					justifyItems="flex-start"
 					alignItems="center"
 				>
-					<Typography style={{ opacity: "0.8" }} variant="subtitle1">
-						{item.ProductionYear ? item.ProductionYear : "Unknown"}
-					</Typography>
-					<Chip variant="filled" label={item.OfficialRating ?? "Not Rated"} />
+					{item.PremiereDate && (
+						<Typography style={{ opacity: "0.8" }} variant="subtitle2">
+							{item.ProductionYear ?? ""}
+						</Typography>
+					)}
+					{item.OfficialRating && (
+						<Chip variant="filled" size="small" label={item.OfficialRating} />
+					)}
 
 					{item.CommunityRating && (
 						<div
@@ -222,12 +224,10 @@ const CarouselSlide = ({ item }) => {
 							className="hero-carousel-info-rating"
 						>
 							<div
-								className="material-symbols-rounded "
+								className="material-symbols-rounded fill"
 								style={{
 									// fontSize: "2.2em",
 									color: yellow[400],
-									fontVariationSettings:
-										'"FILL" 1, "wght" 300, "GRAD" 25, "opsz" 40',
 								}}
 							>
 								star
@@ -236,13 +236,13 @@ const CarouselSlide = ({ item }) => {
 								style={{
 									opacity: "0.8",
 								}}
-								variant="subtitle1"
+								variant="subtitle2"
 							>
 								{Math.round(item.CommunityRating * 10) / 10}
 							</Typography>
 						</div>
 					)}
-					{Boolean(item.CriticRating) && (
+					{item.CriticRating && (
 						<div
 							style={{
 								display: "flex",
@@ -252,11 +252,9 @@ const CarouselSlide = ({ item }) => {
 							className="hero-carousel-info-rating"
 						>
 							<div
-								className="material-symbols-rounded "
+								className="material-symbols-rounded fill"
 								style={{
 									color: item.CriticRating > 50 ? green[400] : red[400],
-									fontVariationSettings:
-										'"FILL" 1, "wght" 300, "GRAD" 25, "opsz" 40',
 								}}
 							>
 								{item.CriticRating > 50 ? "thumb_up" : "thumb_down"}
@@ -265,23 +263,26 @@ const CarouselSlide = ({ item }) => {
 								style={{
 									opacity: "0.8",
 								}}
-								variant="subtitle1"
+								variant="subtitle2"
 							>
 								{item.CriticRating}
 							</Typography>
 						</div>
 					)}
 
-					{!!item.RunTimeTicks && (
-						<Typography style={{ opacity: "0.8" }} variant="subtitle1">
+					{item.RunTimeTicks && (
+						<Typography style={{ opacity: "0.8" }} variant="subtitle2">
 							{getRuntime(item.RunTimeTicks)}
 						</Typography>
 					)}
-					{!!item.RunTimeTicks && (
-						<Typography style={{ opacity: "0.8" }} variant="subtitle1">
-							{endsAt(item.RunTimeTicks)}
+					{item.RunTimeTicks && (
+						<Typography style={{ opacity: "0.8" }} variant="subtitle2">
+							{endsAt(item.RunTimeTicks - item.UserData.PlaybackPositionTicks)}
 						</Typography>
 					)}
+					<Typography variant="subtitle2" style={{ opacity: 0.8 }}>
+						{item.Genres?.slice(0, 4).join(" / ")}
+					</Typography>
 				</Stack>
 				<Typography
 					component={motion.div}
@@ -308,7 +309,6 @@ const CarouselSlide = ({ item }) => {
 						duration: 0.25,
 						ease: "easeInOut",
 					}}
-					variant="subtitle1"
 					className="hero-carousel-text"
 					sx={{
 						display: "-webkit-box",
@@ -319,6 +319,8 @@ const CarouselSlide = ({ item }) => {
 						WebkitLineClamp: "4",
 						WebkitBoxOrient: "vertical",
 					}}
+					variant="subtitle2"
+					fontWeight={300}
 				>
 					{item.Overview}
 				</Typography>

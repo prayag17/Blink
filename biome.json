@@ -1,5 +1,5 @@
 {
-	"$schema": "https://biomejs.dev/schemas/1.5.0/schema.json",
+	"$schema": "https://biomejs.dev/schemas/1.8.0/schema.json",
 	"organizeImports": {
 		"enabled": true
 	},
@@ -8,13 +8,16 @@
 		"rules": {
 			"recommended": true,
 			"style": {
-				"noNonNullAssertion": "off"
+				"noNonNullAssertion": "off",
+				"useEnumInitializers": "off"
 			},
 			"a11y": {
-				"useKeyWithClickEvents": "off"
+				"useKeyWithClickEvents": "off",
+				"useMediaCaption": "off"
 			},
 			"correctness": {
-				"useExhaustiveDependencies": "off"
+				"useExhaustiveDependencies": "off",
+				"noUnusedImports": "off"
 			},
 			"suspicious": {
 				"noExplicitAny": "off"

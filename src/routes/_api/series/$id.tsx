@@ -55,7 +55,7 @@ import TrailerButton from "@/components/buttons/trailerButton";
 import ShowMoreText from "@/components/showMoreText";
 import { SeasonSelectorSkeleton } from "@/components/skeleton/seasonSelector";
 import { getTypeIcon } from "@/components/utils/iconsCollection";
-import { useBackdropStore } from "@/utils/store/backdrop";
+import { setBackdrop, useBackdropStore } from "@/utils/store/backdrop";
 
 import IconLink from "@/components/iconLink";
 import EpisodeSkeleton from "@/components/skeleton/episode";
@@ -173,9 +173,10 @@ function SeriesTitlePage() {
 		refetchOnWindowFocus: true,
 	});
 
-	const [backdropImage, setBackdropImage] = useState(() => {
-		const result = sessionStorage.getItem(`backdrop-${item.data?.Id}`);
-		return result ?? "0";
+	const [backdropImage, setBackdropImage] = useState<SeriesBackdropImage>(() => {
+		const url = sessionStorage.getItem(`backdrop-${item.data?.Id}`);
+		const key = sessionStorage.getItem(`backdrop-${item.data?.Id}-key`);
+		return { url, key };
 	});
 	const [backdropImageLoaded, setBackdropImageLoaded] = useState(false);
 
@@ -199,7 +200,7 @@ function SeriesTitlePage() {
 	});
 
 	const episodes = useQuery({
-		queryKey: ["item", id, `season ${currentSeason + 1}`, "episodes"],
+		queryKey: ["item", id, "season", currentSeason, "episodes"],
 		queryFn: async () => {
 			const result = await getTvShowsApi(api).getEpisodes({
 				userId: user.data.Id,
@@ -226,7 +227,6 @@ function SeriesTitlePage() {
 		},
 		enabled: item.isSuccess,
 	});
-	const [setAppBackdrop] = useBackdropStore((state) => [state.setBackdrop]);
 
 	const [directors, setDirectors] = useState([]);
 	const [writers, setWriters] = useState([]);
@@ -235,17 +235,18 @@ function SeriesTitlePage() {
 
 	useLayoutEffect(() => {
 		if (item.isSuccess) {
-			setBackdropImage(
-				api.getItemImageUrl(item.data?.Id, "Backdrop", {
-					tag: item.data?.BackdropImageTags[0],
-				}),
-			);
-			setAppBackdrop(
-				api.getItemImageUrl(item.data?.Id, "Backdrop", {
-					tag: item.data?.BackdropImageTags[0],
-				}),
-				item.data.Id,
-			);
+			// setBackdropImage({
+			// 	url: api.getItemImageUrl(item.data?.Id, "Backdrop", {
+			// 		tag: item.data?.BackdropImageTags[0],
+			// 	}),
+			// 	key: item.data?.BackdropImageTags[0],
+			// });
+			// setBackdrop(
+			// 	api.getItemImageUrl(item.data?.Id, "Backdrop", {
+			// 		tag: item.data?.BackdropImageTags[0],
+			// 	}),
+			// 	item.data.Id,
+			// );
 			const direTp = item.data.People.filter((itm) => itm.Type === "Director");
 			setDirectors(direTp);
 			const writeTp = item.data.People.filter((itm) => itm.Type === "Writer");
@@ -283,42 +284,53 @@ function SeriesTitlePage() {
 			sessionStorage.setItem(
 				`backdrop-${item.data?.Id}`,
 				api.getItemImageUrl(currentSeasonItem.data.Id, "Backdrop", {
-					tag: currentSeasonItem.data.BackdropImageTags[0],
+					tag: currentSeasonItem.data.BackdropImageTags?.[0],
 				}),
 			);
-			setBackdropImage(
-				api.getItemImageUrl(currentSeasonItem.data.Id, "Backdrop", {
-					tag: currentSeasonItem.data.BackdropImageTags[0],
-				}),
-				currentSeasonItem.data.Id,
+			sessionStorage.setItem(
+				`backdrop-${item.data?.Id}-key`,
+				currentSeasonItem.data.BackdropImageTags?.[0],
 			);
-			setAppBackdrop(
-				api.getItemImageUrl(currentSeasonItem.data.Id, "Backdrop", {
-					tag: currentSeasonItem.data.BackdropImageTags[0],
+			setBackdropImage({
+				url: api.getItemImageUrl(currentSeasonItem.data.Id, "Backdrop", {
+					tag: currentSeasonItem.data.BackdropImageTags?.[0],
 				}),
-				currentSeasonItem.data.Id,
+				key: currentSeasonItem.data.BackdropImageTags?.[0],
+			});
+			setBackdrop(
+				api.getItemImageUrl(currentSeasonItem.data.Id, "Backdrop", {
+					tag: currentSeasonItem.data.BackdropImageTags?.[0],
+				}),
+				currentSeasonItem.data.BackdropImageTags?.[0],
 			);
 			setBackdropImageLoaded(false);
 		} else if (item.isSuccess && item.data?.BackdropImageTags?.length > 0) {
 			sessionStorage.setItem(
 				`backdrop-${item.data?.Id}`,
 				api.getItemImageUrl(item.data.Id, "Backdrop", {
-					tag: item.data.BackdropImageTags[0],
+					tag: item.data.BackdropImageTags?.[0],
 				}),
 			);
-			setBackdropImage(
+			sessionStorage.setItem(
+				`backdrop-${item.data?.Id}-key`,
+				item.data?.BackdropImageTags?.[0],
+			);
+			if (backdropImage.key !== item.data?.BackdropImageTags?.[0]) {
+				setBackdropImageLoaded(false); // Reset Backdrop image load status if previous image is diff then new image
+			}
+			setBackdropImage({
+				url: api.getItemImageUrl(item.data?.Id, "Backdrop", {
+					tag: item.data?.BackdropImageTags?.[0],
+				}),
+				key: item.data?.BackdropImageTags?.[0],
+			});
+			setBackdrop(
 				api.getItemImageUrl(item.data.Id, "Backdrop", {
-					tag: item.data.BackdropImageTags[0],
+					tag: item.data.BackdropImageTags?.[0],
 				}),
-				item.data.Id,
+				item.data.BackdropImageTags?.[0],
 			);
-			setAppBackdrop(
-				api.getItemImageUrl(item.data.Id, "Backdrop", {
-					tag: item.data.BackdropImageTags[0],
-				}),
-				item.data.Id,
-			);
-			setBackdropImageLoaded(false);
+			// setBackdropImageLoaded(false);
 		}
 	}, [currentSeasonItem.dataUpdatedAt]);
 
@@ -369,14 +381,15 @@ function SeriesTitlePage() {
 						<AnimatePresence mode="wait">
 							{item.data.BackdropImageTags ? (
 								<motion.img
-									key={currentSeasonItem.dataUpdatedAt}
+									key={backdropImage.key}
 									alt={item.data.Name}
-									src={backdropImage}
+									src={backdropImage.url}
 									className="item-hero-backdrop"
 									initial={{
 										opacity: 0,
 									}}
 									onLoad={() => {
+										console.info("Image Loaded");
 										setBackdropImageLoaded(true);
 									}}
 									animate={{
@@ -580,7 +593,7 @@ function SeriesTitlePage() {
 								itemUserData={item.data.UserData}
 								currentAudioTrack={0}
 								currentVideoTrack={0}
-								currentSubTrack={0}
+								currentSubTrack="nosub"
 								userId={user.data.Id}
 								buttonProps={{
 									fullWidth: true,
@@ -1007,12 +1020,12 @@ function SeriesTitlePage() {
 													<PlayButton
 														item={episode}
 														itemId={episode.Id}
-														itemType="Episode"
+														itemType={BaseItemKind.Episode}
 														itemUserData={episode.UserData}
 														userId={user.data.Id}
 														currentAudioTrack={0}
 														currentVideoTrack={0}
-														currentSubTrack={0}
+														currentSubTrack="nosub"
 														size="medium"
 														buttonProps={{
 															color: "white",

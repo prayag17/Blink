@@ -1,4 +1,4 @@
-![Banner](https://i.imgur.com/4LECQq3.png)
+![Banner](https://github.com/user-attachments/assets/cf3ffbe3-3b48-4fab-bd7e-f011928286fa)
 <div align="center">
 <img alt="GitHub Release" src="https://img.shields.io/github/v/release/prayag17/JellyPlayer?sort=date&display_name=tag&style=for-the-badge&logo=data%3Aimage%2Fsvg%2Bxml%3Bbase64%2CPHN2ZyB3aWR0aD0iODc4IiBoZWlnaHQ9IjEwMTIiIHZpZXdCb3g9IjAgMCA4NzggMTAxMiIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHBhdGggZmlsbC1ydWxlPSJldmVub2RkIiBjbGlwLXJ1bGU9ImV2ZW5vZGQiIGQ9Ik00MzguODA5IDUwNkwzNS40MDQ4IDczOC45MDZMNDM4LjgwOSA5NzEuODEyTDg0Mi4yMTQgNzM4LjkwNlYyNzMuMDk0TDQzOC44MDkgNDAuMTg4NUwzNS40MDQ4IDI3My4wOTRMNDM4LjgwOSA1MDZaTTQzOC44MDkgMEw4NzcuMDE4IDI1M1Y3NTlMNDM4LjgwOSAxMDEyTDAuNjAwNTg2IDc1OVY3MTguODEyVjI5My4xODhWMjUzTDQzOC44MDkgMFoiIGZpbGw9IndoaXRlIi8%2BCjwvc3ZnPgo%3D&labelColor=000&link=https%3A%2F%2Fgithub.com%2Fprayag17%2FJellyPlayer%2Freleases%2Flatest">
 <img alt="GitHub Repo stars" src="https://img.shields.io/github/stars/prayag17/JellyPlayer?style=for-the-badge&logo=github&labelColor=000&link=https%3A%2F%2Fgithub.com%2Fprayag17%2FJellyPlayer%2Fstargazers">
@@ -59,6 +59,7 @@
 - Mediainfo recognition (DolbyVision, DolbyAtoms, Dts, Hdr10+, and more...)
 - Sort/Filter library items
 - Queue playback support 
+- Intro Skip button using [jumoog/Intro-Skipper](https://github.com/jumoog/intro-skipper) plugin
 
 ## 📷 Screenshots
 

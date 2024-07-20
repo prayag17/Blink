@@ -11,7 +11,7 @@ import Typography from "@mui/material/Typography";
 
 import { useSnackbar } from "notistack";
 
-import { createApi, jellyfin } from "@/utils/store/api";
+import { jellyfin, useApiInContext } from "@/utils/store/api";
 import { yellow } from "@mui/material/colors";
 import { useMutation } from "@tanstack/react-query";
 // SCSS
@@ -24,6 +24,7 @@ export const Route = createFileRoute("/setup/server/add")({
 
 function ServerSetup() {
 	const [serverIp, setServerIp] = useState("");
+	const createApi = useApiInContext((s) => s.createApi);
 
 	const { enqueueSnackbar } = useSnackbar();
 
@@ -47,7 +48,7 @@ function ServerSetup() {
 					variant: "success",
 				});
 
-				navigate({ to: "/login/index" });
+				navigate({ to: "/login" });
 			}
 		},
 		onError: (err) => {

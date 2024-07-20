@@ -14,7 +14,9 @@ export const EmptyNotice = ({ extraMsg }) => {
 				justifyContent: "center",
 				alignItems: "center",
 				flexFlow: "column",
-				// opacity: 0.2,
+				position: "absolute",
+				top: 0,
+				left: 0,
 			}}
 		>
 			<div

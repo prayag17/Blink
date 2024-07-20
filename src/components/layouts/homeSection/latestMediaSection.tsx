@@ -5,15 +5,19 @@ import { CardScroller } from "../../cardScroller/cardScroller";
 import { CardsSkeleton } from "../../skeleton/cards";
 
 import { useApiInContext } from "@/utils/store/api";
-import { BaseItemKind } from "@jellyfin/sdk/lib/generated-client";
+import {
+	type BaseItemDto,
+	BaseItemKind,
+} from "@jellyfin/sdk/lib/generated-client";
 import { getUserApi } from "@jellyfin/sdk/lib/utils/api/user-api";
 import { getUserLibraryApi } from "@jellyfin/sdk/lib/utils/api/user-library-api";
-import { useRouteContext } from "@tanstack/react-router";
 
 /**
  * @description Latest Media Section
  */
-export const LatestMediaSection = ({ latestMediaLib }) => {
+export const LatestMediaSection = ({
+	latestMediaLib,
+}: { latestMediaLib: BaseItemDto }) => {
 	const api = useApiInContext((s) => s.api);
 	const user = useQuery({
 		queryKey: ["user"],
@@ -23,27 +27,27 @@ export const LatestMediaSection = ({ latestMediaLib }) => {
 		},
 		networkMode: "always",
 	});
-	const fetchLatestMedia = async (library) => {
+	const fetchLatestMedia = async (library: BaseItemDto) => {
 		const media = await getUserLibraryApi(api).getLatestMedia({
-			userId: user.data.Id,
-			parentId: library,
+			userId: user.data?.Id,
+			parentId: library.Id,
 			limit: 16,
 			fields: ["PrimaryImageAspectRatio"],
 		});
 		return media.data;
 	};
 	const data = useQuery({
-		queryKey: ["homeSection, latestMedia", latestMediaLib],
-		queryFn: () => fetchLatestMedia(latestMediaLib[0]),
+		queryKey: ["home", "latestMedia", latestMediaLib.Id],
+		queryFn: () => fetchLatestMedia(latestMediaLib),
 		enabled: !!user.data,
-		refetchOnMount: true
+		refetchOnMount: true,
 	});
 	if (data.isPending) {
 		return <CardsSkeleton />;
 	}
 	if (data.isSuccess && data.data.length >= 1) {
 		return (
-			<CardScroller displayCards={7} title={`Latest ${latestMediaLib[1]}`}>
+			<CardScroller displayCards={7} title={`Latest ${latestMediaLib.Name}`}>
 				{data.data.map((item) => {
 					return (
 						<Card
@@ -75,8 +79,8 @@ export const LatestMediaSection = ({ latestMediaLib }) => {
 									? "square"
 									: "portrait"
 							}
-							queryKey={["homeSection, latestMedia", latestMediaLib]}
-							userId={user.data.Id}
+							queryKey={["home", "latestMedia", latestMediaLib.Id]}
+							userId={user.data?.Id}
 							imageBlurhash={
 								!!item.ImageBlurHashes?.Primary &&
 								item.ImageBlurHashes?.Primary[

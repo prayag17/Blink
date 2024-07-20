@@ -7,7 +7,7 @@ import path from "path";
 
 // const ReactCompilerConfig = {compilationMode: "annotation"}
 
-const plugins = [MillionLint.vite(),react(), svgr(), TanStackRouterVite()];
+const plugins = [react(), svgr(), TanStackRouterVite()];
 export default defineConfig({
   plugins: plugins,
   css: {
