@@ -4,16 +4,17 @@ import { Card } from "../../card/card";
 import { CardScroller } from "../../cardScroller/cardScroller";
 import { CardsSkeleton } from "../../skeleton/cards";
 
+import { useApiInContext } from "@/utils/store/api";
 import { BaseItemKind } from "@jellyfin/sdk/lib/generated-client";
 import { getUserApi } from "@jellyfin/sdk/lib/utils/api/user-api";
 import { getUserLibraryApi } from "@jellyfin/sdk/lib/utils/api/user-library-api";
-import { useApi } from "../../../utils/store/api";
+import { useRouteContext } from "@tanstack/react-router";
 
 /**
  * @description Latest Media Section
  */
 export const LatestMediaSection = ({ latestMediaLib }) => {
-	const [api] = useApi((state) => [state.api]);
+	const api = useApiInContext((s) => s.api);
 	const user = useQuery({
 		queryKey: ["user"],
 		queryFn: async () => {
@@ -55,16 +56,18 @@ export const LatestMediaSection = ({ latestMediaLib }) => {
 							imageType={"Primary"}
 							cardCaption={
 								item.Type === BaseItemKind.Episode
-									? `S${item.ParentIndexNumber}:E${item.IndexNumber} - ${item.Name}`
+									? `S${item.ParentIndexNumber ?? 0}:E${
+											item.IndexNumber ?? 0
+										} - ${item.Name ?? "Unknown"}`
 									: item.Type === BaseItemKind.Series
-									  ? `${item.ProductionYear} - ${
+										? `${item.ProductionYear} - ${
 												item.EndDate
 													? new Date(item.EndDate).toLocaleString([], {
 															year: "numeric",
-													  })
+														})
 													: "Present"
-										  }`
-									  : item.ProductionYear
+											}`
+										: item.ProductionYear
 							}
 							cardType={
 								item.Type === BaseItemKind.MusicAlbum ||

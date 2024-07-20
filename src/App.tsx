@@ -40,14 +40,14 @@ import {
 } from "@mui/material";
 
 // Routes
-import About from "./routes/about";
-import MusicAlbumTitlePage from "./routes/album/index.jsx";
-import ArtistTitlePage from "./routes/artist/index.jsx";
-import BoxSetTitlePage from "./routes/boxset/index.jsx";
-import EpisodeTitlePage from "./routes/episode/index";
+import About from "./routes/_about";
+import MusicAlbumTitlePage from "./routes/album/$id.js";
+import ArtistTitlePage from "./routes/artist/$id.js";
+import BoxSetTitlePage from "./routes/boxset/$id.js";
+import EpisodeTitlePage from "./routes/episode/$id";
 import FavoritePage from "./routes/favorite/index.jsx";
 import Home from "./routes/home";
-import ItemDetail from "./routes/item";
+import ItemDetail from "./routes/item/$id";
 import LibraryView from "./routes/library";
 import {
 	LoginRoute,
@@ -55,39 +55,17 @@ import {
 	UserLogin,
 	UserLoginManual,
 } from "./routes/login";
-import PersonTitlePage from "./routes/person/index.jsx";
+import PersonTitlePage from "./routes/person/$id.jsx";
 import VideoPlayer from "./routes/player/videoPlayer";
-import PlaylistTitlePage from "./routes/playlist/index.jsx";
+import PlaylistTitlePage from "./routes/playlist/$id.jsx";
 import SearchPage from "./routes/search";
-import SeriesTitlePage from "./routes/series/index.jsx";
-import { ServerSetup } from "./routes/setup/server";
-import ServerList from "./routes/setup/serverList/index.jsx";
+import SeriesTitlePage from "./routes/series/$id.js";
+import { ServerSetup } from "./routes/setup/server.add";
+import ServerList from "./routes/setup/server.list.js";
 
 import Markdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 
-// Fonts
-import "@fontsource-variable/jetbrains-mono";
-import "@fontsource/noto-sans/100-italic.css";
-import "@fontsource/noto-sans/100.css";
-import "@fontsource/noto-sans/200-italic.css";
-import "@fontsource/noto-sans/200.css";
-import "@fontsource/noto-sans/300-italic.css";
-import "@fontsource/noto-sans/300.css";
-import "@fontsource/noto-sans/400-italic.css";
-import "@fontsource/noto-sans/400.css";
-import "@fontsource/noto-sans/500-italic.css";
-import "@fontsource/noto-sans/500.css";
-import "@fontsource/noto-sans/600-italic.css";
-import "@fontsource/noto-sans/600.css";
-import "@fontsource/noto-sans/700-italic.css";
-import "@fontsource/noto-sans/700.css";
-import "@fontsource/noto-sans/800-italic.css";
-import "@fontsource/noto-sans/800.css";
-import "@fontsource/noto-sans/900-italic.css";
-import "@fontsource/noto-sans/900.css";
-
-import "material-symbols/rounded.scss";
 
 // Components
 import { AppBar } from "./components/appBar/appBar.jsx";
@@ -251,12 +229,7 @@ function AppReady() {
 	const location = useLocation();
 	const navigate = useNavigate();
 
-	const [updateDialog, setUpdateDialog] = useState(false);
-	const [updateDialogButton, setUpdateDialogButton] = useState(false);
-	const [backdropLoading, setBackdropLoading] = useState(true);
-	const [updateInfo, setUpdateInfo] = useState<UpdateManifest | undefined>(
-		undefined,
-	);
+	
 
 	const isQueryFetching = useIsFetching();
 	const isMutating = useIsMutating();
@@ -265,28 +238,7 @@ function AppReady() {
 
 	const [videoPlaybackItem] = usePlaybackStore((state) => [state.item]);
 
-	// Reset BakcdropImageLoading for every new image
-	useEffect(() => {
-		setBackdropLoading(true);
-	}, [backdropId]);
 
-	useLayoutEffect(() => {
-		async function checkForUpdates() {
-			try {
-				const { shouldUpdate, manifest } = await checkUpdate();
-
-				if (shouldUpdate) {
-					setUpdateInfo(manifest);
-					setUpdateDialog(true);
-
-					console.log(`Update found : ${manifest?.version}, ${manifest?.date}`);
-				}
-			} catch (error) {
-				console.error(error);
-			}
-		}
-		checkForUpdates();
-	}, []);
 
 	if (!initialRoute) {
 		return (
@@ -304,142 +256,13 @@ function AppReady() {
 	}
 
 	return (
-		<SnackbarProvider maxSnack={5}>
-			<ThemeProvider theme={theme}>
-				<CssBaseline />
-				<NProgress isAnimating={isQueryFetching || isMutating} />
-				<Dialog
-					open={updateDialog}
-					fullWidth
-					PaperProps={{
-						style: {
-							borderRadius: "14px",
-							background: "rgb(0 0 0 / 0.5)",
-							backdropFilter: "blur(10px)",
-							border: "1px solid rgb(255 255 255 / 0.2)",
-						},
-					}}
-					sx={{
-						"& img": {
-							width: "100%",
-						},
-					}}
-				>
-					{updateInfo !== undefined && (
-						<>
-							<DialogTitle
-								variant="h5"
-								style={{
-									display: "flex",
-									flexDirection: "column",
-									alignItems: "flex-start",
-									gap: "0.4em",
-								}}
-							>
-								Update Available!
-								<Chip
-									icon={
-										<span className="material-symbols-rounded">update</span>
-									}
-									label={`v${updateInfo.version}`}
-									color="success"
-								/>
-							</DialogTitle>
-							<DialogContent dividers>
-								<DialogContentText>
-									<Markdown remarkPlugins={[remarkGfm]}>
-										{updateInfo.body}
-									</Markdown>
-								</DialogContentText>
-							</DialogContent>
-							<DialogActions
-								style={{
-									padding: "1em",
-								}}
-							>
-								<IconButton
-									disabled={updateDialogButton}
-									target="_blank"
-									href={`https://github.com/prayag17/JellyPlayer/releases/${updateInfo.version}`}
-								>
-									<SvgIcon>
-										<svg
-											xmlns="http://www.w3.org/2000/svg"
-											width="16"
-											height="16"
-											fill="currentColor"
-											viewBox="0 0 16 16"
-										>
-											<title>Update</title>
-											<path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.012 8.012 0 0 0 16 8c0-4.42-3.58-8-8-8" />
-										</svg>
-									</SvgIcon>
-								</IconButton>
-								<Button
-									size="large"
-									color="error"
-									variant="outlined"
-									disabled={updateDialogButton}
-									onClick={() => setUpdateDialog(false)}
-								>
-									close
-								</Button>
-								<LoadingButton
-									size="large"
-									color="success"
-									variant="contained"
-									loading={updateDialogButton}
-									loadingIndicator="Updating..."
-									onClick={async () => {
-										setUpdateDialogButton(true);
-										await installUpdate();
-										enqueueSnackbar(
-											"Update has been installed! You need to relaunch JellyPlayer.",
-											{
-												variant: "success",
-											},
-										);
-										await relaunch();
-									}}
-								>
-									Update
-								</LoadingButton>
-							</DialogActions>
-						</>
-					)}
-				</Dialog>
+				
 
-				<Settings />
-				<EasterEgg />
+				
 
 				{/* Show Dialog if server not reachable */}
 
-				<div className="app-backdrop-container">
-					<AnimatePresence>
-						<motion.img
-							key={backdropId}
-							src={backdropUrl}
-							alt=""
-							className="app-backdrop"
-							initial={{
-								opacity: 0,
-							}}
-							animate={{
-								opacity: backdropLoading ? 0 : 1,
-							}}
-							exit={{
-								opacity: 0,
-							}}
-							transition={{
-								opacity: {
-									duration: 1.2,
-								},
-							}}
-							onLoad={() => setBackdropLoading(false)}
-							loading="lazy"
-						/>
-					</AnimatePresence>
-				</div>
+				
 				<div
 					className={audioPlayerVisible ? "audio-playing" : ""}
 					style={{
@@ -448,8 +271,7 @@ function AppReady() {
 						transition: "padding 250ms",
 					}}
 				>
-					<AppBar />
-					{audioPlayerVisible && <AudioPlayer />}
+					
 					<ErrorBoundary FallbackComponent={ErrorNotice} key={location.key}>
 						<Routes location={location}>
 							<Route path="/" element={<Navigate to={initialRoute} />} />
@@ -527,7 +349,7 @@ function AppReady() {
 				</div>
 
 				<ReactQueryDevtools buttonPosition="bottom-right" position="left" />
-			</ThemeProvider>
+			</>
 		</SnackbarProvider>
 	);
 }

@@ -1,16 +1,15 @@
 import Typography from "@mui/material/Typography";
-import { useNavigate } from "react-router-dom";
 
 import "./textLink.scss";
 
 const TextLink = ({ children, location, variant, otherProps }) => {
-	const navigate = useNavigate();
+	// const navigate = useNavigate();
 
 	return (
 		<Typography
 			variant={variant}
 			className="link flex"
-			onClick={() => navigate(location)}
+			// onClick={() => navigate(location)}
 			{...otherProps}
 		>
 			{children}

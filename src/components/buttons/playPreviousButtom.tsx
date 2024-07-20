@@ -1,13 +1,14 @@
+import { useApiInContext } from "@/utils/store/api";
+import { playItemFromQueue } from "@/utils/store/playback";
+import useQueue from "@/utils/store/queue";
 import { getUserApi } from "@jellyfin/sdk/lib/utils/api/user-api";
 import { IconButton } from "@mui/material";
 import { useMutation, useQuery } from "@tanstack/react-query";
+import { useRouteContext } from "@tanstack/react-router";
 import React from "react";
-import { useApi } from "src/utils/store/api";
-import { playItemFromQueue } from "src/utils/store/playback";
-import useQueue from "src/utils/store/queue";
 
 const PlayPreviousButton = () => {
-	const [api] = useApi((state) => [state.api]);
+	const api = useApiInContext((s) => s.api);
 	const user = useQuery({
 		queryKey: ["user"],
 		queryFn: async () => {

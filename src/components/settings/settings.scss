@@ -3,7 +3,6 @@
     grid-template-columns: 20% 1fr;
     height: 60vh;
     overflow: hidden !important;
-    
     .MuiTabs-flexContainerVertical{
         height: 100%;
     }
@@ -23,8 +22,8 @@
     }
     &-scroll{
         overflow-y: auto;
-        mask-image: linear-gradient(to top, transparent, black 15px calc(100% - 15px), transparent);
         scrollbar-gutter:stable ;
+        overscroll-behavior: contain;
         // Magic scrollbar
         &::-webkit-scrollbar {
             &-thumb {
@@ -48,9 +47,11 @@
     &-logo{
         width: 100%;
         background: rgb(255 255 255 / 1);
-        padding: 2em;
+        padding: 0em;
+        height: 10em;
         margin-bottom: 1em;
         border-radius: $border-radius-default;
+        object-fit: contain;
     }
     &-info{
         display: grid;
@@ -58,16 +59,23 @@
         gap: 1em;
         justify-items: start;
         align-items: center;
-        
+        border-bottom: 1px solid rgb(255 255 255 / 0.1);
+        padding-bottom: 0.5em;
         &-container{
             background: rgb(0 0 0 / 0.3);
-            border: 1px solid rgb(255 255 255 / 0.1);
             padding: 1em;
             border-radius: $border-radius-default;
             display: flex;
             flex-direction: column;
-            gap:0.4em;
+            gap:0.6em;
             width: 100%;
+        }
+        &:last-child {
+            border: none;
+            padding-bottom: 0em;
+        }
+        > :last-child {
+            opacity: 0.8;
         }
     }
     
@@ -78,7 +86,11 @@
         justify-content: space-between;
         width: 100%;
         padding: 0 !important;
-        margin: 0  0 0.4em 0!important;
+        margin: 0 !important;
+        margin-bottom: 0.6em !important;
+        &-info-caption{
+            opacity: 0.6;
+        }
     }
     
     //serverList

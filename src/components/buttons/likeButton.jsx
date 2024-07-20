@@ -4,16 +4,16 @@ import React, { useEffect } from "react";
 
 import IconButton from "@mui/material/IconButton";
 
+import { useApiInContext } from "@/utils/store/api";
 import { getUserLibraryApi } from "@jellyfin/sdk/lib/utils/api/user-library-api";
 import CircularProgress from "@mui/material/CircularProgress";
 import { pink } from "@mui/material/colors";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { useRouteContext } from "@tanstack/react-router";
 import { useSnackbar } from "notistack";
 
-import { useApi } from "../../utils/store/api";
-
 const LikeButton = ({ itemId, isFavorite, queryKey, userId, itemName }) => {
-	const [api] = useApi((state) => [state.api]);
+	const api = useApiInContext((s) => s.api);
 	const queryClient = useQueryClient();
 	const { enqueueSnackbar } = useSnackbar();
 

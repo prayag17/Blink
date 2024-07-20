@@ -1,12 +1,32 @@
-import React from "react";
-import ReactDOM from "react-dom/client";
-import { MemoryRouter as Router } from "react-router-dom";
-
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { RouterProvider, createRouter } from "@tanstack/react-router";
+import React, { Suspense } from "react";
+import ReactDOM from "react-dom/client";
+// Import the generated route tree
+import { routeTree } from "./routeTree.gen";
 
-import App from "./App";
+// Create a new router instance
+const router = createRouter({
+	routeTree,
+	context: {
+		api: undefined!,
+		createApi: undefined!,
+	},
+});
 
-const queryClient = new QueryClient({
+// Register the router instance for type safety
+declare module "@tanstack/react-router" {
+	interface Register {
+		router: typeof router;
+	}
+}
+
+import { ThemeProvider } from "@mui/material";
+import { SnackbarProvider } from "notistack";
+import { theme } from "./theme";
+import { ApiProvider, useApiInContext } from "./utils/store/api";
+
+export const queryClient = new QueryClient({
 	defaultOptions: {
 		queries: {
 			networkMode: "always",
@@ -17,12 +37,21 @@ const queryClient = new QueryClient({
 	},
 });
 
+function ProviderWrapper() {
+	const api = useApiInContext((s) => s.api);
+	const createApi = useApiInContext((s) => s.createApi);
+	return <RouterProvider router={router} context={{ api, createApi }} />;
+}
+
 ReactDOM.createRoot(document.getElementById("root")!).render(
 	<React.StrictMode>
 		<QueryClientProvider client={queryClient}>
-			<Router>
-				<App />
-			</Router>
+			{/* TODO: Create a proper loading fallback component */}
+			<Suspense fallback={<h1>Loading in main.tsx</h1>}>
+				<ApiProvider>
+					<ProviderWrapper />
+				</ApiProvider>
+			</Suspense>
 		</QueryClientProvider>
 	</React.StrictMode>,
 );

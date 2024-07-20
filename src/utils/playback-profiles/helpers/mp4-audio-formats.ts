@@ -9,7 +9,7 @@ import {
 	isTizen55,
 	isTv,
 	isWebOS,
-} from "src/utils/browser-detection";
+} from "@/utils/browser-detection";
 import { getSupportedAudioCodecs } from "./audio-formats";
 import { hasVp8Support } from "./mp4-video-formats";
 

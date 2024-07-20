@@ -1,6 +1,6 @@
 import { LinearProgress } from "@mui/material";
 import { useNProgress } from "@tanem/react-nprogress";
-import React from "react";
+import type React from "react";
 
 const NProgress: React.FC<{ isAnimating: boolean | number }> = ({
 	isAnimating,
@@ -19,7 +19,7 @@ const NProgress: React.FC<{ isAnimating: boolean | number }> = ({
 				top: "0",
 				left: "0",
 				right: "0",
-				zIndex: "10000",
+				zIndex: "10001",
 			}}
 		>
 			<LinearProgress

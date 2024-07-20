@@ -1,3 +1,7 @@
+import useSettingsStore, {
+	setSettingsDialogOpen,
+	setSettingsTabValue,
+} from "@/utils/store/settings";
 import {
 	Button,
 	Chip,
@@ -21,34 +25,30 @@ import {
 } from "@mui/material";
 import { AnimatePresence, motion, transform } from "framer-motion";
 import React, { useEffect, useState } from "react";
-import useSettingsStore, {
-	setSettingsDialogOpen,
-	setSettingsTabValue,
-} from "../../utils/store/settings";
 
-import logo from "../../assets/logoBlack.png";
+import logo from "@/assets/logo.png";
 
+import { createApi, jellyfin, useApiInContext } from "@/utils/store/api";
+import { useCentralStore } from "@/utils/store/central";
 import { getSystemApi } from "@jellyfin/sdk/lib/utils/api/system-api";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { createApi, useApi } from "../../utils/store/api";
-import { useCentralStore } from "../../utils/store/central";
 import "./settings.scss";
 
-import type { RecommendedServerInfo } from "@jellyfin/sdk";
-import { LoadingButton } from "@mui/lab";
-import { red, yellow } from "@mui/material/colors";
-import { relaunch } from "@tauri-apps/api/process";
-import { checkUpdate, installUpdate } from "@tauri-apps/api/updater";
-import { enqueueSnackbar, useSnackbar } from "notistack";
-import { useNavigate } from "react-router-dom";
 import {
 	delServer,
 	getAllServers,
 	getDefaultServer,
 	setDefaultServer,
 	setServer,
-} from "../../utils/storage/servers";
-import { delUser } from "../../utils/storage/user";
+} from "@/utils/storage/servers";
+import { delUser } from "@/utils/storage/user";
+import type { RecommendedServerInfo } from "@jellyfin/sdk";
+import { LoadingButton } from "@mui/lab";
+import { red, yellow } from "@mui/material/colors";
+import { useNavigate, useRouteContext } from "@tanstack/react-router";
+import { relaunch } from "@tauri-apps/api/process";
+import { checkUpdate, installUpdate } from "@tauri-apps/api/updater";
+import { enqueueSnackbar, useSnackbar } from "notistack";
 
 const motionConfig = {
 	initial: {
@@ -64,7 +64,8 @@ const Settings = () => {
 		state.dialogOpen,
 		state.tabValue,
 	]);
-	const [api, jellyfin] = useApi((state) => [state.api, state.jellyfin]);
+		const api = useApiInContext((s) => s.api);
+
 	const systemInfo = useQuery({
 		queryKey: ["about", "systemInfo"],
 		queryFn: async () => {
@@ -116,7 +117,7 @@ const Settings = () => {
 		},
 		onSuccess: async () => {
 			setSettingsDialogOpen(false);
-			navigate("/login/index");
+			navigate({ to: "/login/index" });
 		},
 		onError: (error) => {
 			console.error(error);
@@ -139,12 +140,12 @@ const Settings = () => {
 					setDefaultServer(serversOnDisk.data[0].id);
 					createApi(serversOnDisk.data[0].address, null);
 				} else {
-					// Reset Api as no server is present on disk
-					useApi.setState(useApi.getInitialState());
+					// TODO: Reset api in context
+					// useApi.setState(useApi.getInitialState());
 				}
 				setSettingsDialogOpen(false);
 				await queryClient.removeQueries();
-				navigate("/");
+				navigate({ to: "/" });
 			}
 			enqueueSnackbar("Server deleted successfully!", { variant: "success" });
 			await serversOnDisk.refetch();
@@ -193,7 +194,9 @@ const Settings = () => {
 			maxWidth="md"
 			PaperProps={{
 				className: "settings glass",
+				elevation: 10,
 			}}
+			hideBackdrop
 			onClose={() => setSettingsDialogOpen(false)}
 		>
 			<Tabs
@@ -256,246 +259,28 @@ const Settings = () => {
 					{/* General */}
 					{tabValue === 1 && (
 						<div className="settings-container">
-							<FormControlLabel
-								value="start"
-								control={<Switch color="primary" />}
-								label={
-									<div className="settings-option-info">
-										<Typography variant="h6" fontWeight={400}>
-											Enable DiscordRPC
-										</Typography>
-										<Typography variant="subtitle2" fontWeight={200}>
-											this a test
-										</Typography>
-									</div>
-								}
-								labelPlacement="start"
-								className="settings-option"
-							/>
-							<FormControlLabel
-								value="start"
-								control={<Switch color="primary" />}
-								label={
-									<div className="settings-option-info">
-										<Typography variant="h6" fontWeight={400}>
-											Enable DiscordRPC
-										</Typography>
-										<Typography variant="subtitle2" fontWeight={200}>
-											this a test
-										</Typography>
-									</div>
-								}
-								labelPlacement="start"
-								className="settings-option"
-							/>
-							<FormControlLabel
-								value="start"
-								control={<Switch color="primary" />}
-								label={
-									<div className="settings-option-info">
-										<Typography variant="h6" fontWeight={400}>
-											Enable DiscordRPC
-										</Typography>
-										<Typography variant="subtitle2" fontWeight={200}>
-											this a test
-										</Typography>
-									</div>
-								}
-								labelPlacement="start"
-								className="settings-option"
-							/>
-							<FormControlLabel
-								value="start"
-								control={<Switch color="primary" />}
-								label={
-									<div className="settings-option-info">
-										<Typography variant="h6" fontWeight={400}>
-											Enable DiscordRPC
-										</Typography>
-										<Typography variant="subtitle2" fontWeight={200}>
-											this a test
-										</Typography>
-									</div>
-								}
-								labelPlacement="start"
-								className="settings-option"
-							/>
-							<FormControlLabel
-								value="start"
-								control={<Switch color="primary" />}
-								label={
-									<div className="settings-option-info">
-										<Typography variant="h6" fontWeight={400}>
-											Enable DiscordRPC
-										</Typography>
-										<Typography variant="subtitle2" fontWeight={200}>
-											this a test
-										</Typography>
-									</div>
-								}
-								labelPlacement="start"
-								className="settings-option"
-							/>
-							<FormControlLabel
-								value="start"
-								control={<Switch color="primary" />}
-								label={
-									<div className="settings-option-info">
-										<Typography variant="h6" fontWeight={400}>
-											Enable DiscordRPC
-										</Typography>
-										<Typography variant="subtitle2" fontWeight={200}>
-											this a test
-										</Typography>
-									</div>
-								}
-								labelPlacement="start"
-								className="settings-option"
-							/>
-							<FormControlLabel
-								value="start"
-								control={<Switch color="primary" />}
-								label={
-									<div className="settings-option-info">
-										<Typography variant="h6" fontWeight={400}>
-											Enable DiscordRPC
-										</Typography>
-										<Typography variant="subtitle2" fontWeight={200}>
-											this a test
-										</Typography>
-									</div>
-								}
-								labelPlacement="start"
-								className="settings-option"
-							/>
-							<FormControlLabel
-								value="start"
-								control={<Switch color="primary" />}
-								label={
-									<div className="settings-option-info">
-										<Typography variant="h6" fontWeight={400}>
-											Enable DiscordRPC
-										</Typography>
-										<Typography variant="subtitle2" fontWeight={200}>
-											this a test
-										</Typography>
-									</div>
-								}
-								labelPlacement="start"
-								className="settings-option"
-							/>
-							<FormControlLabel
-								value="start"
-								control={<Switch color="primary" />}
-								label={
-									<div className="settings-option-info">
-										<Typography variant="h6" fontWeight={400}>
-											Enable DiscordRPC
-										</Typography>
-										<Typography variant="subtitle2" fontWeight={200}>
-											this a test
-										</Typography>
-									</div>
-								}
-								labelPlacement="start"
-								className="settings-option"
-							/>
-							<FormControlLabel
-								value="start"
-								control={<Switch color="primary" />}
-								label={
-									<div className="settings-option-info">
-										<Typography variant="h6" fontWeight={400}>
-											Enable DiscordRPC
-										</Typography>
-										<Typography variant="subtitle2" fontWeight={200}>
-											this a test
-										</Typography>
-									</div>
-								}
-								labelPlacement="start"
-								className="settings-option"
-							/>
-							<FormControlLabel
-								value="start"
-								control={<Switch color="primary" />}
-								label={
-									<div className="settings-option-info">
-										<Typography variant="h6" fontWeight={400}>
-											Enable DiscordRPC
-										</Typography>
-										<Typography variant="subtitle2" fontWeight={200}>
-											this a test
-										</Typography>
-									</div>
-								}
-								labelPlacement="start"
-								className="settings-option"
-							/>
-							<FormControlLabel
-								value="start"
-								control={<Switch color="primary" />}
-								label={
-									<div className="settings-option-info">
-										<Typography variant="h6" fontWeight={400}>
-											Enable DiscordRPC
-										</Typography>
-										<Typography variant="subtitle2" fontWeight={200}>
-											this a test
-										</Typography>
-									</div>
-								}
-								labelPlacement="start"
-								className="settings-option"
-							/>
-							<FormControlLabel
-								value="start"
-								control={<Switch color="primary" />}
-								label={
-									<div className="settings-option-info">
-										<Typography variant="h6" fontWeight={400}>
-											Enable DiscordRPC
-										</Typography>
-										<Typography variant="subtitle2" fontWeight={200}>
-											this a test
-										</Typography>
-									</div>
-								}
-								labelPlacement="start"
-								className="settings-option"
-							/>
-							<FormControlLabel
-								value="start"
-								control={<Switch color="primary" />}
-								label={
-									<div className="settings-option-info">
-										<Typography variant="h6" fontWeight={400}>
-											Enable DiscordRPC
-										</Typography>
-										<Typography variant="subtitle2" fontWeight={200}>
-											this a test
-										</Typography>
-									</div>
-								}
-								labelPlacement="start"
-								className="settings-option"
-							/>
-							<FormControlLabel
-								value="start"
-								control={<Switch color="primary" />}
-								label={
-									<div className="settings-option-info">
-										<Typography variant="h6" fontWeight={400}>
-											Enable DiscordRPC
-										</Typography>
-										<Typography variant="subtitle2" fontWeight={200}>
-											this a test
-										</Typography>
-									</div>
-								}
-								labelPlacement="start"
-								className="settings-option"
-							/>
+							{Array.from(new Array(10)).map((i) => (
+								<FormControlLabel
+									key={i}
+									value="start"
+									control={<Switch color="primary" />}
+									label={
+										<div className="settings-option-info">
+											<Typography variant="subtitle1">
+												Some dummy setting
+											</Typography>
+											<Typography
+												variant="caption"
+												className="settings-option-info-caption"
+											>
+												this a test
+											</Typography>
+										</div>
+									}
+									labelPlacement="start"
+									className="settings-option"
+								/>
+							))}
 						</div>
 					)}
 
@@ -516,7 +301,7 @@ const Settings = () => {
 												opacity: 0,
 											}}
 											animate={{ transform: "translateY(0px)", opacity: 1 }}
-											exit={{ transform: "translateY(-10px)", opacity: 1 }}
+											exit={{ transform: "translateY(-10px)", opacity: 0 }}
 											transition={{
 												delay: 0.1 * index,
 												duration: 0.15,
@@ -644,37 +429,60 @@ const Settings = () => {
 							<div className="settings-grid">
 								<div className="settings-info-container">
 									<div className="settings-info">
-										<Typography>Client Version:</Typography>
+										<Typography variant="subtitle2">Client Version:</Typography>
 										<Chip
 											icon={
-												<span className="material-symbols-rounded">
+												<span
+													className="material-symbols-rounded"
+													style={{ "--wght": 500 }}
+												>
 													{updateInfo.data?.shouldUpdate
-														? "update"
-														: "update_disabled"}
+														? "new_release"
+														: "new_releases"}
 												</span>
 											}
 											label={
-												<Typography variant="subtitle1">
+												<Typography variant="subtitle2">
 													{applicationVersion}
 												</Typography>
 											}
 											color={
 												updateInfo.data?.shouldUpdate ? "error" : "success"
 											}
-											size="medium"
+											size="small"
 											style={{
 												width: "fit-content !important",
 											}}
 										/>
 									</div>
 									<div className="settings-info">
-										<Typography>Update Available:</Typography>
-										<Typography>
-											{updateInfo.isFetching
-												? "Checking for new updates..."
-												: updateInfo.data?.shouldUpdate
-													? updateInfo.data.manifest?.version
-													: "No update found."}
+										<Typography variant="subtitle2">
+											Update Available:
+										</Typography>
+										<Typography variant="subtitle2">
+											{updateInfo.isFetching ? (
+												"Checking for new updates..."
+											) : updateInfo.data?.shouldUpdate ? (
+												<Chip
+													icon={
+														<span className="material-symbols-rounded">
+															new_releases
+														</span>
+													}
+													label={
+														<Typography variant="subtitle2">
+															{applicationVersion}
+														</Typography>
+													}
+													color="success"
+													size="small"
+													style={{
+														width: "fit-content !important",
+													}}
+												/>
+											) : (
+												"No update found."
+											)}
 										</Typography>
 									</div>
 									<LoadingButton
@@ -709,22 +517,32 @@ const Settings = () => {
 								{systemInfo.isSuccess ? (
 									<div className="settings-info-container">
 										<div className="settings-info">
-											<Typography>Server:</Typography>
-											<Typography>{systemInfo.data?.ServerName}</Typography>
+											<Typography variant="subtitle2">Server:</Typography>
+											<Typography variant="subtitle2">
+												{systemInfo.data?.ServerName}
+											</Typography>
 										</div>
 										<div className="settings-info">
-											<Typography>Jellyfin Version:</Typography>
-											<Typography>{systemInfo.data?.Version}</Typography>
+											<Typography variant="subtitle2">
+												Jellyfin Version:
+											</Typography>
+											<Typography variant="subtitle2">
+												{systemInfo.data?.Version}
+											</Typography>
 										</div>
 										<div className="settings-info">
-											<Typography>Operating System:</Typography>
-											<Typography>
+											<Typography variant="subtitle2">
+												Operating System:
+											</Typography>
+											<Typography variant="subtitle2">
 												{systemInfo.data?.OperatingSystemDisplayName}
 											</Typography>
 										</div>
 										<div className="settings-info">
-											<Typography>Server Architecture:</Typography>
-											<Typography>
+											<Typography variant="subtitle2">
+												Server Architecture:
+											</Typography>
+											<Typography variant="subtitle2">
 												{systemInfo.data?.SystemArchitecture}
 											</Typography>
 										</div>
@@ -745,10 +563,9 @@ const Settings = () => {
 									background: "rgb(0 0 0 / 0.3)",
 									padding: "1em",
 									borderRadius: "10px",
-									border: "1px solid rgb(255 255 255 / 0.1)",
 								}}
 							>
-								<Typography variant="h6" fontWeight={300} mb={1}>
+								<Typography variant="subtitle1" mb={1}>
 									Links:
 								</Typography>
 								<div
@@ -759,15 +576,22 @@ const Settings = () => {
 										gap: "0.1em",
 									}}
 								>
-									<Link
+									<Typography
+										component={Link}
+										variant="subtitle2"
 										target="_blank"
 										href="https://github.com/prayag17/JellyPlayer"
 									>
 										https://github.com/prayag17/JellyPlayer
-									</Link>
-									<Link target="_blank" href="https://jellyfin.org">
+									</Typography>
+									<Typography
+										component={Link}
+										variant="subtitle2"
+										target="_blank"
+										href="https://jellyfin.org"
+									>
 										https://jellyfin.org
-									</Link>
+									</Typography>
 								</div>
 							</div>
 						</div>
@@ -776,7 +600,12 @@ const Settings = () => {
 			</AnimatePresence>
 
 			{/* Add Server */}
-			<Dialog open={addServerDialog} fullWidth>
+			<Dialog
+				open={addServerDialog}
+				fullWidth
+				hideBackdrop
+				disableScrollLock={true}
+			>
 				<DialogTitle>Add Server</DialogTitle>
 				<DialogContent className="settings-server-add">
 					<TextField

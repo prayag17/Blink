@@ -1,0 +1,63 @@
+
+.user {
+	&List {
+		display: flex;
+		gap: 1em;
+		width: min(60vw, 45em);
+	}
+	&Card {
+		border-radius: $border-radius-default;
+		display: flex;
+		flex-flow: column;
+		flex: 1 1 0px;
+		overflow: hidden;
+	}
+	&Icon {
+		font-size: 5em;
+		display: flex;
+		justify-content: center;
+		align-items: center;
+		background: $clr-accent-dark;
+	}
+}
+
+.buttons {
+	display: flex;
+	gap: 1em;
+	width: 100%;
+	.userEventButton {
+		flex: 1 1 0 !important;
+	}
+}
+
+.login {
+	width: 100vw;
+	height: 100vh;
+	display: flex;
+	flex-direction: column;
+	justify-content: center;
+	align-items: center;
+
+	&-form {
+		width: 28em;
+		display: flex;
+		flex-direction: column;
+		justify-content: center;
+		align-items: stretch;
+		gap:1em;
+		&-container{
+			display: flex;
+			flex-direction: column;
+			justify-content: center;
+			align-items: center;
+			gap:2em;
+			background: rgb(255 255 255 / 0.05);
+			padding: 2em;
+			border-radius: 20px;
+			border: 1px solid rgb(255 255 255 / 0.1);
+			&.padded-top {
+				margin-top: 25vh;
+			}
+		}
+	}
+}

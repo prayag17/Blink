@@ -1,4 +1,4 @@
-import { BaseItemDto } from "@jellyfin/sdk/lib/generated-client";
+import type { BaseItemDto } from "@jellyfin/sdk/lib/generated-client";
 import { create } from "zustand";
 
 interface QueueStore {
@@ -11,7 +11,10 @@ const useQueue = create<QueueStore>(() => ({
 	currentItemIndex: 0,
 }));
 
-export const setQueue = (tracks: BaseItemDto[], currentItemIndex: number) => {
+export const setQueue = (
+	tracks: BaseItemDto[] | undefined,
+	currentItemIndex: number,
+) => {
 	useQueue.setState(() => ({ tracks, currentItemIndex }));
 };
 

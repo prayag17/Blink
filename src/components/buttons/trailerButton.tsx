@@ -1,4 +1,4 @@
-import { MediaUrl } from "@jellyfin/sdk/lib/generated-client";
+import type { MediaUrl } from "@jellyfin/sdk/lib/generated-client";
 import { Dialog, IconButton } from "@mui/material";
 import React, { useState } from "react";
 import ReactPlayer from "react-player";
