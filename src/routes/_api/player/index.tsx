@@ -116,6 +116,8 @@ function VideoPlayer() {
 
 	useEffect(() => setBackdrop("", ""), []);
 
+  const [clickTimeout, setClickTimeout] = useState<NodeJS.Timeout>(null)
+	
 	const showSubtitles = useMemo(
 		() => mediaSource.subtitle.enable,
 		[mediaSource.subtitle],
@@ -388,6 +390,24 @@ function VideoPlayer() {
 				style={{
 					zIndex: 2,
 				}}
+        onClick={(event) => {
+          if (event.currentTarget !== event.target) { 
+            return
+          }
+
+          if (event.detail === 1) {
+            setClickTimeout(
+              setTimeout(() => {
+                setPlaying((state) => !state);
+              }, 200))
+          } else if (event.detail === 2){
+            clearTimeout(clickTimeout)
+            setAppFullscreen((state) => {
+              appWindow.getCurrent().setFullscreen(!state);
+              return !state
+            });
+          }
+        }}
 			>
 				<div className="video-player-osd-header flex flex-justify-spaced-between flex-align-center">
 					<IconButton onClick={handleExitPlayer}>
