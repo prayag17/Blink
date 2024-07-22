@@ -63,7 +63,7 @@ const AudioPlayer = () => {
 			return usr.data;
 		},
 		networkMode: "always",
-		enabled: Boolean(display),
+		enabled: Boolean(display) && Boolean(api),
 	});
 
 	const waveSurferRef = useRef(null);

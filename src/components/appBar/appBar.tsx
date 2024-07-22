@@ -85,7 +85,7 @@ export const AppBar = () => {
 			const usr = await getUserApi(api).getCurrentUser();
 			return usr.data;
 		},
-		enabled: display,
+		enabled: display && Boolean(api),
 		throwOnError: true,
 	});
 	const libraries = useQuery({

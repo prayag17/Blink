@@ -84,7 +84,7 @@ function LoginUser() {
 			await saveUser(userName, user.data.AccessToken);
 		}
 		setLoading(false);
-		navigate("/home");
+		navigate({ to: "/home" });
 	};
 
 	useLayoutEffect(() => {

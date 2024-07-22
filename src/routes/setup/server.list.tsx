@@ -71,7 +71,7 @@ function ServerList() {
 			await delUser();
 			await servers.refetch();
 
-			if (servers.length > 0) {
+			if (servers.length > 1) {
 				setDefaultServer(servers[0].id);
 				createApi(servers[0].address, undefined);
 			} else {
@@ -109,7 +109,7 @@ function ServerList() {
 					style={{
 						fontSize: "1.64em",
 					}}
-					onClick={() => navigate({ to: "/setup/server" })}
+					onClick={() => navigate({ to: "/setup/server/add" })}
 				>
 					<div className="material-symbols-rounded">add</div>
 				</IconButton>

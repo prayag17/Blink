@@ -40,11 +40,6 @@ import { createFileRoute, useNavigate } from "@tanstack/react-router";
 
 export const Route = createFileRoute("/_api/login/list")({
 	component: LoginPublicUsersList,
-	loader: async ({context}) => {
-		const api = context.api;
-		const result = await getUserApi(api).getPublicUsers();
-		return result.data;
-	},
 });
 
 function LoginPublicUsersList() {
@@ -70,7 +65,14 @@ function LoginPublicUsersList() {
 	const handleManualLogin = () => {
 		// navigate("/login/manual");
 	};
-	const users = Route.useLoaderData();
+	const users = useQuery({
+		queryKey: ["login", "public-users"],
+		queryFn: async () => {
+			const result = await getUserApi(api).getPublicUsers();
+			return result.data;
+		},
+		enabled: Boolean(api),
+	});
 
 	const handleQuickConnect = async () => {
 		setQuickConnectLoading(0);
@@ -218,7 +220,10 @@ function LoginPublicUsersList() {
 										itemType="User"
 										cardType="square"
 										onClick={() =>
-											navigate(`/login/withImg/${item.Name}/${item.Id}/`)
+											navigate({
+												to: "/login/$userId/$userName",
+												params: { userId: item.Id, userName: item.Name },
+											})
 										}
 										overrideIcon="User"
 										imageType="Primary"
