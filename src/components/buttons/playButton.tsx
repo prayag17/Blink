@@ -108,9 +108,14 @@ const PlayButton = ({
 					case BaseItemKind.Episode:
 						result = await getTvShowsApi(api).getEpisodes({
 							seriesId: item.SeriesId,
-							fields: [ItemFields.MediaSources, ItemFields.MediaStreams],
+							fields: [
+								ItemFields.MediaSources,
+								ItemFields.MediaStreams,
+								ItemFields.Overview,
+							],
 							enableUserData: true,
 							userId: userId,
+							seasonId: item.SeasonId,
 							// startItemId: item.Id,
 						});
 						mediaSource = await getMediaInfoApi(api).getPostedPlaybackInfo({
@@ -142,11 +147,29 @@ const PlayButton = ({
 						} catch (error) {
 							console.error(error);
 						}
+						try {
+							introInfo = (
+								await axiosClient.get(
+									`${api.basePath}/Episode/${result.data.Items?.[0]?.Id}/IntroSkipperSegments`,
+									{
+										headers: {
+											Authorization: `MediaBrowser Token=${api.accessToken}`,
+										},
+									},
+								)
+							)?.data;
+						} catch (error) {
+							console.error(error);
+						}
 						break;
 					case BaseItemKind.Series:
 						result = await getTvShowsApi(api).getEpisodes({
 							seriesId: itemId,
-							fields: [ItemFields.MediaSources, ItemFields.MediaStreams],
+							fields: [
+								ItemFields.MediaSources,
+								ItemFields.MediaStreams,
+								ItemFields.Overview,
+							],
 							enableUserData: true,
 							userId: userId,
 						});
@@ -166,7 +189,7 @@ const PlayButton = ({
 						try {
 							introInfo = (
 								await axiosClient.get(
-									`${api.basePath}/Episode/${result.data.Items?.[0]?.Id}/IntroTimestamps`,
+									`${api.basePath}/Episode/${result.data.Items?.[0]?.Id}/IntroSkipperSegments`,
 									{
 										headers: {
 											Authorization: `MediaBrowser Token=${api.accessToken}`,
@@ -251,7 +274,7 @@ const PlayButton = ({
 					api_key: api?.accessToken,
 				};
 				const urlParams = new URLSearchParams(urlOptions).toString();
-				
+
 				const playbackUrl = `${api.basePath}/Audio/${result?.item.Items[0].Id}/universal?${urlParams}`;
 				playAudio(playbackUrl, result?.item.Items[0], undefined);
 				setQueue(result?.item.Items ?? [], 0);
@@ -272,7 +295,6 @@ const PlayButton = ({
 					currentSubTrack,
 					result?.mediaSource.MediaSources?.[0].MediaStreams,
 				);
-				console.log(subtitle);
 				// URL generation
 				const urlOptions = {
 					Static: true,

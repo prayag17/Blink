@@ -126,7 +126,7 @@ const Carousel = ({
 							setCurrentSlide(index);
 						}}
 					>
-						{item.ImageTags?.Primary ? (
+						{item.ImageTags?.Thumb ? (
 							<img
 								src={api.getItemImageUrl(item.Id, "Thumb", {
 									tag: item.ImageTags.Primary,

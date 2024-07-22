@@ -39,6 +39,7 @@ import wasmUrl from "jassub/dist/jassub-worker.wasm?url";
 import PlayNextButton from "@/components/buttons/playNextButton";
 import PlayPreviousButton from "@/components/buttons/playPreviousButtom";
 import QueueButton from "@/components/buttons/queueButton";
+import OutroCard from "@/components/outroCard";
 import { createFileRoute, useRouter } from "@tanstack/react-router";
 import type { OnProgressProps } from "react-player/base";
 import subtitleFont from "./Noto-Sans-Indosphere.ttf";
@@ -64,7 +65,7 @@ const ticksDisplay = (ticks: number) => {
 	})}`;
 	return formatedTime;
 };
-const VOLUME_SCROLL_INTERVAL = 0.05
+const VOLUME_SCROLL_INTERVAL = 0.05;
 
 export const Route = createFileRoute("/_api/player/")({
 	component: VideoPlayer,
@@ -116,8 +117,8 @@ function VideoPlayer() {
 
 	useEffect(() => setBackdrop("", ""), []);
 
-  const [clickTimeout, setClickTimeout] = useState<NodeJS.Timeout>(null)
-	
+	const [clickTimeout, setClickTimeout] = useState<NodeJS.Timeout>(null);
+
 	const showSubtitles = useMemo(
 		() => mediaSource.subtitle.enable,
 		[mediaSource.subtitle],
@@ -164,14 +165,14 @@ function VideoPlayer() {
 				PlaybackStartTimeTicks: startPosition,
 				PositionTicks: secToTicks(event.playedSeconds),
 				RepeatMode: RepeatMode.RepeatNone,
-				VolumeLevel: volume * 100,
+				VolumeLevel: Math.floor(volume * 100),
 			},
 		});
 	};
 
 	const handleExitPlayer = async () => {
 		appWindow.getCurrent().setFullscreen(false);
-		
+
 		history.back();
 		// Report Jellyfin server: Playback has ended/stopped
 		getPlaystateApi(api).reportPlaybackStopped({
@@ -246,28 +247,27 @@ function VideoPlayer() {
 		};
 	}, [handleKeyPress]);
 
-  useEffect(() => {
-    const handleMouseWheel = (event: WheelEvent) => {
-      console.log(event.deltaY);
-      
-      if (event.deltaY < 0) {
-        // increase volume 
-        setVolume((state) => Math.min(1, state + VOLUME_SCROLL_INTERVAL))
-      } else if (event.deltaY > 0) {
-        // decrease volume
-        setVolume((state) => Math.max(0, state - VOLUME_SCROLL_INTERVAL))  
-      }
-    }
+	useEffect(() => {
+		const handleMouseWheel = (event: WheelEvent) => {
+			console.log(event.deltaY);
+
+			if (event.deltaY < 0) {
+				// increase volume
+				setVolume((state) => Math.min(1, state + VOLUME_SCROLL_INTERVAL));
+			} else if (event.deltaY > 0) {
+				// decrease volume
+				setVolume((state) => Math.max(0, state - VOLUME_SCROLL_INTERVAL));
+			}
+		};
 
 		// attach the event listener
-    document.addEventListener("wheel", handleMouseWheel);
+		document.addEventListener("wheel", handleMouseWheel);
 
 		// remove the event listener
-    return () => {
-      document.removeEventListener("wheel", handleMouseWheel);
-    }
-  }, [])
-
+		return () => {
+			document.removeEventListener("wheel", handleMouseWheel);
+		};
+	}, []);
 
 	useLayoutEffect(() => {
 		setPlaying(true);
@@ -321,16 +321,42 @@ function VideoPlayer() {
 
 	const showSkipIntroButton = useMemo(() => {
 		if (
-			ticksToSec(progress) >= introInfo?.ShowSkipPromptAt &&
-			ticksToSec(progress) < introInfo?.HideSkipPromptAt
+			ticksToSec(progress) >=
+				(introInfo?.Introduction?.ShowSkipPromptAt ?? 0) &&
+			ticksToSec(progress) < (introInfo?.Introduction?.HideSkipPromptAt ?? 0)
 		)
 			return true;
 		return false;
 	}, [progress]);
 
+	const showUpNextCard = useMemo(() => {
+		if (introInfo?.Credits) {
+			if (
+				ticksToSec(progress) >= introInfo?.Credits.ShowSkipPromptAt &&
+				ticksToSec(progress) < introInfo?.Credits.HideSkipPromptAt
+			)
+				return true;
+		}
+		if (
+			Math.ceil(ticksToSec(itemDuration) - ticksToSec(progress)) <= 30 &&
+			Math.ceil(ticksToSec(itemDuration) - ticksToSec(progress)) > 0
+		) {
+			return true;
+		}
+		return false;
+	}, [progress, item?.Id]);
+
 	const handleSkipIntro = useCallback(() => {
-		player.current?.seekTo(introInfo?.IntroEnd);
+		player.current?.seekTo(
+			introInfo?.Introduction.IntroEnd ?? player.current?.getCurrentTime(),
+		);
 	}, [item?.Id]);
+
+	const [forceShowCredits, setForceShowCredits] = useState(false);
+	const handleShowCredits = useCallback(() => {
+		setForceShowCredits(true);
+	}, []);
+	useEffect(() => setForceShowCredits(false), [item?.Id]);
 
 	return (
 		<div className="video-player">
@@ -374,6 +400,9 @@ function VideoPlayer() {
 					Skip Intro
 				</Button>
 			)}
+			{!forceShowCredits && showUpNextCard && (
+				<OutroCard handleShowCredits={handleShowCredits} />
+			)}
 			<motion.div
 				className={
 					hoveringOsd || !playing || isSeeking
@@ -390,24 +419,25 @@ function VideoPlayer() {
 				style={{
 					zIndex: 2,
 				}}
-        onClick={(event) => {
-          if (event.currentTarget !== event.target) { 
-            return
-          }
+				onClick={(event) => {
+					if (event.currentTarget !== event.target) {
+						return;
+					}
 
-          if (event.detail === 1) {
-            setClickTimeout(
-              setTimeout(() => {
-                setPlaying((state) => !state);
-              }, 200))
-          } else if (event.detail === 2){
-            clearTimeout(clickTimeout)
-            setAppFullscreen((state) => {
-              appWindow.getCurrent().setFullscreen(!state);
-              return !state
-            });
-          }
-        }}
+					if (event.detail === 1) {
+						setClickTimeout(
+							setTimeout(() => {
+								setPlaying((state) => !state);
+							}, 200),
+						);
+					} else if (event.detail === 2) {
+						clearTimeout(clickTimeout);
+						setAppFullscreen((state) => {
+							appWindow.getCurrent().setFullscreen(!state);
+							return !state;
+						});
+					}
+				}}
 			>
 				<div className="video-player-osd-header flex flex-justify-spaced-between flex-align-center">
 					<IconButton onClick={handleExitPlayer}>
@@ -459,172 +489,177 @@ function VideoPlayer() {
 						</TextField>
 					</Menu>
 				</div>
-				<div className="video-player-osd-info">
-					<Typography variant="h4" fontWeight={500} mb={2}>
-						{itemName}
-						{episodeTitle && (
-							<Typography variant="h6" fontWeight={300} mt={1}>
-								{episodeTitle}
-							</Typography>
-						)}
-					</Typography>
-					<div className="video-player-osd-controls">
-						<div className="video-player-osd-controls-progress">
-							<Slider
-								value={isSeeking ? sliderProgress : progress}
-								max={itemDuration}
-								step={secToTicks(1)}
-								onChange={(e, newValue) => {
-									setIsSeeking(true);
-									setSliderProgress(newValue);
-								}}
-								onChangeCommitted={(e, newValue) => {
-									setIsSeeking(false);
-									setProgress(newValue);
-									player.current.seekTo(ticksToSec(newValue), "seconds");
-								}}
-								sx={{
-									"& .MuiSlider-thumb": {
-										width: 14,
-										height: 14,
-										transition: "0.1s ease-in-out",
-										opacity: 0,
-										"&.Mui-active": {
-											width: 20,
-											height: 20,
+				{(forceShowCredits || !showUpNextCard) && (
+					<div className="video-player-osd-info">
+						<Typography variant="h4" fontWeight={500} mb={2}>
+							{itemName}
+							{episodeTitle && (
+								<Typography variant="h6" fontWeight={300} mt={1}>
+									{episodeTitle}
+								</Typography>
+							)}
+						</Typography>
+						<div className="video-player-osd-controls">
+							<div className="video-player-osd-controls-progress">
+								<Slider
+									value={isSeeking ? sliderProgress : progress}
+									max={itemDuration}
+									step={secToTicks(10)}
+									onChange={(e, newValue) => {
+										setIsSeeking(true);
+										setSliderProgress(newValue);
+									}}
+									onChangeCommitted={(e, newValue) => {
+										setIsSeeking(false);
+										setProgress(newValue);
+										player.current?.seekTo(ticksToSec(newValue), "seconds");
+									}}
+									sx={{
+										"& .MuiSlider-thumb": {
+											width: 14,
+											height: 14,
+											transition: "0.1s ease-in-out",
+											opacity: 0,
+											"&.Mui-active": {
+												width: 20,
+												height: 20,
+												opacity: 1,
+											},
+										},
+										"&:hover .MuiSlider-thumb": {
 											opacity: 1,
 										},
-									},
-									"&:hover .MuiSlider-thumb": {
-										opacity: 1,
-									},
-									"& .MuiSlider-rail": {
-										opacity: 0.28,
-										background: "white",
-									},
-								}}
-							/>
-							<div className="video-player-osd-controls-progress-text">
-								<Typography>
-									{ticksDisplay(isSeeking ? sliderProgress : progress)}
-								</Typography>
-								<Typography>{ticksDisplay(itemDuration)}</Typography>
-							</div>
-						</div>
-						<div className="flex flex-row flex-justify-spaced-between">
-							<div className="video-player-osd-controls-buttons">
-								<PlayPreviousButton />
-								<IconButton
-									onClick={() =>
-										player.current.seekTo(player.current.getCurrentTime() - 15)
-									}
-								>
-									<span className="material-symbols-rounded fill">
-										fast_rewind
-									</span>
-								</IconButton>
-								<IconButton onClick={() => setPlaying((state) => !state)}>
-									<span className="material-symbols-rounded fill">
-										{playing ? "pause" : "play_arrow"}
-									</span>
-								</IconButton>
-								<IconButton
-									onClick={() =>
-										player.current.seekTo(player.current.getCurrentTime() + 15)
-									}
-								>
-									<span className="material-symbols-rounded fill">
-										fast_forward
-									</span>
-								</IconButton>
-								<PlayNextButton />
-								<Typography variant="subtitle1">
-									{isSeeking
-										? endsAt(itemDuration - sliderProgress)
-										: endsAt(itemDuration - progress)}
-								</Typography>
-							</div>
-							<div className="video-player-osd-controls-buttons">
-								<motion.div
-									style={{
-										width: "13em",
-										padding: "0.5em 1.5em",
-										paddingLeft: "0.8em",
-										gap: "0.4em",
-										background: "black",
-										borderRadius: "100px",
-										display: "grid",
-										justifyContent: "center",
-										alignItems: "center",
-										gridTemplateColumns: "2em 1fr",
-										opacity: 0,
+										"& .MuiSlider-rail": {
+											opacity: 0.28,
+											background: "white",
+										},
 									}}
-									animate={{
-										opacity: showVolumeControl ? 1 : 0,
-									}}
-									whileHover={{
-										opacity: 1,
-									}}
-									onMouseLeave={() => setShowVolumeControl(false)}
-								>
-									<Typography textAlign="center">
-										{muted ? 0 : Math.round(volume * 100)}
+								/>
+								<div className="video-player-osd-controls-progress-text">
+									<Typography>
+										{ticksDisplay(isSeeking ? sliderProgress : progress)}
 									</Typography>
-									<Slider
-										step={0.01}
-										max={1}
-										size="small"
-										value={muted ? 0 : volume}
-										onChange={(e, newVal) => {
-											setVolume(newVal);
-											if (newVal === 0) setMuted(true);
-											else setMuted(false);
+									<Typography>{ticksDisplay(itemDuration)}</Typography>
+								</div>
+							</div>
+							<div className="flex flex-row flex-justify-spaced-between">
+								<div className="video-player-osd-controls-buttons">
+									<PlayPreviousButton />
+									<IconButton
+										onClick={() =>
+											player.current.seekTo(
+												player.current.getCurrentTime() - 15,
+											)
+										}
+									>
+										<span className="material-symbols-rounded fill">
+											fast_rewind
+										</span>
+									</IconButton>
+									<IconButton onClick={() => setPlaying((state) => !state)}>
+										<span className="material-symbols-rounded fill">
+											{playing ? "pause" : "play_arrow"}
+										</span>
+									</IconButton>
+									<IconButton
+										onClick={() =>
+											player.current.seekTo(
+												player.current.getCurrentTime() + 15,
+											)
+										}
+									>
+										<span className="material-symbols-rounded fill">
+											fast_forward
+										</span>
+									</IconButton>
+									<PlayNextButton />
+									<Typography variant="subtitle1">
+										{isSeeking
+											? endsAt(itemDuration - sliderProgress)
+											: endsAt(itemDuration - progress)}
+									</Typography>
+								</div>
+								<div className="video-player-osd-controls-buttons">
+									<motion.div
+										style={{
+											width: "13em",
+											padding: "0.5em 1.5em",
+											paddingLeft: "0.8em",
+											gap: "0.4em",
+											background: "black",
+											borderRadius: "100px",
+											display: "grid",
+											justifyContent: "center",
+											alignItems: "center",
+											gridTemplateColumns: "2em 1fr",
+											opacity: 0,
 										}}
-									/>
-								</motion.div>
-								<IconButton
-									onClick={() => setMuted((state) => !state)}
-									onMouseMoveCapture={() => {
-										setShowVolumeControl(true);
-									}}
-								>
-									<span className="material-symbols-rounded">
-										{muted
-											? "volume_off"
-											: volume < 0.4
-												? "volume_down"
-												: "volume_up"}
-									</span>
-								</IconButton>
-								<QueueButton />
-								<IconButton
-									disabled={mediaSource.subtitle.track === -2}
-									onClick={toggleSubtitleTrack}
-								>
-									<span className={"material-symbols-rounded"}>
-										{mediaSource.subtitle.enable
-											? "closed_caption"
-											: "closed_caption_disabled"}
-									</span>
-								</IconButton>
-								<IconButton
-									onClick={async () => {
-										setAppFullscreen((state) => {
-											appWindow.getCurrent().setFullscreen(!state);
-											return !state;
-										});
-									}}
-								>
-									<span className="material-symbols-rounded fill">
-										{appFullscreen ? "fullscreen_exit" : "fullscreen"}
-									</span>
-								</IconButton>
+										animate={{
+											opacity: showVolumeControl ? 1 : 0,
+										}}
+										whileHover={{
+											opacity: 1,
+										}}
+										onMouseLeave={() => setShowVolumeControl(false)}
+									>
+										<Typography textAlign="center">
+											{muted ? 0 : Math.round(volume * 100)}
+										</Typography>
+										<Slider
+											step={0.01}
+											max={1}
+											size="small"
+											value={muted ? 0 : volume}
+											onChange={(e, newVal) => {
+												setVolume(newVal);
+												if (newVal === 0) setMuted(true);
+												else setMuted(false);
+											}}
+										/>
+									</motion.div>
+									<IconButton
+										onClick={() => setMuted((state) => !state)}
+										onMouseMoveCapture={() => {
+											setShowVolumeControl(true);
+										}}
+									>
+										<span className="material-symbols-rounded">
+											{muted
+												? "volume_off"
+												: volume < 0.4
+													? "volume_down"
+													: "volume_up"}
+										</span>
+									</IconButton>
+									<QueueButton />
+									<IconButton
+										disabled={mediaSource.subtitle.track === -2}
+										onClick={toggleSubtitleTrack}
+									>
+										<span className={"material-symbols-rounded"}>
+											{mediaSource.subtitle.enable
+												? "closed_caption"
+												: "closed_caption_disabled"}
+										</span>
+									</IconButton>
+									<IconButton
+										onClick={async () => {
+											setAppFullscreen((state) => {
+												appWindow.getCurrent().setFullscreen(!state);
+												return !state;
+											});
+										}}
+									>
+										<span className="material-symbols-rounded fill">
+											{appFullscreen ? "fullscreen_exit" : "fullscreen"}
+										</span>
+									</IconButton>
+								</div>
 							</div>
 						</div>
 					</div>
-				</div>
+				)}
 			</motion.div>
-			{/* <video src={hlsStream}></video> */}
 			<ReactPlayer
 				key={item?.Id}
 				playing={playing}

@@ -130,6 +130,9 @@ export const playItemFromQueue = async (
 			: index === "previous"
 				? currentItemIndex - 1
 				: index;
+	const prevItem = queueItems[currentItemIndex];
+	const prevPlaySessionId = usePlaybackStore.getState().playsessionId;
+	const prevMediaSourceId = usePlaybackStore.getState().mediaSource.id;
 	const item = queueItems[requestedItemIndex];
 	if (item.Type === "Audio") {
 		const urlOptions = {
@@ -157,7 +160,6 @@ export const playItemFromQueue = async (
 				},
 			})
 		).data;
-		console.log(mediaSource);
 		let itemName = item.Name;
 		let episodeTitle = "";
 		if (item.SeriesId) {
@@ -197,7 +199,7 @@ export const playItemFromQueue = async (
 		try {
 			introInfo = (
 				await axiosClient.get(
-					`${api.basePath}/Episode/${item.Id}/IntroTimestamps`,
+					`${api.basePath}/Episode/${item.Id}/IntroSkipperSegments`,
 					{
 						headers: {
 							Authorization: `MediaBrowser Token=${api.accessToken}`,
@@ -213,9 +215,9 @@ export const playItemFromQueue = async (
 		getPlaystateApi(api).reportPlaybackStopped({
 			playbackStopInfo: {
 				Failed: false,
-				ItemId: item?.Id,
-				MediaSourceId: mediaSource.MediaSources?.[0].Id,
-				PlaySessionId: mediaSource.PlaySessionId,
+				ItemId: prevItem?.Id,
+				MediaSourceId: prevMediaSourceId,
+				PlaySessionId: prevPlaySessionId,
 			},
 		});
 

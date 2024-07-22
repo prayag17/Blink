@@ -38,6 +38,7 @@ import heroBg from "@/assets/herobg.png";
 import "./boxset.scss";
 
 import IconLink from "@/components/iconLink";
+import { getTypeIcon } from "@/components/utils/iconsCollection";
 import { createFileRoute } from "@tanstack/react-router";
 
 function TabPanel(props) {

@@ -1,0 +1,50 @@
+.outro-card {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    z-index: 1000;
+    display: flex;
+    flex-direction: column;
+    padding: 0 5vw 2em 5vw;
+    gap: 1.2em;
+    background: linear-gradient(to top, rgb(10 10 10), rgb(10 10 10 / 0.7) 50%, transparent);
+    padding-top: 25vh;
+
+    &-content {
+        display: grid;
+        grid-template-areas: "img title"
+            "img info"
+            "img buttons";
+        grid-template-columns: 20em 1fr;
+        align-items: center;
+        gap: 1em;
+
+        &-image {
+            grid-area: img;
+            max-height: 14em;
+            width: 20em;
+            object-fit: cover;
+            border-radius: $border-radius-default;
+        }
+
+        &-title {
+            grid-area: title;
+        }
+
+        &-overview {
+            grid-area: info;
+            display: -webkit-box;
+            text-overflow: ellipsis;
+            overflow: hidden;
+            -webkit-line-clamp: 3;
+            -webkit-box-orient: vertical;
+        }
+
+        &-buttons {
+            grid-area: buttons;
+            display: flex;
+            gap: 1em;
+        }
+    }
+}
