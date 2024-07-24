@@ -19,7 +19,7 @@
 		"@fontsource-variable/noto-sans": "^5.0.5",
 		"@fontsource/noto-sans": "^5.0.22",
 		"@jellyfin/sdk": "0.10.0",
-		"@million/lint": "1.0.0-rc.81",
+		"@million/lint": "1.0.0-rc.84",
 		"@mui/lab": "5.0.0-alpha.172",
 		"@mui/material": "6.0.0-alpha.14",
 		"@react-spring/web": "^9.7.3",
