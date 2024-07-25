@@ -100,7 +100,7 @@ importers:
         version: 1.5.13
       jassub:
         specifier: ^1.7.15
-        version: 1.7.15
+        version: 1.7.16
       lodash:
         specifier: ^4.17.21
         version: 4.17.21
@@ -1940,8 +1940,8 @@ packages:
   isomorphic-fetch@3.0.0:
     resolution: {integrity: sha512-qvUtwJ3j6qwsF3jLxkZ72qCgjMysPzDfeV240JHiGZsANBYd+EEuu35v7dfrJ9Up0Ak07D7GGSkGhCHTqg/5wA==}
 
-  jassub@1.7.15:
-    resolution: {integrity: sha512-8yKAJc++Y1gNfATOPRo3APk0JUhshKl5l7bRkT6WkJ8XP4RvYfVPb6ieH6WDxsMq523exwGzNvjjPEEWT+Z1nQ==}
+  jassub@1.7.16:
+    resolution: {integrity: sha512-JDzKtGqQeApqQtEDWM5KzuGs5HKvUOWS35HXKaka6MuHV8HxLfW/F77HDE6gsZVn+Vuhh8omzXv6THevF6z5Jg==}
 
   js-tokens@4.0.0:
     resolution: {integrity: sha512-RdJUflcE3cUzKiMqQgsCu06FPu9UdIJO0beYbPhHN4k6apgJtifcoCtT9bcxOpYBtpD2kCM6Sbzg4CausW/PKQ==}
@@ -3284,8 +3284,8 @@ snapshots:
     dependencies:
       '@antfu/ni': 0.21.12
       '@axiomhq/js': 1.0.0-rc.3
-      '@babel/core': 7.24.9
-      '@babel/types': 7.24.9
+      '@babel/core': 7.24.6
+      '@babel/types': 7.24.6
       '@clack/prompts': 0.7.0
       cli-high: 0.4.2
       diff: 5.2.0
@@ -4462,7 +4462,7 @@ snapshots:
     transitivePeerDependencies:
       - encoding
 
-  jassub@1.7.15:
+  jassub@1.7.16:
     dependencies:
       rvfc-polyfill: 1.0.7
 
