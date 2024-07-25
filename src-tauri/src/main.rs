@@ -4,6 +4,7 @@ use tauri_plugin_log::{fern::colors::ColoredLevelConfig, Target, TargetKind};
 
 fn main() {
     tauri::Builder::default()
+        .plugin(tauri_plugin_clipboard_manager::init())
         .plugin(
             tauri_plugin_log::Builder::default()
                 .targets([Target::new(TargetKind::Webview)])

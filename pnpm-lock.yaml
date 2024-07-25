@@ -56,6 +56,9 @@ importers:
       '@tauri-apps/api':
         specifier: 2.0.0-beta.15
         version: 2.0.0-beta.15
+      '@tauri-apps/plugin-clipboard-manager':
+        specifier: 2.1.0-beta.5
+        version: 2.1.0-beta.5
       '@tauri-apps/plugin-process':
         specifier: 2.0.0-beta.7
         version: 2.0.0-beta.7
@@ -1312,6 +1315,9 @@ packages:
     resolution: {integrity: sha512-OAuiDdSRKxNmr/dseQKKMoZZxIhQ6aAxmXJctGYJxCnkd62tQ8xeq87roVXGNS5Qkuv7WpySAyR0ntiMjvNLUA==}
     engines: {node: '>= 10'}
     hasBin: true
+
+  '@tauri-apps/plugin-clipboard-manager@2.1.0-beta.5':
+    resolution: {integrity: sha512-7YQEXRHXn5dIr/YcE7RtkoAhc6XwpqI7Qz0I3FcHn5vMbVvQ5OxKnGqEa8ZGRud6R3G9pNdnEKglLXLgUXK8tA==}
 
   '@tauri-apps/plugin-process@2.0.0-beta.7':
     resolution: {integrity: sha512-iK4HYnzeyqAZE5HAKd0mDI7ekYXUqA9azjA9AgL4LscOEHma1XGEP0DlcHn+RrXIvVbI4LwCol9DSNNoIrB0+w==}
@@ -3278,8 +3284,8 @@ snapshots:
     dependencies:
       '@antfu/ni': 0.21.12
       '@axiomhq/js': 1.0.0-rc.3
-      '@babel/core': 7.24.6
-      '@babel/types': 7.24.6
+      '@babel/core': 7.24.9
+      '@babel/types': 7.24.9
       '@clack/prompts': 0.7.0
       cli-high: 0.4.2
       diff: 5.2.0
@@ -3814,6 +3820,10 @@ snapshots:
       '@tauri-apps/cli-win32-arm64-msvc': 2.0.0-beta.22
       '@tauri-apps/cli-win32-ia32-msvc': 2.0.0-beta.22
       '@tauri-apps/cli-win32-x64-msvc': 2.0.0-beta.22
+
+  '@tauri-apps/plugin-clipboard-manager@2.1.0-beta.5':
+    dependencies:
+      '@tauri-apps/api': 2.0.0-beta.15
 
   '@tauri-apps/plugin-process@2.0.0-beta.7':
     dependencies:

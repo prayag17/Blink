@@ -5,7 +5,10 @@ export const Route = createFileRoute("/_api/login")({
 	beforeLoad: async ({ context, location }) => {
 		if (location.pathname === "/login") {
 			const api = context.api;
-			console.log(api);
+			if (!api) {
+				console.info("Awaiting Api generation.");
+				return;
+			}
 			const publicUsers = (await getUserApi(api).getPublicUsers()).data;
 			if (publicUsers.length > 0) {
 				throw redirect({ to: "/login/list" });

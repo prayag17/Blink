@@ -72,9 +72,10 @@ function ServerList() {
 			await servers.refetch();
 
 			if (servers.length > 1) {
-				setDefaultServer(servers[0].id);
-				createApi(servers[0].address, undefined);
+				setDefaultServer(servers.data?.[0].id);
+				createApi(servers.data?.[0].address, undefined);
 			} else {
+				await setDefaultServer(null);
 				// TODO: reset api in context here
 			}
 			queryClient.removeQueries();

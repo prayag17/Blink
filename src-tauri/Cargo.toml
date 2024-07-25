@@ -26,6 +26,7 @@ tauri-plugin-window-state = { git = "https://github.com/tauri-apps/plugins-works
 portpicker = "0.1" # used in the example to pick a random free port
 tauri-plugin-process = { git = "https://github.com/tauri-apps/plugins-workspace", branch = "v2" }
 tauri-plugin-updater = { git = "https://github.com/tauri-apps/plugins-workspace", branch = "v2" }
+tauri-plugin-clipboard-manager = "2.1.0-beta.6"
 
 [features]
 # by default Tauri runs in production mode
