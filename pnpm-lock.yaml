@@ -46,7 +46,7 @@ importers:
         version: 5.51.15(@tanstack/react-query@5.51.15(react@18.3.1))(react@18.3.1)
       '@tanstack/react-router':
         specifier: ^1.45.11
-        version: 1.45.11(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
+        version: 1.45.13(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
       '@tanstack/react-virtual':
         specifier: ^3.8.3
         version: 3.8.3(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
@@ -61,7 +61,7 @@ importers:
         version: 2.0.0-beta.7
       '@tauri-apps/plugin-store':
         specifier: github:tauri-apps/tauri-plugin-store#v2
-        version: https://codeload.github.com/tauri-apps/tauri-plugin-store/tar.gz/4b2d9ef3e26191e767b97707801a3a361d99dfbd
+        version: https://codeload.github.com/tauri-apps/tauri-plugin-store/tar.gz/56c758259a532eeb2f96d62852f95a8a6acd303f
       '@tauri-apps/plugin-updater':
         specifier: 2.0.0-beta.7
         version: 2.0.0-beta.7
@@ -146,13 +146,13 @@ importers:
         version: 1.8.3
       '@tanstack/router-cli':
         specifier: ^1.45.8
-        version: 1.45.8
+        version: 1.45.13
       '@tanstack/router-devtools':
         specifier: ^1.45.11
-        version: 1.45.11(@tanstack/react-router@1.45.11(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(csstype@3.1.3)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
+        version: 1.45.14(@tanstack/react-router@1.45.13(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(csstype@3.1.3)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
       '@tanstack/router-vite-plugin':
         specifier: ^1.45.8
-        version: 1.45.8(vite@5.3.5(@types/node@22.0.0)(sass@1.77.8)(terser@5.31.3))
+        version: 1.45.13(vite@5.3.5(@types/node@22.0.0)(sass@1.77.8)(terser@5.31.3))
       '@tauri-apps/cli':
         specifier: 2.0.0-beta.22
         version: 2.0.0-beta.22
@@ -1148,8 +1148,8 @@ packages:
     peerDependencies:
       react: ^18.0.0
 
-  '@tanstack/react-router@1.45.11':
-    resolution: {integrity: sha512-unVxPYsOwwMnyAW/ZeOCymWpstEV0tiUexUPqiCuYwb2rCwsrmjsgB4tIpVONHabPlFKrxoMbkUh5UCSpL0h+w==}
+  '@tanstack/react-router@1.45.13':
+    resolution: {integrity: sha512-zO4ogI8WP+mE9aOkNhM85QPvMj2/ckjlN1Yhk4ihwr6nNYy++npX+k94IsPQJhYeSHCmAkKPLquegA/xh6Z11w==}
     engines: {node: '>=12'}
     peerDependencies:
       react: '>=18'
@@ -1167,16 +1167,16 @@ packages:
       react: ^16.8.0 || ^17.0.0 || ^18.0.0
       react-dom: ^16.8.0 || ^17.0.0 || ^18.0.0
 
-  '@tanstack/router-cli@1.45.8':
-    resolution: {integrity: sha512-Ecj0vRRx21t4AEwoOc0m7Zz52V6WtU8bNyuZDjTDo4+ZiIl+nlo5QvmPiQf04+wFx3zm3sGD4h2O5FuVNcXuEw==}
+  '@tanstack/router-cli@1.45.13':
+    resolution: {integrity: sha512-HlMagUXCoaWj7w7UpnP/t4Sc0JbigCEh6TdMa3gF0et5Ay1JtJzrlSCuGku4RW+Sdwp+oVkezHIi3G8us1Jmhg==}
     engines: {node: '>=12'}
     hasBin: true
 
-  '@tanstack/router-devtools@1.45.11':
-    resolution: {integrity: sha512-Na6L1lU00m18eqnWd4/Ex51LnCPGbsDpNNRu551tv3hlrtX9at4eJeI0ZOhv9IAKI2Ky3cW4OhvvHrtTalLCJg==}
+  '@tanstack/router-devtools@1.45.14':
+    resolution: {integrity: sha512-BZ/TiN47uV9DFeULYvXSzKKgQU6ezmWmEfPaQsx35KWSLC4awOOo+A7AVDITURBxgZ+vB1vqGkGbLp7d34mGIQ==}
     engines: {node: '>=12'}
     peerDependencies:
-      '@tanstack/react-router': ^1.45.11
+      '@tanstack/react-router': ^1.45.14
       react: '>=18'
       react-dom: '>=18'
 
@@ -1184,8 +1184,8 @@ packages:
     resolution: {integrity: sha512-5B756YXpZO0/yr7ahsxXoBOCpqroLx/D3l6X9qPlZaP0FVHVmTR6ZKGRX6zzuAxns/VO+sxnQso4AYLdDyZ9GA==}
     engines: {node: '>=12'}
 
-  '@tanstack/router-plugin@1.45.8':
-    resolution: {integrity: sha512-mncDu49pBEivRHWVOdCl9fHwtyUT3QLZ0X+gYIsm7o6LhT6i7BzC++BZqOOSrjDcyXy3dx2Nf/FMrB06qlXx9Q==}
+  '@tanstack/router-plugin@1.45.13':
+    resolution: {integrity: sha512-7IWdtIDC5jjhD6IZ5c/s11xNwvKDom/p6ZOO78FxeeA0FIaSx+3AQD7/iVhzfiRfepqGmecLn9a1KfNTFGQI/A==}
     engines: {node: '>=12'}
     peerDependencies:
       '@rsbuild/core': '>=0.7.9'
@@ -1199,8 +1199,8 @@ packages:
       webpack:
         optional: true
 
-  '@tanstack/router-vite-plugin@1.45.8':
-    resolution: {integrity: sha512-gIblg5X+7xl2/QT3UpD5opv6hYCwD6eaHJ4Ko63pV7Z5hdKH7vzlfoG2fZlf3QC+wYg47nTV1bxvFyEnQ8+YAA==}
+  '@tanstack/router-vite-plugin@1.45.13':
+    resolution: {integrity: sha512-AuZS7uVvLaw8oXtjL9/sC52pGNIbHGFRknq4RVonk4CGwdQ4qAvpV+Wh2oTxf1Aww5KqCaGxHAp0fujmeD55RA==}
     engines: {node: '>=12'}
 
   '@tanstack/store@0.5.5':
@@ -1215,6 +1215,10 @@ packages:
 
   '@tauri-apps/api@2.0.0-beta.15':
     resolution: {integrity: sha512-H9w6iISmR+NvH4XuyCZB4zDN10tf9RFt6i/9JHEjaRhAowdAaJ+oiXq/3kedizNClHMtbTQ5j0oqDVPkZDAI8g==}
+    engines: {node: '>= 18.18', npm: '>= 6.6.0', yarn: '>= 1.19.1'}
+
+  '@tauri-apps/api@2.0.0-beta.16':
+    resolution: {integrity: sha512-YGjkR9HxS/YyIoqoXDkk8o9Yy5NW6u9YxzeqEodwwOUoeS0nac6mzLTW3VYIuSelHmyUQCgbyENVY6e5CJXA4Q==}
     engines: {node: '>= 18.18', npm: '>= 6.6.0', yarn: '>= 1.19.1'}
 
   '@tauri-apps/cli-darwin-arm64@2.0.0-beta.22':
@@ -1288,8 +1292,8 @@ packages:
   '@tauri-apps/plugin-process@2.0.0-beta.7':
     resolution: {integrity: sha512-iK4HYnzeyqAZE5HAKd0mDI7ekYXUqA9azjA9AgL4LscOEHma1XGEP0DlcHn+RrXIvVbI4LwCol9DSNNoIrB0+w==}
 
-  '@tauri-apps/plugin-store@https://codeload.github.com/tauri-apps/tauri-plugin-store/tar.gz/4b2d9ef3e26191e767b97707801a3a361d99dfbd':
-    resolution: {tarball: https://codeload.github.com/tauri-apps/tauri-plugin-store/tar.gz/4b2d9ef3e26191e767b97707801a3a361d99dfbd}
+  '@tauri-apps/plugin-store@https://codeload.github.com/tauri-apps/tauri-plugin-store/tar.gz/56c758259a532eeb2f96d62852f95a8a6acd303f':
+    resolution: {tarball: https://codeload.github.com/tauri-apps/tauri-plugin-store/tar.gz/56c758259a532eeb2f96d62852f95a8a6acd303f}
     version: 2.0.0-beta.7
 
   '@tauri-apps/plugin-updater@2.0.0-beta.7':
@@ -3611,7 +3615,7 @@ snapshots:
       '@tanstack/query-core': 5.51.15
       react: 18.3.1
 
-  '@tanstack/react-router@1.45.11(react-dom@18.3.1(react@18.3.1))(react@18.3.1)':
+  '@tanstack/react-router@1.45.13(react-dom@18.3.1(react@18.3.1))(react@18.3.1)':
     dependencies:
       '@tanstack/history': 1.45.3
       '@tanstack/react-store': 0.5.5(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
@@ -3633,15 +3637,15 @@ snapshots:
       react: 18.3.1
       react-dom: 18.3.1(react@18.3.1)
 
-  '@tanstack/router-cli@1.45.8':
+  '@tanstack/router-cli@1.45.13':
     dependencies:
       '@tanstack/router-generator': 1.45.7
       chokidar: 3.6.0
       yargs: 17.7.2
 
-  '@tanstack/router-devtools@1.45.11(@tanstack/react-router@1.45.11(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(csstype@3.1.3)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)':
+  '@tanstack/router-devtools@1.45.14(@tanstack/react-router@1.45.13(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(csstype@3.1.3)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)':
     dependencies:
-      '@tanstack/react-router': 1.45.11(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
+      '@tanstack/react-router': 1.45.13(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
       clsx: 2.1.1
       goober: 2.1.14(csstype@3.1.3)
       react: 18.3.1
@@ -3654,7 +3658,7 @@ snapshots:
       prettier: 3.3.3
       zod: 3.23.8
 
-  '@tanstack/router-plugin@1.45.8(vite@5.3.5(@types/node@22.0.0)(sass@1.77.8)(terser@5.31.3))':
+  '@tanstack/router-plugin@1.45.13(vite@5.3.5(@types/node@22.0.0)(sass@1.77.8)(terser@5.31.3))':
     dependencies:
       '@babel/core': 7.24.9
       '@babel/generator': 7.25.0
@@ -3678,9 +3682,9 @@ snapshots:
     transitivePeerDependencies:
       - supports-color
 
-  '@tanstack/router-vite-plugin@1.45.8(vite@5.3.5(@types/node@22.0.0)(sass@1.77.8)(terser@5.31.3))':
+  '@tanstack/router-vite-plugin@1.45.13(vite@5.3.5(@types/node@22.0.0)(sass@1.77.8)(terser@5.31.3))':
     dependencies:
-      '@tanstack/router-plugin': 1.45.8(vite@5.3.5(@types/node@22.0.0)(sass@1.77.8)(terser@5.31.3))
+      '@tanstack/router-plugin': 1.45.13(vite@5.3.5(@types/node@22.0.0)(sass@1.77.8)(terser@5.31.3))
     transitivePeerDependencies:
       - '@rsbuild/core'
       - supports-color
@@ -3694,6 +3698,8 @@ snapshots:
   '@tauri-apps/api@1.6.0': {}
 
   '@tauri-apps/api@2.0.0-beta.15': {}
+
+  '@tauri-apps/api@2.0.0-beta.16': {}
 
   '@tauri-apps/cli-darwin-arm64@2.0.0-beta.22':
     optional: true
@@ -3746,9 +3752,9 @@ snapshots:
     dependencies:
       '@tauri-apps/api': 2.0.0-beta.15
 
-  '@tauri-apps/plugin-store@https://codeload.github.com/tauri-apps/tauri-plugin-store/tar.gz/4b2d9ef3e26191e767b97707801a3a361d99dfbd':
+  '@tauri-apps/plugin-store@https://codeload.github.com/tauri-apps/tauri-plugin-store/tar.gz/56c758259a532eeb2f96d62852f95a8a6acd303f':
     dependencies:
-      '@tauri-apps/api': 2.0.0-beta.15
+      '@tauri-apps/api': 2.0.0-beta.16
 
   '@tauri-apps/plugin-updater@2.0.0-beta.7':
     dependencies:
