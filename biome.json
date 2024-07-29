@@ -30,7 +30,8 @@
 			"src/**/*.tsx",
 			"src/**/*.jsx",
 			"src/**/*.js",
-			"*.json"
+			"*.json",
+			"*.scss"
 		],
 		"ignoreUnknown": true
 	}

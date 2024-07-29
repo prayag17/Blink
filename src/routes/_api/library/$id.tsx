@@ -252,6 +252,38 @@ function LibraryView() {
 					},
 				];
 				break;
+			case BaseItemKind.MusicAlbum:
+				result = [
+					{
+						title: "Name",
+						value: ItemSortBy.SortName,
+					},
+					{
+						title: "Album Artist",
+						value: ItemSortBy.AlbumArtist,
+					},
+					{
+						title: "Community Rating",
+						value: ItemSortBy.CommunityRating,
+					},
+					{
+						title: "Critcs Rating",
+						value: ItemSortBy.CriticRating,
+					},
+					{
+						title: "Date Added",
+						value: ItemSortBy.DateCreated,
+					},
+					{
+						title: "Release Date",
+						value: ItemSortBy.PremiereDate,
+					},
+					{
+						title: "Random",
+						value: ItemSortBy.Random,
+					},
+				];
+				break;
 			default:
 				result = [];
 				break;

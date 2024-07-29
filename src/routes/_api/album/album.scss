@@ -1,63 +1,138 @@
-
 $border-radius: 20px;
-
-.item-album{
-	.item-detail-cast {
-		max-height: 50vh;
-		overflow-y: auto;
-		mask-image: linear-gradient(to top, transparent, black 1.2em);
-		-webkit-mask-image: linear-gradient(to top, transparent, black 1.2em);
-		&-title {
-			position: sticky;
-			top: 0;
-			background: $clr-background-dark;
-			padding: 0.35em;
-			border-radius: 10px;
-			z-index: 1;
-		}
-		&-container {
+.item-album {
+	grid-template-columns: 1fr 25%;
+	display: grid;
+	gap: 3em;
+	.item-info {
+		display: flex;
+		flex-direction: column;
+		gap: 1.2em;
+		&-sidebar {
 			display: flex;
 			flex-direction: column;
 			gap: 1em;
-		}
-		&-grid {
-			display: grid;
-			gap: 1em;
-			margin-bottom: 1em;
-			grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
-		}
-		&-card {
-			display: grid;
-			grid-template-columns: 6em 1fr;
-			gap: 0.5em;
-			align-items: center;
-			color: white !important;
-			text-decoration: none;
-			padding: 0.5em;
-			background: rgb(255 255 255 / 0);
-			transition: background $transition-time-default;
-			border-radius: $border-radius-default;
-			&:hover {
-				background: rgb(255 255 255 / 0.1);
-			}
-			&-image,
-			&-icon {
-				width: 6em;
-				height: 6em;
+			position: sticky;
+			max-height: 100vh;
+			top: 0;
+			&-image {
+				width: 100%;
 				object-fit: cover;
-				border-radius: 100%;
-				box-shadow: $shadow-card-image;
+				border-radius: $border-radius-default;
 			}
-			&-icon {
+			&-artist {
 				display: flex;
+				gap: 1em;
 				align-items: center;
-				justify-content: center;
-				font-size: 1em;
-				background: rgb(255 255 255 / 0.1);
-				.material-symbols-rounded {
-					font-size: 3em;
+				padding: 1em 0;
+				color: rgb(255 255 255 / 0.7);
+				transition: $transition-time-default;
+				cursor: pointer;
+				text-decoration: none;
+				&:hover {
+					color: rgb(255 255 255)
+				}
+				&-image {
+					width: 100%;
+					height: 100%;
+					object-fit: cover;
+					z-index: 1;
+					position: relative;
+					&-container {
+						width: 3em;
+						aspect-ratio: 1;
+						border-radius: 100%;
+						overflow: hidden;
+						position: relative;
+						.material-symbols-rounded {
+							position: absolute;
+							top: 0;
+							right: 0;
+							width: 100%;
+							height: 100%;
+							display: flex;
+							align-items: center;
+							justify-content: center;
+							background: rgb(255 255 255 / 0.1);
+							z-index: 0;
+						}
+					}
+				}
+				&-container {
+					// max-height: 20em;/
+					overflow-y: auto;
+					overflow-x: hidden;
 				}
 			}
+		}
+		&-track {
+			display: grid;
+			grid-template-columns: 3em 60% 6em 1fr;
+			gap: 1em;
+			padding: 1em;
+			align-items: center;
+			cursor: pointer;
+			border-radius: $border-radius-default;
+			transition: background $transition-time-fast;
+			&.header {
+				border-bottom: 1px solid rgb(255 255 255 / 0.2);
+				color: rgb(255 255 255 / 0.7);
+				border-radius: 0 !important;
+			}
+			.index-container {
+				justify-self: center;
+				position: relative;
+				.material-symbols-rounded {
+					position: absolute;
+					top: 50%;
+					left: 50%;
+					transform: translate(-50%, -50%);
+					font-size: 2em !important;
+					opacity: 0;
+					transition: none !important;
+					color: $clr-accent-default;
+				}
+			}
+			&-info {
+				display: flex;
+				flex-direction: column;
+				gap: 0.1em
+			}
+			&:nth-last-of-type(even):not(.header) {
+				background: rgb(0 0 0 / 0.2);
+			}
+			&:hover {
+				background: rgb(255 255 255 / 0.1) !important;
+				.index-container {
+					// font-size: 0em;
+					.index {
+						opacity: 0;
+						transition: opacity 0;
+					}
+					.material-symbols-rounded {
+						opacity: 1;
+						font-size: 2.2em !important;
+					}
+				}
+			}
+			&.playing {
+				background: rgb(0 0 0 / 0.4) !important;
+				.item-info-track-info-name, .index {
+					color: $clr-accent-default;
+					font-weight: 600;
+				}
+			}
+			&-container {
+				display: flex;
+				flex-direction: column;
+				gap: 0.4em
+			}
+		}
+		&-album-info {
+			gap: 1.2em;
+		}
+		&-buttons {
+			display: flex;
+			gap: 1em;
 		}
 	}
 }
@@ -73,18 +148,14 @@ $border-radius: 20px;
 		background: rgb(0 0 0 / 0.4);
 		transition: background $transition-time-default;
 		backdrop-filter: blur(5px);
-		
 		&:first-child {
 			border-radius: $border-radius $border-radius 8px 8px;
 			cursor: default !important;
-			
 		}
-		
 		&:last-child {
 			border-radius: 8px 8px $border-radius $border-radius;
 		}
 		border-radius: 8px;
-		
 		&s {
 			background: transparent !important;
 			box-shadow: none !important;
@@ -92,22 +163,17 @@ $border-radius: 20px;
 			flex-direction: column;
 			gap: 5px;
 		}
-		
 		&:hover {
 			background: rgb(0 0 0 / 0.5);
 			cursor: pointer;
 		}
-		
 		&.playing {
 			color: $clr-accent-default;
 		}
 	}
 }
-
 $cardWidth: 22%;
-
 .item-album.item {
-	gap: 1em;
 	.item-hero {
 		height: 50vh;
 		gap: 2em;
@@ -171,11 +237,9 @@ $cardWidth: 22%;
 				height: calc(50vh + 4.4em);
 				z-index: -1;
 				mask-image: linear-gradient(to top, transparent, black);
-				-webkit-mask-image: linear-gradient(
-				to top,
-				transparent,
-				black
-				);
+				-webkit-mask-image: linear-gradient(to top,
+						transparent,
+						black);
 			}
 		}
 	}
@@ -217,7 +281,7 @@ $cardWidth: 22%;
 				display: flex;
 				align-items: center;
 				justify-content: center;
-				.material-symbols-rounded{
+				.material-symbols-rounded {
 					font-size: 4em;
 				}
 			}
@@ -263,11 +327,9 @@ $cardWidth: 22%;
 				height: calc(54vh + 4.4em);
 				z-index: -1;
 				mask-image: linear-gradient(to top, transparent, black);
-				-webkit-mask-image: linear-gradient(
-				to top,
-				transparent,
-				black
-				);
+				-webkit-mask-image: linear-gradient(to top,
+						transparent,
+						black);
 			}
 		}
 		& .play-button {
@@ -280,7 +342,6 @@ $cardWidth: 22%;
 		justify-items: center;
 		align-items: start;
 		gap: 3em;
-		
 		&-cast {
 			max-height: 50vh;
 			overflow-y: auto;
@@ -291,7 +352,7 @@ $cardWidth: 22%;
 				position: sticky;
 				top: 0;
 				background: black;
-				border:1px solid rgb(255 255 255 / 0.2) ;
+				border: 1px solid rgb(255 255 255 / 0.2);
 				padding: 0.35em;
 				border-radius: 10px;
 				z-index: 1;
@@ -358,7 +419,6 @@ $cardWidth: 22%;
 		}
 	}
 }
-
 @media (max-width: 1320px) {
 	.item-album .item-detail {
 		&-cast {

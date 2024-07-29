@@ -2,8 +2,9 @@
     "recommendations": [
         "biomejs.biome",
         "github.vscode-github-actions",
-        "esbenp.prettier-vscode",
         "swellaby.rust-pack",
-        "1yib.rust-bundle"
+        "1yib.rust-bundle",
+        "sibiraj-s.vscode-scss-formatter",
+        "tauri-apps.tauri-vscode"
     ]
 }

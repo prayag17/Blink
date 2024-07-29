@@ -11,7 +11,11 @@ import Typography from "@mui/material/Typography";
 import useParallax from "@/utils/hooks/useParallax";
 import { motion, useScroll } from "framer-motion";
 
-import { BaseItemKind, SortOrder } from "@jellyfin/sdk/lib/generated-client";
+import {
+	type BaseItemDto,
+	BaseItemKind,
+	SortOrder,
+} from "@jellyfin/sdk/lib/generated-client";
 import { getItemsApi } from "@jellyfin/sdk/lib/utils/api/items-api";
 import { getLibraryApi } from "@jellyfin/sdk/lib/utils/api/library-api";
 import { getUserApi } from "@jellyfin/sdk/lib/utils/api/user-api";
@@ -21,7 +25,11 @@ import { Blurhash } from "react-blurhash";
 
 import { useQuery } from "@tanstack/react-query";
 
-import { getRuntime } from "@/utils/date/time";
+import {
+	getRuntime,
+	getRuntimeCompact,
+	getRuntimeMusic,
+} from "@/utils/date/time";
 
 import { Card } from "@/components/card/card";
 import { CardScroller } from "@/components/cardScroller/cardScroller";
@@ -33,11 +41,16 @@ import { ErrorNotice } from "@/components/notices/errorNotice/errorNotice";
 import ShowMoreText from "@/components/showMoreText";
 
 import { getTypeIcon } from "@/components/utils/iconsCollection";
-import { useAudioPlayback } from "@/utils/store/audioPlayback";
+import {
+	generateAudioStreamUrl,
+	playAudio,
+	useAudioPlayback,
+} from "@/utils/store/audioPlayback";
 import { useBackdropStore } from "@/utils/store/backdrop";
 import "./album.scss";
 
 import IconLink from "@/components/iconLink";
+import TagChip from "@/components/tagChip";
 import { Link, createFileRoute } from "@tanstack/react-router";
 
 function TabPanel(props) {
@@ -118,7 +131,7 @@ function MusicAlbumTitlePage() {
 	});
 
 	const musicTracks = useQuery({
-		queryKey: ["item", id, "musicTracks"],
+		queryKey: ["item", "musicTracks", id],
 		queryFn: async () => {
 			const result = await getItemsApi(api).getItems({
 				userId: user.data?.Id,
@@ -131,31 +144,6 @@ function MusicAlbumTitlePage() {
 		enabled: item.isSuccess && item.data.Type === BaseItemKind.MusicAlbum,
 		networkMode: "always",
 	});
-
-	const [
-		currentTrackItem,
-		setCurrentAudioTrack,
-		setAudioUrl,
-		setAudioDisplay,
-		setAudioItem,
-		setAudioTracks,
-	] = useAudioPlayback((state) => [
-		state.item,
-		state.setCurrentTrack,
-		state.setUrl,
-		state.setDisplay,
-		state.setItem,
-		state.setTracks,
-	]);
-	const playTrack = (index) => {
-		setAudioTracks(musicTracks.data.Items);
-		setCurrentAudioTrack(index);
-		setAudioUrl(
-			`${api.basePath}/Audio/${musicTracks.data.Items[index].Id}/universal?deviceId=${api.deviceInfo.id}&userId=${user.data.Id}&api_key=${api.accessToken}`,
-		);
-		setAudioItem(musicTracks.data.Items[index]);
-		setAudioDisplay(true);
-	};
 
 	const [setAppBackdrop] = useBackdropStore((state) => [state.setBackdrop]);
 
@@ -175,6 +163,22 @@ function MusicAlbumTitlePage() {
 	});
 	const parallax = useParallax(scrollYProgress, 50);
 
+	const handlePlayback = (
+		index: number,
+		item: BaseItemDto,
+		queue: BaseItemDto[],
+	) => {
+		const url = generateAudioStreamUrl(
+			item.Id,
+			user.data?.Id,
+			api.deviceInfo.id,
+			api.basePath,
+		);
+		playAudio(url, item, undefined, queue, index);
+	};
+
+	const currentPlayingItem = useAudioPlayback((s) => s.item);
+
 	if (item.isPending || similarItems.isPending) {
 		return (
 			<Box
@@ -192,266 +196,167 @@ function MusicAlbumTitlePage() {
 	}
 	if (item.isSuccess && similarItems.isSuccess) {
 		return (
-			<motion.div
+			<div
 				key={id}
-				initial={{
-					opacity: 0,
-				}}
-				animate={{
-					opacity: 1,
-				}}
-				transition={{
-					duration: 0.25,
-					ease: "easeInOut",
-				}}
 				className="scrollY padded-top item item-album"
 				ref={pageRef}
 			>
-				<div className="item-hero flex flex-row">
-					<div className="item-hero-backdrop-container">
-						{item.data.ParentBackdropImageTags?.length ? (
-							<motion.img
-								alt={item.data.Name}
-								src={api.getItemImageUrl(
-									item.data.ParentBackdropItemId,
-									"Backdrop",
-									{
-										tag: item.data.ParentBackdropImageTags[0],
-									},
-								)}
-								className="item-hero-backdrop"
-								onLoad={(e) => {
-									e.currentTarget.style.opacity = 1;
-								}}
+				<div className="item-info">
+					<Typography className="item-info-name" variant="h3">
+						{item.data.Name}
+					</Typography>
+					<div className="flex flex-align-center item-info-album-info">
+						<div className="flex flex-align-center">
+							<span
+								className="material-symbols-rounded"
 								style={{
-									y: parallax,
+									opacity: 0.7,
 								}}
-							/>
-						) : (
-							<motion.img
-								alt={item.data.Name}
-								src={heroBg}
-								className="item-hero-backdrop"
-								onLoad={(e) => {
-									e.currentTarget.style.opacity = 1;
-								}}
-								style={{
-									y: parallax,
-								}}
-							/>
-						)}
+							>
+								artist
+							</span>
+							<Typography ml={1}>{item.data.AlbumArtist}</Typography>
+						</div>
+						<Typography className="opacity-07">
+							{item.data.ProductionYear}
+						</Typography>
+						<Typography className="opacity-07">
+							{musicTracks.data?.TotalRecordCount > 1
+								? `${musicTracks.data?.TotalRecordCount} songs`
+								: `1 song`}
+						</Typography>
+						<Typography className="opacity-07">
+							{getRuntimeCompact(item.data.CumulativeRunTimeTicks)}
+						</Typography>
 					</div>
-					<div
-						className="item-hero-image-container"
-						style={{
-							aspectRatio: item.data.PrimaryImageAspectRatio ?? 1,
-						}}
-					>
-						{Object.keys(item.data.ImageTags).includes("Primary") ? (
-							<>
-								<Blurhash
-									hash={
-										item.data.ImageBlurHashes.Primary[
-											item.data.ImageTags.Primary
-										]
-									}
-									className="item-hero-image-blurhash"
-								/>
-								<img
-									alt={item.data.Name}
-									src={api.getItemImageUrl(item.data.Id, "Primary", {
-										quality: 90,
-										tag: item.data.ImageTags.Primary,
-									})}
-									onLoad={(e) => {
-										e.currentTarget.style.opacity = 1;
-									}}
-									className="item-hero-image"
-								/>
-							</>
+					<div className="item-info-buttons">
+						<PlayButton
+							item={item}
+							audio
+							itemType={item.data.Type}
+							userId={user.data?.Id}
+						/>
+						<LikeButton
+							itemId={item.data.Id}
+							isFavorite={item.data.UserData?.IsFavorite}
+							queryKey={["item", "musicTracks"]}
+							userId={user.data?.Id}
+							itemName={item.data.Name}
+						/>
+					</div>
+					<div className="item-info-track-container">
+						<div className="item-info-track header">
+							<span className="material-symbols-rounded index">tag</span>
+							<Typography variant="subtitle1">Title</Typography>
+							<Typography variant="subtitle1">Duration</Typography>
+						</div>
+						{musicTracks.data?.Items?.map((track) => (
+							<div
+								className={
+									currentPlayingItem?.Id === track.Id
+										? "item-info-track playing"
+										: "item-info-track"
+								}
+								key={track.Id}
+								onClick={() =>
+									handlePlayback(
+										track.IndexNumber,
+										track,
+										musicTracks.data.Items,
+									)
+								}
+							>
+								<div className="index-container">
+									<span className="material-symbols-rounded fill ">
+										play_arrow
+									</span>
+									<Typography className="index">
+										{track.IndexNumber ?? "-"}
+									</Typography>
+								</div>
+								<div className="item-info-track-info">
+									<Typography className="item-info-track-info-name">
+										{track.Name}
+									</Typography>
+									<Typography
+										variant="subtitle2"
+										style={{
+											opacity: 0.6,
+										}}
+										fontWeight={300}
+									>
+										{track.Artists?.join(", ")}
+									</Typography>
+								</div>
+								<Typography>{getRuntimeMusic(track.RunTimeTicks)}</Typography>
+								<div className="flex flex-align-center">
+									<LikeButton
+										itemId={track.Id}
+										isFavorite={track.UserData?.IsFavorite}
+										queryKey={["item", "musicTracks"]}
+										userId={user.data?.Id}
+										itemName={track.Name}
+									/>
+								</div>
+							</div>
+						))}
+					</div>
+				</div>
+				<div className="item-info-sidebar">
+					<div className="item-info-sidebar-image-container">
+						{item.data.ImageTags?.Primary ? (
+							<img
+								className="item-info-sidebar-image"
+								alt={item.data.Name ?? "Album"}
+								src={api.getItemImageUrl(item.data.Id, "Primary", {
+									tag: item.data.ImageTags.Primary,
+									quality: 90,
+								})}
+							/>
 						) : (
-							<div className="item-hero-image-icon">
-								{getTypeIcon(item.data.Type)}
+							<div className="item-info-sidebar-icon">
+								{getTypeIcon("MusicAlbum")}
 							</div>
 						)}
 					</div>
-					<div className="item-hero-detail flex flex-column">
-						<Typography variant="h2" fontWeight={200} mb={2}>
-							{item.data.Name}
-						</Typography>
-
-						<Stack
-							direction="row"
-							gap={2}
-							justifyItems="flex-start"
-							alignItems="center"
-						>
-							<Chip
-								size="small"
-								label={item.data.AlbumArtist}
-								icon={
-									<span
-										className="material-symbols-rounded"
-										style={{
-											padding: "0.2em",
-
-											fontVariationSettings:
-												'"FILL" 1, "wght" 300, "GRAD" 25, "opsz" 40',
-										}}
-									>
-										artist
-									</span>
-								}
-							/>
-							{item.data.PremiereDate && (
-								<Typography style={{ opacity: "0.8" }} variant="subtitle2">
-									{item.data.ProductionYear ?? ""}
-								</Typography>
-							)}
-							<Typography style={{ opacity: "0.8" }} variant="subtitle2">
-								{item.data.ChildCount > 1
-									? `${item.data.ChildCount} Tracks`
-									: `${item.data.ChildCount} Track`}
-							</Typography>
-							{item.data.RunTimeTicks && (
-								<Typography style={{ opacity: "0.8" }} variant="subtitle2">
-									{getRuntime(item.data.RunTimeTicks)}
-								</Typography>
-							)}
-							<Typography variant="subtitle2" style={{ opacity: 0.8 }}>
-								{item.data.Genres?.slice(0, 4).join(" / ")}
-							</Typography>
-						</Stack>
-					</div>
-
-					<div className="item-hero-buttons-container">
-						<div className="flex flex-row fullWidth">
-							<PlayButton
-								audio
-								item={item.data}
-								itemId={item.data.Id}
-								itemType={item.data.Type}
-								itemUserData={item.data.UserData}
-								userId={user.data.Id}
-								buttonProps={{
-									fullWidth: true,
-								}}
-							/>
-						</div>
-						<div className="flex flex-row" style={{ gap: "1em" }}>
-							<LikeButton
-								itemName={item.data.Name}
-								itemId={item.data.Id}
-								queryKey={["item", id]}
-								isFavorite={item.data.UserData.IsFavorite}
-								userId={user.data.Id}
-							/>
-						</div>
-					</div>
-				</div>
-				<div
-					className="item-detail"
-					style={{
-						marginBottom: "1em",
-					}}
-				>
-					<div style={{ width: "100%" }}>
-						<ShowMoreText
-							content={item.data.Overview ?? ""}
-							collapsedLines={4}
-						/>
-
-						<div
-							style={{
-								display: "flex",
-								gap: "0.6em",
-								alignSelf: "start",
-								marginTop: "0.2em",
-							}}
-						>
-							{item.data.ExternalUrls.map((url) => (
-								<IconLink url={url.Url} name={url.Name} />
-							))}
-						</div>
-					</div>
 					<div
-						style={{
-							width: "100%",
-						}}
+						className="flex flex-align-center"
+						style={{ gap: "1em", flexWrap: "wrap" }}
 					>
-						<div className="item-detail-cast">
-							{item.data.ArtistItems.length > 0 && (
-								<div className="item-detail-cast-container">
-									<Typography variant="h6" className="item-detail-cast-title">
-										Artists
-									</Typography>
-									<div className="item-detail-cast-grid">
-										{item.data.ArtistItems.map((artist) => (
-											<Link
-												className="item-detail-cast-card"
-												key={artist.Id}
-												to="/artist/$id"
-												params={{
-													id: artist.Id,
-												}}
-											>
-												<div
-													style={{
-														width: "5em",
-														position: "relative",
-													}}
-												>
-													<img
-														alt={artist.Name}
-														src={api.getItemImageUrl(artist.Id, "Primary", {
-															quality: 80,
-															fillWidth: 200,
-															fillHeight: 200,
-														})}
-														style={{
-															position: "absolute",
-															top: 0,
-															left: 0,
-														}}
-														className="item-detail-cast-card-image"
-													/>
-
-													<div className="item-detail-cast-card-icon">
-														{getTypeIcon("Person")}
-													</div>
-												</div>
-												<div className="item-detail-cast-card-text">
-													<Typography variant="subtitle1">
-														{artist.Name}
-													</Typography>
-													<Typography
-														variant="subtitle2"
-														style={{
-															opacity: 0.5,
-														}}
-													>
-														{artist.Role}
-													</Typography>
-												</div>
-											</Link>
-										))}
-									</div>
+						{item.data.GenreItems?.map((genre) => (
+							<TagChip label={genre.Name} key={genre.Id} />
+						))}
+					</div>
+					<div className="flex flex-column item-info-sidebar-artist-container">
+						{item.data.ArtistItems?.map((artist) => (
+							<Link
+								to="/artist/$id"
+								params={{ id: artist.Id }}
+								className="item-info-sidebar-artist"
+								key={artist.Id}
+							>
+								<div className="item-info-sidebar-artist-image-container">
+									<img
+										className="item-info-sidebar-artist-image"
+										alt={artist.Name ?? "Artist"}
+										src={api.getItemImageUrl(artist.Id, "Primary", {
+											quality: 90,
+										})}
+									/>
+									<span className="material-symbols-rounded">artist</span>
 								</div>
-							)}
-						</div>
+								<Typography>{artist.Name}</Typography>
+							</Link>
+						))}
 					</div>
 				</div>
-				{musicTracks.isSuccess && musicTracks.data.TotalRecordCount > 0 && (
-					<TrackList user={user.data.Id} tracks={musicTracks.data.Items} />
-				)}
-
 				{similarItems.data.TotalRecordCount > 0 && (
 					<CardScroller
 						title="You might also like"
-						displayCards={7}
+						displayCards={5}
 						disableDecoration
 					>
-						{similarItems.data.Items.map((similar, index) => {
+						{similarItems.data.Items.map((similar) => {
 							return (
 								<Card
 									key={similar.Id}
@@ -495,7 +400,7 @@ function MusicAlbumTitlePage() {
 						})}
 					</CardScroller>
 				)}
-			</motion.div>
+			</div>
 		);
 	}
 	if (item.isError || similarItems.isError) {

@@ -1,7 +1,7 @@
 import { BaseItemKind } from "@jellyfin/sdk/lib/generated-client";
 import React from "react";
 
-export const getTypeIcon = (icon) => {
+export const getTypeIcon = (icon: BaseItemKind) => {
 	switch (icon) {
 		case "Home":
 			return <div className="material-symbols-rounded">home</div>;

@@ -400,7 +400,7 @@ const PlayButton = ({
 				color="white"
 				size={size}
 			>
-				{itemUserData.PlaybackPositionTicks
+				{itemUserData?.PlaybackPositionTicks
 					? "Continue Watching"
 					: item?.Type === "MusicAlbum" ||
 							item?.Type === "Audio" ||
@@ -412,8 +412,8 @@ const PlayButton = ({
 				<LinearProgress
 					variant="determinate"
 					value={
-						100 > itemUserData.PlayedPercentage > 0
-							? itemUserData.PlayedPercentage
+						100 > itemUserData?.PlayedPercentage > 0
+							? itemUserData?.PlayedPercentage
 							: 0
 					}
 					sx={{
@@ -431,7 +431,7 @@ const PlayButton = ({
 					color="white"
 				/>
 			</Button>
-			{itemUserData.PlaybackPositionTicks > 0 && (
+			{itemUserData?.PlaybackPositionTicks > 0 && (
 				<Typography
 					sx={{
 						opacity: 0.8,

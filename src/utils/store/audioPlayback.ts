@@ -30,3 +30,17 @@ export const playAudio = (
 	});
 	setQueue(queue, queueItemIndex);
 };
+
+export const generateAudioStreamUrl = (
+	itemId: string,
+	userId: string,
+	deviceId: string,
+	basePath: string,
+) => {
+	const urlOptions = {
+		userId,
+		deviceId,
+	};
+	const urlParams = new URLSearchParams(urlOptions).toString();
+	return `${basePath}/Audio/${itemId}/universal?${urlParams}`;
+};

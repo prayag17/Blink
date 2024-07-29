@@ -47,13 +47,16 @@ export const Route = createFileRoute("/_api")({
 								},
 							});
 						}
-						return { api: apiTemp };
+						// return { api: apiTemp };
 					}
 					context.createApi(currentServer?.address, userOnDisk.AccessToken);
 				} else {
-					const apiTemp = context.jellyfinSDK.createApi(currentServer?.address, null);
+					const apiTemp = context.jellyfinSDK.createApi(
+						currentServer?.address,
+						null,
+					);
 					context.createApi(currentServer?.address, undefined); // Creates Api
-					return { api: apiTemp };
+					// return { api: apiTemp };
 				}
 			}
 		} else if (context.api) {
