@@ -17,7 +17,6 @@
 		"@emotion/styled": "^11.13.0",
 		"@fontsource-variable/jetbrains-mono": "^5.0.21",
 		"@fontsource-variable/noto-sans": "^5.0.5",
-		"@fontsource/noto-sans": "^5.0.22",
 		"@jellyfin/sdk": "0.10.0",
 		"@million/lint": "1.0.0-rc.84",
 		"@mui/lab": "5.0.0-alpha.172",
@@ -38,11 +37,8 @@
 		"@types/react-dom": "^18.3.0",
 		"axios": "^1.7.2",
 		"axios-tauri-api-adapter": "^0.2.1",
-		"babel-plugin-react-compiler": "0.0.0",
 		"blurhash": "^2.0.5",
-		"events": "^3.3.0",
 		"framer-motion": "^11.3.17",
-		"hls.js": "^1.5.13",
 		"jassub": "^1.7.15",
 		"lodash": "^4.17.21",
 		"material-symbols": "^0.21.2",
@@ -72,8 +68,7 @@
 		"@vitejs/plugin-react": "^4.3.1",
 		"prop-types": "^15.8.1",
 		"sass": "^1.77.8",
-		"vite": "^5.3.4",
-		"vite-plugin-compression": "^0.5.1"
+		"vite": "^5.3.4"
 	},
 	"license": "GPL-3.0-only"
 }

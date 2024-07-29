@@ -20,9 +20,6 @@ importers:
       '@fontsource-variable/noto-sans':
         specifier: ^5.0.5
         version: 5.0.5
-      '@fontsource/noto-sans':
-        specifier: ^5.0.22
-        version: 5.0.22
       '@jellyfin/sdk':
         specifier: 0.10.0
         version: 0.10.0(axios@1.7.2)
@@ -83,21 +80,12 @@ importers:
       axios-tauri-api-adapter:
         specifier: ^0.2.1
         version: 0.2.1
-      babel-plugin-react-compiler:
-        specifier: 0.0.0
-        version: 0.0.0
       blurhash:
         specifier: ^2.0.5
         version: 2.0.5
-      events:
-        specifier: ^3.3.0
-        version: 3.3.0
       framer-motion:
         specifier: ^11.3.17
         version: 11.3.17(@emotion/is-prop-valid@1.3.0)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
-      hls.js:
-        specifier: ^1.5.13
-        version: 1.5.13
       jassub:
         specifier: ^1.7.15
         version: 1.7.15
@@ -183,9 +171,6 @@ importers:
       vite:
         specifier: ^5.3.4
         version: 5.3.4(@types/node@20.14.12)(sass@1.77.8)(terser@5.31.3)
-      vite-plugin-compression:
-        specifier: ^0.5.1
-        version: 0.5.1(vite@5.3.4(@types/node@20.14.12)(sass@1.77.8)(terser@5.31.3))
 
 packages:
 
@@ -739,9 +724,6 @@ packages:
 
   '@fontsource-variable/noto-sans@5.0.5':
     resolution: {integrity: sha512-SVixgckO4DIgvFJ+vTRZEj8vTvjZceuGOhKMgnETItKELl1tHzk+ZFatSTCofPJ1zjhTwqvHrHkFeCbUGiqaRg==}
-
-  '@fontsource/noto-sans@5.0.22':
-    resolution: {integrity: sha512-PwjvKPGFbgpwfKjWZj1zeUvd7ExUW2AqHE9PF9ysAJ2gOuzIHWE6mEVIlchYif7WC2pQhn+g0w6xooCObVi+4A==}
 
   '@hono/node-server@1.12.0':
     resolution: {integrity: sha512-e6oHjNiErRxsZRZBmc2KucuvY3btlO/XPncIpP2X75bRdTilF9GLjm3NHvKKunpJbbJJj31/FoPTksTf8djAVw==}
@@ -1448,9 +1430,6 @@ packages:
     resolution: {integrity: sha512-Cg7TFGpIr01vOQNODXOOaGz2NpCU5gl8x1qJFbb6hbZxR7XrcE2vtbAsTAbJ7/xwJtUuJEw8K8Zr/AE0LHlesg==}
     engines: {node: '>=10', npm: '>=6'}
 
-  babel-plugin-react-compiler@0.0.0:
-    resolution: {integrity: sha512-Kigl0V36a/6hLVH7+CCe1CCtU3mFBqBd829V//VtuG7I/pyq+B2QZJqOefd63snQmdfCryNhO9XW1FbGPBvYDA==}
-
   babel-plugin-syntax-hermes-parser@0.21.1:
     resolution: {integrity: sha512-tUCEa+EykZx3oJXc+PolKz2iwDscCJ2hCONMvEqjAb4jIQH5ZapDd5Brs2Nk4TQpSJ/1Ykz53ksQbevXbF0wxg==}
 
@@ -1709,10 +1688,6 @@ packages:
   estree-walker@2.0.2:
     resolution: {integrity: sha512-Rfkk/Mp/DL7JVje3u18FxFujQlTNR2q6QfMSMB7AvCBx91NGj/ba3kCfza0f6dVDbw7YlRf/nDrn7pQrCCyQ/w==}
 
-  events@3.3.0:
-    resolution: {integrity: sha512-mQw+2fkQbALzQ7V0MY0IqdnXNOeTtP4r0lN9z7AAawCXgqea7bDii20AYrIBrFd/Hx0M2Ocz6S111CaFkUcb0Q==}
-    engines: {node: '>=0.8.x'}
-
   extend@3.0.2:
     resolution: {integrity: sha512-fjquC59cD7CyW6urNXK0FBufkZcoiGG80wTuPujX590cB5Ttln20E2UB4S/WARVqhXffZl2LNgS+gQdPIIim/g==}
 
@@ -1755,10 +1730,6 @@ packages:
         optional: true
       react-dom:
         optional: true
-
-  fs-extra@10.1.0:
-    resolution: {integrity: sha512-oRXApq54ETRj4eMiFzGnHWGy+zo5raudjuxN0b8H7s/RU2oW0Wvsx9O0ACRN/kRq9E8Vu/ReskGB5o3ji+FzHQ==}
-    engines: {node: '>=12'}
 
   fsevents@2.3.3:
     resolution: {integrity: sha512-5xoDfX+fL7faATnagmWPpbFtwh/R77WmMMqqHGS65C3vvB0YHrgF+B1YmZ3441tMj5n63k0212XNoJwzlhffQw==}
@@ -1826,9 +1797,6 @@ packages:
 
   hermes-parser@0.21.1:
     resolution: {integrity: sha512-ANsRSBqQHzca7AXbsuwKApSQhAdljPip63MgqLebSVzNUI+A3NDzfiH9Ny4df4fA7Ndso3kPR1V/x1YEc7BYxA==}
-
-  hls.js@1.5.13:
-    resolution: {integrity: sha512-xRgKo84nsC7clEvSfIdgn/Tc0NOT+d7vdiL/wvkLO+0k0juc26NRBPPG1SfB8pd5bHXIjMW/F5VM8VYYkOYYdw==}
 
   hoist-non-react-statics@3.3.2:
     resolution: {integrity: sha512-/gGivxi8JPKWNm/W0jSmzcMPpfpPLc3dY/6GxhX2hQ9iGj3aDfklV4ET7NjKpSinLpJ5vafa9iiGIEZg10SfBw==}
@@ -1962,9 +1930,6 @@ packages:
     resolution: {integrity: sha512-XmOWe7eyHYH14cLdVPoyg+GOH3rYX++KpzrylJwSW98t3Nk+U8XOl8FWKOgwtzdb8lXGf6zYwDUzeHMWfxasyg==}
     engines: {node: '>=6'}
     hasBin: true
-
-  jsonfile@6.1.0:
-    resolution: {integrity: sha512-5dgndWOriYSm5cnYaJNhalLNDKOqFwyDB/rr1E9ZsGciGvKPs8R2xYGCacuf3z6K1YKDz182fd+fY3cn3pMqXQ==}
 
   kleur@4.1.5:
     resolution: {integrity: sha512-o+NO+8WrRiQEE4/7nwRJhN1HWpVmJm511pBHUxPLtp0BUISzlBplORYSmTclCnJvQq2tKu/sgl3xVpkc7ZWuQQ==}
@@ -2579,10 +2544,6 @@ packages:
   unist-util-visit@5.0.0:
     resolution: {integrity: sha512-MR04uvD+07cwl/yhVuVWAtw+3GOR/knlL55Nd/wAdblk27GCVt3lqpTivy/tkJcZoNPzTwS1Y+KMojlLDhoTzg==}
 
-  universalify@2.0.1:
-    resolution: {integrity: sha512-gptHNQghINnc/vTGIk0SOFGFNXw7JVrlRUtConJRlvaw6DuX0wO5Jeko9sWrMBhh+PsYAZ7oXAiOnf/UKogyiw==}
-    engines: {node: '>= 10.0.0'}
-
   unplugin@1.12.0:
     resolution: {integrity: sha512-KeczzHl2sATPQUx1gzo+EnUkmN4VmGBYRRVOZSGvGITE9rGHRDGqft6ONceP3vgXcyJ2XjX5axG5jMWUwNCYLw==}
     engines: {node: '>=14.0.0'}
@@ -2619,11 +2580,6 @@ packages:
 
   vfile@6.0.2:
     resolution: {integrity: sha512-zND7NlS8rJYb/sPqkb13ZvbbUoExdbi4w3SfRrMq6R3FvnLQmmfpajJNITuuYm6AZ5uao9vy4BAos3EXBPf2rg==}
-
-  vite-plugin-compression@0.5.1:
-    resolution: {integrity: sha512-5QJKBDc+gNYVqL/skgFAP81Yuzo9R+EAf19d+EtsMF/i8kFUpNi3J/H01QD3Oo8zBQn+NzoCIFkpPLynoOzaJg==}
-    peerDependencies:
-      vite: '>=2.0.0'
 
   vite-plugin-svgr@4.2.0:
     resolution: {integrity: sha512-SC7+FfVtNQk7So0XMjrrtLAbEC8qjFPifyD7+fs/E6aaNdVde6umlVVh0QuwDLdOMu7vp5RiGFsB70nj5yo0XA==}
@@ -3248,8 +3204,6 @@ snapshots:
   '@fontsource-variable/jetbrains-mono@5.0.21': {}
 
   '@fontsource-variable/noto-sans@5.0.5': {}
-
-  '@fontsource/noto-sans@5.0.22': {}
 
   '@hono/node-server@1.12.0': {}
 
@@ -3982,8 +3936,6 @@ snapshots:
       cosmiconfig: 7.1.0
       resolve: 1.22.8
 
-  babel-plugin-react-compiler@0.0.0: {}
-
   babel-plugin-syntax-hermes-parser@0.21.1:
     dependencies:
       hermes-parser: 0.21.1
@@ -4271,8 +4223,6 @@ snapshots:
 
   estree-walker@2.0.2: {}
 
-  events@3.3.0: {}
-
   extend@3.0.2: {}
 
   fetch-retry@6.0.0: {}
@@ -4300,12 +4250,6 @@ snapshots:
       '@emotion/is-prop-valid': 1.3.0
       react: 18.3.1
       react-dom: 18.3.1(react@18.3.1)
-
-  fs-extra@10.1.0:
-    dependencies:
-      graceful-fs: 4.2.11
-      jsonfile: 6.1.0
-      universalify: 2.0.1
 
   fsevents@2.3.3:
     optional: true
@@ -4373,8 +4317,6 @@ snapshots:
   hermes-parser@0.21.1:
     dependencies:
       hermes-estree: 0.21.1
-
-  hls.js@1.5.13: {}
 
   hoist-non-react-statics@3.3.2:
     dependencies:
@@ -4477,12 +4419,6 @@ snapshots:
   json-parse-even-better-errors@2.3.1: {}
 
   json5@2.2.3: {}
-
-  jsonfile@6.1.0:
-    dependencies:
-      universalify: 2.0.1
-    optionalDependencies:
-      graceful-fs: 4.2.11
 
   kleur@4.1.5: {}
 
@@ -5358,8 +5294,6 @@ snapshots:
       unist-util-is: 6.0.0
       unist-util-visit-parents: 6.0.1
 
-  universalify@2.0.1: {}
-
   unplugin@1.12.0:
     dependencies:
       acorn: 8.12.1
@@ -5419,15 +5353,6 @@ snapshots:
       '@types/unist': 3.0.2
       unist-util-stringify-position: 4.0.0
       vfile-message: 4.0.2
-
-  vite-plugin-compression@0.5.1(vite@5.3.4(@types/node@20.14.12)(sass@1.77.8)(terser@5.31.3)):
-    dependencies:
-      chalk: 4.1.2
-      debug: 4.3.5
-      fs-extra: 10.1.0
-      vite: 5.3.4(@types/node@20.14.12)(sass@1.77.8)(terser@5.31.3)
-    transitivePeerDependencies:
-      - supports-color
 
   vite-plugin-svgr@4.2.0(rollup@4.19.0)(typescript@5.5.4)(vite@5.3.4(@types/node@20.14.12)(sass@1.77.8)(terser@5.31.3)):
     dependencies:
