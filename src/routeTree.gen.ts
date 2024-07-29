@@ -24,6 +24,7 @@ import { Route as SetupServerErrorImport } from './routes/setup/server.error'
 import { Route as SetupServerAddImport } from './routes/setup/server.add'
 import { Route as ApiSeriesIdImport } from './routes/_api/series/$id'
 import { Route as ApiPlaylistIdImport } from './routes/_api/playlist/$id'
+import { Route as ApiPlayerAudioImport } from './routes/_api/player/audio'
 import { Route as ApiPersonIdImport } from './routes/_api/person/$id'
 import { Route as ApiLoginManualImport } from './routes/_api/login/manual'
 import { Route as ApiLoginListImport } from './routes/_api/login/list'
@@ -99,6 +100,11 @@ const ApiSeriesIdRoute = ApiSeriesIdImport.update({
 
 const ApiPlaylistIdRoute = ApiPlaylistIdImport.update({
   path: '/playlist/$id',
+  getParentRoute: () => ApiRoute,
+} as any)
+
+const ApiPlayerAudioRoute = ApiPlayerAudioImport.update({
+  path: '/player/audio',
   getParentRoute: () => ApiRoute,
 } as any)
 
@@ -247,6 +253,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiPersonIdImport
       parentRoute: typeof ApiImport
     }
+    '/_api/player/audio': {
+      id: '/_api/player/audio'
+      path: '/player/audio'
+      fullPath: '/player/audio'
+      preLoaderRoute: typeof ApiPlayerAudioImport
+      parentRoute: typeof ApiImport
+    }
     '/_api/playlist/$id': {
       id: '/_api/playlist/$id'
       path: '/playlist/$id'
@@ -337,6 +350,7 @@ export const routeTree = rootRoute.addChildren({
     ApiItemIdRoute,
     ApiLibraryIdRoute,
     ApiPersonIdRoute,
+    ApiPlayerAudioRoute,
     ApiPlaylistIdRoute,
     ApiSeriesIdRoute,
     ApiFavoriteIndexRoute,
@@ -380,6 +394,7 @@ export const routeTree = rootRoute.addChildren({
         "/_api/item/$id",
         "/_api/library/$id",
         "/_api/person/$id",
+        "/_api/player/audio",
         "/_api/playlist/$id",
         "/_api/series/$id",
         "/_api/favorite/",
@@ -434,6 +449,10 @@ export const routeTree = rootRoute.addChildren({
     },
     "/_api/person/$id": {
       "filePath": "_api/person/$id.tsx",
+      "parent": "/_api"
+    },
+    "/_api/player/audio": {
+      "filePath": "_api/player/audio.tsx",
       "parent": "/_api"
     },
     "/_api/playlist/$id": {

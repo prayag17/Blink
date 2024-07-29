@@ -19,13 +19,13 @@ import Typography from "@mui/material/Typography";
 
 import WaveSurfer from "wavesurfer.js";
 
-import { useAudioPlayback } from "@/utils/store/audioPlayback";
+import { setAudioRef, useAudioPlayback } from "@/utils/store/audioPlayback";
 import useQueue from "@/utils/store/queue";
 
 import { AnimatePresence } from "framer-motion";
 import "./audioPlayer.scss";
 
-import { getRuntimeMusic, secToTicks } from "@/utils/date/time";
+import { getRuntimeMusic, secToTicks, ticksToSec } from "@/utils/date/time";
 import { getUserApi } from "@jellyfin/sdk/lib/utils/api/user-api";
 import { useQuery } from "@tanstack/react-query";
 
@@ -33,22 +33,15 @@ import PlayNextButton from "@/components/buttons/playNextButton";
 import PlayPreviousButton from "@/components/buttons/playPreviousButtom";
 import QueueButton from "@/components/buttons/queueButton";
 import { useApiInContext } from "@/utils/store/api";
-import { useRouteContext } from "@tanstack/react-router";
+import { useNavigate, useRouteContext } from "@tanstack/react-router";
 
 const AudioPlayer = () => {
 	const api = useApiInContext((s) => s.api);
-	const [
-		url,
-		display,
-		item,
-		// tracks,
-		// currentTrack,
-		setCurrentTrack,
-	] = useAudioPlayback((state) => [
+	const audioRef = useRef<HTMLAudioElement>(null!);
+	const [url, display, item] = useAudioPlayback((state) => [
 		state.url,
 		state.display,
 		state.item,
-		state.playlistItemId,
 	]);
 
 	const [tracks, currentTrack] = useQueue((state) => [
@@ -66,93 +59,43 @@ const AudioPlayer = () => {
 		enabled: Boolean(display) && Boolean(api),
 	});
 
-	const waveSurferRef = useRef(null);
 	const waveSurferContainerRef = useRef(null);
 
+	const playing = useMemo(() => {
+		if (audioRef.current?.paused) return false;
+		return true;
+	}, [audioRef.current?.paused]);
 	const [playerReady, setPlayerReady] = useState(false);
-	const [playing, setPlaying] = useState(true);
 	const [volume, setVolume] = useState(0.8);
 	const [isMuted, setIsMuted] = useState(false);
+	const [progress, setProgress] = useState(0);
+	const [isScrubbing, setIsScrubbing] = useState(false);
+	const [sliderProgress, setSliderProgress] = useState(false);
 
 	const [loading, setLoading] = useState(true);
 
-	const [showWaveform, setShowWaveform] = useState(false);
-
-	const [currentTime, setCurrentTime] = useState(0);
-
 	useEffect(() => {
 		if (display) {
-			const waveSurfer = WaveSurfer.create({
-				container: waveSurferContainerRef.current,
-				dragToSeek: true,
-				height: 25,
-				cursorColor: "#fb2376",
-				progressColor: "#fb2376",
-				waveColor: "#ffffff2f",
-				normalize: true,
-				barHeight: 0.6,
-				backend: "MediaElementWebAudio",
+			const audioUrlRequest = new Request(audioRef.current?.dataset.src, {
+				method: "GET",
+				headers: {
+					Authorization: api.authorizationHeader,
+				},
 			});
-			waveSurfer.load(url);
-			waveSurfer.on("load", () => {
-				setLoading(true);
-			});
-			waveSurfer.on("ready", () => {
-				waveSurferRef.current = waveSurfer;
-				waveSurfer.play();
-				waveSurfer.setVolume(volume);
-				waveSurfer.setMuted(isMuted);
-				setPlayerReady(true);
-				setLoading(false);
-			});
-			waveSurfer.on("timeupdate", async (atime) => {
-				setCurrentTime(atime);
-			});
-			waveSurfer.on("redraw", () => {
-				setShowWaveform(true);
-			});
-			waveSurfer.on("play", () => {
-				setPlaying(true);
-			});
-			waveSurfer.on("pause", () => {
-				setPlaying(false);
-			});
-			waveSurfer.on("finish", () => {
-				setPlaying(false);
-				if (currentTrack !== tracks.length - 1) {
-					setCurrentTrack(currentTrack + 1);
-					setAudioUrl(
-						`${api.basePath}/Audio/${
-							tracks[currentTrack + 1].Id
-						}/universal?deviceId=${api.deviceInfo.id}&userId=${
-							user.data.Id
-						}&api_key=${api.accessToken}`,
-					);
-					setAudioItem(tracks[currentTrack + 1]);
-					setShowWaveform(false);
-				}
-			});
-			waveSurfer.on("destroy", () => {
-				waveSurfer.unAll();
-				setLoading(true);
-			});
-
-			return () => {
-				waveSurfer.destroy();
-			};
+			fetch(audioUrlRequest)
+				.then((res) => res)
+				.then(async (result) => {
+					const blob = await result.blob();
+					const blobUrl = URL.createObjectURL(blob);
+					audioRef.current.src = blobUrl;
+					audioRef.current.play();
+					setLoading(false);
+				});
+			setAudioRef(audioRef);
 		}
 	}, [url, currentTrack]);
 
-	useLayoutEffect(() => {
-		if (playerReady) {
-			waveSurferRef.current.setVolume(volume);
-			waveSurferRef.current.setMuted(isMuted);
-		}
-	}, [playerReady, volume, isMuted]);
-
-	const handlePlayPause = () => {
-		waveSurferRef.current.playPause();
-	};
+	const navigate = useNavigate();
 
 	const info = useMemo(
 		() => (
@@ -222,7 +165,14 @@ const AudioPlayer = () => {
 						position: "relative",
 					}}
 				>
-					<Fab size="small" onClick={handlePlayPause}>
+					<Fab
+						size="small"
+						onClick={() =>
+							audioRef.current.paused
+								? audioRef.current.play()
+								: audioRef.current.pause()
+						}
+					>
 						<div
 							className="material-symbols-rounded"
 							style={{
@@ -248,6 +198,9 @@ const AudioPlayer = () => {
 					justifyContent: "flex-end",
 				}}
 			>
+				<IconButton onClick={() => navigate({ to: "/player/audio" })}>
+					<span className="material-symbols-rounded">info</span>
+				</IconButton>
 				<QueueButton />
 				<IconButton
 					onClick={(e) => {
@@ -262,7 +215,10 @@ const AudioPlayer = () => {
 					value={isMuted ? 0 : volume * 100}
 					step={1}
 					max={100}
-					onChange={(e, newVal) => setVolume(newVal / 100)}
+					onChange={(e, newVal) => {
+						setVolume(newVal / 100);
+						audioRef.current.volume = newVal / 100;
+					}}
 					valueLabelDisplay="auto"
 					valueLabelFormat={(value) => Math.floor(value)}
 					size="small"
@@ -325,7 +281,14 @@ const AudioPlayer = () => {
 					className="audio-player glass"
 				>
 					{info}
-
+					<audio
+						data-src={url}
+						ref={audioRef}
+						key={item?.Id}
+						onTimeUpdate={(e) =>
+							setProgress(secToTicks(e.currentTarget.currentTime))
+						}
+					/>
 					<div className="audio-player-controls">
 						{controls}
 						<div
@@ -344,12 +307,24 @@ const AudioPlayer = () => {
 									opacity: 0.8,
 								}}
 							>
-								{getRuntimeMusic(secToTicks(currentTime))}
+								{getRuntimeMusic(progress)}
 							</Typography>
-							<div
-								id="waveform"
-								ref={waveSurferContainerRef}
-								data-show={Boolean(showWaveform)}
+							<Slider
+								value={isScrubbing ? sliderProgress : progress}
+								step={1}
+								size="small"
+								max={item?.RunTimeTicks}
+								onChange={(e, value) => {
+									setIsScrubbing(true);
+									setSliderProgress(value);
+									console.log(value);
+								}}
+								onChangeCommitted={(e, value) => {
+									setIsScrubbing(false);
+									// console.log(ticksToSec(value * item?.RunTimeTicks));
+									setProgress(value);
+									audioRef.current.currentTime = ticksToSec(value);
+								}}
 							/>
 							<Typography
 								variant="subtitle2"
