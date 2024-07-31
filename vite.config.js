@@ -7,7 +7,17 @@ import path from "path";
 
 // const ReactCompilerConfig = {compilationMode: "annotation"}
 
-const plugins = [react(), svgr(), TanStackRouterVite()];
+const plugins = [react({
+  babel: {
+    babelrc: true,
+    plugins: [
+      ["@babel/plugin-proposal-optional-chaining-assign",
+      {
+        version: "2023-07"
+      }]
+    ]
+  }
+}), svgr(), TanStackRouterVite()];
 export default defineConfig({
   plugins: plugins,
   css: {

@@ -1,21 +1,60 @@
-.audio-info {
-    &-container {
-        display: flex;
-        gap: 1em;
-        align-items: center;
-        justify-content: flex-start;
-    }
-    &-image {
+.audio {
+    &-info {
         width: 100%;
-        aspect-ratio: 1;
-        height: 100%;
-        object-fit: cover;
+        padding: 4em;
+        gap: 0.5em;
+        display: flex;
+        flex-direction: column;
         &-container {
-            width: 25em;
+            display: flex;
+            gap: 0em;
+            align-items: center;
+            justify-content: flex-start;
+        }
+        &-image {
+            width: 100%;
             aspect-ratio: 1;
-            position: relative;
-            border-radius: $border-radius-default;
-            overflow: hidden;
+            height: 100%;
+            object-fit: cover;
+            &-container {
+                width: 25em;
+                aspect-ratio: 1;
+                position: relative;
+                border-radius: $border-radius-default;
+                overflow: hidden;
+            }
+        }
+        &-controls {
+            width: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 1em;
+        }
+    }
+    &-queue{
+        display: flex;
+        flex-direction: column;
+        width: 100%;
+        align-items: center;
+        gap: 1em;
+        margin-top: 2em;
+        &-track{
+            display: grid;
+            grid-template-columns: 3em 1fr 6em;
+            align-items: center;
+            justify-content: center;
+            width: 100%;
+            gap: 1em;
+            &-info-name{
+                transition: $transition-time-fast;
+            }
+            &.active{
+                .audio-queue-track-info-name{
+                    color: $clr-accent-light;
+                    font-weight: 500;
+                }
+            }
         }
     }
 }

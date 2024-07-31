@@ -97,9 +97,6 @@ $border-radius: 20px;
 				flex-direction: column;
 				gap: 0.1em
 			}
-			&:nth-last-of-type(even):not(.header) {
-				background: rgb(0 0 0 / 0.2);
-			}
 			&:hover {
 				background: rgb(255 255 255 / 0.1) !important;
 				.index-container {

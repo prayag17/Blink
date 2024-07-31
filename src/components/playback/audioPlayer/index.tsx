@@ -93,7 +93,7 @@ const AudioPlayer = () => {
 				});
 			setAudioRef(audioRef);
 		}
-	}, [url, currentTrack]);
+	}, [url, tracks[currentTrack]?.Id]);
 
 	const navigate = useNavigate();
 
@@ -288,6 +288,7 @@ const AudioPlayer = () => {
 						onTimeUpdate={(e) =>
 							setProgress(secToTicks(e.currentTarget.currentTime))
 						}
+						id="audio-player"
 					/>
 					<div className="audio-player-controls">
 						{controls}
@@ -317,7 +318,6 @@ const AudioPlayer = () => {
 								onChange={(e, value) => {
 									setIsScrubbing(true);
 									setSliderProgress(value);
-									console.log(value);
 								}}
 								onChangeCommitted={(e, value) => {
 									setIsScrubbing(false);

@@ -71,15 +71,16 @@
   "app": {
     "windows": [
       {
-        "fullscreen": false,
-        "height": 600,
-        "width": 800,
-        "resizable": true,
-        "title": "Blink",
-        "visible": true,
-        "center": true,
-        "label": "main"
-      }
+							"fullscreen": false,
+							"height": 600,
+							"width": 800,
+							"resizable": true,
+							"title": "Blink",
+							"visible": true,
+							"center": true,
+							"label": "main",
+							"dragDropEnabled": false
+						}
     ],
     "security": {
       "csp": null

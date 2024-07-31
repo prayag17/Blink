@@ -250,7 +250,7 @@ function MusicAlbumTitlePage() {
 							<Typography variant="subtitle1">Title</Typography>
 							<Typography variant="subtitle1">Duration</Typography>
 						</div>
-						{musicTracks.data?.Items?.map((track) => (
+						{musicTracks.data?.Items?.map((track, index) => (
 							<div
 								className={
 									currentPlayingItem?.Id === track.Id
@@ -259,11 +259,7 @@ function MusicAlbumTitlePage() {
 								}
 								key={track.Id}
 								onClick={() =>
-									handlePlayback(
-										track.IndexNumber,
-										track,
-										musicTracks.data.Items,
-									)
+									handlePlayback(index, track, musicTracks.data.Items)
 								}
 							>
 								<div className="index-container">

@@ -19,8 +19,6 @@ import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { delUser } from "@/utils/storage/user";
 import "./appBar.scss";
 
-import { EventEmitter as event } from "@/eventEmitter";
-
 import { getTypeIcon } from "../utils/iconsCollection";
 
 import { useApiInContext } from "@/utils/store/api";
@@ -121,7 +119,6 @@ export const AppBar = () => {
 		await api.logout();
 		delUser();
 		sessionStorage.removeItem("accessToken");
-		event.emit("create-jellyfin-api", api.basePath);
 		queryClient.clear();
 		setAnchorEl(null);
 		navigate({ to: "/login" });

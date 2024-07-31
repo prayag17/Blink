@@ -86,7 +86,7 @@ const QueueButton = () => {
 							>
 								<Typography variant="subtitle2">
 									{item.Type === "Audio"
-										? item.IndexNumber ?? 0
+										? index + 1
 										: item.IndexNumberEnd
 											? `S${item.ParentIndexNumber}:E${item.IndexNumber} / ${item.IndexNumberEnd}`
 											: `S${item.ParentIndexNumber}:E${item.IndexNumber}`}
