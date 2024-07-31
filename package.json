@@ -28,7 +28,7 @@
 		"@tanstack/react-router": "^1.45.11",
 		"@tanstack/react-virtual": "^3.8.3",
 		"@tauri-apps/api": "2.0.0-beta.15",
-		"@tauri-apps/plugin-clipboard-manager": "2.1.0-beta.5",
+		"@tauri-apps/plugin-clipboard-manager": "2.1.0-beta.6",
 		"@tauri-apps/plugin-process": "2.0.0-beta.7",
 		"@tauri-apps/plugin-store": "github:tauri-apps/tauri-plugin-store#v2",
 		"@tauri-apps/plugin-updater": "2.0.0-beta.7",
