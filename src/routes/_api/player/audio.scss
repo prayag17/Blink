@@ -1,4 +1,7 @@
 .audio {
+    &-hidden{
+        transform: translateY(-100%);
+    }
     &-info {
         width: 100%;
         padding: 4em;
@@ -22,6 +25,14 @@
                 position: relative;
                 border-radius: $border-radius-default;
                 overflow: hidden;
+            }
+            &-icon {
+                font-size: 4em;
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                height: 100%;
+                background: rgb(255 255 255 / 0.2);
             }
         }
         &-controls {
@@ -51,7 +62,7 @@
             }
             &.active{
                 .audio-queue-track-info-name{
-                    color: $clr-accent-light;
+                    color: $clr-accent-default;
                     font-weight: 500;
                 }
             }

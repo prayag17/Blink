@@ -11,8 +11,8 @@ import PlayNextButton from "@/components/buttons/playNextButton";
 import PlayPreviousButton from "@/components/buttons/playPreviousButtom";
 import QueueTrack from "@/components/queueTrack";
 import { getRuntimeMusic, secToTicks, ticksToSec } from "@/utils/date/time";
-import { useDrop } from "react-dnd";
-import { Identifier } from "typescript";
+import { getLyricsApi } from "@jellyfin/sdk/lib/utils/api/lyrics-api";
+import { useQuery } from "@tanstack/react-query";
 
 export const Route = createFileRoute("/_api/player/audio")({
 	component: AudioPlayerRoute,
@@ -32,6 +32,16 @@ function AudioPlayerRoute() {
 	const [progress, setProgress] = useState<number | number[]>(
 		audioPlayer?.currentTime ?? 0,
 	);
+
+	const lyrics = useQuery({
+		queryKey: ["player", "audio", item?.Id, "lyrics"],
+		queryFn: async () =>
+			await getLyricsApi(api).getLyrics({
+				itemId: item?.Id,
+			}),
+		enabled: Boolean(item?.Id),
+	});
+
 	useEffect(() => {
 		audioPlayer?.addEventListener("timeupdate", () => {
 			setProgress(audioPlayer.currentTime);
@@ -42,7 +52,7 @@ function AudioPlayerRoute() {
 		<div className="scrollY padded-top flex flex-column" style={{ gap: "1em" }}>
 			<div className="audio-info-container">
 				<div className="audio-info-image-container">
-					{item?.ImageTags ? (
+					{item?.ImageTags?.Primary ? (
 						<img
 							alt={item.Name ?? "Music"}
 							src={api.getItemImageUrl(item.Id, "Primary", {
@@ -51,7 +61,9 @@ function AudioPlayerRoute() {
 							className="audio-info-image"
 						/>
 					) : (
-						<span className="material-symbols-rounded fill">music_note</span>
+						<span className="material-symbols-rounded fill audio-info-image-icon">
+							music_note
+						</span>
 					)}
 				</div>
 				<div className="audio-info">
@@ -116,6 +128,7 @@ function AudioPlayerRoute() {
 							<span className="material-symbols-rounded">fast_rewind</span>
 						</IconButton>
 						<Fab
+							disabled={!audioPlayer?.readyState}
 							color="white"
 							size="large"
 							onClick={() =>

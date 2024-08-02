@@ -9,7 +9,7 @@ const TagChip = ({
 	linkProps,
 }: { label: string; linkProps: LinkProps }) => {
 	return (
-		<Link className="tag" {...linkProps}>
+		<Link className="tag" to="/search" search={{ query: label }} {...linkProps}>
 			<Typography variant="subtitle2" fontWeight={300}>
 				{label}
 			</Typography>

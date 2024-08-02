@@ -267,7 +267,12 @@ const AudioPlayer = () => {
 					initial={{
 						transform: "translateY(100%)",
 					}}
-					animate={{ transform: "translateY(0)" }}
+					animate={{
+						transform:
+							location.pathname === "/player/audio"
+								? "translateY(100%)"
+								: "translateY(0%)",
+					}}
 					exit={{
 						transform: "translateY(100%)",
 					}}
