@@ -52,7 +52,7 @@ jobs:
      build:
           needs: build_web
           # Prevent forked PRs from running the build job which is expensive
-          if: github.repository == 'prayag17/JellyPlayer'
+          if: github.repository == 'prayag17/Blink'
           strategy:
                fail-fast: false
                matrix:
@@ -116,5 +116,5 @@ jobs:
                - name: Upload build Artifacts
                  uses: actions/upload-artifact@v4
                  with:
-                      name: JellyPlayer-${{ matrix.platform }}-dev${{ github.sha }}
+                      name: Blink-${{ matrix.platform }}-dev${{ github.sha }}
                       path: src-tauri/target/release/bundle/*
