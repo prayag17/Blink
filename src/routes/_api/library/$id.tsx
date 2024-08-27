@@ -65,10 +65,10 @@ import { useWindowVirtualizer } from "@tanstack/react-virtual";
 import type { AxiosResponse } from "axios";
 import "./library.scss";
 import LibraryItemsSkeleton from "@/components/skeleton/libraryItems";
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, useNavigate } from "@tanstack/react-router";
 
 type SortByObject = { title: string; value: ItemSortBy };
-type ViewObject = { title: string; value: BaseItemKind };
+type ViewObject = { title: string; value: BaseItemKind | "Artist" };
 // type allowedFilters = ["movies", "tvshows", "music", "books"];
 type allowedFilters = Partial<CollectionType>[];
 
@@ -97,6 +97,7 @@ export const Route = createFileRoute("/_api/library/$id")({
 
 function LibraryView() {
 	const api = Route.useRouteContext().api;
+	const navigate = useNavigate();
 
 	const { id } = Route.useParams();
 
@@ -123,7 +124,7 @@ function LibraryView() {
 		staleTime: 0,
 	});
 
-	const [currentViewType, setCurrentViewType] = useState<BaseItemKind>(
+	const [currentViewType, setCurrentViewType] = useState<BaseItemKind | "Artist">(
 		undefined!,
 	);
 	const availableViewTypes: ViewObject[] = useMemo(() => {
@@ -190,7 +191,19 @@ function LibraryView() {
 			default:
 				result = [];
 		}
-		setCurrentViewType(result?.[0]?.value);
+		if (
+			sessionStorage.getItem(
+				`library-${currentLib.data?.Id}-config_currentViewType`,
+			)
+		) {
+			setCurrentViewType(
+				sessionStorage.getItem(
+					`library-${currentLib.data?.Id}-config_currentViewType`,
+				) as BaseItemKind | "Artist",
+			);
+		} else {
+			setCurrentViewType(result?.[0]?.value);
+		}
 		return result;
 	}, [currentLib.data?.CollectionType]);
 
@@ -205,6 +218,18 @@ function LibraryView() {
 
 	const [sortBy, setSortBy] = useState<ItemSortBy>("Name");
 	const [sortAscending, setSortAscending] = useState(true);
+	useEffect(() => {
+		// I don't know why this works, don't ask...
+		const cachedVal = sessionStorage.getItem(
+			`library-${currentLib.data?.Id}-config_sort`,
+		) as unknown as {
+			sortAscending: boolean;
+			sortBy: ItemSortBy;
+		};
+		if (cachedVal) {
+			setSortAscending(cachedVal.sortAscending);
+		}
+	}, [currentLib.data?.Id]);
 	const sortByOptions: SortByObject[] = useMemo(() => {
 		let result: SortByObject[] = undefined!;
 		switch (currentViewType) {
@@ -414,10 +439,19 @@ function LibraryView() {
 				];
 				break;
 		}
-		setSortBy(result?.[0]?.value);
+		// And they say typescript makes your code better :|
+		const cachedVal = JSON.parse(sessionStorage.getItem(`library-${currentLib.data?.Id}-config_sort`) as string);
+		// as {
+		// 	sortAscending: boolean;
+		// 	sortBy: ItemSortBy;
+		// }
+		if (cachedVal) {
+			setSortBy(cachedVal.sortBy);
+		} else {
+			setSortBy(result?.[0]?.value);
+		}
 		return result;
 	}, [currentLib.data?.CollectionType, currentViewType]);
-	useLayoutEffect(() => {}, [sortByOptions]);
 
 	const [filters, setFilters] = useState<Record<string, undefined | boolean>>({
 		isPlayed: false,
@@ -775,9 +809,16 @@ function LibraryView() {
 											select
 											value={sortBy ?? "Name"}
 											size="small"
-											onChange={(e: ChangeEvent<HTMLSelectElement>) =>
-												setSortBy(e.target.value)
-											}
+											onChange={(e) => {
+												setSortBy(e.target.value);
+												sessionStorage.setItem(
+													`library-${currentLib.data?.Id}-config_sort`,
+													JSON.stringify({
+														sortAscending,
+														sortBy: e.target.value,
+													}),
+												);
+											}}
 										>
 											{sortByOptions.map((item) => (
 												<MenuItem key={item.value} value={item.value}>
@@ -792,9 +833,13 @@ function LibraryView() {
 										select
 										value={currentViewType}
 										size="small"
-										onChange={(e: ChangeEvent<HTMLSelectElement>) =>
-											setCurrentViewType(e.target.value)
-										}
+										onChange={(e) => {
+											setCurrentViewType(e.target.value);
+											sessionStorage.setItem(
+												`library-${currentLib.data?.Id}-config_currentViewType`,
+												e.target.value,
+											);
+										}}
 									>
 										{availableViewTypes.map((item) => (
 											<MenuItem key={item.value} value={item.value}>

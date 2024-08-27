@@ -16,6 +16,7 @@ import { Route as IndexImport } from './routes/index'
 import { Route as ErrorCodeImport } from './routes/error/$code'
 import { Route as ApiSearchImport } from './routes/_api/search'
 import { Route as ApiLoginImport } from './routes/_api/login'
+import { Route as ApiLibraryImport } from './routes/_api/library'
 import { Route as ApiSearchIndexImport } from './routes/_api/search/index'
 import { Route as ApiPlayerIndexImport } from './routes/_api/player/index'
 import { Route as ApiHomeIndexImport } from './routes/_api/home/index'
@@ -61,6 +62,11 @@ const ApiSearchRoute = ApiSearchImport.update({
 
 const ApiLoginRoute = ApiLoginImport.update({
   path: '/login',
+  getParentRoute: () => ApiRoute,
+} as any)
+
+const ApiLibraryRoute = ApiLibraryImport.update({
+  path: '/library',
   getParentRoute: () => ApiRoute,
 } as any)
 
@@ -130,8 +136,8 @@ const ApiLoginListRoute = ApiLoginListImport.update({
 } as any)
 
 const ApiLibraryIdRoute = ApiLibraryIdImport.update({
-  path: '/library/$id',
-  getParentRoute: () => ApiRoute,
+  path: '/$id',
+  getParentRoute: () => ApiLibraryRoute,
 } as any)
 
 const ApiItemIdRoute = ApiItemIdImport.update({
@@ -181,6 +187,13 @@ declare module '@tanstack/react-router' {
       fullPath: ''
       preLoaderRoute: typeof ApiImport
       parentRoute: typeof rootRoute
+    }
+    '/_api/library': {
+      id: '/_api/library'
+      path: '/library'
+      fullPath: '/library'
+      preLoaderRoute: typeof ApiLibraryImport
+      parentRoute: typeof ApiImport
     }
     '/_api/login': {
       id: '/_api/login'
@@ -240,10 +253,10 @@ declare module '@tanstack/react-router' {
     }
     '/_api/library/$id': {
       id: '/_api/library/$id'
-      path: '/library/$id'
+      path: '/$id'
       fullPath: '/library/$id'
       preLoaderRoute: typeof ApiLibraryIdImport
-      parentRoute: typeof ApiImport
+      parentRoute: typeof ApiLibraryImport
     }
     '/_api/login/list': {
       id: '/_api/login/list'
@@ -351,6 +364,7 @@ declare module '@tanstack/react-router' {
 export const routeTree = rootRoute.addChildren({
   IndexRoute,
   ApiRoute: ApiRoute.addChildren({
+    ApiLibraryRoute: ApiLibraryRoute.addChildren({ ApiLibraryIdRoute }),
     ApiLoginRoute: ApiLoginRoute.addChildren({
       ApiLoginListRoute,
       ApiLoginManualRoute,
@@ -362,7 +376,6 @@ export const routeTree = rootRoute.addChildren({
     ApiBoxsetIdRoute,
     ApiEpisodeIdRoute,
     ApiItemIdRoute,
-    ApiLibraryIdRoute,
     ApiPersonIdRoute,
     ApiPlayerAudioRoute,
     ApiPlaylistIdRoute,
@@ -399,6 +412,7 @@ export const routeTree = rootRoute.addChildren({
     "/_api": {
       "filePath": "_api.tsx",
       "children": [
+        "/_api/library",
         "/_api/login",
         "/_api/search",
         "/_api/album/$id",
@@ -406,7 +420,6 @@ export const routeTree = rootRoute.addChildren({
         "/_api/boxset/$id",
         "/_api/episode/$id",
         "/_api/item/$id",
-        "/_api/library/$id",
         "/_api/person/$id",
         "/_api/player/audio",
         "/_api/playlist/$id",
@@ -414,6 +427,13 @@ export const routeTree = rootRoute.addChildren({
         "/_api/favorite/",
         "/_api/home/",
         "/_api/player/"
+      ]
+    },
+    "/_api/library": {
+      "filePath": "_api/library.tsx",
+      "parent": "/_api",
+      "children": [
+        "/_api/library/$id"
       ]
     },
     "/_api/login": {
@@ -457,7 +477,7 @@ export const routeTree = rootRoute.addChildren({
     },
     "/_api/library/$id": {
       "filePath": "_api/library/$id.tsx",
-      "parent": "/_api"
+      "parent": "/_api/library"
     },
     "/_api/login/list": {
       "filePath": "_api/login/list.tsx",

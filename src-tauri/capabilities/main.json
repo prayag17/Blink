@@ -12,8 +12,6 @@
 		"store:allow-keys",
 		"store:allow-load",
 		"updater:allow-check",
-		"updater:allow-download-and-install",
-		"window:default",
-		"window:allow-set-fullscreen"
+		"updater:allow-download-and-install"
 	]
 }

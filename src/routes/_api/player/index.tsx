@@ -40,6 +40,7 @@ import PlayNextButton from "@/components/buttons/playNextButton";
 import PlayPreviousButton from "@/components/buttons/playPreviousButtom";
 import QueueButton from "@/components/buttons/queueButton";
 import OutroCard from "@/components/outroCard";
+import useQueue from "@/utils/store/queue";
 import { createFileRoute, useRouter } from "@tanstack/react-router";
 import type { OnProgressProps } from "react-player/base";
 import subtitleFont from "./Noto-Sans-Indosphere.ttf";
@@ -97,6 +98,10 @@ function VideoPlayer() {
 		state.mediaSource,
 		state.playsessionId,
 		state.intro,
+	]);
+	const [currentQueueItemIndex, queue] = useQueue((s) => [
+		s.currentItemIndex,
+		s.tracks,
 	]);
 
 	const [loading, setLoading] = useState(true);
@@ -330,6 +335,9 @@ function VideoPlayer() {
 	}, [progress]);
 
 	const showUpNextCard = useMemo(() => {
+		if (queue[currentQueueItemIndex]?.Id === queue[queue.length - 1]?.Id) {
+			return false; // Check if the current playing episode is last episode in queue
+		}
 		if (introInfo?.Credits) {
 			if (
 				ticksToSec(progress) >= introInfo?.Credits.ShowSkipPromptAt &&

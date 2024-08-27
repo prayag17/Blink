@@ -129,7 +129,7 @@ export const AppBar = () => {
 			location.pathname.includes("login") ||
 			location.pathname.includes("setup") ||
 			location.pathname.includes("server") ||
-			location.pathname === "/player/" ||
+			location.pathname === "/player" ||
 			location.pathname.includes("error") ||
 			location.pathname === "/"
 		) {

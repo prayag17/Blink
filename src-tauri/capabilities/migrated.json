@@ -1,17 +1,16 @@
 {
-  "identifier": "migrated",
-  "description": "permissions that were migrated from v1",
-  "local": true,
-  "windows": [
-    "main"
-  ],
-  "permissions": [
-    "path:default",
-    "event:default",
-    "window:default",
-    "app:default",
-    "resources:default",
-    "menu:default",
-    "tray:default"
-  ]
+	"$schema": "../gen/schemas/desktop-schema.json",
+	"identifier": "migrated",
+	"description": "permissions that were migrated from v1",
+	"local": true,
+	"windows": ["main"],
+	"permissions": [
+		"core:path:default",
+		"core:event:default",
+		"core:window:default",
+		"core:app:default",
+		"core:resources:default",
+		"core:menu:default",
+		"core:tray:default"
+	]
 }

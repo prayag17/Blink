@@ -265,7 +265,7 @@ function SearchPage() {
 				)}
 				{episodes.isSuccess && episodes.data.TotalRecordCount > 0 && (
 					<CardScroller title="Episodes" displayCards={4} disableDecoration>
-						{episodes.data.SearchHints.map((episode) => {
+						{episodes.data.SearchHints?.map((episode) => {
 							return (
 								<EpisodeCard
 									key={episode.Id}
@@ -280,9 +280,9 @@ function SearchPage() {
 						})}
 					</CardScroller>
 				)}
-				{audio.isSuccess && audio.data.Items.length > 0 && (
+				{audio.isSuccess && audio.data.Items?.length > 0 && (
 					<CardScroller title="Audio" displayCards={8} disableDecoration>
-						{audio.data.Items.map((item, index) => (
+						{audio.data.Items?.map((item, index) => (
 							<Card
 								key={item.Id}
 								item={item}
@@ -291,20 +291,14 @@ function SearchPage() {
 								cardCaption={item.ProductionYear}
 								cardType="square"
 								queryKey={["search", "items", "Audio", query]}
-								userId={user.data.Id}
-								imageBlurhash={
-									!!item.ImageBlurHashes?.Primary &&
-									item.ImageBlurHashes?.Primary[
-										Object.keys(item.ImageBlurHashes.Primary)[0]
-									]
-								}
+								userId={user.data?.Id}
 							/>
 						))}
 					</CardScroller>
 				)}
-				{musicAlbum.isSuccess && musicAlbum.data.Items.length > 0 && (
+				{musicAlbum.isSuccess && musicAlbum.data.Items?.length > 0 && (
 					<CardScroller title="Albums" displayCards={8} disableDecoration>
-						{musicAlbum.data.Items.map((item, index) => (
+						{musicAlbum.data.Items?.map((item, index) => (
 							<Card
 								key={item.Id}
 								item={item}
@@ -314,20 +308,14 @@ function SearchPage() {
 								cardCaption={item.AlbumArtist}
 								cardType={"square"}
 								queryKey={["search", "items", "MusicAlbum", query]}
-								userId={user.data.Id}
-								imageBlurhash={
-									!!item.ImageBlurHashes?.Primary &&
-									item.ImageBlurHashes?.Primary[
-										Object.keys(item.ImageBlurHashes.Primary)[0]
-									]
-								}
+								userId={user.data?.Id}
 							/>
 						))}
 					</CardScroller>
 				)}
-				{book.isSuccess && book.data.Items.length > 0 && (
+				{book.isSuccess && book.data.Items?.length > 0 && (
 					<CardScroller title="Books" displayCards={8} disableDecoration>
-						{book.data.Items.map((item, index) => (
+						{book.data.Items?.map((item, index) => (
 							<Card
 								key={item.Id}
 								item={item}
@@ -337,20 +325,14 @@ function SearchPage() {
 								disableOverlay
 								cardType={"portrait"}
 								queryKey={["search", "items", "Book", query]}
-								userId={user.data.Id}
-								imageBlurhash={
-									!!item.ImageBlurHashes?.Primary &&
-									item.ImageBlurHashes?.Primary[
-										Object.keys(item.ImageBlurHashes.Primary)[0]
-									]
-								}
+								userId={user.data?.Id}
 							/>
 						))}
 					</CardScroller>
 				)}
-				{musicArtists.isSuccess && musicArtists.data.Items.length > 0 && (
+				{musicArtists.isSuccess && musicArtists.data.Items?.length > 0 && (
 					<CardScroller title="Artists" displayCards={8} disableDecoration>
-						{musicArtists.data.Items.map((item) => (
+						{musicArtists.data.Items?.map((item) => (
 							<Card
 								key={item.Id}
 								item={item}
@@ -359,20 +341,14 @@ function SearchPage() {
 								disableOverlay
 								cardType={"square"}
 								queryKey={["search", "items", "MusicArtists", query]}
-								userId={user.data.Id}
-								imageBlurhash={
-									!!item.ImageBlurHashes?.Primary &&
-									item.ImageBlurHashes?.Primary[
-										Object.keys(item.ImageBlurHashes.Primary)[0]
-									]
-								}
+								userId={user.data?.Id}
 							/>
 						))}
 					</CardScroller>
 				)}
-				{person.isSuccess && person.data.Items.length > 0 && (
+				{person.isSuccess && person.data.Items?.length > 0 && (
 					<CardScroller title="People" displayCards={8} disableDecoration>
-						{person.data.Items.map((item) => (
+						{person.data.Items?.map((item) => (
 							<Card
 								key={item.Id}
 								item={item}
@@ -381,13 +357,7 @@ function SearchPage() {
 								disableOverlay
 								cardType={"square"}
 								queryKey={["search", "items", "Person", query]}
-								userId={user.data.Id}
-								imageBlurhash={
-									!!item.ImageBlurHashes?.Primary &&
-									item.ImageBlurHashes?.Primary[
-										Object.keys(item.ImageBlurHashes.Primary)[0]
-									]
-								}
+								userId={user.data?.Id}
 							/>
 						))}
 					</CardScroller>
@@ -401,14 +371,14 @@ function SearchPage() {
 				book.isSuccess &&
 				musicArtists.isSuccess &&
 				person.isSuccess &&
-				movies.data.Items.length === 0 &&
-				series.data.Items.length === 0 &&
-				audio.data.Items.length === 0 &&
-				musicAlbum.data.Items.length === 0 &&
-				book.data.Items.length === 0 &&
-				musicArtists.data.Items.length === 0 &&
+				movies.data.Items?.length === 0 &&
+				series.data.Items?.length === 0 &&
+				audio.data.Items?.length === 0 &&
+				musicAlbum.data.Items?.length === 0 &&
+				book.data.Items?.length === 0 &&
+				musicArtists.data.Items?.length === 0 &&
 				person.data.Items?.length === 0 &&
-				episodes.data.SearchHints?.length === 0 && (
+				episodes.data?.SearchHints?.length === 0 && (
 					<div
 						style={{
 							height: "calc(100vh - 12em)",

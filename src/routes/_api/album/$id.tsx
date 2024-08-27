@@ -49,9 +49,9 @@ import {
 import { useBackdropStore } from "@/utils/store/backdrop";
 import "./album.scss";
 
-import IconLink from "@/components/iconLink";
 import TagChip from "@/components/tagChip";
 import { Link, createFileRoute } from "@tanstack/react-router";
+import lyricsIcon from "../../../assets/icons/lyrics.svg";
 
 function TabPanel(props) {
 	const { children, value, index, ...other } = props;
@@ -201,155 +201,161 @@ function MusicAlbumTitlePage() {
 				className="scrollY padded-top item item-album"
 				ref={pageRef}
 			>
-				<div className="item-info">
-					<Typography className="item-info-name" variant="h3">
-						{item.data.Name}
-					</Typography>
-					<div className="flex flex-align-center item-info-album-info">
-						<div className="flex flex-align-center">
-							<span
-								className="material-symbols-rounded"
-								style={{
-									opacity: 0.7,
-								}}
-							>
-								artist
-							</span>
-							<Typography ml={1}>{item.data.AlbumArtist}</Typography>
-						</div>
-						<Typography className="opacity-07">
-							{item.data.ProductionYear}
+				<div className="item-info-container">
+					<div className="item-info">
+						<Typography className="item-info-name" variant="h3">
+							{item.data.Name}
 						</Typography>
-						<Typography className="opacity-07">
-							{musicTracks.data?.TotalRecordCount > 1
-								? `${musicTracks.data?.TotalRecordCount} songs`
-								: `1 song`}
-						</Typography>
-						<Typography className="opacity-07">
-							{getRuntimeCompact(item.data.CumulativeRunTimeTicks)}
-						</Typography>
-					</div>
-					<div className="item-info-buttons">
-						<PlayButton
-							item={item}
-							audio
-							itemType={item.data.Type}
-							userId={user.data?.Id}
-						/>
-						<LikeButton
-							itemId={item.data.Id}
-							isFavorite={item.data.UserData?.IsFavorite}
-							queryKey={["item", "musicTracks"]}
-							userId={user.data?.Id}
-							itemName={item.data.Name}
-						/>
-					</div>
-					<div className="item-info-track-container">
-						<div className="item-info-track header">
-							<span className="material-symbols-rounded index">tag</span>
-							<Typography variant="subtitle1">Title</Typography>
-							<Typography variant="subtitle1">Duration</Typography>
-						</div>
-						{musicTracks.data?.Items?.map((track, index) => (
-							<div
-								className={
-									currentPlayingItem?.Id === track.Id
-										? "item-info-track playing"
-										: "item-info-track"
-								}
-								key={track.Id}
-								onClick={() =>
-									handlePlayback(index, track, musicTracks.data.Items)
-								}
-							>
-								<div className="index-container">
-									<span className="material-symbols-rounded fill ">
-										play_arrow
-									</span>
-									<Typography className="index">
-										{track.IndexNumber ?? "-"}
-									</Typography>
-								</div>
-								<div className="item-info-track-info">
-									<Typography className="item-info-track-info-name">
-										{track.Name}
-									</Typography>
-									<Typography
-										variant="subtitle2"
-										style={{
-											opacity: 0.6,
-										}}
-										fontWeight={300}
-									>
-										{track.Artists?.join(", ")}
-									</Typography>
-								</div>
-								<Typography>{getRuntimeMusic(track.RunTimeTicks)}</Typography>
-								<div className="flex flex-align-center">
-									<LikeButton
-										itemId={track.Id}
-										isFavorite={track.UserData?.IsFavorite}
-										queryKey={["item", "musicTracks"]}
-										userId={user.data?.Id}
-										itemName={track.Name}
-									/>
-								</div>
+						<div className="flex flex-align-center item-info-album-info">
+							<div className="flex flex-align-center">
+								<span
+									className="material-symbols-rounded"
+									style={{
+										opacity: 0.7,
+									}}
+								>
+									artist
+								</span>
+								<Typography ml={1}>{item.data.AlbumArtist}</Typography>
 							</div>
-						))}
-					</div>
-				</div>
-				<div className="item-info-sidebar">
-					<div className="item-info-sidebar-image-container">
-						{item.data.ImageTags?.Primary ? (
-							<img
-								className="item-info-sidebar-image"
-								alt={item.data.Name ?? "Album"}
-								src={api.getItemImageUrl(item.data.Id, "Primary", {
-									tag: item.data.ImageTags.Primary,
-									quality: 90,
-								})}
+							<Typography className="opacity-07">
+								{item.data.ProductionYear}
+							</Typography>
+							<Typography className="opacity-07">
+								{musicTracks.data?.TotalRecordCount > 1
+									? `${musicTracks.data?.TotalRecordCount} songs`
+									: `1 song`}
+							</Typography>
+							<Typography className="opacity-07">
+								{getRuntimeCompact(item.data.CumulativeRunTimeTicks)}
+							</Typography>
+						</div>
+						<div className="item-info-buttons">
+							<PlayButton
+								item={item}
+								audio
+								itemType={item.data.Type}
+								userId={user.data?.Id}
 							/>
-						) : (
-							<div className="item-info-sidebar-icon">
-								{getTypeIcon("MusicAlbum")}
+							<LikeButton
+								itemId={item.data.Id}
+								isFavorite={item.data.UserData?.IsFavorite}
+								queryKey={["item", "musicTracks"]}
+								userId={user.data?.Id}
+								itemName={item.data.Name}
+							/>
+						</div>
+						<div className="item-info-track-container">
+							<div className="item-info-track header">
+								<span className="material-symbols-rounded index">tag</span>
+								<Typography variant="subtitle1">Title</Typography>
+								<Typography variant="subtitle1">Duration</Typography>
 							</div>
-						)}
-					</div>
-					<div
-						className="flex flex-align-center"
-						style={{ gap: "1em", flexWrap: "wrap" }}
-					>
-						{item.data.GenreItems?.map((genre) => (
-							<TagChip label={genre.Name} key={genre.Id} />
-						))}
-					</div>
-					<div className="flex flex-column item-info-sidebar-artist-container">
-						{item.data.ArtistItems?.map((artist) => (
-							<Link
-								to="/artist/$id"
-								params={{ id: artist.Id }}
-								className="item-info-sidebar-artist"
-								key={artist.Id}
-							>
-								<div className="item-info-sidebar-artist-image-container">
-									<img
-										className="item-info-sidebar-artist-image"
-										alt={artist.Name ?? "Artist"}
-										src={api.getItemImageUrl(artist.Id, "Primary", {
-											quality: 90,
-										})}
-									/>
-									<span className="material-symbols-rounded">artist</span>
+							{musicTracks.data?.Items?.map((track, index) => (
+								<div
+									className={
+										currentPlayingItem?.Id === track.Id
+											? "item-info-track playing"
+											: "item-info-track"
+									}
+									key={track.Id}
+									onClick={() =>
+										handlePlayback(index, track, musicTracks.data.Items)
+									}
+								>
+									<div className="index-container">
+										<span className="material-symbols-rounded fill ">
+											play_arrow
+										</span>
+										<Typography className="index">
+											{track.IndexNumber ?? "-"}
+										</Typography>
+									</div>
+									<div className="item-info-track-info">
+										<Typography className="item-info-track-info-name">
+											{track.Name}
+										</Typography>
+										<Typography
+											variant="subtitle2"
+											style={{
+												opacity: 0.6,
+												display: "flex",
+												alignItems: "center",
+												gap: "0.6em",
+											}}
+											fontWeight={300}
+										>
+											{track.HasLyrics && <img src={lyricsIcon} alt="lyrics" />}
+											{track.Artists?.join(", ")}
+										</Typography>
+									</div>
+									<Typography>{getRuntimeMusic(track.RunTimeTicks)}</Typography>
+									<div className="flex flex-align-center">
+										<LikeButton
+											itemId={track.Id}
+											isFavorite={track.UserData?.IsFavorite}
+											queryKey={["item", "musicTracks"]}
+											userId={user.data?.Id}
+											itemName={track.Name}
+										/>
+									</div>
 								</div>
-								<Typography>{artist.Name}</Typography>
-							</Link>
-						))}
+							))}
+						</div>
+					</div>
+					<div className="item-info-sidebar">
+						<div className="item-info-sidebar-image-container">
+							{item.data.ImageTags?.Primary ? (
+								<img
+									className="item-info-sidebar-image"
+									alt={item.data.Name ?? "Album"}
+									src={api.getItemImageUrl(item.data.Id, "Primary", {
+										tag: item.data.ImageTags.Primary,
+										quality: 90,
+									})}
+								/>
+							) : (
+								<div className="item-info-sidebar-icon">
+									{getTypeIcon("MusicAlbum")}
+								</div>
+							)}
+						</div>
+						<div
+							className="flex flex-align-center"
+							style={{ gap: "1em", flexWrap: "wrap" }}
+						>
+							{item.data.GenreItems?.map((genre) => (
+								<TagChip label={genre.Name} key={genre.Id} />
+							))}
+						</div>
+						<div className="flex flex-column item-info-sidebar-artist-container">
+							{item.data.ArtistItems?.map((artist) => (
+								<Link
+									to="/artist/$id"
+									params={{ id: artist.Id }}
+									className="item-info-sidebar-artist"
+									key={artist.Id}
+								>
+									<div className="item-info-sidebar-artist-image-container">
+										<img
+											className="item-info-sidebar-artist-image"
+											alt={artist.Name ?? "Artist"}
+											src={api.getItemImageUrl(artist.Id, "Primary", {
+												quality: 90,
+											})}
+										/>
+										<span className="material-symbols-rounded">artist</span>
+									</div>
+									<Typography>{artist.Name}</Typography>
+								</Link>
+							))}
+						</div>
 					</div>
 				</div>
 				{similarItems.data.TotalRecordCount > 0 && (
 					<CardScroller
 						title="You might also like"
-						displayCards={5}
+						displayCards={7}
 						disableDecoration
 					>
 						{similarItems.data.Items.map((similar) => {

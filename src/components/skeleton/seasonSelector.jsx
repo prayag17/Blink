@@ -1,7 +1,7 @@
 import Divider from "@mui/material/Divider";
+import Grid from "@mui/material/Grid2";
 import Skeleton from "@mui/material/Skeleton";
 import Typography from "@mui/material/Typography";
-import Grid from "@mui/material/Unstable_Grid2";
 import EpisodeSkeleton from "./episode";
 
 export const SeasonSelectorSkeleton = () => {
