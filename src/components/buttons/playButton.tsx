@@ -104,6 +104,7 @@ const PlayButton = ({
 					playlistId: playlistItemId,
 				});
 			} else {
+				console.log(itemType);
 				switch (itemType) {
 					case BaseItemKind.Episode:
 						result = await getTvShowsApi(api).getEpisodes({
@@ -112,11 +113,12 @@ const PlayButton = ({
 								ItemFields.MediaSources,
 								ItemFields.MediaStreams,
 								ItemFields.Overview,
+								ItemFields.Chapters,
 							],
 							enableUserData: true,
 							userId: userId,
 							seasonId: item.SeasonId,
-							// startItemId: item.Id,
+							startItemId: item.Id,
 						});
 						mediaSource = await getMediaInfoApi(api).getPostedPlaybackInfo({
 							audioStreamIndex: currentAudioTrack,
@@ -133,20 +135,6 @@ const PlayButton = ({
 								DeviceProfile: playbackProfile,
 							},
 						});
-						try {
-							introInfo = (
-								await axiosClient.get(
-									`${api.basePath}/Episode/${result.data.Items?.[indexNumber]?.Id}/IntroTimestamps`,
-									{
-										headers: {
-											Authorization: `MediaBrowser Token=${api.accessToken}`,
-										},
-									},
-								)
-							)?.data;
-						} catch (error) {
-							console.error(error);
-						}
 						try {
 							introInfo = (
 								await axiosClient.get(
@@ -169,6 +157,7 @@ const PlayButton = ({
 								ItemFields.MediaSources,
 								ItemFields.MediaStreams,
 								ItemFields.Overview,
+								ItemFields.Chapters,
 							],
 							enableUserData: true,
 							userId: userId,
@@ -240,7 +229,11 @@ const PlayButton = ({
 						result = await getItemsApi(api).getItems({
 							ids: [itemId],
 							userId: userId,
-							fields: [ItemFields.MediaSources, ItemFields.MediaStreams],
+							fields: [
+								ItemFields.MediaSources,
+								ItemFields.MediaStreams,
+								ItemFields.Chapters,
+							],
 							sortOrder: [SortOrder.Ascending],
 							sortBy: ["IndexNumber"],
 						});
@@ -311,6 +304,10 @@ const PlayButton = ({
 				) {
 					playbackUrl = `${api.basePath}${result.mediaSource.MediaSources[0].TranscodingUrl}`;
 				}
+				let playItemValue = item;
+				if (itemType === BaseItemKind.Movie) {
+					playItemValue = result?.item.Items?.[0];
+				} 
 
 				playItem(
 					itemName,
@@ -322,7 +319,7 @@ const PlayButton = ({
 					userId,
 					item.UserData?.PlaybackPositionTicks,
 					item.RunTimeTicks,
-					item,
+					playItemValue,
 					queue,
 					episodeIndex,
 					result?.mediaSource.MediaSources?.[0]?.Id,

@@ -72,6 +72,7 @@ export const Route = createFileRoute("/_api/player/")({
 	component: VideoPlayer,
 });
 
+
 function VideoPlayer() {
 	const api = Route.useRouteContext().api;
 	const { history } = useRouter();
@@ -366,6 +367,45 @@ function VideoPlayer() {
 	}, []);
 	useEffect(() => setForceShowCredits(false), [item?.Id]);
 
+	const chapterMarks = useMemo(() => {
+		const marks: { value?: number; label?: string }[] = [];
+		item?.Chapters?.map((val) => {
+			marks.push({ value: val.StartPositionTicks });
+		});
+		console.log(item);
+		return marks;
+	}, [item?.Chapters]);
+
+	const sliderDisplayFormat = (value: number) => {
+		const chapterName = "";
+		const currentChapter = item?.Chapters?.filter((chapter, index) => {
+			if (index + 1 === item.Chapters?.length) {
+				return chapter;
+			}
+			if (isSeeking) {
+				if (
+					item.Chapters?.[index + 1]?.StartPositionTicks - sliderProgress > 0 &&
+					chapter.StartPositionTicks - sliderProgress < 0
+				) {
+					return chapter;
+				}
+			} else {
+				if (
+					item.Chapters?.[index + 1]?.StartPositionTicks - progress > 0 &&
+					chapter.StartPositionTicks - progress < 0
+				) {
+					return chapter;
+				}
+			}
+		});
+		return (
+			<div className="flex flex-column">
+				<Typography>{currentChapter?.[0].Name}</Typography>
+				<Typography>{ticksDisplay(value)}</Typography>
+			</div>
+		);
+	};
+
 	return (
 		<div className="video-player">
 			<AnimatePresence>
@@ -542,6 +582,9 @@ function VideoPlayer() {
 											background: "white",
 										},
 									}}
+									marks={chapterMarks}
+									valueLabelDisplay="auto"
+									valueLabelFormat={sliderDisplayFormat}
 								/>
 								<div className="video-player-osd-controls-progress-text">
 									<Typography>
