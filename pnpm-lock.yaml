@@ -61,7 +61,7 @@ importers:
         version: 2.0.0-rc.1
       '@tauri-apps/plugin-store':
         specifier: github:tauri-apps/tauri-plugin-store#v2
-        version: https://codeload.github.com/tauri-apps/tauri-plugin-store/tar.gz/066fb36e21633e4b83bb0921318d1fae614d0843
+        version: https://codeload.github.com/tauri-apps/tauri-plugin-store/tar.gz/eb2083f76bc85c6e8731fe52d576d8a6b2407bff
       '@tauri-apps/plugin-updater':
         specifier: 2.0.0-rc.1
         version: 2.0.0-rc.1
@@ -85,7 +85,7 @@ importers:
         version: 2.0.5
       framer-motion:
         specifier: ^11.3.31
-        version: 11.3.31(@emotion/is-prop-valid@1.3.0)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
+        version: 11.4.0(@emotion/is-prop-valid@1.3.0)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
       jassub:
         specifier: ^1.7.17
         version: 1.7.17
@@ -1291,8 +1291,8 @@ packages:
   '@tauri-apps/plugin-process@2.0.0-rc.1':
     resolution: {integrity: sha512-Bl22xdoiu+AqEP6rzjb7DUJwdLDnejuRFukpkdrqF1/VEWJK5PuE903l+8mIOsd17zZ1Ua8y8WaBWnOXx4QHmw==}
 
-  '@tauri-apps/plugin-store@https://codeload.github.com/tauri-apps/tauri-plugin-store/tar.gz/066fb36e21633e4b83bb0921318d1fae614d0843':
-    resolution: {tarball: https://codeload.github.com/tauri-apps/tauri-plugin-store/tar.gz/066fb36e21633e4b83bb0921318d1fae614d0843}
+  '@tauri-apps/plugin-store@https://codeload.github.com/tauri-apps/tauri-plugin-store/tar.gz/eb2083f76bc85c6e8731fe52d576d8a6b2407bff':
+    resolution: {tarball: https://codeload.github.com/tauri-apps/tauri-plugin-store/tar.gz/eb2083f76bc85c6e8731fe52d576d8a6b2407bff}
     version: 2.0.0-rc.1
 
   '@tauri-apps/plugin-updater@2.0.0-rc.1':
@@ -1707,8 +1707,8 @@ packages:
     resolution: {integrity: sha512-ETEklSGi5t0QMZuiXoA/Q6vcnxcLQP5vdugSpuAyi6SVGi2clPPp+xgEhuMaHC+zGgn31Kd235W35f7Hykkaww==}
     engines: {node: '>= 6'}
 
-  framer-motion@11.3.31:
-    resolution: {integrity: sha512-Xmxs08WBXnc2tNzNZbFSpquI33lvleJg4Y+hmZ+vFkn+laN9ZnR3gbZnNGKDtuz7c/x3u8dLg05OU3EhLobCsg==}
+  framer-motion@11.4.0:
+    resolution: {integrity: sha512-gHKUZr88OTMFubkIPkaIZxxX18PhQ6IbYxBoXUVdBLQQKZ3teH2BtxMVVRUsuzIfKs259MlL0elgAiZf82fiHg==}
     peerDependencies:
       '@emotion/is-prop-valid': '*'
       react: ^18.0.0
@@ -2191,6 +2191,9 @@ packages:
 
   picocolors@1.0.1:
     resolution: {integrity: sha512-anP1Z8qwhkbmu7MFP5iTt+wQKXgwzf7zTyGlcdzabySa9vd0Xt392U0rVmz9poOaBj0uHJKyyo9/upk0HrEQew==}
+
+  picocolors@1.1.0:
+    resolution: {integrity: sha512-TQ92mBOW0l3LeMeyLV6mzy/kWr8lkd/hp3mTg7wYK7zJhuBStmGMBG0BdeDZS/dZx1IukaX6Bk11zcln25o1Aw==}
 
   picomatch@2.3.1:
     resolution: {integrity: sha512-JU3teHTNjmE2VCGFzuY8EXzCDVwEqB2a8fsIvwaStHhAWJEeVd1o1QD80CU6+ZdEXXSLbSsuLwJjkCBWqRQUVA==}
@@ -2975,13 +2978,13 @@ snapshots:
 
   '@clack/core@0.3.4':
     dependencies:
-      picocolors: 1.0.1
+      picocolors: 1.1.0
       sisteransi: 1.0.5
 
   '@clack/prompts@0.7.0':
     dependencies:
       '@clack/core': 0.3.4
-      picocolors: 1.0.1
+      picocolors: 1.1.0
       sisteransi: 1.0.5
 
   '@emotion/babel-plugin@11.12.0':
@@ -3767,7 +3770,7 @@ snapshots:
     dependencies:
       '@tauri-apps/api': 2.0.0-rc.4
 
-  '@tauri-apps/plugin-store@https://codeload.github.com/tauri-apps/tauri-plugin-store/tar.gz/066fb36e21633e4b83bb0921318d1fae614d0843':
+  '@tauri-apps/plugin-store@https://codeload.github.com/tauri-apps/tauri-plugin-store/tar.gz/eb2083f76bc85c6e8731fe52d576d8a6b2407bff':
     dependencies:
       '@tauri-apps/api': 2.0.0-rc.4
 
@@ -4232,7 +4235,7 @@ snapshots:
       combined-stream: 1.0.8
       mime-types: 2.1.35
 
-  framer-motion@11.3.31(@emotion/is-prop-valid@1.3.0)(react-dom@18.3.1(react@18.3.1))(react@18.3.1):
+  framer-motion@11.4.0(@emotion/is-prop-valid@1.3.0)(react-dom@18.3.1(react@18.3.1))(react@18.3.1):
     dependencies:
       tslib: 2.7.0
     optionalDependencies:
@@ -4881,6 +4884,8 @@ snapshots:
   pathe@1.1.2: {}
 
   picocolors@1.0.1: {}
+
+  picocolors@1.1.0: {}
 
   picomatch@2.3.1: {}
 
