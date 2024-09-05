@@ -31,7 +31,7 @@
 		"@tauri-apps/plugin-clipboard-manager": "2.1.0-beta.5",
 		"@tauri-apps/plugin-process": "2.0.0-rc.1",
 		"@tauri-apps/plugin-store": "github:tauri-apps/tauri-plugin-store#v2",
-		"@tauri-apps/plugin-updater": "2.0.0-rc.1",
+		"@tauri-apps/plugin-updater": "2.0.0-rc.2",
 		"@types/node": "^22.5.1",
 		"@types/react": "^18.3.5",
 		"@types/react-dom": "^18.3.0",
