@@ -1,5 +1,41 @@
-- # 0.0.6-dev
+- # 0.0.6-dev (9/7/2024)
     > **Note** : This is an unstable release
+    - feat: add video player slider bubble theming #337
+    - feat: add trickplay support #338 #337
+    - fix(ci): update env variables
+    - fix(ci): fix ubuntu build failing
+    - chore(deps): update js and rust deps
+    - feat: add chapter markers #337
+    - feat: add subtitle support #337
+    - fix(ci): invalid tauri build command
+    - fix(ci):workflow repo name
+    - feat: remember last search query
+    - feat: add new audioPlayer route and allow reordering queue
+    - chore(deps): update deps
+    - chore(deps): cleanup unused dependencies and update dependencies
+    - refactor: replace wavesurfer with html audio player
+    - feat: add new album page
+    - fix: quick connect not working
+    - chore: change tauri updater signing keys
+    - feat: show upNext card for episode items in player
+    - fix: login page not working
+    - Merge pull request #332 from pypp/feat/double-click-fullscreen
+    - Merge pull request #333 from pypp/feat/scrollwheel-volume-control
+    - fix: removed subtitleRenderer state that was added while merging
+    - fix: fixed bug caused by merge econflicts
+    - Merge remote-tracking branch 'upstream/main' into feat/scrollwheel-volume-control
+    - fix: fixed fucntion to use the new API
+    - Merge remote-tracking branch 'upstream/main' into feat/double-click-fullscreen
+    - Merge branch 'main' of https://github.com/pypp/JellyPlayer into feat/double-click-fullscreen
+    - fix(deps): update dependency babel-plugin-react-compiler to v0.0.0
+    - fix(deps): update tauri monorepo
+    - chore(deps): update dependencies
+    - feat: allow toggling subtitles on and off from player
+    - fix: playNext and playPrevious logic
+    - feat: add intro-skipper
+    - refactor: cleanup unused variables in playbackStore
+    - chore(deps): update packages
+    - refactor: support vtt and ass subtitles
     - refactor: add sorting options to library page for Series and BoxSets
     - style: update hero-carousel styling
     - chore(deps): update deps
