@@ -361,34 +361,277 @@ declare module '@tanstack/react-router' {
 
 // Create and export the route tree
 
-export const routeTree = rootRoute.addChildren({
-  IndexRoute,
-  ApiRoute: ApiRoute.addChildren({
-    ApiLibraryRoute: ApiLibraryRoute.addChildren({ ApiLibraryIdRoute }),
-    ApiLoginRoute: ApiLoginRoute.addChildren({
-      ApiLoginListRoute,
-      ApiLoginManualRoute,
-      ApiLoginUserIdUserNameRoute,
-    }),
-    ApiSearchRoute: ApiSearchRoute.addChildren({ ApiSearchIndexRoute }),
-    ApiAlbumIdRoute,
-    ApiArtistIdRoute,
-    ApiBoxsetIdRoute,
-    ApiEpisodeIdRoute,
-    ApiItemIdRoute,
-    ApiPersonIdRoute,
-    ApiPlayerAudioRoute,
-    ApiPlaylistIdRoute,
-    ApiSeriesIdRoute,
-    ApiFavoriteIndexRoute,
-    ApiHomeIndexRoute,
-    ApiPlayerIndexRoute,
-  }),
-  ErrorCodeRoute,
-  SetupServerAddRoute,
-  SetupServerErrorRoute,
-  SetupServerListRoute,
-})
+interface ApiLibraryRouteChildren {
+  ApiLibraryIdRoute: typeof ApiLibraryIdRoute
+}
+
+const ApiLibraryRouteChildren: ApiLibraryRouteChildren = {
+  ApiLibraryIdRoute: ApiLibraryIdRoute,
+}
+
+const ApiLibraryRouteWithChildren = ApiLibraryRoute._addFileChildren(
+  ApiLibraryRouteChildren,
+)
+
+interface ApiLoginRouteChildren {
+  ApiLoginListRoute: typeof ApiLoginListRoute
+  ApiLoginManualRoute: typeof ApiLoginManualRoute
+  ApiLoginUserIdUserNameRoute: typeof ApiLoginUserIdUserNameRoute
+}
+
+const ApiLoginRouteChildren: ApiLoginRouteChildren = {
+  ApiLoginListRoute: ApiLoginListRoute,
+  ApiLoginManualRoute: ApiLoginManualRoute,
+  ApiLoginUserIdUserNameRoute: ApiLoginUserIdUserNameRoute,
+}
+
+const ApiLoginRouteWithChildren = ApiLoginRoute._addFileChildren(
+  ApiLoginRouteChildren,
+)
+
+interface ApiSearchRouteChildren {
+  ApiSearchIndexRoute: typeof ApiSearchIndexRoute
+}
+
+const ApiSearchRouteChildren: ApiSearchRouteChildren = {
+  ApiSearchIndexRoute: ApiSearchIndexRoute,
+}
+
+const ApiSearchRouteWithChildren = ApiSearchRoute._addFileChildren(
+  ApiSearchRouteChildren,
+)
+
+interface ApiRouteChildren {
+  ApiLibraryRoute: typeof ApiLibraryRouteWithChildren
+  ApiLoginRoute: typeof ApiLoginRouteWithChildren
+  ApiSearchRoute: typeof ApiSearchRouteWithChildren
+  ApiAlbumIdRoute: typeof ApiAlbumIdRoute
+  ApiArtistIdRoute: typeof ApiArtistIdRoute
+  ApiBoxsetIdRoute: typeof ApiBoxsetIdRoute
+  ApiEpisodeIdRoute: typeof ApiEpisodeIdRoute
+  ApiItemIdRoute: typeof ApiItemIdRoute
+  ApiPersonIdRoute: typeof ApiPersonIdRoute
+  ApiPlayerAudioRoute: typeof ApiPlayerAudioRoute
+  ApiPlaylistIdRoute: typeof ApiPlaylistIdRoute
+  ApiSeriesIdRoute: typeof ApiSeriesIdRoute
+  ApiFavoriteIndexRoute: typeof ApiFavoriteIndexRoute
+  ApiHomeIndexRoute: typeof ApiHomeIndexRoute
+  ApiPlayerIndexRoute: typeof ApiPlayerIndexRoute
+}
+
+const ApiRouteChildren: ApiRouteChildren = {
+  ApiLibraryRoute: ApiLibraryRouteWithChildren,
+  ApiLoginRoute: ApiLoginRouteWithChildren,
+  ApiSearchRoute: ApiSearchRouteWithChildren,
+  ApiAlbumIdRoute: ApiAlbumIdRoute,
+  ApiArtistIdRoute: ApiArtistIdRoute,
+  ApiBoxsetIdRoute: ApiBoxsetIdRoute,
+  ApiEpisodeIdRoute: ApiEpisodeIdRoute,
+  ApiItemIdRoute: ApiItemIdRoute,
+  ApiPersonIdRoute: ApiPersonIdRoute,
+  ApiPlayerAudioRoute: ApiPlayerAudioRoute,
+  ApiPlaylistIdRoute: ApiPlaylistIdRoute,
+  ApiSeriesIdRoute: ApiSeriesIdRoute,
+  ApiFavoriteIndexRoute: ApiFavoriteIndexRoute,
+  ApiHomeIndexRoute: ApiHomeIndexRoute,
+  ApiPlayerIndexRoute: ApiPlayerIndexRoute,
+}
+
+const ApiRouteWithChildren = ApiRoute._addFileChildren(ApiRouteChildren)
+
+interface FileRoutesByFullPath {
+  '/': typeof IndexRoute
+  '': typeof ApiRouteWithChildren
+  '/library': typeof ApiLibraryRouteWithChildren
+  '/login': typeof ApiLoginRouteWithChildren
+  '/search': typeof ApiSearchRouteWithChildren
+  '/error/$code': typeof ErrorCodeRoute
+  '/album/$id': typeof ApiAlbumIdRoute
+  '/artist/$id': typeof ApiArtistIdRoute
+  '/boxset/$id': typeof ApiBoxsetIdRoute
+  '/episode/$id': typeof ApiEpisodeIdRoute
+  '/item/$id': typeof ApiItemIdRoute
+  '/library/$id': typeof ApiLibraryIdRoute
+  '/login/list': typeof ApiLoginListRoute
+  '/login/manual': typeof ApiLoginManualRoute
+  '/person/$id': typeof ApiPersonIdRoute
+  '/player/audio': typeof ApiPlayerAudioRoute
+  '/playlist/$id': typeof ApiPlaylistIdRoute
+  '/series/$id': typeof ApiSeriesIdRoute
+  '/setup/server/add': typeof SetupServerAddRoute
+  '/setup/server/error': typeof SetupServerErrorRoute
+  '/setup/server/list': typeof SetupServerListRoute
+  '/favorite': typeof ApiFavoriteIndexRoute
+  '/home': typeof ApiHomeIndexRoute
+  '/player': typeof ApiPlayerIndexRoute
+  '/search/': typeof ApiSearchIndexRoute
+  '/login/$userId/$userName': typeof ApiLoginUserIdUserNameRoute
+}
+
+interface FileRoutesByTo {
+  '/': typeof IndexRoute
+  '': typeof ApiRouteWithChildren
+  '/library': typeof ApiLibraryRouteWithChildren
+  '/login': typeof ApiLoginRouteWithChildren
+  '/error/$code': typeof ErrorCodeRoute
+  '/album/$id': typeof ApiAlbumIdRoute
+  '/artist/$id': typeof ApiArtistIdRoute
+  '/boxset/$id': typeof ApiBoxsetIdRoute
+  '/episode/$id': typeof ApiEpisodeIdRoute
+  '/item/$id': typeof ApiItemIdRoute
+  '/library/$id': typeof ApiLibraryIdRoute
+  '/login/list': typeof ApiLoginListRoute
+  '/login/manual': typeof ApiLoginManualRoute
+  '/person/$id': typeof ApiPersonIdRoute
+  '/player/audio': typeof ApiPlayerAudioRoute
+  '/playlist/$id': typeof ApiPlaylistIdRoute
+  '/series/$id': typeof ApiSeriesIdRoute
+  '/setup/server/add': typeof SetupServerAddRoute
+  '/setup/server/error': typeof SetupServerErrorRoute
+  '/setup/server/list': typeof SetupServerListRoute
+  '/favorite': typeof ApiFavoriteIndexRoute
+  '/home': typeof ApiHomeIndexRoute
+  '/player': typeof ApiPlayerIndexRoute
+  '/search': typeof ApiSearchIndexRoute
+  '/login/$userId/$userName': typeof ApiLoginUserIdUserNameRoute
+}
+
+interface FileRoutesById {
+  '/': typeof IndexRoute
+  '/_api': typeof ApiRouteWithChildren
+  '/_api/library': typeof ApiLibraryRouteWithChildren
+  '/_api/login': typeof ApiLoginRouteWithChildren
+  '/_api/search': typeof ApiSearchRouteWithChildren
+  '/error/$code': typeof ErrorCodeRoute
+  '/_api/album/$id': typeof ApiAlbumIdRoute
+  '/_api/artist/$id': typeof ApiArtistIdRoute
+  '/_api/boxset/$id': typeof ApiBoxsetIdRoute
+  '/_api/episode/$id': typeof ApiEpisodeIdRoute
+  '/_api/item/$id': typeof ApiItemIdRoute
+  '/_api/library/$id': typeof ApiLibraryIdRoute
+  '/_api/login/list': typeof ApiLoginListRoute
+  '/_api/login/manual': typeof ApiLoginManualRoute
+  '/_api/person/$id': typeof ApiPersonIdRoute
+  '/_api/player/audio': typeof ApiPlayerAudioRoute
+  '/_api/playlist/$id': typeof ApiPlaylistIdRoute
+  '/_api/series/$id': typeof ApiSeriesIdRoute
+  '/setup/server/add': typeof SetupServerAddRoute
+  '/setup/server/error': typeof SetupServerErrorRoute
+  '/setup/server/list': typeof SetupServerListRoute
+  '/_api/favorite/': typeof ApiFavoriteIndexRoute
+  '/_api/home/': typeof ApiHomeIndexRoute
+  '/_api/player/': typeof ApiPlayerIndexRoute
+  '/_api/search/': typeof ApiSearchIndexRoute
+  '/_api/login/$userId/$userName': typeof ApiLoginUserIdUserNameRoute
+}
+
+interface FileRouteTypes {
+  fileRoutesByFullPath: FileRoutesByFullPath
+  fullPaths:
+    | '/'
+    | ''
+    | '/library'
+    | '/login'
+    | '/search'
+    | '/error/$code'
+    | '/album/$id'
+    | '/artist/$id'
+    | '/boxset/$id'
+    | '/episode/$id'
+    | '/item/$id'
+    | '/library/$id'
+    | '/login/list'
+    | '/login/manual'
+    | '/person/$id'
+    | '/player/audio'
+    | '/playlist/$id'
+    | '/series/$id'
+    | '/setup/server/add'
+    | '/setup/server/error'
+    | '/setup/server/list'
+    | '/favorite'
+    | '/home'
+    | '/player'
+    | '/search/'
+    | '/login/$userId/$userName'
+  fileRoutesByTo: FileRoutesByTo
+  to:
+    | '/'
+    | ''
+    | '/library'
+    | '/login'
+    | '/error/$code'
+    | '/album/$id'
+    | '/artist/$id'
+    | '/boxset/$id'
+    | '/episode/$id'
+    | '/item/$id'
+    | '/library/$id'
+    | '/login/list'
+    | '/login/manual'
+    | '/person/$id'
+    | '/player/audio'
+    | '/playlist/$id'
+    | '/series/$id'
+    | '/setup/server/add'
+    | '/setup/server/error'
+    | '/setup/server/list'
+    | '/favorite'
+    | '/home'
+    | '/player'
+    | '/search'
+    | '/login/$userId/$userName'
+  id:
+    | '/'
+    | '/_api'
+    | '/_api/library'
+    | '/_api/login'
+    | '/_api/search'
+    | '/error/$code'
+    | '/_api/album/$id'
+    | '/_api/artist/$id'
+    | '/_api/boxset/$id'
+    | '/_api/episode/$id'
+    | '/_api/item/$id'
+    | '/_api/library/$id'
+    | '/_api/login/list'
+    | '/_api/login/manual'
+    | '/_api/person/$id'
+    | '/_api/player/audio'
+    | '/_api/playlist/$id'
+    | '/_api/series/$id'
+    | '/setup/server/add'
+    | '/setup/server/error'
+    | '/setup/server/list'
+    | '/_api/favorite/'
+    | '/_api/home/'
+    | '/_api/player/'
+    | '/_api/search/'
+    | '/_api/login/$userId/$userName'
+  fileRoutesById: FileRoutesById
+}
+
+interface RootRouteChildren {
+  IndexRoute: typeof IndexRoute
+  ApiRoute: typeof ApiRouteWithChildren
+  ErrorCodeRoute: typeof ErrorCodeRoute
+  SetupServerAddRoute: typeof SetupServerAddRoute
+  SetupServerErrorRoute: typeof SetupServerErrorRoute
+  SetupServerListRoute: typeof SetupServerListRoute
+}
+
+const rootRouteChildren: RootRouteChildren = {
+  IndexRoute: IndexRoute,
+  ApiRoute: ApiRouteWithChildren,
+  ErrorCodeRoute: ErrorCodeRoute,
+  SetupServerAddRoute: SetupServerAddRoute,
+  SetupServerErrorRoute: SetupServerErrorRoute,
+  SetupServerListRoute: SetupServerListRoute,
+}
+
+export const routeTree = rootRoute
+  ._addFileChildren(rootRouteChildren)
+  ._addFileTypes<FileRouteTypes>()
 
 /* prettier-ignore-end */
 

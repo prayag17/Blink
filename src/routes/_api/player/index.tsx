@@ -1,5 +1,5 @@
 import { WebviewWindow as appWindow } from "@tauri-apps/api/webviewWindow";
-import React, { MouseEventHandler, type ChangeEventHandler } from "react";
+import React from "react";
 import { useLayoutEffect, useMemo } from "react";
 
 import CircularProgress from "@mui/material/CircularProgress";
@@ -35,9 +35,11 @@ import { AnimatePresence, motion } from "framer-motion";
 
 import { setBackdrop } from "@/utils/store/backdrop";
 
-import { Button, TextField } from "@mui/material";
+import { Button, LinearProgress, TextField } from "@mui/material";
 import JASSUB from "jassub";
+//@ts-ignore
 import workerUrl from "jassub/dist/jassub-worker.js?url";
+//@ts-ignore
 import wasmUrl from "jassub/dist/jassub-worker.wasm?url";
 
 import PlayNextButton from "@/components/buttons/playNextButton";
@@ -46,11 +48,9 @@ import QueueButton from "@/components/buttons/queueButton";
 import OutroCard from "@/components/outroCard";
 import { useApiInContext } from "@/utils/store/api";
 import useQueue from "@/utils/store/queue";
-import type { Mark } from "@mui/material/Slider/useSlider.types";
 import { createFileRoute, useRouter } from "@tanstack/react-router";
-import axios from "axios";
+import { toNumber } from "lodash";
 import type { OnProgressProps } from "react-player/base";
-import subtitleFont from "./Noto-Sans-Indosphere.ttf";
 
 const ticksDisplay = (ticks: number) => {
 	const time = Math.round(ticks / 10000);
@@ -73,7 +73,7 @@ const ticksDisplay = (ticks: number) => {
 	})}`;
 	return formatedTime;
 };
-const VOLUME_SCROLL_INTERVAL = 0.05;
+const VOLUME_SCROLL_INTERVAL = 0.02;
 
 export const Route = createFileRoute("/_api/player/")({
 	component: VideoPlayer,
@@ -113,7 +113,9 @@ function VideoPlayer() {
 	]);
 
 	const [loading, setLoading] = useState(true);
-	const [settingsMenu, setSettingsMenu] = useState(null);
+	const [settingsMenu, setSettingsMenu] = useState<HTMLButtonElement | null>(
+		null,
+	);
 	const settingsMenuOpen = Boolean(settingsMenu);
 	const [showVolumeControl, setShowVolumeControl] = useState(false);
 
@@ -130,18 +132,12 @@ function VideoPlayer() {
 
 	useEffect(() => setBackdrop("", ""), []);
 
-	const [clickTimeout, setClickTimeout] = useState<NodeJS.Timeout>(null);
-
-	const showSubtitles = useMemo(
-		() => mediaSource.subtitle.enable,
-		[mediaSource.subtitle],
-	);
+	const [clickTimeout, setClickTimeout] = useState<NodeJS.Timeout>(null!);
 
 	const handleReady = async () => {
 		if (!isReady) {
 			player.current?.seekTo(ticksToSec(startPosition), "seconds");
 			setIsReady(true);
-			console.log(item);
 			// Report Jellyfin server: Playback has begin
 			getPlaystateApi(api).reportPlaybackStart({
 				playbackStartInfo: {
@@ -212,41 +208,43 @@ function VideoPlayer() {
 		timer = setTimeout(() => setHoveringOsd(false), 5000);
 	};
 
-	const handleKeyPress = useCallback((event) => {
-		switch (event.key) {
-			case "ArrowRight":
-				player.current.seekTo(player.current.getCurrentTime() + 10);
-				break;
-			case "ArrowLeft":
-				player.current.seekTo(player.current.getCurrentTime() - 10);
-				break;
-			case " ":
-				setPlaying((state) => !state);
-				break;
-			case "ArrowUp":
-				// setVolume((state) => (state <= 0.9 ? state + 0.1 : state));
-				break;
-			case "ArrowDown":
-				// setVolume((state) => (state >= 0.1 ? state - 0.1 : state));
-				break;
-			case "F":
-			case "f":
-				setAppFullscreen((state) => {
-					appWindow.getCurrent().setFullscreen(!state);
-					return !state;
-				});
-				break;
-			case "P":
-			case "p":
-				// setIsPIP((state) => !state);
-				break;
-			case "M":
-			case "m":
-				// setIsMuted((state) => !state);
-				break;
-			default:
-				console.log(event.key);
-				break;
+	const handleKeyPress = useCallback((event: KeyboardEvent) => {
+		if (player.current) {
+			switch (event.key) {
+				case "ArrowRight":
+					player.current.seekTo(player.current.getCurrentTime() + 10);
+					break;
+				case "ArrowLeft":
+					player.current.seekTo(player.current.getCurrentTime() - 10);
+					break;
+				case " ":
+					setPlaying((state) => !state);
+					break;
+				case "ArrowUp":
+					// setVolume((state) => (state <= 0.9 ? state + 0.1 : state));
+					break;
+				case "ArrowDown":
+					// setVolume((state) => (state >= 0.1 ? state - 0.1 : state));
+					break;
+				case "F":
+				case "f":
+					setAppFullscreen((state) => {
+						appWindow.getCurrent().setFullscreen(!state);
+						return !state;
+					});
+					break;
+				case "P":
+				case "p":
+					// setIsPIP((state) => !state);
+					break;
+				case "M":
+				case "m":
+					// setIsMuted((state) => !state);
+					break;
+				default:
+					console.log(event.key);
+					break;
+			}
 		}
 	}, []);
 
@@ -262,8 +260,6 @@ function VideoPlayer() {
 
 	useEffect(() => {
 		const handleMouseWheel = (event: WheelEvent) => {
-			console.log(event.deltaY);
-
 			if (event.deltaY < 0) {
 				// increase volume
 				setVolume((state) => Math.min(1, state + VOLUME_SCROLL_INTERVAL));
@@ -305,11 +301,6 @@ function VideoPlayer() {
 		}
 		return [];
 	}, [mediaSource.subtitle.track, mediaSource.subtitle.enable]);
-	const handleSubtitleChange = (
-		e: ChangeEventHandler<HTMLInputElement | HTMLTextAreaElement>,
-	) => {
-		changeSubtitleTrack(e.target.value, mediaSource.subtitle.allTracks);
-	};
 
 	useEffect(() => {
 		if (player.current?.getInternalPlayer() && mediaSource.subtitle.enable) {
@@ -318,6 +309,7 @@ function VideoPlayer() {
 				mediaSource.subtitle.format === "ssa"
 			) {
 				const jassubRenderer = new JASSUB({
+					//@ts-ignore
 					video: player.current?.getInternalPlayer(),
 					workerUrl,
 					wasmUrl,
@@ -375,11 +367,10 @@ function VideoPlayer() {
 	useEffect(() => setForceShowCredits(false), [item?.Id]);
 
 	const chapterMarks = useMemo(() => {
-		const marks: Mark[] = [];
+		const marks: { value: number }[] = [];
 		item?.Chapters?.map((val) => {
 			marks.push({ value: val.StartPositionTicks ?? 0 });
 		});
-		console.log(item);
 		return marks;
 	}, [item?.Chapters]);
 
@@ -390,15 +381,19 @@ function VideoPlayer() {
 			}
 			if (isSeeking) {
 				if (
-					item.Chapters?.[index + 1]?.StartPositionTicks - sliderProgress > 0 &&
-					chapter.StartPositionTicks - sliderProgress < 0
+					(item.Chapters?.[index + 1]?.StartPositionTicks ?? sliderProgress) -
+						sliderProgress >=
+						0 &&
+					(chapter.StartPositionTicks ?? sliderProgress) - sliderProgress < 0
 				) {
 					return chapter;
 				}
 			} else {
 				if (
-					item.Chapters?.[index + 1]?.StartPositionTicks - progress > 0 &&
-					chapter.StartPositionTicks - progress < 0
+					(item.Chapters?.[index + 1]?.StartPositionTicks ?? progress) -
+						progress >=
+						0 &&
+					(chapter.StartPositionTicks ?? progress) - progress < 0
 				) {
 					return chapter;
 				}
@@ -415,8 +410,9 @@ function VideoPlayer() {
 			for (const [_, trickInfo] of Object.entries(trickplayResolutions)) {
 				if (
 					!bestWidth ||
-					(trickInfo.Width < bestWidth && bestWidth > maxWidth) ||
-					(trickInfo.Width > bestWidth && bestWidth <= maxWidth)
+					(trickInfo.Width &&
+						((trickInfo.Width < bestWidth && bestWidth > maxWidth) ||
+							(trickInfo.Width > bestWidth && bestWidth <= maxWidth)))
 				) {
 					bestWidth = trickInfo.Width;
 				}
@@ -435,28 +431,49 @@ function VideoPlayer() {
 				? Math.floor(ticksToMs(value) / trickplayResolution?.Interval)
 				: 0;
 			const trickplayImageSize =
-				trickplayResolution?.TileWidth * trickplayResolution?.TileHeight;
+				trickplayResolution?.TileWidth * trickplayResolution?.TileHeight; // this gives the area of a single tile
 
-			const trickplayImageOffset = currentTrickplayImage % trickplayImageSize;
-			console.log(trickplayImageOffset);
+			const trickplayImageOffset = currentTrickplayImage % trickplayImageSize; // this gives the tile index inside a trickplay image
+			const index = Math.floor(currentTrickplayImage / trickplayImageSize); // this gives the index of trickplay image
 
-			const index = Math.floor(currentTrickplayImage / trickplayImageSize);
 			const imageOffsetX =
-				trickplayImageOffset % trickplayResolution?.TileWidth;
+				trickplayImageOffset % trickplayResolution?.TileWidth; // this gives the x coordinate of tile in trickplay image
 			const imageOffsetY = Math.floor(
 				trickplayImageOffset / trickplayResolution?.TileWidth,
-			);
+			); // this gives the y coordinate of tile in trickplay image
 			const backgroundOffsetX = -(imageOffsetX * trickplayResolution?.Width);
 			const backgroundOffsetY = -(imageOffsetY * trickplayResolution?.Height);
 
-			const imgUrlParamsObject = {
+			const imgUrlParamsObject: Record<string, string> = {
 				api_key: api.accessToken,
-				MediaSourceId: mediaSource.id,
+				MediaSourceId: mediaSource.id ?? "",
 			};
-			const imgUrlParams = new URLSearchParams(imgUrlParamsObject);
+			const imgUrlParams = new URLSearchParams(imgUrlParamsObject).toString();
 
+			if (currentChapter?.[0]?.Name) {
+				return (
+					<div className="flex flex-column video-osb-bubble glass">
+						<div
+							className="video-osd-trickplayBubble"
+							style={{
+								background: `url(${api.basePath}/Videos/${item?.Id}/Trickplay/${trickplayResolution.Width}/${index}.jpg?${imgUrlParams})`,
+								backgroundPositionX: `${backgroundOffsetX}px`,
+								backgroundPositionY: `${backgroundOffsetY}px`,
+								width: `${trickplayResolution.Width}px`,
+								height: `${trickplayResolution.Height}px`,
+							}}
+						/>
+						<Typography variant="h6" px={2} pt={1}>
+							{currentChapter?.[0]?.Name}
+						</Typography>
+						<Typography px={2} pb={1}>
+							{ticksDisplay(value)}
+						</Typography>
+					</div>
+				);
+			}
 			return (
-				<div className="flex flex-column">
+				<div className="flex flex-column video-osb-bubble glass">
 					<div
 						className="video-osd-trickplayBubble"
 						style={{
@@ -464,31 +481,44 @@ function VideoPlayer() {
 							backgroundPositionX: `${backgroundOffsetX}px`,
 							backgroundPositionY: `${backgroundOffsetY}px`,
 							width: `${trickplayResolution.Width}px`,
+							height: `${trickplayResolution.Height}px`,
 						}}
 					/>
-					<Typography>{currentChapter?.[0].Name}</Typography>
-					<Typography>{ticksDisplay(value)}</Typography>
+					<Typography variant="h6" px={2} py={1}>
+						{ticksDisplay(value)}
+					</Typography>
+				</div>
+			);
+		}
+		if (currentChapter?.[0]?.Name) {
+			return (
+				<div className="flex flex-column video-osb-bubble glass">
+					<Typography variant="h6" px={2} pt={1}>
+						{currentChapter?.[0]?.Name}
+					</Typography>
+					<Typography px={2} pb={1}>
+						{ticksDisplay(value)}
+					</Typography>
 				</div>
 			);
 		}
 		return (
-			<div className="flex flex-column">
-				<Typography>{currentChapter?.[0].Name}</Typography>
-				<Typography>{ticksDisplay(value)}</Typography>
+			<div className="flex flex-column video-osb-bubble glass">
+				<Typography variant="h6" px={2} py={1}>
+					{ticksDisplay(value)}
+				</Typography>
 			</div>
 		);
 	};
 
-	// useEffect(() => {
-	// 	async function testTrick() {
-	// 		const result = await axios.get(
-	// 			`${api.basePath}/Videos/${item?.Id}/Trickplay/320/0.jpg`,
-	// 			{ headers: { Authorization: api.authorizationHeader } },
-	// 		);
-	// 		console.log(result);
-	// 	}
-	// 	testTrick();
-	// }, []);
+	const [showVolumeIndicator, setVolumeIndicator] = useState(false);
+	useEffect(() => {
+		setVolumeIndicator(true);
+		const timeout = setTimeout(() => {
+			setVolumeIndicator(false);
+		}, 1000);
+		return () => clearTimeout(timeout);
+	}, [volume]);
 
 	return (
 		<div className="video-player">
@@ -520,6 +550,7 @@ function VideoPlayer() {
 				<Button
 					variant="outlined"
 					size="large"
+					//@ts-ignore
 					color="white"
 					style={{
 						position: "absolute",
@@ -535,6 +566,25 @@ function VideoPlayer() {
 			{!forceShowCredits && showUpNextCard && (
 				<OutroCard handleShowCredits={handleShowCredits} />
 			)}
+			<AnimatePresence>
+				{showVolumeIndicator && (
+					<motion.div
+						initial={{ opacity: 0 }}
+						animate={{ opacity: 1 }}
+						exit={{ opacity: 0 }}
+						className="video-volume-indicator glass"
+					>
+						<div className="material-symbols-rounded">
+							{volume > 0.7 ? "volume_up" : "volume_down"}
+						</div>
+						<LinearProgress
+							style={{ width: "100%" }}
+							value={volume * 100}
+							variant="determinate"
+						/>
+					</motion.div>
+				)}
+			</AnimatePresence>
 			<motion.div
 				className={
 					hoveringOsd || !playing || isSeeking
@@ -575,9 +625,7 @@ function VideoPlayer() {
 					<IconButton onClick={handleExitPlayer}>
 						<span className="material-symbols-rounded">arrow_back</span>
 					</IconButton>
-					<IconButton
-						onClick={(e: MouseEvent) => setSettingsMenu(e.currentTarget)}
-					>
+					<IconButton onClick={(e) => setSettingsMenu(e.currentTarget)}>
 						<span className="material-symbols-rounded">settings</span>
 					</IconButton>
 					<Menu
@@ -606,7 +654,14 @@ function VideoPlayer() {
 							label="Subtitles"
 							variant="outlined"
 							value={mediaSource.subtitle.track}
-							onChange={handleSubtitleChange}
+							onChange={(e) => {
+								if (mediaSource.subtitle.allTracks) {
+									changeSubtitleTrack(
+										toNumber(e.target.value),
+										mediaSource.subtitle.allTracks,
+									);
+								}
+							}}
 							fullWidth
 							disabled={mediaSource.subtitle.track === -2}
 						>
@@ -624,10 +679,10 @@ function VideoPlayer() {
 				{(forceShowCredits || !showUpNextCard) && (
 					<div className="video-player-osd-info">
 						<Typography variant="h4" fontWeight={500} mb={2}>
-							<>{itemName}</>
+							{itemName}
 							{episodeTitle && (
 								<Typography variant="h6" fontWeight={300} mt={1}>
-									<>{episodeTitle}</>
+									{episodeTitle}
 								</Typography>
 							)}
 						</Typography>
@@ -636,7 +691,7 @@ function VideoPlayer() {
 								<Slider
 									value={isSeeking ? sliderProgress : progress}
 									max={itemDuration}
-									step={secToTicks(10)}
+									step={1}
 									onChange={(_, newValue) => {
 										setIsSeeking(true);
 										Array.isArray(newValue)
@@ -648,7 +703,14 @@ function VideoPlayer() {
 										Array.isArray(newValue)
 											? setProgress(newValue[0])
 											: setProgress(newValue);
-										player.current?.seekTo(ticksToSec(newValue), "seconds");
+										if (Array.isArray(newValue)) {
+											player.current?.seekTo(
+												ticksToSec(newValue[0]),
+												"seconds",
+											);
+										} else {
+											player.current?.seekTo(ticksToSec(newValue), "seconds");
+										}
 									}}
 									sx={{
 										"& .MuiSlider-thumb": {
