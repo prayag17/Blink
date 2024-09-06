@@ -3,7 +3,7 @@
  * @param {number} ticks - C# ticks of a particular item
  * @return {number} Converted ticks to Milliseconds
  */
-const ticksToMs = (ticks) => {
+export const ticksToMs = (ticks) => {
 	return Math.round(ticks / 10000);
 };
 

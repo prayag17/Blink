@@ -17,7 +17,7 @@ import {
 	usePlaybackStore,
 } from "@/utils/store/playback";
 
-import { secToTicks, ticksToSec } from "@/utils/date/time";
+import { secToTicks, ticksToMs, ticksToSec } from "@/utils/date/time";
 import { useCallback, useEffect, useRef, useState } from "react";
 
 import { getPlaystateApi } from "@jellyfin/sdk/lib/utils/api/playstate-api";
@@ -26,7 +26,11 @@ import "./videoPlayer.scss";
 
 import { endsAt } from "@/utils/date/time";
 
-import { PlayMethod, RepeatMode } from "@jellyfin/sdk/lib/generated-client";
+import {
+	PlayMethod,
+	RepeatMode,
+	type TrickplayInfo,
+} from "@jellyfin/sdk/lib/generated-client";
 import { AnimatePresence, motion } from "framer-motion";
 
 import { setBackdrop } from "@/utils/store/backdrop";
@@ -40,8 +44,11 @@ import PlayNextButton from "@/components/buttons/playNextButton";
 import PlayPreviousButton from "@/components/buttons/playPreviousButtom";
 import QueueButton from "@/components/buttons/queueButton";
 import OutroCard from "@/components/outroCard";
+import { useApiInContext } from "@/utils/store/api";
 import useQueue from "@/utils/store/queue";
+import type { Mark } from "@mui/material/Slider/useSlider.types";
 import { createFileRoute, useRouter } from "@tanstack/react-router";
+import axios from "axios";
 import type { OnProgressProps } from "react-player/base";
 import subtitleFont from "./Noto-Sans-Indosphere.ttf";
 
@@ -74,7 +81,7 @@ export const Route = createFileRoute("/_api/player/")({
 
 
 function VideoPlayer() {
-	const api = Route.useRouteContext().api;
+	const api = useApiInContext((s) => s.api);
 	const { history } = useRouter();
 	const [hoveringOsd, setHoveringOsd] = useState(false);
 	const player = useRef<ReactPlayer | null>(null);
@@ -368,16 +375,15 @@ function VideoPlayer() {
 	useEffect(() => setForceShowCredits(false), [item?.Id]);
 
 	const chapterMarks = useMemo(() => {
-		const marks: { value?: number; label?: string }[] = [];
+		const marks: Mark[] = [];
 		item?.Chapters?.map((val) => {
-			marks.push({ value: val.StartPositionTicks });
+			marks.push({ value: val.StartPositionTicks ?? 0 });
 		});
 		console.log(item);
 		return marks;
 	}, [item?.Chapters]);
 
 	const sliderDisplayFormat = (value: number) => {
-		const chapterName = "";
 		const currentChapter = item?.Chapters?.filter((chapter, index) => {
 			if (index + 1 === item.Chapters?.length) {
 				return chapter;
@@ -398,6 +404,73 @@ function VideoPlayer() {
 				}
 			}
 		});
+
+		let trickplayResolution: TrickplayInfo | undefined;
+		const trickplayResolutions = mediaSource.id
+			? item?.Trickplay?.[mediaSource.id]
+			: null;
+		if (trickplayResolutions) {
+			let bestWidth: number | undefined;
+			const maxWidth = window.screen.width * window.devicePixelRatio * 0.2;
+			for (const [_, trickInfo] of Object.entries(trickplayResolutions)) {
+				if (
+					!bestWidth ||
+					(trickInfo.Width < bestWidth && bestWidth > maxWidth) ||
+					(trickInfo.Width > bestWidth && bestWidth <= maxWidth)
+				) {
+					bestWidth = trickInfo.Width;
+				}
+			}
+			if (bestWidth) {
+				trickplayResolution = trickplayResolutions[bestWidth];
+			}
+		}
+		if (
+			trickplayResolution?.TileWidth &&
+			trickplayResolution.TileHeight &&
+			trickplayResolution.Width &&
+			trickplayResolution.Height
+		) {
+			const currentTrickplayImage = trickplayResolution?.Interval
+				? Math.floor(ticksToMs(value) / trickplayResolution?.Interval)
+				: 0;
+			const trickplayImageSize =
+				trickplayResolution?.TileWidth * trickplayResolution?.TileHeight;
+
+			const trickplayImageOffset = currentTrickplayImage % trickplayImageSize;
+			console.log(trickplayImageOffset);
+
+			const index = Math.floor(currentTrickplayImage / trickplayImageSize);
+			const imageOffsetX =
+				trickplayImageOffset % trickplayResolution?.TileWidth;
+			const imageOffsetY = Math.floor(
+				trickplayImageOffset / trickplayResolution?.TileWidth,
+			);
+			const backgroundOffsetX = -(imageOffsetX * trickplayResolution?.Width);
+			const backgroundOffsetY = -(imageOffsetY * trickplayResolution?.Height);
+
+			const imgUrlParamsObject = {
+				api_key: api.accessToken,
+				MediaSourceId: mediaSource.id,
+			};
+			const imgUrlParams = new URLSearchParams(imgUrlParamsObject);
+
+			return (
+				<div className="flex flex-column">
+					<div
+						className="video-osd-trickplayBubble"
+						style={{
+							background: `url(${api.basePath}/Videos/${item?.Id}/Trickplay/${trickplayResolution.Width}/${index}.jpg?${imgUrlParams})`,
+							backgroundPositionX: `${backgroundOffsetX}px`,
+							backgroundPositionY: `${backgroundOffsetY}px`,
+							width: `${trickplayResolution.Width}px`,
+						}}
+					/>
+					<Typography>{currentChapter?.[0].Name}</Typography>
+					<Typography>{ticksDisplay(value)}</Typography>
+				</div>
+			);
+		}
 		return (
 			<div className="flex flex-column">
 				<Typography>{currentChapter?.[0].Name}</Typography>
@@ -405,6 +478,17 @@ function VideoPlayer() {
 			</div>
 		);
 	};
+
+	// useEffect(() => {
+	// 	async function testTrick() {
+	// 		const result = await axios.get(
+	// 			`${api.basePath}/Videos/${item?.Id}/Trickplay/320/0.jpg`,
+	// 			{ headers: { Authorization: api.authorizationHeader } },
+	// 		);
+	// 		console.log(result);
+	// 	}
+	// 	testTrick();
+	// }, []);
 
 	return (
 		<div className="video-player">
@@ -540,10 +624,10 @@ function VideoPlayer() {
 				{(forceShowCredits || !showUpNextCard) && (
 					<div className="video-player-osd-info">
 						<Typography variant="h4" fontWeight={500} mb={2}>
-							{itemName}
+							<>{itemName}</>
 							{episodeTitle && (
 								<Typography variant="h6" fontWeight={300} mt={1}>
-									{episodeTitle}
+									<>{episodeTitle}</>
 								</Typography>
 							)}
 						</Typography>
@@ -553,13 +637,17 @@ function VideoPlayer() {
 									value={isSeeking ? sliderProgress : progress}
 									max={itemDuration}
 									step={secToTicks(10)}
-									onChange={(e, newValue) => {
+									onChange={(_, newValue) => {
 										setIsSeeking(true);
-										setSliderProgress(newValue);
+										Array.isArray(newValue)
+											? setSliderProgress(newValue[0])
+											: setSliderProgress(newValue);
 									}}
-									onChangeCommitted={(e, newValue) => {
+									onChangeCommitted={(_, newValue) => {
 										setIsSeeking(false);
-										setProgress(newValue);
+										Array.isArray(newValue)
+											? setProgress(newValue[0])
+											: setProgress(newValue);
 										player.current?.seekTo(ticksToSec(newValue), "seconds");
 									}}
 									sx={{
@@ -598,7 +686,7 @@ function VideoPlayer() {
 									<PlayPreviousButton />
 									<IconButton
 										onClick={() =>
-											player.current.seekTo(
+											player.current?.seekTo(
 												player.current.getCurrentTime() - 15,
 											)
 										}
@@ -614,7 +702,7 @@ function VideoPlayer() {
 									</IconButton>
 									<IconButton
 										onClick={() =>
-											player.current.seekTo(
+											player.current?.seekTo(
 												player.current.getCurrentTime() + 15,
 											)
 										}
@@ -661,8 +749,10 @@ function VideoPlayer() {
 											max={1}
 											size="small"
 											value={muted ? 0 : volume}
-											onChange={(e, newVal) => {
-												setVolume(newVal);
+											onChange={(_, newVal) => {
+												Array.isArray(newVal)
+													? setVolume(newVal[0])
+													: setVolume(newVal);
 												if (newVal === 0) setMuted(true);
 												else setMuted(false);
 											}}

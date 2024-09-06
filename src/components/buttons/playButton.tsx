@@ -114,6 +114,7 @@ const PlayButton = ({
 								ItemFields.MediaStreams,
 								ItemFields.Overview,
 								ItemFields.Chapters,
+								ItemFields.Trickplay,
 							],
 							enableUserData: true,
 							userId: userId,
@@ -158,6 +159,7 @@ const PlayButton = ({
 								ItemFields.MediaStreams,
 								ItemFields.Overview,
 								ItemFields.Chapters,
+								ItemFields.Trickplay,
 							],
 							enableUserData: true,
 							userId: userId,
@@ -220,7 +222,12 @@ const PlayButton = ({
 						result = await getItemsApi(api).getItems({
 							parentId: itemId,
 							userId,
-							fields: [ItemFields.MediaSources, ItemFields.MediaStreams],
+							fields: [
+								ItemFields.MediaSources,
+								ItemFields.MediaStreams,
+								ItemFields.Chapters,
+								ItemFields.Trickplay,
+							],
 							sortOrder: [SortOrder.Ascending],
 							sortBy: ["IndexNumber"],
 						});
@@ -233,6 +240,7 @@ const PlayButton = ({
 								ItemFields.MediaSources,
 								ItemFields.MediaStreams,
 								ItemFields.Chapters,
+								ItemFields.Trickplay,
 							],
 							sortOrder: [SortOrder.Ascending],
 							sortBy: ["IndexNumber"],
