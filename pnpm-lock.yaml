@@ -16,7 +16,7 @@ importers:
         version: 11.13.0(@emotion/react@11.13.3(@types/react@18.3.5)(react@18.3.1))(@types/react@18.3.5)(react@18.3.1)
       '@fontsource-variable/jetbrains-mono':
         specifier: ^5.0.22
-        version: 5.0.22
+        version: 5.0.23
       '@fontsource-variable/noto-sans':
         specifier: ^5.0.5
         version: 5.0.5
@@ -883,8 +883,8 @@ packages:
   '@floating-ui/utils@0.2.7':
     resolution: {integrity: sha512-X8R8Oj771YRl/w+c1HqAC1szL8zWQRwFvgDwT129k9ACdBoud/+/rX9V0qiMl6LWUdP9voC2nDVZYPMQQsb6eA==}
 
-  '@fontsource-variable/jetbrains-mono@5.0.22':
-    resolution: {integrity: sha512-2LZQFb37H9iUY92qrhqjvrrkBPROdmBy5MMDgQX+FGeHdVE2WwvGt4lOpxOAy0L/bwE2Y0UCe/eb/tOs1kaTYQ==}
+  '@fontsource-variable/jetbrains-mono@5.0.23':
+    resolution: {integrity: sha512-AzdFE3IqYJ9/2hFRwcqJre/+/MKZHMz2y6dRYPwfz6aC0WE3Hv/PwzCLcv3W/oGMmu/xmBL3URbkUfxjgmMhjQ==}
 
   '@fontsource-variable/noto-sans@5.0.5':
     resolution: {integrity: sha512-SVixgckO4DIgvFJ+vTRZEj8vTvjZceuGOhKMgnETItKELl1tHzk+ZFatSTCofPJ1zjhTwqvHrHkFeCbUGiqaRg==}
@@ -3464,7 +3464,7 @@ snapshots:
 
   '@floating-ui/utils@0.2.7': {}
 
-  '@fontsource-variable/jetbrains-mono@5.0.22': {}
+  '@fontsource-variable/jetbrains-mono@5.0.23': {}
 
   '@fontsource-variable/noto-sans@5.0.5': {}
 
@@ -3503,8 +3503,8 @@ snapshots:
     dependencies:
       '@antfu/ni': 0.21.12
       '@axiomhq/js': 1.0.0-rc.3
-      '@babel/core': 7.25.2
-      '@babel/types': 7.25.6
+      '@babel/core': 7.24.6
+      '@babel/types': 7.24.6
       '@clack/prompts': 0.7.0
       cli-high: 0.4.2
       diff: 5.2.0
