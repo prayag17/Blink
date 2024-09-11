@@ -61,7 +61,7 @@ importers:
         version: 2.0.0-rc.1
       '@tauri-apps/plugin-store':
         specifier: github:tauri-apps/tauri-plugin-store#v2
-        version: https://codeload.github.com/tauri-apps/tauri-plugin-store/tar.gz/0eff388d4754c1d567111ca520d4655e3ccaa0d2
+        version: https://codeload.github.com/tauri-apps/tauri-plugin-store/tar.gz/96185a8aedb7a8658de7281cd8ac0149874de425
       '@tauri-apps/plugin-updater':
         specifier: 2.0.0-rc.2
         version: 2.0.0-rc.2
@@ -142,7 +142,7 @@ importers:
         version: 4.2.0(rollup@4.21.2)(typescript@5.5.4)(vite@5.4.3(@types/node@22.5.4)(sass@1.78.0)(terser@5.31.6))
       wavesurfer.js:
         specifier: ^7.8.4
-        version: 7.8.5
+        version: 7.8.6
       zustand:
         specifier: ^4.5.5
         version: 4.5.5(@types/react@18.3.5)(react@18.3.1)
@@ -1440,8 +1440,8 @@ packages:
   '@tauri-apps/plugin-process@2.0.0-rc.1':
     resolution: {integrity: sha512-Bl22xdoiu+AqEP6rzjb7DUJwdLDnejuRFukpkdrqF1/VEWJK5PuE903l+8mIOsd17zZ1Ua8y8WaBWnOXx4QHmw==}
 
-  '@tauri-apps/plugin-store@https://codeload.github.com/tauri-apps/tauri-plugin-store/tar.gz/0eff388d4754c1d567111ca520d4655e3ccaa0d2':
-    resolution: {tarball: https://codeload.github.com/tauri-apps/tauri-plugin-store/tar.gz/0eff388d4754c1d567111ca520d4655e3ccaa0d2}
+  '@tauri-apps/plugin-store@https://codeload.github.com/tauri-apps/tauri-plugin-store/tar.gz/96185a8aedb7a8658de7281cd8ac0149874de425':
+    resolution: {tarball: https://codeload.github.com/tauri-apps/tauri-plugin-store/tar.gz/96185a8aedb7a8658de7281cd8ac0149874de425}
     version: 2.0.0-rc.1
 
   '@tauri-apps/plugin-updater@2.0.0-rc.2':
@@ -2790,8 +2790,8 @@ packages:
       terser:
         optional: true
 
-  wavesurfer.js@7.8.5:
-    resolution: {integrity: sha512-z3+p2ruYElXFSnxVrIPLcfziQCovf8Jngeq6UIntKeBDBUwveQ6YWf21d5BfYDZM5QoY3DkM91BETvgwZdTYUQ==}
+  wavesurfer.js@7.8.6:
+    resolution: {integrity: sha512-EDexkMwkkQBTWruhfWQRkTtvRggtKFTPuJX/oZ5wbIZEfyww9EBeLr2mtkxzA1S8TlWPx6adY5WyjOlNYNyHSg==}
 
   webidl-conversions@3.0.1:
     resolution: {integrity: sha512-2JAn3z8AR6rjK8Sm8orRC0h/bcl/DqL7tRPdGZ4I1CjdF+EaMLmYxBHyXuKL849eucPFhvBoxMsflfOb8kxaeQ==}
@@ -3503,8 +3503,8 @@ snapshots:
     dependencies:
       '@antfu/ni': 0.21.12
       '@axiomhq/js': 1.0.0-rc.3
-      '@babel/core': 7.25.2
-      '@babel/types': 7.25.6
+      '@babel/core': 7.24.6
+      '@babel/types': 7.24.6
       '@clack/prompts': 0.7.0
       cli-high: 0.4.2
       diff: 5.2.0
@@ -4018,7 +4018,7 @@ snapshots:
     dependencies:
       '@tauri-apps/api': 2.0.0-rc.4
 
-  '@tauri-apps/plugin-store@https://codeload.github.com/tauri-apps/tauri-plugin-store/tar.gz/0eff388d4754c1d567111ca520d4655e3ccaa0d2':
+  '@tauri-apps/plugin-store@https://codeload.github.com/tauri-apps/tauri-plugin-store/tar.gz/96185a8aedb7a8658de7281cd8ac0149874de425':
     dependencies:
       '@tauri-apps/api': 2.0.0-rc.4
 
@@ -5668,7 +5668,7 @@ snapshots:
       sass: 1.78.0
       terser: 5.31.6
 
-  wavesurfer.js@7.8.5: {}
+  wavesurfer.js@7.8.6: {}
 
   webidl-conversions@3.0.1: {}
 
