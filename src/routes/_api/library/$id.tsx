@@ -1,31 +1,23 @@
 import React, {
 	useState,
 	useEffect,
-	useLayoutEffect,
 	type ChangeEvent,
 	useMemo,
 	useCallback,
 	type MouseEvent,
 } from "react";
 
-import { useQuery } from "@tanstack/react-query";
-
-import Accordion from "@mui/material/Accordion";
-import AccordionDetails from "@mui/material/AccordionDetails";
-import AccordionSummary from "@mui/material/AccordionSummary";
-import Box from "@mui/material/Box";
 import Button from "@mui/material/Button";
 import Checkbox from "@mui/material/Checkbox";
 import Chip from "@mui/material/Chip";
 import CircularProgress from "@mui/material/CircularProgress";
 import Divider from "@mui/material/Divider";
 import FormControlLabel from "@mui/material/FormControlLabel";
-import Grow from "@mui/material/Grow";
 import IconButton from "@mui/material/IconButton";
 import MenuItem from "@mui/material/MenuItem";
-import Popper from "@mui/material/Popper";
 import TextField from "@mui/material/TextField";
 import Typography from "@mui/material/Typography";
+import { useQuery } from "@tanstack/react-query";
 
 import { getArtistsApi } from "@jellyfin/sdk/lib/utils/api/artists-api";
 import { getGenresApi } from "@jellyfin/sdk/lib/utils/api/genres-api";
@@ -43,7 +35,6 @@ import MusicTrack from "@/components/musicTrack";
 import { ErrorNotice } from "@/components/notices/errorNotice/errorNotice";
 import { setBackdrop } from "@/utils/store/backdrop";
 import {
-	type BaseItemDto,
 	type BaseItemDtoQueryResult,
 	BaseItemKind,
 	CollectionType,
@@ -54,23 +45,16 @@ import {
 } from "@jellyfin/sdk/lib/generated-client";
 
 import { getUserLibraryApi } from "@jellyfin/sdk/lib/utils/api/user-library-api";
-import {
-	FormControl,
-	Menu,
-	MenuList,
-	Stack,
-	useScrollTrigger,
-} from "@mui/material";
+import { FormControl, Menu, Stack, useScrollTrigger } from "@mui/material";
 import { useWindowVirtualizer } from "@tanstack/react-virtual";
 import type { AxiosResponse } from "axios";
 import "./library.scss";
 import LibraryItemsSkeleton from "@/components/skeleton/libraryItems";
-import { createFileRoute, useNavigate } from "@tanstack/react-router";
+import { createFileRoute } from "@tanstack/react-router";
 
 type SortByObject = { title: string; value: ItemSortBy };
 type ViewObject = { title: string; value: BaseItemKind | "Artist" };
 // type allowedFilters = ["movies", "tvshows", "music", "books"];
-type allowedFilters = Partial<CollectionType>[];
 
 const useWindowWidth = () => {
 	const [width, setWidth] = React.useState(window.innerWidth);
@@ -97,7 +81,6 @@ export const Route = createFileRoute("/_api/library/$id")({
 
 function LibraryView() {
 	const api = Route.useRouteContext().api;
-	const navigate = useNavigate();
 
 	const { id } = Route.useParams();
 
@@ -217,16 +200,24 @@ function LibraryView() {
 	});
 
 	const [sortBy, setSortBy] = useState<ItemSortBy>("Name");
-	const [sortAscending, setSortAscending] = useState(true);
+	const [sortAscending, setSortAscending] = useState(
+		() =>
+			JSON.parse(
+				sessionStorage.getItem(
+					`library-${currentLib.data?.Id}-config_sort`,
+				) as string,
+			)?.sortAscending ?? true,
+	);
 	useEffect(() => {
 		// I don't know why this works, don't ask...
 		const cachedVal = sessionStorage.getItem(
 			`library-${currentLib.data?.Id}-config_sort`,
 		) as unknown as {
-			sortAscending: boolean;
-			sortBy: ItemSortBy;
+			sortAscending?: boolean;
+			sortBy?: ItemSortBy;
 		};
-		if (cachedVal) {
+		if (cachedVal?.sortAscending) {
+			console.log(cachedVal.sortAscending);
 			setSortAscending(cachedVal.sortAscending);
 		}
 	}, [currentLib.data?.Id]);
@@ -453,25 +444,45 @@ function LibraryView() {
 		return result;
 	}, [currentLib.data?.CollectionType, currentViewType]);
 
-	const [filters, setFilters] = useState<Record<string, undefined | boolean>>({
-		isPlayed: false,
-		isUnPlayed: false,
-		isResumable: false,
-		isFavorite: false,
-		isLiked: false,
-		isUnliked: false,
-		hasSubtitles: false,
-		hasTrailer: false,
-		hasSpecialFeature: false,
-		hasThemeSong: false,
-		hasThemeVideo: false,
-		isBluRay: false,
-		isDVD: false,
-		isHD: undefined,
-		isSD: false,
-		is4K: false,
-		is3D: false,
-	});
+	const [filters, setFilters] = useState<Record<string, undefined | boolean>>(
+		() => {
+			const cachedVal = sessionStorage.getItem(
+				`library-${currentLib.data?.Id}-config_fliters`,
+			); 
+			if (
+				cachedVal !== null
+			) {
+				return JSON.parse(
+					cachedVal
+				);
+			}
+			return {
+				isPlayed: false,
+				isUnPlayed: false,
+				isResumable: false,
+				isFavorite: false,
+				isLiked: false,
+				isUnliked: false,
+				hasSubtitles: false,
+				hasTrailer: false,
+				hasSpecialFeature: false,
+				hasThemeSong: false,
+				hasThemeVideo: false,
+				isBluRay: false,
+				isDVD: false,
+				isHD: undefined,
+				isSD: false,
+				is4K: false,
+				is3D: false,
+			};
+		},
+	);
+	useEffect(() => {
+		sessionStorage.setItem(
+			`library-${currentLib.data?.Id}-config_fliters`,
+			JSON.stringify(filters),
+		);
+	}, [filters, currentLib.data?.Id]);
 
 	const items = useQuery({
 		queryKey: [
@@ -684,12 +695,14 @@ function LibraryView() {
 			const temp = items.data.Items?.filter(
 				(item) => item.BackdropImageTags?.length,
 			);
-			setBackdrop(
-				api.getItemImageUrl(temp?.[0]?.Id, "Backdrop", {
-					tag: temp?.[0]?.BackdropImageTags?.[0],
-				}),
-				temp?.[0]?.BackdropImageTags?.[0] ?? "none",
-			);
+			if (temp?.[0]?.Id) {
+				setBackdrop(
+					api.getItemImageUrl(temp?.[0]?.Id, "Backdrop", {
+						tag: temp?.[0]?.BackdropImageTags?.[0],
+					}),
+					temp?.[0]?.BackdropImageTags?.[0] ?? "none",
+				);
+			}
 			return temp;
 		}
 	}, [items]);
@@ -792,7 +805,16 @@ function LibraryView() {
 								{!disableSort && (
 									<div className="flex flex-row flex-center">
 										<IconButton
-											onClick={() => setSortAscending((state) => !state)}
+											onClick={() => {
+												sessionStorage.setItem(
+													`library-${currentLib.data?.Id}-config_sort`,
+													JSON.stringify({
+														sortAscending: !sortAscending,
+														sortBy,
+													}),
+												);
+												setSortAscending((state: boolean) => !state);
+											}}
 										>
 											<span
 												className="material-symbols-rounded"
@@ -810,7 +832,7 @@ function LibraryView() {
 											value={sortBy ?? "Name"}
 											size="small"
 											onChange={(e) => {
-												setSortBy(e.target.value);
+												setSortBy(e.target.value as ItemSortBy);
 												sessionStorage.setItem(
 													`library-${currentLib.data?.Id}-config_sort`,
 													JSON.stringify({
@@ -834,7 +856,7 @@ function LibraryView() {
 										value={currentViewType}
 										size="small"
 										onChange={(e) => {
-											setCurrentViewType(e.target.value);
+											setCurrentViewType(e.target.value as BaseItemKind);
 											sessionStorage.setItem(
 												`library-${currentLib.data?.Id}-config_currentViewType`,
 												e.target.value,
@@ -892,44 +914,60 @@ function LibraryView() {
 												}}
 											>
 												<FormControlLabel
-													control={<Checkbox checked={filters.isPlayed} />}
+													control={
+														<Checkbox
+															checked={filters.isPlayed}
+															onChange={(e: ChangeEvent<HTMLInputElement>) =>
+																setFilters((s) => ({
+																	...s,
+																	isPlayed: e.target.checked,
+																}))
+															}
+														/>
+													}
 													label="Played"
-													onChange={(e: ChangeEvent<HTMLInputElement>) =>
-														setFilters((s) => ({
-															...s,
-															isPlayed: e.target.checked,
-														}))
-													}
 												/>
 												<FormControlLabel
-													control={<Checkbox checked={filters.isUnPlayed} />}
+													control={
+														<Checkbox
+															checked={filters.isUnPlayed}
+															onChange={(e: ChangeEvent<HTMLInputElement>) =>
+																setFilters((s) => ({
+																	...s,
+																	isUnPlayed: e.target.checked,
+																}))
+															}
+														/>
+													}
 													label="Unplayed"
-													onChange={(e: ChangeEvent<HTMLInputElement>) =>
-														setFilters((s) => ({
-															...s,
-															isUnPlayed: e.target.checked,
-														}))
-													}
 												/>
 												<FormControlLabel
-													control={<Checkbox checked={filters.isResumable} />}
+													control={
+														<Checkbox
+															checked={filters.isResumable}
+															onChange={(e: ChangeEvent<HTMLInputElement>) =>
+																setFilters((s) => ({
+																	...s,
+																	isResumable: e.target.checked,
+																}))
+															}
+														/>
+													}
 													label="Resumable"
-													onChange={(e: ChangeEvent<HTMLInputElement>) =>
-														setFilters((s) => ({
-															...s,
-															isResumable: e.target.checked,
-														}))
-													}
 												/>
 												<FormControlLabel
-													control={<Checkbox checked={filters.isFavorite} />}
-													label="Favorites"
-													onChange={(e: ChangeEvent<HTMLInputElement>) =>
-														setFilters((s) => ({
-															...s,
-															isFavorite: e.target.checked,
-														}))
+													control={
+														<Checkbox
+															checked={filters.isFavorite}
+															onChange={(e: ChangeEvent<HTMLInputElement>) =>
+																setFilters((s) => ({
+																	...s,
+																	isFavorite: e.target.checked,
+																}))
+															}
+														/>
 													}
+													label="Favorites"
 												/>
 											</FormControl>
 											<Typography
@@ -949,56 +987,74 @@ function LibraryView() {
 												}}
 											>
 												<FormControlLabel
-													control={<Checkbox checked={filters.hasSubtitles} />}
+													control={
+														<Checkbox
+															checked={filters.hasSubtitles}
+															onChange={(e: ChangeEvent<HTMLInputElement>) =>
+																setFilters((s) => ({
+																	...s,
+																	hasSubtitles: e.target.checked,
+																}))
+															}
+														/>
+													}
 													label="Subtitles"
-													onChange={(e: ChangeEvent<HTMLInputElement>) =>
-														setFilters((s) => ({
-															...s,
-															hasSubtitles: e.target.checked,
-														}))
-													}
-												/>
-												<FormControlLabel
-													control={<Checkbox checked={filters.hasTrailer} />}
-													label="Trailer"
-													onChange={(e: ChangeEvent<HTMLInputElement>) =>
-														setFilters((s) => ({
-															...s,
-															hasTrailer: e.target.checked,
-														}))
-													}
 												/>
 												<FormControlLabel
 													control={
-														<Checkbox checked={filters.hasSpecialFeature} />
+														<Checkbox
+															checked={filters.hasTrailer}
+															onChange={(e: ChangeEvent<HTMLInputElement>) =>
+																setFilters((s) => ({
+																	...s,
+																	hasTrailer: e.target.checked,
+																}))
+															}
+														/>
+													}
+													label="Trailer"
+												/>
+												<FormControlLabel
+													control={
+														<Checkbox
+															checked={filters.hasSpecialFeature}
+															onChange={(e: ChangeEvent<HTMLInputElement>) =>
+																setFilters((s) => ({
+																	...s,
+																	hasSpecialFeature: e.target.checked,
+																}))
+															}
+														/>
 													}
 													label="Special Features"
-													onChange={(e: ChangeEvent<HTMLInputElement>) =>
-														setFilters((s) => ({
-															...s,
-															hasSpecialFeature: e.target.checked,
-														}))
-													}
 												/>
 												<FormControlLabel
-													control={<Checkbox checked={filters.hasThemeSong} />}
+													control={
+														<Checkbox
+															checked={filters.hasThemeSong}
+															onChange={(e: ChangeEvent<HTMLInputElement>) =>
+																setFilters((s) => ({
+																	...s,
+																	hasThemeSong: e.target.checked,
+																}))
+															}
+														/>
+													}
 													label="Theme Song"
-													onChange={(e: ChangeEvent<HTMLInputElement>) =>
-														setFilters((s) => ({
-															...s,
-															hasThemeSong: e.target.checked,
-														}))
-													}
 												/>
 												<FormControlLabel
-													control={<Checkbox checked={filters.hasThemeVideo} />}
-													label="Theme Video"
-													onChange={(e: ChangeEvent<HTMLInputElement>) =>
-														setFilters((s) => ({
-															...s,
-															hasThemeVideo: e.target.checked,
-														}))
+													control={
+														<Checkbox
+															checked={filters.hasThemeVideo}
+															onChange={(e: ChangeEvent<HTMLInputElement>) =>
+																setFilters((s) => ({
+																	...s,
+																	hasThemeVideo: e.target.checked,
+																}))
+															}
+														/>
 													}
+													label="Theme Video"
 												/>
 											</FormControl>
 											<Typography
@@ -1019,45 +1075,59 @@ function LibraryView() {
 											>
 												<FormControlLabel
 													control={
-														<Checkbox checked={videoTypesState.BluRay} />
+														<Checkbox
+															checked={videoTypesState.BluRay}
+															onChange={(e: ChangeEvent<HTMLInputElement>) =>
+																setVideoTypesState((s) => ({
+																	...s,
+																	BluRay: e.target.checked,
+																}))
+															}
+														/>
 													}
 													label="BluRay"
-													onChange={(e: ChangeEvent<HTMLInputElement>) =>
-														setVideoTypesState((s) => ({
-															...s,
-															BluRay: e.target.checked,
-														}))
-													}
 												/>
 												<FormControlLabel
-													control={<Checkbox checked={videoTypesState.Dvd} />}
+													control={
+														<Checkbox
+															checked={videoTypesState.Dvd}
+															onChange={(e: ChangeEvent<HTMLInputElement>) =>
+																setVideoTypesState((s) => ({
+																	...s,
+																	Dvd: e.target.checked,
+																}))
+															}
+														/>
+													}
 													label="DVD"
-													onChange={(e: ChangeEvent<HTMLInputElement>) =>
-														setVideoTypesState((s) => ({
-															...s,
-															Dvd: e.target.checked,
-														}))
-													}
 												/>
 												<FormControlLabel
-													control={<Checkbox checked={filters.isHD} />}
+													control={
+														<Checkbox
+															checked={filters.isHD}
+															onChange={(e: ChangeEvent<HTMLInputElement>) => {
+																setFilters((s) => ({
+																	...s,
+																	isHD: e.target.checked,
+																}));
+															}}
+														/>
+													}
 													label="HD"
-													onChange={(e: ChangeEvent<HTMLInputElement>) => {
-														setFilters((s) => ({
-															...s,
-															isHD: e.target.checked,
-														}));
-													}}
 												/>
 												<FormControlLabel
-													control={<Checkbox checked={filters.is4K} />}
-													label="4k"
-													onChange={(e: ChangeEvent<HTMLInputElement>) =>
-														setFilters((s) => ({
-															...s,
-															is4K: e.target.checked,
-														}))
+													control={
+														<Checkbox
+															checked={filters.is4K}
+															onChange={(e: ChangeEvent<HTMLInputElement>) =>
+																setFilters((s) => ({
+																	...s,
+																	is4K: e.target.checked,
+																}))
+															}
+														/>
 													}
+													label="4k"
 												/>
 												<FormControlLabel
 													control={<Checkbox checked={false} />}
@@ -1065,14 +1135,18 @@ function LibraryView() {
 													disabled
 												/>
 												<FormControlLabel
-													control={<Checkbox value={filters.is3D} />}
-													label="3D"
-													onChange={(e: ChangeEvent<HTMLInputElement>) =>
-														setFilters((s) => ({
-															...s,
-															is3D: e.target.checked,
-														}))
+													control={
+														<Checkbox
+															value={filters.is3D}
+															onChange={(e) =>
+																setFilters((s) => ({
+																	...s,
+																	is3D: e.target.checked,
+																}))
+															}
+														/>
 													}
+													label="3D"
 												/>
 											</FormControl>
 										</Menu>
@@ -1116,10 +1190,10 @@ function LibraryView() {
 								const fromIndex = index * itemsPerRow;
 								const toIndex = Math.min(
 									fromIndex + itemsPerRow,
-									items.data?.TotalRecordCount,
+									items.data?.TotalRecordCount ?? 0,
 								);
 								for (let i = fromIndex; i < toIndex; i++) {
-									const item = items.data?.Items[i];
+									const item = items.data?.Items?.[i];
 									displayItems.push(
 										<div
 											className="library-virtual-item"
@@ -1128,18 +1202,18 @@ function LibraryView() {
 											ref={virtualizer.measureElement}
 										>
 											<Card
-												item={item}
-												seriesId={item.SeriesId}
+												item={item ?? null}
+												seriesId={item?.SeriesId}
 												cardTitle={
-													item.Type === BaseItemKind.Episode
+													item?.Type === BaseItemKind.Episode
 														? item.SeriesName
-														: item.Name
+														: item?.Name
 												}
 												imageType={"Primary"}
 												cardCaption={
-													item.Type === BaseItemKind.Episode
+													item?.Type === BaseItemKind.Episode
 														? `S${item.ParentIndexNumber}:E${item.IndexNumber} - ${item.Name}`
-														: item.Type === BaseItemKind.Series
+														: item?.Type === BaseItemKind.Series
 															? `${item.ProductionYear} - ${
 																	item.EndDate
 																		? new Date(item.EndDate).toLocaleString(
@@ -1150,32 +1224,26 @@ function LibraryView() {
 																			)
 																		: "Present"
 																}`
-															: item.ProductionYear
+															: item?.ProductionYear
 												}
 												disableOverlay={
-													item.Type === BaseItemKind.Person ||
-													item.Type === BaseItemKind.Genre ||
-													item.Type === BaseItemKind.MusicGenre ||
-													item.Type === BaseItemKind.Studio
+													item?.Type === BaseItemKind.Person ||
+													item?.Type === BaseItemKind.Genre ||
+													item?.Type === BaseItemKind.MusicGenre ||
+													item?.Type === BaseItemKind.Studio
 												}
 												cardType={
-													item.Type === BaseItemKind.MusicAlbum ||
-													item.Type === BaseItemKind.Audio ||
-													item.Type === BaseItemKind.Genre ||
-													item.Type === BaseItemKind.MusicGenre ||
-													item.Type === BaseItemKind.Studio ||
-													item.Type === BaseItemKind.Playlist
+													item?.Type === BaseItemKind.MusicAlbum ||
+													item?.Type === BaseItemKind.Audio ||
+													item?.Type === BaseItemKind.Genre ||
+													item?.Type === BaseItemKind.MusicGenre ||
+													item?.Type === BaseItemKind.Studio ||
+													item?.Type === BaseItemKind.Playlist
 														? "square"
 														: "portrait"
 												}
 												// queryKey={items}
-												userId={user.data.Id}
-												imageBlurhash={
-													!!item.ImageBlurHashes?.Primary &&
-													item.ImageBlurHashes?.Primary[
-														Object.keys(item.ImageBlurHashes.Primary)[0]
-													]
-												}
+												userId={user.data?.Id}
 											/>
 										</div>,
 									);
@@ -1210,7 +1278,7 @@ function LibraryView() {
 								const item = items.data?.Items?.[virtualRow.index];
 								return (
 									<div
-										key={item.Id}
+										key={item?.Id}
 										style={{
 											position: "absolute",
 											top: 0,
@@ -1221,7 +1289,7 @@ function LibraryView() {
 										}}
 									>
 										<MusicTrack
-											item={item}
+											item={item ?? null}
 											// queryKey={[
 											// 	"libraryView",
 											// 	"currentLibItems",
@@ -1260,7 +1328,7 @@ function LibraryView() {
 		);
 	}
 	if (currentLib.isError) {
-		return <h6>{currentLib.error}</h6>;
+		return <ErrorNotice error={currentLib.error} />;
 	}
 }
 

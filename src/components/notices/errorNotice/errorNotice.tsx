@@ -4,7 +4,7 @@ import Typography from "@mui/material/Typography";
 import { red } from "@mui/material/colors";
 import React from "react";
 
-export const ErrorNotice = ({ error }) => {
+export const ErrorNotice = ({ error }: { error?: unknown }) => {
 	console.log(error);
 	return (
 		<Box

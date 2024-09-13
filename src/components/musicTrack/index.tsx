@@ -36,13 +36,13 @@ const MusicTrack = ({
 	trackIndex,
 	className = "",
 }: {
-	item: BaseItemDto;
-	queryKey: QueryKey;
-	userId: string | undefined;
-	playlistItem: boolean;
-	playlistItemId: string;
-	trackIndex: number;
-	className: string;
+	item?: BaseItemDto | null;
+	queryKey?: QueryKey;
+	userId?: string | undefined;
+	playlistItem?: boolean;
+	playlistItemId?: string;
+	trackIndex?: number;
+	className?: string;
 }) => {
 	const api = useApiInContext((s) => s.api);
 	const [currentTrackItem] = useAudioPlayback((state) => [state.item]);

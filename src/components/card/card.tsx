@@ -49,7 +49,7 @@ const CardComponent = ({
 	disableOverlay = false,
 	overrideIcon,
 }: {
-	item: BaseItemDto;
+	item: BaseItemDto | null;
 	cardTitle: string | undefined | null;
 	cardCaption?: string | null | number;
 	imageType: ImageType;

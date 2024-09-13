@@ -51,6 +51,7 @@ import useQueue from "@/utils/store/queue";
 import { createFileRoute, useRouter } from "@tanstack/react-router";
 import { toNumber } from "lodash";
 import type { OnProgressProps } from "react-player/base";
+import type { TrackProps } from "react-player/file";
 
 const ticksDisplay = (ticks: number) => {
 	const time = Math.round(ticks / 10000);
@@ -283,7 +284,7 @@ function VideoPlayer() {
 		setIsReady(false);
 	}, [item?.Id]);
 
-	const reactPlayerCaptions = useMemo(() => {
+	const reactPlayerCaptions: TrackProps = useMemo(() => {
 		if (
 			(mediaSource.subtitle.format === "vtt" ||
 				mediaSource.subtitle.format === "subrip") &&
@@ -303,6 +304,7 @@ function VideoPlayer() {
 	}, [mediaSource.subtitle.track, mediaSource.subtitle.enable]);
 
 	useEffect(() => {
+		console.log(mediaSource.subtitle);
 		if (player.current?.getInternalPlayer() && mediaSource.subtitle.enable) {
 			if (
 				mediaSource.subtitle.format === "ass" ||

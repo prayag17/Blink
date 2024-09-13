@@ -104,7 +104,6 @@ const PlayButton = ({
 					playlistId: playlistItemId,
 				});
 			} else {
-				console.log(itemType);
 				switch (itemType) {
 					case BaseItemKind.Episode:
 						result = await getTvShowsApi(api).getEpisodes({
@@ -119,7 +118,7 @@ const PlayButton = ({
 							enableUserData: true,
 							userId: userId,
 							seasonId: item.SeasonId,
-							startItemId: item.Id,
+							// startItemId: item.Id,
 						});
 						mediaSource = await getMediaInfoApi(api).getPostedPlaybackInfo({
 							audioStreamIndex: currentAudioTrack,
@@ -297,7 +296,7 @@ const PlayButton = ({
 					result?.mediaSource.MediaSources?.[0].MediaStreams,
 				);
 				// URL generation
-				const urlOptions = {
+				const urlOptions: URLSearchParams = {
 					Static: true,
 					tag: result?.mediaSource.MediaSources?.[0].ETag,
 					mediaSourceId: result?.mediaSource.MediaSources?.[0].Id,
