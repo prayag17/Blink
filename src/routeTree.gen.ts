@@ -439,7 +439,7 @@ const ApiRouteChildren: ApiRouteChildren = {
 
 const ApiRouteWithChildren = ApiRoute._addFileChildren(ApiRouteChildren)
 
-interface FileRoutesByFullPath {
+export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '': typeof ApiRouteWithChildren
   '/library': typeof ApiLibraryRouteWithChildren
@@ -468,7 +468,7 @@ interface FileRoutesByFullPath {
   '/login/$userId/$userName': typeof ApiLoginUserIdUserNameRoute
 }
 
-interface FileRoutesByTo {
+export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '': typeof ApiRouteWithChildren
   '/library': typeof ApiLibraryRouteWithChildren
@@ -496,7 +496,8 @@ interface FileRoutesByTo {
   '/login/$userId/$userName': typeof ApiLoginUserIdUserNameRoute
 }
 
-interface FileRoutesById {
+export interface FileRoutesById {
+  __root__: typeof rootRoute
   '/': typeof IndexRoute
   '/_api': typeof ApiRouteWithChildren
   '/_api/library': typeof ApiLibraryRouteWithChildren
@@ -525,7 +526,7 @@ interface FileRoutesById {
   '/_api/login/$userId/$userName': typeof ApiLoginUserIdUserNameRoute
 }
 
-interface FileRouteTypes {
+export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
@@ -582,6 +583,7 @@ interface FileRouteTypes {
     | '/search'
     | '/login/$userId/$userName'
   id:
+    | '__root__'
     | '/'
     | '/_api'
     | '/_api/library'
@@ -611,7 +613,7 @@ interface FileRouteTypes {
   fileRoutesById: FileRoutesById
 }
 
-interface RootRouteChildren {
+export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   ApiRoute: typeof ApiRouteWithChildren
   ErrorCodeRoute: typeof ErrorCodeRoute

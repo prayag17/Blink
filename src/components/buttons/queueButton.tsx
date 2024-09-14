@@ -34,7 +34,7 @@ const QueueButton = () => {
 	const handlePlay = useMutation({
 		mutationKey: ["handlePlayIndex"],
 		mutationFn: async ({ index }: { index: number }) => {
-			const result = playItemFromQueue(index, user.data?.Id);
+			const result = playItemFromQueue(index, user.data?.Id, api);
 			return result;
 		},
 		onSuccess: () => {
@@ -76,82 +76,86 @@ const QueueButton = () => {
 						position: "relative",
 					}}
 				>
-					{queueItems.map((item, index) => {
-						return (
-							<MenuItem
-								className="queue-item"
-								disabled={index === currentItemIndex}
-								onClick={() => handlePlay.mutate({ index })}
-								key={item.Id}
-							>
-								<Typography variant="subtitle2">
-									{item.Type === "Audio"
-										? index + 1
-										: item.IndexNumberEnd
-											? `S${item.ParentIndexNumber}:E${item.IndexNumber} / ${item.IndexNumberEnd}`
-											: `S${item.ParentIndexNumber}:E${item.IndexNumber}`}
-								</Typography>
-								<div className="queue-item-image-container">
-									{item.ImageTags?.Primary ? (
-										<img
-											className="queue-item-image"
-											src={api?.getItemImageUrl(item?.Id, "Primary", {
-												tag: item.ImageTags?.Primary,
-											})}
-											alt={item.Name}
-										/>
-									) : item.AlbumPrimaryImageTag?.length > 0 ? (
-										<img
-											className="queue-item-image"
-											src={api?.getItemImageUrl(item?.AlbumId, "Primary", {
-												tag: item.AlbumPrimaryImageTag[0],
-											})}
-											alt={item.Name}
-										/>
-									) : (
-										<div className="queue-item-image-icon">
-											{getTypeIcon(item.Type)}
-										</div>
-									)}
-									{index === currentItemIndex && (
-										<span
-											className="material-symbols-rounded"
-											style={{
-												position: "absolute",
-												top: "50%",
-												left: "50%",
-												transform: "translate(-50%,-50%)",
-												fontSize: "2em",
-												"--wght": "100",
-											}}
-										>
-											equalizer
-										</span>
-									)}
-								</div>
-								<div className="queue-item-info">
-									{item.SeriesName ? (
-										<>
-											<Typography variant="subtitle1" width="100%">
-												{item.SeriesName}
-											</Typography>
-											<Typography
-												variant="subtitle2"
-												width="100%"
-												style={{ opacity: 0.6 }}
+					{queueItems
+						.slice(currentItemIndex, queueItems.length - 1)
+						.map((item, index) => {
+							return (
+								<MenuItem
+									className="queue-item"
+									disabled={index === 0}
+									onClick={() =>
+										handlePlay.mutate({ index: index + currentItemIndex })
+									}
+									key={item.Id}
+								>
+									<Typography variant="subtitle2">
+										{item.Type === "Audio"
+											? index + 1
+											: item.IndexNumberEnd
+												? `S${item.ParentIndexNumber}:E${item.IndexNumber} / ${item.IndexNumberEnd}`
+												: `S${item.ParentIndexNumber}:E${item.IndexNumber}`}
+									</Typography>
+									<div className="queue-item-image-container">
+										{item.ImageTags?.Primary ? (
+											<img
+												className="queue-item-image"
+												src={api?.getItemImageUrl(item?.Id, "Primary", {
+													tag: item.ImageTags?.Primary,
+												})}
+												alt={item.Name}
+											/>
+										) : item.AlbumPrimaryImageTag?.length > 0 ? (
+											<img
+												className="queue-item-image"
+												src={api?.getItemImageUrl(item?.AlbumId, "Primary", {
+													tag: item.AlbumPrimaryImageTag[0],
+												})}
+												alt={item.Name}
+											/>
+										) : (
+											<div className="queue-item-image-icon">
+												{getTypeIcon(item.Type)}
+											</div>
+										)}
+										{index === 0 && (
+											<span
+												className="material-symbols-rounded"
+												style={{
+													position: "absolute",
+													top: "50%",
+													left: "50%",
+													transform: "translate(-50%,-50%)",
+													fontSize: "2em",
+													"--wght": "100",
+												}}
 											>
+												equalizer
+											</span>
+										)}
+									</div>
+									<div className="queue-item-info">
+										{item.SeriesName ? (
+											<>
+												<Typography variant="subtitle1" width="100%">
+													{item.SeriesName}
+												</Typography>
+												<Typography
+													variant="subtitle2"
+													width="100%"
+													style={{ opacity: 0.6 }}
+												>
+													{item.Name}
+												</Typography>
+											</>
+										) : (
+											<Typography variant="subtitle1" width="100%">
 												{item.Name}
 											</Typography>
-										</>
-									) : (
-										<Typography variant="subtitle1" width="100%">
-											{item.Name}
-										</Typography>
-									)}
-								</div>
-							</MenuItem>
-						);
-					})}
+										)}
+									</div>
+								</MenuItem>
+							);
+						})}
 				</MenuList>
 			</Menu>
 			<IconButton onClick={(e) => setButtonEl(e.currentTarget)}>
