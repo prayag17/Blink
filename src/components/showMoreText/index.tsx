@@ -2,7 +2,11 @@ import Button from "@mui/material/Button";
 import Typography from "@mui/material/Typography";
 import { useEffect, useRef, useState } from "react";
 
-const ShowMoreText = ({ content, collapsedLines, extraProps }) => {
+const ShowMoreText = ({
+	content,
+	collapsedLines,
+	extraProps,
+}: { content: string; collapsedLines: number; extraProps?: unknown }) => {
 	const [displayFull, setDisplayFull] = useState(false);
 	const [isOverflowing, setIsOverflowing] = useState(false);
 	const textRef = useRef(null);
@@ -34,7 +38,7 @@ const ShowMoreText = ({ content, collapsedLines, extraProps }) => {
 					display: "-webkit-box",
 					textOverflow: "ellipsis",
 					overflow: "hidden",
-					WebkitLineClamp: displayFull ? "none" : collapsedLines ?? 2,
+					WebkitLineClamp: displayFull ? "none" : (collapsedLines ?? 2),
 					WebkitBoxOrient: "vertical",
 					width: "100%",
 				}}

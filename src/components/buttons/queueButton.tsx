@@ -14,7 +14,6 @@ import { getUserApi } from "@jellyfin/sdk/lib/utils/api/user-api";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import "./queueButton.scss";
 import { useApiInContext } from "@/utils/store/api";
-import { useRouteContext } from "@tanstack/react-router";
 const QueueButton = () => {
 	const api = useApiInContext((s) => s.api);
 	const [queueItems, currentItemIndex] = useQueue((state) => [
@@ -29,7 +28,7 @@ const QueueButton = () => {
 			return result.data;
 		},
 	});
-	const [buttonEl, setButtonEl] = useState(null);
+	const [buttonEl, setButtonEl] = useState<HTMLButtonElement | null>(null);
 
 	const handlePlay = useMutation({
 		mutationKey: ["handlePlayIndex"],
@@ -76,13 +75,105 @@ const QueueButton = () => {
 						position: "relative",
 					}}
 				>
+					{queueItems[currentItemIndex].Id && (
+						<>
+							<Typography px="1em" mb={2} variant="h5" fontWeight={300}>
+								Currently Playing:
+							</Typography>
+							<MenuItem
+								className="queue-item"
+								disabled
+								key={queueItems[currentItemIndex].Id}
+							>
+								<Typography variant="subtitle2">
+									{queueItems[currentItemIndex]?.Type === "Audio"
+										? currentItemIndex + 1
+										: queueItems[currentItemIndex].IndexNumberEnd
+											? `S${queueItems[currentItemIndex].ParentIndexNumber}:E${queueItems[currentItemIndex].IndexNumber} / ${queueItems[currentItemIndex].IndexNumberEnd}`
+											: `S${queueItems[currentItemIndex].ParentIndexNumber}:E${queueItems[currentItemIndex].IndexNumber}`}
+								</Typography>
+								<div className="queue-item-image-container">
+									{queueItems[currentItemIndex].ImageTags?.Primary ? (
+										<img
+											className="queue-item-image"
+											src={api?.getItemImageUrl(
+												queueItems[currentItemIndex]?.Id,
+												"Primary",
+												{
+													tag: queueItems[currentItemIndex].ImageTags?.Primary,
+												},
+											)}
+											alt={queueItems[currentItemIndex].Name ?? "image"}
+										/>
+									) : (queueItems[currentItemIndex].AlbumPrimaryImageTag
+											?.length ?? -1) > 0 ? (
+										<img
+											className="queue-item-image"
+											src={api?.getItemImageUrl(
+												queueItems[currentItemIndex]?.AlbumId,
+												"Primary",
+												{
+													tag: queueItems[currentItemIndex]
+														.AlbumPrimaryImageTag[0],
+												},
+											)}
+											alt={queueItems[currentItemIndex].Name ?? "image"}
+										/>
+									) : (
+										<div className="queue-item-image-icon">
+											{queueItems[currentItemIndex].Type &&
+												getTypeIcon(queueItems[currentItemIndex].Type)}
+										</div>
+									)}
+									<span
+										className="material-symbols-rounded"
+										style={{
+											position: "absolute",
+											top: "50%",
+											left: "50%",
+											transform: "translate(-50%,-50%)",
+											fontSize: "2em",
+											"--wght": "100",
+										}}
+									>
+										equalizer
+									</span>
+								</div>
+								<div className="queue-item-info">
+									{queueItems[currentItemIndex].SeriesName ? (
+										<>
+											<Typography variant="subtitle1" width="100%">
+												{queueItems[currentItemIndex].SeriesName}
+											</Typography>
+											<Typography
+												variant="subtitle2"
+												width="100%"
+												style={{ opacity: 0.6 }}
+											>
+												{queueItems[currentItemIndex].Name}
+											</Typography>
+										</>
+									) : (
+										<Typography variant="subtitle1" width="100%">
+											{queueItems[currentItemIndex].Name}
+										</Typography>
+									)}
+								</div>
+							</MenuItem>
+						</>
+					)}
+					{queueItems.slice(currentItemIndex + 1, queueItems.length - 1)
+						.length > 0 && (
+						<Typography px="1em" my={2} variant="h5" fontWeight={300}>
+							Queue:
+						</Typography>
+					)}
 					{queueItems
-						.slice(currentItemIndex, queueItems.length - 1)
+						.slice(currentItemIndex + 1, queueItems.length - 1)
 						.map((item, index) => {
 							return (
 								<MenuItem
 									className="queue-item"
-									disabled={index === 0}
 									onClick={() =>
 										handlePlay.mutate({ index: index + currentItemIndex })
 									}
@@ -102,41 +193,30 @@ const QueueButton = () => {
 												src={api?.getItemImageUrl(item?.Id, "Primary", {
 													tag: item.ImageTags?.Primary,
 												})}
-												alt={item.Name}
+												alt={item.Name ?? "image"}
 											/>
-										) : item.AlbumPrimaryImageTag?.length > 0 ? (
+										) : (item.AlbumPrimaryImageTag?.length ?? -1) > 0 ? (
 											<img
 												className="queue-item-image"
 												src={api?.getItemImageUrl(item?.AlbumId, "Primary", {
 													tag: item.AlbumPrimaryImageTag[0],
 												})}
-												alt={item.Name}
+												alt={item.Name ?? "image"}
 											/>
 										) : (
 											<div className="queue-item-image-icon">
-												{getTypeIcon(item.Type)}
+												{item.Type && getTypeIcon(item.Type)}
 											</div>
-										)}
-										{index === 0 && (
-											<span
-												className="material-symbols-rounded"
-												style={{
-													position: "absolute",
-													top: "50%",
-													left: "50%",
-													transform: "translate(-50%,-50%)",
-													fontSize: "2em",
-													"--wght": "100",
-												}}
-											>
-												equalizer
-											</span>
 										)}
 									</div>
 									<div className="queue-item-info">
 										{item.SeriesName ? (
 											<>
-												<Typography variant="subtitle1" width="100%">
+												<Typography
+													variant="subtitle1"
+													width="100%"
+													sx={{ overflow: "hidden", textOverflow: "ellipsis" }}
+												>
 													{item.SeriesName}
 												</Typography>
 												<Typography
@@ -148,9 +228,23 @@ const QueueButton = () => {
 												</Typography>
 											</>
 										) : (
-											<Typography variant="subtitle1" width="100%">
-												{item.Name}
-											</Typography>
+											<>
+												<Typography
+													variant="subtitle1"
+													width="100%"
+													sx={{ overflow: "hidden", textOverflow: "ellipsis" }}
+												>
+													{item.Name}
+												</Typography>
+												<Typography
+													variant="subtitle2"
+													width="100%"
+													style={{ opacity: 0.6 }}
+													sx={{ overflow: "hidden", textOverflow: "ellipsis" }}
+												>
+													{item.Artists?.join(", ")}
+												</Typography>
+											</>
 										)}
 									</div>
 								</MenuItem>

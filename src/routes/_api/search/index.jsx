@@ -23,6 +23,7 @@ import { getSearchApi } from "@jellyfin/sdk/lib/utils/api/search-api";
 import "./search.scss";
 import { Dialog, Fab } from "@mui/material";
 import { Outlet, createFileRoute, useNavigate } from "@tanstack/react-router";
+import { useCentralStore } from "@/utils/store/central";
 
 export const Route = createFileRoute("/_api/search/")({
 	component: SearchPage,
@@ -37,15 +38,7 @@ function SearchPage() {
 	const [searchTerm, setSearchTerm] = useState("");
 	// const searchParam = useDebounce(query, 500);
 
-	const user = useQuery({
-		queryKey: ["user"],
-		queryFn: async () => {
-			const usr = await getUserApi(api).getCurrentUser();
-			return usr.data;
-		},
-		networkMode: "always",
-		enabled: Boolean(api),
-	});
+	const user = useCentralStore((s) => s.currentUser);
 
 	const itemLimit = 12;
 
@@ -53,7 +46,7 @@ function SearchPage() {
 		queryKey: ["search", "items", "Movie", query],
 		queryFn: async () => {
 			const result = await getItemsApi(api).getItems({
-				userId: user.data?.Id,
+				userId: user?.Id,
 				searchTerm: query,
 				includeItemTypes: [BaseItemKind.Movie],
 				recursive: true,
@@ -61,13 +54,13 @@ function SearchPage() {
 			});
 			return result.data;
 		},
-		enabled: user.isSuccess,
+		enabled: !!user?.Id,
 	});
 	const series = useQuery({
 		queryKey: ["search", "items", "Series", query],
 		queryFn: async () => {
 			const result = await getItemsApi(api).getItems({
-				userId: user.data?.Id,
+				userId: user?.Id,
 				searchTerm: query,
 				includeItemTypes: [BaseItemKind.Series],
 				recursive: true,
@@ -75,13 +68,13 @@ function SearchPage() {
 			});
 			return result.data;
 		},
-		enabled: user.isSuccess,
+		enabled: !!user?.Id,
 	});
 	const musicAlbum = useQuery({
 		queryKey: ["search", "items", "MusicAlbum", query],
 		queryFn: async () => {
 			const result = await getItemsApi(api).getItems({
-				userId: user.data?.Id,
+				userId: user?.Id,
 				searchTerm: query,
 				includeItemTypes: [BaseItemKind.MusicAlbum],
 				recursive: true,
@@ -89,13 +82,13 @@ function SearchPage() {
 			});
 			return result.data;
 		},
-		enabled: user.isSuccess,
+		enabled: !!user?.Id,
 	});
 	const audio = useQuery({
 		queryKey: ["search", "items", "Audio", query],
 		queryFn: async () => {
 			const result = await getItemsApi(api).getItems({
-				userId: user.data?.Id,
+				userId: user?.Id,
 				searchTerm: query,
 				includeItemTypes: [BaseItemKind.Audio],
 				recursive: true,
@@ -103,13 +96,13 @@ function SearchPage() {
 			});
 			return result.data;
 		},
-		enabled: user.isSuccess,
+		enabled: !!user?.Id,
 	});
 	const book = useQuery({
 		queryKey: ["search", "items", "Book", query],
 		queryFn: async () => {
 			const result = await getItemsApi(api).getItems({
-				userId: user.data?.Id,
+				userId: user?.Id,
 				searchTerm: query,
 				includeItemTypes: [BaseItemKind.Book],
 				recursive: true,
@@ -117,13 +110,13 @@ function SearchPage() {
 			});
 			return result.data;
 		},
-		enabled: user.isSuccess,
+		enabled: !!user?.Id,
 	});
 	const musicArtists = useQuery({
 		queryKey: ["search", "items", "MusicArtists", query],
 		queryFn: async () => {
 			const result = await getItemsApi(api).getItems({
-				userId: user.data?.Id,
+				userId: user?.Id,
 				searchTerm: query,
 				includeItemTypes: [BaseItemKind.MusicArtist],
 				recursive: true,
@@ -131,32 +124,32 @@ function SearchPage() {
 			});
 			return result.data;
 		},
-		enabled: user.isSuccess,
+		enabled: !!user?.Id,
 	});
 	const person = useQuery({
 		queryKey: ["search", "items", "Person", query],
 		queryFn: async () => {
 			const result = await getPersonsApi(api).getPersons({
-				userId: user.data?.Id,
+				userId: user?.Id,
 				searchTerm: query,
 				limit: itemLimit,
 			});
 			return result.data;
 		},
-		enabled: user.isSuccess,
+		enabled: !!user?.Id,
 	});
 	const episodes = useQuery({
 		queryKey: ["search", "items", "Episodes", query],
 		queryFn: async () => {
 			const result = await getSearchApi(api).getSearchHints({
-				userId: user.data?.Id,
+				userId: user?.Id,
 				searchTerm: query,
 				limit: itemLimit,
 				includeItemTypes: ["Episode"],
 			});
 			return result.data;
 		},
-		enabled: user.isSuccess,
+		enabled: !!user?.Id,
 	});
 
 	const [setBackdrop] = useBackdropStore((state) => [state.setBackdrop]);
@@ -224,7 +217,7 @@ function SearchPage() {
 								cardCaption={item.ProductionYear}
 								cardType="portrait"
 								queryKey={["search", "items", "Movie", query]}
-								userId={user.data.Id}
+								userId={user?.Id}
 								imageBlurhash={
 									!!item.ImageBlurHashes?.Primary &&
 									item.ImageBlurHashes?.Primary[
@@ -252,7 +245,7 @@ function SearchPage() {
 								}`}
 								cardType="portrait"
 								queryKey={["search", "items", "Series", query]}
-								userId={user.data.Id}
+								userId={user?.Id}
 								imageBlurhash={
 									!!item.ImageBlurHashes?.Primary &&
 									item.ImageBlurHashes?.Primary[
@@ -273,7 +266,7 @@ function SearchPage() {
 									cardTitle={episode.Series}
 									cardCaption={`S${episode.ParentIndexNumber}:E${episode.IndexNumber} - ${episode.Name}`}
 									queryKey={["search", "items", "Episodes", query]}
-									userId={user.data.Id}
+									userId={user?.Id}
 									disableRunTime
 								/>
 							);
@@ -291,7 +284,7 @@ function SearchPage() {
 								cardCaption={item.ProductionYear}
 								cardType="square"
 								queryKey={["search", "items", "Audio", query]}
-								userId={user.data?.Id}
+								userId={user?.Id}
 							/>
 						))}
 					</CardScroller>
@@ -308,7 +301,7 @@ function SearchPage() {
 								cardCaption={item.AlbumArtist}
 								cardType={"square"}
 								queryKey={["search", "items", "MusicAlbum", query]}
-								userId={user.data?.Id}
+								userId={user?.Id}
 							/>
 						))}
 					</CardScroller>
@@ -325,7 +318,7 @@ function SearchPage() {
 								disableOverlay
 								cardType={"portrait"}
 								queryKey={["search", "items", "Book", query]}
-								userId={user.data?.Id}
+								userId={user?.Id}
 							/>
 						))}
 					</CardScroller>
@@ -341,7 +334,7 @@ function SearchPage() {
 								disableOverlay
 								cardType={"square"}
 								queryKey={["search", "items", "MusicArtists", query]}
-								userId={user.data?.Id}
+								userId={user?.Id}
 							/>
 						))}
 					</CardScroller>
@@ -357,7 +350,7 @@ function SearchPage() {
 								disableOverlay
 								cardType={"square"}
 								queryKey={["search", "items", "Person", query]}
-								userId={user.data?.Id}
+								userId={user?.Id}
 							/>
 						))}
 					</CardScroller>

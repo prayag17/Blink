@@ -13,6 +13,7 @@ import ReactPlayer from "react-player";
 
 import {
 	changeSubtitleTrack,
+	playItemFromQueue,
 	toggleSubtitleTrack,
 	usePlaybackStore,
 } from "@/utils/store/playback";
@@ -47,11 +48,14 @@ import PlayPreviousButton from "@/components/buttons/playPreviousButtom";
 import QueueButton from "@/components/buttons/queueButton";
 import OutroCard from "@/components/outroCard";
 import { useApiInContext } from "@/utils/store/api";
-import useQueue from "@/utils/store/queue";
+import useQueue, { clearQueue } from "@/utils/store/queue";
 import { createFileRoute, useRouter } from "@tanstack/react-router";
 import { toNumber } from "lodash";
 import type { OnProgressProps } from "react-player/base";
 import type { TrackProps } from "react-player/file";
+import { useQuery } from "@tanstack/react-query";
+import { getUserApi } from "@jellyfin/sdk/lib/utils/api/user-api";
+import { useCentralStore } from "@/utils/store/central";
 
 const ticksDisplay = (ticks: number) => {
 	const time = Math.round(ticks / 10000);
@@ -86,6 +90,8 @@ function VideoPlayer() {
 	const { history } = useRouter();
 	const [hoveringOsd, setHoveringOsd] = useState(false);
 	const player = useRef<ReactPlayer | null>(null);
+
+	const user = useCentralStore((s) => s.currentUser);
 
 	const [
 		playbackStream,
@@ -195,6 +201,7 @@ function VideoPlayer() {
 			},
 		});
 		usePlaybackStore.setState(usePlaybackStore.getInitialState());
+		clearQueue();
 	};
 
 	const handleShowOsd = () => {
@@ -521,6 +528,15 @@ function VideoPlayer() {
 		}, 1000);
 		return () => clearTimeout(timeout);
 	}, [volume]);
+
+	const handlePlaybackEnded = () => {
+		//check if next track item exists
+		if (queue[currentQueueItemIndex + 1].Id) {
+			playItemFromQueue("next", user?.Id, api);
+		} else {
+			handleExitPlayer(); // Exit player if playback has finished and the queue is empty
+		}
+	};
 
 	return (
 		<div className="video-player">
@@ -877,6 +893,7 @@ function VideoPlayer() {
 					console.error(hls);
 					console.error(hlsG);
 				}}
+				onEnded={handlePlaybackEnded}
 				width="100vw"
 				height="100vh"
 				style={{

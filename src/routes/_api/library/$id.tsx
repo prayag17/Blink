@@ -51,6 +51,8 @@ import type { AxiosResponse } from "axios";
 import "./library.scss";
 import LibraryItemsSkeleton from "@/components/skeleton/libraryItems";
 import { createFileRoute } from "@tanstack/react-router";
+import { useApiInContext } from "@/utils/store/api";
+import { useCentralStore } from "@/utils/store/central";
 
 type SortByObject = { title: string; value: ItemSortBy };
 type ViewObject = { title: string; value: BaseItemKind | "Artist" };
@@ -80,29 +82,22 @@ export const Route = createFileRoute("/_api/library/$id")({
 });
 
 function LibraryView() {
-	const api = Route.useRouteContext().api;
+	const api = useApiInContext((s) => s.api);
 
 	const { id } = Route.useParams();
 
-	const user = useQuery({
-		queryKey: ["user"],
-		queryFn: async () => {
-			const usr = await getUserApi(api).getCurrentUser();
-			return usr.data;
-		},
-		networkMode: "always",
-	});
+	const user = useCentralStore((s) => s.currentUser);
 
 	const currentLib = useQuery({
 		queryKey: ["libraryView", "currentLib", id],
 		queryFn: async () => {
 			const result = await getUserLibraryApi(api).getItem({
-				userId: user.data?.Id,
+				userId: user?.Id,
 				itemId: id,
 			});
 			return result.data;
 		},
-		enabled: !!user.data,
+		enabled: !!user?.Id,
 		networkMode: "always",
 		staleTime: 0,
 	});
@@ -431,7 +426,11 @@ function LibraryView() {
 				break;
 		}
 		// And they say typescript makes your code better :|
-		const cachedVal = JSON.parse(sessionStorage.getItem(`library-${currentLib.data?.Id}-config_sort`) as string);
+		const cachedVal = JSON.parse(
+			sessionStorage.getItem(
+				`library-${currentLib.data?.Id}-config_sort`,
+			) as string,
+		);
 		// as {
 		// 	sortAscending: boolean;
 		// 	sortBy: ItemSortBy;
@@ -448,13 +447,9 @@ function LibraryView() {
 		() => {
 			const cachedVal = sessionStorage.getItem(
 				`library-${currentLib.data?.Id}-config_fliters`,
-			); 
-			if (
-				cachedVal !== null
-			) {
-				return JSON.parse(
-					cachedVal
-				);
+			);
+			if (cachedVal !== null) {
+				return JSON.parse(cachedVal);
 			}
 			return {
 				isPlayed: false,
@@ -501,32 +496,32 @@ function LibraryView() {
 			let result: AxiosResponse<BaseItemDtoQueryResult, any>;
 			if (currentViewType === "MusicArtist") {
 				result = await getArtistsApi(api).getAlbumArtists({
-					userId: user.data?.Id,
+					userId: user?.Id,
 					parentId: id,
 				});
 			} else if (currentViewType === "Artist") {
 				result = await getArtistsApi(api).getArtists({
-					userId: user.data?.Id,
+					userId: user?.Id,
 					parentId: id,
 				});
 			} else if (currentViewType === "Person") {
 				result = await getPersonsApi(api).getPersons({
-					userId: user.data?.Id,
+					userId: user?.Id,
 					personTypes: ["Actor"],
 				});
 			} else if (currentViewType === "Genre") {
 				result = await getGenresApi(api).getGenres({
-					userId: user.data?.Id,
+					userId: user?.Id,
 					parentId: id,
 				});
 			} else if (currentViewType === "MusicGenre") {
 				result = await getMusicGenresApi(api).getMusicGenres({
-					userId: user.data?.Id,
+					userId: user?.Id,
 					parentId: id,
 				});
 			} else if (currentViewType === "Studio") {
 				result = await getStudiosApi(api).getStudios({
-					userId: user.data?.Id,
+					userId: user?.Id,
 					parentId: id,
 				});
 			} else if (currentViewType === "BoxSet") {
@@ -543,7 +538,7 @@ function LibraryView() {
 				if (filters.isFavorite) filtersArray.push(ItemFilter.IsFavorite);
 
 				result = await getItemsApi(api).getItems({
-					userId: user.data?.Id,
+					userId: user?.Id,
 					parentId: currentLib.data?.Id,
 					recursive:
 						currentLib.data?.CollectionType === "boxsets" ? undefined : true,
@@ -578,7 +573,7 @@ function LibraryView() {
 				if (filters.isFavorite) filtersArray.push(ItemFilter.IsFavorite);
 
 				result = await getItemsApi(api).getItems({
-					userId: user.data?.Id,
+					userId: user?.Id,
 					parentId: currentLib.data?.Id,
 					recursive:
 						currentLib.data?.CollectionType === "boxsets" ? undefined : true,
@@ -603,7 +598,7 @@ function LibraryView() {
 			return result.data;
 		},
 		// enabled: false,
-		enabled: user.isSuccess && Boolean(currentViewType) && currentLib.isSuccess,
+		enabled: user?.Id && Boolean(currentViewType) && currentLib.isSuccess,
 		networkMode: "always",
 		// gcTime: 0,
 	});
@@ -1172,7 +1167,7 @@ function LibraryView() {
 									libraryId={currentLib.data.Id}
 									genreId={item.Id}
 									genreName={item.Name}
-									userId={user.data?.Id}
+									userId={user?.Id}
 								/>
 							);
 						})
@@ -1243,7 +1238,7 @@ function LibraryView() {
 														: "portrait"
 												}
 												// queryKey={items}
-												userId={user.data?.Id}
+												userId={user?.Id}
 											/>
 										</div>,
 									);
@@ -1314,7 +1309,7 @@ function LibraryView() {
 											// 		},
 											// 	},
 											// ]}
-											userId={user.data?.Id}
+											userId={user?.Id}
 										/>
 									</div>
 								);
@@ -1333,4 +1328,3 @@ function LibraryView() {
 }
 
 export default LibraryView;
-	

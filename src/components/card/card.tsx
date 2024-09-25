@@ -49,7 +49,7 @@ const CardComponent = ({
 	disableOverlay = false,
 	overrideIcon,
 }: {
-	item: BaseItemDto | null;
+	item: BaseItemDto;
 	cardTitle: string | undefined | null;
 	cardCaption?: string | null | number;
 	imageType: ImageType;
@@ -65,31 +65,33 @@ const CardComponent = ({
 	const api = useApiInContext((s) => s.api);
 	const navigate = useNavigate();
 	const defaultOnClick = () => {
-		switch (item.Type) {
-			case BaseItemKind.BoxSet:
-				navigate({ to: "/boxset/$id", params: { id: item.Id } });
-				break;
-			case BaseItemKind.Episode:
-				navigate({ to: "/episode/$id", params: { id: item.Id } });
-				break;
-			case BaseItemKind.MusicAlbum:
-				navigate({ to: "/album/$id", params: { id: item.Id } });
-				break;
-			case BaseItemKind.MusicArtist:
-				navigate({ to: "/artist/$id", params: { id: item.Id } });
-				break;
-			case BaseItemKind.Person:
-				navigate({ to: "/person/$id", params: { id: item.Id } });
-				break;
-			case BaseItemKind.Series:
-				navigate({ to: "/series/$id", params: { id: item.Id } });
-				break;
-			case BaseItemKind.Playlist:
-				navigate({ to: "/playlist/$id", params: { id: item.Id } });
-				break;
-			default:
-				navigate({ to: "/item/$id", params: { id: item.Id } });
-				break;
+		if (item?.Id) {
+			switch (item?.Type) {
+				case BaseItemKind.BoxSet:
+					navigate({ to: "/boxset/$id", params: { id: item.Id } });
+					break;
+				case BaseItemKind.Episode:
+					navigate({ to: "/episode/$id", params: { id: item.Id } });
+					break;
+				case BaseItemKind.MusicAlbum:
+					navigate({ to: "/album/$id", params: { id: item.Id } });
+					break;
+				case BaseItemKind.MusicArtist:
+					navigate({ to: "/artist/$id", params: { id: item.Id } });
+					break;
+				case BaseItemKind.Person:
+					navigate({ to: "/person/$id", params: { id: item.Id } });
+					break;
+				case BaseItemKind.Series:
+					navigate({ to: "/series/$id", params: { id: item.Id } });
+					break;
+				case BaseItemKind.Playlist:
+					navigate({ to: "/playlist/$id", params: { id: item.Id } });
+					break;
+				default:
+					navigate({ to: "/item/$id", params: { id: item.Id } });
+					break;
+			}
 		}
 	};
 
@@ -129,7 +131,7 @@ const CardComponent = ({
 						overrideIcon === "User"
 							? `${api.basePath}/Users/${item.Id}/Images/Primary`
 							: api.getItemImageUrl(
-									seriesId ? item.SeriesId : item.AlbumId ?? item.Id,
+									seriesId ? item.SeriesId : (item.AlbumId ?? item.Id),
 									imageType,
 									{
 										quality: 90,

@@ -19,11 +19,10 @@ import { getUserApi } from "@jellyfin/sdk/lib/utils/api/user-api";
 import { getUserLibraryApi } from "@jellyfin/sdk/lib/utils/api/user-library-api";
 import { getUserViewsApi } from "@jellyfin/sdk/lib/utils/api/user-views-api";
 
-import { Outlet, createFileRoute, useNavigate } from "@tanstack/react-router";
+import { createFileRoute, useNavigate } from "@tanstack/react-router";
 
 import { setBackdrop } from "@/utils/store/backdrop";
 
-import CarouselSlide from "@/components/carouselSlide";
 import { ErrorNotice } from "@/components/notices/errorNotice/errorNotice";
 import { useApiInContext } from "@/utils/store/api";
 import {
@@ -33,36 +32,25 @@ import {
 } from "@jellyfin/sdk/lib/generated-client";
 import Typography from "@mui/material/Typography";
 import { ErrorBoundary } from "react-error-boundary";
+import { useCentralStore } from "@/utils/store/central";
 
 export const Route = createFileRoute("/_api/home/")({
 	component: Home,
-	onError: (err) => {
-		console.log(err);
-	},
 });
 
 function Home() {
 	const api = useApiInContext((s) => s.api);
-	const user = useQuery({
-		queryKey: ["user"],
-		queryFn: async () => {
-			const usr = await getUserApi(api).getCurrentUser();
-			console.log(usr.data);
-			return usr.data;
-		},
-		networkMode: "always",
-		enabled: Boolean(api),
-	});
+	const user = useCentralStore((s) => s.currentUser);
 
 	const libraries = useQuery({
 		queryKey: ["libraries"],
 		queryFn: async () => {
 			const libs = await getUserViewsApi(api).getUserViews({
-				userId: user.data?.Id,
+				userId: user?.Id,
 			});
 			return libs.data;
 		},
-		enabled: !!user.data && !!api.accessToken,
+		enabled: !!user?.Id && !!api.accessToken,
 		networkMode: "always",
 	});
 
@@ -70,7 +58,7 @@ function Home() {
 		queryKey: ["home", "latestMedia"],
 		queryFn: async () => {
 			const media = await getUserLibraryApi(api).getLatestMedia({
-				userId: user.data?.Id,
+				userId: user?.Id,
 				fields: [
 					ItemFields.Overview,
 					ItemFields.ParentId,
@@ -84,14 +72,14 @@ function Home() {
 			});
 			return media.data;
 		},
-		enabled: !!user.data,
+		enabled: !!user?.Id,
 	});
 
 	const resumeItemsVideo = useQuery({
 		queryKey: ["home", "resume", "video"],
 		queryFn: async () => {
 			const resumeItems = await getItemsApi(api).getResumeItems({
-				userId: user.data?.Id,
+				userId: user?.Id,
 				limit: 10,
 				mediaTypes: ["Video"],
 				enableUserData: true,
@@ -99,7 +87,7 @@ function Home() {
 			});
 			return resumeItems.data;
 		},
-		enabled: !!user.data,
+		enabled: !!user?.Id,
 		refetchOnMount: true,
 	});
 
@@ -107,7 +95,7 @@ function Home() {
 		queryKey: ["home", "resume", "audio"],
 		queryFn: async () => {
 			const resumeItems = await getItemsApi(api).getResumeItems({
-				userId: user.data?.Id,
+				userId: user?.Id,
 				limit: 10,
 				mediaTypes: ["Audio"],
 				enableUserData: true,
@@ -115,14 +103,14 @@ function Home() {
 			});
 			return resumeItems.data;
 		},
-		enabled: !!user.data,
+		enabled: !!user?.Id,
 	});
 
 	const upNextItems = useQuery({
 		queryKey: ["home", "upNext"],
 		queryFn: async () => {
 			const upNext = await getTvShowsApi(api).getNextUp({
-				userId: user.data?.Id,
+				userId: user?.Id,
 				fields: [
 					ItemFields.PrimaryImageAspectRatio,
 					ItemFields.MediaStreams,
@@ -133,7 +121,7 @@ function Home() {
 			});
 			return upNext.data;
 		},
-		enabled: !!user.data,
+		enabled: !!user?.Id,
 		refetchOnMount: true,
 	});
 
@@ -234,12 +222,14 @@ function Home() {
 											imageType="Primary"
 											cardType="thumb"
 											disableOverlay
-											onClick={() =>
-												navigate({
-													to: "/library/$id",
-													params: { id: item.Id ?? "" },
-												})
-											}
+											onClick={() => {
+												if (item.Id) {
+													navigate({
+														to: "/library/$id",
+														params: { id: item.Id },
+													});
+												}
+											}}
 											overrideIcon={item.CollectionType}
 										/>
 									);
@@ -296,7 +286,7 @@ function Home() {
 										}
 										cardType="thumb"
 										queryKey={["home", "upNext"]}
-										userId={user.data?.Id}
+										userId={user?.Id}
 									/>
 								);
 							})}
@@ -349,7 +339,7 @@ function Home() {
 										}
 										cardType="thumb"
 										queryKey={["home", "resume", "video"]}
-										userId={user.data?.Id}
+										userId={user?.Id}
 									/>
 								);
 							})}
@@ -380,7 +370,7 @@ function Home() {
 										cardCaption={item.ProductionYear}
 										cardType="thumb"
 										queryKey={["home", "resume", "audio"]}
-										userId={user.data?.Id}
+										userId={user?.Id}
 									/>
 								);
 							})}

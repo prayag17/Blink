@@ -61,6 +61,7 @@ import IconLink from "@/components/iconLink";
 import EpisodeSkeleton from "@/components/skeleton/episode";
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { Link } from "@tanstack/react-router";
+import { useCentralStore } from "@/utils/store/central";
 
 function TabPanel(props) {
 	const { children, value, index, ...other } = props;
@@ -101,27 +102,18 @@ function SeriesTitlePage() {
 
 	const api = Route.useRouteContext().api;
 
-	const user = useQuery({
-		queryKey: ["user"],
-		queryFn: async () => {
-			const usr = await getUserApi(api).getCurrentUser();
-			return usr.data;
-		},
-		networkMode: "always",
-		enabled: Boolean(api),
-	});
+	const user = useCentralStore((s) => s.currentUser);
 
 	const item = useQuery({
 		queryKey: ["item", id],
 		queryFn: async () => {
 			const result = await getUserLibraryApi(api).getItem({
-				userId: user.data.Id,
+				userId: user?.Id,
 				itemId: id,
-				fields: [ItemFields.Crew],
 			});
 			return result.data;
 		},
-		enabled: !!user.data,
+		enabled: !!user?.Id,
 		networkMode: "always",
 		refetchOnWindowFocus: true,
 	});
@@ -130,7 +122,7 @@ function SeriesTitlePage() {
 		queryKey: ["item", id, "similarItem"],
 		queryFn: async () => {
 			const result = await getLibraryApi(api).getSimilarShows({
-				userId: user.data.Id,
+				userId: user?.Id,
 				itemId: item.data.Id,
 				limit: 16,
 			});
@@ -145,7 +137,7 @@ function SeriesTitlePage() {
 		queryKey: ["item", id, "seasons"],
 		queryFn: async () => {
 			const result = await getTvShowsApi(api).getSeasons({
-				userId: user.data.Id,
+				userId: user?.Id,
 				seriesId: item.data.Id,
 				// isSpecialSeason: false,
 			});
@@ -160,7 +152,7 @@ function SeriesTitlePage() {
 		queryKey: ["item", id, "nextUp"],
 		queryFn: async () => {
 			const result = await getTvShowsApi(api).getNextUp({
-				userId: user.data.Id,
+				userId: user?.Id,
 				limit: 1,
 				parentId: item.data.Id,
 				disableFirstEpisode: true,
@@ -189,7 +181,7 @@ function SeriesTitlePage() {
 		queryKey: ["item", id, "season", currentSeason],
 		queryFn: async () => {
 			const result = await getUserLibraryApi(api).getItem({
-				userId: user.data.Id,
+				userId: user?.Id,
 				itemId: seasons.data.Items[currentSeason].Id,
 			});
 			return result.data;
@@ -203,7 +195,7 @@ function SeriesTitlePage() {
 		queryKey: ["item", id, "season", currentSeason, "episodes"],
 		queryFn: async () => {
 			const result = await getTvShowsApi(api).getEpisodes({
-				userId: user.data.Id,
+				userId: user?.Id,
 				seriesId: item.data.Id,
 				seasonId: seasons.data.Items[currentSeason].Id,
 				fields: [ItemFields.Overview],
@@ -221,7 +213,7 @@ function SeriesTitlePage() {
 		queryFn: async () => {
 			const result = await getUserLibraryApi(api).getSpecialFeatures({
 				itemId: item.data.Id,
-				userId: user.data.Id,
+				userId: user?.Id,
 			});
 			return result.data;
 		},
@@ -594,7 +586,7 @@ function SeriesTitlePage() {
 								currentAudioTrack={0}
 								currentVideoTrack={0}
 								currentSubTrack="nosub"
-								userId={user.data.Id}
+								userId={user?.Id}
 								buttonProps={{
 									fullWidth: true,
 								}}
@@ -610,14 +602,14 @@ function SeriesTitlePage() {
 								itemId={item.data.Id}
 								queryKey={["item", id]}
 								isFavorite={item.data.UserData.IsFavorite}
-								userId={user.data.Id}
+								userId={user?.Id}
 							/>
 							<MarkPlayedButton
 								itemName={item.data.Name}
 								itemId={item.data.Id}
 								queryKey={["item", id]}
 								isPlayed={item.data.UserData.Played}
-								userId={user.data.Id}
+								userId={user?.Id}
 							/>
 						</div>
 					</div>
@@ -870,7 +862,7 @@ function SeriesTitlePage() {
 										`season ${currentSeason + 1}`,
 										"episodes",
 									]}
-									userId={user.data.Id}
+									userId={user?.Id}
 								/>
 							);
 						})}
@@ -927,7 +919,7 @@ function SeriesTitlePage() {
 										itemId={currentSeasonItem.data.Id}
 										isFavorite={currentSeasonItem.data.UserData.IsFavorite}
 										queryKey={["item", id, "season", currentSeason]}
-										userId={user.data.Id}
+										userId={user?.Id}
 										itemName={currentSeasonItem.data.Name}
 									/>
 								)}
@@ -937,7 +929,7 @@ function SeriesTitlePage() {
 											itemId={currentSeasonItem.data.Id}
 											isPlayed={currentSeasonItem.data.UserData.Played}
 											queryKey={["item", id, "season", currentSeason]}
-											userId={user.data.Id}
+											userId={user?.Id}
 											itemName={currentSeasonItem.data.Name}
 										/>
 									</>
@@ -1007,7 +999,7 @@ function SeriesTitlePage() {
 											<Typography variant="subtitle1" textAlign="center">
 												{episode.IndexNumberEnd
 													? `${episode.IndexNumber} / ${episode.IndexNumberEnd}`
-													: episode.IndexNumber ?? 0}
+													: (episode.IndexNumber ?? 0)}
 											</Typography>
 											<div
 												className={
@@ -1022,7 +1014,7 @@ function SeriesTitlePage() {
 														itemId={episode.Id}
 														itemType={BaseItemKind.Episode}
 														itemUserData={episode.UserData}
-														userId={user.data.Id}
+														userId={user?.Id}
 														currentAudioTrack={0}
 														currentVideoTrack={0}
 														currentSubTrack="nosub"
@@ -1112,7 +1104,7 @@ function SeriesTitlePage() {
 														`season ${currentSeason + 1}`,
 														"episodes",
 													]}
-													userId={user.data.Id}
+													userId={user?.Id}
 												/>
 												<MarkPlayedButton
 													itemId={episode.Id}
@@ -1124,7 +1116,7 @@ function SeriesTitlePage() {
 														`season ${currentSeason + 1}`,
 														"episodes",
 													]}
-													userId={user.data.Id}
+													userId={user?.Id}
 												/>
 											</div>
 										</motion.div>
@@ -1157,7 +1149,7 @@ function SeriesTitlePage() {
 											Object.keys(special.ImageBlurHashes.Primary)[0]
 										]
 									}
-									userId={user.data.Id}
+									userId={user?.Id}
 									onClick={() => {}}
 								/>
 							);
@@ -1202,7 +1194,7 @@ function SeriesTitlePage() {
 											: "portrait"
 									}
 									queryKey={["item", id, "similarItem"]}
-									userId={user.data.Id}
+									userId={user?.Id}
 									imageBlurhash={
 										!!similar.ImageBlurHashes?.Primary &&
 										similar.ImageBlurHashes?.Primary[

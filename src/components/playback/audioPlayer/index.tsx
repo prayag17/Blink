@@ -1,23 +1,11 @@
-import React, {
-	useEffect,
-	useLayoutEffect,
-	useMemo,
-	useRef,
-	useState,
-} from "react";
+import React, { useEffect, useMemo, useRef, useState } from "react";
 
 import { motion } from "framer-motion";
 
-import CircularProgress from "@mui/material/CircularProgress";
 import Fab from "@mui/material/Fab";
-import Grow from "@mui/material/Grow";
 import IconButton from "@mui/material/IconButton";
-import Paper from "@mui/material/Paper";
-import Popper from "@mui/material/Popper";
 import Slider from "@mui/material/Slider";
 import Typography from "@mui/material/Typography";
-
-import WaveSurfer from "wavesurfer.js";
 
 import { setAudioRef, useAudioPlayback } from "@/utils/store/audioPlayback";
 import useQueue from "@/utils/store/queue";
@@ -26,14 +14,16 @@ import { AnimatePresence } from "framer-motion";
 import "./audioPlayer.scss";
 
 import { getRuntimeMusic, secToTicks, ticksToSec } from "@/utils/date/time";
-import { getUserApi } from "@jellyfin/sdk/lib/utils/api/user-api";
-import { useQuery } from "@tanstack/react-query";
 
 import PlayNextButton from "@/components/buttons/playNextButton";
 import PlayPreviousButton from "@/components/buttons/playPreviousButtom";
 import QueueButton from "@/components/buttons/queueButton";
 import { useApiInContext } from "@/utils/store/api";
-import { useNavigate, useRouteContext } from "@tanstack/react-router";
+import { useNavigate } from "@tanstack/react-router";
+import { playItemFromQueue } from "@/utils/store/playback";
+import { useQuery } from "@tanstack/react-query";
+import { getUserApi } from "@jellyfin/sdk/lib/utils/api/user-api";
+import { useCentralStore } from "@/utils/store/central";
 
 const AudioPlayer = () => {
 	const api = useApiInContext((s) => s.api);
@@ -49,17 +39,7 @@ const AudioPlayer = () => {
 		state.currentItemIndex,
 	]);
 
-	const user = useQuery({
-		queryKey: ["user"],
-		queryFn: async () => {
-			const usr = await getUserApi(api).getCurrentUser();
-			return usr.data;
-		},
-		networkMode: "always",
-		enabled: Boolean(display) && Boolean(api),
-	});
-
-	const waveSurferContainerRef = useRef(null);
+	const user = useCentralStore((s) => s.currentUser);
 
 	const playing = useMemo(() => {
 		if (audioRef.current?.paused) return false;
@@ -70,7 +50,7 @@ const AudioPlayer = () => {
 	const [isMuted, setIsMuted] = useState(false);
 	const [progress, setProgress] = useState(0);
 	const [isScrubbing, setIsScrubbing] = useState(false);
-	const [sliderProgress, setSliderProgress] = useState(false);
+	const [sliderProgress, setSliderProgress] = useState(0);
 
 	const [loading, setLoading] = useState(true);
 
@@ -113,7 +93,7 @@ const AudioPlayer = () => {
 			>
 				<div className="audio-player-image-container">
 					<img
-						alt={tracks[currentTrack]?.Name}
+						alt={tracks[currentTrack]?.Name ?? "track"}
 						className="audio-player-image"
 						src={api?.getItemImageUrl(
 							!item?.ImageTags.Primary ? item?.AlbumId : item?.Id,
@@ -145,7 +125,7 @@ const AudioPlayer = () => {
 						}}
 						noWrap
 					>
-						by {item?.Artists.map((artist) => artist).join(",")}
+						by {item?.Artists?.map((artist) => artist).join(",")}
 					</Typography>
 				</div>
 			</div>
@@ -215,8 +195,10 @@ const AudioPlayer = () => {
 					value={isMuted ? 0 : volume * 100}
 					step={1}
 					max={100}
-					onChange={(e, newVal) => {
-						setVolume(newVal / 100);
+					onChange={(_, newVal) => {
+						Array.isArray(newVal)
+							? setVolume(newVal[0] / 100)
+							: setVolume(newVal / 100);
 						audioRef.current.volume = newVal / 100;
 					}}
 					valueLabelDisplay="auto"
@@ -259,6 +241,14 @@ const AudioPlayer = () => {
 		),
 		[volume, isMuted, currentTrack],
 	);
+
+	if (audioRef.current) {
+		audioRef.current.addEventListener("ended", () => {
+			if (tracks[currentTrack + 1]?.Id) {
+				playItemFromQueue("next", user?.Id, api);
+			}
+		});
+	}
 
 	return (
 		<AnimatePresence mode="sync">
@@ -319,12 +309,14 @@ const AudioPlayer = () => {
 								value={isScrubbing ? sliderProgress : progress}
 								step={1}
 								size="small"
-								max={item?.RunTimeTicks}
-								onChange={(e, value) => {
+								max={item?.RunTimeTicks ?? 1}
+								onChange={(_, value) => {
 									setIsScrubbing(true);
-									setSliderProgress(value);
+									Array.isArray(value)
+										? setSliderProgress(value[0])
+										: setSliderProgress(value);
 								}}
-								onChangeCommitted={(e, value) => {
+								onChangeCommitted={(_, value) => {
 									setIsScrubbing(false);
 									// console.log(ticksToSec(value * item?.RunTimeTicks));
 									setProgress(value);

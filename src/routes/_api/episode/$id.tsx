@@ -65,6 +65,7 @@ import type MediaQualityInfo from "@/utils/types/mediaQualityInfo";
 
 import IconLink from "@/components/iconLink";
 import { Link, createFileRoute } from "@tanstack/react-router";
+import { useCentralStore } from "@/utils/store/central";
 
 function TabPanel(props) {
 	const { children, value, index, ...other } = props;
@@ -97,27 +98,19 @@ function EpisodeTitlePage() {
 	const { id } = Route.useParams();
 	const api = Route.useRouteContext().api;
 
-	const user = useQuery({
-		queryKey: ["user"],
-		queryFn: async () => {
-			const usr = await getUserApi(api).getCurrentUser();
-			return usr.data;
-		},
-		networkMode: "always",
-		enabled: Boolean(api),
-	});
+	const user = useCentralStore((s) => s.currentUser);
 
 	const item = useQuery({
 		queryKey: ["item", id],
 		queryFn: async () => {
 			const result = await getUserLibraryApi(api).getItem({
-				userId: user.data.Id,
+				userId: user?.Id,
 				itemId: id,
 				fields: [ItemFields.Crew],
 			});
 			return result.data;
 		},
-		enabled: !!user.data,
+		enabled: !!user?.Id,
 		networkMode: "always",
 		refetchOnWindowFocus: true,
 	});
@@ -126,9 +119,9 @@ function EpisodeTitlePage() {
 		queryKey: ["item", id, "episode", "upcomingEpisodes"],
 		queryFn: async () => {
 			const result = await getItemsApi(api).getItems({
-				userId: user.data.Id,
-				parentId: item.data.ParentId,
-				startIndex: item.data.IndexNumber,
+				userId: user?.Id,
+				parentId: item.data?.ParentId ?? "",
+				startIndex: item.data?.IndexNumber ?? 0,
 			});
 			return result.data;
 		},
@@ -688,7 +681,7 @@ function EpisodeTitlePage() {
 								currentVideoTrack={selectedVideoTrack}
 								currentAudioTrack={selectedAudioTrack}
 								currentSubTrack={selectedSubtitleTrack}
-								userId={user.data.Id}
+								userId={user?.Id}
 							/>
 						</div>
 						<div className="flex flex-row" style={{ gap: "1em" }}>
@@ -701,14 +694,14 @@ function EpisodeTitlePage() {
 								itemId={item.data.Id}
 								queryKey={["item", id]}
 								isFavorite={item.data.UserData.IsFavorite}
-								userId={user.data.Id}
+								userId={user?.Id}
 							/>
 							<MarkPlayedButton
 								itemName={item.data.Name}
 								itemId={item.data.Id}
 								queryKey={["item", id]}
 								isPlayed={item.data.UserData.Played}
-								userId={user.data.Id}
+								userId={user?.Id}
 							/>
 						</div>
 					</div>
@@ -812,7 +805,7 @@ function EpisodeTitlePage() {
 										cardCaption={`S${episode.ParentIndexNumber}:E${episode.IndexNumber} - ${episode.Name}`}
 										cardType="thumb"
 										queryKey={["item", id, "episode", "upcomingEpisodes"]}
-										userId={user.data.Id}
+										userId={user?.Id}
 										imageBlurhash={
 											!!episode.ImageBlurHashes?.Primary &&
 											episode.ImageBlurHashes?.Primary[

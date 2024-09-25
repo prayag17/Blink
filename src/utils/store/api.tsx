@@ -15,6 +15,9 @@ type ApiStore = {
 	createApi: (serverAddress: string, accessToken?: string | undefined) => void;
 };
 
+/**
+ * @deprecated
+ */
 export const axiosClient = axios.create({
 	// adapter: axiosTauriApiAdapter,
 	headers: {
@@ -50,12 +53,7 @@ export const ApiProvider = ({ children }: { children: ReactNode }) => {
 			jellyfin: jellyfin,
 			createApi: (serverAddress, accessToken?) =>
 				set((state) => {
-					const apiTemp = state.jellyfin.createApi(
-						serverAddress,
-						accessToken,
-						axiosClient,
-					);
-					console.info(apiTemp);
+					const apiTemp = state.jellyfin.createApi(serverAddress, accessToken);
 					return {
 						...state,
 						api: apiTemp,
@@ -69,7 +67,7 @@ export const ApiProvider = ({ children }: { children: ReactNode }) => {
 export function useApiInContext<T>(selector?: (state: ApiStore) => T) {
 	const store = useContext(ApiContext);
 	if (!store) {
-		throw new Error("Missing StoreProvider");
+		throw new Error("Missing ApiProvider");
 	}
 	return useStore(store, selector!);
 }

@@ -1,11 +1,10 @@
 import Box from "@mui/material/Box";
-import Button from "@mui/material/Button";
 import Typography from "@mui/material/Typography";
 import { red } from "@mui/material/colors";
 import React from "react";
 
-export const ErrorNotice = ({ error }: { error?: unknown }) => {
-	console.log(error);
+export const ErrorNotice = ({ error }: { error?: Error }) => {
+	console.error(error);
 	return (
 		<Box
 			sx={{
@@ -23,14 +22,15 @@ export const ErrorNotice = ({ error }: { error?: unknown }) => {
 				style={{
 					fontSize: "10em",
 					color: red[800],
+					//@ts-ignore
 					"--clr": "rgb(198 40 40 / 30%)",
 					fontVariationSettings: '"FILL" 1, "wght" 400, "GRAD" 25, "opsz" 60',
 				}}
 			>
 				error
 			</div>
-			<Typography variant="h3" fontWeight={300}>
-				Something went wrong
+			<Typography variant="h3" color="white" fontWeight={300}>
+				Something went wrong.
 			</Typography>
 			<Typography
 				fontFamily="JetBrains Mono Variable"
@@ -45,8 +45,9 @@ export const ErrorNotice = ({ error }: { error?: unknown }) => {
 					marginTop: "1em",
 					// opacity: 0.6,
 				}}
+				color="gray"
 			>
-				{JSON.stringify(error.message)}
+				{JSON.stringify(error?.message)}
 			</Typography>
 		</Box>
 	);

@@ -52,6 +52,7 @@ import "./album.scss";
 import TagChip from "@/components/tagChip";
 import { Link, createFileRoute } from "@tanstack/react-router";
 import lyricsIcon from "../../../assets/icons/lyrics.svg";
+import { useCentralStore } from "@/utils/store/central";
 
 function TabPanel(props) {
 	const { children, value, index, ...other } = props;
@@ -91,26 +92,18 @@ function MusicAlbumTitlePage() {
 	const { id } = Route.useParams();
 	const api = Route.useRouteContext().api;
 
-	const user = useQuery({
-		queryKey: ["user"],
-		queryFn: async () => {
-			const usr = await getUserApi(api).getCurrentUser();
-			return usr.data;
-		},
-		networkMode: "always",
-		enabled: Boolean(api),
-	});
+	const user = useCentralStore((s) => s.currentUser);
 
 	const item = useQuery({
 		queryKey: ["item", id],
 		queryFn: async () => {
 			const result = await getUserLibraryApi(api).getItem({
-				userId: user.data?.Id,
+				userId: user?.Id,
 				itemId: id,
 			});
 			return result.data;
 		},
-		enabled: !!user.data,
+		enabled: !!user?.Id,
 		networkMode: "always",
 		refetchOnWindowFocus: true,
 	});
@@ -119,7 +112,7 @@ function MusicAlbumTitlePage() {
 		queryKey: ["item", id, "similarItem"],
 		queryFn: async () => {
 			const result = await getLibraryApi(api).getSimilarAlbums({
-				userId: user.data?.Id,
+				userId: user?.Id,
 				itemId: item.data?.Id,
 				limit: 16,
 			});
@@ -134,7 +127,7 @@ function MusicAlbumTitlePage() {
 		queryKey: ["item", "musicTracks", id],
 		queryFn: async () => {
 			const result = await getItemsApi(api).getItems({
-				userId: user.data?.Id,
+				userId: user?.Id,
 				parentId: item.data?.Id,
 				sortOrder: [SortOrder.Ascending],
 				sortBy: ["IndexNumber"],
@@ -170,7 +163,7 @@ function MusicAlbumTitlePage() {
 	) => {
 		const url = generateAudioStreamUrl(
 			item.Id,
-			user.data?.Id,
+			user?.Id,
 			api.deviceInfo.id,
 			api.basePath,
 		);
@@ -235,13 +228,13 @@ function MusicAlbumTitlePage() {
 								item={item}
 								audio
 								itemType={item.data.Type}
-								userId={user.data?.Id}
+								userId={user?.Id}
 							/>
 							<LikeButton
 								itemId={item.data.Id}
 								isFavorite={item.data.UserData?.IsFavorite}
 								queryKey={["item", "musicTracks"]}
-								userId={user.data?.Id}
+								userId={user?.Id}
 								itemName={item.data.Name}
 							/>
 						</div>
@@ -295,7 +288,7 @@ function MusicAlbumTitlePage() {
 											itemId={track.Id}
 											isFavorite={track.UserData?.IsFavorite}
 											queryKey={["item", "musicTracks"]}
-											userId={user.data?.Id}
+											userId={user?.Id}
 											itemName={track.Name}
 										/>
 									</div>
@@ -352,13 +345,13 @@ function MusicAlbumTitlePage() {
 						</div>
 					</div>
 				</div>
-				{similarItems.data.TotalRecordCount > 0 && (
+				{(similarItems.data.TotalRecordCount ?? -1) > 0 && (
 					<CardScroller
 						title="You might also like"
 						displayCards={7}
 						disableDecoration
 					>
-						{similarItems.data.Items.map((similar) => {
+						{similarItems.data.Items?.map((similar) => {
 							return (
 								<Card
 									key={similar.Id}
@@ -390,13 +383,7 @@ function MusicAlbumTitlePage() {
 											: "portrait"
 									}
 									queryKey={["item", id, "similarItem"]}
-									userId={user.data.Id}
-									imageBlurhash={
-										!!similar.ImageBlurHashes?.Primary &&
-										similar.ImageBlurHashes?.Primary[
-											Object.keys(similar.ImageBlurHashes.Primary)[0]
-										]
-									}
+									userId={user?.Id}
 								/>
 							);
 						})}

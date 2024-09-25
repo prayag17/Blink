@@ -40,10 +40,12 @@ export const setDefaultServer = async (
 
 /**
  * Get a Server
+ * @returns {ServerInfo}
  */
-export const getServer = async (serverId: string | null) => {
+export const getServer = async (
+	serverId: string | null,
+): Promise<ServerInfo | undefined> => {
 	const servers = await getAllServers();
-
 	return servers.find((server) => server.id === serverId);
 };
 

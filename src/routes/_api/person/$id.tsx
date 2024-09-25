@@ -35,6 +35,7 @@ import "./person.scss";
 
 import IconLink from "@/components/iconLink";
 import { createFileRoute } from "@tanstack/react-router";
+import { useCentralStore } from "@/utils/store/central";
 
 function TabPanel(props) {
 	const { children, value, index, ...other } = props;
@@ -74,27 +75,18 @@ function PersonTitlePage() {
 	const { id } = Route.useParams();
 	const api = Route.useRouteContext().api;
 
-	const user = useQuery({
-		queryKey: ["user"],
-		queryFn: async () => {
-			const usr = await getUserApi(api).getCurrentUser();
-			return usr.data;
-		},
-		networkMode: "always",
-		enabled: Boolean(api),
-	});
+	const user = useCentralStore((s) => s.currentUser);
 
 	const item = useQuery({
 		queryKey: ["item", id],
 		queryFn: async () => {
 			const result = await getUserLibraryApi(api).getItem({
-				userId: user.data.Id,
+				userId: user?.Id,
 				itemId: id,
-				fields: [ItemFields.Crew],
 			});
 			return result.data;
 		},
-		enabled: !!user.data,
+		enabled: !!user?.Id,
 		networkMode: "always",
 		refetchOnWindowFocus: true,
 	});
@@ -103,7 +95,7 @@ function PersonTitlePage() {
 		queryKey: ["item", id, "personMovies"],
 		queryFn: async () => {
 			const result = await getItemsApi(api).getItems({
-				userId: user.data.Id,
+				userId: user?.Id,
 				personIds: [id],
 				includeItemTypes: [BaseItemKind.Movie],
 				recursive: true,
@@ -120,7 +112,7 @@ function PersonTitlePage() {
 		queryKey: ["item", id, "personShows"],
 		queryFn: async () => {
 			const result = await getItemsApi(api).getItems({
-				userId: user.data.Id,
+				userId: user?.Id,
 				personIds: [id],
 				includeItemTypes: [BaseItemKind.Series],
 				recursive: true,
@@ -138,7 +130,7 @@ function PersonTitlePage() {
 		queryKey: ["item", id, "personBooks"],
 		queryFn: async () => {
 			const result = await getItemsApi(api).getItems({
-				userId: user.data.Id,
+				userId: user?.Id,
 				personIds: [id],
 				includeItemTypes: [BaseItemKind.Book],
 				recursive: true,
@@ -155,7 +147,7 @@ function PersonTitlePage() {
 		queryKey: ["item", id, "personPhotos"],
 		queryFn: async () => {
 			const result = await getItemsApi(api).getItems({
-				userId: user.data.Id,
+				userId: user?.Id,
 				personIds: [id],
 				includeItemTypes: [BaseItemKind.Photo],
 				recursive: true,
@@ -171,7 +163,7 @@ function PersonTitlePage() {
 		queryKey: ["item", id, "personEpisodes"],
 		queryFn: async () => {
 			const result = await getItemsApi(api).getItems({
-				userId: user.data.Id,
+				userId: user?.Id,
 				personIds: [id],
 				includeItemTypes: [BaseItemKind.Episode],
 				recursive: true,
@@ -343,7 +335,7 @@ function PersonTitlePage() {
 							itemId={item.data.Id}
 							queryKey={["item", id]}
 							isFavorite={item.data.UserData.IsFavorite}
-							userId={user.data.Id}
+							userId={user?.Id}
 						/>
 					</div>
 				</div>
@@ -480,7 +472,7 @@ function PersonTitlePage() {
 																: "portrait"
 														}
 														queryKey={tab.queryKey}
-														userId={user.data.Id}
+														userId={user?.Id}
 														imageBlurhash={
 															!!tabitem.ImageBlurHashes?.Primary &&
 															tabitem.ImageBlurHashes?.Primary[

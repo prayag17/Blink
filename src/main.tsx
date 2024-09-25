@@ -1,9 +1,9 @@
-import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import {
-	RouterProvider,
-	createRouteMask,
-	createRouter,
-} from "@tanstack/react-router";
+	QueryClient,
+	QueryClientProvider,
+	useQuery,
+} from "@tanstack/react-query";
+import { RouterProvider, createRouter } from "@tanstack/react-router";
 import React, { Suspense } from "react";
 import ReactDOM from "react-dom/client";
 // Import the generated route tree
@@ -25,6 +25,7 @@ const router = createRouter({
 		createApi: undefined!,
 		user: undefined,
 		jellyfinSDK: undefined!,
+		fetchCurrentUser: undefined!,
 	},
 	defaultPreload: "intent",
 });
@@ -37,6 +38,10 @@ declare module "@tanstack/react-router" {
 }
 
 import { ApiProvider, useApiInContext } from "./utils/store/api";
+import { getUserApi } from "@jellyfin/sdk/lib/utils/api/user-api";
+import { ErrorBoundary } from "react-error-boundary";
+import { ErrorNotice } from "./components/notices/errorNotice/errorNotice";
+import { CentralProvider, useCentralStore } from "./utils/store/central";
 
 export const queryClient = new QueryClient({
 	defaultOptions: {
@@ -55,8 +60,16 @@ function ProviderWrapper() {
 		s.createApi,
 		s.jellyfin,
 	]);
+	const [user, fetchCurrentUser] = useCentralStore((s) => [
+		s.currentUser,
+		s.fetchCurrentUser,
+	]);
+	if (api?.accessToken) fetchCurrentUser(api);
 	return (
-		<RouterProvider router={router} context={{ api, createApi, jellyfinSDK }} />
+		<RouterProvider
+			router={router}
+			context={{ api, createApi, user, jellyfinSDK, fetchCurrentUser }}
+		/>
 	);
 }
 
@@ -64,11 +77,15 @@ ReactDOM.createRoot(document.getElementById("root")!).render(
 	<React.StrictMode>
 		<QueryClientProvider client={queryClient}>
 			{/* TODO: Create a proper loading fallback component */}
-			<Suspense fallback={<h1>Loading in main.tsx</h1>}>
-				<ApiProvider>
-					<ProviderWrapper />
-				</ApiProvider>
-			</Suspense>
+			<ErrorBoundary FallbackComponent={ErrorNotice}>
+				<Suspense fallback={<h1>Loading in main.tsx</h1>}>
+					<CentralProvider>
+						<ApiProvider>
+							<ProviderWrapper />
+						</ApiProvider>
+					</CentralProvider>
+				</Suspense>
+			</ErrorBoundary>
 		</QueryClientProvider>
 	</React.StrictMode>,
 );

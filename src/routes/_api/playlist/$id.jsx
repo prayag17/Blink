@@ -20,6 +20,7 @@ import { ErrorNotice } from "@/components/notices/errorNotice/errorNotice";
 import { useBackdropStore } from "@/utils/store/backdrop";
 import "./playlist.scss";
 import { createFileRoute } from "@tanstack/react-router";
+import { useCentralStore } from "@/utils/store/central";
 function TabPanel(props) {
 	const { children, value, index, ...other } = props;
 
@@ -58,27 +59,18 @@ function PlaylistTitlePage() {
 	const { id } = Route.useParams();
 	const api = Route.useRouteContext().api;
 
-	const user = useQuery({
-		queryKey: ["user"],
-		queryFn: async () => {
-			const usr = await getUserApi(api).getCurrentUser();
-			return usr.data;
-		},
-		networkMode: "always",
-		enabled: Boolean(api),
-	});
+	const user = useCentralStore((s) => s.currentUser);
 
 	const item = useQuery({
 		queryKey: ["item", id],
 		queryFn: async () => {
 			const result = await getUserLibraryApi(api).getItem({
-				userId: user.data.Id,
+				userId: user?.Id,
 				itemId: id,
-				fields: [ItemFields.Crew],
 			});
 			return result.data;
 		},
-		enabled: !!user.data,
+		enabled: !!user?.Id,
 		networkMode: "always",
 		refetchOnWindowFocus: true,
 	});
@@ -87,7 +79,7 @@ function PlaylistTitlePage() {
 		queryKey: ["item", id, "similarItem"],
 		queryFn: async () => {
 			const result = await getLibraryApi(api).getSimilarAlbums({
-				userId: user.data.Id,
+				userId: user?.Id,
 				itemId: item.data.Id,
 				limit: 16,
 			});
@@ -102,7 +94,7 @@ function PlaylistTitlePage() {
 		queryKey: ["item", id, "musicTracks"],
 		queryFn: async () => {
 			const result = await getPlaylistsApi(api).getPlaylistItems({
-				userId: user.data.Id,
+				userId: user?.Id,
 				playlistId: item.data.Id,
 			});
 			return result.data;
@@ -161,7 +153,7 @@ function PlaylistTitlePage() {
 								item={track}
 								key={track.Id}
 								queryKey={["item", id, "musicTracks"]}
-								userId={user.data.Id}
+								userId={user?.Id}
 								playlistItem
 								playlistItemId={item.data.Id}
 								trackIndex={index}
@@ -208,7 +200,7 @@ function PlaylistTitlePage() {
 											: "portrait"
 									}
 									queryKey={["item", id, "similarItem"]}
-									userId={user.data.Id}
+									userId={user?.Id}
 									imageBlurhash={
 										!!similar.ImageBlurHashes?.Primary &&
 										similar.ImageBlurHashes?.Primary[

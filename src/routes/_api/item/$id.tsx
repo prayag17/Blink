@@ -69,6 +69,7 @@ import type MediaQualityInfo from "@/utils/types/mediaQualityInfo";
 import IconLink from "@/components/iconLink";
 import { queryClient } from "@/main";
 import { Link, createFileRoute } from "@tanstack/react-router";
+import { useCentralStore } from "@/utils/store/central";
 
 function TabPanel(props) {
 	const { children, value, index, ...other } = props;
@@ -102,26 +103,18 @@ function ItemDetail() {
 
 	const api = Route.useRouteContext().api;
 
-	const user = useQuery({
-		queryKey: ["user"],
-		queryFn: async () => {
-			const usr = await getUserApi(api).getCurrentUser();
-			return usr.data;
-		},
-		networkMode: "always",
-		enabled: Boolean(api),
-	});
+	const user = useCentralStore((s) => s.currentUser);
 
 	const item = useQuery({
 		queryKey: ["item", id],
 		queryFn: async () => {
 			const result = await getUserLibraryApi(api).getItem({
-				userId: user.data?.Id,
+				userId: user?.Id,
 				itemId: id,
 			});
 			return result.data;
 		},
-		enabled: !!user.data,
+		enabled: !!user?.Id,
 		networkMode: "always",
 		refetchOnWindowFocus: true,
 	});
@@ -134,28 +127,28 @@ function ItemDetail() {
 			let result;
 			if (item.data.Type === "Movie") {
 				result = await getLibraryApi(api).getSimilarMovies({
-					userId: user.data.Id,
+					userId: user?.Id,
 					itemId: item.data.Id,
 					limit: 16,
 				});
 			} else if (item.data.Type === "Series") {
 				result = await getLibraryApi(api).getSimilarShows({
-					userId: user.data.Id,
+					userId: user?.Id,
 					itemId: item.data.Id,
 				});
 			} else if (item.data.Type === "MusicAlbum") {
 				result = await getLibraryApi(api).getSimilarAlbums({
-					userId: user.data.Id,
+					userId: user?.Id,
 					itemId: item.data.Id,
 				});
 			} else if (item.data.Type === "MusicArtist") {
 				result = await getLibraryApi(api).getSimilarArtists({
-					userId: user.data.Id,
+					userId: user?.Id,
 					itemId: item.data.Id,
 				});
 			} else {
 				result = await getLibraryApi(api).getSimilarItems({
-					userId: user.data.Id,
+					userId: user?.Id,
 					itemId: item.data.Id,
 				});
 			}
@@ -192,8 +185,6 @@ function ItemDetail() {
 	const [selectedVideoTrack, setSelectedVideoTrack] = useState(null);
 	const [selectedAudioTrack, setSelectedAudioTrack] = useState(null);
 	const [selectedSubtitleTrack, setSelectedSubtitleTrack] = useState(null);
-
-	const [setAppBackdrop] = useBackdropStore((state) => [state.setBackdrop]);
 
 	const [directors, setDirectors] = useState([]);
 	const [writers, setWriters] = useState([]);
@@ -694,7 +685,7 @@ function ItemDetail() {
 								currentVideoTrack={selectedVideoTrack}
 								currentAudioTrack={selectedAudioTrack}
 								currentSubTrack={selectedSubtitleTrack}
-								userId={user.data.Id}
+								userId={user?.Id}
 								buttonProps={{
 									fullWidth: true,
 								}}
@@ -710,14 +701,14 @@ function ItemDetail() {
 								itemId={item.data.Id}
 								queryKey={["item", id]}
 								isFavorite={item.data.UserData.IsFavorite}
-								userId={user.data.Id}
+								userId={user?.Id}
 							/>
 							<MarkPlayedButton
 								itemName={item.data.Name}
 								itemId={item.data.Id}
 								queryKey={["item", id]}
 								isPlayed={item.data.UserData.Played}
-								userId={user.data.Id}
+								userId={user?.Id}
 							/>
 						</div>
 					</div>
@@ -1043,7 +1034,7 @@ function ItemDetail() {
 											: "portrait"
 									}
 									queryKey={["item", id, "similarItem"]}
-									userId={user.data.Id}
+									userId={user?.Id}
 									imageBlurhash={
 										!!similar.ImageBlurHashes?.Primary &&
 										similar.ImageBlurHashes?.Primary[

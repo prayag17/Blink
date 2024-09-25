@@ -44,6 +44,7 @@ $image-size: 5em;
             flex-direction: column;
             gap: 0.2em;
             width: 100%;
+            overflow: hidden;
         }
     }
     &-item.Mui-disabled {

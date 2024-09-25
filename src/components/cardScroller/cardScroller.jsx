@@ -53,8 +53,6 @@ export const CardScroller = ({
 		},
 	};
 
-	const [carouselRef, setCarouselRef] = useState();
-
 	return (
 		<Box {...boxProps} className="card-scroller-container" mb={1}>
 			<Box
@@ -79,7 +77,7 @@ export const CardScroller = ({
 				draggable
 				responsive={responsive}
 				arrows
-				ref={(el) => setCarouselRef(el)}
+				rtl={false}
 				className="card-scroller"
 				customTransition="all .6s"
 				transitionDuration={600}

@@ -12,6 +12,7 @@ import { BaseItemKind } from "@jellyfin/sdk/lib/generated-client";
 import { getItemsApi } from "@jellyfin/sdk/lib/utils/api/items-api";
 import { getUserApi } from "@jellyfin/sdk/lib/utils/api/user-api";
 import { createFileRoute } from "@tanstack/react-router";
+import { useCentralStore } from "@/utils/store/central";
 
 export const Route = createFileRoute("/_api/favorite/")({
 	component: FavoritePage,
@@ -21,21 +22,13 @@ function FavoritePage() {
 	const api = Route.useRouteContext().api;
 	const [setBackdrop] = useBackdropStore((state) => [state.setBackdrop]);
 
-	const user = useQuery({
-		queryKey: ["user"],
-		queryFn: async () => {
-			const usr = await getUserApi(api).getCurrentUser();
-			return usr.data;
-		},
-		networkMode: "always",
-		enabled: Boolean(api),
-	});
+	const user = useCentralStore((s) => s.currentUser);
 
 	const movies = useQuery({
 		queryKey: ["favorite", "movies"],
 		queryFn: async () => {
 			const result = await getItemsApi(api).getItems({
-				userId: user.data.Id,
+				userId: user?.Id,
 				isFavorite: true,
 				includeItemTypes: [BaseItemKind.Movie],
 				recursive: true,
@@ -48,7 +41,7 @@ function FavoritePage() {
 		queryKey: ["favorite", "series"],
 		queryFn: async () => {
 			const result = await getItemsApi(api).getItems({
-				userId: user.data.Id,
+				userId: user?.Id,
 				isFavorite: true,
 				includeItemTypes: [BaseItemKind.Series],
 				recursive: true,
@@ -61,7 +54,7 @@ function FavoritePage() {
 		queryKey: ["favorite", "musicAlbum"],
 		queryFn: async () => {
 			const result = await getItemsApi(api).getItems({
-				userId: user.data.Id,
+				userId: user?.Id,
 				isFavorite: true,
 				includeItemTypes: [BaseItemKind.MusicAlbum],
 				recursive: true,
@@ -74,7 +67,7 @@ function FavoritePage() {
 		queryKey: ["favorite", "audio"],
 		queryFn: async () => {
 			const result = await getItemsApi(api).getItems({
-				userId: user.data.Id,
+				userId: user?.Id,
 				isFavorite: true,
 				includeItemTypes: [BaseItemKind.Audio],
 				recursive: true,
@@ -87,7 +80,7 @@ function FavoritePage() {
 		queryKey: ["favorite", "book"],
 		queryFn: async () => {
 			const result = await getItemsApi(api).getItems({
-				userId: user.data.Id,
+				userId: user?.Id,
 				isFavorite: true,
 				includeItemTypes: [BaseItemKind.Book],
 				recursive: true,
@@ -100,7 +93,7 @@ function FavoritePage() {
 		queryKey: ["favorite", "musicArtist"],
 		queryFn: async () => {
 			const result = await getItemsApi(api).getItems({
-				userId: user.data.Id,
+				userId: user?.Id,
 				isFavorite: true,
 				includeItemTypes: [BaseItemKind.MusicArtist],
 				recursive: true,
@@ -113,7 +106,7 @@ function FavoritePage() {
 		queryKey: ["favorite", "person"],
 		queryFn: async () => {
 			const result = await getItemsApi(api).getItems({
-				userId: user.data.Id,
+				userId: user?.Id,
 				isFavorite: true,
 				includeItemTypes: [BaseItemKind.Person],
 				recursive: true,
@@ -148,7 +141,7 @@ function FavoritePage() {
 							cardCaption={item.ProductionYear}
 							cardType="portrait"
 							queryKey={["favorite", "movies"]}
-							userId={user.data.Id}
+							userId={user?.Id}
 							imageBlurhash={
 								!!item.ImageBlurHashes?.Primary &&
 								item.ImageBlurHashes?.Primary[
@@ -176,7 +169,7 @@ function FavoritePage() {
 							}`}
 							cardType="portrait"
 							queryKey={["favorite", "series"]}
-							userId={user.data.Id}
+							userId={user?.Id}
 							imageBlurhash={
 								!!item.ImageBlurHashes?.Primary &&
 								item.ImageBlurHashes?.Primary[
@@ -198,7 +191,7 @@ function FavoritePage() {
 							cardCaption={item.ProductionYear}
 							cardType="square"
 							queryKey={["favorite", "audio"]}
-							userId={user.data.Id}
+							userId={user?.Id}
 							imageBlurhash={
 								!!item.ImageBlurHashes?.Primary &&
 								item.ImageBlurHashes?.Primary[
@@ -221,7 +214,7 @@ function FavoritePage() {
 							cardCaption={item.AlbumArtist}
 							cardType={"square"}
 							queryKey={["favorite", "musicAlbum"]}
-							userId={user.data.Id}
+							userId={user?.Id}
 							imageBlurhash={
 								!!item.ImageBlurHashes?.Primary &&
 								item.ImageBlurHashes?.Primary[
@@ -244,7 +237,7 @@ function FavoritePage() {
 							disableOverlay
 							cardType={"portrait"}
 							queryKey={["favorite", "book"]}
-							userId={user.data.Id}
+							userId={user?.Id}
 							imageBlurhash={
 								!!item.ImageBlurHashes?.Primary &&
 								item.ImageBlurHashes?.Primary[
@@ -266,7 +259,7 @@ function FavoritePage() {
 							disableOverlay
 							cardType={"square"}
 							queryKey={["favorite", "musicArtist"]}
-							userId={user.data.Id}
+							userId={user?.Id}
 							imageBlurhash={
 								!!item.ImageBlurHashes?.Primary &&
 								item.ImageBlurHashes?.Primary[
@@ -288,7 +281,7 @@ function FavoritePage() {
 							disableOverlay
 							cardType={"square"}
 							queryKey={["favorite", "person"]}
-							userId={user.data.Id}
+							userId={user?.Id}
 							imageBlurhash={
 								!!item.ImageBlurHashes?.Primary &&
 								item.ImageBlurHashes?.Primary[

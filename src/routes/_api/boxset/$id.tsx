@@ -40,6 +40,7 @@ import "./boxset.scss";
 import IconLink from "@/components/iconLink";
 import { getTypeIcon } from "@/components/utils/iconsCollection";
 import { createFileRoute } from "@tanstack/react-router";
+import { useCentralStore } from "@/utils/store/central";
 
 function TabPanel(props) {
 	const { children, value, index, ...other } = props;
@@ -72,27 +73,18 @@ function BoxSetTitlePage() {
 	const { id } = Route.useParams();
 	const api = Route.useRouteContext().api;
 
-	const user = useQuery({
-		queryKey: ["user"],
-		queryFn: async () => {
-			const usr = await getUserApi(api).getCurrentUser();
-			return usr.data;
-		},
-		networkMode: "always",
-		enabled: Boolean(api),
-	});
+	const user = useCentralStore((s) => s.currentUser);
 
 	const item = useQuery({
 		queryKey: ["item", id],
 		queryFn: async () => {
 			const result = await getUserLibraryApi(api).getItem({
-				userId: user.data.Id,
+				userId: user?.Id,
 				itemId: id,
-				fields: [ItemFields.Crew],
 			});
 			return result.data;
 		},
-		enabled: !!user.data,
+		enabled: !!user?.Id,
 		networkMode: "always",
 		refetchOnWindowFocus: true,
 	});
@@ -101,7 +93,7 @@ function BoxSetTitlePage() {
 		queryKey: ["item", id, "collection"],
 		queryFn: async () => {
 			const result = await getItemsApi(api).getItems({
-				userId: user.data.Id,
+				userId: user?.Id,
 				parentId: item.data.Id,
 				fields: [ItemFields.SeasonUserData, ItemFields.Overview],
 				excludeLocationTypes: [LocationType.Virtual],
@@ -117,8 +109,8 @@ function BoxSetTitlePage() {
 		queryKey: ["item", id, "similarItem"],
 		queryFn: async () => {
 			const result = await getLibraryApi(api).getSimilarItems({
-				userId: user.data.Id,
-				itemId: item.data.Id,
+				userId: user?.Id,
+				itemId: item.data?.Id,
 				limit: 16,
 			});
 			return result.data;
@@ -370,7 +362,7 @@ function BoxSetTitlePage() {
 								currentVideoTrack={0}
 								currentAudioTrack={0}
 								currentSubTrack={0}
-								userId={user.data.Id}
+								userId={user?.Id}
 								buttonProps={{
 									fullWidth: true,
 								}}
@@ -382,14 +374,14 @@ function BoxSetTitlePage() {
 								itemId={item.data.Id}
 								queryKey={["item", id]}
 								isFavorite={item.data.UserData.IsFavorite}
-								userId={user.data.Id}
+								userId={user?.Id}
 							/>
 							<MarkPlayedButton
 								itemName={item.data.Name}
 								itemId={item.data.Id}
 								queryKey={["item", id]}
 								isPlayed={item.data.UserData.Played}
-								userId={user.data.Id}
+								userId={user?.Id}
 							/>
 						</div>
 					</div>
@@ -437,7 +429,7 @@ function BoxSetTitlePage() {
 									cardCaption={similar.ProductionYear}
 									cardType={"portrait"}
 									queryKey={["item", id, "collection"]}
-									userId={user.data.Id}
+									userId={user?.Id}
 									imageBlurhash={
 										!!similar.ImageBlurHashes?.Primary &&
 										similar.ImageBlurHashes?.Primary[
@@ -487,7 +479,7 @@ function BoxSetTitlePage() {
 											: "portrait"
 									}
 									queryKey={["item", id, "similarItem"]}
-									userId={user.data.Id}
+									userId={user?.Id}
 									imageBlurhash={
 										!!similar.ImageBlurHashes?.Primary &&
 										similar.ImageBlurHashes?.Primary[

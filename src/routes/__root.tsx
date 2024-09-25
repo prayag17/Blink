@@ -48,15 +48,17 @@ import type { UserDto } from "@jellyfin/sdk/lib/generated-client";
 import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 import { DndProvider } from "react-dnd";
 import { HTML5Backend } from "react-dnd-html5-backend";
+import { ErrorNotice } from "@/components/notices/errorNotice/errorNotice";
 
 type ApiContext = {
 	api: Api;
 	createApi: (
-		serverAddress: string | undefined,
-		accessToken: string | undefined,
+		serverAddress: string | undefined | null,
+		accessToken: string | undefined | null,
 	) => void;
 	user: UserDto | null | undefined;
 	jellyfinSDK: Jellyfin;
+	fetchCurrentUser: (api: Api | undefined) => Promise<void>;
 };
 
 export const Route = createRootRouteWithContext<ApiContext>()({
@@ -264,11 +266,12 @@ export const Route = createRootRouteWithContext<ApiContext>()({
 							<AudioPlayer />
 							<Outlet />
 							<ReactQueryDevtools />
-							{/* <TanStackRouterDevtools /> */}
+							<TanStackRouterDevtools />
 						</SnackbarProvider>
 					</ThemeProvider>
 				</Suspense>
 			</DndProvider>
 		);
 	},
+	errorComponent: ErrorNotice,
 });

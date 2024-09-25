@@ -46,7 +46,7 @@ type PlayButtonProps = {
 	item: BaseItemDto;
 	itemId: string;
 	itemUserData: UserItemDataDto;
-	userId: string;
+	userId: string | undefined;
 	itemType: BaseItemKind;
 	currentAudioTrack: number;
 	currentVideoTrack: number;

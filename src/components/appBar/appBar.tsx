@@ -11,7 +11,6 @@ import useScrollTrigger from "@mui/material/useScrollTrigger";
 
 import { Link, useLocation, useNavigate } from "@tanstack/react-router";
 
-import { getUserApi } from "@jellyfin/sdk/lib/utils/api/user-api";
 import { getUserViewsApi } from "@jellyfin/sdk/lib/utils/api/user-views-api";
 
 import { useQuery, useQueryClient } from "@tanstack/react-query";
@@ -35,6 +34,7 @@ import {
 	ListItemText,
 } from "@mui/material";
 import BackButton from "../buttons/backButton";
+import { useCentralStore } from "@/utils/store/central";
 
 interface ListItemLinkProps {
 	icon?: ReactNode;
@@ -77,24 +77,16 @@ export const AppBar = () => {
 
 	const location = useLocation();
 
-	const user = useQuery({
-		queryKey: ["user"],
-		queryFn: async () => {
-			const usr = await getUserApi(api).getCurrentUser();
-			return usr.data;
-		},
-		enabled: display && Boolean(api?.accessToken),
-		throwOnError: true,
-	});
+	const user = useCentralStore((s) => s.currentUser);
 	const libraries = useQuery({
 		queryKey: ["libraries"],
 		queryFn: async () => {
 			const libs = await getUserViewsApi(api).getUserViews({
-				userId: user.data?.Id,
+				userId: user?.Id,
 			});
 			return libs.data;
 		},
-		enabled: !!user.data && !!api.accessToken,
+		enabled: !!user?.Id && !!api.accessToken,
 		networkMode: "always",
 	});
 
@@ -179,19 +171,18 @@ export const AppBar = () => {
 					</div>
 
 					<div className="flex flex-row" style={{ gap: "0.6em" }}>
-						<IconButton onClick={() => navigate({ to: "/search" })}>
+						<IconButton
+							onClick={() => navigate({ to: "/search", params: { query: "" } })}
+						>
 							<div className="material-symbols-rounded">search</div>
 						</IconButton>
 						<IconButton onClick={() => navigate({ to: "/favorite" })}>
 							<div className="material-symbols-rounded">favorite</div>
 						</IconButton>
 						<IconButton sx={{ p: 0 }} onClick={handleMenuOpen}>
-							{user.isSuccess &&
-								(user.data.PrimaryImageTag === undefined ? (
-									<Avatar
-										className="appBar-avatar"
-										alt={user.data.Name ?? "image"}
-									>
+							{!!user?.Id &&
+								(user?.PrimaryImageTag === undefined ? (
+									<Avatar className="appBar-avatar" alt={user?.Name ?? "image"}>
 										<span className="material-symbols-rounded appBar-avatar-icon">
 											account_circle
 										</span>
@@ -199,8 +190,8 @@ export const AppBar = () => {
 								) : (
 									<Avatar
 										className="appBar-avatar"
-										src={`${api.basePath}/Users/${user.data.Id}/Images/Primary`}
-										alt={user.data.Name ?? "image"}
+										src={`${api.basePath}/Users/${user?.Id}/Images/Primary`}
+										alt={user?.Name ?? "image"}
 									>
 										<span className="material-symbols-rounded appBar-avatar-icon">
 											account_circle
@@ -281,12 +272,12 @@ export const AppBar = () => {
 					<List>
 						<ListItemLink to="/home" icon="home" primary="Home" />
 						{libraries.isSuccess &&
-							libraries.data.Items?.map((library, index) => (
+							libraries.data.Items?.map((library) => (
 								<ListItemLink
 									key={library.Id}
 									to={`/library/${library.Id}`}
 									icon={getTypeIcon(library.CollectionType)}
-									primary={library.Name}
+									primary={library.Name ?? "Library"}
 								/>
 							))}
 					</List>

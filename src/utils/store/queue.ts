@@ -23,4 +23,12 @@ export const setTrackIndex = (index: number) => {
 	useQueue.setState((state) => ({ ...state, currentItemIndex: index }));
 };
 
+
+/**
+ * Resets the Queue store
+ */
+export const clearQueue = () => {
+	useQueue.setState(useQueue.getInitialState());
+};
+
 export default useQueue;

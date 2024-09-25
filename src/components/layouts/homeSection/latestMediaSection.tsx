@@ -11,6 +11,7 @@ import {
 } from "@jellyfin/sdk/lib/generated-client";
 import { getUserApi } from "@jellyfin/sdk/lib/utils/api/user-api";
 import { getUserLibraryApi } from "@jellyfin/sdk/lib/utils/api/user-library-api";
+import { useCentralStore } from "@/utils/store/central";
 
 /**
  * @description Latest Media Section
@@ -19,17 +20,10 @@ export const LatestMediaSection = ({
 	latestMediaLib,
 }: { latestMediaLib: BaseItemDto }) => {
 	const api = useApiInContext((s) => s.api);
-	const user = useQuery({
-		queryKey: ["user"],
-		queryFn: async () => {
-			const usr = await getUserApi(api).getCurrentUser();
-			return usr.data;
-		},
-		networkMode: "always",
-	});
+	const user = useCentralStore((s) => s.currentUser);
 	const fetchLatestMedia = async (library: BaseItemDto) => {
 		const media = await getUserLibraryApi(api).getLatestMedia({
-			userId: user.data?.Id,
+			userId: user?.Id,
 			parentId: library.Id,
 			limit: 16,
 			fields: ["PrimaryImageAspectRatio"],
@@ -39,7 +33,7 @@ export const LatestMediaSection = ({
 	const data = useQuery({
 		queryKey: ["home", "latestMedia", latestMediaLib.Id],
 		queryFn: () => fetchLatestMedia(latestMediaLib),
-		enabled: !!user.data,
+		enabled: !!user?.Id,
 		refetchOnMount: true,
 	});
 	if (data.isPending) {
@@ -80,7 +74,7 @@ export const LatestMediaSection = ({
 									: "portrait"
 							}
 							queryKey={["home", "latestMedia", latestMediaLib.Id]}
-							userId={user.data?.Id}
+							userId={user?.Id}
 							imageBlurhash={
 								!!item.ImageBlurHashes?.Primary &&
 								item.ImageBlurHashes?.Primary[

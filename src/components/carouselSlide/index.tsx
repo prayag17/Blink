@@ -13,7 +13,6 @@ import { yellow } from "@mui/material/colors";
 
 import { endsAt, getRuntime } from "@/utils/date/time";
 import { green, red } from "@mui/material/colors";
-import { useQuery } from "@tanstack/react-query";
 import { useNavigate } from "@tanstack/react-router";
 import { getTypeIcon } from "../utils/iconsCollection";
 
@@ -23,66 +22,45 @@ import {
 	type BaseItemDto,
 	BaseItemKind,
 } from "@jellyfin/sdk/lib/generated-client";
-import { getUserApi } from "@jellyfin/sdk/lib/utils/api/user-api";
 import LikeButton from "../buttons/likeButton";
 import MarkPlayedButton from "../buttons/markPlayedButton";
 import PlayButton from "../buttons/playButton";
+import { useCentralStore } from "@/utils/store/central";
 
-const availableSpecialRoutes = [
-	BaseItemKind.Series,
-	BaseItemKind.BoxSet,
-	BaseItemKind.MusicAlbum,
-];
-
-/**
- * @typedef {Object} Props
- * @property {import("@jellyfin/sdk/lib/generated-client/models").BaseItemDto} item
- */
-
-/**
- * @description Carousel slide component
- * @param {Props}
- * @returns {React.Component}
- */
 const CarouselSlide = ({ item }: { item: BaseItemDto }) => {
 	const api = useApiInContext((s) => s.api);
 	const navigate = useNavigate();
 
-	const user = useQuery({
-		queryKey: ["user"],
-		queryFn: async () => {
-			const usr = await getUserApi(api).getCurrentUser();
-			return usr.data;
-		},
-		networkMode: "always",
-	});
+	const user = useCentralStore((s) => s.currentUser);
 
 	const handleMoreInfo = () => {
-		switch (item.Type) {
-			case BaseItemKind.BoxSet:
-				navigate({ to: "/boxset/$id", params: { id: item.Id } });
-				break;
-			case BaseItemKind.Episode:
-				navigate({ to: "/episode/$id", params: { id: item.Id } });
-				break;
-			case BaseItemKind.MusicAlbum:
-				navigate({ to: "/album/$id", params: { id: item.Id } });
-				break;
-			case BaseItemKind.MusicArtist:
-				navigate({ to: "/artist/$id", params: { id: item.Id } });
-				break;
-			case BaseItemKind.Person:
-				navigate({ to: "/person/$id", params: { id: item.Id } });
-				break;
-			case BaseItemKind.Series:
-				navigate({ to: "/series/$id", params: { id: item.Id } });
-				break;
-			case BaseItemKind.Playlist:
-				navigate({ to: "/playlist/$id", params: { id: item.Id } });
-				break;
-			default:
-				navigate({ to: "/item/$id", params: { id: item.Id } });
-				break;
+		if (item.Id) {
+			switch (item.Type) {
+				case BaseItemKind.BoxSet:
+					navigate({ to: "/boxset/$id", params: { id: item.Id } });
+					break;
+				case BaseItemKind.Episode:
+					navigate({ to: "/episode/$id", params: { id: item.Id } });
+					break;
+				case BaseItemKind.MusicAlbum:
+					navigate({ to: "/album/$id", params: { id: item.Id } });
+					break;
+				case BaseItemKind.MusicArtist:
+					navigate({ to: "/artist/$id", params: { id: item.Id } });
+					break;
+				case BaseItemKind.Person:
+					navigate({ to: "/person/$id", params: { id: item.Id } });
+					break;
+				case BaseItemKind.Series:
+					navigate({ to: "/series/$id", params: { id: item.Id } });
+					break;
+				case BaseItemKind.Playlist:
+					navigate({ to: "/playlist/$id", params: { id: item.Id } });
+					break;
+				default:
+					navigate({ to: "/item/$id", params: { id: item.Id } });
+					break;
+			}
 		}
 	};
 
@@ -100,7 +78,7 @@ const CarouselSlide = ({ item }: { item: BaseItemDto }) => {
 			<div className="hero-carousel-background-container">
 				{item.BackdropImageTags?.length ? (
 					<img
-						alt={item.Name}
+						alt={item.Name ?? "item"}
 						className="hero-carousel-background-image"
 						src={
 							item.ParentBackdropItemId
@@ -155,7 +133,7 @@ const CarouselSlide = ({ item }: { item: BaseItemDto }) => {
 					fontWeight={200}
 					overflow="visible"
 				>
-					{!item.ImageTags.Logo ? (
+					{!item.ImageTags?.Logo ? (
 						item.Name
 					) : (
 						<img
@@ -336,7 +314,7 @@ const CarouselSlide = ({ item }: { item: BaseItemDto }) => {
 					<PlayButton
 						item={item}
 						itemId={item.Id}
-						userId={user.data.Id}
+						userId={user?.Id}
 						itemType={item.Type}
 						currentAudioTrack={0}
 						currentSubTrack={0}
@@ -377,15 +355,15 @@ const CarouselSlide = ({ item }: { item: BaseItemDto }) => {
 						<LikeButton
 							itemId={item.Id}
 							queryKey={["home", "latestMedia"]}
-							userId={user.data.Id}
-							isFavorite={item.UserData.IsFavorite}
+							userId={user?.Id}
+							isFavorite={item.UserData?.IsFavorite}
 							itemName={item.Name}
 						/>
 						<MarkPlayedButton
 							itemId={item.Id}
 							queryKey={["home", "latestMedia"]}
-							userId={user.data.Id}
-							isPlayed={item.UserData.Played}
+							userId={user?.Id}
+							isPlayed={item.UserData?.Played}
 							itemName={item.Name}
 						/>
 					</Stack>

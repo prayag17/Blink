@@ -37,6 +37,7 @@ import "./artist.scss";
 import IconLink from "@/components/iconLink";
 import { getTypeIcon } from "@/components/utils/iconsCollection";
 import { createFileRoute } from "@tanstack/react-router";
+import { useCentralStore } from "@/utils/store/central";
 
 function TabPanel(props) {
 	const { children, value, index, ...other } = props;
@@ -69,26 +70,19 @@ function ArtistTitlePage() {
 	const { id } = Route.useParams();
 	const api = Route.useRouteContext().api;
 
-	const user = useQuery({
-		queryKey: ["user"],
-		queryFn: async () => {
-			const usr = await getUserApi(api).getCurrentUser();
-			return usr.data;
-		},
-		networkMode: "always",
-	});
+	const user = useCentralStore((s) => s.currentUser);
 
 	const item = useQuery({
 		queryKey: ["item", id],
 		queryFn: async () => {
 			const result = await getUserLibraryApi(api).getItem({
-				userId: user.data.Id,
+				userId: user?.Id,
 				itemId: id,
 				fields: [ItemFields.Crew],
 			});
 			return result.data;
 		},
-		enabled: !!user.data,
+		enabled: !!user?.Id,
 		networkMode: "always",
 		refetchOnWindowFocus: true,
 	});
@@ -102,7 +96,7 @@ function ArtistTitlePage() {
 				sortOrder: [SortOrder.Descending],
 				recursive: true,
 				includeItemTypes: [BaseItemKind.MusicAlbum],
-				userId: user.data.Id,
+				userId: user?.Id,
 				fields: [ItemFields.Overview],
 			});
 			return result.data;
@@ -119,7 +113,7 @@ function ArtistTitlePage() {
 				sortOrder: [SortOrder.Ascending],
 				recursive: true,
 				includeItemTypes: [BaseItemKind.Audio],
-				userId: user.data.Id,
+				userId: user?.Id,
 				fields: [ItemFields.Overview],
 			});
 			return result.data;
@@ -137,7 +131,7 @@ function ArtistTitlePage() {
 				sortOrder: [SortOrder.Descending],
 				recursive: true,
 				includeItemTypes: [BaseItemKind.MusicAlbum],
-				userId: user.data.Id,
+				userId: user?.Id,
 			});
 			return result.data;
 		},
@@ -295,8 +289,8 @@ function ArtistTitlePage() {
 							itemName={item.data.Name}
 							itemId={item.data.Id}
 							queryKey={["item", id]}
-							isFavorite={item.data.UserData.IsFavorite}
-							userId={user.data.Id}
+							isFavorite={item.data.UserData?.IsFavorite}
+							userId={user?.Id}
 						/>
 					</div>
 				</div>
@@ -314,7 +308,7 @@ function ArtistTitlePage() {
 								marginTop: "1em",
 							}}
 						>
-							{item.data.ExternalUrls.map((url) => (
+							{item.data.ExternalUrls?.map((url) => (
 								<IconLink url={url.Url} name={url.Name} />
 							))}
 						</div>
@@ -358,7 +352,7 @@ function ArtistTitlePage() {
 								setActiveArtistTab(newVal);
 							}}
 						>
-							{artistTabs.map((tab, index) => {
+							{artistTabs.map((tab) => {
 								return (
 									<Tab
 										key={tab.title}
@@ -391,11 +385,11 @@ function ArtistTitlePage() {
 								}}
 							>
 								{artistDiscography.isSuccess &&
-									artistDiscography.data.Items.map((tabitem) => {
+									artistDiscography.data.Items?.map((tabitem) => {
 										return (
 											<ArtistAlbum
 												key={tabitem.Id}
-												user={user.data}
+												user={user}
 												album={tabitem}
 											/>
 										);
@@ -422,13 +416,13 @@ function ArtistTitlePage() {
 								}}
 							>
 								{artistSongs.isSuccess &&
-									artistSongs.data.Items.map((tabitem) => {
+									artistSongs.data.Items?.map((tabitem) => {
 										return (
 											<MusicTrack
 												item={tabitem}
 												key={tabitem.Id}
 												queryKey={["item", id, "artist", "songs"]}
-												userId={user.data.Id}
+												userId={user?.Id}
 											/>
 										);
 									})}
@@ -455,7 +449,7 @@ function ArtistTitlePage() {
 								className="grid"
 							>
 								{artistAppearances.isSuccess &&
-									artistAppearances.data.Items.map((tabitem) => {
+									artistAppearances.data.Items?.map((tabitem) => {
 										return (
 											<Card
 												key={tabitem.Id}
@@ -465,13 +459,7 @@ function ArtistTitlePage() {
 												cardCaption={tabitem.AlbumArtist}
 												cardType={"square"}
 												queryKey={["item", id, "artist", "appearences"]}
-												userId={user.data.Id}
-												imageBlurhash={
-													!!tabitem.ImageBlurHashes?.Primary &&
-													tabitem.ImageBlurHashes?.Primary[
-														Object.keys(tabitem.ImageBlurHashes.Primary)[0]
-													]
-												}
+												userId={user?.Id}
 											/>
 										);
 									})}
