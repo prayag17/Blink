@@ -109,10 +109,10 @@ export const Route = createRootRouteWithContext<ApiContext>()({
 							<NProgress
 								key={
 									isQueryFetching || isMutating || routeIsLoading
-										? `show${(isQueryFetching ?? 1) * (isMutating ?? 1) * (routeIsLoading ?? 1)}`
+										? `show${(isQueryFetching ?? 1) * (isMutating ?? 1) * (routeIsLoading ? 1 : 2)}`
 										: "hide"
 								}
-								isAnimating={isQueryFetching + isMutating + routeIsLoading}
+								isAnimating={isQueryFetching && isMutating && routeIsLoading}
 							/>
 
 							{routeIsLoading && (
