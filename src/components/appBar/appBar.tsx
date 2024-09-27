@@ -47,6 +47,7 @@ function ListItemLink(props: ListItemLinkProps) {
 
 	return (
 		<li>
+			{/* @ts-ignore */}
 			<ListItem
 				component={Link}
 				activeClassName="active"
@@ -276,7 +277,10 @@ export const AppBar = () => {
 								<ListItemLink
 									key={library.Id}
 									to={`/library/${library.Id}`}
-									icon={getTypeIcon(library.CollectionType)}
+									icon={
+										library.CollectionType &&
+										getTypeIcon(library.CollectionType)
+									}
 									primary={library.Name ?? "Library"}
 								/>
 							))}

@@ -1,5 +1,4 @@
-import React, { memo } from "react";
-import { Blurhash } from "react-blurhash";
+import React from "react";
 
 import { motion } from "framer-motion";
 
@@ -67,14 +66,7 @@ const CarouselSlide = ({ item }: { item: BaseItemDto }) => {
 	const [animationDirection] = useCarouselStore((state) => [state.direction]);
 
 	return (
-		<Paper
-			className="hero-carousel-slide"
-			sx={{
-				background: "transparent",
-				// px: 3,
-			}}
-			elevation={0}
-		>
+		<div className="hero-carousel-slide">
 			<div className="hero-carousel-background-container">
 				{item.BackdropImageTags?.length ? (
 					<img
@@ -369,7 +361,7 @@ const CarouselSlide = ({ item }: { item: BaseItemDto }) => {
 					</Stack>
 				</Stack>
 			</div>
-		</Paper>
+		</div>
 	);
 };
 

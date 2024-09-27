@@ -1,6 +1,6 @@
 import { LinearProgress } from "@mui/material";
 import { useNProgress } from "@tanem/react-nprogress";
-import type React from "react";
+import React from "react";
 
 const NProgress: React.FC<{ isAnimating: boolean | number }> = ({
 	isAnimating,

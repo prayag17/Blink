@@ -112,7 +112,7 @@ export const Route = createRootRouteWithContext<ApiContext>()({
 										? `show${(isQueryFetching ?? 1) * (isMutating ?? 1) * (routeIsLoading ?? 1)}`
 										: "hide"
 								}
-								isAnimating={isQueryFetching || isMutating || routeIsLoading}
+								isAnimating={isQueryFetching + isMutating + routeIsLoading}
 							/>
 
 							{routeIsLoading && (
@@ -265,8 +265,8 @@ export const Route = createRootRouteWithContext<ApiContext>()({
 							<AppBar />
 							<AudioPlayer />
 							<Outlet />
-							<ReactQueryDevtools />
-							<TanStackRouterDevtools />
+							{/* <ReactQueryDevtools /> */}
+							{/* <TanStackRouterDevtools /> */}
 						</SnackbarProvider>
 					</ThemeProvider>
 				</Suspense>
