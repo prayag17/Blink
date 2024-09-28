@@ -58,7 +58,7 @@ importers:
         version: 2.0.0-rc.1
       '@tauri-apps/plugin-store':
         specifier: github:tauri-apps/tauri-plugin-store#v2
-        version: https://codeload.github.com/tauri-apps/tauri-plugin-store/tar.gz/1232967be6a6eeb21c57a69886d8e97d55b5c1bc
+        version: https://codeload.github.com/tauri-apps/tauri-plugin-store/tar.gz/2ce8ae37d8cfa35d6cdeedea1f338577ea276e83
       '@tauri-apps/plugin-updater':
         specifier: 2.0.0-rc.2
         version: 2.0.0-rc.2
@@ -1242,8 +1242,8 @@ packages:
   '@tauri-apps/plugin-process@2.0.0-rc.1':
     resolution: {integrity: sha512-Bl22xdoiu+AqEP6rzjb7DUJwdLDnejuRFukpkdrqF1/VEWJK5PuE903l+8mIOsd17zZ1Ua8y8WaBWnOXx4QHmw==}
 
-  '@tauri-apps/plugin-store@https://codeload.github.com/tauri-apps/tauri-plugin-store/tar.gz/1232967be6a6eeb21c57a69886d8e97d55b5c1bc':
-    resolution: {tarball: https://codeload.github.com/tauri-apps/tauri-plugin-store/tar.gz/1232967be6a6eeb21c57a69886d8e97d55b5c1bc}
+  '@tauri-apps/plugin-store@https://codeload.github.com/tauri-apps/tauri-plugin-store/tar.gz/2ce8ae37d8cfa35d6cdeedea1f338577ea276e83':
+    resolution: {tarball: https://codeload.github.com/tauri-apps/tauri-plugin-store/tar.gz/2ce8ae37d8cfa35d6cdeedea1f338577ea276e83}
     version: 2.0.0-rc.1
 
   '@tauri-apps/plugin-updater@2.0.0-rc.2':
@@ -3294,7 +3294,7 @@ snapshots:
     dependencies:
       '@tauri-apps/api': 2.0.0-rc.4
 
-  '@tauri-apps/plugin-store@https://codeload.github.com/tauri-apps/tauri-plugin-store/tar.gz/1232967be6a6eeb21c57a69886d8e97d55b5c1bc':
+  '@tauri-apps/plugin-store@https://codeload.github.com/tauri-apps/tauri-plugin-store/tar.gz/2ce8ae37d8cfa35d6cdeedea1f338577ea276e83':
     dependencies:
       '@tauri-apps/api': 2.0.0-rc.4
 

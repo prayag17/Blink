@@ -1,15 +1,19 @@
 import type { BaseItemDto } from "@jellyfin/sdk/lib/generated-client";
-import { create } from "zustand";
+import { shallow } from "zustand/shallow";
+import { createWithEqualityFn } from "zustand/traditional";
 
 interface QueueStore {
 	tracks: BaseItemDto[];
 	currentItemIndex: number;
 }
 
-const useQueue = create<QueueStore>(() => ({
-	tracks: [],
-	currentItemIndex: 0,
-}));
+const useQueue = createWithEqualityFn<QueueStore>(
+	() => ({
+		tracks: [],
+		currentItemIndex: 0,
+	}),
+	shallow,
+);
 
 export const setQueue = (
 	tracks: BaseItemDto[] | undefined,

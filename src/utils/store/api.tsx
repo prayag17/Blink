@@ -1,7 +1,9 @@
 import { type Api, Jellyfin } from "@jellyfin/sdk";
 import React, { type ReactNode } from "react";
 import { createContext, useContext, useState } from "react";
-import { type StoreApi, createStore, useStore } from "zustand";
+import { type StoreApi, createStore } from "zustand";
+import { shallow } from "zustand/shallow";
+import { useStoreWithEqualityFn } from "zustand/traditional";
 import { version as appVer } from "../../../package.json";
 
 // Initial custom axios client to use tauri's http module
@@ -69,5 +71,5 @@ export function useApiInContext<T>(selector?: (state: ApiStore) => T) {
 	if (!store) {
 		throw new Error("Missing ApiProvider");
 	}
-	return useStore(store, selector!);
+	return useStoreWithEqualityFn(store, selector!, shallow);
 }

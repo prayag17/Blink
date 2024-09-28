@@ -2,7 +2,7 @@ import { getDefaultServer, getServer } from "@/utils/storage/servers";
 import { getUser } from "@/utils/storage/user";
 import { getSystemApi } from "@jellyfin/sdk/lib/utils/api/system-api";
 import { getUserApi } from "@jellyfin/sdk/lib/utils/api/user-api";
-import { createFileRoute, redirect, useRouter } from "@tanstack/react-router";
+import { createFileRoute, redirect } from "@tanstack/react-router";
 
 export const Route = createFileRoute("/_api")({
 	beforeLoad: async ({ context, location }) => {

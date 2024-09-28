@@ -6,12 +6,13 @@ import type {
 import { getMediaInfoApi } from "@jellyfin/sdk/lib/utils/api/media-info-api";
 import { getPlaystateApi } from "@jellyfin/sdk/lib/utils/api/playstate-api";
 import type { AxiosResponse } from "axios";
-import { create } from "zustand";
+import { shallow } from "zustand/shallow";
+import { createWithEqualityFn } from "zustand/traditional";
 import getSubtitle from "../methods/getSubtitles";
 import playbackProfile from "../playback-profiles";
 import type IntroMediaInfo from "../types/introMediaInfo";
 import type subtitlePlaybackInfo from "../types/subtitlePlaybackInfo";
-import { axiosClient, useApiInContext } from "./api";
+import { axiosClient } from "./api";
 import { playAudio } from "./audioPlayback";
 import useQueue, { setQueue, setTrackIndex } from "./queue";
 
@@ -34,31 +35,34 @@ type PlaybackStore = {
 	intro: IntroMediaInfo | undefined;
 };
 
-export const usePlaybackStore = create<PlaybackStore>(() => ({
-	itemName: undefined!,
-	episodeTitle: "",
-	mediaSource: {
-		videoTrack: 0,
-		audioTrack: 0,
-		container: "",
-		id: undefined,
-		subtitle: {
-			enable: false,
-			track: undefined!,
-			format: "ass",
-			allTracks: undefined,
-			url: undefined,
+export const usePlaybackStore = createWithEqualityFn<PlaybackStore>(
+	() => ({
+		itemName: undefined!,
+		episodeTitle: "",
+		mediaSource: {
+			videoTrack: 0,
+			audioTrack: 0,
+			container: "",
+			id: undefined,
+			subtitle: {
+				enable: false,
+				track: undefined!,
+				format: "ass",
+				allTracks: undefined,
+				url: undefined,
+			},
 		},
-	},
-	enableSubtitle: true,
-	playbackStream: "",
-	userId: "",
-	startPosition: 0,
-	itemDuration: 0,
-	item: null,
-	playsessionId: "",
-	intro: undefined,
-}));
+		enableSubtitle: true,
+		playbackStream: "",
+		userId: "",
+		startPosition: 0,
+		itemDuration: 0,
+		item: null,
+		playsessionId: "",
+		intro: undefined,
+	}),
+	shallow,
+);
 
 export const playItem = (
 	itemName: string | React.Component | undefined | null,
@@ -249,16 +253,18 @@ interface PlaybackDataLoadState {
 	setisPending: (loading: boolean) => void;
 }
 
-export const usePlaybackDataLoadStore = create<PlaybackDataLoadState>(
-	(set) => ({
-		isPending: false,
-		setisPending: (loading: boolean) =>
-			set((state: PlaybackDataLoadState) => ({
-				...state,
-				isPending: loading,
-			})),
-	}),
-);
+export const usePlaybackDataLoadStore =
+	createWithEqualityFn<PlaybackDataLoadState>(
+		(set) => ({
+			isPending: false,
+			setisPending: (loading: boolean) =>
+				set((state: PlaybackDataLoadState) => ({
+					...state,
+					isPending: loading,
+				})),
+		}),
+		shallow,
+	);
 
 export const changeSubtitleTrack = (
 	trackIndex: number,

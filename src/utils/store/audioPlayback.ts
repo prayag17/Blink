@@ -3,6 +3,8 @@ import { create } from "zustand";
 import { setQueue } from "./queue";
 
 import type React from "react";
+import { shallow } from "zustand/shallow";
+import { createWithEqualityFn } from "zustand/traditional";
 import { secToTicks } from "../date/time";
 
 type AudioPlaybackStore = {
@@ -16,17 +18,20 @@ type AudioPlaybackStore = {
 		ref: React.Ref<HTMLAudioElement> | null;
 	};
 };
-export const useAudioPlayback = create<AudioPlaybackStore>(() => ({
-	display: false,
-	url: "",
-	item: undefined,
-	playlistItemId: undefined,
-	player: {
-		currentTick: 0,
-		playing: false,
-		ref: null,
-	},
-}));
+export const useAudioPlayback = createWithEqualityFn<AudioPlaybackStore>(
+	() => ({
+		display: false,
+		url: "",
+		item: undefined,
+		playlistItemId: undefined,
+		player: {
+			currentTick: 0,
+			playing: false,
+			ref: null,
+		},
+	}),
+	shallow,
+);
 
 export const playAudio = (
 	url: string,

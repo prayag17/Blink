@@ -1,19 +1,19 @@
-import React from "react";
-import { createStore, StoreApi, useStore } from "zustand";
+import type { Api } from "@jellyfin/sdk";
+import type { UserDto } from "@jellyfin/sdk/lib/generated-client";
+import { getUserApi } from "@jellyfin/sdk/lib/utils/api/user-api";
+import React, { type ReactNode } from "react";
+import { createContext, useContext, useState } from "react";
+import { type StoreApi, createStore } from "zustand";
+import { shallow } from "zustand/shallow";
+import { useStoreWithEqualityFn } from "zustand/traditional";
 import { version } from "../../../package.json";
 import {
+	type ServerInfo,
 	getAllServers,
 	getDefaultServer,
 	getServer,
-	ServerInfo,
 } from "../storage/servers";
 import { getUser } from "../storage/user";
-import { useApiInContext } from "./api";
-import { Api } from "@jellyfin/sdk";
-import { getUserApi } from "@jellyfin/sdk/lib/utils/api/user-api";
-import { createContext, useContext, useState } from "react";
-import { type UserDto } from "@jellyfin/sdk/lib/generated-client";
-import { type ReactNode } from "@tanstack/react-router";
 
 type CentralStore = {
 	defaultServerOnDisk: () => Promise<string | null>;
@@ -32,14 +32,14 @@ type CentralStore = {
  * Sets app inital route
  * @deprecated
  */
-export const setInitialRoute = (route) => {
+export const setInitialRoute = () => {
 	// useCentralStore.setState((state) => ({ ...state, initialRoute: route }));
 };
 
 /**
  * @deprecated
  */
-export const setAppReady = (appReady) => {
+export const setAppReady = () => {
 	// useCentralStore.setState((state) => ({ ...state, appReady }));
 };
 
@@ -75,5 +75,5 @@ export function useCentralStore<T>(selector?: (state: CentralStore) => T) {
 	if (!store) {
 		throw new Error("Missing CentralProvider");
 	}
-	return useStore(store, selector!);
+	return useStoreWithEqualityFn(store, selector!, shallow);
 }
