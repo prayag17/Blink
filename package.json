@@ -18,7 +18,6 @@
 		"@fontsource-variable/jetbrains-mono": "^5.1.0",
 		"@fontsource-variable/noto-sans": "^5.1.0",
 		"@jellyfin/sdk": "0.10.0",
-		"@million/lint": "1.0.0-rc.84",
 		"@mui/lab": "6.0.0-beta.10",
 		"@mui/material": "6.1.1",
 		"@react-spring/web": "^9.7.4",
