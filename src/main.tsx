@@ -1,8 +1,4 @@
-import {
-	QueryClient,
-	QueryClientProvider,
-	useQuery,
-} from "@tanstack/react-query";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { RouterProvider, createRouter } from "@tanstack/react-router";
 import React, { Suspense } from "react";
 import ReactDOM from "react-dom/client";
@@ -37,10 +33,9 @@ declare module "@tanstack/react-router" {
 	}
 }
 
-import { ApiProvider, useApiInContext } from "./utils/store/api";
-import { getUserApi } from "@jellyfin/sdk/lib/utils/api/user-api";
 import { ErrorBoundary } from "react-error-boundary";
 import { ErrorNotice } from "./components/notices/errorNotice/errorNotice";
+import { ApiProvider, useApiInContext } from "./utils/store/api";
 import { CentralProvider, useCentralStore } from "./utils/store/central";
 
 export const queryClient = new QueryClient({
@@ -64,7 +59,9 @@ function ProviderWrapper() {
 		s.currentUser,
 		s.fetchCurrentUser,
 	]);
-	if (api?.accessToken) fetchCurrentUser(api);
+	if (api?.accessToken && !user?.Id) {
+		fetchCurrentUser(api);
+	}
 	return (
 		<RouterProvider
 			router={router}

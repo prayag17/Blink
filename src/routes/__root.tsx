@@ -43,12 +43,12 @@ import "@fontsource-variable/jetbrains-mono";
 import "@fontsource-variable/noto-sans";
 
 import "material-symbols/rounded.scss";
+import { ErrorNotice } from "@/components/notices/errorNotice/errorNotice";
 import type { Api, Jellyfin } from "@jellyfin/sdk";
 import type { UserDto } from "@jellyfin/sdk/lib/generated-client";
 import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 import { DndProvider } from "react-dnd";
 import { HTML5Backend } from "react-dnd-html5-backend";
-import { ErrorNotice } from "@/components/notices/errorNotice/errorNotice";
 
 type ApiContext = {
 	api: Api;

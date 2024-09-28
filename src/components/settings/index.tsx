@@ -206,7 +206,7 @@ const Settings = () => {
 			<Tabs
 				orientation="vertical"
 				value={tabValue}
-				onChange={(e, newValue) => {
+				onChange={(_, newValue) => {
 					setSettingsTabValue(newValue);
 				}}
 				style={{

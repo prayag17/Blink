@@ -126,9 +126,11 @@ function AudioPlayerRoute() {
 								Array.isArray(newVal)
 									? setProgress(ticksToSec(newVal[0]))
 									: setProgress(ticksToSec(newVal));
-								audioPlayer?.currentTime = Array.isArray(newVal)
-									? ticksToSec(newVal[0])
-									: ticksToSec(newVal);
+								if (audioPlayer) {
+									audioPlayer.currentTime = Array.isArray(newVal)
+										? ticksToSec(newVal[0])
+										: ticksToSec(newVal);
+								}
 							}}
 							sx={{
 								"& .MuiSlider-thumb": {
@@ -167,7 +169,9 @@ function AudioPlayerRoute() {
 							<PlayPreviousButton />
 							<IconButton
 								onClick={() => {
-									audioPlayer?.currentTime -= SEEK_AMOUNT;
+									if (audioPlayer) {
+										audioPlayer.currentTime -= SEEK_AMOUNT;
+									}
 								}}
 							>
 								<span className="material-symbols-rounded">fast_rewind</span>
@@ -193,7 +197,9 @@ function AudioPlayerRoute() {
 							</Fab>
 							<IconButton
 								onClick={() => {
-									audioPlayer?.currentTime += SEEK_AMOUNT;
+									if (audioPlayer) {
+										audioPlayer.currentTime += SEEK_AMOUNT;
+									}
 								}}
 							>
 								<span className="material-symbols-rounded">fast_forward</span>
