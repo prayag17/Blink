@@ -2,7 +2,7 @@ import { defineConfig } from "vite";
 import react from "@vitejs/plugin-react";
 import svgr from "vite-plugin-svgr";
 import { TanStackRouterVite } from '@tanstack/router-vite-plugin'
-import MillionLint from '@million/lint';
+
 import path from "path";
 
 // const ReactCompilerConfig = {compilationMode: "annotation"}
