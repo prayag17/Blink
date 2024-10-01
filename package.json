@@ -40,7 +40,7 @@
 		"framer-motion": "^11.9.0",
 		"jassub": "^1.7.17",
 		"lodash": "^4.17.21",
-		"material-symbols": "^0.23.0",
+		"material-symbols": "^0.24.0",
 		"million": "^3.1.11",
 		"notistack": "^3.0.1",
 		"react": "18.3.1",

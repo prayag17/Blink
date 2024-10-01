@@ -90,8 +90,8 @@ importers:
         specifier: ^4.17.21
         version: 4.17.21
       material-symbols:
-        specifier: ^0.23.0
-        version: 0.23.0
+        specifier: ^0.24.0
+        version: 0.24.0
       million:
         specifier: ^3.1.11
         version: 3.1.11(rollup@4.22.5)(webpack-sources@3.2.3)
@@ -1754,8 +1754,8 @@ packages:
   markdown-table@3.0.3:
     resolution: {integrity: sha512-Z1NL3Tb1M9wH4XESsCDEksWoKTdlUafKc4pt0GRwjUyXaCFZ+dc3g2erqB6zm3szA2IUSi7VnPI+o/9jnxh9hw==}
 
-  material-symbols@0.23.0:
-    resolution: {integrity: sha512-ciq9bPgw5bFGC807lT3KgbvU97bC7w6DeUQmqLXdIHD28L/FD9ajvX11swtQXcMV/nEjQ/fI6u5NVtli18qUqQ==}
+  material-symbols@0.24.0:
+    resolution: {integrity: sha512-PfQ6S+vuYmm9F8f4xUwF8RfahbKxBPFbkfIe6du66Lyh5jFohqC4s2J87PB8L8T76TwqsnJLza1Wnt08NKtBtw==}
 
   mdast-util-find-and-replace@3.0.1:
     resolution: {integrity: sha512-SG21kZHGC3XRTSUhtofZkBzZTJNM5ecCi0SK2IMKmSXR8vO3peL+kb1O0z7Zl83jKtutG4k5Wv/W7V3/YHvzPA==}
@@ -3826,7 +3826,7 @@ snapshots:
 
   markdown-table@3.0.3: {}
 
-  material-symbols@0.23.0: {}
+  material-symbols@0.24.0: {}
 
   mdast-util-find-and-replace@3.0.1:
     dependencies:
