@@ -265,7 +265,7 @@ export const Route = createRootRouteWithContext<ApiContext>()({
 							<AppBar />
 							<AudioPlayer />
 							<Outlet />
-							{/* <ReactQueryDevtools /> */}
+							<ReactQueryDevtools />
 							{/* <TanStackRouterDevtools /> */}
 						</SnackbarProvider>
 					</ThemeProvider>

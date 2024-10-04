@@ -76,7 +76,7 @@ const Slider = ({
 		},
 	}));
 
-	const slide = (direction: Direction) => {
+	const slideLeft = useCallback(() => {
 		const clientWidth =
 			containerRef.current?.getBoundingClientRect().width ?? 0;
 		const cardWidth =
@@ -86,58 +86,67 @@ const Slider = ({
 		const visibleItems = Math.floor(clientWidth / cardWidth);
 		const scrollOffset = scrollPosition % cardWidth;
 
-		if (direction === Direction.LEFT) {
-			const newX = Math.max(
-				scrollPosition - scrollOffset - visibleItems * cardWidth,
-				0,
-			);
-			setX.start({
-				from: { x: scrollPosition },
-				to: { x: newX },
-				onChange: (results) => {
-					if (containerRef.current) {
-						containerRef.current.scrollLeft = results.value.x;
-					}
-				},
-				reset: true,
-				config: { friction: 60, tension: 1000, velocity: 2 },
-			});
+		const newX = Math.max(
+			scrollPosition - scrollOffset - visibleItems * cardWidth,
+			0,
+		);
+		setX.start({
+			from: { x: scrollPosition },
+			to: { x: newX },
+			onChange: (results) => {
+				if (containerRef.current) {
+					containerRef.current.scrollLeft = results.value.x;
+				}
+			},
+			reset: true,
+			config: { friction: 60, tension: 1000, velocity: 2 },
+		});
 
-			if (newX === 0) {
-				setScrollPos({ isStart: true, isEnd: false });
-			} else {
-				setScrollPos({ isStart: false, isEnd: false });
-			}
-		} else if (direction === Direction.RIGHT) {
-			const newX = Math.min(
-				scrollPosition - scrollOffset + visibleItems * cardWidth,
-				containerRef.current?.scrollWidth ?? 0 - clientWidth,
-			);
-			setX.start({
-				from: { x: scrollPosition },
-				to: { x: newX },
-				onChange: (results) => {
-					if (containerRef.current) {
-						containerRef.current.scrollLeft = results.value.x;
-					}
-				},
-				reset: true,
-				config: { friction: 60, tension: 500, velocity: 2 },
-			});
-
-			if (newX >= (containerRef.current?.scrollWidth ?? 0) - clientWidth) {
-				setScrollPos({ isStart: false, isEnd: true });
-			} else {
-				setScrollPos({ isStart: false, isEnd: false });
-			}
+		if (newX === 0) {
+			setScrollPos({ isStart: true, isEnd: false });
+		} else {
+			setScrollPos({ isStart: false, isEnd: false });
 		}
-	};
+	}, [setX]);
+
+	const slideRight = useCallback(() => {
+		const clientWidth =
+			containerRef.current?.getBoundingClientRect().width ?? 0;
+		const cardWidth =
+			containerRef.current?.firstElementChild?.getBoundingClientRect().width ??
+			0;
+		const scrollPosition = containerRef.current?.scrollLeft ?? 0;
+		const visibleItems = Math.floor(clientWidth / cardWidth);
+		const scrollOffset = scrollPosition % cardWidth;
+
+		const newX = Math.min(
+			scrollPosition - scrollOffset + visibleItems * cardWidth,
+			containerRef.current?.scrollWidth ?? 0 - clientWidth,
+		);
+		setX.start({
+			from: { x: scrollPosition },
+			to: { x: newX },
+			onChange: (results) => {
+				if (containerRef.current) {
+					containerRef.current.scrollLeft = results.value.x;
+				}
+			},
+			reset: true,
+			config: { friction: 60, tension: 500, velocity: 2 },
+		});
+
+		if (newX >= (containerRef.current?.scrollWidth ?? 0) - clientWidth) {
+			setScrollPos({ isStart: false, isEnd: true });
+		} else {
+			setScrollPos({ isStart: false, isEnd: false });
+		}
+	}, [setX]);
 
 	return (
 		<div className="slider">
 			<IconButton
 				className="slider-button left"
-				onClick={() => slide(Direction.LEFT)}
+				onClick={slideLeft}
 				disabled={scrollPos.isStart}
 				variant="contained"
 			>
@@ -159,7 +168,7 @@ const Slider = ({
 			</div>
 			<IconButton
 				className="slider-button right"
-				onClick={() => slide(Direction.RIGHT)}
+				onClick={slideRight}
 				disabled={scrollPos.isEnd}
 				variant="contained"
 			>

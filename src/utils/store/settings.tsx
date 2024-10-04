@@ -1,4 +1,3 @@
-import { create } from "zustand";
 import { shallow } from "zustand/shallow";
 import { createWithEqualityFn } from "zustand/traditional";
 

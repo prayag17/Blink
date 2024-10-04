@@ -15,16 +15,16 @@ import { CarouselSkeleton } from "@/components/skeleton/carousel";
 
 import { getItemsApi } from "@jellyfin/sdk/lib/utils/api/items-api";
 import { getTvShowsApi } from "@jellyfin/sdk/lib/utils/api/tv-shows-api";
-import { getUserApi } from "@jellyfin/sdk/lib/utils/api/user-api";
 import { getUserLibraryApi } from "@jellyfin/sdk/lib/utils/api/user-library-api";
 import { getUserViewsApi } from "@jellyfin/sdk/lib/utils/api/user-views-api";
 
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 
-import { setBackdrop } from "@/utils/store/backdrop";
+import { useBackdropStore } from "@/utils/store/backdrop";
 
 import { ErrorNotice } from "@/components/notices/errorNotice/errorNotice";
 import { useApiInContext } from "@/utils/store/api";
+import { useCentralStore } from "@/utils/store/central";
 import {
 	type BaseItemDto,
 	BaseItemKind,
@@ -32,7 +32,6 @@ import {
 } from "@jellyfin/sdk/lib/generated-client";
 import Typography from "@mui/material/Typography";
 import { ErrorBoundary } from "react-error-boundary";
-import { useCentralStore } from "@/utils/store/central";
 
 export const Route = createFileRoute("/_api/home/")({
 	component: Home,
@@ -66,6 +65,11 @@ function Home() {
 					ItemFields.IsHd,
 					ItemFields.MediaStreams,
 					ItemFields.MediaSources,
+				],
+				includeItemTypes: [
+					BaseItemKind.Movie,
+					BaseItemKind.Series,
+					BaseItemKind.MusicAlbum,
 				],
 				enableUserData: true,
 				enableImages: true,
@@ -131,6 +135,8 @@ function Home() {
 
 	const navigate = useNavigate();
 
+	const setBackdrop = useBackdropStore((s) => s.setBackdrop);
+
 	const [excludeTypes] = useState(
 		() => new Set(["boxsets", "playlists", "livetv", "channels"]),
 	);
@@ -139,7 +145,7 @@ function Home() {
 		if (libraries.isSuccess) {
 			const latestMediaLibsTemp = libraries.data.Items?.reduce(
 				(filteredItems: BaseItemDto[], currentItem) => {
-					if (!excludeTypes.has(currentItem.Type)) {
+					if (currentItem.Type && !excludeTypes.has(currentItem.Type)) {
 						filteredItems.push(currentItem);
 					}
 					return filteredItems;

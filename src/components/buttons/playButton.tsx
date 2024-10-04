@@ -1,5 +1,5 @@
 import PropTypes from "prop-types";
-import React from "react";
+import React, { memo } from "react"; // Import memo
 
 import Button, {
 	type ButtonProps,
@@ -15,6 +15,8 @@ import {
 	type BaseItemDtoQueryResult,
 	BaseItemKind,
 	ItemFields,
+	ItemFilter,
+	LocationType,
 	MediaProtocol,
 	type PlaybackInfoResponse,
 	SortOrder,
@@ -37,8 +39,12 @@ import { getRuntimeCompact } from "@/utils/date/time";
 import getSubtitle from "@/utils/methods/getSubtitles";
 import playbackProfile from "@/utils/playback-profiles";
 import { axiosClient, useApiInContext } from "@/utils/store/api";
+import { usePhotosPlayback } from "@/utils/store/photosPlayback";
 import type IntroMediaInfo from "@/utils/types/introMediaInfo";
 import { getMediaInfoApi } from "@jellyfin/sdk/lib/utils/api/media-info-api";
+import { getUserApi } from "@jellyfin/sdk/lib/utils/api/user-api";
+import { getUserLibraryApi } from "@jellyfin/sdk/lib/utils/api/user-library-api";
+import { getUserViewsApi } from "@jellyfin/sdk/lib/utils/api/user-views-api";
 import type { SxProps } from "@mui/material";
 import type { AxiosResponse } from "axios";
 
@@ -61,6 +67,27 @@ type PlayButtonProps = {
 	playlistItemId: string;
 	trackIndex: number;
 };
+
+// Memoized LinearProgress component
+const MemoizedLinearProgress = memo(({ value }: { value: number }) => (
+	<LinearProgress
+		variant="determinate"
+		value={value}
+		sx={{
+			position: "absolute",
+			top: 0,
+			left: 0,
+			right: 0,
+			bottom: 0,
+			height: "100%",
+			background: "transparent",
+			opacity: 0.2,
+			zIndex: 0,
+			mixBlendMode: "difference",
+		}}
+		color="white"
+	/>
+));
 
 const PlayButton = ({
 	item,
@@ -87,6 +114,7 @@ const PlayButton = ({
 	const setPlaybackDataLoading = usePlaybackDataLoadStore(
 		(state) => state.setisPending,
 	);
+	const playPhotos = usePhotosPlayback((s) => s.playPhotos);
 
 	const { enqueueSnackbar } = useSnackbar();
 
@@ -96,7 +124,7 @@ const PlayButton = ({
 			setPlaybackDataLoading(true);
 			let result: undefined | AxiosResponse<BaseItemDtoQueryResult, any>;
 			let mediaSource: undefined | AxiosResponse<PlaybackInfoResponse, any>;
-			let introInfo: undefined | AxiosResponse<IntroMediaInfo, any>;
+			let introInfo: undefined | IntroMediaInfo;
 			const indexNumber = item.IndexNumber ? item.IndexNumber - 1 : 0;
 			if (playlistItem) {
 				result = await getPlaylistsApi(api).getPlaylistItems({
@@ -106,48 +134,50 @@ const PlayButton = ({
 			} else {
 				switch (itemType) {
 					case BaseItemKind.Episode:
-						result = await getTvShowsApi(api).getEpisodes({
-							seriesId: item.SeriesId,
-							fields: [
-								ItemFields.MediaSources,
-								ItemFields.MediaStreams,
-								ItemFields.Overview,
-								ItemFields.Chapters,
-								ItemFields.Trickplay,
-							],
-							enableUserData: true,
-							userId: userId,
-							seasonId: item.SeasonId,
-							// startItemId: item.Id,
-						});
-						mediaSource = await getMediaInfoApi(api).getPostedPlaybackInfo({
-							audioStreamIndex: currentAudioTrack,
-							subtitleStreamIndex:
-								currentSubTrack === "nosub" ? -1 : currentSubTrack,
-							itemId: result.data.Items?.[indexNumber].Id,
-							startTimeTicks:
-								result.data.Items?.[indexNumber].UserData
-									?.PlaybackPositionTicks,
-							userId: userId,
-							mediaSourceId:
-								result.data.Items?.[indexNumber].MediaSources?.[0].Id,
-							playbackInfoDto: {
-								DeviceProfile: playbackProfile,
-							},
-						});
-						try {
-							introInfo = (
-								await axiosClient.get(
-									`${api.basePath}/Episode/${result.data.Items?.[0]?.Id}/IntroSkipperSegments`,
-									{
-										headers: {
-											Authorization: `MediaBrowser Token=${api.accessToken}`,
+						if (item.SeriesId && item.SeasonId) {
+							result = await getTvShowsApi(api).getEpisodes({
+								seriesId: item.SeriesId,
+								fields: [
+									ItemFields.MediaSources,
+									ItemFields.MediaStreams,
+									ItemFields.Overview,
+									ItemFields.Chapters,
+									ItemFields.Trickplay,
+								],
+								enableUserData: true,
+								userId: userId,
+								seasonId: item.SeasonId,
+								// startItemId: item.Id,
+							});
+							mediaSource = await getMediaInfoApi(api).getPostedPlaybackInfo({
+								audioStreamIndex: currentAudioTrack,
+								subtitleStreamIndex:
+									currentSubTrack === "nosub" ? -1 : currentSubTrack,
+								itemId: result.data.Items?.[indexNumber].Id,
+								startTimeTicks:
+									result.data.Items?.[indexNumber].UserData
+										?.PlaybackPositionTicks,
+								userId: userId,
+								mediaSourceId:
+									result.data.Items?.[indexNumber].MediaSources?.[0].Id,
+								playbackInfoDto: {
+									DeviceProfile: playbackProfile,
+								},
+							});
+							try {
+								introInfo = (
+									await axiosClient.get(
+										`${api.basePath}/Episode/${result.data.Items?.[0]?.Id}/IntroSkipperSegments`,
+										{
+											headers: {
+												Authorization: `MediaBrowser Token=${api.accessToken}`,
+											},
 										},
-									},
-								)
-							)?.data;
-						} catch (error) {
-							console.error(error);
+									)
+								)?.data;
+							} catch (error) {
+								console.error(error);
+							}
 						}
 						break;
 					case BaseItemKind.Series:
@@ -163,19 +193,23 @@ const PlayButton = ({
 							enableUserData: true,
 							userId: userId,
 						});
-						mediaSource = await getMediaInfoApi(api).getPostedPlaybackInfo({
-							audioStreamIndex: currentAudioTrack,
-							subtitleStreamIndex:
-								currentSubTrack === "nosub" ? -1 : currentSubTrack,
-							itemId: result.data.Items?.[0].Id,
-							startTimeTicks:
-								result.data.Items?.[0].UserData?.PlaybackPositionTicks,
-							userId: userId,
-							mediaSourceId: result.data.Items?.[0].MediaSources?.[0].Id,
-							playbackInfoDto: {
-								DeviceProfile: playbackProfile,
-							},
-						});
+						if (
+							result.data.Items?.[0].Id &&
+							result.data.Items?.[0].MediaSources?.[0].Id
+						)
+							mediaSource = await getMediaInfoApi(api).getPostedPlaybackInfo({
+								audioStreamIndex: currentAudioTrack,
+								subtitleStreamIndex:
+									currentSubTrack === "nosub" ? -1 : currentSubTrack,
+								itemId: result.data.Items?.[0].Id,
+								startTimeTicks:
+									result.data.Items?.[0].UserData?.PlaybackPositionTicks,
+								userId: userId,
+								mediaSourceId: result.data.Items?.[0].MediaSources?.[0].Id,
+								playbackInfoDto: {
+									DeviceProfile: playbackProfile,
+								},
+							});
 						try {
 							introInfo = (
 								await axiosClient.get(
@@ -231,6 +265,24 @@ const PlayButton = ({
 							sortBy: ["IndexNumber"],
 						});
 						break;
+					case BaseItemKind.Photo:
+						if (item.Id) {
+							const photo = (
+								await getUserLibraryApi(api).getItem({
+									itemId: item.Id,
+								})
+							).data;
+							result = await getItemsApi(api).getItems({
+								parentId: photo.ParentId,
+								filters: [ItemFilter.IsNotFolder],
+								recursive: false,
+								sortBy: ["SortName"],
+								mediaTypes: ["Photo"],
+								excludeLocationTypes: [LocationType.Virtual],
+								collapseBoxSetItems: false,
+							});
+						}
+						break;
 					default:
 						result = await getItemsApi(api).getItems({
 							ids: [itemId],
@@ -268,16 +320,22 @@ const PlayButton = ({
 				enqueueSnackbar("Playlist playback is WIP", { variant: "info" });
 			} else if (audio) {
 				// Album/Individual audio track playback
-				const urlOptions = {
+				const urlOptions: Record<string, string> = {
 					deviceId: api?.deviceInfo.id,
-					userId,
+					//@ts-ignore
+					userId: userId,
 					api_key: api?.accessToken,
 				};
 				const urlParams = new URLSearchParams(urlOptions).toString();
-
-				const playbackUrl = `${api.basePath}/Audio/${result?.item.Items[0].Id}/universal?${urlParams}`;
-				playAudio(playbackUrl, result?.item.Items[0], undefined);
+				const playbackUrl = `${api.basePath}/Audio/${result?.item.Items?.[0].Id}/universal?${urlParams}`;
+				playAudio(playbackUrl, result?.item.Items?.[0], undefined);
 				setQueue(result?.item.Items ?? [], 0);
+			} else if (item.Type === "Photo") {
+				const index = result?.item?.Items?.map((i) => i.Id).indexOf(item.Id);
+				if (result?.item?.Items && index) {
+					playPhotos(result?.item?.Items, index);
+					navigate({ to: "/player/photos" });
+				}
 			} else {
 				const episodeIndex = item.IndexNumber ? item.IndexNumber - 1 : 0;
 				// Creates a queue containing all Episodes for a particular season(series) or collection of movies
@@ -314,7 +372,7 @@ const PlayButton = ({
 				let playItemValue = item;
 				if (itemType === BaseItemKind.Movie) {
 					playItemValue = result?.item.Items?.[0];
-				} 
+				}
 
 				playItem(
 					itemName,
@@ -413,26 +471,13 @@ const PlayButton = ({
 							audio
 						? "Play Now"
 						: "Watch Now"}
-				<LinearProgress
-					variant="determinate"
+				<MemoizedLinearProgress
 					value={
-						100 > itemUserData?.PlayedPercentage > 0
+						100 > itemUserData?.PlayedPercentage &&
+						itemUserData?.PlayedPercentage > 0
 							? itemUserData?.PlayedPercentage
 							: 0
 					}
-					sx={{
-						position: "absolute",
-						top: 0,
-						left: 0,
-						right: 0,
-						bottom: 0,
-						height: "100%",
-						background: "transparent",
-						opacity: 0.2,
-						zIndex: 0,
-						mixBlendMode: "difference",
-					}}
-					color="white"
 				/>
 			</Button>
 			{itemUserData?.PlaybackPositionTicks > 0 && (

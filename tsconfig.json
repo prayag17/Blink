@@ -34,7 +34,9 @@
   },
   "include": [
     "src/**/*" // *** The files TypeScript should type check ***
-  ],
+,
+"src/routes/_api/player/photos/.tsx"
+],
   "exclude": [
     "node_modules",
     "build"

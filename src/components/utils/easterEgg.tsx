@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useCallback, useMemo } from "react";
 
 import { Dialog, Slide } from "@mui/material";
 import { useKonamiEasterEgg } from "../../utils/misc/konami";
@@ -6,15 +6,22 @@ import { useKonamiEasterEgg } from "../../utils/misc/konami";
 export const EasterEgg = () => {
 	const [easterEgg, setEasterEgg] = useKonamiEasterEgg();
 
+	// Memoize the onClose function
+	const handleClose = useCallback(() => {
+		setEasterEgg(false);
+	}, [setEasterEgg]);
+
+	// Memoize the sx object
+	const dialogSx = useMemo(
+		() => ({
+			background: "black",
+		}),
+		[],
+	);
+
 	return (
 		<>
-			<Dialog
-				open={easterEgg}
-				onClose={() => setEasterEgg(false)}
-				sx={{
-					background: "black",
-				}}
-			>
+			<Dialog open={easterEgg} onClose={handleClose} sx={dialogSx}>
 				<iframe
 					width="560"
 					height="315"

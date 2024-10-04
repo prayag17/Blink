@@ -5,13 +5,13 @@ import { CardScroller } from "../../cardScroller/cardScroller";
 import { CardsSkeleton } from "../../skeleton/cards";
 
 import { useApiInContext } from "@/utils/store/api";
+import { useCentralStore } from "@/utils/store/central";
 import {
 	type BaseItemDto,
 	BaseItemKind,
 } from "@jellyfin/sdk/lib/generated-client";
 import { getUserApi } from "@jellyfin/sdk/lib/utils/api/user-api";
 import { getUserLibraryApi } from "@jellyfin/sdk/lib/utils/api/user-library-api";
-import { useCentralStore } from "@/utils/store/central";
 
 /**
  * @description Latest Media Section
@@ -26,7 +26,7 @@ export const LatestMediaSection = ({
 			userId: user?.Id,
 			parentId: library.Id,
 			limit: 16,
-			fields: ["PrimaryImageAspectRatio"],
+			fields: ["PrimaryImageAspectRatio", "ParentId"],
 		});
 		return media.data;
 	};

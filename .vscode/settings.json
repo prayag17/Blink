@@ -26,5 +26,6 @@
 	"typescript.tsdk": "node_modules/typescript/lib",
 	"[scss]": {
 		"editor.defaultFormatter": "vscode.css-language-features"
-	}
+	},
+	"millionLint.theme": "million"
 }

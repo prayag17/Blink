@@ -19,11 +19,11 @@ import PlayNextButton from "@/components/buttons/playNextButton";
 import PlayPreviousButton from "@/components/buttons/playPreviousButtom";
 import QueueButton from "@/components/buttons/queueButton";
 import { useApiInContext } from "@/utils/store/api";
-import { useNavigate } from "@tanstack/react-router";
-import { playItemFromQueue } from "@/utils/store/playback";
-import { useQuery } from "@tanstack/react-query";
-import { getUserApi } from "@jellyfin/sdk/lib/utils/api/user-api";
 import { useCentralStore } from "@/utils/store/central";
+import { playItemFromQueue } from "@/utils/store/playback";
+import { getUserApi } from "@jellyfin/sdk/lib/utils/api/user-api";
+import { useQuery } from "@tanstack/react-query";
+import { useNavigate } from "@tanstack/react-router";
 
 const AudioPlayer = () => {
 	const api = useApiInContext((s) => s.api);
@@ -62,13 +62,117 @@ const AudioPlayer = () => {
 					Authorization: api.authorizationHeader,
 				},
 			});
+
+			const currentTrackItem = tracks[currentTrack];
+
 			fetch(audioUrlRequest)
 				.then((res) => res)
 				.then(async (result) => {
 					const blob = await result.blob();
 					const blobUrl = URL.createObjectURL(blob);
 					audioRef.current.src = blobUrl;
-					audioRef.current.play();
+					await audioRef.current.play();
+					if ("mediaSession" in navigator) {
+						navigator.mediaSession.playbackState = "playing";
+						navigator.mediaSession.metadata = new MediaMetadata({
+							title: currentTrackItem.Name ?? "Unknown audio",
+							artist: currentTrackItem.Artists?.join(", "),
+							album: currentTrackItem.Album ?? "",
+							artwork: [
+								{
+									src: api.getItemImageUrl(currentTrackItem.Id, "Primary", {
+										tag: currentTrackItem.ImageTags?.Primary,
+										width: 96,
+										height: 96,
+									}),
+									sizes: "96x96",
+									type: "image/jpeg",
+								},
+								{
+									src: api.getItemImageUrl(currentTrackItem.Id, "Primary", {
+										tag: currentTrackItem.ImageTags?.Primary,
+										width: 128,
+										height: 128,
+									}),
+									sizes: "128x128",
+									type: "image/jpeg",
+								},
+								{
+									src: api.getItemImageUrl(currentTrackItem.Id, "Primary", {
+										tag: currentTrackItem.ImageTags?.Primary,
+										width: 192,
+										height: 192,
+									}),
+									sizes: "192x192",
+									type: "image/jpeg",
+								},
+								{
+									src: api.getItemImageUrl(currentTrackItem.Id, "Primary", {
+										tag: currentTrackItem.ImageTags?.Primary,
+										width: 256,
+										height: 256,
+									}),
+									sizes: "256x256",
+									type: "image/jpeg",
+								},
+								{
+									src: api.getItemImageUrl(currentTrackItem.Id, "Primary", {
+										tag: currentTrackItem.ImageTags?.Primary,
+										width: 384,
+										height: 384,
+									}),
+									sizes: "384x384",
+									type: "image/jpeg",
+								},
+								{
+									src: api.getItemImageUrl(currentTrackItem.Id, "Primary", {
+										tag: currentTrackItem.ImageTags?.Primary,
+										width: 512,
+										height: 512,
+									}),
+									sizes: "512x512",
+									type: "image/jpeg",
+								},
+							],
+						});
+						console.log("Using MediaSession Api");
+						// navigator.mediaSession.setActionHandler("play", () => {
+						// 	/* Code excerpted. */
+						// });
+						// navigator.mediaSession.setActionHandler("pause", () => {
+						// 	/* Code excerpted. */
+						// });
+						// navigator.mediaSession.setActionHandler("stop", () => {
+						// 	/* Code excerpted. */
+						// });
+						// navigator.mediaSession.setActionHandler("seekbackward", () => {
+						// 	/* Code excerpted. */
+						// });
+						// navigator.mediaSession.setActionHandler("seekforward", () => {
+						// 	/* Code excerpted. */
+						// });
+						// navigator.mediaSession.setActionHandler("seekto", () => {
+						// 	/* Code excerpted. */
+						// });
+						// navigator.mediaSession.setActionHandler("previoustrack", () => {
+						// 	/* Code excerpted. */
+						// });
+						// navigator.mediaSession.setActionHandler("nexttrack", () => {
+						// 	/* Code excerpted. */
+						// });
+						// navigator.mediaSession.setActionHandler("skipad", () => {
+						// 	/* Code excerpted. */
+						// });
+						// navigator.mediaSession.setActionHandler("togglecamera", () => {
+						// 	/* Code excerpted. */
+						// });
+						// navigator.mediaSession.setActionHandler("togglemicrophone", () => {
+						// 	/* Code excerpted. */
+						// });
+						// navigator.mediaSession.setActionHandler("hangup", () => {
+						// 	/* Code excerpted. */
+						// });
+					}
 					setLoading(false);
 				});
 			setAudioRef(audioRef);

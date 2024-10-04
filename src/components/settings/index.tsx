@@ -24,7 +24,7 @@ import {
 	withStyles,
 } from "@mui/material";
 import { AnimatePresence, motion, transform } from "framer-motion";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useMemo, useCallback } from "react";
 
 import logo from "@/assets/logo.png";
 
@@ -191,17 +191,28 @@ const Settings = () => {
 		},
 	});
 
+	// Memoize PaperProps to prevent unnecessary re-renders
+	const paperProps = useMemo(
+		() => ({
+			className: "settings glass",
+			elevation: 10,
+		}),
+		[],
+	);
+
+	// Memoize onClose function to prevent unnecessary re-renders
+	const handleClose = useCallback(() => {
+		setSettingsDialogOpen(false);
+	}, []);
+
 	return (
 		<Dialog
 			open={open}
 			fullWidth
 			maxWidth="md"
-			PaperProps={{
-				className: "settings glass",
-				elevation: 10,
-			}}
+			PaperProps={paperProps}
 			hideBackdrop
-			onClose={() => setSettingsDialogOpen(false)}
+			onClose={handleClose}
 		>
 			<Tabs
 				orientation="vertical"

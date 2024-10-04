@@ -37,8 +37,6 @@ export const playAudio = (
 	url: string,
 	item: BaseItemDto | undefined | null,
 	playlistItemId: string | undefined,
-	queue: BaseItemDto[] | undefined,
-	queueItemIndex: number,
 ): void => {
 	useAudioPlayback.setState({
 		display: true,
@@ -46,7 +44,6 @@ export const playAudio = (
 		item,
 		playlistItemId,
 	});
-	setQueue(queue, queueItemIndex);
 };
 
 export const generateAudioStreamUrl = (

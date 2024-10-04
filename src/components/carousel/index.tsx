@@ -1,5 +1,5 @@
 import { AnimatePresence, motion } from "framer-motion";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useMemo, useCallback } from "react";
 
 import IconButton from "@mui/material/IconButton";
 
@@ -18,6 +18,12 @@ const swipePower = (offset, velocity) => {
 	return Math.abs(offset) * velocity;
 };
 
+// Memoize CarouselSlide to prevent unnecessary re-renders
+const MemoizedCarouselSlide = React.memo(CarouselSlide);
+
+// Memoize Slider to prevent unnecessary re-renders
+const MemoizedSlider = React.memo(Slider);
+
 const Carousel = ({
 	content,
 	onChange,
@@ -31,6 +37,7 @@ const Carousel = ({
 		state.setDirection,
 		state.direction,
 	]);
+
 	useEffect(() => {
 		onChange(currentSlide);
 	}, [content[currentSlide]?.Id]);
@@ -39,7 +46,6 @@ const Carousel = ({
 
 	const responsive = {
 		superLargeDesktop: {
-			// the naming can be any, depends on you.
 			breakpoint: { max: 4000, min: 3000 },
 			items: 6,
 		},
@@ -57,6 +63,70 @@ const Carousel = ({
 		},
 	};
 
+	// Memoize the content mapping
+	const sliderContent = useMemo(() => {
+		return content.map((item, index) => (
+			<motion.div
+				className={
+					currentSlide === index
+						? "carousel-indicator active"
+						: "carousel-indicator"
+				}
+				layout
+				initial={{
+					height: "4.6em",
+				}}
+				whileHover={{
+					height: "5.5em",
+				}}
+				transition={{
+					duration: 0.05,
+				}}
+				key={item.Id}
+				onClick={() => {
+					if (currentSlide > index) {
+						setDirection("left");
+					} else if (currentSlide <= index) {
+						setDirection("right");
+					}
+					setCurrentSlide(index);
+				}}
+			>
+				{item.ImageTags?.Thumb ? (
+					<img
+						src={api.getItemImageUrl(item.Id, "Thumb", {
+							tag: item.ImageTags.Primary,
+							fillWidth: 300,
+						})}
+						alt={item.Name ?? "item-image"}
+						className="carousel-indicator-image"
+					/>
+				) : (
+					<div className="carousel-indicator-icon">
+						{getTypeIcon(item.Type)}
+					</div>
+				)}
+			</motion.div>
+		));
+	}, [content, currentSlide, api, setDirection]);
+
+	const handleDragEnd = useCallback(
+		(e, { offset, velocity }) => {
+			const swipe = swipePower(offset.x, velocity.x);
+			if (
+				currentSlide !== content.length - 1 &&
+				swipe < -swipeConfidenceThreshold
+			) {
+				setDirection("right");
+				setCurrentSlide((init) => init + 1);
+			} else if (currentSlide !== 0 && swipe > swipeConfidenceThreshold) {
+				setDirection("left");
+				setCurrentSlide((init) => init - 1);
+			}
+		},
+		[currentSlide, content.length, setDirection],
+	);
+
 	return (
 		<div className="carousel">
 			<AnimatePresence mode="sync">
@@ -72,79 +142,22 @@ const Carousel = ({
 					drag={"x"}
 					dragConstraints={{ left: 0, right: 0 }}
 					dragElastic={1}
-					onDragEnd={(e, { offset, velocity }) => {
-						const swipe = swipePower(offset.x, velocity.x);
-						if (
-							currentSlide !== content.length - 1 &&
-							swipe < -swipeConfidenceThreshold
-						) {
-							setDirection("right");
-							setCurrentSlide((init) => init + 1);
-						} else if (currentSlide !== 0 && swipe > swipeConfidenceThreshold) {
-							setDirection("left");
-							setCurrentSlide((init) => init - 1);
-						}
-					}}
+					onDragEnd={handleDragEnd}
 					style={{
 						height: "100%",
 						width: "100%",
 						position: "absolute",
 					}}
 				>
-					<CarouselSlide
+					<MemoizedCarouselSlide
 						item={content[currentSlide]}
 						key={content[currentSlide].Id}
 					/>
 				</motion.div>
 			</AnimatePresence>
-			<Slider
-				currentSlide={currentSlide}
-				content={content.map((item, index) => (
-					<motion.div
-						className={
-							currentSlide === index
-								? "carousel-indicator active"
-								: "carousel-indicator"
-						}
-						layout
-						initial={{
-							height: "4.6em",
-						}}
-						whileHover={{
-							height: "5.5em",
-						}}
-						transition={{
-							duration: 0.05,
-						}}
-						key={item.Id}
-						onClick={() => {
-							if (currentSlide > index) {
-								setDirection("left");
-							} else if (currentSlide <= index) {
-								setDirection("right");
-							}
-							setCurrentSlide(index);
-						}}
-					>
-						{item.ImageTags?.Thumb ? (
-							<img
-								src={api.getItemImageUrl(item.Id, "Thumb", {
-									tag: item.ImageTags.Primary,
-									fillWidth: 300,
-								})}
-								alt={item.Name ?? "item-image"}
-								className="carousel-indicator-image"
-							/>
-						) : (
-							<div className="carousel-indicator-icon">
-								{getTypeIcon(item.Type)}
-							</div>
-						)}
-					</motion.div>
-				))}
-			/>
+			<MemoizedSlider currentSlide={currentSlide} content={sliderContent} />
 		</div>
 	);
 };
 
-export default Carousel;
+export default React.memo(Carousel);

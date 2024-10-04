@@ -1,0 +1,38 @@
+.photos {
+    background: black;
+    overflow: hidden;
+    height: 100vh;
+    &-currentPhoto {
+        width: 100vw;
+        height: 100vh;
+        object-fit: contain;
+    }
+    &-overlay{
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        width: 100vw;
+    }
+    &-preview {
+        // width: 10vw;
+        height: 10vh;
+        object-fit: cover;
+        border: 2px;
+        border: 2px solid transparent;
+        border-radius: 4px;
+        transition: border $transition-time-default;
+        &-container {
+            width: 90vw;
+            overflow-y: hidden;
+            overflow-x: auto;
+            display: flex;
+            gap: 4px;
+            margin: 0 auto;
+            bottom: 0;
+            left: 5vw;
+        }
+        &.active {
+            border-color: $clr-accent-default;
+        }
+    }
+}

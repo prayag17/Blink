@@ -25,6 +25,7 @@ import { Route as SetupServerErrorImport } from './routes/setup/server.error'
 import { Route as SetupServerAddImport } from './routes/setup/server.add'
 import { Route as ApiSeriesIdImport } from './routes/_api/series/$id'
 import { Route as ApiPlaylistIdImport } from './routes/_api/playlist/$id'
+import { Route as ApiPlayerPhotosImport } from './routes/_api/player/photos'
 import { Route as ApiPlayerAudioImport } from './routes/_api/player/audio'
 import { Route as ApiPersonIdImport } from './routes/_api/person/$id'
 import { Route as ApiLoginManualImport } from './routes/_api/login/manual'
@@ -106,6 +107,11 @@ const ApiSeriesIdRoute = ApiSeriesIdImport.update({
 
 const ApiPlaylistIdRoute = ApiPlaylistIdImport.update({
   path: '/playlist/$id',
+  getParentRoute: () => ApiRoute,
+} as any)
+
+const ApiPlayerPhotosRoute = ApiPlayerPhotosImport.update({
+  path: '/player/photos',
   getParentRoute: () => ApiRoute,
 } as any)
 
@@ -273,6 +279,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiPlayerAudioImport
       parentRoute: typeof ApiImport
     }
+    '/_api/player/photos': {
+      id: '/_api/player/photos'
+      path: '/player/photos'
+      fullPath: '/player/photos'
+      preLoaderRoute: typeof ApiPlayerPhotosImport
+      parentRoute: typeof ApiImport
+    }
     '/_api/playlist/$id': {
       id: '/_api/playlist/$id'
       path: '/playlist/$id'
@@ -387,6 +400,7 @@ interface ApiRouteChildren {
   ApiLibraryIdRoute: typeof ApiLibraryIdRoute
   ApiPersonIdRoute: typeof ApiPersonIdRoute
   ApiPlayerAudioRoute: typeof ApiPlayerAudioRoute
+  ApiPlayerPhotosRoute: typeof ApiPlayerPhotosRoute
   ApiPlaylistIdRoute: typeof ApiPlaylistIdRoute
   ApiSeriesIdRoute: typeof ApiSeriesIdRoute
   ApiFavoriteIndexRoute: typeof ApiFavoriteIndexRoute
@@ -405,6 +419,7 @@ const ApiRouteChildren: ApiRouteChildren = {
   ApiLibraryIdRoute: ApiLibraryIdRoute,
   ApiPersonIdRoute: ApiPersonIdRoute,
   ApiPlayerAudioRoute: ApiPlayerAudioRoute,
+  ApiPlayerPhotosRoute: ApiPlayerPhotosRoute,
   ApiPlaylistIdRoute: ApiPlaylistIdRoute,
   ApiSeriesIdRoute: ApiSeriesIdRoute,
   ApiFavoriteIndexRoute: ApiFavoriteIndexRoute,
@@ -430,6 +445,7 @@ export interface FileRoutesByFullPath {
   '/login/manual': typeof ApiLoginManualRoute
   '/person/$id': typeof ApiPersonIdRoute
   '/player/audio': typeof ApiPlayerAudioRoute
+  '/player/photos': typeof ApiPlayerPhotosRoute
   '/playlist/$id': typeof ApiPlaylistIdRoute
   '/series/$id': typeof ApiSeriesIdRoute
   '/setup/server/add': typeof SetupServerAddRoute
@@ -457,6 +473,7 @@ export interface FileRoutesByTo {
   '/login/manual': typeof ApiLoginManualRoute
   '/person/$id': typeof ApiPersonIdRoute
   '/player/audio': typeof ApiPlayerAudioRoute
+  '/player/photos': typeof ApiPlayerPhotosRoute
   '/playlist/$id': typeof ApiPlaylistIdRoute
   '/series/$id': typeof ApiSeriesIdRoute
   '/setup/server/add': typeof SetupServerAddRoute
@@ -486,6 +503,7 @@ export interface FileRoutesById {
   '/_api/login/manual': typeof ApiLoginManualRoute
   '/_api/person/$id': typeof ApiPersonIdRoute
   '/_api/player/audio': typeof ApiPlayerAudioRoute
+  '/_api/player/photos': typeof ApiPlayerPhotosRoute
   '/_api/playlist/$id': typeof ApiPlaylistIdRoute
   '/_api/series/$id': typeof ApiSeriesIdRoute
   '/setup/server/add': typeof SetupServerAddRoute
@@ -516,6 +534,7 @@ export interface FileRouteTypes {
     | '/login/manual'
     | '/person/$id'
     | '/player/audio'
+    | '/player/photos'
     | '/playlist/$id'
     | '/series/$id'
     | '/setup/server/add'
@@ -542,6 +561,7 @@ export interface FileRouteTypes {
     | '/login/manual'
     | '/person/$id'
     | '/player/audio'
+    | '/player/photos'
     | '/playlist/$id'
     | '/series/$id'
     | '/setup/server/add'
@@ -569,6 +589,7 @@ export interface FileRouteTypes {
     | '/_api/login/manual'
     | '/_api/person/$id'
     | '/_api/player/audio'
+    | '/_api/player/photos'
     | '/_api/playlist/$id'
     | '/_api/series/$id'
     | '/setup/server/add'
@@ -636,6 +657,7 @@ export const routeTree = rootRoute
         "/_api/library/$id",
         "/_api/person/$id",
         "/_api/player/audio",
+        "/_api/player/photos",
         "/_api/playlist/$id",
         "/_api/series/$id",
         "/_api/favorite/",
@@ -702,6 +724,10 @@ export const routeTree = rootRoute
       "filePath": "_api/player/audio.tsx",
       "parent": "/_api"
     },
+    "/_api/player/photos": {
+      "filePath": "_api/player/photos.tsx",
+      "parent": "/_api"
+    },
     "/_api/playlist/$id": {
       "filePath": "_api/playlist/$id.jsx",
       "parent": "/_api"
@@ -732,7 +758,7 @@ export const routeTree = rootRoute
       "parent": "/_api"
     },
     "/_api/search/": {
-      "filePath": "_api/search/index.jsx",
+      "filePath": "_api/search/index.tsx",
       "parent": "/_api/search"
     },
     "/_api/login/$userId/$userName": {

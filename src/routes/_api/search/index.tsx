@@ -21,12 +21,15 @@ import { getItemsApi } from "@jellyfin/sdk/lib/utils/api/items-api";
 import { getPersonsApi } from "@jellyfin/sdk/lib/utils/api/persons-api";
 import { getSearchApi } from "@jellyfin/sdk/lib/utils/api/search-api";
 import "./search.scss";
+import { useCentralStore } from "@/utils/store/central";
 import { Dialog, Fab } from "@mui/material";
 import { Outlet, createFileRoute, useNavigate } from "@tanstack/react-router";
-import { useCentralStore } from "@/utils/store/central";
 
 export const Route = createFileRoute("/_api/search/")({
 	component: SearchPage,
+	validateSearch: (search: Record<string, unknown>): { query: string } => {
+		return { query: search.query as string };
+	},
 });
 
 function SearchPage() {

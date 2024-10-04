@@ -1,11 +1,9 @@
 /** @format */
 
 import React, { memo } from "react";
-import { Component, useState } from "react";
 
-import { useNavigate, useRouteContext } from "@tanstack/react-router";
+import { useNavigate } from "@tanstack/react-router";
 
-import LinearProgress from "@mui/material/LinearProgress";
 import Typography from "@mui/material/Typography";
 
 import {
@@ -20,20 +18,6 @@ import ErrorBoundary from "../errorBoundary";
 import { getTypeIcon } from "../utils/iconsCollection";
 import "./card.scss";
 import { useApiInContext } from "@/utils/store/api";
-
-const cardImageAspectRatios = {
-	thumb: 1.777,
-	portrait: 0.666,
-	square: 1,
-};
-
-const availableSpecialRoutes = [
-	BaseItemKind.Series,
-	BaseItemKind.BoxSet,
-	BaseItemKind.MusicAlbum,
-	BaseItemKind.Episode,
-	BaseItemKind.Playlist,
-];
 
 const CardComponent = ({
 	item,
@@ -123,7 +107,9 @@ const CardComponent = ({
 					</div>
 				</ErrorBoundary>
 				<div className="card-image-icon-container">
-					{overrideIcon ? getTypeIcon(overrideIcon) : getTypeIcon(item.Type)}
+					{overrideIcon
+						? getTypeIcon(overrideIcon)
+						: getTypeIcon(item.Type ?? "universal")}
 				</div>
 				<img
 					alt={item.Name ?? "blink"}
@@ -131,7 +117,7 @@ const CardComponent = ({
 						overrideIcon === "User"
 							? `${api.basePath}/Users/${item.Id}/Images/Primary`
 							: api.getItemImageUrl(
-									seriesId ? item.SeriesId : (item.AlbumId ?? item.Id),
+									(seriesId ? item.SeriesId : (item.AlbumId ?? item.Id)) ?? "",
 									imageType,
 									{
 										quality: 90,
@@ -193,7 +179,7 @@ const CardComponent = ({
 						</>
 					)}
 				</div>
-				{item.UserData?.PlaybackPositionTicks > 0 && (
+				{(item.UserData?.PlaybackPositionTicks ?? -1) > 0 && (
 					<div className="card-progress-container">
 						<div
 							className="card-progress"

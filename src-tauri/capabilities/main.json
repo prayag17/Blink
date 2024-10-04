@@ -12,6 +12,8 @@
 		"store:allow-keys",
 		"store:allow-load",
 		"updater:allow-check",
-		"updater:allow-download-and-install"
+		"updater:allow-download-and-install",
+		"notification:default",
+		"core:webview:allow-internal-toggle-devtools"
 	]
 }
