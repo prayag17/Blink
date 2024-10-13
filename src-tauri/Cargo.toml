@@ -28,6 +28,8 @@ tauri-plugin-process = { git = "https://github.com/tauri-apps/plugins-workspace"
 tauri-plugin-updater = { git = "https://github.com/tauri-apps/plugins-workspace", branch = "v2" }
 tauri-plugin-clipboard-manager = "2.1.0-beta.6"
 tauri-plugin-notification = "2.0.0-rc.1"
+tauri-plugin-upload = "2.0.0"
+tauri-plugin-dialog = "2.0.0"
 
 [features]
 # by default Tauri runs in production mode

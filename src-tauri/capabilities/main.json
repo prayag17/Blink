@@ -14,6 +14,8 @@
 		"updater:allow-check",
 		"updater:allow-download-and-install",
 		"notification:default",
-		"core:webview:allow-internal-toggle-devtools"
+		"core:webview:allow-internal-toggle-devtools",
+		"dialog:default",
+		"upload:allow-download"
 	]
 }

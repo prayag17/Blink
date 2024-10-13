@@ -27,5 +27,6 @@
 	"[scss]": {
 		"editor.defaultFormatter": "vscode.css-language-features"
 	},
-	"millionLint.theme": "million"
+	"millionLint.theme": "million",
+	"millionLint.disableOutdatedVersionMessage": true
 }

@@ -1,13 +1,26 @@
 import { useApiInContext } from "@/utils/store/api";
 import { usePhotosPlayback } from "@/utils/store/photosPlayback";
 import { createFileRoute } from "@tanstack/react-router";
-import React, { useCallback, useEffect, useMemo, useState } from "react";
+import React, { type MouseEvent, useCallback, useMemo, useState } from "react";
 
 import { AnimatePresence, motion } from "framer-motion";
-import brokenImage from "../../../../public/assetsStatic/broken-image.png";
+//@ts-ignore
+import brokenImage from "/assetsStatic/broken-image.png?url";
+
+import { save } from "@tauri-apps/plugin-dialog";
 
 import "./photos.scss";
-import { Button } from "@mui/material";
+import {
+	Button,
+	CircularProgress,
+	IconButton,
+	ListItemIcon,
+	ListItemText,
+	Menu,
+	MenuItem,
+} from "@mui/material";
+import { download } from "@tauri-apps/plugin-upload";
+import { useSnackbar } from "notistack";
 
 export const Route = createFileRoute("/_api/player/photos")({
 	component: PhotosPlayer,
@@ -17,6 +30,7 @@ function PhotosPlayer() {
 	const api = useApiInContext((s) => s.api);
 	const [photos, startIndex] = usePhotosPlayback((s) => [s.photos, s.index]);
 	const [currentIndex, setCurrentIndex] = useState(startIndex);
+	const { enqueueSnackbar } = useSnackbar();
 	const currentPhoto = useMemo(
 		() => photos?.[currentIndex],
 		[photos, currentIndex],
@@ -53,6 +67,50 @@ function PhotosPlayer() {
 		[photos, currentIndex],
 	);
 
+	const handlePhotosChangePrev = useCallback(() => {
+		setCurrentIndex(currentIndex - 1);
+	}, [currentIndex]);
+	const handlePhotosChangeNext = useCallback(() => {
+		setCurrentIndex(currentIndex + 1);
+	}, [currentIndex]);
+
+	const [contextMenu, setContextMenu] = useState<{
+		mouseX: number;
+		mouseY: number;
+	} | null>(null);
+	const handleShowContextMenu = (e: MouseEvent) => {
+		e.preventDefault();
+		if (contextMenu === null) {
+			setContextMenu({ mouseX: e.clientX + 2, mouseY: e.clientY - 6 });
+		} else {
+			setContextMenu(null);
+		}
+	};
+	const handleContextMenuClose = useCallback(() => {
+		setContextMenu(null);
+	}, []);
+
+	const [downloadProgress, setDownloadProgress] = useState(0);
+
+	const handleImageDownload = useCallback(async () => {
+		const pathToSave = await save({
+			filters: [
+				{
+					name: "Image",
+					extensions: ["png", "jpeg"],
+				},
+			],
+		});
+
+		if (pathToSave) {
+			download(
+				`${api.basePath}/Items/${currentPhoto?.Id}/Download?api_key=${api.accessToken}`,
+				pathToSave,
+			);
+			enqueueSnackbar("Image downloaded!", { variant: "success" });
+		}
+	}, [currentIndex]);
+
 	return (
 		<div className="photos">
 			<AnimatePresence mode="wait">
@@ -71,13 +129,34 @@ function PhotosPlayer() {
 					className="photos-currentPhoto"
 				/>
 			</AnimatePresence>
-			<motion.div
-				className="photos-overlay"
-				whileHover={{ opacity: 1, transform: "translateY(0)" }}
-				style={{ opacity: 0.5, transform: "translateY(80%)" }}
+			<div className="photos-actions" onContextMenu={handleShowContextMenu}>
+				<IconButton onClick={handlePhotosChangePrev}>
+					<span className="material-symbols-rounded">chevron_left</span>
+				</IconButton>
+				<IconButton onClick={handlePhotosChangeNext}>
+					<span className="material-symbols-rounded">chevron_right</span>
+				</IconButton>
+			</div>
+			<Menu
+				open={!!contextMenu?.mouseX}
+				onClose={handleContextMenuClose}
+				anchorReference="anchorPosition"
+				anchorPosition={
+					contextMenu !== null
+						? { left: contextMenu.mouseX, top: contextMenu.mouseY }
+						: undefined
+				}
 			>
+				<MenuItem onClick={handleImageDownload}>
+					<ListItemIcon>
+						<span className="material-symbols-rounded">download</span>
+					</ListItemIcon>
+					<ListItemText>Download</ListItemText>
+				</MenuItem>
+			</Menu>
+			<div className="photos-overlay">
 				<div className="photos-preview-container">{allPhotos}</div>
-			</motion.div>
+			</div>
 		</div>
 	);
 }
