@@ -574,9 +574,9 @@ const Settings = () => {
 										component={Link}
 										variant="subtitle2"
 										target="_blank"
-										href="https://github.com/prayag17/JellyPlayer"
+										href="https://github.com/prayag17/Blink"
 									>
-										https://github.com/prayag17/JellyPlayer
+										https://github.com/prayag17/Blink
 									</Typography>
 									<Typography
 										component={Link}
