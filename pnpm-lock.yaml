@@ -40,10 +40,10 @@ importers:
         version: 5.0.51(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
       '@tanstack/react-query':
         specifier: ^5.59.13
-        version: 5.59.13(react@18.3.1)
+        version: 5.59.14(react@18.3.1)
       '@tanstack/react-query-devtools':
         specifier: ^5.59.13
-        version: 5.59.13(@tanstack/react-query@5.59.13(react@18.3.1))(react@18.3.1)
+        version: 5.59.14(@tanstack/react-query@5.59.14(react@18.3.1))(react@18.3.1)
       '@tanstack/react-router':
         specifier: ^1.65.0
         version: 1.65.0(@tanstack/router-generator@1.65.0)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
@@ -928,8 +928,8 @@ packages:
   '@jridgewell/trace-mapping@0.3.25':
     resolution: {integrity: sha512-vNk6aEwybGtawWmy/PzwnGDOjCkLWSD2wqvjGGAgOAwCGWySYXfYoxt00IJkTF+8Lb57DwOb3Aa0o9CApepiYQ==}
 
-  '@million/install@1.0.9':
-    resolution: {integrity: sha512-tJk7azrjsIkHl/xTppFw8K7M/CIrqa1y9J75By+dtW6jZBQi51DQlsp5J1SuAcTR89XwpGEuhN29HOvHosblPw==}
+  '@million/install@1.0.11':
+    resolution: {integrity: sha512-koRlY6tCYa6isBUTheP0pL7PC31pBY1QlL8F/Yaorcx6gIyZSJNVqTGBDqLvDeeV8QcmD/S9mswSazI/FsyGKQ==}
     hasBin: true
 
   '@million/lint@1.0.9':
@@ -1464,14 +1464,14 @@ packages:
   '@tanstack/query-devtools@5.58.0':
     resolution: {integrity: sha512-iFdQEFXaYYxqgrv63ots+65FGI+tNp5ZS5PdMU1DWisxk3fez5HG3FyVlbUva+RdYS5hSLbxZ9aw3yEs97GNTw==}
 
-  '@tanstack/react-query-devtools@5.59.13':
-    resolution: {integrity: sha512-6RW9jjJPeIUxu/rAy7W2a4cCOFp46Tv2LY2pOS4m5s8vqOSvI8dkizvOq+GmLGtI2E+QjoeZbEOGKDSmqDynWg==}
+  '@tanstack/react-query-devtools@5.59.14':
+    resolution: {integrity: sha512-7hYY59jveDF1thc4mnExfMoz/ySnE22pv3d+tinw+HxDGZFPa5BfCZgr1N3i1OGxxBuZch8k9seUJ2qUhBdJoQ==}
     peerDependencies:
-      '@tanstack/react-query': ^5.59.13
+      '@tanstack/react-query': ^5.59.14
       react: ^18 || ^19
 
-  '@tanstack/react-query@5.59.13':
-    resolution: {integrity: sha512-GB2ELtiH8tL0rcFiM4sWvnXhazt1xRXX/LolMEV12kfEKu58aNA4lQoieslP61PO4vZO9JJMwm+6lqyS0E1HOA==}
+  '@tanstack/react-query@5.59.14':
+    resolution: {integrity: sha512-2cM4x3Ka4Thl7/wnjf++EMGA2Is/RgPynn83D4kfGiJOGSjb5T2D3EEOlC8Nt6U2htLS3imOXjOSMEjC3K7JNg==}
     peerDependencies:
       react: ^18 || ^19
 
@@ -1850,8 +1850,8 @@ packages:
     resolution: {integrity: sha512-y4coMcylgSCdVinjiDBuR8PCC2bLjyGTwEmPb9NHR/QaNU6EUOXcTY/s6VjGMD6ENSEaeQYHCY0GNGS5jfMwPw==}
     engines: {node: '>=6'}
 
-  cli-high@0.4.2:
-    resolution: {integrity: sha512-q/CIxOggmzAw/67QYS4j1bMo72IpC+dAlswZl8xHxp8XvmWS97x3Q30pWNXq8mg0pZLSJwIFWZpUWTfcF119wA==}
+  cli-high@0.4.3:
+    resolution: {integrity: sha512-YbwZhmK0fpwVn3bsbYiYdkseXFcGvSVkX+fl0CY73PAz77Uzkr46X3Ifs4V7NgwfvCqGx+6C5zEi8SL8m9lqtg==}
     hasBin: true
 
   cliui@8.0.1:
@@ -1974,6 +1974,9 @@ packages:
   dot-prop@5.3.0:
     resolution: {integrity: sha512-QM8q3zDe58hqUqjraQOmzZ1LIH9SWQJTlEKCH4kJ2oQvLZk7RbQXvtDM2XEq3fwkV9CCvvH4LA0AV+ogFsBM2Q==}
     engines: {node: '>=8'}
+
+  effect@3.9.2:
+    resolution: {integrity: sha512-1sx/v1HTWHTodXfzWxAFg+SCF+ACgpJVruaAMIh/NmDVvrUsf0x9PzpXvkgJUbQ1fMdmKYK//FqxeHSQ+Zxv/Q==}
 
   electron-to-chromium@1.5.36:
     resolution: {integrity: sha512-HYTX8tKge/VNp6FGO+f/uVDmUkq+cEfcxYhKf15Akc4M5yxt5YmorwlAitKWjWhWQnKcDRBAQKXkhqqXMqcrjw==}
@@ -2837,8 +2840,8 @@ packages:
   stylis@4.2.0:
     resolution: {integrity: sha512-Orov6g6BB1sDfYgzWfTHDOxamtX1bE/zo104Dh9e6fqJ3PooipYyfJ0pUmrZO2wAvO8YbEyeFrkV91XTsGMSrw==}
 
-  sugar-high@0.6.1:
-    resolution: {integrity: sha512-kg1qMW7WwJcueXIlHkChL/p2EWY3gf8rQmP6n5nUq2TWVqatqDTMLvViS9WgAjgyTKH5/3/b8sRwWPOOAo1zMA==}
+  sugar-high@0.7.1:
+    resolution: {integrity: sha512-hwEXr/gtUvi+jfgjgxbuiRD5EX5C1/eQrW/RoZ0Dm+993p46ECB5HBjMfc20FEbsXKQHtueHtYoe2ofb6V+83A==}
 
   supports-color@5.5.0:
     resolution: {integrity: sha512-QjVjwdXIt408MIiAqCX4oUKsgU2EqAGzs2Ppkm4aQYbjm+ZEWEcW4SfFNTr4uMNZma0ey4f5lgLrkB0aX0QMow==}
@@ -3712,7 +3715,7 @@ snapshots:
       '@jridgewell/resolve-uri': 3.1.2
       '@jridgewell/sourcemap-codec': 1.5.0
 
-  '@million/install@1.0.9':
+  '@million/install@1.0.11':
     dependencies:
       '@antfu/ni': 0.21.12
       '@axiomhq/js': 1.0.0-rc.3
@@ -3720,8 +3723,9 @@ snapshots:
       '@babel/types': 7.25.2
       '@clack/prompts': 0.7.0
       ast-types: 0.14.2
-      cli-high: 0.4.2
+      cli-high: 0.4.3
       diff: 5.2.0
+      effect: 3.9.2
       nanoid: 5.0.7
       recast: 0.23.9
       xycolors: 0.1.2
@@ -3732,7 +3736,7 @@ snapshots:
       '@babel/core': 7.25.2
       '@babel/types': 7.25.2
       '@hono/node-server': 1.13.2(hono@4.6.4)
-      '@million/install': 1.0.9
+      '@million/install': 1.0.11
       '@rollup/pluginutils': 5.1.2(rollup@4.24.0)
       '@rrweb/types': 2.0.0-alpha.16
       babel-plugin-syntax-hermes-parser: 0.21.1
@@ -4202,13 +4206,13 @@ snapshots:
 
   '@tanstack/query-devtools@5.58.0': {}
 
-  '@tanstack/react-query-devtools@5.59.13(@tanstack/react-query@5.59.13(react@18.3.1))(react@18.3.1)':
+  '@tanstack/react-query-devtools@5.59.14(@tanstack/react-query@5.59.14(react@18.3.1))(react@18.3.1)':
     dependencies:
       '@tanstack/query-devtools': 5.58.0
-      '@tanstack/react-query': 5.59.13(react@18.3.1)
+      '@tanstack/react-query': 5.59.14(react@18.3.1)
       react: 18.3.1
 
-  '@tanstack/react-query@5.59.13(react@18.3.1)':
+  '@tanstack/react-query@5.59.14(react@18.3.1)':
     dependencies:
       '@tanstack/query-core': 5.59.13
       react: 18.3.1
@@ -4616,10 +4620,10 @@ snapshots:
 
   cli-boxes@2.2.1: {}
 
-  cli-high@0.4.2:
+  cli-high@0.4.3:
     dependencies:
       '@clack/prompts': 0.7.0
-      sugar-high: 0.6.1
+      sugar-high: 0.7.1
       xycolors: 0.1.2
       yargs: 17.7.2
 
@@ -4736,6 +4740,8 @@ snapshots:
   dot-prop@5.3.0:
     dependencies:
       is-obj: 2.0.0
+
+  effect@3.9.2: {}
 
   electron-to-chromium@1.5.36: {}
 
@@ -5868,7 +5874,7 @@ snapshots:
 
   stylis@4.2.0: {}
 
-  sugar-high@0.6.1: {}
+  sugar-high@0.7.1: {}
 
   supports-color@5.5.0:
     dependencies:
