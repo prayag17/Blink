@@ -67,7 +67,7 @@ importers:
         version: 2.0.0
       '@tauri-apps/plugin-store':
         specifier: github:tauri-apps/tauri-plugin-store#v2
-        version: https://codeload.github.com/tauri-apps/tauri-plugin-store/tar.gz/ff9d772d3887481105e6f1fc1d7e92cd5c676d9f
+        version: https://codeload.github.com/tauri-apps/tauri-plugin-store/tar.gz/8e815652f4208c1bbb27dc4bafe1f4a0d7e97f62
       '@tauri-apps/plugin-updater':
         specifier: 2.0.0
         version: 2.0.0
@@ -156,8 +156,8 @@ importers:
         specifier: ^7.8.6
         version: 7.8.6
       zustand:
-        specifier: 5.0.0-rc.2
-        version: 5.0.0-rc.2(@types/react@18.3.11)(immer@10.1.1)(react@18.3.1)(use-sync-external-store@1.2.2(react@18.3.1))
+        specifier: 5.0.1
+        version: 5.0.1(@types/react@18.3.11)(immer@10.1.1)(react@18.3.1)(use-sync-external-store@1.2.2(react@18.3.1))
     devDependencies:
       '@babel/plugin-proposal-optional-chaining-assign':
         specifier: ^7.25.7
@@ -928,8 +928,8 @@ packages:
   '@jridgewell/trace-mapping@0.3.25':
     resolution: {integrity: sha512-vNk6aEwybGtawWmy/PzwnGDOjCkLWSD2wqvjGGAgOAwCGWySYXfYoxt00IJkTF+8Lb57DwOb3Aa0o9CApepiYQ==}
 
-  '@million/install@1.0.9':
-    resolution: {integrity: sha512-tJk7azrjsIkHl/xTppFw8K7M/CIrqa1y9J75By+dtW6jZBQi51DQlsp5J1SuAcTR89XwpGEuhN29HOvHosblPw==}
+  '@million/install@1.0.11':
+    resolution: {integrity: sha512-koRlY6tCYa6isBUTheP0pL7PC31pBY1QlL8F/Yaorcx6gIyZSJNVqTGBDqLvDeeV8QcmD/S9mswSazI/FsyGKQ==}
     hasBin: true
 
   '@million/lint@1.0.9':
@@ -1627,9 +1627,9 @@ packages:
   '@tauri-apps/plugin-process@2.0.0':
     resolution: {integrity: sha512-OYzi0GnkrF4NAnsHZU7U3tjSoP0PbeAlO7T1Z+vJoBUH9sFQ1NSLqWYWQyf8hcb3gVWe7P1JggjiskO+LST1ug==}
 
-  '@tauri-apps/plugin-store@https://codeload.github.com/tauri-apps/tauri-plugin-store/tar.gz/ff9d772d3887481105e6f1fc1d7e92cd5c676d9f':
-    resolution: {tarball: https://codeload.github.com/tauri-apps/tauri-plugin-store/tar.gz/ff9d772d3887481105e6f1fc1d7e92cd5c676d9f}
-    version: 2.0.0
+  '@tauri-apps/plugin-store@https://codeload.github.com/tauri-apps/tauri-plugin-store/tar.gz/8e815652f4208c1bbb27dc4bafe1f4a0d7e97f62':
+    resolution: {tarball: https://codeload.github.com/tauri-apps/tauri-plugin-store/tar.gz/8e815652f4208c1bbb27dc4bafe1f4a0d7e97f62}
+    version: 2.1.0
 
   '@tauri-apps/plugin-updater@2.0.0':
     resolution: {integrity: sha512-N0cl71g7RPr7zK2Fe5aoIwzw14NcdLcz7XMGFWZVjprsqgDRWoxbnUkknyCQMZthjhGkppCd/wN2MIsUz+eAhQ==}
@@ -1975,6 +1975,9 @@ packages:
     resolution: {integrity: sha512-QM8q3zDe58hqUqjraQOmzZ1LIH9SWQJTlEKCH4kJ2oQvLZk7RbQXvtDM2XEq3fwkV9CCvvH4LA0AV+ogFsBM2Q==}
     engines: {node: '>=8'}
 
+  effect@3.10.6:
+    resolution: {integrity: sha512-gmEKTmnxvu0jX+WQAXINPKmXWE7cBTRuSZ/h6aJw9AzljIB3q+3x/vr0hTAg9UqLNXYyWLUVURt3pemj2AWykA==}
+
   electron-to-chromium@1.5.36:
     resolution: {integrity: sha512-HYTX8tKge/VNp6FGO+f/uVDmUkq+cEfcxYhKf15Akc4M5yxt5YmorwlAitKWjWhWQnKcDRBAQKXkhqqXMqcrjw==}
 
@@ -2043,6 +2046,10 @@ packages:
 
   extend@3.0.2:
     resolution: {integrity: sha512-fjquC59cD7CyW6urNXK0FBufkZcoiGG80wTuPujX590cB5Ttln20E2UB4S/WARVqhXffZl2LNgS+gQdPIIim/g==}
+
+  fast-check@3.22.0:
+    resolution: {integrity: sha512-8HKz3qXqnHYp/VCNn2qfjHdAdcI8zcSqOyX64GOMukp7SL2bfzfeDKjSd+UyECtejccaZv3LcvZTm9YDD22iCQ==}
+    engines: {node: '>=8.0.0'}
 
   fast-deep-equal@3.1.3:
     resolution: {integrity: sha512-f3qQ9oQy9j2AhBe/H9VC91wLmKBCCU/gDOnKNAYG5hswO7BLKj09Hc5HYNz9cGI++xlpDCIgDaitVs03ATR84Q==}
@@ -2602,6 +2609,9 @@ packages:
     resolution: {integrity: sha512-l1jNAspIBSFqbT+y+5FosojNpVpF94nlI+wDUpqP9enwOTfHx9f0gh5nB96vl+6yTpsJsypeNrwfzPrKuHB41A==}
     engines: {node: '>=8'}
 
+  pure-rand@6.1.0:
+    resolution: {integrity: sha512-bVWawvoZoBYpp6yIoQtQXHZjmz35RSVHnUOTefl8Vcjr8snTPY1wnpSPMWekcFwbxI6gtmT7rSYPFvz71ldiOA==}
+
   rc@1.2.8:
     resolution: {integrity: sha512-y3bGgqKj3QBdxLbLkomlohkvsA8gdAiUQlSBJnBhfn+BPxg4bc62d8TcBW15wavDfgexCgccckhcZvywyQYPOw==}
     hasBin: true
@@ -3081,8 +3091,8 @@ packages:
   zod@3.23.8:
     resolution: {integrity: sha512-XBx9AXhXktjUqnepgTiE5flcKIYWi/rme0Eaj+5Y0lftuGBq+jyRu/md4WnuxqgP1ubdpNCsYEYPxrzVHD8d6g==}
 
-  zustand@5.0.0-rc.2:
-    resolution: {integrity: sha512-o2Nwuvnk8vQBX7CcHL8WfFkZNJdxB/VKeWw0tNglw8p4cypsZ3tRT7rTRTDNeUPFS0qaMBRSKe+fVwL5xpcE3A==}
+  zustand@5.0.1:
+    resolution: {integrity: sha512-pRET7Lao2z+n5R/HduXMio35TncTlSW68WsYBq2Lg1ASspsNGjpwLAsij3RpouyV6+kHMwwwzP0bZPD70/Jx/w==}
     engines: {node: '>=12.20.0'}
     peerDependencies:
       '@types/react': '>=18.0.0'
@@ -3712,7 +3722,7 @@ snapshots:
       '@jridgewell/resolve-uri': 3.1.2
       '@jridgewell/sourcemap-codec': 1.5.0
 
-  '@million/install@1.0.9':
+  '@million/install@1.0.11':
     dependencies:
       '@antfu/ni': 0.21.12
       '@axiomhq/js': 1.0.0-rc.3
@@ -3722,6 +3732,7 @@ snapshots:
       ast-types: 0.14.2
       cli-high: 0.4.2
       diff: 5.2.0
+      effect: 3.10.6
       nanoid: 5.0.7
       recast: 0.23.9
       xycolors: 0.1.2
@@ -3732,7 +3743,7 @@ snapshots:
       '@babel/core': 7.25.2
       '@babel/types': 7.25.2
       '@hono/node-server': 1.13.2(hono@4.6.4)
-      '@million/install': 1.0.9
+      '@million/install': 1.0.11
       '@rollup/pluginutils': 5.1.2(rollup@4.24.0)
       '@rrweb/types': 2.0.0-alpha.16
       babel-plugin-syntax-hermes-parser: 0.21.1
@@ -4367,7 +4378,7 @@ snapshots:
     dependencies:
       '@tauri-apps/api': 2.0.2
 
-  '@tauri-apps/plugin-store@https://codeload.github.com/tauri-apps/tauri-plugin-store/tar.gz/ff9d772d3887481105e6f1fc1d7e92cd5c676d9f':
+  '@tauri-apps/plugin-store@https://codeload.github.com/tauri-apps/tauri-plugin-store/tar.gz/8e815652f4208c1bbb27dc4bafe1f4a0d7e97f62':
     dependencies:
       '@tauri-apps/api': 2.0.2
 
@@ -4737,6 +4748,10 @@ snapshots:
     dependencies:
       is-obj: 2.0.0
 
+  effect@3.10.6:
+    dependencies:
+      fast-check: 3.22.0
+
   electron-to-chromium@1.5.36: {}
 
   emoji-regex@8.0.0: {}
@@ -4857,6 +4872,10 @@ snapshots:
   estree-walker@2.0.2: {}
 
   extend@3.0.2: {}
+
+  fast-check@3.22.0:
+    dependencies:
+      pure-rand: 6.1.0
 
   fast-deep-equal@3.1.3: {}
 
@@ -5568,6 +5587,8 @@ snapshots:
     dependencies:
       escape-goat: 2.1.1
 
+  pure-rand@6.1.0: {}
+
   rc@1.2.8:
     dependencies:
       deep-extend: 0.6.0
@@ -6099,7 +6120,7 @@ snapshots:
 
   zod@3.23.8: {}
 
-  zustand@5.0.0-rc.2(@types/react@18.3.11)(immer@10.1.1)(react@18.3.1)(use-sync-external-store@1.2.2(react@18.3.1)):
+  zustand@5.0.1(@types/react@18.3.11)(immer@10.1.1)(react@18.3.1)(use-sync-external-store@1.2.2(react@18.3.1)):
     optionalDependencies:
       '@types/react': 18.3.11
       immer: 10.1.1
