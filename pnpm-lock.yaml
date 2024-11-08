@@ -88,7 +88,7 @@ importers:
         version: 1.7.7
       axios-tauri-api-adapter:
         specifier: ^2.0.2
-        version: 2.0.2
+        version: 2.0.3
       blurhash:
         specifier: ^2.0.5
         version: 2.0.5
@@ -1744,8 +1744,8 @@ packages:
   asynckit@0.4.0:
     resolution: {integrity: sha512-Oei9OH4tRh0YqU3GxhX79dM/mwVgvbZJaSNaRk+bshkj0S5cfHcgYakreBjrHwatXKbz+IoIdYLxrKim2MjW0Q==}
 
-  axios-tauri-api-adapter@2.0.2:
-    resolution: {integrity: sha512-xjcznnGQg8dKB0CPp8rIBeBRPsH8P2BbXW7e0rXu6VoSijmED8a0i7eqmlNZVR46AabGxkk/mAiSvx0kDxVtbQ==}
+  axios-tauri-api-adapter@2.0.3:
+    resolution: {integrity: sha512-WSsVXYrTT2QI+WETsbf4TWqxVb79PZG8R17o9weG9R43Qj2HGBo5kOdHWg1/QgeDCOXy8VDo+nv10NBw2JjSgg==}
     engines: {node: '>=16', pnpm: '>=7'}
 
   axios@1.7.7:
@@ -1959,8 +1959,8 @@ packages:
     resolution: {integrity: sha512-QM8q3zDe58hqUqjraQOmzZ1LIH9SWQJTlEKCH4kJ2oQvLZk7RbQXvtDM2XEq3fwkV9CCvvH4LA0AV+ogFsBM2Q==}
     engines: {node: '>=8'}
 
-  effect@3.10.12:
-    resolution: {integrity: sha512-+IqqTQS5+jM13qZHzfAX+RpCGOl0oBWIR7nec/zq76HyN/hdGQYnfr/LLLOVxUt8uIbckBea8rkwBKrQ0Hb/aA==}
+  effect@3.10.13:
+    resolution: {integrity: sha512-7L8BGZldtMpXx5mw5MRTsnW6j4zpa+K6Rn2pU5CJ4LyH9jm2Hopfgaq3YurkTmv5HWpCQnhqCkMhbaSG3Nporw==}
 
   electron-to-chromium@1.5.52:
     resolution: {integrity: sha512-xtoijJTZ+qeucLBDNztDOuQBE1ksqjvNjvqFoST3nGC7fSpqJ+X6BdTBaY5BHG+IhWWmpc6b/KfpeuEDupEPOQ==}
@@ -3693,7 +3693,7 @@ snapshots:
       ast-types: 0.14.2
       cli-high: 0.4.3
       diff: 5.2.0
-      effect: 3.10.12
+      effect: 3.10.13
       nanoid: 5.0.8
       recast: 0.23.9
       xycolors: 0.1.2
@@ -4466,7 +4466,7 @@ snapshots:
 
   asynckit@0.4.0: {}
 
-  axios-tauri-api-adapter@2.0.2:
+  axios-tauri-api-adapter@2.0.3:
     dependencies:
       '@tauri-apps/plugin-http': 2.0.1
       axios: 1.7.7
@@ -4693,7 +4693,7 @@ snapshots:
     dependencies:
       is-obj: 2.0.0
 
-  effect@3.10.12:
+  effect@3.10.13:
     dependencies:
       fast-check: 3.23.1
 
