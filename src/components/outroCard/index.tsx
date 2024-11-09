@@ -6,6 +6,7 @@ import React from "react";
 import { getTypeIcon } from "../utils/iconsCollection";
 
 import "./outroCard.scss";
+import getImageUrlsApi from "@/utils/methods/getImageUrlsApi";
 import { getUserApi } from "@jellyfin/sdk/lib/utils/api/user-api";
 import { useMutation, useQuery } from "@tanstack/react-query";
 
@@ -36,7 +37,7 @@ const OutroCard = (props: { handleShowCredits: () => void }) => {
 					<img
 						className="outro-card-content-image"
 						alt={item.Name ?? "Cover"}
-						src={api.getItemImageUrl(item.Id, "Primary", {
+						src={getImageUrlsApi(api).getItemImageUrlById(item.Id, "Primary", {
 							tag: item.ImageTags.Primary,
 							quality: 80,
 						})}

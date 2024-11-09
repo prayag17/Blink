@@ -8,6 +8,7 @@ import Typography from "@mui/material/Typography";
 import { Blurhash } from "react-blurhash";
 import { useApi } from "../../utils/store/api";
 import "./card.scss";
+import getImageUrlsApi from "@/utils/methods/getImageUrlsApi";
 
 /**
  * @typedef {Object} Props
@@ -70,7 +71,7 @@ export const ActorCard = ({
 					</div>
 					<img
 						alt={item.Name}
-						src={api.getItemImageUrl(
+						src={getImageUrlsApi(api).getItemImageUrlById(
 							seriesId ? item.SeriesId : item.Id,
 							"Primary",
 							{

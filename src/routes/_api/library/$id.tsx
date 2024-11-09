@@ -50,9 +50,10 @@ import { useWindowVirtualizer } from "@tanstack/react-virtual";
 import type { AxiosResponse } from "axios";
 import "./library.scss";
 import LibraryItemsSkeleton from "@/components/skeleton/libraryItems";
-import { createFileRoute } from "@tanstack/react-router";
+import getImageUrlsApi from "@/utils/methods/getImageUrlsApi";
 import { useApiInContext } from "@/utils/store/api";
 import { useCentralStore } from "@/utils/store/central";
+import { createFileRoute } from "@tanstack/react-router";
 
 type SortByObject = { title: string; value: ItemSortBy };
 type ViewObject = { title: string; value: BaseItemKind | "Artist" };
@@ -692,7 +693,7 @@ function LibraryView() {
 			);
 			if (temp?.[0]?.Id) {
 				setBackdrop(
-					api.getItemImageUrl(temp?.[0]?.Id, "Backdrop", {
+					getImageUrlsApi(api).getItemImageUrlById(temp?.[0]?.Id, "Backdrop", {
 						tag: temp?.[0]?.BackdropImageTags?.[0],
 					}),
 					temp?.[0]?.BackdropImageTags?.[0] ?? "none",
@@ -709,9 +710,13 @@ function LibraryView() {
 				const backdropItem = backdropItems[itemIndex];
 				// enqueueSnackbar("Running");
 				setBackdrop(
-					api?.getItemImageUrl(backdropItem.Id ?? "", "Backdrop", {
-						tag: backdropItem.BackdropImageTags?.[0],
-					}),
+					getImageUrlsApi(api).getItemImageUrlById(
+						backdropItem.Id ?? "",
+						"Backdrop",
+						{
+							tag: backdropItem.BackdropImageTags?.[0],
+						},
+					),
 					backdropItem.BackdropImageTags?.[0] ?? "none",
 				);
 			}, 14000); // Update backdrop every 14s

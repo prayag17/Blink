@@ -23,6 +23,7 @@ import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useBackdropStore } from "@/utils/store/backdrop";
 
 import { ErrorNotice } from "@/components/notices/errorNotice/errorNotice";
+import getImageUrlsApi from "@/utils/methods/getImageUrlsApi";
 import { useApiInContext } from "@/utils/store/api";
 import { useCentralStore } from "@/utils/store/central";
 import {
@@ -176,7 +177,7 @@ function Home() {
 									if (latestMedia.isSuccess && latestMedia.data.length > 0) {
 										if (latestMedia.data[now]?.ParentBackdropImageTags) {
 											setBackdrop(
-												api.getItemImageUrl(
+												getImageUrlsApi(api).getItemImageUrlById(
 													latestMedia.data[now].Id,
 													"Backdrop",
 													{
@@ -189,7 +190,7 @@ function Home() {
 											);
 										} else {
 											setBackdrop(
-												api.getItemImageUrl(
+												getImageUrlsApi(api).getItemImageUrlById(
 													latestMedia.data[now].Id,
 													"Backdrop",
 													{

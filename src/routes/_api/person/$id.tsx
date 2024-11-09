@@ -34,8 +34,9 @@ import ShowMoreText from "@/components/showMoreText";
 import "./person.scss";
 
 import IconLink from "@/components/iconLink";
-import { createFileRoute } from "@tanstack/react-router";
+import getImageUrlsApi from "@/utils/methods/getImageUrlsApi";
 import { useCentralStore } from "@/utils/store/central";
+import { createFileRoute } from "@tanstack/react-router";
 
 function TabPanel(props) {
 	const { children, value, index, ...other } = props;
@@ -311,10 +312,14 @@ function PersonTitlePage() {
 								/>
 								<img
 									alt={item.data.Name}
-									src={api.getItemImageUrl(item.data.Id, "Primary", {
-										quality: 90,
-										tag: item.data.ImageTags.Primary,
-									})}
+									src={getImageUrlsApi(api).getItemImageUrlById(
+										item.data.Id,
+										"Primary",
+										{
+											quality: 90,
+											tag: item.data.ImageTags.Primary,
+										},
+									)}
 									onLoad={(e) => {
 										e.currentTarget.style.opacity = 1;
 									}}

@@ -17,6 +17,7 @@ import PlayNextButton from "@/components/buttons/playNextButton";
 import PlayPreviousButton from "@/components/buttons/playPreviousButtom";
 import QueueTrack from "@/components/queueTrack";
 import { getRuntimeMusic, secToTicks, ticksToSec } from "@/utils/date/time";
+import getImageUrlsApi from "@/utils/methods/getImageUrlsApi";
 import { getLyricsApi } from "@jellyfin/sdk/lib/utils/api/lyrics-api";
 import { useQuery } from "@tanstack/react-query";
 
@@ -84,9 +85,13 @@ function AudioPlayerRoute() {
 					{item?.ImageTags?.Primary ? (
 						<img
 							alt={item.Name ?? "Music"}
-							src={api.getItemImageUrl(item.Id, "Primary", {
-								tag: item.ImageTags.Primary,
-							})}
+							src={getImageUrlsApi(api).getItemImageUrlById(
+								item.Id,
+								"Primary",
+								{
+									tag: item.ImageTags.Primary,
+								},
+							)}
 							className="audio-info-image"
 						/>
 					) : (

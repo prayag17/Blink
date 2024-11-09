@@ -18,6 +18,7 @@ import { getRuntimeMusic, secToTicks, ticksToSec } from "@/utils/date/time";
 import PlayNextButton from "@/components/buttons/playNextButton";
 import PlayPreviousButton from "@/components/buttons/playPreviousButtom";
 import QueueButton from "@/components/buttons/queueButton";
+import getImageUrlsApi from "@/utils/methods/getImageUrlsApi";
 import { useApiInContext } from "@/utils/store/api";
 import { useCentralStore } from "@/utils/store/central";
 import { playItemFromQueue } from "@/utils/store/playback";
@@ -80,56 +81,80 @@ const AudioPlayer = () => {
 							album: currentTrackItem.Album ?? "",
 							artwork: [
 								{
-									src: api.getItemImageUrl(currentTrackItem.Id, "Primary", {
-										tag: currentTrackItem.ImageTags?.Primary,
-										width: 96,
-										height: 96,
-									}),
+									src: getImageUrlsApi(api).getItemImageUrlById(
+										currentTrackItem.Id,
+										"Primary",
+										{
+											tag: currentTrackItem.ImageTags?.Primary,
+											width: 96,
+											height: 96,
+										},
+									),
 									sizes: "96x96",
 									type: "image/jpeg",
 								},
 								{
-									src: api.getItemImageUrl(currentTrackItem.Id, "Primary", {
-										tag: currentTrackItem.ImageTags?.Primary,
-										width: 128,
-										height: 128,
-									}),
+									src: getImageUrlsApi(api).getItemImageUrlById(
+										currentTrackItem.Id,
+										"Primary",
+										{
+											tag: currentTrackItem.ImageTags?.Primary,
+											width: 128,
+											height: 128,
+										},
+									),
 									sizes: "128x128",
 									type: "image/jpeg",
 								},
 								{
-									src: api.getItemImageUrl(currentTrackItem.Id, "Primary", {
-										tag: currentTrackItem.ImageTags?.Primary,
-										width: 192,
-										height: 192,
-									}),
+									src: getImageUrlsApi(api).getItemImageUrlById(
+										currentTrackItem.Id,
+										"Primary",
+										{
+											tag: currentTrackItem.ImageTags?.Primary,
+											width: 192,
+											height: 192,
+										},
+									),
 									sizes: "192x192",
 									type: "image/jpeg",
 								},
 								{
-									src: api.getItemImageUrl(currentTrackItem.Id, "Primary", {
-										tag: currentTrackItem.ImageTags?.Primary,
-										width: 256,
-										height: 256,
-									}),
+									src: getImageUrlsApi(api).getItemImageUrlById(
+										currentTrackItem.Id,
+										"Primary",
+										{
+											tag: currentTrackItem.ImageTags?.Primary,
+											width: 256,
+											height: 256,
+										},
+									),
 									sizes: "256x256",
 									type: "image/jpeg",
 								},
 								{
-									src: api.getItemImageUrl(currentTrackItem.Id, "Primary", {
-										tag: currentTrackItem.ImageTags?.Primary,
-										width: 384,
-										height: 384,
-									}),
+									src: getImageUrlsApi(api).getItemImageUrlById(
+										currentTrackItem.Id,
+										"Primary",
+										{
+											tag: currentTrackItem.ImageTags?.Primary,
+											width: 384,
+											height: 384,
+										},
+									),
 									sizes: "384x384",
 									type: "image/jpeg",
 								},
 								{
-									src: api.getItemImageUrl(currentTrackItem.Id, "Primary", {
-										tag: currentTrackItem.ImageTags?.Primary,
-										width: 512,
-										height: 512,
-									}),
+									src: getImageUrlsApi(api).getItemImageUrlById(
+										currentTrackItem.Id,
+										"Primary",
+										{
+											tag: currentTrackItem.ImageTags?.Primary,
+											width: 512,
+											height: 512,
+										},
+									),
 									sizes: "512x512",
 									type: "image/jpeg",
 								},
@@ -199,15 +224,18 @@ const AudioPlayer = () => {
 					<img
 						alt={tracks[currentTrack]?.Name ?? "track"}
 						className="audio-player-image"
-						src={api?.getItemImageUrl(
-							!item?.ImageTags.Primary ? item?.AlbumId : item?.Id,
-							"Primary",
-							{
-								quality: 85,
-								fillHeight: 462,
-								fillWidth: 462,
-							},
-						)}
+						src={
+							!!api?.configuration?.apiKey &&
+							getImageUrlsApi(api).getItemImageUrlById(
+								!item?.ImageTags.Primary ? item?.AlbumId : item?.Id,
+								"Primary",
+								{
+									quality: 85,
+									fillHeight: 462,
+									fillWidth: 462,
+								},
+							)
+						}
 					/>
 					<span className="material-symbols-rounded audio-player-image-icon">
 						music_note

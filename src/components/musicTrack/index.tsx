@@ -6,6 +6,7 @@ import LikeButton from "../buttons/likeButton";
 import PlayButton from "../buttons/playButton";
 import TextLink from "../textLink";
 import "./musicTrack.scss";
+import getImageUrlsApi from "@/utils/methods/getImageUrlsApi";
 import { useApiInContext } from "@/utils/store/api";
 import type { BaseItemDto } from "@jellyfin/sdk/lib/generated-client";
 import type { QueryKey } from "@tanstack/react-query";
@@ -60,7 +61,7 @@ const MusicTrack = ({
 				</div>
 				<img
 					alt={item.Name}
-					src={api.getItemImageUrl(
+					src={getImageUrlsApi(api).getItemImageUrlById(
 						Object.keys(item.ImageTags).length === 0 ? item.AlbumId : item.Id,
 						"Primary",
 						{

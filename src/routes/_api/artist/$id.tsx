@@ -36,8 +36,9 @@ import "./artist.scss";
 
 import IconLink from "@/components/iconLink";
 import { getTypeIcon } from "@/components/utils/iconsCollection";
-import { createFileRoute } from "@tanstack/react-router";
+import getImageUrlsApi from "@/utils/methods/getImageUrlsApi";
 import { useCentralStore } from "@/utils/store/central";
+import { createFileRoute } from "@tanstack/react-router";
 
 function TabPanel(props) {
 	const { children, value, index, ...other } = props;
@@ -219,9 +220,13 @@ function ArtistTitlePage() {
 					<div className="item-hero-backdrop-container">
 						<motion.img
 							alt={item.data.Name}
-							src={api.getItemImageUrl(item.data.Id, "Backdrop", {
-								tag: item.data.BackdropImageTags[0],
-							})}
+							src={getImageUrlsApi(api).getItemImageUrlById(
+								item.data.Id,
+								"Backdrop",
+								{
+									tag: item.data.BackdropImageTags[0],
+								},
+							)}
 							className="item-hero-backdrop"
 							onLoad={(e) => {
 								e.currentTarget.style.opacity = 1;
@@ -249,10 +254,14 @@ function ArtistTitlePage() {
 								/>
 								<img
 									alt={item.data.Name}
-									src={api.getItemImageUrl(item.data.Id, "Primary", {
-										quality: 90,
-										tag: item.data.ImageTags.Primary,
-									})}
+									src={getImageUrlsApi(api).getItemImageUrlById(
+										item.data.Id,
+										"Primary",
+										{
+											quality: 90,
+											tag: item.data.ImageTags.Primary,
+										},
+									)}
 									onLoad={(e) => {
 										e.currentTarget.style.opacity = 1;
 									}}
@@ -269,11 +278,15 @@ function ArtistTitlePage() {
 						{Object.keys(item.data.ImageTags).includes("Logo") ? (
 							<img
 								alt={item.data.Name}
-								src={api.getItemImageUrl(item.data.Id, "Logo", {
-									quality: 90,
-									fillWidth: 592,
-									fillHeight: 592,
-								})}
+								src={getImageUrlsApi(api).getItemImageUrlById(
+									item.data.Id,
+									"Logo",
+									{
+										quality: 90,
+										fillWidth: 592,
+										fillHeight: 592,
+									},
+								)}
 								onLoad={(e) => {
 									e.currentTarget.style.opacity = 1;
 								}}

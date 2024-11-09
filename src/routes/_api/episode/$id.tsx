@@ -64,8 +64,9 @@ import sdrIcon from "@/assets/icons/sdr.svg";
 import type MediaQualityInfo from "@/utils/types/mediaQualityInfo";
 
 import IconLink from "@/components/iconLink";
-import { Link, createFileRoute } from "@tanstack/react-router";
+import getImageUrlsApi from "@/utils/methods/getImageUrlsApi";
 import { useCentralStore } from "@/utils/store/central";
+import { Link, createFileRoute } from "@tanstack/react-router";
 
 function TabPanel(props) {
 	const { children, value, index, ...other } = props;
@@ -350,7 +351,7 @@ function EpisodeTitlePage() {
 						{item.data.ParentBackdropImageTags?.length ? (
 							<motion.img
 								alt={item.data.Name}
-								src={api.getItemImageUrl(
+								src={getImageUrlsApi(api).getItemImageUrlById(
 									item.data.ParentBackdropItemId,
 									"Backdrop",
 									{
@@ -397,10 +398,14 @@ function EpisodeTitlePage() {
 								/>
 								<img
 									alt={item.data.Name}
-									src={api.getItemImageUrl(item.data.Id, "Primary", {
-										quality: 90,
-										tag: item.data.ImageTags.Primary,
-									})}
+									src={getImageUrlsApi(api).getItemImageUrlById(
+										item.data.Id,
+										"Primary",
+										{
+											quality: 90,
+											tag: item.data.ImageTags.Primary,
+										},
+									)}
 									onLoad={(e) => {
 										e.currentTarget.style.opacity = 1;
 									}}
@@ -428,11 +433,15 @@ function EpisodeTitlePage() {
 							{item.data.ParentLogoItemId?.length > 0 ? (
 								<img
 									alt={item.data.SeriesName}
-									src={api.getItemImageUrl(item.data.ParentLogoItemId, "Logo", {
-										quality: 90,
-										fillWidth: 592,
-										fillHeight: 592,
-									})}
+									src={getImageUrlsApi(api).getItemImageUrlById(
+										item.data.ParentLogoItemId,
+										"Logo",
+										{
+											quality: 90,
+											fillWidth: 592,
+											fillHeight: 592,
+										},
+									)}
 									onLoad={(e) => {
 										e.currentTarget.style.opacity = 1;
 									}}
@@ -838,11 +847,15 @@ function EpisodeTitlePage() {
 											{actor.PrimaryImageTag ? (
 												<img
 													alt={actor.Name}
-													src={api.getItemImageUrl(actor.Id, "Primary", {
-														quality: 80,
-														fillWidth: 200,
-														fillHeight: 200,
-													})}
+													src={getImageUrlsApi(api).getItemImageUrlById(
+														actor.Id,
+														"Primary",
+														{
+															quality: 80,
+															fillWidth: 200,
+															fillHeight: 200,
+														},
+													)}
 													className="item-detail-cast-card-image"
 												/>
 											) : (
@@ -884,11 +897,15 @@ function EpisodeTitlePage() {
 											{actor.PrimaryImageTag ? (
 												<img
 													alt={actor.Name}
-													src={api.getItemImageUrl(actor.Id, "Primary", {
-														quality: 80,
-														fillWidth: 200,
-														fillHeight: 200,
-													})}
+													src={getImageUrlsApi(api).getItemImageUrlById(
+														actor.Id,
+														"Primary",
+														{
+															quality: 80,
+															fillWidth: 200,
+															fillHeight: 200,
+														},
+													)}
 													className="item-detail-cast-card-image"
 												/>
 											) : (
@@ -930,11 +947,15 @@ function EpisodeTitlePage() {
 											{actor.PrimaryImageTag ? (
 												<img
 													alt={actor.Name}
-													src={api.getItemImageUrl(actor.Id, "Primary", {
-														quality: 80,
-														fillWidth: 200,
-														fillHeight: 200,
-													})}
+													src={getImageUrlsApi(api).getItemImageUrlById(
+														actor.Id,
+														"Primary",
+														{
+															quality: 80,
+															fillWidth: 200,
+															fillHeight: 200,
+														},
+													)}
 													className="item-detail-cast-card-image"
 												/>
 											) : (
@@ -976,11 +997,15 @@ function EpisodeTitlePage() {
 											{actor.PrimaryImageTag ? (
 												<img
 													alt={actor.Name}
-													src={api.getItemImageUrl(actor.Id, "Primary", {
-														quality: 80,
-														fillWidth: 200,
-														fillHeight: 200,
-													})}
+													src={getImageUrlsApi(api).getItemImageUrlById(
+														actor.Id,
+														"Primary",
+														{
+															quality: 80,
+															fillWidth: 200,
+															fillHeight: 200,
+														},
+													)}
 													className="item-detail-cast-card-image"
 												/>
 											) : (

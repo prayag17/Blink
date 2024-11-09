@@ -10,6 +10,7 @@ import brokenImage from "/assetsStatic/broken-image.png?url";
 import { save } from "@tauri-apps/plugin-dialog";
 
 import "./photos.scss";
+import getImageUrlsApi from "@/utils/methods/getImageUrlsApi";
 import {
 	Button,
 	CircularProgress,
@@ -48,7 +49,7 @@ function PhotosPlayer() {
 					<img
 						src={
 							item.Id
-								? api.getItemImageUrl(item.Id, "Primary", {
+								? getImageUrlsApi(api).getItemImageUrl(item.Id, "Primary", {
 										// width: 250,
 										fillWidth: 250,
 										quality: 70,
@@ -90,8 +91,6 @@ function PhotosPlayer() {
 		setContextMenu(null);
 	}, []);
 
-	const [downloadProgress, setDownloadProgress] = useState(0);
-
 	const handleImageDownload = useCallback(async () => {
 		const pathToSave = await save({
 			filters: [
@@ -107,7 +106,7 @@ function PhotosPlayer() {
 				`${api.basePath}/Items/${currentPhoto?.Id}/Download?api_key=${api.accessToken}`,
 				pathToSave,
 			);
-			enqueueSnackbar("Image downloaded!", { variant: "success" });
+			enqueueSnackbar("Image download queued.", { variant: "info" });
 		}
 	}, [currentIndex]);
 

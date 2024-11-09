@@ -59,9 +59,10 @@ import { setBackdrop, useBackdropStore } from "@/utils/store/backdrop";
 
 import IconLink from "@/components/iconLink";
 import EpisodeSkeleton from "@/components/skeleton/episode";
+import getImageUrlsApi from "@/utils/methods/getImageUrlsApi";
+import { useCentralStore } from "@/utils/store/central";
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { Link } from "@tanstack/react-router";
-import { useCentralStore } from "@/utils/store/central";
 
 function TabPanel(props) {
 	const { children, value, index, ...other } = props;
@@ -228,13 +229,13 @@ function SeriesTitlePage() {
 	useLayoutEffect(() => {
 		if (item.isSuccess) {
 			// setBackdropImage({
-			// 	url: api.getItemImageUrl(item.data?.Id, "Backdrop", {
+			// 	url: getImageUrlsApi(api).getItemImageUrlById(item.data?.Id, "Backdrop", {
 			// 		tag: item.data?.BackdropImageTags[0],
 			// 	}),
 			// 	key: item.data?.BackdropImageTags[0],
 			// });
 			// setBackdrop(
-			// 	api.getItemImageUrl(item.data?.Id, "Backdrop", {
+			// 	getImageUrlsApi(api).getItemImageUrlById(item.data?.Id, "Backdrop", {
 			// 		tag: item.data?.BackdropImageTags[0],
 			// 	}),
 			// 	item.data.Id,
@@ -275,31 +276,43 @@ function SeriesTitlePage() {
 		) {
 			sessionStorage.setItem(
 				`backdrop-${item.data?.Id}`,
-				api.getItemImageUrl(currentSeasonItem.data.Id, "Backdrop", {
-					tag: currentSeasonItem.data.BackdropImageTags?.[0],
-				}),
+				getImageUrlsApi(api).getItemImageUrlById(
+					currentSeasonItem.data.Id,
+					"Backdrop",
+					{
+						tag: currentSeasonItem.data.BackdropImageTags?.[0],
+					},
+				),
 			);
 			sessionStorage.setItem(
 				`backdrop-${item.data?.Id}-key`,
 				currentSeasonItem.data.BackdropImageTags?.[0],
 			);
 			setBackdropImage({
-				url: api.getItemImageUrl(currentSeasonItem.data.Id, "Backdrop", {
-					tag: currentSeasonItem.data.BackdropImageTags?.[0],
-				}),
+				url: getImageUrlsApi(api).getItemImageUrlById(
+					currentSeasonItem.data.Id,
+					"Backdrop",
+					{
+						tag: currentSeasonItem.data.BackdropImageTags?.[0],
+					},
+				),
 				key: currentSeasonItem.data.BackdropImageTags?.[0],
 			});
 			setBackdrop(
-				api.getItemImageUrl(currentSeasonItem.data.Id, "Backdrop", {
-					tag: currentSeasonItem.data.BackdropImageTags?.[0],
-				}),
+				getImageUrlsApi(api).getItemImageUrlById(
+					currentSeasonItem.data.Id,
+					"Backdrop",
+					{
+						tag: currentSeasonItem.data.BackdropImageTags?.[0],
+					},
+				),
 				currentSeasonItem.data.BackdropImageTags?.[0],
 			);
 			setBackdropImageLoaded(false);
 		} else if (item.isSuccess && item.data?.BackdropImageTags?.length > 0) {
 			sessionStorage.setItem(
 				`backdrop-${item.data?.Id}`,
-				api.getItemImageUrl(item.data.Id, "Backdrop", {
+				getImageUrlsApi(api).getItemImageUrlById(item.data.Id, "Backdrop", {
 					tag: item.data.BackdropImageTags?.[0],
 				}),
 			);
@@ -311,13 +324,17 @@ function SeriesTitlePage() {
 				setBackdropImageLoaded(false); // Reset Backdrop image load status if previous image is diff then new image
 			}
 			setBackdropImage({
-				url: api.getItemImageUrl(item.data?.Id, "Backdrop", {
-					tag: item.data?.BackdropImageTags?.[0],
-				}),
+				url: getImageUrlsApi(api).getItemImageUrlById(
+					item.data?.Id,
+					"Backdrop",
+					{
+						tag: item.data?.BackdropImageTags?.[0],
+					},
+				),
 				key: item.data?.BackdropImageTags?.[0],
 			});
 			setBackdrop(
-				api.getItemImageUrl(item.data.Id, "Backdrop", {
+				getImageUrlsApi(api).getItemImageUrlById(item.data.Id, "Backdrop", {
 					tag: item.data.BackdropImageTags?.[0],
 				}),
 				item.data.BackdropImageTags?.[0],
@@ -430,10 +447,14 @@ function SeriesTitlePage() {
 								/>
 								<img
 									alt={item.data.Name}
-									src={api.getItemImageUrl(item.data.Id, "Primary", {
-										quality: 90,
-										tag: item.data.ImageTags.Primary,
-									})}
+									src={getImageUrlsApi(api).getItemImageUrlById(
+										item.data.Id,
+										"Primary",
+										{
+											quality: 90,
+											tag: item.data.ImageTags.Primary,
+										},
+									)}
 									onLoad={(e) => {
 										e.currentTarget.style.opacity = 1;
 									}}
@@ -450,11 +471,15 @@ function SeriesTitlePage() {
 						{Object.keys(item.data.ImageTags).includes("Logo") ? (
 							<img
 								alt={item.data.Name}
-								src={api.getItemImageUrl(item.data.Id, "Logo", {
-									quality: 90,
-									fillWidth: 592,
-									fillHeight: 592,
-								})}
+								src={getImageUrlsApi(api).getItemImageUrlById(
+									item.data.Id,
+									"Logo",
+									{
+										quality: 90,
+										fillWidth: 592,
+										fillHeight: 592,
+									},
+								)}
 								onLoad={(e) => {
 									e.currentTarget.style.opacity = 1;
 								}}
@@ -664,11 +689,15 @@ function SeriesTitlePage() {
 												{actor.PrimaryImageTag ? (
 													<img
 														alt={actor.Name}
-														src={api.getItemImageUrl(actor.Id, "Primary", {
-															quality: 80,
-															fillWidth: 200,
-															fillHeight: 200,
-														})}
+														src={getImageUrlsApi(api).getItemImageUrlById(
+															actor.Id,
+															"Primary",
+															{
+																quality: 80,
+																fillWidth: 200,
+																fillHeight: 200,
+															},
+														)}
 														className="item-detail-cast-card-image"
 													/>
 												) : (
@@ -712,11 +741,15 @@ function SeriesTitlePage() {
 												{actor.PrimaryImageTag ? (
 													<img
 														alt={actor.Name}
-														src={api.getItemImageUrl(actor.Id, "Primary", {
-															quality: 80,
-															fillWidth: 200,
-															fillHeight: 200,
-														})}
+														src={getImageUrlsApi(api).getItemImageUrlById(
+															actor.Id,
+															"Primary",
+															{
+																quality: 80,
+																fillWidth: 200,
+																fillHeight: 200,
+															},
+														)}
 														className="item-detail-cast-card-image"
 													/>
 												) : (
@@ -760,11 +793,15 @@ function SeriesTitlePage() {
 												{actor.PrimaryImageTag ? (
 													<img
 														alt={actor.Name}
-														src={api.getItemImageUrl(actor.Id, "Primary", {
-															quality: 80,
-															fillWidth: 200,
-															fillHeight: 200,
-														})}
+														src={getImageUrlsApi(api).getItemImageUrlById(
+															actor.Id,
+															"Primary",
+															{
+																quality: 80,
+																fillWidth: 200,
+																fillHeight: 200,
+															},
+														)}
 														className="item-detail-cast-card-image"
 													/>
 												) : (
@@ -808,11 +845,15 @@ function SeriesTitlePage() {
 												{actor.PrimaryImageTag ? (
 													<img
 														alt={actor.Name}
-														src={api.getItemImageUrl(actor.Id, "Primary", {
-															quality: 80,
-															fillWidth: 200,
-															fillHeight: 200,
-														})}
+														src={getImageUrlsApi(api).getItemImageUrlById(
+															actor.Id,
+															"Primary",
+															{
+																quality: 80,
+																fillWidth: 200,
+																fillHeight: 200,
+															},
+														)}
 														className="item-detail-cast-card-image"
 													/>
 												) : (
@@ -1035,10 +1076,14 @@ function SeriesTitlePage() {
 												</div>
 												<img
 													alt={episode.Name}
-													src={api.getItemImageUrl(episode.Id, "Primary", {
-														tag: episode.ImageTags.Primary,
-														fillHeight: 300,
-													})}
+													src={getImageUrlsApi(api).getItemImageUrlById(
+														episode.Id,
+														"Primary",
+														{
+															tag: episode.ImageTags.Primary,
+															fillHeight: 300,
+														},
+													)}
 													className="item-detail-episode-image"
 													onLoad={(e) => {
 														e.target.style.opacity = 1;

@@ -9,6 +9,7 @@ import { useApiInContext } from "@/utils/store/api";
 import type { BaseItemDto } from "@jellyfin/sdk/lib/generated-client";
 import CarouselSlide from "../carouselSlide";
 
+import getImageUrlsApi from "@/utils/methods/getImageUrlsApi";
 import ReactMultiCarousel from "react-multi-carousel";
 import Slider from "../Slider";
 import { getTypeIcon } from "../utils/iconsCollection";
@@ -63,51 +64,55 @@ const Carousel = ({
 		},
 	};
 
+	
+
 	// Memoize the content mapping
 	const sliderContent = useMemo(() => {
-		return content.map((item, index) => (
-			<motion.div
-				className={
-					currentSlide === index
-						? "carousel-indicator active"
-						: "carousel-indicator"
-				}
-				layout
-				initial={{
-					height: "4.6em",
-				}}
-				whileHover={{
-					height: "5.5em",
-				}}
-				transition={{
-					duration: 0.05,
-				}}
-				key={item.Id}
-				onClick={() => {
-					if (currentSlide > index) {
-						setDirection("left");
-					} else if (currentSlide <= index) {
-						setDirection("right");
+		return content.map((item, index) => {
+			return (
+				<motion.div
+					className={
+						currentSlide === index
+							? "carousel-indicator active"
+							: "carousel-indicator"
 					}
-					setCurrentSlide(index);
-				}}
-			>
-				{item.ImageTags?.Thumb ? (
-					<img
-						src={api.getItemImageUrl(item.Id, "Thumb", {
-							tag: item.ImageTags.Primary,
-							fillWidth: 300,
-						})}
-						alt={item.Name ?? "item-image"}
-						className="carousel-indicator-image"
-					/>
-				) : (
-					<div className="carousel-indicator-icon">
-						{getTypeIcon(item.Type)}
-					</div>
-				)}
-			</motion.div>
-		));
+					layout
+					initial={{
+						height: "4.6em",
+					}}
+					whileHover={{
+						height: "5.5em",
+					}}
+					transition={{
+						duration: 0.05,
+					}}
+					key={item.Id}
+					onClick={() => {
+						if (currentSlide > index) {
+							setDirection("left");
+						} else if (currentSlide <= index) {
+							setDirection("right");
+						}
+						setCurrentSlide(index);
+					}}
+				>
+					{item.ImageTags?.Thumb ? (
+						<img
+							src={getImageUrlsApi(api).getItemImageUrlById(item.Id, "Thumb", {
+								tag: item.ImageTags.Primary,
+								fillWidth: 300,
+							})}
+							alt={item.Name ?? "item-image"}
+							className="carousel-indicator-image"
+						/>
+					) : (
+						<div className="carousel-indicator-icon">
+							{getTypeIcon(item.Type)}
+						</div>
+					)}
+				</motion.div>
+			);
+		});
 	}, [content, currentSlide, api, setDirection]);
 
 	const handleDragEnd = useCallback(

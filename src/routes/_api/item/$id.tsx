@@ -68,8 +68,9 @@ import type MediaQualityInfo from "@/utils/types/mediaQualityInfo";
 
 import IconLink from "@/components/iconLink";
 import { queryClient } from "@/main";
-import { Link, createFileRoute } from "@tanstack/react-router";
+import getImageUrlsApi from "@/utils/methods/getImageUrlsApi";
 import { useCentralStore } from "@/utils/store/central";
+import { Link, createFileRoute } from "@tanstack/react-router";
 
 function TabPanel(props) {
 	const { children, value, index, ...other } = props;
@@ -372,9 +373,13 @@ function ItemDetail() {
 						{item.data.BackdropImageTags?.length ? (
 							<motion.img
 								alt={item.data.Name}
-								src={api.getItemImageUrl(item.data.Id, "Backdrop", {
-									tag: item.data.BackdropImageTags[0],
-								})}
+								src={getImageUrlsApi(api).getItemImageUrlById(
+									item.data.Id,
+									"Backdrop",
+									{
+										tag: item.data.BackdropImageTags[0],
+									},
+								)}
 								className="item-hero-backdrop"
 								onLoad={(e) => {
 									e.currentTarget.style.opacity = 1;
@@ -415,10 +420,14 @@ function ItemDetail() {
 								/>
 								<img
 									alt={item.data.Name}
-									src={api.getItemImageUrl(item.data.Id, "Primary", {
-										quality: 90,
-										tag: item.data.ImageTags.Primary,
-									})}
+									src={getImageUrlsApi(api).getItemImageUrlById(
+										item.data.Id,
+										"Primary",
+										{
+											quality: 90,
+											tag: item.data.ImageTags.Primary,
+										},
+									)}
 									onLoad={(e) => {
 										e.currentTarget.style.opacity = 1;
 									}}
@@ -435,12 +444,16 @@ function ItemDetail() {
 						{item.data.ImageTags?.Logo ? (
 							<img
 								alt={item.data.Name}
-								src={api.getItemImageUrl(item.data.Id, "Logo", {
-									quality: 90,
-									fillWidth: 592,
-									fillHeight: 592,
-									tag: item.data.ImageTags.Logo,
-								})}
+								src={getImageUrlsApi(api).getItemImageUrlById(
+									item.data.Id,
+									"Logo",
+									{
+										quality: 90,
+										fillWidth: 592,
+										fillHeight: 592,
+										tag: item.data.ImageTags.Logo,
+									},
+								)}
 								onLoad={(e) => {
 									e.currentTarget.style.opacity = 1;
 								}}
@@ -829,11 +842,15 @@ function ItemDetail() {
 											{actor.PrimaryImageTag ? (
 												<img
 													alt={actor.Name}
-													src={api.getItemImageUrl(actor.Id, "Primary", {
-														quality: 80,
-														fillWidth: 200,
-														fillHeight: 200,
-													})}
+													src={getImageUrlsApi(api).getItemImageUrlById(
+														actor.Id,
+														"Primary",
+														{
+															quality: 80,
+															fillWidth: 200,
+															fillHeight: 200,
+														},
+													)}
 													className="item-detail-cast-card-image"
 												/>
 											) : (
@@ -872,11 +889,15 @@ function ItemDetail() {
 											{actor.PrimaryImageTag ? (
 												<img
 													alt={actor.Name}
-													src={api.getItemImageUrl(actor.Id, "Primary", {
-														quality: 80,
-														fillWidth: 200,
-														fillHeight: 200,
-													})}
+													src={getImageUrlsApi(api).getItemImageUrlById(
+														actor.Id,
+														"Primary",
+														{
+															quality: 80,
+															fillWidth: 200,
+															fillHeight: 200,
+														},
+													)}
 													className="item-detail-cast-card-image"
 												/>
 											) : (
@@ -918,11 +939,15 @@ function ItemDetail() {
 											{actor.PrimaryImageTag ? (
 												<img
 													alt={actor.Name}
-													src={api.getItemImageUrl(actor.Id, "Primary", {
-														quality: 80,
-														fillWidth: 200,
-														fillHeight: 200,
-													})}
+													src={getImageUrlsApi(api).getItemImageUrlById(
+														actor.Id,
+														"Primary",
+														{
+															quality: 80,
+															fillWidth: 200,
+															fillHeight: 200,
+														},
+													)}
 													className="item-detail-cast-card-image"
 												/>
 											) : (
@@ -964,11 +989,15 @@ function ItemDetail() {
 											{actor.PrimaryImageTag ? (
 												<img
 													alt={actor.Name}
-													src={api.getItemImageUrl(actor.Id, "Primary", {
-														quality: 80,
-														fillWidth: 200,
-														fillHeight: 200,
-													})}
+													src={getImageUrlsApi(api).getItemImageUrlById(
+														actor.Id,
+														"Primary",
+														{
+															quality: 80,
+															fillWidth: 200,
+															fillHeight: 200,
+														},
+													)}
 													className="item-detail-cast-card-image"
 												/>
 											) : (

@@ -50,9 +50,10 @@ import { useBackdropStore } from "@/utils/store/backdrop";
 import "./album.scss";
 
 import TagChip from "@/components/tagChip";
+import getImageUrlsApi from "@/utils/methods/getImageUrlsApi";
+import { useCentralStore } from "@/utils/store/central";
 import { Link, createFileRoute } from "@tanstack/react-router";
 import lyricsIcon from "../../../assets/icons/lyrics.svg";
-import { useCentralStore } from "@/utils/store/central";
 
 function TabPanel(props) {
 	const { children, value, index, ...other } = props;
@@ -302,10 +303,14 @@ function MusicAlbumTitlePage() {
 								<img
 									className="item-info-sidebar-image"
 									alt={item.data.Name ?? "Album"}
-									src={api.getItemImageUrl(item.data.Id, "Primary", {
-										tag: item.data.ImageTags.Primary,
-										quality: 90,
-									})}
+									src={getImageUrlsApi(api).getItemImageUrlById(
+										item.data.Id,
+										"Primary",
+										{
+											tag: item.data.ImageTags.Primary,
+											quality: 90,
+										},
+									)}
 								/>
 							) : (
 								<div className="item-info-sidebar-icon">
@@ -333,9 +338,13 @@ function MusicAlbumTitlePage() {
 										<img
 											className="item-info-sidebar-artist-image"
 											alt={artist.Name ?? "Artist"}
-											src={api.getItemImageUrl(artist.Id, "Primary", {
-												quality: 90,
-											})}
+											src={getImageUrlsApi(api).getItemImageUrlById(
+												artist.Id,
+												"Primary",
+												{
+													quality: 90,
+												},
+											)}
 										/>
 										<span className="material-symbols-rounded">artist</span>
 									</div>

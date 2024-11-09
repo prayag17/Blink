@@ -13,6 +13,7 @@ import { getTypeIcon } from "../utils/iconsCollection";
 import { getUserApi } from "@jellyfin/sdk/lib/utils/api/user-api";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import "./queueButton.scss";
+import getImageUrlsApi from "@/utils/methods/getImageUrlsApi";
 import { useApiInContext } from "@/utils/store/api";
 const QueueButton = () => {
 	const api = useApiInContext((s) => s.api);
@@ -96,7 +97,7 @@ const QueueButton = () => {
 									{queueItems[currentItemIndex].ImageTags?.Primary ? (
 										<img
 											className="queue-item-image"
-											src={api?.getItemImageUrl(
+											src={getImageUrlsApi(api).getItemImageUrlById(
 												queueItems[currentItemIndex]?.Id,
 												"Primary",
 												{
@@ -109,7 +110,7 @@ const QueueButton = () => {
 											?.length ?? -1) > 0 ? (
 										<img
 											className="queue-item-image"
-											src={api?.getItemImageUrl(
+											src={getImageUrlsApi(api).getItemImageUrlById(
 												queueItems[currentItemIndex]?.AlbumId,
 												"Primary",
 												{
@@ -190,17 +191,25 @@ const QueueButton = () => {
 										{item.ImageTags?.Primary ? (
 											<img
 												className="queue-item-image"
-												src={api?.getItemImageUrl(item?.Id, "Primary", {
-													tag: item.ImageTags?.Primary,
-												})}
+												src={getImageUrlsApi(api).getItemImageUrlById(
+													item?.Id,
+													"Primary",
+													{
+														tag: item.ImageTags?.Primary,
+													},
+												)}
 												alt={item.Name ?? "image"}
 											/>
 										) : (item.AlbumPrimaryImageTag?.length ?? -1) > 0 ? (
 											<img
 												className="queue-item-image"
-												src={api?.getItemImageUrl(item?.AlbumId, "Primary", {
-													tag: item.AlbumPrimaryImageTag[0],
-												})}
+												src={getImageUrlsApi(api).getItemImageUrlById(
+													item?.AlbumId,
+													"Primary",
+													{
+														tag: item.AlbumPrimaryImageTag[0],
+													},
+												)}
 												alt={item.Name ?? "image"}
 											/>
 										) : (

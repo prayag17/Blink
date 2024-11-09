@@ -1,4 +1,4 @@
-import { Store } from "@tauri-apps/plugin-store";
+import { load } from "@tauri-apps/plugin-store";
 
 export interface UserStore {
 	user: {
@@ -7,7 +7,7 @@ export interface UserStore {
 	};
 }
 
-const user = new Store(".user.dat");
+const user = await load(".user.dat", { autoSave: true });
 
 /**
  * Set User details to .user.dat

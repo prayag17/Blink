@@ -17,6 +17,7 @@ import PlayButton from "../buttons/playButton";
 import ErrorBoundary from "../errorBoundary";
 import { getTypeIcon } from "../utils/iconsCollection";
 import "./card.scss";
+import getImageUrlsApi from "@/utils/methods/getImageUrlsApi";
 import { useApiInContext } from "@/utils/store/api";
 
 const CardComponent = ({
@@ -116,7 +117,7 @@ const CardComponent = ({
 					src={
 						overrideIcon === "User"
 							? `${api.basePath}/Users/${item.Id}/Images/Primary`
-							: api.getItemImageUrl(
+							: getImageUrlsApi(api).getItemImageUrlById(
 									(seriesId ? item.SeriesId : (item.AlbumId ?? item.Id)) ?? "",
 									imageType,
 									{

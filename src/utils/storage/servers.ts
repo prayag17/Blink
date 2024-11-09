@@ -1,5 +1,5 @@
 import type { RecommendedServerInfo } from "@jellyfin/sdk";
-import { Store } from "@tauri-apps/plugin-store";
+import { load } from "@tauri-apps/plugin-store";
 
 export interface ServerInfo extends RecommendedServerInfo {
 	id: string;
@@ -10,7 +10,7 @@ export interface ServerStore {
 	servers: ServerInfo[];
 }
 
-const store = new Store(".servers.dat");
+const store = await load(".servers.dat", { autoSave: true });
 
 /**
  * Set server in .servers.dat

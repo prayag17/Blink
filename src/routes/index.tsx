@@ -6,6 +6,7 @@ import React from "react";
 
 export const Route = createFileRoute("/")({
 	beforeLoad: async () => {
+		console.log("Hello");
 		const currentServerId = await getDefaultServer();
 		const userOnDisk = await getUser();
 		if (currentServerId) {

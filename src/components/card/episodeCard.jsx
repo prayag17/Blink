@@ -10,6 +10,7 @@ import { Blurhash } from "react-blurhash";
 import "./card.scss";
 
 import { getRuntimeCompact } from "@/utils/date/time";
+import getImageUrlsApi from "@/utils/methods/getImageUrlsApi";
 import { useApiInContext } from "@/utils/store/api";
 import { useNavigate, useRouteContext } from "@tanstack/react-router";
 import LikeButton from "../buttons/likeButton";
@@ -87,7 +88,7 @@ export const EpisodeCard = ({
 					</div>
 					<img
 						alt={item.Name}
-						src={api.getItemImageUrl(item.Id, "Primary", {
+						src={getImageUrlsApi(api).getItemImageUrlById(item.Id, "Primary", {
 							quality: 90,
 							fillHeight: 512,
 							fillWidth: 512,
