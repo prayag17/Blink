@@ -90,7 +90,7 @@ const Slider = ({
 			scrollPosition - scrollOffset - visibleItems * cardWidth,
 			0,
 		);
-		setX.start({
+		setX({
 			from: { x: scrollPosition },
 			to: { x: newX },
 			onChange: (results) => {
@@ -123,7 +123,7 @@ const Slider = ({
 			scrollPosition - scrollOffset + visibleItems * cardWidth,
 			containerRef.current?.scrollWidth ?? 0 - clientWidth,
 		);
-		setX.start({
+		setX({
 			from: { x: scrollPosition },
 			to: { x: newX },
 			onChange: (results) => {
