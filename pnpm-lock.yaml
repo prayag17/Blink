@@ -67,7 +67,7 @@ importers:
         version: 2.0.0
       '@tauri-apps/plugin-store':
         specifier: github:tauri-apps/tauri-plugin-store#v2
-        version: https://codeload.github.com/tauri-apps/tauri-plugin-store/tar.gz/7b5225289975065d1aac72c3b0a436d111efef4c
+        version: https://codeload.github.com/tauri-apps/tauri-plugin-store/tar.gz/f8b81577000e2f9a57f0715261a8f1e5b66211ca
       '@tauri-apps/plugin-updater':
         specifier: 2.0.0
         version: 2.0.0
@@ -105,8 +105,8 @@ importers:
         specifier: ^4.17.21
         version: 4.17.21
       material-symbols:
-        specifier: ^0.26.0
-        version: 0.26.0
+        specifier: ^0.27.0
+        version: 0.27.0
       million:
         specifier: ^3.1.11
         version: 3.1.11(rollup@4.26.0)
@@ -1618,8 +1618,8 @@ packages:
   '@tauri-apps/plugin-process@2.0.0':
     resolution: {integrity: sha512-OYzi0GnkrF4NAnsHZU7U3tjSoP0PbeAlO7T1Z+vJoBUH9sFQ1NSLqWYWQyf8hcb3gVWe7P1JggjiskO+LST1ug==}
 
-  '@tauri-apps/plugin-store@https://codeload.github.com/tauri-apps/tauri-plugin-store/tar.gz/7b5225289975065d1aac72c3b0a436d111efef4c':
-    resolution: {tarball: https://codeload.github.com/tauri-apps/tauri-plugin-store/tar.gz/7b5225289975065d1aac72c3b0a436d111efef4c}
+  '@tauri-apps/plugin-store@https://codeload.github.com/tauri-apps/tauri-plugin-store/tar.gz/f8b81577000e2f9a57f0715261a8f1e5b66211ca':
+    resolution: {tarball: https://codeload.github.com/tauri-apps/tauri-plugin-store/tar.gz/f8b81577000e2f9a57f0715261a8f1e5b66211ca}
     version: 2.1.0
 
   '@tauri-apps/plugin-updater@2.0.0':
@@ -2302,8 +2302,8 @@ packages:
   markdown-table@3.0.4:
     resolution: {integrity: sha512-wiYz4+JrLyb/DqW2hkFJxP7Vd7JuTDm77fvbM8VfEQdmSMqcImWeeRbHwZjBjIFki/VaMK2BhFi7oUUZeM5bqw==}
 
-  material-symbols@0.26.0:
-    resolution: {integrity: sha512-7WefpjuZLsXjE4MHlbi7QVca9y6M45YJws8oC3l7UITfpGDxVwEddQaaqYqtGMGVRFeBw/dIxmlazR5eeZH0rg==}
+  material-symbols@0.27.0:
+    resolution: {integrity: sha512-nRHpnw2Cz7eNl6GptgHHhkjauL0zvkYsuiqy1HBifOYCY4fdbZ/PwtdZN4RNmwA+9jQPoymvlArVPPX5nYTdZg==}
 
   mdast-util-find-and-replace@3.0.1:
     resolution: {integrity: sha512-SG21kZHGC3XRTSUhtofZkBzZTJNM5ecCi0SK2IMKmSXR8vO3peL+kb1O0z7Zl83jKtutG4k5Wv/W7V3/YHvzPA==}
@@ -4279,7 +4279,7 @@ snapshots:
     dependencies:
       '@tauri-apps/api': 2.1.1
 
-  '@tauri-apps/plugin-store@https://codeload.github.com/tauri-apps/tauri-plugin-store/tar.gz/7b5225289975065d1aac72c3b0a436d111efef4c':
+  '@tauri-apps/plugin-store@https://codeload.github.com/tauri-apps/tauri-plugin-store/tar.gz/f8b81577000e2f9a57f0715261a8f1e5b66211ca':
     dependencies:
       '@tauri-apps/api': 2.1.1
 
@@ -4988,7 +4988,7 @@ snapshots:
 
   markdown-table@3.0.4: {}
 
-  material-symbols@0.26.0: {}
+  material-symbols@0.27.0: {}
 
   mdast-util-find-and-replace@3.0.1:
     dependencies:
