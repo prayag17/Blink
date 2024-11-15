@@ -333,6 +333,8 @@ function VideoPlayer() {
 	}, [item?.Id]);
 
 	useEffect(() => {
+		console.log(mediaSource.subtitle.enable);
+
 		if (player.current?.getInternalPlayer() && mediaSource.subtitle.enable) {
 			let jassubRenderer: JASSUB | undefined;
 			if (
@@ -367,6 +369,17 @@ function VideoPlayer() {
 					jassubRenderer.destroy();
 				} // Remove JASSUB renderer when track changes to fix duplicate renders
 			};
+		}
+		if (
+			player.current?.getInternalPlayer() &&
+			mediaSource.subtitle.enable === false
+		) {
+			// @ts-ignore internalPlayer here provides the HTML video player element
+			const videoElem: HTMLMediaElement =
+				player.current.getInternalPlayer() as HTMLMediaElement;
+			for (const i of videoElem.textTracks) {
+				i.mode = "hidden";
+			}
 		}
 	}, [
 		mediaSource.subtitle.track,
@@ -584,10 +597,9 @@ function VideoPlayer() {
 	) => {
 		startSubtitleChange(() => {
 			if (mediaSource.subtitle.allTracks) {
-				changeSubtitleTrack(
-					toNumber(e.target.value),
-					mediaSource.subtitle.allTracks,
-				);
+				changeSubtitleTrack(toNumber(e.target.value), mediaSource.subtitle.allTracks);
+				console.log(mediaSource.subtitle);
+				setSettingsMenu(null);
 			}
 		});
 	};

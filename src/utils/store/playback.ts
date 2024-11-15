@@ -279,7 +279,7 @@ export const changeSubtitleTrack = (
 		track: trackIndex,
 		format: requiredSubtitle?.[0]?.Codec,
 		allTracks,
-		enable: true,
+		enable: trackIndex !== -1,
 	};
 	usePlaybackStore.setState(prevState);
 };
