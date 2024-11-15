@@ -49,7 +49,7 @@ function PhotosPlayer() {
 					<img
 						src={
 							item.Id
-								? getImageUrlsApi(api).getItemImageUrl(item.Id, "Primary", {
+								? getImageUrlsApi(api).getItemImageUrlById(item.Id, "Primary", {
 										// width: 250,
 										fillWidth: 250,
 										quality: 70,

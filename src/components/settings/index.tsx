@@ -10,21 +10,16 @@ import {
 	DialogContent,
 	DialogTitle,
 	Fab,
-	FormControlLabel,
 	IconButton,
-	LinearProgress,
 	Link,
 	Skeleton,
-	Switch,
 	Tab,
 	Tabs,
 	TextField,
 	Typography,
-	styled,
-	withStyles,
 } from "@mui/material";
-import { AnimatePresence, motion, transform } from "framer-motion";
-import React, { useEffect, useState, useMemo, useCallback } from "react";
+import { AnimatePresence, motion } from "framer-motion";
+import React, { useState, useMemo, useCallback } from "react";
 
 import logo from "@/assets/logo.png";
 
@@ -41,14 +36,14 @@ import {
 	setDefaultServer,
 	setServer,
 } from "@/utils/storage/servers";
-import { allSettings, getSetting, setSetting } from "@/utils/storage/settings";
+import { allSettings } from "@/utils/storage/settings";
 import { delUser } from "@/utils/storage/user";
 import type { RecommendedServerInfo } from "@jellyfin/sdk";
 import { LoadingButton } from "@mui/lab";
-import { red, yellow } from "@mui/material/colors";
-import { useNavigate, useRouteContext } from "@tanstack/react-router";
+import { red } from "@mui/material/colors";
+import { useNavigate } from "@tanstack/react-router";
 import { relaunch } from "@tauri-apps/plugin-process";
-import { type Update, check } from "@tauri-apps/plugin-updater";
+import { check } from "@tauri-apps/plugin-updater";
 import { useSnackbar } from "notistack";
 import SettingOption from "../settingOption";
 
@@ -82,10 +77,7 @@ const Settings = () => {
 	const navigate = useNavigate();
 	const { enqueueSnackbar } = useSnackbar();
 
-	const [applicationVersion, serversOnDiskFn] = useCentralStore((state) => [
-		state.clientVersion,
-		state.allServersOnDisk,
-	]);
+	const [applicationVersion] = useCentralStore((state) => [state.clientVersion]);
 
 	const serversOnDisk = useQuery({
 		queryKey: ["settings", "serversOnDisk"],
@@ -522,14 +514,6 @@ const Settings = () => {
 											</Typography>
 											<Typography variant="subtitle2">
 												{systemInfo.data?.Version}
-											</Typography>
-										</div>
-										<div className="settings-info">
-											<Typography variant="subtitle2">
-												Operating System:
-											</Typography>
-											<Typography variant="subtitle2">
-												{systemInfo.data?.OperatingSystemDisplayName}
 											</Typography>
 										</div>
 										<div className="settings-info">

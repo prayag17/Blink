@@ -7,6 +7,7 @@
 		&-name {
 			display: flex;
 			flex-direction: column;
+			gap: 0.5em;
 			margin-left: 1.2em;
 			&-logo {
 				width: 16em;
@@ -15,7 +16,6 @@
 				object-position: left top;
 				filter: drop-shadow(0 0 10px black);
 			}
-			gap: 0.5em;
 		}
 		&-trick-bubble {
 			overflow: hidden;
@@ -97,12 +97,12 @@ video {
 				gap: 0.2em;
 				align-items: stretch;
 				justify-content: center;
-				&-text {
+				margin-bottom: 0.5em;
+					&-text {
 					display: flex;
 					align-items: stretch;
 					justify-content: space-between;
 				}
-				margin-bottom: 0.5em;
 			}
 			&-buttons {
 				display: flex;

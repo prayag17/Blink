@@ -76,7 +76,7 @@ const QueueButton = () => {
 						position: "relative",
 					}}
 				>
-					{queueItems[currentItemIndex].Id && (
+					{queueItems[currentItemIndex]?.Id && (
 						<>
 							<Typography px="1em" mb={2} variant="h5" fontWeight={300}>
 								Currently Playing:

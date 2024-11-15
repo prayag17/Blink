@@ -26,6 +26,8 @@
 		aspect-ratio: 1;
 		position: relative;
 		width: 4em;
+		box-shadow: 0 0 10px rgb(0 0 0 / 0.2);
+			transition: opacity $transition-time-default;
 		&-overlay {
 			position: absolute;
 			top: 0;
@@ -39,8 +41,6 @@
 			opacity: 0;
 			transition: opacity $transition-time-fast;
 		}
-		box-shadow: 0 0 10px rgb(0 0 0 / 0.2);
-		transition: opacity $transition-time-default;
 	}
 	&-info {
 		justify-self: start;

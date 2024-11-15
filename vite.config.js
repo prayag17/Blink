@@ -17,7 +17,7 @@ const plugins = [react({
       }]
     ]
   }
-}), svgr(), TanStackRouterVite(), MillionLint.vite()];
+}), svgr(), TanStackRouterVite()];
 export default defineConfig({
   plugins: plugins,
   css: {

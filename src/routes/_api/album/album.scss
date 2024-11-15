@@ -3,12 +3,12 @@ $border-radius: 20px;
 	.item-info {
 		display: flex;
 		flex-direction: column;
-		&-container {
+		gap: 1.2em;
+			&-container {
 			grid-template-columns: 1fr 25%;
 			display: grid;
 			gap: 3em;
 		}
-		gap: 1.2em;
 		&-sidebar {
 			display: flex;
 			flex-direction: column;

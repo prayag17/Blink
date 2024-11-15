@@ -3,7 +3,7 @@ import { shallow } from "zustand/shallow";
 import { createWithEqualityFn } from "zustand/traditional";
 
 interface QueueStore {
-	tracks: BaseItemDto[];
+	tracks: BaseItemDto[] | undefined;
 	currentItemIndex: number;
 }
 

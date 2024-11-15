@@ -1,28 +1,27 @@
-.settings{
+.settings {
     display: grid !important;
     grid-template-columns: 20% 1fr;
     height: 60vh;
     overflow: hidden !important;
-    .MuiTabs-flexContainerVertical{
+    .MuiTabs-flexContainerVertical {
         height: 100%;
     }
-    &-container{
+    &-container {
         margin: 14px 0 14px 14px;
     }
-    &-tab{
+    &-tab {
         display: grid !important;
         grid-template-columns: 2em 1fr;
         align-items: center;
         justify-items: start !important;
-        gap:1em;
-        & .material-symbols-rounded{
+        gap: 1em;
+        & .material-symbols-rounded {
             justify-self: center !important;
         }
-        
     }
-    &-scroll{
+    &-scroll {
         overflow-y: auto;
-        scrollbar-gutter:stable ;
+        scrollbar-gutter: stable;
         overscroll-behavior: contain;
         // Magic scrollbar
         &::-webkit-scrollbar {
@@ -37,14 +36,13 @@
             }
         }
     }
-    
     // About page
-    &-grid{
+    &-grid {
         display: grid;
         grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
-        gap:1em;
+        gap: 1em;
     }
-    &-logo{
+    &-logo {
         width: 100%;
         background: rgb(255 255 255 / 1);
         padding: 0em;
@@ -53,7 +51,7 @@
         border-radius: $border-radius-default;
         object-fit: contain;
     }
-    &-info{
+    &-info {
         display: grid;
         grid-template-columns: 40% 1fr;
         gap: 1em;
@@ -61,13 +59,13 @@
         align-items: center;
         border-bottom: 1px solid rgb(255 255 255 / 0.1);
         padding-bottom: 0.5em;
-        &-container{
+        &-container {
             background: rgb(0 0 0 / 0.3);
             padding: 1em;
             border-radius: $border-radius-default;
             display: flex;
             flex-direction: column;
-            gap:0.6em;
+            gap: 0.6em;
             width: 100%;
         }
         &:last-child {
@@ -78,9 +76,8 @@
             opacity: 0.8;
         }
     }
-    
     //settings
-    &-option{
+    &-option {
         display: flex;
         align-items: center;
         justify-content: space-between;
@@ -88,21 +85,12 @@
         padding: 0 !important;
         margin: 0 !important;
         margin-bottom: 0.6em !important;
-        &-info-caption{
+        &-info-caption {
             opacity: 0.6;
         }
     }
-    
     //serverList
-    &-server{
-        &-container{
-            display: flex;
-            flex-direction: column;
-            gap: 1em;
-            align-items: center;
-            padding-bottom: 4.6em;
-        }
-        
+    &-server {
         display: grid;
         grid-template-columns: 3.4em 1fr auto;
         justify-items: start;
@@ -112,7 +100,13 @@
         padding: 1em;
         width: 100%;
         border-radius: $border-radius-default;
-        
+        &-container {
+            display: flex;
+            flex-direction: column;
+            gap: 1em;
+            align-items: center;
+            padding-bottom: 4.6em;
+        }
         &-icon {
             font-size: 3.4em !important;
             font-variation-settings: "FILL" 1, "wght" 500, "GRAD" 10, "opsz" 40;
@@ -124,7 +118,7 @@
             &-version {
                 display: flex;
                 align-items: center;
-                gap:0.4em;
+                gap: 0.4em;
             }
         }
         &-buttons {
@@ -134,7 +128,6 @@
             // width: 100%;
             overflow: hidden;
         }
-        
         &-fab-container {
             display: flex;
             position: absolute;
@@ -144,7 +137,6 @@
             justify-content: center;
             gap: 0.8em;
         }
-        
         // Dialog
         &-add {
             display: flex;
@@ -154,7 +146,6 @@
         }
     }
 }
-
-.Mui-selected .material-symbols-rounded{
+.Mui-selected .material-symbols-rounded {
     font-variation-settings: "FILL" 1, "wght" 300, "GRAD" 25, "opsz" 40;
 }

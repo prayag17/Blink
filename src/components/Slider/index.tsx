@@ -1,4 +1,3 @@
-import useDebounce from "@/utils/hooks/useDebounce";
 import React, {
 	type ReactNode,
 	useCallback,
@@ -11,12 +10,7 @@ import { useSpring } from "@react-spring/web";
 import { debounce } from "lodash";
 
 import "./style.scss";
-import { Button, IconButton } from "@mui/material";
-
-enum Direction {
-	RIGHT = 0,
-	LEFT = 1,
-}
+import { IconButton } from "@mui/material";
 
 const Slider = ({
 	content,
@@ -148,13 +142,13 @@ const Slider = ({
 				className="slider-button left"
 				onClick={slideLeft}
 				disabled={scrollPos.isStart}
-				variant="contained"
 			>
 				<span className="material-symbols-rounded">chevron_left</span>
 			</IconButton>
 			<div className="slider-track" ref={containerRef} onScroll={onScroll}>
 				{content?.map((item, index) => (
 					<div
+						//biome-ignore lint/suspicious/noArrayIndexKey: item does not have a unique key
 						key={index}
 						className={
 							currentSlide === index
@@ -170,7 +164,6 @@ const Slider = ({
 				className="slider-button right"
 				onClick={slideRight}
 				disabled={scrollPos.isEnd}
-				variant="contained"
 			>
 				<span className="material-symbols-rounded">chevron_right</span>
 			</IconButton>

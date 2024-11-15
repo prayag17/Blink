@@ -19,21 +19,19 @@ import TextField from "@mui/material/TextField";
 import Typography from "@mui/material/Typography";
 import { useQuery } from "@tanstack/react-query";
 
+import { Card } from "@/components/card/card";
+import { EmptyNotice } from "@/components/notices/emptyNotice/emptyNotice";
 import { getArtistsApi } from "@jellyfin/sdk/lib/utils/api/artists-api";
 import { getGenresApi } from "@jellyfin/sdk/lib/utils/api/genres-api";
 import { getItemsApi } from "@jellyfin/sdk/lib/utils/api/items-api";
 import { getMusicGenresApi } from "@jellyfin/sdk/lib/utils/api/music-genres-api";
 import { getPersonsApi } from "@jellyfin/sdk/lib/utils/api/persons-api";
 import { getStudiosApi } from "@jellyfin/sdk/lib/utils/api/studios-api";
-import { getUserApi } from "@jellyfin/sdk/lib/utils/api/user-api";
-
-import { Card } from "@/components/card/card";
-import { EmptyNotice } from "@/components/notices/emptyNotice/emptyNotice";
 
 import GenreView from "@/components/layouts/library/genreView";
 import MusicTrack from "@/components/musicTrack";
 import { ErrorNotice } from "@/components/notices/errorNotice/errorNotice";
-import { setBackdrop } from "@/utils/store/backdrop";
+import { useBackdropStore } from "@/utils/store/backdrop";
 import {
 	type BaseItemDtoQueryResult,
 	BaseItemKind,
@@ -45,7 +43,13 @@ import {
 } from "@jellyfin/sdk/lib/generated-client";
 
 import { getUserLibraryApi } from "@jellyfin/sdk/lib/utils/api/user-library-api";
-import { FormControl, Menu, Stack, useScrollTrigger } from "@mui/material";
+import {
+	FormControl,
+	Menu,
+	Select,
+	Stack,
+	useScrollTrigger,
+} from "@mui/material";
 import { useWindowVirtualizer } from "@tanstack/react-virtual";
 import type { AxiosResponse } from "axios";
 import "./library.scss";
@@ -599,7 +603,7 @@ function LibraryView() {
 			return result.data;
 		},
 		// enabled: false,
-		enabled: user?.Id && Boolean(currentViewType) && currentLib.isSuccess,
+		enabled: !!user?.Id && Boolean(currentViewType) && currentLib.isSuccess,
 		networkMode: "always",
 		// gcTime: 0,
 	});
@@ -686,6 +690,8 @@ function LibraryView() {
 		threshold: 20,
 	});
 
+	const setBackdrop = useBackdropStore((s) => s.setBackdrop);
+
 	const backdropItems = useMemo(() => {
 		if (items.isSuccess) {
 			const temp = items.data.Items?.filter(
@@ -723,6 +729,8 @@ function LibraryView() {
 			return () => clearInterval(intervalId);
 		}
 	}, [backdropItems]);
+
+	const [test, setTest] = useState(1);
 
 	if (items.isError) {
 		console.error(items.error);
@@ -833,6 +841,7 @@ function LibraryView() {
 											size="small"
 											onChange={(e) => {
 												setSortBy(e.target.value as ItemSortBy);
+												console.info(e);
 												sessionStorage.setItem(
 													`library-${currentLib.data?.Id}-config_sort`,
 													JSON.stringify({
@@ -879,6 +888,7 @@ function LibraryView() {
 												</span>
 											}
 											size="large"
+											//@ts-ignore
 											color="white"
 											onClick={handleFilterDropdown}
 										>

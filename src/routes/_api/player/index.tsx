@@ -1,5 +1,5 @@
 import { WebviewWindow as appWindow } from "@tauri-apps/api/webviewWindow";
-import React from "react";
+import React, { type ChangeEventHandler, useTransition } from "react";
 import { useLayoutEffect, useMemo } from "react";
 
 import CircularProgress from "@mui/material/CircularProgress";
@@ -34,7 +34,7 @@ import {
 } from "@jellyfin/sdk/lib/generated-client";
 import { AnimatePresence, motion } from "framer-motion";
 
-import { setBackdrop } from "@/utils/store/backdrop";
+import { useBackdropStore } from "@/utils/store/backdrop";
 
 import { Button, LinearProgress, TextField } from "@mui/material";
 import JASSUB from "jassub";
@@ -48,14 +48,14 @@ import PlayPreviousButton from "@/components/buttons/playPreviousButtom";
 import QueueButton from "@/components/buttons/queueButton";
 import OutroCard from "@/components/outroCard";
 import { useApiInContext } from "@/utils/store/api";
+import { useCentralStore } from "@/utils/store/central";
 import useQueue, { clearQueue } from "@/utils/store/queue";
 import { createFileRoute, useRouter } from "@tanstack/react-router";
 import { toNumber } from "lodash";
 import type { OnProgressProps } from "react-player/base";
 import type { TrackProps } from "react-player/file";
-import { useQuery } from "@tanstack/react-query";
-import { getUserApi } from "@jellyfin/sdk/lib/utils/api/user-api";
-import { useCentralStore } from "@/utils/store/central";
+
+import font from "./Noto-Sans-Indosphere.ttf?url";
 
 const ticksDisplay = (ticks: number) => {
 	const time = Math.round(ticks / 10000);
@@ -80,10 +80,49 @@ const ticksDisplay = (ticks: number) => {
 };
 const VOLUME_SCROLL_INTERVAL = 0.02;
 
+/**
+ * This function is used to add a subtitle track (.vtt and .srt) to the react player instance.
+ */
+function addSubtitleTrackToReactPlayer(
+	videoElem: HTMLMediaElement,
+	subtitleTracks,
+	baseUrl: string,
+) {
+	if (subtitleTracks.url && subtitleTracks.allTracks) {
+		const reqSubTrack = subtitleTracks.allTracks.filter(
+			(val) => val.Index === subtitleTracks.track,
+		);
+		const track = document.createElement("track");
+		track.src = `${baseUrl}${subtitleTracks.url}`;
+		track.kind = "subtitles";
+		track.srclang = reqSubTrack[0].Language ?? "en";
+		track.label = reqSubTrack[0].DisplayTitle ?? "Subtitle";
+		track.default = true;
+
+		track.addEventListener("load", () => {
+			console.log("Track loaded");
+			const a = track.track;
+			a.mode = "showing";
+		});
+		track.addEventListener("error", (e) => {
+			console.error(e);
+		});
+
+		videoElem.appendChild(track);
+
+		for (const i of videoElem.textTracks) {
+			if (i.label === reqSubTrack[0].DisplayTitle) {
+				i.mode = "showing";
+			} else {
+				i.mode = "hidden";
+			}
+		}
+	}
+}
+
 export const Route = createFileRoute("/_api/player/")({
 	component: VideoPlayer,
 });
-
 
 function VideoPlayer() {
 	const api = useApiInContext((s) => s.api);
@@ -137,6 +176,7 @@ function VideoPlayer() {
 	const [volume, setVolume] = useState(1);
 	const [muted, setMuted] = useState(false);
 
+	const setBackdrop = useBackdropStore((s) => s.setBackdrop);
 	useEffect(() => setBackdrop("", ""), []);
 
 	const [clickTimeout, setClickTimeout] = useState<NodeJS.Timeout>(null!);
@@ -255,7 +295,6 @@ function VideoPlayer() {
 			}
 		}
 	}, []);
-
 	useEffect(() => {
 		// attach the event listener
 		document.addEventListener("keydown", handleKeyPress);
@@ -266,6 +305,7 @@ function VideoPlayer() {
 		};
 	}, [handleKeyPress]);
 
+	// Volume control with mouse wheel
 	useEffect(() => {
 		const handleMouseWheel = (event: WheelEvent) => {
 			if (event.deltaY < 0) {
@@ -286,46 +326,47 @@ function VideoPlayer() {
 		};
 	}, []);
 
+	// Set playing state to true when a new item is loaded
 	useLayoutEffect(() => {
 		setPlaying(true);
 		setIsReady(false);
 	}, [item?.Id]);
 
-	const reactPlayerCaptions: TrackProps = useMemo(() => {
-		if (
-			(mediaSource.subtitle.format === "vtt" ||
-				mediaSource.subtitle.format === "subrip") &&
-			mediaSource.subtitle.enable
-		) {
-			return [
-				{
-					kind: "subtitles",
-					src: `${api.basePath}${mediaSource.subtitle.url}`,
-					srcLang: "en",
-					default: true,
-					label: mediaSource.subtitle.url,
-				},
-			];
-		}
-		return [];
-	}, [mediaSource.subtitle.track, mediaSource.subtitle.enable]);
-
 	useEffect(() => {
-		console.log(mediaSource.subtitle);
 		if (player.current?.getInternalPlayer() && mediaSource.subtitle.enable) {
+			let jassubRenderer: JASSUB | undefined;
 			if (
 				mediaSource.subtitle.format === "ass" ||
 				mediaSource.subtitle.format === "ssa"
 			) {
-				const jassubRenderer = new JASSUB({
+				jassubRenderer = new JASSUB({
 					//@ts-ignore
 					video: player.current?.getInternalPlayer(),
 					workerUrl,
 					wasmUrl,
 					subUrl: `${api.basePath}${mediaSource.subtitle.url}`,
+					availableFonts: { "noto sans": font },
+					fallbackFont: "noto sans",
 				});
-				return () => jassubRenderer.destroy(); // Remove JASSUB renderer when track changes to fix duplicate renders
+			} else if (
+				mediaSource.subtitle.format === "subrip" ||
+				mediaSource.subtitle.format === "vtt"
+			) {
+				// @ts-ignore internalPlayer here provides the HTML video player element
+				const videoElem: HTMLMediaElement =
+					player.current.getInternalPlayer() as HTMLMediaElement;
+				addSubtitleTrackToReactPlayer(
+					player.current.getInternalPlayer() as HTMLMediaElement,
+					mediaSource.subtitle,
+					api.basePath,
+				);
+				console.log(videoElem.textTracks);
 			}
+			return () => {
+				if (jassubRenderer) {
+					jassubRenderer.destroy();
+				} // Remove JASSUB renderer when track changes to fix duplicate renders
+			};
 		}
 	}, [
 		mediaSource.subtitle.track,
@@ -530,12 +571,25 @@ function VideoPlayer() {
 	}, [volume]);
 
 	const handlePlaybackEnded = () => {
-		//check if next track item exists
 		if (queue[currentQueueItemIndex + 1].Id) {
 			playItemFromQueue("next", user?.Id, api);
 		} else {
 			handleExitPlayer(); // Exit player if playback has finished and the queue is empty
 		}
+	};
+	
+	const [subtitleIsChanging, startSubtitleChange] = useTransition();
+	const handleSubtitleChange = (
+		e: ChangeEventHandler<HTMLInputElement | HTMLTextAreaElement>,
+	) => {
+		startSubtitleChange(() => {
+			if (mediaSource.subtitle.allTracks) {
+				changeSubtitleTrack(
+					toNumber(e.target.value),
+					mediaSource.subtitle.allTracks,
+				);
+			}
+		});
 	};
 
 	return (
@@ -672,16 +726,9 @@ function VideoPlayer() {
 							label="Subtitles"
 							variant="outlined"
 							value={mediaSource.subtitle.track}
-							onChange={(e) => {
-								if (mediaSource.subtitle.allTracks) {
-									changeSubtitleTrack(
-										toNumber(e.target.value),
-										mediaSource.subtitle.allTracks,
-									);
-								}
-							}}
+							onChange={handleSubtitleChange}
 							fullWidth
-							disabled={mediaSource.subtitle.track === -2}
+							disabled={mediaSource.subtitle.track === -2 || subtitleIsChanging}
 						>
 							<MenuItem key={-1} value={-1}>
 								No Subtitle
@@ -854,8 +901,10 @@ function VideoPlayer() {
 									</IconButton>
 									<QueueButton />
 									<IconButton
-										disabled={mediaSource.subtitle.track === -2}
-										onClick={toggleSubtitleTrack}
+										disabled={
+											mediaSource.subtitle.track === -2 || subtitleIsChanging
+										}
+										onClick={() => startSubtitleChange(toggleSubtitleTrack)}
 									>
 										<span className={"material-symbols-rounded"}>
 											{mediaSource.subtitle.enable
@@ -882,7 +931,7 @@ function VideoPlayer() {
 				)}
 			</motion.div>
 			<ReactPlayer
-				key={item?.Id}
+				key={`${item?.Id}${mediaSource.id}`}
 				playing={playing}
 				url={playbackStream}
 				ref={player}
@@ -900,18 +949,18 @@ function VideoPlayer() {
 					position: "fixed",
 					zIndex: 1,
 				}}
-				config={{
-					file: {
-						attributes: {
-							crossOrigin: "true",
-						},
-						tracks: reactPlayerCaptions,
-					},
-				}}
 				volume={muted ? 0 : volume}
 				onReady={handleReady}
 				onBuffer={() => setLoading(true)}
 				onBufferEnd={() => setLoading(false)}
+				config={{
+					file: {
+						attributes: {
+							crossOrigin: "anonymous",
+						},
+						tracks: [],
+					},
+				}}
 			/>
 		</div>
 	);
