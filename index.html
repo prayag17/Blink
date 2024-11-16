@@ -9,56 +9,34 @@
   <style>
     .app-loading {
       position: fixed;
-      top: 0;
-      left: 0;
-      bottom: 0;
-      right: 0;
-      background: #fff;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%,-50%);
+      width: 10em;
+      height: 10em;
+      background: rgb(180 180 180);
       z-index: 100000;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      flex-direction: column;
-      transition: opacity 0.25s ease-in-out;
-      opacity: 0;
-      animation: fadeIn linear 500ms forwards;
+      mask-image: url("./src/assets/icon-outline.png");
+      mask-size: contain;
     }
 
     .app-loading.hidden {
       display: none;
     }
 
-    .app-loading-logo {
-      width: 5vw;
-    }
-
-    .app-loading-bar-container{
-      height: 2px;
-      width: 16vw;
-      position: absolute;
-      left: 50%;
-      bottom: 36vh;
-      transform: translateX(-50%);
-      overflow: hidden;
-    }
     
-    .app-loading-bar{
-      width: 100%;
+    .app-loading-anim{
+      width: 150%;
       height: 100%;
-      background: #101010;
+      position: absolute;
+      top: 0;
+      left: 0;
+      background: linear-gradient(to right,transparent,rgb(255 255 255),transparent);
       transform: scaleX(0);
-      animation: loading 1s ease-in-out infinite both;
+      animation: loading 0.75s linear infinite both;
         transform-origin: left;
     }
 
-    @keyframes fadeIn {
-      0%{
-        opacity: 0;
-      }
-      100%{
-        opacity: 1;
-      }
-    }
     @keyframes loading {
       0%{
         transform: translate(-100%);
@@ -75,10 +53,8 @@
 
 <body>
   <div class="app-loading">
-    <img src="./src/assets/icon-outline.svg" class="app-loading-logo" />
-    <div class="app-loading-bar-container">
-      <div class="app-loading-bar"></div>
-    </div>
+    <!-- <img src="./src/assets/icon-outline.svg" class="app-loading-logo" /> -->
+    <div class="app-loading-anim"></div>
   </div>
   <div id="root"></div>
   <svg style="width: 0; height: 0; position: absolute" aria-hidden="true" focusable="false">

@@ -9,7 +9,7 @@ import Fab from "@mui/material/Fab";
 import LinearProgress from "@mui/material/LinearProgress";
 import Typography from "@mui/material/Typography";
 
-import { playAudio } from "@/utils/store/audioPlayback";
+import { generateAudioStreamUrl, playAudio } from "@/utils/store/audioPlayback";
 import {
 	type BaseItemDto,
 	type BaseItemDtoQueryResult,
@@ -50,22 +50,28 @@ import type { AxiosResponse } from "axios";
 
 type PlayButtonProps = {
 	item: BaseItemDto;
-	itemId: string;
-	itemUserData: UserItemDataDto;
+	/**
+	 * @deprecated
+	 */
+	itemId?: string;
+	/**
+	 * @deprecated
+	 */
+	itemUserData?: UserItemDataDto;
 	userId: string | undefined;
 	itemType: BaseItemKind;
-	currentAudioTrack: number;
-	currentVideoTrack: number;
-	currentSubTrack: number | "nosub";
-	className: string;
-	sx: SxProps;
-	buttonProps: ButtonProps;
-	iconOnly: boolean;
-	audio: boolean;
-	size: ButtonPropsSizeOverrides;
-	playlistItem: BaseItemDto;
-	playlistItemId: string;
-	trackIndex: number;
+	currentAudioTrack?: number;
+	currentVideoTrack?: number;
+	currentSubTrack?: number | "nosub";
+	className?: string;
+	sx?: SxProps;
+	buttonProps?: ButtonProps;
+	iconOnly?: boolean;
+	audio?: boolean;
+	size?: ButtonPropsSizeOverrides;
+	playlistItem?: BaseItemDto;
+	playlistItemId?: string;
+	trackIndex?: number;
 };
 
 // Memoized LinearProgress component
@@ -119,7 +125,7 @@ const PlayButton = ({
 	const { enqueueSnackbar } = useSnackbar();
 
 	const itemQuery = useMutation({
-		mutationKey: ["playButton", itemId, userId],
+		mutationKey: ["playButton", item?.Id, userId],
 		mutationFn: async () => {
 			setPlaybackDataLoading(true);
 			let result: undefined | AxiosResponse<BaseItemDtoQueryResult, any>;
@@ -182,7 +188,7 @@ const PlayButton = ({
 						break;
 					case BaseItemKind.Series:
 						result = await getTvShowsApi(api).getEpisodes({
-							seriesId: itemId,
+							seriesId: item.Id,
 							fields: [
 								ItemFields.MediaSources,
 								ItemFields.MediaStreams,
@@ -233,7 +239,7 @@ const PlayButton = ({
 						break;
 					case BaseItemKind.MusicAlbum:
 						result = await getItemsApi(api).getItems({
-							parentId: itemId,
+							parentId: item.Id,
 							userId: userId,
 							fields: [ItemFields.MediaSources, ItemFields.MediaStreams],
 							sortOrder: [SortOrder.Ascending],
@@ -242,7 +248,7 @@ const PlayButton = ({
 						break;
 					case BaseItemKind.MusicArtist:
 						result = await getItemsApi(api).getItems({
-							artistIds: [itemId],
+							artistIds: [item.Id],
 							recursive: true,
 							includeItemTypes: [BaseItemKind.Audio],
 							userId: userId,
@@ -253,7 +259,7 @@ const PlayButton = ({
 						break;
 					case BaseItemKind.BoxSet:
 						result = await getItemsApi(api).getItems({
-							parentId: itemId,
+							parentId: item.Id,
 							userId,
 							fields: [
 								ItemFields.MediaSources,
@@ -285,7 +291,7 @@ const PlayButton = ({
 						break;
 					default:
 						result = await getItemsApi(api).getItems({
-							ids: [itemId],
+							ids: [item.Id],
 							userId: userId,
 							fields: [
 								ItemFields.MediaSources,
@@ -300,7 +306,7 @@ const PlayButton = ({
 							audioStreamIndex: currentAudioTrack,
 							subtitleStreamIndex:
 								currentSubTrack === "nosub" ? -1 : currentSubTrack,
-							itemId: itemId,
+							itemId: item.Id,
 							startTimeTicks:
 								result.data.Items?.[0].UserData?.PlaybackPositionTicks,
 							userId: userId,
@@ -327,9 +333,15 @@ const PlayButton = ({
 					api_key: api?.accessToken,
 				};
 				const urlParams = new URLSearchParams(urlOptions).toString();
-				const playbackUrl = `${api.basePath}/Audio/${result?.item.Items?.[0].Id}/universal?${urlParams}`;
-				playAudio(playbackUrl, result?.item.Items?.[0], undefined);
-				setQueue(result?.item.Items ?? [], 0);
+				const playbackUrl = generateAudioStreamUrl(
+					result?.item?.Items?.[0].Id,
+					userId,
+					api?.deviceInfo.id,
+					api.basePath,
+					api.accessToken,
+				);
+				playAudio(playbackUrl, result?.item?.Items?.[0], undefined);
+				setQueue(result?.item?.Items ?? [], 0);
 			} else if (item.Type === "Photo") {
 				const index = result?.item?.Items?.map((i) => i.Id).indexOf(item.Id);
 				if (result?.item?.Items && index) {

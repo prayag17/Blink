@@ -133,6 +133,13 @@ $border-radius: 20px;
 			display: flex;
 			gap: 1em;
 		}
+		&-disc-header{
+			padding: 1em 2em;
+			background: hsla(0, 0, 100%, 10%);
+			border-radius: 100px;
+			gap: 1em;
+			margin-top: 1em;
+		}
 	}
 }
 .item-detail-album {

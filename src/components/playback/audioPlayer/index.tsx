@@ -57,212 +57,82 @@ const AudioPlayer = () => {
 
 	useEffect(() => {
 		if (display) {
-			const audioUrlRequest = new Request(audioRef.current?.dataset.src, {
-				method: "GET",
-				headers: {
-					Authorization: api.authorizationHeader,
-				},
-			});
-
-			const currentTrackItem = tracks[currentTrack];
-
-			fetch(audioUrlRequest)
-				.then((res) => res)
-				.then(async (result) => {
-					const blob = await result.blob();
-					const blobUrl = URL.createObjectURL(blob);
-					audioRef.current.src = blobUrl;
-					await audioRef.current.play();
-					if ("mediaSession" in navigator) {
-						navigator.mediaSession.playbackState = "playing";
-						navigator.mediaSession.metadata = new MediaMetadata({
-							title: currentTrackItem.Name ?? "Unknown audio",
-							artist: currentTrackItem.Artists?.join(", "),
-							album: currentTrackItem.Album ?? "",
-							artwork: [
-								{
-									src: getImageUrlsApi(api).getItemImageUrlById(
-										currentTrackItem.Id,
-										"Primary",
-										{
-											tag: currentTrackItem.ImageTags?.Primary,
-											width: 96,
-											height: 96,
-										},
-									),
-									sizes: "96x96",
-									type: "image/jpeg",
-								},
-								{
-									src: getImageUrlsApi(api).getItemImageUrlById(
-										currentTrackItem.Id,
-										"Primary",
-										{
-											tag: currentTrackItem.ImageTags?.Primary,
-											width: 128,
-											height: 128,
-										},
-									),
-									sizes: "128x128",
-									type: "image/jpeg",
-								},
-								{
-									src: getImageUrlsApi(api).getItemImageUrlById(
-										currentTrackItem.Id,
-										"Primary",
-										{
-											tag: currentTrackItem.ImageTags?.Primary,
-											width: 192,
-											height: 192,
-										},
-									),
-									sizes: "192x192",
-									type: "image/jpeg",
-								},
-								{
-									src: getImageUrlsApi(api).getItemImageUrlById(
-										currentTrackItem.Id,
-										"Primary",
-										{
-											tag: currentTrackItem.ImageTags?.Primary,
-											width: 256,
-											height: 256,
-										},
-									),
-									sizes: "256x256",
-									type: "image/jpeg",
-								},
-								{
-									src: getImageUrlsApi(api).getItemImageUrlById(
-										currentTrackItem.Id,
-										"Primary",
-										{
-											tag: currentTrackItem.ImageTags?.Primary,
-											width: 384,
-											height: 384,
-										},
-									),
-									sizes: "384x384",
-									type: "image/jpeg",
-								},
-								{
-									src: getImageUrlsApi(api).getItemImageUrlById(
-										currentTrackItem.Id,
-										"Primary",
-										{
-											tag: currentTrackItem.ImageTags?.Primary,
-											width: 512,
-											height: 512,
-										},
-									),
-									sizes: "512x512",
-									type: "image/jpeg",
-								},
-							],
-						});
-						console.log("Using MediaSession Api");
-						// navigator.mediaSession.setActionHandler("play", () => {
-						// 	/* Code excerpted. */
-						// });
-						// navigator.mediaSession.setActionHandler("pause", () => {
-						// 	/* Code excerpted. */
-						// });
-						// navigator.mediaSession.setActionHandler("stop", () => {
-						// 	/* Code excerpted. */
-						// });
-						// navigator.mediaSession.setActionHandler("seekbackward", () => {
-						// 	/* Code excerpted. */
-						// });
-						// navigator.mediaSession.setActionHandler("seekforward", () => {
-						// 	/* Code excerpted. */
-						// });
-						// navigator.mediaSession.setActionHandler("seekto", () => {
-						// 	/* Code excerpted. */
-						// });
-						// navigator.mediaSession.setActionHandler("previoustrack", () => {
-						// 	/* Code excerpted. */
-						// });
-						// navigator.mediaSession.setActionHandler("nexttrack", () => {
-						// 	/* Code excerpted. */
-						// });
-						// navigator.mediaSession.setActionHandler("skipad", () => {
-						// 	/* Code excerpted. */
-						// });
-						// navigator.mediaSession.setActionHandler("togglecamera", () => {
-						// 	/* Code excerpted. */
-						// });
-						// navigator.mediaSession.setActionHandler("togglemicrophone", () => {
-						// 	/* Code excerpted. */
-						// });
-						// navigator.mediaSession.setActionHandler("hangup", () => {
-						// 	/* Code excerpted. */
-						// });
-					}
-					setLoading(false);
-				});
-			setAudioRef(audioRef);
+			// const audioUrlRequest = new Request(audioRef.current?.dataset.src, {
+			// 	method: "GET",
+			// 	headers: {
+			// 		Authorization: api.authorizationHeader,
+			// 	},
+			// });
+			// fetch(audioUrlRequest)
+			// 	.then((res) => res)
+			// 	.then(async (result) => {
+			// 		const blob = await result.blob();
+			// 		const blobUrl = URL.createObjectURL(blob);
+			// 		audioRef.current.src = blobUrl;
+			// 		await audioRef.current.play();
+			// 		setLoading(false);
+			// 	});
+			// setAudioRef(audioRef);
 		}
-	}, [url, tracks[currentTrack]?.Id]);
+	}, [url, tracks?.[currentTrack]?.Id]);
 
 	const navigate = useNavigate();
 
 	const info = useMemo(
-		() => (
-			<div
-				// initial={{
-				// 	filter: "opacity(0)",
-				// }}
-				// animate={{
-				// 	filter: "opacity(1)",
-				// }}
-				// exit={{
-				// 	filter: "opacity(0)",
-				// }}
-				className="audio-player-info"
-			>
-				<div className="audio-player-image-container">
-					<img
-						alt={tracks[currentTrack]?.Name ?? "track"}
-						className="audio-player-image"
-						src={
-							!!api?.configuration?.apiKey &&
-							getImageUrlsApi(api).getItemImageUrlById(
-								!item?.ImageTags.Primary ? item?.AlbumId : item?.Id,
+		() =>
+			!!api?.configuration && (
+				<div
+					// initial={{
+					// 	filter: "opacity(0)",
+					// }}
+					// animate={{
+					// 	filter: "opacity(1)",
+					// }}
+					// exit={{
+					// 	filter: "opacity(0)",
+					// }}
+					className="audio-player-info"
+				>
+					<div className="audio-player-image-container">
+						<img
+							alt={tracks?.[currentTrack]?.Name ?? "track"}
+							className="audio-player-image"
+							src={getImageUrlsApi(api).getItemImageUrlById(
+								(!item?.ImageTags?.Primary ? item?.AlbumId : item?.Id) ?? "",
 								"Primary",
 								{
 									quality: 85,
 									fillHeight: 462,
 									fillWidth: 462,
 								},
-							)
-						}
-					/>
-					<span className="material-symbols-rounded audio-player-image-icon">
-						music_note
-					</span>
+							)}
+						/>
+						<span className="material-symbols-rounded audio-player-image-icon">
+							music_note
+						</span>
+					</div>
+					<div className="audio-player-info-text">
+						<Typography
+							variant="subtitle2"
+							style={{
+								width: "100%",
+							}}
+						>
+							{item?.Name}
+						</Typography>
+						<Typography
+							variant="caption"
+							style={{
+								opacity: 0.5,
+							}}
+							noWrap
+						>
+							by {item?.Artists?.map((artist) => artist).join(",")}
+						</Typography>
+					</div>
 				</div>
-				<div className="audio-player-info-text">
-					<Typography
-						variant="subtitle2"
-						style={{
-							width: "100%",
-						}}
-					>
-						{item?.Name}
-					</Typography>
-					<Typography
-						variant="caption"
-						style={{
-							opacity: 0.5,
-						}}
-						noWrap
-					>
-						by {item?.Artists?.map((artist) => artist).join(",")}
-					</Typography>
-				</div>
-			</div>
-		),
-		[tracks[currentTrack]?.Id, currentTrack],
+			),
+		[tracks?.[currentTrack]?.Id, currentTrack],
 	);
 
 	const controls = useMemo(
@@ -298,7 +168,7 @@ const AudioPlayer = () => {
 				<PlayNextButton />
 			</div>
 		),
-		[tracks[currentTrack]?.Id, loading, playing, tracks.length],
+		[tracks?.[currentTrack]?.Id, loading, playing, tracks?.length],
 	);
 
 	const buttons = useMemo(
@@ -328,10 +198,12 @@ const AudioPlayer = () => {
 					step={1}
 					max={100}
 					onChange={(_, newVal) => {
-						Array.isArray(newVal)
-							? setVolume(newVal[0] / 100)
-							: setVolume(newVal / 100);
-						audioRef.current.volume = newVal / 100;
+						Array.isArray(newVal) ? setVolume(newVal[0] / 100) : setVolume(newVal / 100);
+						if (Array.isArray(newVal)) {
+							audioRef.current.volume = newVal[0] / 100;
+						} else {
+							audioRef.current.volume = newVal / 100;
+						}
 					}}
 					valueLabelDisplay="auto"
 					valueLabelFormat={(value) => Math.floor(value)}
@@ -376,7 +248,7 @@ const AudioPlayer = () => {
 
 	if (audioRef.current) {
 		audioRef.current.addEventListener("ended", () => {
-			if (tracks[currentTrack + 1]?.Id) {
+			if (tracks?.[currentTrack + 1]?.Id) {
 				playItemFromQueue("next", user?.Id, api);
 			}
 		});
@@ -409,7 +281,8 @@ const AudioPlayer = () => {
 				>
 					{info}
 					<audio
-						data-src={url}
+						autoPlay
+						src={url}
 						ref={audioRef}
 						key={item?.Id}
 						onTimeUpdate={(e) =>
@@ -451,8 +324,14 @@ const AudioPlayer = () => {
 								onChangeCommitted={(_, value) => {
 									setIsScrubbing(false);
 									// console.log(ticksToSec(value * item?.RunTimeTicks));
-									setProgress(value);
-									audioRef.current.currentTime = ticksToSec(value);
+									Array.isArray(value)
+										? setProgress(value[0])
+										: setProgress(value);
+									if (Array.isArray(value)) {
+										audioRef.current.currentTime = ticksToSec(value[0]);
+									} else {
+										audioRef.current.currentTime = ticksToSec(value);
+									}
 								}}
 							/>
 							<Typography

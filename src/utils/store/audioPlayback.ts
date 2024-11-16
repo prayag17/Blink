@@ -2,10 +2,13 @@ import type { BaseItemDto } from "@jellyfin/sdk/lib/generated-client";
 import { create } from "zustand";
 import { setQueue } from "./queue";
 
+import { start } from "repl";
+import { max } from "lodash";
 import type React from "react";
 import { shallow } from "zustand/shallow";
 import { createWithEqualityFn } from "zustand/traditional";
 import { secToTicks } from "../date/time";
+import playbackProfile from "../playback-profiles";
 
 type AudioPlaybackStore = {
 	display: boolean;
@@ -51,10 +54,41 @@ export const generateAudioStreamUrl = (
 	userId: string,
 	deviceId: string,
 	basePath: string,
+	api_key: string,
 ) => {
+	const transcodingProfile = playbackProfile.TranscodingProfiles?.filter(
+		(val) => val.Type === "Audio" && val.Context === "Streaming",
+	)[0];
+
+	let directPlayContainers = "";
+	if (playbackProfile.DirectPlayProfiles) {
+		for (const p of playbackProfile.DirectPlayProfiles) {
+			if (p.Type === "Audio") {
+				if (directPlayContainers) {
+					directPlayContainers += `, ${p.Container}`;
+				} else {
+					directPlayContainers = p.Container ?? "";
+				}
+
+				if (p.AudioCodec) {
+					directPlayContainers += `| ${p.AudioCodec}`;
+				}
+			}
+		}
+	}
 	const urlOptions = {
 		userId,
 		deviceId,
+		api_key,
+		container: directPlayContainers,
+		maxAudioChannels: transcodingProfile?.MaxAudioChannels,
+		transcodingContainer: transcodingProfile?.Container,
+		transcodingProtocol: transcodingProfile?.Protocol,
+		audioCodec: transcodingProfile?.AudioCodec,
+		playSessionId: new Date().getTime(),
+		startTimeTicks: 0,
+		enableRemoteMedia: false,
+		enableAudioVbrEncoding: true,
 	};
 	const urlParams = new URLSearchParams(urlOptions).toString();
 	return `${basePath}/Audio/${itemId}/universal?${urlParams}`;

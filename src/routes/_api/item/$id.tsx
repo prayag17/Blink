@@ -43,7 +43,7 @@ import TrailerButton from "@/components/buttons/trailerButton";
 import ShowMoreText from "@/components/showMoreText";
 import { getTypeIcon } from "@/components/utils/iconsCollection";
 import { endsAt, getRuntime } from "@/utils/date/time";
-import { setBackdrop, useBackdropStore } from "@/utils/store/backdrop";
+import { useBackdropStore } from "@/utils/store/backdrop";
 
 import ItemSkeleton from "@/components/skeleton/item";
 
@@ -194,11 +194,13 @@ function ItemDetail() {
 
 	const [mediaQualityInfo, setMediaQualityInfo] = useState<MediaQualityInfo>();
 
+	const setBackdrop = useBackdropStore((state) => state.setBackdrop);
+
 	useLayoutEffect(() => {
 		if (item.isSuccess) {
 			if (item.data.BackdropImageTags?.length > 0) {
 				setBackdrop(
-					getImageUrlsApi(api).getItemImageUrl(item.data.Id, "Backdrop", {
+					getImageUrlsApi(api).getItemImageUrlById(item.data.Id, "Backdrop", {
 						tag: item.data.BackdropImageTags[0],
 					}),
 					item.data.BackdropImageTags[0],

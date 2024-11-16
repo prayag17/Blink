@@ -1,89 +1,84 @@
 {
-  "$schema": "../node_modules/@tauri-apps/cli/schema.json",
-  "build": {
-    "beforeBuildCommand": "pnpm run build",
-    "beforeDevCommand": "pnpm run dev",
-    "frontendDist": "../dist",
-    "devUrl": "http://localhost:5173"
-  },
-  "bundle": {
-    "active": true,
-    "category": "Video",
-    "copyright": "GPL-3.0-only",
-    "windows": {
-      "certificateThumbprint": null,
-      "digestAlgorithm": "sha256",
-      "timestampUrl": "",
-      "nsis": {
-        "sidebarImage": "../public/installerSideBarImage.bmp",
-        "headerImage": "../public/installerHeaderImage.bmp",
-        "installerIcon": "icons/icon.ico",
-        "displayLanguageSelector": true
-      }
-    },
-    "externalBin": [],
-    "icon": [
-      "icons/32x32.png",
-      "icons/128x128.png",
-      "icons/128x128@2x.png",
-      "icons/icon.icns",
-      "icons/icon.ico"
-    ],
-    "linux": {
-      "deb": {
-        "depends": []
-      },
-      "appimage": {
-        "bundleMediaFramework": true
-      }
-    },
-    "longDescription": "A modern desktop client for Jellyfin",
-    "macOS": {
-      "entitlements": null,
-      "exceptionDomain": "",
-      "frameworks": [],
-      "providerShortName": null,
-      "signingIdentity": null
-    },
-    "resources": [],
-    "shortDescription": "Blink",
-    "targets": [
-      "deb",
-      "appimage",
-      "nsis",
-      "app",
-      "dmg"
-    ],
-    "licenseFile": "../LICENSE",
-    "createUpdaterArtifacts": "v1Compatible"
-  },
-  "productName": "Blink",
-  "version": "../package.json",
-  "identifier": "com.blink.prayag17",
-  "plugins": {
-    "updater": {
-					"pubkey": "dW50cnVzdGVkIGNvbW1lbnQ6IG1pbmlzaWduIHB1YmxpYyBrZXk6IEZEMTg0MjEzRDYzRjJDN0EKUldSNkxEL1dFMElZL1dxbHA0V2lyVDFEdGpOZXkxMG9XdHVLVnRpVVV5c1Z0OFNRUE45dkpxbFAK",
-					"endpoints": [
-						"https://rawcdn.githack.com/prayag17/Blink/refs/heads/main/latest.json"
-					]
-				}
-  },
-  "app": {
-    "windows": [
-      {
-							"fullscreen": false,
-							"height": 600,
-							"width": 800,
-							"resizable": true,
-							"title": "Blink",
-							"visible": true,
-							"center": true,
-							"label": "main",
-							"dragDropEnabled": false
-						}
-    ],
-    "security": {
-      "csp": null
-    }
-  }
+	"$schema": "../node_modules/@tauri-apps/cli/schema.json",
+	"build": {
+		"beforeBuildCommand": "pnpm run build",
+		"beforeDevCommand": "pnpm run dev",
+		"frontendDist": "../dist",
+		"devUrl": "http://localhost:5173"
+	},
+	"bundle": {
+		"active": true,
+		"category": "Video",
+		"copyright": "GPL-3.0-only",
+		"windows": {
+			"certificateThumbprint": null,
+			"digestAlgorithm": "sha256",
+			"timestampUrl": "",
+			"nsis": {
+				"sidebarImage": "../public/installerSideBarImage.bmp",
+				"headerImage": "../public/installerHeaderImage.bmp",
+				"installerIcon": "icons/icon.ico",
+				"displayLanguageSelector": true
+			}
+		},
+		"externalBin": [],
+		"icon": [
+			"icons/32x32.png",
+			"icons/128x128.png",
+			"icons/128x128@2x.png",
+			"icons/icon.icns",
+			"icons/icon.ico"
+		],
+		"linux": {
+			"deb": {
+				"depends": []
+			},
+			"appimage": {
+				"bundleMediaFramework": true
+			}
+		},
+		"longDescription": "A modern desktop client for Jellyfin",
+		"macOS": {
+			"entitlements": null,
+			"exceptionDomain": "",
+			"frameworks": [],
+			"providerShortName": null,
+			"signingIdentity": null
+		},
+		"resources": [],
+		"shortDescription": "Blink",
+		"targets": ["deb", "appimage", "nsis", "app", "dmg"],
+		"licenseFile": "../LICENSE",
+		"createUpdaterArtifacts": "v1Compatible"
+	},
+	"productName": "Blink",
+	"version": "../package.json",
+	"identifier": "com.blink.prayag17",
+	"plugins": {
+		"updater": {
+			"pubkey": "dW50cnVzdGVkIGNvbW1lbnQ6IG1pbmlzaWduIHB1YmxpYyBrZXk6IEZEMTg0MjEzRDYzRjJDN0EKUldSNkxEL1dFMElZL1dxbHA0V2lyVDFEdGpOZXkxMG9XdHVLVnRpVVV5c1Z0OFNRUE45dkpxbFAK",
+			"endpoints": [
+				"https://rawcdn.githack.com/prayag17/Blink/refs/heads/main/latest.json"
+			]
+		}
+	},
+	"app": {
+		"windows": [
+			{
+				"fullscreen": false,
+				"height": 600,
+				"width": 800,
+				"resizable": true,
+				"title": "Blink",
+				"visible": true,
+				"center": true,
+				"label": "main",
+				"dragDropEnabled": false,
+				"backgroundColor": "#08001f"
+			}
+		],
+		"security": {
+			"csp": null
+		}
+	}
 }
