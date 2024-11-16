@@ -132,7 +132,7 @@ const AudioPlayer = () => {
 					</div>
 				</div>
 			),
-		[tracks?.[currentTrack]?.Id, currentTrack],
+		[tracks?.[currentTrack]?.Id, currentTrack, api.configuration],
 	);
 
 	const controls = useMemo(
