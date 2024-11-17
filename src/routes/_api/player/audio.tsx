@@ -1,18 +1,11 @@
 import { useApiInContext } from "@/utils/store/api";
 import { useAudioPlayback } from "@/utils/store/audioPlayback";
-import useQueue from "@/utils/store/queue";
+import useQueue, { setQueue } from "@/utils/store/queue";
 import { Fab, IconButton, Slider, Typography } from "@mui/material";
 import { createFileRoute } from "@tanstack/react-router";
-import React, {
-	useCallback,
-	useEffect,
-	useMemo,
-	useRef,
-	useState,
-} from "react";
+import React, { useEffect, useMemo, useRef, useState } from "react";
 
 import "./audio.scss";
-import LikeButton from "@/components/buttons/likeButton";
 import PlayNextButton from "@/components/buttons/playNextButton";
 import PlayPreviousButton from "@/components/buttons/playPreviousButtom";
 import QueueTrack from "@/components/queueTrack";
@@ -20,6 +13,27 @@ import { getRuntimeMusic, secToTicks, ticksToSec } from "@/utils/date/time";
 import getImageUrlsApi from "@/utils/methods/getImageUrlsApi";
 import { getLyricsApi } from "@jellyfin/sdk/lib/utils/api/lyrics-api";
 import { useQuery } from "@tanstack/react-query";
+
+import {
+	DndContext,
+	type DragEndEvent,
+	DragOverlay,
+	KeyboardSensor,
+	PointerSensor,
+	closestCenter,
+	useSensor,
+	useSensors,
+} from "@dnd-kit/core";
+import {
+	restrictToVerticalAxis,
+	restrictToWindowEdges,
+} from "@dnd-kit/modifiers";
+import {
+	SortableContext,
+	arrayMove,
+	sortableKeyboardCoordinates,
+	verticalListSortingStrategy,
+} from "@dnd-kit/sortable";
 
 export const Route = createFileRoute("/_api/player/audio")({
 	component: AudioPlayerRoute,
@@ -30,11 +44,19 @@ const SEEK_AMOUNT = 10; // seconds to skip on fast_rewind or fast_forward button
 function AudioPlayerRoute() {
 	const api = useApiInContext((s) => s.api);
 	const [queue, currentTrack] = useQueue((s) => [s.tracks, s.currentItemIndex]);
-	const [item] = useAudioPlayback((s) => [s.item]);
-	const audioPlayer: HTMLAudioElement | null = useMemo(
-		() => document.querySelector("#audio-player"),
-		[item],
+	const [item, audioPlayerRef] = useAudioPlayback((s) => [
+		s.item,
+		s.player.ref,
+	]);
+	const [audioPlayer, setAudioPlayer] = useState<HTMLAudioElement | null>(
+		audioPlayerRef?.current,
 	);
+	useEffect(() => {
+		console.log(audioPlayerRef);
+		setAudioPlayer(audioPlayerRef.current);
+	}, [audioPlayerRef?.current]);
+
+	console.log(audioPlayer?.paused);
 
 	const [isScrubbing, setIsScrubbing] = useState(false);
 	const [sliderProgress, setSliderProgress] = useState<number | number[]>(0); // this state hold the slider scrubbing value allowing user to scrub track without changing current time
@@ -56,10 +78,14 @@ function AudioPlayerRoute() {
 	});
 
 	useEffect(() => {
-		audioPlayer?.addEventListener("timeupdate", () => {
-			setProgress(audioPlayer.currentTime ?? 0);
+		audioPlayerRef?.current?.addEventListener("timeupdate", () => {
+			setProgress(audioPlayerRef?.current?.currentTime ?? 0);
 		});
-		console.log(audioPlayer);
+		return () => {
+			audioPlayerRef?.current?.removeEventListener("timeupdate", () => {
+				setProgress(audioPlayerRef?.current?.currentTime ?? 0);
+			});
+		};
 	}, [item?.Id, currentTrack]);
 
 	const lyricsContainer = useRef<HTMLDivElement | null>(null);
@@ -74,11 +100,39 @@ function AudioPlayerRoute() {
 		}
 	}, [showLyrics, audioPlayer?.currentTime]);
 
+	const sensors = useSensors(
+		useSensor(PointerSensor),
+		useSensor(KeyboardSensor, {
+			coordinateGetter: sortableKeyboardCoordinates,
+		}),
+	);
+	const handleDragEnd = (event: DragEndEvent) => {
+		const { active, over } = event;
+		if (active.id !== over?.id) {
+			const prevState = queue;
+			const oldIndex = prevState?.map((item) => item.Id).indexOf(active.id);
+			const newIndex = prevState?.map((item) => item.Id).indexOf(over.id);
+
+			const newState = prevState
+				? arrayMove(prevState, oldIndex, newIndex)
+				: prevState;
+
+			const currentTrack = newState?.map((item) => item.Id).indexOf(item?.Id);
+
+			setQueue(newState, currentTrack);
+			// setQueue(newState);
+		}
+	};
+
+	const [currentDraggingIndex, setCurrentDraggingIndex] = useState<
+		number | null
+	>(null);
+
 	return (
 		<div
 			className="scrollY padded-top flex flex-column"
 			style={{ gap: "1em" }}
-			key={queue[currentTrack]?.Id}
+			key={item?.Id}
 		>
 			<div className="audio-info-container">
 				<div className="audio-info-image-container">
@@ -86,7 +140,7 @@ function AudioPlayerRoute() {
 						<img
 							alt={item.Name ?? "Music"}
 							src={getImageUrlsApi(api).getItemImageUrlById(
-								item.Id,
+								item.Id ?? "",
 								"Primary",
 								{
 									tag: item.ImageTags.Primary,
@@ -122,6 +176,7 @@ function AudioPlayerRoute() {
 							value={isScrubbing ? sliderProgress : secToTicks(progress)}
 							max={item?.RunTimeTicks ?? 1}
 							step={1}
+							key={item?.Id}
 							onChange={(_, newVal) => {
 								setIsScrubbing(true);
 								setSliderProgress(newVal);
@@ -131,8 +186,8 @@ function AudioPlayerRoute() {
 								Array.isArray(newVal)
 									? setProgress(ticksToSec(newVal[0]))
 									: setProgress(ticksToSec(newVal));
-								if (audioPlayer) {
-									audioPlayer.currentTime = Array.isArray(newVal)
+								if (audioPlayerRef?.current) {
+									audioPlayerRef.current.currentTime = Array.isArray(newVal)
 										? ticksToSec(newVal[0])
 										: ticksToSec(newVal);
 								}
@@ -182,13 +237,14 @@ function AudioPlayerRoute() {
 								<span className="material-symbols-rounded">fast_rewind</span>
 							</IconButton>
 							<Fab
-								disabled={!audioPlayer?.readyState}
+								disabled={!audioPlayerRef?.current?.readyState}
+								//@ts-ignore
 								color="white"
 								size="large"
 								onClick={() =>
-									audioPlayer?.paused
-										? audioPlayer.play()
-										: audioPlayer?.pause()
+									audioPlayerRef?.current?.paused
+										? audioPlayerRef?.current?.play()
+										: audioPlayerRef?.current?.pause()
 								}
 							>
 								<span
@@ -197,7 +253,7 @@ function AudioPlayerRoute() {
 										fontSize: "2.4em",
 									}}
 								>
-									{audioPlayer?.paused ? "play_arrow" : "pause"}
+									{audioPlayerRef?.current?.paused ? "play_arrow" : "pause"}
 								</span>
 							</Fab>
 							<IconButton
@@ -238,7 +294,7 @@ function AudioPlayerRoute() {
 								className="audio-lyrics-line"
 								key={`${lyric.Text}${index}`}
 								data-active-lyric={
-									secToTicks(audioPlayer?.currentTime) >= lyric.Start &&
+									secToTicks(audioPlayer?.currentTime) >= (lyric.Start ?? 0) &&
 									secToTicks(audioPlayer?.currentTime) <
 										(lyrics.data?.[0]?.Lyrics?.Lyrics?.[index + 1]?.Start ?? 0)
 								}
@@ -263,14 +319,58 @@ function AudioPlayerRoute() {
 					)}
 				</div>
 			)}
-			<div className="audio-queue-container">
-				<Typography variant="h5">Queue:</Typography>
-				<div className="audio-queue">
-					{queue.map((track, index) => (
-						<QueueTrack key={track.Id} track={track} index={index} />
-					))}
-				</div>
-			</div>
+			<DndContext
+				sensors={sensors}
+				collisionDetection={closestCenter}
+				onDragEnd={handleDragEnd}
+				onDragStart={(event) => {
+					const { active } = event;
+					setCurrentDraggingIndex(
+						queue?.map((item) => item.Id).indexOf(active.id),
+					);
+				}}
+				modifiers={[restrictToVerticalAxis]}
+			>
+				{queue && (
+					<div className="audio-queue-container">
+						<Typography variant="h5">Queue:</Typography>
+						<SortableContext
+							items={queue?.map((track) => track.Id)}
+							strategy={verticalListSortingStrategy}
+						>
+							<div className="audio-queue">
+								{queue?.map((track, index) => (
+									<QueueTrack key={track.Id} track={track} index={index} />
+								))}
+							</div>
+						</SortableContext>
+						<DragOverlay modifiers={[restrictToWindowEdges]}>
+							{(currentDraggingIndex ?? -1) >= 0 && (
+								<div className="audio-queue-track dragging">
+									<span className="material-symbols-rounded">drag_handle</span>
+									<div className="audio-queue-track-info">
+										<Typography className="audio-queue-track-info-name">
+											{queue[currentDraggingIndex].Name}
+										</Typography>
+										<Typography
+											fontWeight={300}
+											className="opacity-07"
+											variant="subtitle2"
+										>
+											{queue[currentDraggingIndex].Artists?.join(", ")}
+										</Typography>
+									</div>
+									<Typography className="opacity-07">
+										{getRuntimeMusic(
+											queue[currentDraggingIndex].RunTimeTicks ?? 0,
+										)}
+									</Typography>
+								</div>
+							)}
+						</DragOverlay>
+					</div>
+				)}
+			</DndContext>
 		</div>
 	);
 }

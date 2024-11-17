@@ -11,6 +11,25 @@ import Typography from "@mui/material/Typography";
 
 import "./cardScroller.scss";
 
+//@ts-ignore - I don't know the prop type for react-multi-carousel's customRightArrow and customLeftArrow
+function RightButton(props) {
+	const { carouselState, children, rtl, ...restProps } = props;
+	return (
+		<IconButton className="card-scroller-button right" {...restProps}>
+			<div className="material-symbols-rounded">chevron_right</div>
+		</IconButton>
+	);
+}
+//@ts-ignore - I don't know the prop type for react-multi-carousel's customRightArrow and customLeftArrow
+function LeftButton(props) {
+	const { carouselState, children, rtl, ...restProps } = props;
+	return (
+		<IconButton className="card-scroller-button left" {...restProps}>
+			<div className="material-symbols-rounded">chevron_left</div>
+		</IconButton>
+	);
+}
+
 export const CardScroller = ({
 	children,
 	displayCards,
@@ -77,20 +96,11 @@ export const CardScroller = ({
 				draggable
 				responsive={responsive}
 				arrows
-				rtl={false}
 				className="card-scroller"
 				customTransition="all .6s"
 				transitionDuration={600}
-				customRightArrow={
-					<IconButton className="card-scroller-button right">
-						<div className="material-symbols-rounded">chevron_right</div>
-					</IconButton>
-				}
-				customLeftArrow={
-					<IconButton className="card-scroller-button left">
-						<div className="material-symbols-rounded">chevron_left</div>
-					</IconButton>
-				}
+				customRightArrow={<RightButton />}
+				customLeftArrow={<LeftButton />}
 			>
 				{children}
 			</Carousel>

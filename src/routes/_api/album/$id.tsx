@@ -212,7 +212,7 @@ function MusicAlbumTitlePage() {
 							/>
 						</div>
 						<div className="item-info-track-container ">
-							{allDiscs.length > 0 ? (
+							{allDiscs.length > 1 ? (
 								allDiscs.map((disc) => (
 									<>
 										<div

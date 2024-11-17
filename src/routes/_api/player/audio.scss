@@ -48,15 +48,19 @@
         flex-direction: column;
         width: 100%;
         align-items: center;
-        gap: 1em;
+        
         margin-top: 2em;
         &-track {
+            padding: 1em;
             display: grid;
             grid-template-columns: 3em 1fr 6em;
             align-items: center;
             justify-content: center;
             width: 100%;
             gap: 1em;
+            .material-symbols-rounded{
+                cursor: grab;
+            }
             &-info-name {
                 transition: $transition-time-fast;
             }
@@ -66,11 +70,17 @@
                     font-weight: 500;
                 }
             }
+            &.dragging {
+                background: black;
+                border-radius: 10px;
+                width: calc(100% + 2em);
+                cursor: grabbing;
+            }
         }
     }
     &-lyrics {
         max-height: 40vh;
-        overflow:visible;
+        overflow: visible;
         background: rgb(255 255 255 / 0.05);
         // border: 1px solid rgb(255 255 255 / 0.2);
         padding: 2em;

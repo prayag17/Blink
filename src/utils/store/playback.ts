@@ -13,7 +13,7 @@ import playbackProfile from "../playback-profiles";
 import type IntroMediaInfo from "../types/introMediaInfo";
 import type subtitlePlaybackInfo from "../types/subtitlePlaybackInfo";
 import { axiosClient } from "./api";
-import { playAudio } from "./audioPlayback";
+import { generateAudioStreamUrl, playAudio } from "./audioPlayback";
 import useQueue, { setQueue, setTrackIndex } from "./queue";
 
 type PlaybackStore = {
@@ -139,16 +139,16 @@ export const playItemFromQueue = async (
 	const prevMediaSourceId = usePlaybackStore.getState().mediaSource.id;
 	const item = queueItems[requestedItemIndex];
 	if (item.Type === "Audio") {
-		const urlOptions = {
-			deviceId: api?.deviceInfo.id,
+		const playbackUrl = generateAudioStreamUrl(
+			item.Id,
 			userId,
-			api_key: api?.accessToken,
-		};
-		const urlParams = new URLSearchParams(urlOptions).toString();
-
-		const playbackUrl = `${api.basePath}/Audio/${item?.Id}/universal?${urlParams}`;
+			api?.deviceInfo.id,
+			api?.basePath,
+			api?.accessToken,
+		);
 		console.log(item);
-		playAudio(playbackUrl, item, undefined, queueItems, requestedItemIndex);
+		playAudio(playbackUrl, item, undefined);
+		setQueue(queueItems, requestedItemIndex);
 	} else {
 		const mediaSource = (
 			await getMediaInfoApi(api).getPostedPlaybackInfo({

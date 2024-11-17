@@ -72,7 +72,9 @@ const AudioPlayer = () => {
 			// 		await audioRef.current.play();
 			// 		setLoading(false);
 			// 	});
-			// setAudioRef(audioRef);
+
+			// Set the audio ref in the store to allow for global control
+			setAudioRef(audioRef);
 		}
 	}, [url, tracks?.[currentTrack]?.Id]);
 
@@ -132,7 +134,7 @@ const AudioPlayer = () => {
 					</div>
 				</div>
 			),
-		[tracks?.[currentTrack]?.Id, currentTrack, api.configuration],
+		[tracks?.[currentTrack]?.Id, currentTrack, api?.configuration],
 	);
 
 	const controls = useMemo(
