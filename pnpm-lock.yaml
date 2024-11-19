@@ -49,7 +49,7 @@ importers:
         version: 9.7.5(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
       '@tanem/react-nprogress':
         specifier: ^5.0.52
-        version: 5.0.52(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
+        version: 5.0.53(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
       '@tanstack/react-query':
         specifier: ^5.59.20
         version: 5.59.20(react@18.3.1)
@@ -79,7 +79,7 @@ importers:
         version: 2.0.0
       '@tauri-apps/plugin-store':
         specifier: github:tauri-apps/tauri-plugin-store#v2
-        version: https://codeload.github.com/tauri-apps/tauri-plugin-store/tar.gz/7b5225289975065d1aac72c3b0a436d111efef4c
+        version: https://codeload.github.com/tauri-apps/tauri-plugin-store/tar.gz/f8b81577000e2f9a57f0715261a8f1e5b66211ca
       '@tauri-apps/plugin-updater':
         specifier: 2.0.0
         version: 2.0.0
@@ -1479,8 +1479,8 @@ packages:
     peerDependencies:
       '@svgr/core': '*'
 
-  '@tanem/react-nprogress@5.0.52':
-    resolution: {integrity: sha512-ncDcnDS/vm79sqPmBmeslA5TeA3+7VMmLgo6SPkjmRivHmImV/5DqzcbCltopkpadZ5/mSyCCPoQEi1bvU/VMQ==}
+  '@tanem/react-nprogress@5.0.53':
+    resolution: {integrity: sha512-leYKdK85/MSFz2WdcZKMI6Xaq63U06V6ERk1H+ovPPIWeVemK3HIBPb3O3Hsee9RliV5kolcM06epcuY36q0Dw==}
     peerDependencies:
       react: ^16.8.0 || ^17.0.0 || ^18.0.0
       react-dom: ^16.8.0 || ^17.0.0 || ^18.0.0
@@ -1658,8 +1658,8 @@ packages:
   '@tauri-apps/plugin-process@2.0.0':
     resolution: {integrity: sha512-OYzi0GnkrF4NAnsHZU7U3tjSoP0PbeAlO7T1Z+vJoBUH9sFQ1NSLqWYWQyf8hcb3gVWe7P1JggjiskO+LST1ug==}
 
-  '@tauri-apps/plugin-store@https://codeload.github.com/tauri-apps/tauri-plugin-store/tar.gz/7b5225289975065d1aac72c3b0a436d111efef4c':
-    resolution: {tarball: https://codeload.github.com/tauri-apps/tauri-plugin-store/tar.gz/7b5225289975065d1aac72c3b0a436d111efef4c}
+  '@tauri-apps/plugin-store@https://codeload.github.com/tauri-apps/tauri-plugin-store/tar.gz/f8b81577000e2f9a57f0715261a8f1e5b66211ca':
+    resolution: {tarball: https://codeload.github.com/tauri-apps/tauri-plugin-store/tar.gz/f8b81577000e2f9a57f0715261a8f1e5b66211ca}
     version: 2.1.0
 
   '@tauri-apps/plugin-updater@2.0.0':
@@ -1986,8 +1986,8 @@ packages:
     resolution: {integrity: sha512-QM8q3zDe58hqUqjraQOmzZ1LIH9SWQJTlEKCH4kJ2oQvLZk7RbQXvtDM2XEq3fwkV9CCvvH4LA0AV+ogFsBM2Q==}
     engines: {node: '>=8'}
 
-  effect@3.10.14:
-    resolution: {integrity: sha512-NtEeDltifeP6SX1JptGL+k1k6CDjB++Yc7enAKEj3Pd7/4Llb4CDgZybqyiyqBkGK805ZLOIkyAyELdoJpmcqg==}
+  effect@3.10.15:
+    resolution: {integrity: sha512-LdczPAFbtij3xGr9i+8PyDtuWdlXjSY5UJ8PKrYrr0DClKfR/OW3j8sxtambWYljzJAYD865KFhv7LdbWdG7VQ==}
 
   electron-to-chromium@1.5.57:
     resolution: {integrity: sha512-xS65H/tqgOwUBa5UmOuNSLuslDo7zho0y/lgQw35pnrqiZh7UOWHCeL/Bt6noJATbA6tpQJGCifsFsIRZj1Fqg==}
@@ -3705,7 +3705,7 @@ snapshots:
       ast-types: 0.14.2
       cli-high: 0.4.3
       diff: 5.2.0
-      effect: 3.10.14
+      effect: 3.10.15
       nanoid: 5.0.8
       recast: 0.23.9
       xycolors: 0.1.2
@@ -4172,7 +4172,7 @@ snapshots:
     transitivePeerDependencies:
       - supports-color
 
-  '@tanem/react-nprogress@5.0.52(react-dom@18.3.1(react@18.3.1))(react@18.3.1)':
+  '@tanem/react-nprogress@5.0.53(react-dom@18.3.1(react@18.3.1))(react@18.3.1)':
     dependencies:
       '@babel/runtime': 7.26.0
       hoist-non-react-statics: 3.3.2
@@ -4351,7 +4351,7 @@ snapshots:
     dependencies:
       '@tauri-apps/api': 2.1.1
 
-  '@tauri-apps/plugin-store@https://codeload.github.com/tauri-apps/tauri-plugin-store/tar.gz/7b5225289975065d1aac72c3b0a436d111efef4c':
+  '@tauri-apps/plugin-store@https://codeload.github.com/tauri-apps/tauri-plugin-store/tar.gz/f8b81577000e2f9a57f0715261a8f1e5b66211ca':
     dependencies:
       '@tauri-apps/api': 2.1.1
 
@@ -4700,7 +4700,7 @@ snapshots:
     dependencies:
       is-obj: 2.0.0
 
-  effect@3.10.14:
+  effect@3.10.15:
     dependencies:
       fast-check: 3.23.1
 
