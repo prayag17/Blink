@@ -1,6 +1,6 @@
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { RouterProvider, createRouter } from "@tanstack/react-router";
-import React, { Suspense } from "react";
+import React, { Suspense, useEffect } from "react";
 import ReactDOM from "react-dom/client";
 // Import the generated route tree
 import { routeTree } from "./routeTree.gen";
@@ -62,6 +62,15 @@ function ProviderWrapper() {
 	if (api?.accessToken && !user?.Id) {
 		fetchCurrentUser(api);
 	}
+	useEffect(() => {
+		if (api) {
+			console.log(`API is set - Route ${window.location.pathname}`);
+			console.log(api);
+		} else {
+			console.log(`API is not set - Route ${window.location.pathname}`);
+		}
+		router.invalidate(); // This is a hack to force the router to re-evaluate the routes and re-run the beforeLoad functions
+	}, [api]);
 	return (
 		<RouterProvider
 			router={router}

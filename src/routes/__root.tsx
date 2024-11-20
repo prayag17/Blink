@@ -51,11 +51,8 @@ import { DndProvider } from "react-dnd";
 import { HTML5Backend } from "react-dnd-html5-backend";
 
 type ApiContext = {
-	api: Api;
-	createApi: (
-		serverAddress: string | undefined | null,
-		accessToken: string | undefined | null,
-	) => void;
+	api: Api | undefined;
+	createApi: (serverAddress: string, accessToken: string | undefined) => void;
 	user: UserDto | null | undefined;
 	jellyfinSDK: Jellyfin;
 	fetchCurrentUser: (api: Api | undefined) => Promise<void>;

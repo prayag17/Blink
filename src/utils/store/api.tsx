@@ -11,7 +11,7 @@ import axios from "axios";
 import axiosTauriApiAdapter from "axios-tauri-api-adapter";
 
 type ApiStore = {
-	api: Api;
+	api: Api | undefined;
 	deviceId: string | null;
 	jellyfin: Jellyfin;
 	createApi: (serverAddress: string, accessToken?: string | undefined) => void;

@@ -1,8 +1,7 @@
-import { saveUser } from "@/utils/storage/user";
+import useInterval from "@/utils/hooks/useInterval";
 import { useApiInContext } from "@/utils/store/api";
 import { getQuickConnectApi } from "@jellyfin/sdk/lib/utils/api/quick-connect-api";
-import { getUserApi } from "@jellyfin/sdk/lib/utils/api/user-api";
-import { LoadingButton } from "@mui/lab";
+import { LoadingButton, type LoadingButtonProps } from "@mui/lab";
 import {
 	Button,
 	Checkbox,
@@ -11,32 +10,47 @@ import {
 	DialogContent,
 	DialogContentText,
 	FormControlLabel,
+	Slide,
 	Tooltip,
 	Typography,
 } from "@mui/material";
-import { useMutation, useQuery } from "@tanstack/react-query";
-import { useNavigate } from "@tanstack/react-router";
-import type { Timeout } from "@tanstack/react-router/dist/esm/utils";
+import type { TransitionProps } from "@mui/material/transitions";
+import { skipToken, useMutation, useQuery } from "@tanstack/react-query";
 import { writeText } from "@tauri-apps/plugin-clipboard-manager";
 import { useSnackbar } from "notistack";
 import React, { useState } from "react";
 
-const QuickConnectButton = () => {
-	const api = useApiInContext((s) => s.api);
-	const createApi = useApiInContext((s) => s.createApi);
-	const headers = {
-		"X-Emby-Authorization": `MediaBrowser Client="${api.clientInfo.name}", Device="${api.deviceInfo.name}", DeviceId="${api.deviceInfo.id}", Version="${api.clientInfo.version}"`,
-	};
+const Transition = React.forwardRef(function Transition(
+	props: TransitionProps & {
+		children: React.ReactElement<any, any>;
+	},
+	ref: React.Ref<unknown>,
+) {
+	return (
+		<Slide
+			direction="up"
+			mountOnEnter
+			unmountOnExit
+			ref={ref}
+			timeout={{ enter: 500, exit: 1500 }}
+			{...props}
+		/>
+	);
+});
 
-	const [quickConnectStatusInterval, setQuickConnectStatusInterval] =
-		useState<Timeout | null>(null);
+const QuickConnectButton = (props: LoadingButtonProps) => {
+	const api = useApiInContext((s) => s.api);
+	const headers = {
+		"X-Emby-Authorization": `MediaBrowser Client="${api?.clientInfo.name}", Device="${api?.deviceInfo.name}", DeviceId="${api?.deviceInfo.id}", Version="${api?.clientInfo.version}"`,
+	};
 
 	const quickConnectEnabled = useQuery({
 		queryKey: ["quick-connect-button", "check-quick-connect-enabled"],
-		queryFn: async () => await getQuickConnectApi(api).getQuickConnectEnabled(),
+		queryFn: api
+			? async () => await getQuickConnectApi(api).getQuickConnectEnabled()
+			: skipToken,
+		enabled: Boolean(api),
 	});
-
-	const navigate = useNavigate();
 
 	const { enqueueSnackbar } = useSnackbar();
 	const [quickConnectCode, setQuickConnectCode] = useState<string | null>();
@@ -44,12 +58,14 @@ const QuickConnectButton = () => {
 	const checkQuickConnectStatus = useMutation({
 		mutationKey: ["quick-connect-button", "check-quick-connect-status"],
 		mutationFn: async (secret: string) =>
-			(
-				await getQuickConnectApi(api).getQuickConnectState(
-					{ secret },
-					{ headers },
-				)
-			).data,
+			api
+				? (
+						await getQuickConnectApi(api).getQuickConnectState(
+							{ secret },
+							{ headers },
+						)
+					).data
+				: skipToken,
 	});
 	const initQuickConnect = useMutation({
 		mutationKey: ["quick-connect-button", "initiate-connection"],
@@ -59,57 +75,42 @@ const QuickConnectButton = () => {
 					variant: "error",
 				});
 			}
-			return await getQuickConnectApi(api).initiateQuickConnect({ headers });
+			if (api) {
+				return await getQuickConnectApi(api).initiateQuickConnect({ headers });
+			}
 		},
 		onSuccess: (result) => {
-			setQuickConnectCode(result.data.Code);
-			const authAwaitInterval = setInterval(async () => {
-				// Check if user has been authenticated by the server
-				const quickConnectCheck = await checkQuickConnectStatus.mutateAsync(
-					result.data.Secret,
-				);
-				if (quickConnectCheck.Authenticated) {
-					const userAuth = await getUserApi(api).authenticateWithQuickConnect({
-						quickConnectDto: {
-							Secret: quickConnectCheck.Secret,
-						},
-					});
-					enqueueSnackbar(`Logged in as ${userAuth.data.User?.Name}!`, {
-						variant: "success",
-					});
-					sessionStorage.setItem("accessToken", userAuth.data.AccessToken);
-					createApi(api.basePath, userAuth.data.AccessToken);
-
-					if (rememberUser) {
-						await saveUser(userAuth.data.User?.Name, userAuth.data.AccessToken);
-					}
-
-					clearInterval(authAwaitInterval);
-
-					navigate({ to: "/home" });
-				}
-			}, 1000);
-			setQuickConnectStatusInterval(authAwaitInterval);
+			setQuickConnectCode(result?.data.Code);
 		},
 		onError: (error) => {
 			enqueueSnackbar("Error initiating Quick Connect.", { variant: "error" });
 			console.error(error);
 		},
 	});
+
+	useInterval(
+		() => {
+			if (quickConnectCode) {
+				checkQuickConnectStatus.mutate(quickConnectCode);
+			}
+		},
+		quickConnectCode ? 1000 : null,
+	);
+
 	return (
 		<>
 			<LoadingButton
+				{...props}
 				disabled={
 					quickConnectEnabled.isPending ||
 					Boolean(!quickConnectEnabled.data?.data)
 				}
-				loading={
+				loading={Boolean(
 					initQuickConnect.isPending ||
-					checkQuickConnectStatus.isPending ||
-					(quickConnectCode && !checkQuickConnectStatus.data?.Authenticated)
-				}
-				variant="contained"
-				size="large"
+						checkQuickConnectStatus.isPending ||
+						(quickConnectCode && !checkQuickConnectStatus.data?.Authenticated),
+				)}
+				variant={props.variant ?? "contained"}
 				style={{ flex: 1 }}
 				onClick={initQuickConnect.mutate}
 			>
@@ -119,10 +120,12 @@ const QuickConnectButton = () => {
 				open={Boolean(quickConnectCode)}
 				onClose={() => {
 					setQuickConnectCode(null);
-					clearInterval(quickConnectStatusInterval);
+					initQuickConnect.reset();
+					checkQuickConnectStatus.reset();
 				}}
 				fullWidth
 				maxWidth="xs"
+				TransitionComponent={Transition}
 			>
 				<DialogContent
 					style={{
@@ -159,8 +162,8 @@ const QuickConnectButton = () => {
 									borderRadius: "10px",
 									cursor: "pointer",
 								}}
-								onClick={async (e) => {
-									await writeText(quickConnectCode);
+								onClick={async () => {
+									quickConnectCode && (await writeText(quickConnectCode));
 									enqueueSnackbar("Quick Connect Code copied!", {
 										variant: "info",
 										key: "copiedText",

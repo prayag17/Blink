@@ -36,7 +36,7 @@ export const Route = createFileRoute("/_api")({
 								userOnDisk.AccessToken,
 							);
 							try {
-								const user = await getUserApi(apiTemp).getCurrentUser();
+								await getUserApi(apiTemp).getCurrentUser();
 								// return { user: user.data };
 							} catch (error) {
 								console.error(error);
@@ -50,7 +50,6 @@ export const Route = createFileRoute("/_api")({
 						}
 						context.createApi(currentServer?.address, userOnDisk.AccessToken);
 					} else {
-						context.jellyfinSDK.createApi(currentServer?.address, undefined);
 						context.createApi(currentServer?.address, undefined); // Creates Api
 
 						// return { api: apiTemp };
@@ -61,7 +60,6 @@ export const Route = createFileRoute("/_api")({
 			if (context.api.accessToken && location.pathname !== "/login/manual") {
 				try {
 					await getUserApi(context.api).getCurrentUser(); // Verify user is able to authenticate
-		
 				} catch (error) {
 					console.error(error);
 					throw redirect({

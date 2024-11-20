@@ -115,16 +115,19 @@ const CardComponent = ({
 				<img
 					alt={item.Name ?? "blink"}
 					src={
-						overrideIcon === "User"
-							? `${api.basePath}/Users/${item.Id}/Images/Primary`
-							: getImageUrlsApi(api).getItemImageUrlById(
-									(seriesId ? item.SeriesId : (item.AlbumId ?? item.Id)) ?? "",
-									imageType,
-									{
-										quality: 90,
-										fillWidth: cardType === "thumb" ? 560 : 280,
-									},
-								)
+						api
+							? overrideIcon === "User"
+								? `${api?.basePath}/Users/${item.Id}/Images/Primary`
+								: getImageUrlsApi(api).getItemImageUrlById(
+										(seriesId ? item.SeriesId : (item.AlbumId ?? item.Id)) ??
+											"",
+										imageType,
+										{
+											quality: 90,
+											fillWidth: cardType === "thumb" ? 560 : 280,
+										},
+									)
+							: ""
 					}
 					style={{
 						height: "100%",
