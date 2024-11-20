@@ -1,6 +1,6 @@
+import { AppBarBackOnly } from "@/components/appBar/backOnly";
 import { getUserApi } from "@jellyfin/sdk/lib/utils/api/user-api";
-import { CircularProgress, Typography } from "@mui/material";
-import { createFileRoute, redirect } from "@tanstack/react-router";
+import { Outlet, createFileRoute, redirect } from "@tanstack/react-router";
 import React from "react";
 
 export const Route = createFileRoute("/_api/login")({
@@ -19,16 +19,12 @@ export const Route = createFileRoute("/_api/login")({
 			}
 		}
 	},
-	// component: () => {
-	// 	const data = Route.useRouteContext();
-	// 	console.log(data);
-	// 	return (
-	// 		<div style={{ height: "100vh" }} className="flex flex-column flex-center">
-	// 			<CircularProgress size={86} thickness={2} />
-	// 			<Typography mt={4} align="center">
-	// 				Fetching users...
-	// 			</Typography>
-	// 		</div>
-	// 	);
-	// },
+	component: () => {
+		return (
+			<>
+				<AppBarBackOnly />
+				<Outlet />
+			</>
+		);
+	},
 });

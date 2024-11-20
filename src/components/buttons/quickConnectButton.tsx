@@ -114,7 +114,7 @@ const QuickConnectButton = (props: LoadingButtonProps) => {
 				style={{ flex: 1 }}
 				onClick={initQuickConnect.mutate}
 			>
-				Quick Connect
+				Use Quick Connect
 			</LoadingButton>
 			<Dialog
 				open={Boolean(quickConnectCode)}

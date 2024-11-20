@@ -74,20 +74,18 @@ function LoginPublicUsersList() {
 	}, []);
 	if (users.isSuccess) {
 		return (
-			<>
-				<AppBarBackOnly />
-				<div className="login-container">
-					<Typography variant="h4" align="center">
-						Users
-					</Typography>
+			<div className="login-container">
+				<Typography variant="h4" align="center">
+					Users
+				</Typography>
 
-					<div className="user-list-container roundedScrollbar">
-						{users.data.map((item) => {
-							return <UserCard user={item} key={item.Id} />;
-						})}
-					</div>
+				<div className="user-list-container roundedScrollbar">
+					{users.data.map((item) => {
+						return <UserCard user={item} key={item.Id} />;
+					})}
+				</div>
 
-					{/* <div className="buttons">
+				{/* <div className="buttons">
 						<Button
 							color="secondary"
 							variant="contained"
@@ -98,18 +96,17 @@ function LoginPublicUsersList() {
 						</Button>
 						<QuickConnectButton />
 					</div> */}
-					<Chip
-						style={{ marginLeft: "50%", transform: "translateX(-50%)" }}
-						label={
-							<Typography variant="body2" align="center">
-								Don't see your user? Try using{" "}
-								<Link to="/login/manual">Manual Login</Link> or{" "}
-								<Link to="/setup/server/list">Changing Server</Link>
-							</Typography>
-						}
-					/>
-				</div>
-			</>
+				<Chip
+					style={{ marginLeft: "50%", transform: "translateX(-50%)" }}
+					label={
+						<Typography variant="body2" align="center">
+							Don't see your user? Try using{" "}
+							<Link to="/login/manual">Manual Login</Link> or{" "}
+							<Link to="/setup/server/list">Changing Server</Link>
+						</Typography>
+					}
+				/>
+			</div>
 		);
 	}
 	if (users.isError) {

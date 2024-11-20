@@ -66,7 +66,7 @@
 	}
 
 	&-form {
-		width: 28em;
+		width: 24em;
 		display: flex;
 		flex-direction: column;
 		justify-content: center;
@@ -81,7 +81,7 @@
 			background: rgb(255 255 255 / 0.05);
 			padding: 2em;
 			border-radius: 20px;
-			border: 1px solid rgb(255 255 255 / 0.1);
+			// border: 1px solid rgb(255 255 255 / 0.1);
 			&.padded-top {
 				margin-top: 25vh;
 			}
