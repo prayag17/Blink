@@ -1,3 +1,41 @@
+- # 0.0.7-dev (20/11/2024)
+    - chore(deps): update dependencies
+    - refactor: change UI of login/list and fix Api not being defined in context
+    - fix: player/audio route not able to interact with audioPlayer
+    - fix: audio player info not visible
+    - fix: audio player not playing audio
+    - fix: toggling ssubtitles not working
+    - fix: subtitles not being rendered #401
+    - fix: hero carousel indicators not scrolling
+    - fix: vite build error for safari13
+    - fix: blink not launching or rendering on opening
+    - Merge branch 'main' of https://github.com/prayag17/JellyPlayer
+    - chore(deps): update dependencies
+    - Merge pull request #410 from prayag17/renovate/tauri-plugin-notification-2.x-lockfile
+    - Merge pull request #409 from Blackspirits/patch-1
+    - chore(deps): update dependencies
+    - (origin/renovate/tauri-plugin-notification-2.x-lockfile) fix(deps): update rust crate tauri-plugin-notification to v2.0.1  
+    - feat: allow downloading images from ImageViewer
+    - Update index.tsx
+    - feat: implement basic image viewer #338 #240
+    - fix: react infinite depth error
+    - fix: vite config
+    - refactor: remove @million/js and @million/lint
+    - refactor: remove Cargo.lock from .gitignore #400
+    - chore(deps): update dependencies
+    - refactor: code cleanup
+    - fix: bug_report showing extra fields
+    - refactor: remove redundant calls for getCurrentUser
+    - feat: show queue item from currently playing item in queueButton
+    - chore(deps): update dependencies
+    - feat: remember library filters #192
+    - Merge pull request #370 from prayag17/renovate/tauri-apps-plugin-clipboard-manager-2.x
+    - fix(deps): update dependency @tauri-apps/plugin-clipboard-manager to v2.1.0-beta.6
+    - Merge pull request #381 from prayag17/renovate/wavesurfer.js-7.x-lockfile
+    - Merge pull request #342 from prayag17/renovate/tanstack-router-monorepo
+    - Merge pull request #368 from prayag17/renovate/tauri-monorepo
+    - chore(release): update latest.json
+
 - # 0.0.6-dev (9/7/2024)
     > **Note** : This is an unstable release
     - feat: add video player slider bubble theming #337
