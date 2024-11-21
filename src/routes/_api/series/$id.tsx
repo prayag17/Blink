@@ -55,7 +55,7 @@ import TrailerButton from "@/components/buttons/trailerButton";
 import ShowMoreText from "@/components/showMoreText";
 import { SeasonSelectorSkeleton } from "@/components/skeleton/seasonSelector";
 import { getTypeIcon } from "@/components/utils/iconsCollection";
-import { setBackdrop, useBackdropStore } from "@/utils/store/backdrop";
+import { useBackdropStore } from "@/utils/store/backdrop";
 
 import IconLink from "@/components/iconLink";
 import EpisodeSkeleton from "@/components/skeleton/episode";
@@ -102,6 +102,8 @@ function SeriesTitlePage() {
 	const { id } = Route.useParams();
 
 	const api = Route.useRouteContext().api;
+
+	const setBackdrop = useBackdropStore((s) => s.setBackdrop);
 
 	const user = useCentralStore((s) => s.currentUser);
 

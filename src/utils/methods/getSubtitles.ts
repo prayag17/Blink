@@ -2,9 +2,9 @@ import type { MediaStream } from "@jellyfin/sdk/lib/generated-client";
 import type subtitlePlaybackInfo from "../types/subtitlePlaybackInfo";
 
 export default function getSubtitle(
-	track: number | "nosub",
+	track: number | "nosub" | undefined,
 	mediaStreams: MediaStream[] | undefined | null,
-): subtitlePlaybackInfo {
+): subtitlePlaybackInfo | undefined {
 	const availableSubtitles = mediaStreams?.filter(
 		(stream) => stream.Type === "Subtitle",
 	);
@@ -29,11 +29,13 @@ export default function getSubtitle(
 	);
 	const url = requiredSubtitle?.[0]?.DeliveryUrl;
 	console.log(track);
-	return {
-		track,
-		enable: true,
-		format: requiredSubtitle?.[0]?.Codec,
-		allTracks: availableSubtitles,
-		url,
-	};
+	if (track) {
+		return {
+			track,
+			enable: true,
+			format: requiredSubtitle?.[0]?.Codec,
+			allTracks: availableSubtitles,
+			url,
+		};
+	}
 }

@@ -18,6 +18,7 @@ import {
 	ItemFilter,
 	LocationType,
 	MediaProtocol,
+	type MediaSegmentDtoQueryResult,
 	type PlaybackInfoResponse,
 	SortOrder,
 	type UserItemDataDto,
@@ -42,9 +43,9 @@ import { axiosClient, useApiInContext } from "@/utils/store/api";
 import { usePhotosPlayback } from "@/utils/store/photosPlayback";
 import type IntroMediaInfo from "@/utils/types/introMediaInfo";
 import { getMediaInfoApi } from "@jellyfin/sdk/lib/utils/api/media-info-api";
+import { getMediaSegmentsApi } from "@jellyfin/sdk/lib/utils/api/media-segments-api";
 import { getUserApi } from "@jellyfin/sdk/lib/utils/api/user-api";
 import { getUserLibraryApi } from "@jellyfin/sdk/lib/utils/api/user-library-api";
-import { getUserViewsApi } from "@jellyfin/sdk/lib/utils/api/user-views-api";
 import type { SxProps } from "@mui/material";
 import type { AxiosResponse } from "axios";
 
@@ -130,8 +131,11 @@ const PlayButton = ({
 			setPlaybackDataLoading(true);
 			let result: undefined | AxiosResponse<BaseItemDtoQueryResult, any>;
 			let mediaSource: undefined | AxiosResponse<PlaybackInfoResponse, any>;
-			let introInfo: undefined | IntroMediaInfo;
+			let introInfo: undefined | MediaSegmentDtoQueryResult;
 			const indexNumber = item.IndexNumber ? item.IndexNumber - 1 : 0;
+			if (!api) {
+				throw new Error("API is not available");
+			}
 			if (playlistItem) {
 				result = await getPlaylistsApi(api).getPlaylistItems({
 					userId: userId,
@@ -172,14 +176,10 @@ const PlayButton = ({
 							});
 							try {
 								introInfo = (
-									await axiosClient.get(
-										`${api.basePath}/Episode/${result.data.Items?.[0]?.Id}/IntroSkipperSegments`,
-										{
-											headers: {
-												Authorization: `MediaBrowser Token=${api.accessToken}`,
-											},
-										},
-									)
+									await getMediaSegmentsApi(api).getItemSegments({
+										itemId: item.Id,
+										includeSegmentTypes: ["Intro"],
+									})
 								)?.data;
 							} catch (error) {
 								console.error(error);
@@ -248,7 +248,7 @@ const PlayButton = ({
 						break;
 					case BaseItemKind.MusicArtist:
 						result = await getItemsApi(api).getItems({
-							artistIds: [item.Id],
+							artistIds: [item.Id ?? ""],
 							recursive: true,
 							includeItemTypes: [BaseItemKind.Audio],
 							userId: userId,
@@ -279,7 +279,7 @@ const PlayButton = ({
 								})
 							).data;
 							result = await getItemsApi(api).getItems({
-								parentId: photo.ParentId,
+								parentId: photo.ParentId ?? "",
 								filters: [ItemFilter.IsNotFolder],
 								recursive: false,
 								sortBy: ["SortName"],
@@ -291,7 +291,7 @@ const PlayButton = ({
 						break;
 					default:
 						result = await getItemsApi(api).getItems({
-							ids: [item.Id],
+							ids: [item.Id ?? ""],
 							userId: userId,
 							fields: [
 								ItemFields.MediaSources,
@@ -306,11 +306,11 @@ const PlayButton = ({
 							audioStreamIndex: currentAudioTrack,
 							subtitleStreamIndex:
 								currentSubTrack === "nosub" ? -1 : currentSubTrack,
-							itemId: item.Id,
+							itemId: item.Id ?? "",
 							startTimeTicks:
 								result.data.Items?.[0].UserData?.PlaybackPositionTicks,
 							userId: userId,
-							mediaSourceId: result.data.Items?.[0].MediaSources?.[0].Id,
+							mediaSourceId: result.data.Items?.[0].MediaSources?.[0].Id ?? "",
 							playbackInfoDto: {
 								DeviceProfile: playbackProfile,
 							},
@@ -321,18 +321,15 @@ const PlayButton = ({
 			return { item: result?.data, mediaSource: mediaSource?.data, introInfo };
 		},
 		onSuccess: (result: PlayResult | null) => {
+			if (!api) {
+				console.error("API is not available");
+				return;
+			}
 			if (trackIndex) {
 				// Playlist Playback
 				enqueueSnackbar("Playlist playback is WIP", { variant: "info" });
 			} else if (audio) {
 				// Album/Individual audio track playback
-				const urlOptions: Record<string, string> = {
-					deviceId: api?.deviceInfo.id,
-					//@ts-ignore
-					userId: userId,
-					api_key: api?.accessToken,
-				};
-				const urlParams = new URLSearchParams(urlOptions).toString();
 				const playbackUrl = generateAudioStreamUrl(
 					result?.item?.Items?.[0].Id,
 					userId,
@@ -350,11 +347,13 @@ const PlayButton = ({
 				}
 			} else {
 				const episodeIndex = item.IndexNumber ? item.IndexNumber - 1 : 0;
+
 				// Creates a queue containing all Episodes for a particular season(series) or collection of movies
-				const queue = result?.item.Items;
+				const queue = result?.item?.Items;
+
 				let itemName = item.Name;
 				let episodeTitle = "";
-				if (result?.item.Items?.[episodeIndex].SeriesId) {
+				if (result?.item?.Items?.[episodeIndex].SeriesId) {
 					itemName = result?.item.Items[episodeIndex].SeriesName;
 					episodeTitle = `S${result?.item.Items[episodeIndex].ParentIndexNumber ?? 0}:E${
 						result?.item.Items[episodeIndex].IndexNumber ?? 0
@@ -381,9 +380,9 @@ const PlayButton = ({
 				) {
 					playbackUrl = `${api.basePath}${result.mediaSource.MediaSources[0].TranscodingUrl}`;
 				}
-				let playItemValue = item;
+				let playItemValue = result?.item?.Items?.[episodeIndex];
 				if (itemType === BaseItemKind.Movie) {
-					playItemValue = result?.item.Items?.[0];
+					playItemValue = result?.item?.Items?.[0];
 				}
 
 				playItem(
@@ -399,8 +398,8 @@ const PlayButton = ({
 					playItemValue,
 					queue,
 					episodeIndex,
-					result?.mediaSource.MediaSources?.[0]?.Id,
-					result?.mediaSource.PlaySessionId,
+					result?.mediaSource?.MediaSources?.[0]?.Id,
+					result?.mediaSource?.PlaySessionId,
 					subtitle,
 					result?.introInfo,
 				);

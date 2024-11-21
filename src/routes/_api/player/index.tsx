@@ -467,6 +467,7 @@ function VideoPlayer() {
 		const trickplayResolutions = mediaSource.id
 			? item?.Trickplay?.[mediaSource.id]
 			: null;
+		console.log(item);
 		if (trickplayResolutions) {
 			let bestWidth: number | undefined;
 			const maxWidth = window.screen.width * window.devicePixelRatio * 0.2;
@@ -553,6 +554,7 @@ function VideoPlayer() {
 				</div>
 			);
 		}
+	
 		if (currentChapter?.[0]?.Name) {
 			return (
 				<div className="flex flex-column video-osb-bubble glass">

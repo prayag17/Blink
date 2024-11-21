@@ -26,13 +26,12 @@ import PlayButton from "../buttons/playButton";
  * @property {Array} queryKey
  * @property {string} userId
  * @property {boolean} disableRunTime
- * @property {() => {}} onClick
+ * @property {() => {} | undefined} onClick
  */
 
 /**
  * @description Hero section for item pages
  * @param {Props}
- * @returns {React.Component}
  */
 
 export const EpisodeCard = ({
@@ -53,7 +52,6 @@ export const EpisodeCard = ({
 	return (
 		<div
 			className="card card-episode"
-			elevation={0}
 			onClick={onClick ? onClick : defaultOnClick}
 		>
 			<div className="card-box">
@@ -107,7 +105,7 @@ export const EpisodeCard = ({
 
 					<div className="card-overlay">
 						<PlayButton
-							itemId={item.Id}
+							item={item}
 							userId={userId}
 							itemType={item.Type}
 							currentAudioTrack={0}
