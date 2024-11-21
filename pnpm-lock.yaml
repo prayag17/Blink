@@ -118,7 +118,7 @@ importers:
         version: 4.17.21
       material-symbols:
         specifier: ^0.27.0
-        version: 0.27.0
+        version: 0.27.1
       million:
         specifier: ^3.1.11
         version: 3.1.11(rollup@4.27.3)
@@ -2342,8 +2342,8 @@ packages:
   markdown-table@3.0.4:
     resolution: {integrity: sha512-wiYz4+JrLyb/DqW2hkFJxP7Vd7JuTDm77fvbM8VfEQdmSMqcImWeeRbHwZjBjIFki/VaMK2BhFi7oUUZeM5bqw==}
 
-  material-symbols@0.27.0:
-    resolution: {integrity: sha512-nRHpnw2Cz7eNl6GptgHHhkjauL0zvkYsuiqy1HBifOYCY4fdbZ/PwtdZN4RNmwA+9jQPoymvlArVPPX5nYTdZg==}
+  material-symbols@0.27.1:
+    resolution: {integrity: sha512-ICw3sP2EyCsxo1T2vvQGhxcUX8sqb3FYLF0vTUOjCNPdJ8G1Z3bn3wjAh2ZIdP/AfGy96zuBY5okK3Ag4XLyVw==}
 
   mdast-util-find-and-replace@3.0.1:
     resolution: {integrity: sha512-SG21kZHGC3XRTSUhtofZkBzZTJNM5ecCi0SK2IMKmSXR8vO3peL+kb1O0z7Zl83jKtutG4k5Wv/W7V3/YHvzPA==}
@@ -5052,7 +5052,7 @@ snapshots:
 
   markdown-table@3.0.4: {}
 
-  material-symbols@0.27.0: {}
+  material-symbols@0.27.1: {}
 
   mdast-util-find-and-replace@3.0.1:
     dependencies:
