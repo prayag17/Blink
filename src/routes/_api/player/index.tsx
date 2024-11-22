@@ -141,7 +141,7 @@ function VideoPlayer() {
 		episodeTitle,
 		mediaSource,
 		playsessionId,
-		introInfo,
+		mediaSegments,
 	] = usePlaybackStore((state) => [
 		state.playbackStream,
 		state.item,
@@ -153,6 +153,15 @@ function VideoPlayer() {
 		state.playsessionId,
 		state.intro,
 	]);
+
+	const introInfo = mediaSegments?.Items?.find(
+		(segment) => segment.Type === "Intro",
+	);
+
+	const creditInfo = mediaSegments?.Items?.find(
+		(segment) => segment.Type === "Outro",
+	);
+
 	const [currentQueueItemIndex, queue] = useQueue((s) => [
 		s.currentItemIndex,
 		s.tracks,
@@ -389,22 +398,23 @@ function VideoPlayer() {
 
 	const showSkipIntroButton = useMemo(() => {
 		if (
-			ticksToSec(progress) >=
-				(introInfo?.Introduction?.ShowSkipPromptAt ?? 0) &&
-			ticksToSec(progress) < (introInfo?.Introduction?.HideSkipPromptAt ?? 0)
-		)
+			progress >= (introInfo?.StartTicks ?? 0) &&
+			progress < (introInfo?.EndTicks ?? 0)
+		) {
+			console.log("showing skip intro button");
 			return true;
+		}
 		return false;
 	}, [progress]);
 
 	const showUpNextCard = useMemo(() => {
-		if (queue[currentQueueItemIndex]?.Id === queue[queue.length - 1]?.Id) {
+		if (queue?.[currentQueueItemIndex]?.Id === queue?.[queue.length - 1]?.Id) {
 			return false; // Check if the current playing episode is last episode in queue
 		}
-		if (introInfo?.Credits) {
+		if (creditInfo) {
 			if (
-				ticksToSec(progress) >= introInfo?.Credits.ShowSkipPromptAt &&
-				ticksToSec(progress) < introInfo?.Credits.HideSkipPromptAt
+				progress >= (creditInfo.StartTicks ?? progress + 1) &&
+				progress < (creditInfo.EndTicks ?? 0)
 			)
 				return true;
 		}
@@ -419,7 +429,7 @@ function VideoPlayer() {
 
 	const handleSkipIntro = useCallback(() => {
 		player.current?.seekTo(
-			introInfo?.Introduction.IntroEnd ?? player.current?.getCurrentTime(),
+			ticksToSec(introInfo?.EndTicks) ?? player.current?.getCurrentTime(),
 		);
 	}, [item?.Id]);
 
@@ -466,8 +476,7 @@ function VideoPlayer() {
 		let trickplayResolution: TrickplayInfo | undefined;
 		const trickplayResolutions = mediaSource.id
 			? item?.Trickplay?.[mediaSource.id]
-			: null;
-		console.log(item);
+			: null;	
 		if (trickplayResolutions) {
 			let bestWidth: number | undefined;
 			const maxWidth = window.screen.width * window.devicePixelRatio * 0.2;

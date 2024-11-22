@@ -1,6 +1,7 @@
 import type { Api } from "@jellyfin/sdk";
 import type {
 	BaseItemDto,
+	MediaSegmentDtoQueryResult,
 	MediaStream,
 } from "@jellyfin/sdk/lib/generated-client";
 import { getMediaInfoApi } from "@jellyfin/sdk/lib/utils/api/media-info-api";
@@ -32,7 +33,7 @@ type PlaybackStore = {
 	itemDuration: number;
 	item: BaseItemDto | null;
 	playsessionId: string | undefined | null;
-	intro: IntroMediaInfo | undefined;
+	intro: MediaSegmentDtoQueryResult | undefined;
 };
 
 export const usePlaybackStore = createWithEqualityFn<PlaybackStore>(
@@ -79,8 +80,8 @@ export const playItem = (
 	queueItemIndex: number,
 	mediaSourceId: string | undefined | null,
 	playsessionId: string | undefined | null,
-	subtitle: subtitlePlaybackInfo,
-	intro: IntroMediaInfo | undefined,
+	subtitle: subtitlePlaybackInfo | undefined,
+	intro: MediaSegmentDtoQueryResult | undefined,
 ) => {
 	console.log({
 		itemName,

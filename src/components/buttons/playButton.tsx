@@ -23,15 +23,14 @@ import {
 	SortOrder,
 	type UserItemDataDto,
 } from "@jellyfin/sdk/lib/generated-client";
-import { getDlnaApi } from "@jellyfin/sdk/lib/utils/api/dlna-api";
 import { getItemsApi } from "@jellyfin/sdk/lib/utils/api/items-api";
 import { getPlaylistsApi } from "@jellyfin/sdk/lib/utils/api/playlists-api";
 import { getTvShowsApi } from "@jellyfin/sdk/lib/utils/api/tv-shows-api";
 import { useMutation } from "@tanstack/react-query";
-import { useNavigate, useRouteContext } from "@tanstack/react-router";
+import { useNavigate } from "@tanstack/react-router";
 import { useSnackbar } from "notistack";
 
-import useQueue, { setQueue } from "@/utils/store/queue";
+import { setQueue } from "@/utils/store/queue";
 
 import { playItem, usePlaybackDataLoadStore } from "@/utils/store/playback";
 
@@ -39,12 +38,10 @@ import type PlayResult from "@//utils/types/playResult";
 import { getRuntimeCompact } from "@/utils/date/time";
 import getSubtitle from "@/utils/methods/getSubtitles";
 import playbackProfile from "@/utils/playback-profiles";
-import { axiosClient, useApiInContext } from "@/utils/store/api";
+import { useApiInContext } from "@/utils/store/api";
 import { usePhotosPlayback } from "@/utils/store/photosPlayback";
-import type IntroMediaInfo from "@/utils/types/introMediaInfo";
 import { getMediaInfoApi } from "@jellyfin/sdk/lib/utils/api/media-info-api";
 import { getMediaSegmentsApi } from "@jellyfin/sdk/lib/utils/api/media-segments-api";
-import { getUserApi } from "@jellyfin/sdk/lib/utils/api/user-api";
 import { getUserLibraryApi } from "@jellyfin/sdk/lib/utils/api/user-library-api";
 import type { SxProps } from "@mui/material";
 import type { AxiosResponse } from "axios";
@@ -92,13 +89,13 @@ const MemoizedLinearProgress = memo(({ value }: { value: number }) => (
 			zIndex: 0,
 			mixBlendMode: "difference",
 		}}
+		//@ts-ignore
 		color="white"
 	/>
 ));
 
 const PlayButton = ({
 	item,
-	itemId,
 	itemUserData,
 	userId,
 	itemType,
@@ -136,6 +133,9 @@ const PlayButton = ({
 			if (!api) {
 				throw new Error("API is not available");
 			}
+			if (!item.Id) {
+				throw new Error("Item ID is not available");
+			}
 			if (playlistItem) {
 				result = await getPlaylistsApi(api).getPlaylistItems({
 					userId: userId,
@@ -163,27 +163,22 @@ const PlayButton = ({
 								audioStreamIndex: currentAudioTrack,
 								subtitleStreamIndex:
 									currentSubTrack === "nosub" ? -1 : currentSubTrack,
-								itemId: result.data.Items?.[indexNumber].Id,
+								itemId: result.data.Items?.[indexNumber].Id ?? "",
 								startTimeTicks:
 									result.data.Items?.[indexNumber].UserData
 										?.PlaybackPositionTicks,
 								userId: userId,
 								mediaSourceId:
-									result.data.Items?.[indexNumber].MediaSources?.[0].Id,
+									result.data.Items?.[indexNumber].MediaSources?.[0].Id ?? "",
 								playbackInfoDto: {
 									DeviceProfile: playbackProfile,
 								},
 							});
-							try {
-								introInfo = (
-									await getMediaSegmentsApi(api).getItemSegments({
-										itemId: item.Id,
-										includeSegmentTypes: ["Intro"],
-									})
-								)?.data;
-							} catch (error) {
-								console.error(error);
-							}
+							introInfo = (
+								await getMediaSegmentsApi(api).getItemSegments({
+									itemId: result.data.Items?.[indexNumber].Id ?? "",
+								})
+							)?.data;
 						}
 						break;
 					case BaseItemKind.Series:
@@ -202,7 +197,7 @@ const PlayButton = ({
 						if (
 							result.data.Items?.[0].Id &&
 							result.data.Items?.[0].MediaSources?.[0].Id
-						)
+						) {
 							mediaSource = await getMediaInfoApi(api).getPostedPlaybackInfo({
 								audioStreamIndex: currentAudioTrack,
 								subtitleStreamIndex:
@@ -216,19 +211,11 @@ const PlayButton = ({
 									DeviceProfile: playbackProfile,
 								},
 							});
-						try {
 							introInfo = (
-								await axiosClient.get(
-									`${api.basePath}/Episode/${result.data.Items?.[0]?.Id}/IntroSkipperSegments`,
-									{
-										headers: {
-											Authorization: `MediaBrowser Token=${api.accessToken}`,
-										},
-									},
-								)
+								await getMediaSegmentsApi(api).getItemSegments({
+									itemId: result.data.Items?.[0].Id,
+								})
 							)?.data;
-						} catch (error) {
-							console.error(error);
 						}
 						break;
 					case BaseItemKind.Playlist:
@@ -323,6 +310,22 @@ const PlayButton = ({
 		onSuccess: (result: PlayResult | null) => {
 			if (!api) {
 				console.error("API is not available");
+				enqueueSnackbar("API is not available", { variant: "error" });
+				return;
+			}
+			if (!userId) {
+				console.error("User ID is not available");
+				enqueueSnackbar("User ID is not available", { variant: "error" });
+				return;
+			}
+			if (!result?.item?.Items?.length) {
+				console.error("No items found");
+				enqueueSnackbar("No items found", { variant: "error" });
+				return;
+			}
+			if (!result?.item?.Items?.[0].Id) {
+				console.error("No item ID found");
+				enqueueSnackbar("No item ID found", { variant: "error" });
 				return;
 			}
 			if (trackIndex) {
@@ -346,6 +349,11 @@ const PlayButton = ({
 					navigate({ to: "/player/photos" });
 				}
 			} else {
+				if (!result?.mediaSource) {
+					enqueueSnackbar("No media source found", { variant: "error" });
+					console.error("No media source found");
+					return;
+				}
 				const episodeIndex = item.IndexNumber ? item.IndexNumber - 1 : 0;
 
 				// Creates a queue containing all Episodes for a particular season(series) or collection of movies
@@ -362,10 +370,11 @@ const PlayButton = ({
 				// Subtitle
 				const subtitle = getSubtitle(
 					currentSubTrack,
-					result?.mediaSource.MediaSources?.[0].MediaStreams,
+					result?.mediaSource?.MediaSources?.[0].MediaStreams,
 				);
 				// URL generation
 				const urlOptions: URLSearchParams = {
+					//@ts-ignore
 					Static: true,
 					tag: result?.mediaSource.MediaSources?.[0].ETag,
 					mediaSourceId: result?.mediaSource.MediaSources?.[0].Id,
@@ -388,14 +397,14 @@ const PlayButton = ({
 				playItem(
 					itemName,
 					episodeTitle,
-					currentVideoTrack,
-					currentAudioTrack,
+					currentVideoTrack ?? 0,
+					currentAudioTrack ?? 0,
 					result?.mediaSource?.MediaSources?.[0].Container ?? "mkv",
 					playbackUrl,
-					userId,
+					userId ?? "",
 					item.UserData?.PlaybackPositionTicks,
 					item.RunTimeTicks,
-					playItemValue,
+					playItemValue ?? item,
 					queue,
 					episodeIndex,
 					result?.mediaSource?.MediaSources?.[0]?.Id,
@@ -484,14 +493,14 @@ const PlayButton = ({
 						: "Watch Now"}
 				<MemoizedLinearProgress
 					value={
-						100 > itemUserData?.PlayedPercentage &&
-						itemUserData?.PlayedPercentage > 0
+						100 > (itemUserData?.PlayedPercentage ?? 100) &&
+						(itemUserData?.PlayedPercentage ?? 0) > 0
 							? itemUserData?.PlayedPercentage
 							: 0
 					}
 				/>
 			</Button>
-			{itemUserData?.PlaybackPositionTicks > 0 && (
+			{(itemUserData?.PlaybackPositionTicks ?? 0) > 0 && (
 				<Typography
 					sx={{
 						opacity: 0.8,
@@ -503,7 +512,7 @@ const PlayButton = ({
 					variant="caption"
 				>
 					{getRuntimeCompact(
-						item.RunTimeTicks - itemUserData.PlaybackPositionTicks,
+						item.RunTimeTicks ?? 0 - (itemUserData?.PlaybackPositionTicks ?? 0),
 					)}{" "}
 					left
 				</Typography>
