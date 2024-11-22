@@ -79,7 +79,7 @@ importers:
         version: 2.0.0
       '@tauri-apps/plugin-store':
         specifier: github:tauri-apps/tauri-plugin-store#v2
-        version: https://codeload.github.com/tauri-apps/tauri-plugin-store/tar.gz/f8b81577000e2f9a57f0715261a8f1e5b66211ca
+        version: https://codeload.github.com/tauri-apps/tauri-plugin-store/tar.gz/2f06d0248b54ba49038c32f63dbe72df6e6c7316
       '@tauri-apps/plugin-updater':
         specifier: 2.0.0
         version: 2.0.0
@@ -160,10 +160,10 @@ importers:
         version: 4.0.0
       typescript:
         specifier: ^5.6.3
-        version: 5.6.3
+        version: 5.7.2
       vite-plugin-svgr:
         specifier: ^4.3.0
-        version: 4.3.0(rollup@4.27.3)(typescript@5.6.3)(vite@5.4.11(@types/node@22.9.1)(sass@1.81.0))
+        version: 4.3.0(rollup@4.27.3)(typescript@5.7.2)(vite@5.4.11(@types/node@22.9.1)(sass@1.81.0))
       wavesurfer.js:
         specifier: ^7.8.8
         version: 7.8.8
@@ -393,8 +393,8 @@ packages:
     cpu: [x64]
     os: [win32]
 
-  '@clack/core@0.3.4':
-    resolution: {integrity: sha512-H4hxZDXgHtWTwV3RAVenqcC4VbJZNegbBjlPvzOzCouXtS2y3sDvlO3IsbrPNWuLWPPlYVYPghQdSF64683Ldw==}
+  '@clack/core@0.3.5':
+    resolution: {integrity: sha512-5cfhQNH+1VQ2xLQlmzXMqUoiaH0lRBq9/CLW9lTyMbuKLC3+xEK01tHVvyut++mLOn5urSHmkm6I0Lg9MaJSTQ==}
 
   '@clack/prompts@0.7.0':
     resolution: {integrity: sha512-0MhX9/B4iL6Re04jPrttDm+BsP8y6mS7byuv0BvXgdXhbV5PdlsHt55dvNsuBCPZ7xq1oTAOOuotR9NFbQyMSA==}
@@ -1658,8 +1658,8 @@ packages:
   '@tauri-apps/plugin-process@2.0.0':
     resolution: {integrity: sha512-OYzi0GnkrF4NAnsHZU7U3tjSoP0PbeAlO7T1Z+vJoBUH9sFQ1NSLqWYWQyf8hcb3gVWe7P1JggjiskO+LST1ug==}
 
-  '@tauri-apps/plugin-store@https://codeload.github.com/tauri-apps/tauri-plugin-store/tar.gz/f8b81577000e2f9a57f0715261a8f1e5b66211ca':
-    resolution: {tarball: https://codeload.github.com/tauri-apps/tauri-plugin-store/tar.gz/f8b81577000e2f9a57f0715261a8f1e5b66211ca}
+  '@tauri-apps/plugin-store@https://codeload.github.com/tauri-apps/tauri-plugin-store/tar.gz/2f06d0248b54ba49038c32f63dbe72df6e6c7316':
+    resolution: {tarball: https://codeload.github.com/tauri-apps/tauri-plugin-store/tar.gz/2f06d0248b54ba49038c32f63dbe72df6e6c7316}
     version: 2.1.0
 
   '@tauri-apps/plugin-updater@2.0.0':
@@ -1986,8 +1986,8 @@ packages:
     resolution: {integrity: sha512-QM8q3zDe58hqUqjraQOmzZ1LIH9SWQJTlEKCH4kJ2oQvLZk7RbQXvtDM2XEq3fwkV9CCvvH4LA0AV+ogFsBM2Q==}
     engines: {node: '>=8'}
 
-  effect@3.10.15:
-    resolution: {integrity: sha512-LdczPAFbtij3xGr9i+8PyDtuWdlXjSY5UJ8PKrYrr0DClKfR/OW3j8sxtambWYljzJAYD865KFhv7LdbWdG7VQ==}
+  effect@3.10.16:
+    resolution: {integrity: sha512-7d69IMsIgnJKzopBMHdZR7d3JWwdHgzaIyIXif5jpu8gtQujIrIpgABXXMe+47KNSuS5k12s9dMRL3B8Y9s+Sw==}
 
   electron-to-chromium@1.5.63:
     resolution: {integrity: sha512-ddeXKuY9BHo/mw145axlyWjlJ1UBt4WK3AlvkT7W2AbqfRQoacVoRUCF6wL3uIx/8wT9oLKXzI+rFqHHscByaA==}
@@ -2907,8 +2907,8 @@ packages:
   typedarray-to-buffer@3.1.5:
     resolution: {integrity: sha512-zdu8XMNEDepKKR+XYOXAVPtWui0ly0NtohUscw+UmaHiAWT8hrV1rr//H6V+0DvJ3OQ19S979M0laLfX8rm82Q==}
 
-  typescript@5.6.3:
-    resolution: {integrity: sha512-hjcS1mhfuyi4WW8IWtjP7brDrG2cuDZukyrYrSauoXGNgx0S7zceP07adYkJycEr56BOUTNPzbInooiN3fn1qw==}
+  typescript@5.7.2:
+    resolution: {integrity: sha512-i5t66RHxDvVN40HfDd1PsEThGNnlMCMT3jMUuoh9/0TaqWevNontacunWyN02LA9/fIbEWlcHZcgTKb9QoaLfg==}
     engines: {node: '>=14.17'}
     hasBin: true
 
@@ -3308,14 +3308,14 @@ snapshots:
   '@biomejs/cli-win32-x64@1.9.4':
     optional: true
 
-  '@clack/core@0.3.4':
+  '@clack/core@0.3.5':
     dependencies:
       picocolors: 1.1.1
       sisteransi: 1.0.5
 
   '@clack/prompts@0.7.0':
     dependencies:
-      '@clack/core': 0.3.4
+      '@clack/core': 0.3.5
       picocolors: 1.1.1
       sisteransi: 1.0.5
 
@@ -3700,7 +3700,7 @@ snapshots:
       ast-types: 0.14.2
       cli-high: 0.4.3
       diff: 5.2.0
-      effect: 3.10.15
+      effect: 3.10.16
       nanoid: 5.0.8
       recast: 0.23.9
       xycolors: 0.1.2
@@ -4140,12 +4140,12 @@ snapshots:
       '@svgr/babel-plugin-transform-react-native-svg': 8.1.0(@babel/core@7.26.0)
       '@svgr/babel-plugin-transform-svg-component': 8.0.0(@babel/core@7.26.0)
 
-  '@svgr/core@8.1.0(typescript@5.6.3)':
+  '@svgr/core@8.1.0(typescript@5.7.2)':
     dependencies:
       '@babel/core': 7.26.0
       '@svgr/babel-preset': 8.1.0(@babel/core@7.26.0)
       camelcase: 6.3.0
-      cosmiconfig: 8.3.6(typescript@5.6.3)
+      cosmiconfig: 8.3.6(typescript@5.7.2)
       snake-case: 3.0.4
     transitivePeerDependencies:
       - supports-color
@@ -4156,11 +4156,11 @@ snapshots:
       '@babel/types': 7.26.0
       entities: 4.5.0
 
-  '@svgr/plugin-jsx@8.1.0(@svgr/core@8.1.0(typescript@5.6.3))':
+  '@svgr/plugin-jsx@8.1.0(@svgr/core@8.1.0(typescript@5.7.2))':
     dependencies:
       '@babel/core': 7.26.0
       '@svgr/babel-preset': 8.1.0(@babel/core@7.26.0)
-      '@svgr/core': 8.1.0(typescript@5.6.3)
+      '@svgr/core': 8.1.0(typescript@5.7.2)
       '@svgr/hast-util-to-babel-ast': 8.0.0
       svg-parser: 2.0.4
     transitivePeerDependencies:
@@ -4343,7 +4343,7 @@ snapshots:
     dependencies:
       '@tauri-apps/api': 2.1.1
 
-  '@tauri-apps/plugin-store@https://codeload.github.com/tauri-apps/tauri-plugin-store/tar.gz/f8b81577000e2f9a57f0715261a8f1e5b66211ca':
+  '@tauri-apps/plugin-store@https://codeload.github.com/tauri-apps/tauri-plugin-store/tar.gz/2f06d0248b54ba49038c32f63dbe72df6e6c7316':
     dependencies:
       '@tauri-apps/api': 2.1.1
 
@@ -4634,14 +4634,14 @@ snapshots:
       path-type: 4.0.0
       yaml: 1.10.2
 
-  cosmiconfig@8.3.6(typescript@5.6.3):
+  cosmiconfig@8.3.6(typescript@5.7.2):
     dependencies:
       import-fresh: 3.3.0
       js-yaml: 4.1.0
       parse-json: 5.2.0
       path-type: 4.0.0
     optionalDependencies:
-      typescript: 5.6.3
+      typescript: 5.7.2
 
   crypto-random-string@2.0.0: {}
 
@@ -4692,7 +4692,7 @@ snapshots:
     dependencies:
       is-obj: 2.0.0
 
-  effect@3.10.15:
+  effect@3.10.16:
     dependencies:
       fast-check: 3.23.1
 
@@ -5873,7 +5873,7 @@ snapshots:
     dependencies:
       is-typedarray: 1.0.0
 
-  typescript@5.6.3: {}
+  typescript@5.7.2: {}
 
   undici-types@6.19.8: {}
 
@@ -5964,11 +5964,11 @@ snapshots:
       '@types/unist': 3.0.3
       vfile-message: 4.0.2
 
-  vite-plugin-svgr@4.3.0(rollup@4.27.3)(typescript@5.6.3)(vite@5.4.11(@types/node@22.9.1)(sass@1.81.0)):
+  vite-plugin-svgr@4.3.0(rollup@4.27.3)(typescript@5.7.2)(vite@5.4.11(@types/node@22.9.1)(sass@1.81.0)):
     dependencies:
       '@rollup/pluginutils': 5.1.3(rollup@4.27.3)
-      '@svgr/core': 8.1.0(typescript@5.6.3)
-      '@svgr/plugin-jsx': 8.1.0(@svgr/core@8.1.0(typescript@5.6.3))
+      '@svgr/core': 8.1.0(typescript@5.7.2)
+      '@svgr/plugin-jsx': 8.1.0(@svgr/core@8.1.0(typescript@5.7.2))
       vite: 5.4.11(@types/node@22.9.1)(sass@1.81.0)
     transitivePeerDependencies:
       - rollup
