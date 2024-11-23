@@ -231,11 +231,8 @@ function MusicAlbumTitlePage() {
 						<div className="item-info-track-container ">
 							{allDiscs.length > 1 ? (
 								allDiscs.map((disc) => (
-									<>
-										<div
-											className="item-info-disc-header flex flex-row flex-align-center"
-											key={disc}
-										>
+									<div className="item-info-disc-container" key={disc}>
+										<div className="item-info-disc-header flex flex-row flex-align-center">
 											<span
 												className="material-symbols-rounded"
 												style={{ fontSize: "2em" }}
@@ -244,7 +241,7 @@ function MusicAlbumTitlePage() {
 											</span>
 											<Typography variant="h5">Disc {disc}</Typography>
 										</div>
-										<div key={disc} className="item-info-track header">
+										<div className="item-info-track header">
 											<span className="material-symbols-rounded index">
 												tag
 											</span>
@@ -314,7 +311,7 @@ function MusicAlbumTitlePage() {
 													</div>
 												),
 										)}
-									</>
+									</div>
 								))
 							) : (
 								<>

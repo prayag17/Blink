@@ -15,7 +15,7 @@ import type IntroMediaInfo from "../types/introMediaInfo";
 import type subtitlePlaybackInfo from "../types/subtitlePlaybackInfo";
 import { axiosClient } from "./api";
 import { generateAudioStreamUrl, playAudio } from "./audioPlayback";
-import useQueue, { setQueue, setTrackIndex } from "./queue";
+import useQueue, { setQueue } from "./queue";
 
 type PlaybackStore = {
 	itemName: string | React.Component | undefined | null;
@@ -135,19 +135,26 @@ export const playItemFromQueue = async (
 			: index === "previous"
 				? currentItemIndex - 1
 				: index;
-	const prevItem = queueItems[currentItemIndex];
+	const prevItem = queueItems?.[currentItemIndex];
 	const prevPlaySessionId = usePlaybackStore.getState().playsessionId;
 	const prevMediaSourceId = usePlaybackStore.getState().mediaSource.id;
-	const item = queueItems[requestedItemIndex];
-	if (item.Type === "Audio") {
+	const item = queueItems?.[requestedItemIndex];
+
+	console.log("requestedItemIndex", queueItems);
+
+	if (!item?.Id) {
+		console.error("No item found in queue");
+		return;
+	}
+	if (item?.Type === "Audio" && userId) {
 		const playbackUrl = generateAudioStreamUrl(
 			item.Id,
 			userId,
-			api?.deviceInfo.id,
-			api?.basePath,
-			api?.accessToken,
+			api.deviceInfo.id,
+			api.basePath,
+			api.accessToken,
 		);
-		console.log(item);
+		// console.log(item);
 		playAudio(playbackUrl, item, undefined);
 		setQueue(queueItems, requestedItemIndex);
 	} else {

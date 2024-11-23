@@ -22,13 +22,12 @@ import getImageUrlsApi from "@/utils/methods/getImageUrlsApi";
 import { useApiInContext } from "@/utils/store/api";
 import { useCentralStore } from "@/utils/store/central";
 import { playItemFromQueue } from "@/utils/store/playback";
-import { getUserApi } from "@jellyfin/sdk/lib/utils/api/user-api";
-import { useQuery } from "@tanstack/react-query";
 import { useNavigate } from "@tanstack/react-router";
 
 const AudioPlayer = () => {
 	const api = useApiInContext((s) => s.api);
-	const audioRef = useRef<HTMLAudioElement>(null!);
+
+	const audioRef = useRef<HTMLAudioElement | null>(null);
 	const [url, display, item] = useAudioPlayback((state) => [
 		state.url,
 		state.display,
@@ -46,14 +45,11 @@ const AudioPlayer = () => {
 		if (audioRef.current?.paused) return false;
 		return true;
 	}, [audioRef.current?.paused]);
-	const [playerReady, setPlayerReady] = useState(false);
 	const [volume, setVolume] = useState(0.8);
 	const [isMuted, setIsMuted] = useState(false);
 	const [progress, setProgress] = useState(0);
 	const [isScrubbing, setIsScrubbing] = useState(false);
 	const [sliderProgress, setSliderProgress] = useState(0);
-
-	const [loading, setLoading] = useState(true);
 
 	useEffect(() => {
 		if (display) {
@@ -82,7 +78,7 @@ const AudioPlayer = () => {
 
 	const info = useMemo(
 		() =>
-			!!api?.configuration && (
+			api && (
 				<div
 					// initial={{
 					// 	filter: "opacity(0)",
@@ -100,7 +96,7 @@ const AudioPlayer = () => {
 							alt={tracks?.[currentTrack]?.Name ?? "track"}
 							className="audio-player-image"
 							src={getImageUrlsApi(api).getItemImageUrlById(
-								(!item?.ImageTags?.Primary ? item?.AlbumId : item?.Id) ?? "",
+								(!item?.ImageTags?.Primary ? item?.AlbumId : item.Id) ?? "",
 								"Primary",
 								{
 									quality: 85,
@@ -152,9 +148,9 @@ const AudioPlayer = () => {
 					<Fab
 						size="small"
 						onClick={() =>
-							audioRef.current.paused
+							audioRef.current?.paused
 								? audioRef.current.play()
-								: audioRef.current.pause()
+								: audioRef.current?.pause()
 						}
 					>
 						<div
@@ -170,7 +166,7 @@ const AudioPlayer = () => {
 				<PlayNextButton />
 			</div>
 		),
-		[tracks?.[currentTrack]?.Id, loading, playing, tracks?.length],
+		[tracks?.[currentTrack]?.Id, playing, tracks?.length],
 	);
 
 	const buttons = useMemo(
@@ -187,7 +183,7 @@ const AudioPlayer = () => {
 				</IconButton>
 				<QueueButton />
 				<IconButton
-					onClick={(e) => {
+					onClick={() => {
 						setIsMuted(!isMuted);
 					}}
 				>
@@ -200,7 +196,13 @@ const AudioPlayer = () => {
 					step={1}
 					max={100}
 					onChange={(_, newVal) => {
-						Array.isArray(newVal) ? setVolume(newVal[0] / 100) : setVolume(newVal / 100);
+						if (!audioRef.current) {
+							console.error("Audio ref not found");
+							return;
+						}
+						Array.isArray(newVal)
+							? setVolume(newVal[0] / 100)
+							: setVolume(newVal / 100);
 						if (Array.isArray(newVal)) {
 							audioRef.current.volume = newVal[0] / 100;
 						} else {
@@ -248,13 +250,14 @@ const AudioPlayer = () => {
 		[volume, isMuted, currentTrack],
 	);
 
-	if (audioRef.current) {
-		audioRef.current.addEventListener("ended", () => {
-			if (tracks?.[currentTrack + 1]?.Id) {
-				playItemFromQueue("next", user?.Id, api);
-			}
-		});
-	}
+	// if (audioRef.current) {
+	// 	audioRef.current.addEventListener("change", () => {
+	// 		console.log("Audio Player changed state : ", currentTrack);
+	// 	});
+	// 	audioRef.current.addEventListener("ended", () => {
+
+	// 	});
+	// }
 
 	return (
 		<AnimatePresence mode="sync">
@@ -286,10 +289,15 @@ const AudioPlayer = () => {
 						autoPlay
 						src={url}
 						ref={audioRef}
-						key={item?.Id}
+						key={item?.Id ?? "noItem"}
 						onTimeUpdate={(e) =>
 							setProgress(secToTicks(e.currentTarget.currentTime))
 						}
+						onEnded={() => {
+							if (tracks?.[currentTrack + 1]?.Id && api && user?.Id) {
+								playItemFromQueue("next", user.Id, api);
+							}
+						}}
 						id="audio-player"
 					/>
 					<div className="audio-player-controls">
@@ -324,8 +332,12 @@ const AudioPlayer = () => {
 										: setSliderProgress(value);
 								}}
 								onChangeCommitted={(_, value) => {
+									if (!audioRef.current) {
+										console.error("Audio ref not found");
+										return;
+									}
 									setIsScrubbing(false);
-									// console.log(ticksToSec(value * item?.RunTimeTicks));
+									// console.log(ticksToSec(value * item.RunTimeTicks));
 									Array.isArray(value)
 										? setProgress(value[0])
 										: setProgress(value);

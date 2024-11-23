@@ -17,6 +17,7 @@ import getImageUrlsApi from "@/utils/methods/getImageUrlsApi";
 import { useApiInContext } from "@/utils/store/api";
 const QueueButton = () => {
 	const api = useApiInContext((s) => s.api);
+	if (!api) return null;
 	const [queueItems, currentItemIndex] = useQueue((state) => [
 		state.tracks,
 		state.currentItemIndex,
@@ -76,7 +77,7 @@ const QueueButton = () => {
 						position: "relative",
 					}}
 				>
-					{queueItems[currentItemIndex]?.Id && (
+					{queueItems?.[currentItemIndex]?.Id && (
 						<>
 							<Typography px="1em" mb={2} variant="h5" fontWeight={300}>
 								Currently Playing:
@@ -111,11 +112,11 @@ const QueueButton = () => {
 										<img
 											className="queue-item-image"
 											src={getImageUrlsApi(api).getItemImageUrlById(
-												queueItems[currentItemIndex]?.AlbumId,
+												queueItems?.[currentItemIndex]?.AlbumId ?? "",
 												"Primary",
 												{
-													tag: queueItems[currentItemIndex]
-														.AlbumPrimaryImageTag[0],
+													tag: queueItems?.[currentItemIndex]
+														.AlbumPrimaryImageTag?.[0],
 												},
 											)}
 											alt={queueItems[currentItemIndex].Name ?? "image"}
@@ -163,14 +164,14 @@ const QueueButton = () => {
 							</MenuItem>
 						</>
 					)}
-					{queueItems.slice(currentItemIndex + 1, queueItems.length - 1)
+					{queueItems?.slice(currentItemIndex + 1, queueItems.length - 1)
 						.length > 0 && (
 						<Typography px="1em" my={2} variant="h5" fontWeight={300}>
 							Queue:
 						</Typography>
 					)}
 					{queueItems
-						.slice(currentItemIndex + 1, queueItems.length - 1)
+						?.slice(currentItemIndex + 1, queueItems.length - 1)
 						.map((item, index) => {
 							return (
 								<MenuItem

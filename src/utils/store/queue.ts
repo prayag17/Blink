@@ -4,6 +4,9 @@ import { createWithEqualityFn } from "zustand/traditional";
 
 interface QueueStore {
 	tracks: BaseItemDto[] | undefined;
+	/**
+	 * This index number should be equal to index of the item in tracks array to allow seamless playback of items having broken IndexNumber field.
+	 */
 	currentItemIndex: number;
 }
 
