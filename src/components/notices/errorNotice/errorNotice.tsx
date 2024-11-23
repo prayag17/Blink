@@ -42,12 +42,14 @@ export const ErrorNotice = ({ error }: { error?: Error }) => {
 					borderRadius: "8px",
 					border: "2px dashed rgb(255 255 255 / 0.5)",
 					maxWidth: "40em",
+					maxHeight: "20em",
+					overflow: "auto",
 					marginTop: "1em",
 					// opacity: 0.6,
 				}}
 				color="gray"
 			>
-				{JSON.stringify(error?.message)}
+				{JSON.stringify(error?.stack)}
 			</Typography>
 		</Box>
 	);

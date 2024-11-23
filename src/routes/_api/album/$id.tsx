@@ -37,8 +37,9 @@ import "./album.scss";
 import TagChip from "@/components/tagChip";
 import getImageUrlsApi from "@/utils/methods/getImageUrlsApi";
 import { useCentralStore } from "@/utils/store/central";
-import { playItem } from "@/utils/store/playback";
+import { setQueue } from "@/utils/store/queue";
 import { Link, createFileRoute } from "@tanstack/react-router";
+import { useSnackbar } from "notistack";
 import lyricsIcon from "../../../assets/icons/lyrics.svg";
 
 export const Route = createFileRoute("/_api/album/$id")({
@@ -49,7 +50,15 @@ function MusicAlbumTitlePage() {
 	const { id } = Route.useParams();
 	const api = Route.useRouteContext().api;
 
+	if (!api) {
+		throw new Error("API not found", {
+			cause:
+				"API is not set in the context, maybe it is not initialized before the component is rendered.",
+		});
+	}
+
 	const user = useCentralStore((s) => s.currentUser);
+	const { enqueueSnackbar } = useSnackbar();
 
 	const item = useQuery({
 		queryKey: ["item", id],
@@ -89,7 +98,7 @@ function MusicAlbumTitlePage() {
 				userId: user?.Id,
 				parentId: item.data?.Id,
 				sortOrder: [SortOrder.Ascending],
-				sortBy: ["IndexNumber"],
+				sortBy: ["IndexNumber", "ParentIndexNumber"],
 				fields: ["MediaSources"],
 			});
 			return result.data;
@@ -118,7 +127,7 @@ function MusicAlbumTitlePage() {
 	useLayoutEffect(() => {
 		if (item.isSuccess) {
 			setAppBackdrop(
-				`${api.basePath}/Items/${item.data.ParentBackdropItemId}/Images/Backdrop`,
+				`${api?.basePath}/Items/${item.data.ParentBackdropItemId}/Images/Backdrop`,
 				item.data.Id,
 			);
 		}
@@ -131,15 +140,23 @@ function MusicAlbumTitlePage() {
 		item: BaseItemDto,
 		queue: BaseItemDto[],
 	) => {
-		if (item.Id && user?.Id) {
+		if (!user?.Id || !api) {
+			console.error("User not logged in");
+			enqueueSnackbar("You need to be logged in to play music", {
+				variant: "error",
+			});
+			return;
+		}
+		if (item.Id) {
 			const url = generateAudioStreamUrl(
 				item.Id,
-				user?.Id,
+				user.Id,
 				api.deviceInfo.id,
 				api.basePath,
 				api.accessToken,
 			);
 			playAudio(url, item, undefined);
+			setQueue(queue, index);
 		}
 	};
 
@@ -244,14 +261,15 @@ function MusicAlbumTitlePage() {
 																: "item-info-track"
 														}
 														key={track.Id}
-														onClick={() =>
-															musicTracks.data.Items &&
-															handlePlayback(
-																index,
-																track,
-																musicTracks.data.Items,
-															)
-														}
+														onClick={() => {
+															if (musicTracks.data.Items) {
+																handlePlayback(
+																	index,
+																	track,
+																	musicTracks.data.Items,
+																);
+															}
+														}}
 													>
 														<div className="index-container">
 															<span className="material-symbols-rounded fill ">
