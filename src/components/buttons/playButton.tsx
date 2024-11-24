@@ -1,10 +1,6 @@
-import PropTypes from "prop-types";
-import React, { memo } from "react"; // Import memo
+import React, { memo, type MouseEventHandler } from "react"; // Import memo
 
-import Button, {
-	type ButtonProps,
-	type ButtonPropsSizeOverrides,
-} from "@mui/material/Button";
+import Button, { type ButtonProps } from "@mui/material/Button";
 import Fab from "@mui/material/Fab";
 import LinearProgress from "@mui/material/LinearProgress";
 import Typography from "@mui/material/Typography";
@@ -17,11 +13,9 @@ import {
 	ItemFields,
 	ItemFilter,
 	LocationType,
-	MediaProtocol,
 	type MediaSegmentDtoQueryResult,
 	type PlaybackInfoResponse,
 	SortOrder,
-	type UserItemDataDto,
 } from "@jellyfin/sdk/lib/generated-client";
 import { getItemsApi } from "@jellyfin/sdk/lib/utils/api/items-api";
 import { getPlaylistsApi } from "@jellyfin/sdk/lib/utils/api/playlists-api";
@@ -48,14 +42,6 @@ import type { AxiosResponse } from "axios";
 
 type PlayButtonProps = {
 	item: BaseItemDto;
-	/**
-	 * @deprecated
-	 */
-	itemId?: string;
-	/**
-	 * @deprecated
-	 */
-	itemUserData?: UserItemDataDto;
 	userId: string | undefined;
 	itemType: BaseItemKind;
 	currentAudioTrack?: number;
@@ -66,7 +52,7 @@ type PlayButtonProps = {
 	buttonProps?: ButtonProps;
 	iconOnly?: boolean;
 	audio?: boolean;
-	size?: ButtonPropsSizeOverrides;
+	size?: "small" | "large" | "medium";
 	playlistItem?: BaseItemDto;
 	playlistItemId?: string;
 	trackIndex?: number;
@@ -96,7 +82,6 @@ const MemoizedLinearProgress = memo(({ value }: { value: number }) => (
 
 const PlayButton = ({
 	item,
-	itemUserData,
 	userId,
 	itemType,
 	currentAudioTrack,
@@ -425,12 +410,13 @@ const PlayButton = ({
 			});
 		},
 	});
-	const handleClick = (e) => {
+	const handleClick: MouseEventHandler<HTMLButtonElement> = (e) => {
 		e.stopPropagation();
 		itemQuery.mutate();
 	};
 	if (iconOnly) {
 		return (
+			//@ts-ignore
 			<Fab
 				color="primary"
 				aria-label="Play"
@@ -479,10 +465,11 @@ const PlayButton = ({
 					position: "relative",
 					overflow: "hidden",
 				}}
+				//@ts-ignore - white color is a custom color in the theme which mui's types don't know about
 				color="white"
 				size={size}
 			>
-				{itemUserData?.PlaybackPositionTicks
+				{item.UserData?.PlaybackPositionTicks
 					? "Continue Watching"
 					: item?.Type === "MusicAlbum" ||
 							item?.Type === "Audio" ||
@@ -492,15 +479,16 @@ const PlayButton = ({
 						? "Play Now"
 						: "Watch Now"}
 				<MemoizedLinearProgress
+					//@ts-ignore
 					value={
-						100 > (itemUserData?.PlayedPercentage ?? 100) &&
-						(itemUserData?.PlayedPercentage ?? 0) > 0
-							? itemUserData?.PlayedPercentage
+						100 > (item.UserData?.PlayedPercentage ?? 100) &&
+						(item.UserData?.PlayedPercentage ?? 0) > 0
+							? item.UserData?.PlayedPercentage
 							: 0
 					}
 				/>
 			</Button>
-			{(itemUserData?.PlaybackPositionTicks ?? 0) > 0 && (
+			{(item.UserData?.PlaybackPositionTicks ?? 0) > 0 && (
 				<Typography
 					sx={{
 						opacity: 0.8,
@@ -512,7 +500,8 @@ const PlayButton = ({
 					variant="caption"
 				>
 					{getRuntimeCompact(
-						item.RunTimeTicks ?? 0 - (itemUserData?.PlaybackPositionTicks ?? 0),
+						item.RunTimeTicks ??
+							0 - (item.UserData?.PlaybackPositionTicks ?? 0),
 					)}{" "}
 					left
 				</Typography>

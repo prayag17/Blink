@@ -1,8 +1,5 @@
-import PropTypes from "prop-types";
-
 import React from "react";
 
-import CircularProgress from "@mui/material/CircularProgress";
 import IconButton from "@mui/material/IconButton";
 
 import { green } from "@mui/material/colors";
@@ -10,11 +7,26 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 
 import { useApiInContext } from "@/utils/store/api";
 import { getPlaystateApi } from "@jellyfin/sdk/lib/utils/api/playstate-api";
-import { useRouteContext } from "@tanstack/react-router";
 import { useSnackbar } from "notistack";
 
-const MarkPlayedButton = ({ itemId, isPlayed, queryKey, userId, itemName }) => {
+export default function MarkPlayedButton({
+	itemId,
+	isPlayed,
+	queryKey,
+	userId,
+	itemName,
+}: {
+	itemId: string;
+	isPlayed: boolean;
+	queryKey: string[];
+	userId: string;
+	itemName: string;
+}) {
 	const api = useApiInContext((s) => s.api);
+	if (!api) {
+		console.error("Unable to display mark played button, api is not available");
+		return null;
+	}
 
 	const queryClient = useQueryClient();
 	const { enqueueSnackbar } = useSnackbar();
@@ -32,11 +44,11 @@ const MarkPlayedButton = ({ itemId, isPlayed, queryKey, userId, itemName }) => {
 				itemId: itemId,
 			});
 		}
-		return result;
+		return result; // We need to return the result so that the onSettled function can invalidate the query
 	};
 	const mutation = useMutation({
 		mutationFn: handleMarking,
-		onError: (error, a, context) => {
+		onError: (error) => {
 			enqueueSnackbar(`${error}`, {
 				variant: "error",
 			});
@@ -73,21 +85,12 @@ const MarkPlayedButton = ({ itemId, isPlayed, queryKey, userId, itemName }) => {
 							? "white"
 							: green.A700
 						: mutation.isPending
-						  ? green.A700
-						  : "white",
+							? green.A700
+							: "white",
 				}}
 			>
 				done
 			</div>
 		</IconButton>
 	);
-};
-
-MarkPlayedButton.propTypes = {
-	itemId: PropTypes.string.isRequired,
-	isPlayed: PropTypes.bool.isRequired,
-	queryKey: PropTypes.any.isRequired,
-	userId: PropTypes.string.isRequired,
-};
-
-export default MarkPlayedButton;
+}

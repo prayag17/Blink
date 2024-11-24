@@ -1,50 +1,57 @@
-import PropTypes from "prop-types";
-
-import React, { useEffect } from "react";
+import React from "react";
 
 import IconButton from "@mui/material/IconButton";
 
 import { useApiInContext } from "@/utils/store/api";
+import type { UserItemDataDto } from "@jellyfin/sdk/lib/generated-client";
 import { getUserLibraryApi } from "@jellyfin/sdk/lib/utils/api/user-library-api";
-import CircularProgress from "@mui/material/CircularProgress";
 import { pink } from "@mui/material/colors";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { useRouteContext } from "@tanstack/react-router";
 import { useSnackbar } from "notistack";
 
-const LikeButton = ({ itemId, isFavorite, queryKey, userId, itemName }) => {
+export default function LikeButton({
+	itemId,
+	isFavorite,
+	queryKey,
+	userId,
+	itemName,
+}: {
+	itemId: string;
+	isFavorite: boolean;
+	queryKey: string[];
+	userId: string;
+	itemName: string;
+}) {
 	const api = useApiInContext((s) => s.api);
+	if (!api) {
+		console.error("Unable to display like button, api is not available");
+		return null;
+	}
 	const queryClient = useQueryClient();
 	const { enqueueSnackbar } = useSnackbar();
 
 	const handleLiking = async () => {
-		let result = null;
+		let result: UserItemDataDto = null!;
 		if (isFavorite) {
-			result = await getUserLibraryApi(api).unmarkFavoriteItem({
-				userId: userId,
-				itemId: itemId,
-			});
+			result = (
+				await getUserLibraryApi(api).unmarkFavoriteItem({
+					userId: userId,
+					itemId: itemId,
+				})
+			).data;
 		} else if (!isFavorite) {
-			result = await getUserLibraryApi(api).markFavoriteItem({
-				userId: userId,
-				itemId: itemId,
-			});
+			result = (
+				await getUserLibraryApi(api).markFavoriteItem({
+					userId: userId,
+					itemId: itemId,
+				})
+			).data;
 		}
-		return result.data;
+		return result; // We need to return the result so that the onSettled function can invalidate the query
 	};
 	const mutation = useMutation({
-		// mutationFn: async () => {
-		// 	new Promise((resolve, reject) => {
-		// 		setTimeout(() => {
-		// 			resolve("foo");
-		// 		}, 4000);
-		// 	});
-		// },
 		mutationFn: handleLiking,
 		onError: (error) => {
-			enqueueSnackbar(`${error}`, {
-				variant: "error",
-			});
 			enqueueSnackbar(`An error occured while updating "${itemName}"`, {
 				variant: "error",
 			});
@@ -76,27 +83,19 @@ const LikeButton = ({ itemId, isFavorite, queryKey, userId, itemName }) => {
 				style={
 					isFavorite
 						? {
+								//@ts-ignore
 								"--fill": mutation.isPending ? 0 : 1,
 								color: mutation.isPending ? "white" : pink.A700,
-						  }
+							}
 						: {
+								//@ts-ignore
 								"--fill": mutation.isPending ? 1 : 0,
 								color: mutation.isPending ? pink.A700 : "white",
-						  }
+							}
 				}
 			>
 				favorite
 			</div>
 		</IconButton>
 	);
-};
-
-LikeButton.propTypes = {
-	itemId: PropTypes.string.isRequired,
-	isFavorite: PropTypes.bool.isRequired,
-	queryKey: PropTypes.any.isRequired,
-	userId: PropTypes.string.isRequired,
-	itemName: PropTypes.string,
-};
-
-export default LikeButton;
+}

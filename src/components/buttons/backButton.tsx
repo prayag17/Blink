@@ -9,7 +9,7 @@ export default function BackButton() {
 	};
 
 	return (
-		<IconButton onClick={handleClick}>
+		<IconButton onClick={handleClick} disabled={history.length === 0}>
 			<span className="material-symbols-rounded">arrow_back</span>
 		</IconButton>
 	);

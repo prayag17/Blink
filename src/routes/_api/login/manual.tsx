@@ -52,16 +52,6 @@ function UserLoginManual() {
 			api ? (await getBrandingApi(api).getBrandingOptions()).data : skipToken,
 	});
 
-	const ssoProviders = useQuery({
-		queryKey: ["login", "manual", "ssoProviders"],
-		queryFn: async () => {
-			if (!api?.accessToken) return;
-			return axios.get(
-				`${api.basePath}/sso/SAML/Get?api_key=${api.accessToken}`,
-			);
-		},
-	});
-
 	const navigate = useNavigate();
 	const { enqueueSnackbar } = useSnackbar();
 

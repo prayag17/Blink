@@ -135,6 +135,7 @@ const QueueButton = () => {
 											left: "50%",
 											transform: "translate(-50%,-50%)",
 											fontSize: "2em",
+											//@ts-ignore
 											"--wght": "100",
 										}}
 									>
@@ -164,12 +165,13 @@ const QueueButton = () => {
 							</MenuItem>
 						</>
 					)}
-					{queueItems?.slice(currentItemIndex + 1, queueItems.length - 1)
-						.length > 0 && (
-						<Typography px="1em" my={2} variant="h5" fontWeight={300}>
-							Queue:
-						</Typography>
-					)}
+					{queueItems &&
+						queueItems.slice(currentItemIndex + 1, queueItems.length - 1)
+							.length > 0 && (
+							<Typography px="1em" my={2} variant="h5" fontWeight={300}>
+								Queue:
+							</Typography>
+						)}
 					{queueItems
 						?.slice(currentItemIndex + 1, queueItems.length - 1)
 						.map((item, index) => {
@@ -193,7 +195,7 @@ const QueueButton = () => {
 											<img
 												className="queue-item-image"
 												src={getImageUrlsApi(api).getItemImageUrlById(
-													item?.Id,
+													item?.Id ?? "",
 													"Primary",
 													{
 														tag: item.ImageTags?.Primary,
@@ -205,10 +207,10 @@ const QueueButton = () => {
 											<img
 												className="queue-item-image"
 												src={getImageUrlsApi(api).getItemImageUrlById(
-													item?.AlbumId,
+													item?.AlbumId ?? "",
 													"Primary",
 													{
-														tag: item.AlbumPrimaryImageTag[0],
+														tag: item.AlbumPrimaryImageTag?.[0],
 													},
 												)}
 												alt={item.Name ?? "image"}

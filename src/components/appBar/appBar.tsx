@@ -1,4 +1,9 @@
-import React, { useCallback, useMemo, type ReactNode } from "react";
+import React, {
+	type MouseEventHandler,
+	useCallback,
+	useMemo,
+	type ReactNode,
+} from "react";
 import { useEffect, useState } from "react";
 
 import MuiAppBar from "@mui/material/AppBar";
@@ -74,6 +79,10 @@ const MemoizeBackButton = React.memo(BackButton);
 
 export const AppBar = () => {
 	const api = useApiInContext((s) => s.api);
+	if (!api) {
+		console.error("No API found in context");
+		return null;
+	}
 	const navigate = useNavigate();
 
 	const [display, setDisplay] = useState(false);
@@ -98,11 +107,14 @@ export const AppBar = () => {
 		threshold: 20,
 	});
 
-	const [anchorEl, setAnchorEl] = useState(null);
+	const [anchorEl, setAnchorEl] = useState<HTMLButtonElement | null>(null);
 	const openMenu = Boolean(anchorEl);
-	const handleMenuOpen = useCallback((event) => {
-		setAnchorEl(event.currentTarget);
-	}, []);
+	const handleMenuOpen: MouseEventHandler<HTMLButtonElement> = useCallback(
+		(event) => {
+			setAnchorEl(event.currentTarget);
+		},
+		[],
+	);
 	const handleMenuClose = useCallback(() => {
 		setAnchorEl(null);
 	}, []);
