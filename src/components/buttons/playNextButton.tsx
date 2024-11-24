@@ -8,13 +8,11 @@ import React from "react";
 
 const PlayNextButton = () => {
 	const api = useApiInContext((s) => s.api);
-	if (!api) {
-		console.error("Unable to display play next button, api is not available");
-		return null;
-	}
+
 	const user = useQuery({
 		queryKey: ["user"],
 		queryFn: async () => {
+			if (!api) return;
 			const result = await getUserApi(api).getCurrentUser();
 			return result.data;
 		},
@@ -22,7 +20,7 @@ const PlayNextButton = () => {
 	const handlePlayNext = useMutation({
 		mutationKey: ["playNextButton"],
 		mutationFn: () => playItemFromQueue("next", user.data?.Id, api),
-		onError: (error) => [console.error(error)],
+		onError: (error) => console.error(error),
 	});
 	const [queueItems, currentItemIndex] = useQueue((state) => [
 		state.tracks,

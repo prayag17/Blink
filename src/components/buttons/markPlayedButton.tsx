@@ -23,16 +23,13 @@ export default function MarkPlayedButton({
 	itemName: string;
 }) {
 	const api = useApiInContext((s) => s.api);
-	if (!api) {
-		console.error("Unable to display mark played button, api is not available");
-		return null;
-	}
 
 	const queryClient = useQueryClient();
 	const { enqueueSnackbar } = useSnackbar();
 
 	const handleMarking = async () => {
 		let result = null;
+		if (!api) return;
 		if (!isPlayed) {
 			result = await getPlaystateApi(api).markPlayedItem({
 				userId: userId,

@@ -8,15 +8,10 @@ import React from "react";
 
 const PlayPreviousButton = () => {
 	const api = useApiInContext((s) => s.api);
-	if (!api) {
-		console.error(
-			"Unable to display play previous button, api is not available",
-		);
-		return null;
-	}
 	const user = useQuery({
 		queryKey: ["user"],
 		queryFn: async () => {
+			if (!api) return;
 			const result = await getUserApi(api).getCurrentUser();
 			return result.data;
 		},

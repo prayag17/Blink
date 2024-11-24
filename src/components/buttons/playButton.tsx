@@ -313,6 +313,7 @@ const PlayButton = ({
 				enqueueSnackbar("No item ID found", { variant: "error" });
 				return;
 			}
+			
 			if (trackIndex) {
 				// Playlist Playback
 				enqueueSnackbar("Playlist playback is WIP", { variant: "info" });

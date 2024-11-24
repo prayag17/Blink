@@ -23,15 +23,12 @@ export default function LikeButton({
 	itemName: string;
 }) {
 	const api = useApiInContext((s) => s.api);
-	if (!api) {
-		console.error("Unable to display like button, api is not available");
-		return null;
-	}
 	const queryClient = useQueryClient();
 	const { enqueueSnackbar } = useSnackbar();
 
 	const handleLiking = async () => {
 		let result: UserItemDataDto = null!;
+		if (!api) return;
 		if (isFavorite) {
 			result = (
 				await getUserLibraryApi(api).unmarkFavoriteItem({

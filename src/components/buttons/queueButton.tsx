@@ -17,7 +17,7 @@ import getImageUrlsApi from "@/utils/methods/getImageUrlsApi";
 import { useApiInContext } from "@/utils/store/api";
 const QueueButton = () => {
 	const api = useApiInContext((s) => s.api);
-	if (!api) return null;
+
 	const [queueItems, currentItemIndex] = useQueue((state) => [
 		state.tracks,
 		state.currentItemIndex,
@@ -26,6 +26,7 @@ const QueueButton = () => {
 	const user = useQuery({
 		queryKey: ["user"],
 		queryFn: async () => {
+			if (!api) return;
 			const result = await getUserApi(api).getCurrentUser();
 			return result.data;
 		},
@@ -98,27 +99,34 @@ const QueueButton = () => {
 									{queueItems[currentItemIndex].ImageTags?.Primary ? (
 										<img
 											className="queue-item-image"
-											src={getImageUrlsApi(api).getItemImageUrlById(
-												queueItems[currentItemIndex]?.Id,
-												"Primary",
-												{
-													tag: queueItems[currentItemIndex].ImageTags?.Primary,
-												},
-											)}
+											src={
+												api &&
+												getImageUrlsApi(api).getItemImageUrlById(
+													queueItems[currentItemIndex]?.Id,
+													"Primary",
+													{
+														tag: queueItems[currentItemIndex].ImageTags
+															?.Primary,
+													},
+												)
+											}
 											alt={queueItems[currentItemIndex].Name ?? "image"}
 										/>
 									) : (queueItems[currentItemIndex].AlbumPrimaryImageTag
 											?.length ?? -1) > 0 ? (
 										<img
 											className="queue-item-image"
-											src={getImageUrlsApi(api).getItemImageUrlById(
-												queueItems?.[currentItemIndex]?.AlbumId ?? "",
-												"Primary",
-												{
-													tag: queueItems?.[currentItemIndex]
-														.AlbumPrimaryImageTag?.[0],
-												},
-											)}
+											src={
+												api &&
+												getImageUrlsApi(api).getItemImageUrlById(
+													queueItems?.[currentItemIndex]?.AlbumId ?? "",
+													"Primary",
+													{
+														tag: queueItems?.[currentItemIndex]
+															.AlbumPrimaryImageTag?.[0],
+													},
+												)
+											}
 											alt={queueItems[currentItemIndex].Name ?? "image"}
 										/>
 									) : (
@@ -194,25 +202,31 @@ const QueueButton = () => {
 										{item.ImageTags?.Primary ? (
 											<img
 												className="queue-item-image"
-												src={getImageUrlsApi(api).getItemImageUrlById(
-													item?.Id ?? "",
-													"Primary",
-													{
-														tag: item.ImageTags?.Primary,
-													},
-												)}
+												src={
+													api &&
+													getImageUrlsApi(api).getItemImageUrlById(
+														item?.Id ?? "",
+														"Primary",
+														{
+															tag: item.ImageTags?.Primary,
+														},
+													)
+												}
 												alt={item.Name ?? "image"}
 											/>
 										) : (item.AlbumPrimaryImageTag?.length ?? -1) > 0 ? (
 											<img
 												className="queue-item-image"
-												src={getImageUrlsApi(api).getItemImageUrlById(
-													item?.AlbumId ?? "",
-													"Primary",
-													{
-														tag: item.AlbumPrimaryImageTag?.[0],
-													},
-												)}
+												src={
+													api &&
+													getImageUrlsApi(api).getItemImageUrlById(
+														item?.AlbumId ?? "",
+														"Primary",
+														{
+															tag: item.AlbumPrimaryImageTag?.[0],
+														},
+													)
+												}
 												alt={item.Name ?? "image"}
 											/>
 										) : (

@@ -79,10 +79,7 @@ const MemoizeBackButton = React.memo(BackButton);
 
 export const AppBar = () => {
 	const api = useApiInContext((s) => s.api);
-	if (!api) {
-		console.error("No API found in context");
-		return null;
-	}
+
 	const navigate = useNavigate();
 
 	const [display, setDisplay] = useState(false);
@@ -93,12 +90,15 @@ export const AppBar = () => {
 	const libraries = useQuery({
 		queryKey: ["libraries"],
 		queryFn: async () => {
+			if (!user?.Id || !api?.accessToken) {
+				return;
+			}
 			const libs = await getUserViewsApi(api).getUserViews({
-				userId: user?.Id,
+				userId: user.Id,
 			});
 			return libs.data;
 		},
-		enabled: !!user?.Id && !!api.accessToken,
+		enabled: !!user?.Id && !!api?.accessToken,
 		networkMode: "always",
 	});
 
@@ -122,7 +122,7 @@ export const AppBar = () => {
 
 	const handleLogout = async () => {
 		console.log("Logging out user...");
-		await api.logout();
+		await api?.logout();
 		delUser();
 		sessionStorage.removeItem("accessToken");
 		queryClient.clear();
@@ -236,7 +236,7 @@ export const AppBar = () => {
 								) : (
 									<Avatar
 										className="appBar-avatar"
-										src={`${api.basePath}/Users/${user?.Id}/Images/Primary`}
+										src={`${api?.basePath}/Users/${user?.Id}/Images/Primary`}
 										alt={user?.Name ?? "image"}
 									>
 										<span className="material-symbols-rounded appBar-avatar-icon">
@@ -315,7 +315,7 @@ export const AppBar = () => {
 					<List>
 						<ListItemLink to="/home" icon="home" primary="Home" />
 						{libraries.isSuccess &&
-							libraries.data.Items?.map((library) => (
+							libraries.data?.Items?.map((library) => (
 								<ListItemLink
 									key={library.Id}
 									to={`/library/${library.Id}`}

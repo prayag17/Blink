@@ -40,12 +40,12 @@ const Transition = React.forwardRef(function Transition(
 
 const QuickConnectButton = (props: LoadingButtonProps) => {
 	const api = useApiInContext((s) => s.api);
-	if (!api) {
-		console.error(
-			"Unable to display quick connect button, api is not available",
-		);
-		return null;
-	}
+	// if (!api) {
+	// 	console.error(
+	// 		"Unable to display quick connect button, api is not available",
+	// 	);
+	// 	return null;
+	// }
 	const headers = {
 		"X-Emby-Authorization": `MediaBrowser Client="${api?.clientInfo.name}", Device="${api?.deviceInfo.name}", DeviceId="${api?.deviceInfo.id}", Version="${api?.clientInfo.version}"`,
 	};
@@ -64,6 +64,7 @@ const QuickConnectButton = (props: LoadingButtonProps) => {
 	const checkQuickConnectStatus = useMutation({
 		mutationKey: ["quick-connect-button", "check-quick-connect-status"],
 		mutationFn: async (secret: string) =>
+			api &&
 			(
 				await getQuickConnectApi(api).getQuickConnectState(
 					{ secret },
@@ -102,7 +103,7 @@ const QuickConnectButton = (props: LoadingButtonProps) => {
 	);
 
 	return (
-		<div>
+		<div style={{ marginLeft: "auto" }}>
 			{/* @ts-ignore */}
 			<LoadingButton
 				{...props}
@@ -116,7 +117,6 @@ const QuickConnectButton = (props: LoadingButtonProps) => {
 						(quickConnectCode && !checkQuickConnectStatus.data?.Authenticated),
 				)}
 				variant={props.variant ?? "contained"}
-				style={{ flex: 1 }}
 				onClick={initQuickConnect.mutate}
 			>
 				Use Quick Connect

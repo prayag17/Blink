@@ -125,8 +125,12 @@ export const playItem = (
 export const playItemFromQueue = async (
 	index: "next" | "previous" | number,
 	userId: string | undefined,
-	api: Api,
+	api: Api | undefined,
 ) => {
+	if (!api) {
+		console.error("Unable to play item from from queue. No API provided");
+		return;
+	}
 	const queueItems = useQueue.getState().tracks;
 	const currentItemIndex = useQueue.getState().currentItemIndex;
 	const requestedItemIndex =
