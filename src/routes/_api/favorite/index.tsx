@@ -7,12 +7,12 @@ import { useQuery } from "@tanstack/react-query";
 import "./favorite.scss";
 
 import { Card } from "@/components/card/card";
-import { CardScroller } from "@/components/cardScroller/cardScroller";
+import CardScroller  from "@/components/cardScroller/cardScroller";
+import { useCentralStore } from "@/utils/store/central";
 import { BaseItemKind } from "@jellyfin/sdk/lib/generated-client";
 import { getItemsApi } from "@jellyfin/sdk/lib/utils/api/items-api";
 import { getUserApi } from "@jellyfin/sdk/lib/utils/api/user-api";
 import { createFileRoute } from "@tanstack/react-router";
-import { useCentralStore } from "@/utils/store/central";
 
 export const Route = createFileRoute("/_api/favorite/")({
 	component: FavoritePage,

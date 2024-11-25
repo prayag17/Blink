@@ -15,7 +15,7 @@ import useDebounce from "@/utils/hooks/useDebounce";
 
 import { Card } from "@/components/card/card";
 import { EpisodeCard } from "@/components/card/episodeCard";
-import { CardScroller } from "@/components/cardScroller/cardScroller";
+import CardScroller from "@/components/cardScroller/cardScroller";
 import { BaseItemKind } from "@jellyfin/sdk/lib/generated-client";
 import { getItemsApi } from "@jellyfin/sdk/lib/utils/api/items-api";
 import { getPersonsApi } from "@jellyfin/sdk/lib/utils/api/persons-api";
@@ -263,14 +263,14 @@ function SearchPage() {
 					<CardScroller title="Episodes" displayCards={4} disableDecoration>
 						{episodes.data.SearchHints?.map((episode) => {
 							return (
-								<EpisodeCard
+								<Card
 									key={episode.Id}
 									item={episode}
 									cardTitle={episode.Series}
+									cardType="thumb"
 									cardCaption={`S${episode.ParentIndexNumber}:E${episode.IndexNumber} - ${episode.Name}`}
 									queryKey={["search", "items", "Episodes", query]}
 									userId={user?.Id}
-									disableRunTime
 								/>
 							);
 						})}

@@ -53,7 +53,7 @@ type PlayButtonProps = {
 	iconOnly?: boolean;
 	audio?: boolean;
 	size?: "small" | "large" | "medium";
-	playlistItem?: BaseItemDto;
+	playlistItem?: boolean;
 	playlistItemId?: string;
 	trackIndex?: number;
 };

@@ -1,7 +1,7 @@
 import { useQuery } from "@tanstack/react-query";
 import React from "react";
 import { Card } from "../../card/card";
-import { CardScroller } from "../../cardScroller/cardScroller";
+import CardScroller from "../../cardScroller/cardScroller";
 import { CardsSkeleton } from "../../skeleton/cards";
 
 import { useApiInContext } from "@/utils/store/api";

@@ -16,11 +16,11 @@ export default function MarkPlayedButton({
 	userId,
 	itemName,
 }: {
-	itemId: string;
-	isPlayed: boolean;
-	queryKey: string[];
-	userId: string;
-	itemName: string;
+	itemId?: string;
+	isPlayed?: boolean;
+	queryKey?: string[];
+	userId?: string;
+	itemName?: string;
 }) {
 	const api = useApiInContext((s) => s.api);
 
@@ -30,6 +30,11 @@ export default function MarkPlayedButton({
 	const handleMarking = async () => {
 		let result = null;
 		if (!api) return;
+		if (!api) return;
+		if (!userId) return;
+		if (!itemId) return;
+		if (!itemName) return;
+
 		if (!isPlayed) {
 			result = await getPlaystateApi(api).markPlayedItem({
 				userId: userId,

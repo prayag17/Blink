@@ -41,8 +41,7 @@ import {
 } from "@/utils/date/time";
 
 import { Card } from "@/components/card/card";
-import { EpisodeCard } from "@/components/card/episodeCard";
-import { CardScroller } from "@/components/cardScroller/cardScroller";
+import CardScroller from "@/components/cardScroller/cardScroller";
 
 import { ErrorNotice } from "@/components/notices/errorNotice/errorNotice";
 import "./series.scss";
@@ -884,33 +883,6 @@ function SeriesTitlePage() {
 						</div>
 					</div>
 				</div>
-
-				{nextUpEpisode.isSuccess && nextUpEpisode.data.TotalRecordCount > 0 && (
-					<CardScroller title="Next Up" displayCards={4} disableDecoration>
-						{nextUpEpisode.data.Items.map((episode) => {
-							return (
-								<EpisodeCard
-									key={episode.Id}
-									item={episode}
-									cardTitle={`S${episode.ParentIndexNumber}:E${episode.IndexNumber} - ${episode.Name}`}
-									cardCaption={episode.Overview}
-									imageBlurhash={
-										episode.ImageBlurHashes?.Primary[
-											Object.keys(episode.ImageBlurHashes.Primary)[0]
-										]
-									}
-									queryKey={[
-										"item",
-										id,
-										`season ${currentSeason + 1}`,
-										"episodes",
-									]}
-									userId={user?.Id}
-								/>
-							);
-						})}
-					</CardScroller>
-				)}
 
 				{seasons.isPending ? (
 					<SeasonSelectorSkeleton />

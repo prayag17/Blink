@@ -22,7 +22,7 @@ import { getUserLibraryApi } from "@jellyfin/sdk/lib/utils/api/user-library-api"
 import { useQuery } from "@tanstack/react-query";
 
 import { Card } from "@/components/card/card";
-import { CardScroller } from "@/components/cardScroller/cardScroller";
+import CardScroller from "@/components/cardScroller/cardScroller";
 
 import { ErrorNotice } from "@/components/notices/errorNotice/errorNotice";
 import ShowMoreText from "@/components/showMoreText";

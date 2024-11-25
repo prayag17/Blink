@@ -30,7 +30,7 @@ import { useQuery } from "@tanstack/react-query";
 
 import heroBg from "@/assets/herobg.png";
 import { Card } from "@/components/card/card";
-import { CardScroller } from "@/components/cardScroller/cardScroller";
+import CardScroller from "@/components/cardScroller/cardScroller";
 
 import LikeButton from "@/components/buttons/likeButton";
 import MarkPlayedButton from "@/components/buttons/markPlayedButton";

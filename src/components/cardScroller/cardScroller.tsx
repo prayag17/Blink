@@ -1,11 +1,8 @@
-import PropTypes from "prop-types";
-import React, { useState } from "react";
+import React, { type ReactNode } from "react";
 
 import Carousel from "react-multi-carousel";
 import "react-multi-carousel/lib/styles.css";
 
-import Box from "@mui/material/Box";
-import ButtonGroup from "@mui/material/ButtonGroup";
 import IconButton from "@mui/material/IconButton";
 import Typography from "@mui/material/Typography";
 
@@ -30,14 +27,23 @@ function LeftButton(props) {
 	);
 }
 
-export const CardScroller = ({
+type CardScrollerProps = {
+	children: ReactNode;
+	displayCards: number;
+	title: string;
+	headingProps?: object;
+	disableDecoration?: boolean;
+	boxProps?: object;
+};
+
+export default function CardScroller({
 	children,
 	displayCards,
 	title,
 	headingProps,
 	disableDecoration = false,
 	boxProps,
-}) => {
+}: CardScrollerProps) {
 	const responsive = {
 		superLargeDesktop: {
 			// the naming can be any, depends on you.
@@ -73,9 +79,13 @@ export const CardScroller = ({
 	};
 
 	return (
-		<Box {...boxProps} className="card-scroller-container" mb={1}>
-			<Box
-				sx={{ mb: 1 }}
+		<div
+			{...boxProps}
+			className="card-scroller-container"
+			style={{ marginBottom: "1.2em" }}
+		>
+			<div
+				style={{ marginBottom: "1.2em" }}
 				className={
 					disableDecoration
 						? "card-scroller-header-container hidden-decoration"
@@ -90,7 +100,7 @@ export const CardScroller = ({
 				>
 					<div className="card-scroller-heading-decoration" /> {title}
 				</Typography>
-			</Box>
+			</div>
 			<Carousel
 				swipeable
 				draggable
@@ -104,12 +114,6 @@ export const CardScroller = ({
 			>
 				{children}
 			</Carousel>
-		</Box>
+		</div>
 	);
-};
-
-CardScroller.propTypes = {
-	displayCards: PropTypes.number.isRequired,
-	title: PropTypes.string.isRequired,
-	headingProps: PropTypes.any,
-};
+}

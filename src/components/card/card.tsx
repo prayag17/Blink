@@ -37,8 +37,8 @@ const CardComponent = ({
 	item: BaseItemDto;
 	cardTitle: string | undefined | null;
 	cardCaption?: string | null | number;
-	imageType: ImageType;
-	cardType: string;
+	imageType?: ImageType;
+	cardType: "square" | "thumb" | "portrait";
 	queryKey?: string[];
 	userId?: string;
 	seriesId?: string | null;
@@ -145,17 +145,13 @@ const CardComponent = ({
 					{!disableOverlay && (
 						<>
 							<PlayButton
-								itemId={item.Id}
 								item={item}
 								userId={userId}
-								itemType={item.Type}
+								itemType={item.Type ?? "Movie"}
 								currentAudioTrack={0}
 								currentSubTrack="nosub"
 								currentVideoTrack={0}
 								className="card-play-button"
-								iconProps={{
-									style: { fontSize: "2.5em" },
-								}}
 								iconOnly
 								audio={
 									item.Type === BaseItemKind.MusicAlbum ||
@@ -168,14 +164,14 @@ const CardComponent = ({
 							/>
 							<LikeButton
 								itemId={item.Id}
-								itemName={item.Name}
+								itemName={item.Name ?? ""}
 								isFavorite={item.UserData?.IsFavorite}
 								queryKey={queryKey}
 								userId={userId}
 							/>
 							<MarkPlayedButton
 								itemId={item.Id}
-								itemName={item.Name}
+								itemName={item.Name ?? ""}
 								isPlayed={item.UserData?.Played}
 								queryKey={queryKey}
 								userId={userId}

@@ -19,7 +19,7 @@ import { useQuery } from "@tanstack/react-query";
 import { getRuntimeCompact, getRuntimeMusic } from "@/utils/date/time";
 
 import { Card } from "@/components/card/card";
-import { CardScroller } from "@/components/cardScroller/cardScroller";
+import CardScroller from "@/components/cardScroller/cardScroller";
 
 import LikeButton from "@/components/buttons/likeButton";
 import PlayButton from "@/components/buttons/playButton";

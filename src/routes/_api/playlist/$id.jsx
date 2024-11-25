@@ -13,14 +13,14 @@ import { getUserLibraryApi } from "@jellyfin/sdk/lib/utils/api/user-library-api"
 import { useQuery } from "@tanstack/react-query";
 
 import { Card } from "@/components/card/card";
-import { CardScroller } from "@/components/cardScroller/cardScroller";
+import CardScroller from "@/components/cardScroller/cardScroller";
 
 import MusicTrack from "@/components/musicTrack";
 import { ErrorNotice } from "@/components/notices/errorNotice/errorNotice";
 import { useBackdropStore } from "@/utils/store/backdrop";
 import "./playlist.scss";
-import { createFileRoute } from "@tanstack/react-router";
 import { useCentralStore } from "@/utils/store/central";
+import { createFileRoute } from "@tanstack/react-router";
 function TabPanel(props) {
 	const { children, value, index, ...other } = props;
 

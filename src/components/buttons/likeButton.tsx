@@ -16,11 +16,11 @@ export default function LikeButton({
 	userId,
 	itemName,
 }: {
-	itemId: string;
-	isFavorite: boolean;
-	queryKey: string[];
-	userId: string;
-	itemName: string;
+	itemId: string | undefined;
+	isFavorite: boolean | undefined;
+	queryKey: string[] | undefined;
+	userId: string | undefined;
+	itemName: string | undefined;
 }) {
 	const api = useApiInContext((s) => s.api);
 	const queryClient = useQueryClient();
@@ -29,6 +29,9 @@ export default function LikeButton({
 	const handleLiking = async () => {
 		let result: UserItemDataDto = null!;
 		if (!api) return;
+		if (!userId) return;
+		if (!itemId) return;
+		if (!itemName) return;
 		if (isFavorite) {
 			result = (
 				await getUserLibraryApi(api).unmarkFavoriteItem({

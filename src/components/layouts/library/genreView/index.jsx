@@ -6,7 +6,7 @@ import { useQuery } from "@tanstack/react-query";
 import { useRouteContext } from "@tanstack/react-router";
 import React from "react";
 import { Card } from "../../../card/card";
-import { CardScroller } from "../../../cardScroller/cardScroller";
+import cardScroller from "../../../cardScroller/cardScroller";
 
 const GenreView = ({ libraryId, genreId, genreName, userId }) => {
 	const api = useApiInContext((s) => s.api);
@@ -25,7 +25,11 @@ const GenreView = ({ libraryId, genreId, genreName, userId }) => {
 	if (items.isSuccess && items.data.Items.length > 0) {
 		return (
 			<div className="library-genre">
-				<CardScroller title={genreName} displayCards={8} disableDecoration>
+				<cardScroller.CardScroller
+					title={genreName}
+					displayCards={8}
+					disableDecoration
+				>
 					{items.data.Items.map((item) => {
 						return (
 							<Card
@@ -42,14 +46,14 @@ const GenreView = ({ libraryId, genreId, genreName, userId }) => {
 									item.Type === BaseItemKind.Episode
 										? `S${item.ParentIndexNumber}:E${item.IndexNumber} - ${item.Name}`
 										: item.Type === BaseItemKind.Series
-										  ? `${item.ProductionYear} - ${
+											? `${item.ProductionYear} - ${
 													item.EndDate
 														? new Date(item.EndDate).toLocaleString([], {
 																year: "numeric",
-														  })
+															})
 														: "Present"
-											  }`
-										  : item.ProductionYear
+												}`
+											: item.ProductionYear
 								}
 								disableOverlay={
 									item.Type === BaseItemKind.Person ||
@@ -79,7 +83,7 @@ const GenreView = ({ libraryId, genreId, genreName, userId }) => {
 							/>
 						);
 					})}
-				</CardScroller>
+				</cardScroller.CardScroller>
 			</div>
 		);
 	}

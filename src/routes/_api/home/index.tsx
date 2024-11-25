@@ -8,7 +8,7 @@ import Carousel from "@/components/carousel";
 
 // Custom Components
 import { Card } from "@/components/card/card";
-import { CardScroller } from "@/components/cardScroller/cardScroller";
+import CardScroller from "@/components/cardScroller/cardScroller";
 import { LatestMediaSection } from "@/components/layouts/homeSection/latestMediaSection";
 import { CardsSkeleton } from "@/components/skeleton/cards";
 import { CarouselSkeleton } from "@/components/skeleton/carousel";

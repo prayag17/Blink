@@ -1,7 +1,7 @@
 import { AnimatePresence, motion } from "framer-motion";
+import type { PanInfo } from "framer-motion";
 import React, { useEffect, useState, useMemo, useCallback } from "react";
-
-import IconButton from "@mui/material/IconButton";
+import type { MouseEvent, PointerEvent } from "react";
 
 import { useCarouselStore } from "../../utils/store/carousel";
 import "./carousel.scss";
@@ -10,12 +10,11 @@ import type { BaseItemDto } from "@jellyfin/sdk/lib/generated-client";
 import CarouselSlide from "../carouselSlide";
 
 import getImageUrlsApi from "@/utils/methods/getImageUrlsApi";
-import ReactMultiCarousel from "react-multi-carousel";
 import Slider from "../Slider";
 import { getTypeIcon } from "../utils/iconsCollection";
 
 const swipeConfidenceThreshold = 8000;
-const swipePower = (offset, velocity) => {
+const swipePower = (offset: number, velocity: number) => {
 	return Math.abs(offset) * velocity;
 };
 
@@ -30,41 +29,17 @@ const Carousel = ({
 	onChange,
 }: {
 	content: BaseItemDto[];
-	onChange: () => void;
+	onChange: (currentSlide: number) => void;
 }) => {
 	const [currentSlide, setCurrentSlide] = useState(0);
 
-	const [setDirection, dir] = useCarouselStore((state) => [
-		state.setDirection,
-		state.direction,
-	]);
+	const [setDirection] = useCarouselStore((state) => [state.setDirection]);
 
 	useEffect(() => {
 		onChange(currentSlide);
 	}, [content[currentSlide]?.Id]);
 
 	const api = useApiInContext((s) => s.api);
-
-	const responsive = {
-		superLargeDesktop: {
-			breakpoint: { max: 4000, min: 3000 },
-			items: 6,
-		},
-		desktop: {
-			breakpoint: { max: 3000, min: 1024 },
-			items: 6,
-		},
-		tablet: {
-			breakpoint: { max: 1024, min: 464 },
-			items: 4,
-		},
-		mobile: {
-			breakpoint: { max: 464, min: 0 },
-			items: 1,
-		},
-	};
-
-	
 
 	// Memoize the content mapping
 	const sliderContent = useMemo(() => {
@@ -98,16 +73,23 @@ const Carousel = ({
 				>
 					{item.ImageTags?.Thumb ? (
 						<img
-							src={getImageUrlsApi(api).getItemImageUrlById(item.Id, "Thumb", {
-								tag: item.ImageTags.Primary,
-								fillWidth: 300,
-							})}
+							src={
+								api &&
+								getImageUrlsApi(api).getItemImageUrlById(
+									item.Id ?? "",
+									"Thumb",
+									{
+										tag: item.ImageTags.Primary,
+										fillWidth: 300,
+									},
+								)
+							}
 							alt={item.Name ?? "item-image"}
 							className="carousel-indicator-image"
 						/>
 					) : (
 						<div className="carousel-indicator-icon">
-							{getTypeIcon(item.Type)}
+							{getTypeIcon(item.Type ?? "Movie")}
 						</div>
 					)}
 				</motion.div>
@@ -116,7 +98,10 @@ const Carousel = ({
 	}, [content, currentSlide, api, setDirection]);
 
 	const handleDragEnd = useCallback(
-		(e, { offset, velocity }) => {
+		(
+			_: MouseEvent | TouchEvent | PointerEvent,
+			{ offset, velocity }: PanInfo,
+		) => {
 			const swipe = swipePower(offset.x, velocity.x);
 			if (
 				currentSlide !== content.length - 1 &&
@@ -147,6 +132,7 @@ const Carousel = ({
 					drag={"x"}
 					dragConstraints={{ left: 0, right: 0 }}
 					dragElastic={1}
+					//@ts-ignore
 					onDragEnd={handleDragEnd}
 					style={{
 						height: "100%",
