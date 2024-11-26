@@ -20,7 +20,7 @@ export default function LikeButton({
 	isFavorite: boolean | undefined;
 	queryKey: string[] | undefined;
 	userId: string | undefined;
-	itemName: string | undefined;
+	itemName?: string | null;
 }) {
 	const api = useApiInContext((s) => s.api);
 	const queryClient = useQueryClient();

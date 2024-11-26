@@ -4,7 +4,6 @@ import { motion } from "framer-motion";
 
 import Button from "@mui/material/Button";
 import Chip from "@mui/material/Chip";
-import Paper from "@mui/material/Paper";
 import Stack from "@mui/material/Stack";
 import Typography from "@mui/material/Typography";
 
@@ -17,6 +16,7 @@ import { getTypeIcon } from "../utils/iconsCollection";
 
 import { useApiInContext } from "@/utils/store/api";
 import { useCarouselStore } from "@/utils/store/carousel";
+import { useCentralStore } from "@/utils/store/central";
 import {
 	type BaseItemDto,
 	BaseItemKind,
@@ -24,7 +24,6 @@ import {
 import LikeButton from "../buttons/likeButton";
 import MarkPlayedButton from "../buttons/markPlayedButton";
 import PlayButton from "../buttons/playButton";
-import { useCentralStore } from "@/utils/store/central";
 
 const CarouselSlide = ({ item }: { item: BaseItemDto }) => {
 	const api = useApiInContext((s) => s.api);
@@ -74,20 +73,20 @@ const CarouselSlide = ({ item }: { item: BaseItemDto }) => {
 						className="hero-carousel-background-image"
 						src={
 							item.ParentBackdropItemId
-								? `${api.basePath}/Items/${item.ParentBackdropItemId}/Images/Backdrop?quality=80`
-								: `${api.basePath}/Items/${item.Id}/Images/Backdrop?quality=80&fillHeight=1400`
+								? `${api?.basePath}/Items/${item.ParentBackdropItemId}/Images/Backdrop?quality=80`
+								: `${api?.basePath}/Items/${item.Id}/Images/Backdrop?quality=80&fillHeight=1400`
 						}
 						style={{
 							opacity: 0,
 						}}
 						onLoad={(e) => {
-							e.target.style.opacity = 1;
+							e.currentTarget.style.opacity = "1";
 						}}
 						loading="eager"
 					/>
 				) : (
 					<div className="hero-carousel-background-icon-container">
-						{getTypeIcon(item.Type)}
+						{getTypeIcon(item.Type ?? "Movie")}
 					</div>
 				)}
 			</div>
@@ -129,16 +128,16 @@ const CarouselSlide = ({ item }: { item: BaseItemDto }) => {
 						item.Name
 					) : (
 						<img
-							alt={item.Name}
+							alt={item.Name ?? "Item"}
 							className="hero-carousel-text-logo"
-							src={`${api.basePath}/Items/${item.Id}/Images/Logo?quality=90&tag=${item.ImageTags.Logo}`}
+							src={`${api?.basePath}/Items/${item.Id}/Images/Logo?quality=90&tag=${item.ImageTags.Logo}`}
 							style={{
 								opacity: 0,
 								transition: "opacity 0.2s",
 								objectFit: "contain",
 							}}
 							onLoad={(e) => {
-								e.target.style.opacity = 1;
+								e.currentTarget.style.opacity = "1";
 							}}
 						/>
 					)}
@@ -240,15 +239,21 @@ const CarouselSlide = ({ item }: { item: BaseItemDto }) => {
 						</div>
 					)}
 
-					{item.RunTimeTicks && (
+					{item.RunTimeTicks ? (
 						<Typography style={{ opacity: "0.8" }} variant="subtitle2">
 							{getRuntime(item.RunTimeTicks)}
 						</Typography>
+					) : (
+						<></>
 					)}
-					{item.RunTimeTicks && (
+					{item.RunTimeTicks ? (
 						<Typography style={{ opacity: "0.8" }} variant="subtitle2">
-							{endsAt(item.RunTimeTicks - item.UserData.PlaybackPositionTicks)}
+							{endsAt(
+								item.RunTimeTicks - (item.UserData?.PlaybackPositionTicks ?? 0),
+							)}
 						</Typography>
+					) : (
+						<></>
 					)}
 					<Typography variant="subtitle2" style={{ opacity: 0.8 }}>
 						{item.Genres?.slice(0, 4).join(" / ")}
@@ -305,16 +310,14 @@ const CarouselSlide = ({ item }: { item: BaseItemDto }) => {
 				>
 					<PlayButton
 						item={item}
-						itemId={item.Id}
 						userId={user?.Id}
-						itemType={item.Type}
+						itemType={item.Type ?? "Movie"}
 						currentAudioTrack={0}
 						currentSubTrack={0}
 						currentVideoTrack={0}
 						buttonProps={{
 							size: "large",
 						}}
-						itemUserData={item.UserData}
 						audio={
 							item.Type === BaseItemKind.MusicAlbum ||
 							item.Type === BaseItemKind.Audio ||
@@ -327,6 +330,7 @@ const CarouselSlide = ({ item }: { item: BaseItemDto }) => {
 
 					<Button
 						size="large"
+						//@ts-ignore
 						color="white"
 						variant="outlined"
 						endIcon={

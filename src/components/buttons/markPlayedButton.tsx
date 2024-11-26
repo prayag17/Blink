@@ -20,7 +20,7 @@ export default function MarkPlayedButton({
 	isPlayed?: boolean;
 	queryKey?: string[];
 	userId?: string;
-	itemName?: string;
+	itemName?: string | null;
 }) {
 	const api = useApiInContext((s) => s.api);
 

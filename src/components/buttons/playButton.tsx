@@ -145,7 +145,15 @@ const PlayButton = ({
 								seasonId: item.SeasonId,
 								// startItemId: item.Id,
 							});
-							index = result.data.Items?.map((i) => i.Id).indexOf(item.Id) ?? 0;
+							if (
+								result.data.Items?.map((i) => i.Id).indexOf(currentEpisodeId) &&
+								result.data.Items?.map((i) => i.Id).indexOf(currentEpisodeId) >
+									-1
+							) {
+								index = result.data.Items?.map((i) => i.Id).indexOf(
+									currentEpisodeId,
+								);
+							}
 							mediaSource = await getMediaInfoApi(api).getPostedPlaybackInfo({
 								audioStreamIndex: currentAudioTrack,
 								subtitleStreamIndex:
@@ -180,11 +188,14 @@ const PlayButton = ({
 							enableUserData: true,
 							userId: userId,
 						});
-						index =
-							result.data.Items?.map((i) => i.Id).indexOf(
-								currentEpisodeId ?? "",
-							) ?? 0;
-
+						if (
+							result.data.Items?.map((i) => i.Id).indexOf(currentEpisodeId) &&
+							result.data.Items?.map((i) => i.Id).indexOf(currentEpisodeId) > -1
+						) {
+							index = result.data.Items?.map((i) => i.Id).indexOf(
+								currentEpisodeId,
+							);
+						}
 						if (
 							result.data.Items?.[index]?.Id &&
 							result.data.Items?.[index].MediaSources?.[0]?.Id
@@ -475,7 +486,7 @@ const PlayButton = ({
 				if (!item.Id) {
 					throw new Error("Item ID is not available");
 				}
-				let data: BaseItemDtoQueryResult | undefined;
+				let data: BaseItemDtoQueryResult | null = null;
 				const continueWatching = await getItemsApi(api).getResumeItems({
 					userId: userId,
 					limit: 1,
@@ -493,10 +504,12 @@ const PlayButton = ({
 					data = continueWatching.data;
 				} else if ((nextUp.data.Items?.length ?? 0) > 0) {
 					data = nextUp.data;
+				} else {
+					return null;
 				}
 				return data;
 			},
-			enabled: itemType === BaseItemKind.Series,
+			// enabled: itemType === BaseItemKind.Series,
 		});
 		return (
 			<div
@@ -531,7 +544,7 @@ const PlayButton = ({
 					color="white"
 					size={size}
 				>
-					Watch S{currentEpisode.data?.Items?.[0].ParentIndexNumber}E
+					Watch S{currentEpisode.data?.Items?.[0].ParentIndexNumber ?? 1}E
 					{currentEpisode.data?.Items?.[0]?.IndexNumber ?? 1}
 					<MemoizedLinearProgress
 						//@ts-ignore

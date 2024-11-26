@@ -45,18 +45,20 @@ function Home() {
 	const libraries = useQuery({
 		queryKey: ["libraries"],
 		queryFn: async () => {
+			if (!api) return;
 			const libs = await getUserViewsApi(api).getUserViews({
 				userId: user?.Id,
 			});
 			return libs.data;
 		},
-		enabled: !!user?.Id && !!api.accessToken,
+		enabled: !!user?.Id && !!api?.accessToken,
 		networkMode: "always",
 	});
 
 	const latestMedia = useQuery({
 		queryKey: ["home", "latestMedia"],
 		queryFn: async () => {
+			if (!api) return;
 			const media = await getUserLibraryApi(api).getLatestMedia({
 				userId: user?.Id,
 				fields: [
@@ -83,6 +85,7 @@ function Home() {
 	const resumeItemsVideo = useQuery({
 		queryKey: ["home", "resume", "video"],
 		queryFn: async () => {
+			if (!api) return;
 			const resumeItems = await getItemsApi(api).getResumeItems({
 				userId: user?.Id,
 				limit: 10,
@@ -99,6 +102,7 @@ function Home() {
 	const resumeItemsAudio = useQuery({
 		queryKey: ["home", "resume", "audio"],
 		queryFn: async () => {
+			if (!api) return;
 			const resumeItems = await getItemsApi(api).getResumeItems({
 				userId: user?.Id,
 				limit: 10,
@@ -114,6 +118,7 @@ function Home() {
 	const upNextItems = useQuery({
 		queryKey: ["home", "upNext"],
 		queryFn: async () => {
+			if (!api) return;
 			const upNext = await getTvShowsApi(api).getNextUp({
 				userId: user?.Id,
 				fields: [
@@ -144,7 +149,7 @@ function Home() {
 
 	useEffect(() => {
 		if (libraries.isSuccess) {
-			const latestMediaLibsTemp = libraries.data.Items?.reduce(
+			const latestMediaLibsTemp = libraries.data?.Items?.reduce(
 				(filteredItems: BaseItemDto[], currentItem) => {
 					if (currentItem.Type && !excludeTypes.has(currentItem.Type)) {
 						filteredItems.push(currentItem);
@@ -174,11 +179,15 @@ function Home() {
 							<Carousel
 								content={latestMedia.data}
 								onChange={(now: number) => {
-									if (latestMedia.isSuccess && latestMedia.data.length > 0) {
-										if (latestMedia.data[now]?.ParentBackdropImageTags) {
+									if (
+										api &&
+										latestMedia.isSuccess &&
+										(latestMedia.data?.length ?? 0) > 0
+									) {
+										if (latestMedia.data?.[now]?.ParentBackdropImageTags) {
 											setBackdrop(
 												getImageUrlsApi(api).getItemImageUrlById(
-													latestMedia.data[now].Id,
+													latestMedia.data[now].Id ?? "",
 													"Backdrop",
 													{
 														tag: latestMedia.data[now]
@@ -191,14 +200,14 @@ function Home() {
 										} else {
 											setBackdrop(
 												getImageUrlsApi(api).getItemImageUrlById(
-													latestMedia.data[now].Id,
+													latestMedia.data?.[now].Id ?? "",
 													"Backdrop",
 													{
-														tag: latestMedia.data[now].BackdropImageTags[0],
+														tag: latestMedia.data?.[now].BackdropImageTags?.[0],
 													},
 												),
-												latestMedia.data[now]?.BackdropImageTags[0] ??
-													latestMedia.data[now].Id,
+												latestMedia.data?.[now]?.BackdropImageTags?.[0] ??
+													latestMedia.data?.[now].Id,
 											);
 										}
 									}
@@ -220,7 +229,7 @@ function Home() {
 					) : (
 						<CardScroller displayCards={4} title="Libraries">
 							{libraries.status === "success" &&
-								libraries.data.Items?.map((item) => {
+								libraries.data?.Items?.map((item) => {
 									return (
 										<Card
 											key={item.Id}
@@ -253,7 +262,7 @@ function Home() {
 				>
 					{upNextItems.isPending ? (
 						<CardsSkeleton />
-					) : upNextItems.isSuccess && !upNextItems.data.TotalRecordCount ? (
+					) : upNextItems.isSuccess && !upNextItems.data?.TotalRecordCount ? (
 						<></>
 					) : (
 						<CardScroller displayCards={4} title="Up Next">
@@ -310,7 +319,7 @@ function Home() {
 					{resumeItemsVideo.isPending ? (
 						<CardsSkeleton />
 					) : resumeItemsVideo.isSuccess &&
-						!resumeItemsVideo.data.TotalRecordCount ? (
+						!resumeItemsVideo.data?.TotalRecordCount ? (
 						<></>
 					) : (
 						<CardScroller displayCards={4} title="Continue Watching">
@@ -363,7 +372,7 @@ function Home() {
 					{resumeItemsAudio.isPending ? (
 						<CardsSkeleton />
 					) : resumeItemsAudio.isSuccess &&
-						!resumeItemsAudio.data.TotalRecordCount ? (
+						!resumeItemsAudio.data?.TotalRecordCount ? (
 						<></>
 					) : (
 						<CardScroller displayCards={4} title="Continue Listening">
