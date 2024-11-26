@@ -1,4 +1,4 @@
-import React, { memo, type MouseEventHandler } from "react"; // Import memo
+import React, { memo, type MouseEvent } from "react"; // Import memo
 
 import Button, { type ButtonProps } from "@mui/material/Button";
 import Fab from "@mui/material/Fab";
@@ -20,7 +20,7 @@ import {
 import { getItemsApi } from "@jellyfin/sdk/lib/utils/api/items-api";
 import { getPlaylistsApi } from "@jellyfin/sdk/lib/utils/api/playlists-api";
 import { getTvShowsApi } from "@jellyfin/sdk/lib/utils/api/tv-shows-api";
-import { useMutation } from "@tanstack/react-query";
+import { useMutation, useQuery } from "@tanstack/react-query";
 import { useNavigate } from "@tanstack/react-router";
 import { useSnackbar } from "notistack";
 
@@ -37,6 +37,7 @@ import { usePhotosPlayback } from "@/utils/store/photosPlayback";
 import { getMediaInfoApi } from "@jellyfin/sdk/lib/utils/api/media-info-api";
 import { getMediaSegmentsApi } from "@jellyfin/sdk/lib/utils/api/media-segments-api";
 import { getUserLibraryApi } from "@jellyfin/sdk/lib/utils/api/user-library-api";
+import { LoadingButton } from "@mui/lab";
 import type { SxProps } from "@mui/material";
 import type { AxiosResponse } from "axios";
 
@@ -109,11 +110,12 @@ const PlayButton = ({
 
 	const itemQuery = useMutation({
 		mutationKey: ["playButton", item?.Id, userId],
-		mutationFn: async () => {
+		mutationFn: async (currentEpisodeId?: string) => {
 			setPlaybackDataLoading(true);
 			let result: undefined | AxiosResponse<BaseItemDtoQueryResult, any>;
 			let mediaSource: undefined | AxiosResponse<PlaybackInfoResponse, any>;
 			let introInfo: undefined | MediaSegmentDtoQueryResult;
+			let index = 0;
 			if (!api) {
 				throw new Error("API is not available");
 			}
@@ -143,7 +145,7 @@ const PlayButton = ({
 								seasonId: item.SeasonId,
 								// startItemId: item.Id,
 							});
-							const index = result.data.Items?.map((i) => i.Id).indexOf(item.Id) ?? 0;
+							index = result.data.Items?.map((i) => i.Id).indexOf(item.Id) ?? 0;
 							mediaSource = await getMediaInfoApi(api).getPostedPlaybackInfo({
 								audioStreamIndex: currentAudioTrack,
 								subtitleStreamIndex:
@@ -178,26 +180,32 @@ const PlayButton = ({
 							enableUserData: true,
 							userId: userId,
 						});
+						index =
+							result.data.Items?.map((i) => i.Id).indexOf(
+								currentEpisodeId ?? "",
+							) ?? 0;
+
 						if (
-							result.data.Items?.[0]?.Id &&
-							result.data.Items?.[0].MediaSources?.[0]?.Id
+							result.data.Items?.[index]?.Id &&
+							result.data.Items?.[index].MediaSources?.[0]?.Id
 						) {
 							mediaSource = await getMediaInfoApi(api).getPostedPlaybackInfo({
 								audioStreamIndex: currentAudioTrack,
 								subtitleStreamIndex:
 									currentSubTrack === "nosub" ? -1 : currentSubTrack,
-								itemId: result.data.Items?.[0].Id,
+								itemId: result.data.Items?.[index].Id ?? "",
 								startTimeTicks:
 									result.data.Items?.[0].UserData?.PlaybackPositionTicks,
 								userId: userId,
-								mediaSourceId: result.data.Items?.[0].MediaSources?.[0].Id,
+								mediaSourceId:
+									result.data.Items?.[index].MediaSources?.[0].Id ?? "",
 								playbackInfoDto: {
 									DeviceProfile: playbackProfile,
 								},
 							});
 							introInfo = (
 								await getMediaSegmentsApi(api).getItemSegments({
-									itemId: result.data.Items?.[0].Id,
+									itemId: result.data.Items?.[index].Id ?? "",
 								})
 							)?.data;
 						}
@@ -289,7 +297,12 @@ const PlayButton = ({
 						break;
 				}
 			}
-			return { item: result?.data, mediaSource: mediaSource?.data, introInfo };
+			return {
+				item: result?.data,
+				mediaSource: mediaSource?.data,
+				introInfo,
+				episodeIndex: index,
+			};
 		},
 		onSuccess: (result: PlayResult | null) => {
 			if (!api) {
@@ -317,7 +330,7 @@ const PlayButton = ({
 				enqueueSnackbar("No media source ID found", { variant: "error" });
 				return;
 			}
-			
+
 			if (trackIndex) {
 				// Playlist Playback
 				enqueueSnackbar("Playlist playback is WIP", { variant: "info" });
@@ -344,7 +357,7 @@ const PlayButton = ({
 					console.error("No media source found");
 					return;
 				}
-				const episodeIndex = item.IndexNumber ? item.IndexNumber - 1 : 0;
+				const episodeIndex = result.episodeIndex;
 
 				// Creates a queue containing all Episodes for a particular season(series) or collection of movies
 				const queue = result?.item?.Items;
@@ -384,6 +397,9 @@ const PlayButton = ({
 					playItemValue = result?.item?.Items?.[0];
 				}
 
+				const startPosition =
+					result?.item?.Items?.[episodeIndex].UserData?.PlaybackPositionTicks;
+
 				playItem(
 					itemName,
 					episodeTitle,
@@ -392,8 +408,8 @@ const PlayButton = ({
 					result?.mediaSource?.MediaSources?.[0].Container ?? "mkv",
 					playbackUrl,
 					userId ?? "",
-					item.UserData?.PlaybackPositionTicks,
-					item.RunTimeTicks,
+					startPosition,
+					result?.item?.Items?.[episodeIndex].RunTimeTicks,
 					playItemValue ?? item,
 					queue,
 					episodeIndex,
@@ -415,9 +431,12 @@ const PlayButton = ({
 			});
 		},
 	});
-	const handleClick: MouseEventHandler<HTMLButtonElement> = (e) => {
+	const handleClick = (
+		e: MouseEvent<HTMLAnchorElement | MouseEvent>,
+		currentEpisodeId: string | undefined,
+	) => {
 		e.stopPropagation();
-		itemQuery.mutate();
+		itemQuery.mutate(currentEpisodeId);
 	};
 	if (iconOnly) {
 		return (
@@ -440,6 +459,114 @@ const PlayButton = ({
 					play_arrow
 				</div>
 			</Fab>
+		);
+	}
+	
+	if (itemType === BaseItemKind.Series) {
+		const currentEpisode = useQuery({
+			queryKey: ["playButton", "currentEpisode", item?.Id],
+			queryFn: async () => {
+				if (!api) {
+					throw new Error("API is not available");
+				}
+				if (!userId) {
+					throw new Error("User ID is not available");
+				}
+				if (!item.Id) {
+					throw new Error("Item ID is not available");
+				}
+				let data: BaseItemDtoQueryResult | undefined;
+				const continueWatching = await getItemsApi(api).getResumeItems({
+					userId: userId,
+					limit: 1,
+					mediaTypes: ["Video"],
+					parentId: item.Id,
+					enableUserData: true,
+					fields: [ItemFields.MediaStreams, ItemFields.MediaSources],
+				});
+				const nextUp = await getTvShowsApi(api).getNextUp({
+					userId: userId,
+					parentId: item.Id,
+					limit: 1,
+				});
+				if ((continueWatching.data.Items?.length ?? 0) > 0) {
+					data = continueWatching.data;
+				} else if ((nextUp.data.Items?.length ?? 0) > 0) {
+					data = nextUp.data;
+				}
+				return data;
+			},
+			enabled: itemType === BaseItemKind.Series,
+		});
+		return (
+			<div
+				className="play-button"
+				style={{
+					width: "auto",
+					position: "relative",
+				}}
+			>
+				<LoadingButton
+					loading={currentEpisode.isPending}
+					className={className ?? "play-button"}
+					variant="contained"
+					onClick={(e) => handleClick(e, currentEpisode.data?.Items?.[0]?.Id)}
+					startIcon={
+						<div
+							className="material-symbols-rounded fill"
+							style={{
+								zIndex: 1,
+								fontSize: "2em",
+							}}
+						>
+							play_arrow
+						</div>
+					}
+					{...buttonProps}
+					sx={{
+						position: "relative",
+						overflow: "hidden",
+					}}
+					//@ts-ignore - white color is a custom color in the theme which mui's types don't know about
+					color="white"
+					size={size}
+				>
+					Watch S{currentEpisode.data?.Items?.[0].ParentIndexNumber}E
+					{currentEpisode.data?.Items?.[0]?.IndexNumber ?? 1}
+					<MemoizedLinearProgress
+						//@ts-ignore
+						value={
+							100 >
+								(currentEpisode.data?.Items?.[0].UserData?.PlayedPercentage ??
+									100) &&
+							(currentEpisode.data?.Items?.[0].UserData?.PlayedPercentage ??
+								0) > 0
+								? currentEpisode.data?.Items?.[0].UserData?.PlayedPercentage
+								: 0
+						}
+					/>
+				</LoadingButton>
+				{(currentEpisode.data?.Items?.[0].UserData?.PlaybackPositionTicks ??
+					0) > 0 && (
+					<Typography
+						sx={{
+							opacity: 0.8,
+							position: "absolute",
+							bottom: "-1.8em",
+							left: "50%",
+							transform: "translate(-50%)",
+						}}
+						variant="caption"
+					>
+						{getRuntimeCompact(
+							(currentEpisode.data?.Items?.[0].RunTimeTicks ?? 0) -
+								(currentEpisode.data?.Items?.[0].UserData
+									?.PlaybackPositionTicks ?? 0),
+						)}{" "}
+						left
+					</Typography>
+				)}
+			</div>
 		);
 	}
 	return (
@@ -505,8 +632,8 @@ const PlayButton = ({
 					variant="caption"
 				>
 					{getRuntimeCompact(
-						item.RunTimeTicks ??
-							0 - (item.UserData?.PlaybackPositionTicks ?? 0),
+						(item.RunTimeTicks ?? 0) -
+							(item.UserData?.PlaybackPositionTicks ?? 0),
 					)}{" "}
 					left
 				</Typography>

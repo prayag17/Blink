@@ -9,6 +9,7 @@ interface PlayResult {
 	item: BaseItemDtoQueryResult | undefined;
 	mediaSource: PlaybackInfoResponse | undefined;
 	introInfo: MediaSegmentDtoQueryResult | undefined;
+	episodeIndex: number;
 }
 
 export default PlayResult;
