@@ -9,7 +9,6 @@ import "./musicTrack.scss";
 import getImageUrlsApi from "@/utils/methods/getImageUrlsApi";
 import { useApiInContext } from "@/utils/store/api";
 import type { BaseItemDto } from "@jellyfin/sdk/lib/generated-client";
-import type { QueryKey } from "@tanstack/react-query";
 import lyrics_icon from "../../assets/icons/lyrics.svg";
 
 /**
@@ -37,8 +36,8 @@ const MusicTrack = ({
 	trackIndex,
 	className = "",
 }: {
-	item?: BaseItemDto | null;
-	queryKey?: QueryKey;
+	item: BaseItemDto;
+	queryKey: string[];
 	userId?: string | undefined;
 	playlistItem?: boolean;
 	playlistItemId?: string;
@@ -60,16 +59,21 @@ const MusicTrack = ({
 					</span>
 				</div>
 				<img
-					alt={item.Name}
-					src={getImageUrlsApi(api).getItemImageUrlById(
-						Object.keys(item.ImageTags).length === 0 ? item.AlbumId : item.Id,
-						"Primary",
-						{
-							quality: 70,
-							fillHeight: 128,
-							fillWidth: 128,
-						},
-					)}
+					alt={item.Name ?? "Music Track"}
+					src={
+						api &&
+						getImageUrlsApi(api).getItemImageUrlById(
+							(Object.keys(item.ImageTags ?? {}).length === 0
+								? item.AlbumId
+								: item.Id) ?? "",
+							"Primary",
+							{
+								quality: 70,
+								fillHeight: 128,
+								fillWidth: 128,
+							},
+						)
+					}
 					style={{
 						width: "100%",
 						height: "100%",
@@ -77,14 +81,14 @@ const MusicTrack = ({
 						opacity: 0,
 					}}
 					onLoad={(e) => {
-						e.target.style.opacity = 1;
+						e.currentTarget.style.opacity = "1";
 					}}
 				/>
 				<div className="music-track-image-overlay">
 					<PlayButton
-						itemId={item.Id}
+						item={item}
+						itemType="Audio"
 						userId={userId}
-						itemType={item.Type}
 						size="small"
 						iconOnly
 						audio
@@ -119,9 +123,11 @@ const MusicTrack = ({
 						/>
 					)}
 					{item.ArtistItems?.map((artist, index) => (
-						<>
+						<span
+							style={{ display: "inline-flex", alignItems: "center" }}
+							key={artist.Id}
+						>
 							<TextLink
-								key={index}
 								variant={"subtitle2"}
 								location={`/artist/${artist.Id}`}
 								otherProps={{
@@ -133,7 +139,7 @@ const MusicTrack = ({
 							>
 								{artist.Name}
 							</TextLink>
-							{index !== item.ArtistItems.length - 1 && (
+							{index !== (item.ArtistItems?.length ?? 0) - 1 && (
 								<span
 									style={{
 										whiteSpace: "pre",
@@ -142,12 +148,12 @@ const MusicTrack = ({
 									,{" "}
 								</span>
 							)}
-						</>
+						</span>
 					))}
 				</div>
 			</div>
-			<Typography variant="subtitl1">
-				{getRuntimeMusic(item.RunTimeTicks)}
+			<Typography variant="subtitle1">
+				{getRuntimeMusic(item.RunTimeTicks ?? 0)}
 			</Typography>
 			<LikeButton
 				itemId={item.Id}

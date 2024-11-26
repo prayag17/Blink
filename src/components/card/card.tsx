@@ -11,10 +11,10 @@ import {
 	BaseItemKind,
 	type ImageType,
 } from "@jellyfin/sdk/lib/generated-client";
+import { ErrorBoundary } from "react-error-boundary";
 import LikeButton from "../buttons/likeButton";
 import MarkPlayedButton from "../buttons/markPlayedButton";
 import PlayButton from "../buttons/playButton";
-import ErrorBoundary from "../errorBoundary";
 import { getTypeIcon } from "../utils/iconsCollection";
 import "./card.scss";
 import getImageUrlsApi from "@/utils/methods/getImageUrlsApi";

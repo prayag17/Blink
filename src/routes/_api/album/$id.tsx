@@ -4,11 +4,7 @@ import Box from "@mui/material/Box";
 import CircularProgress from "@mui/material/CircularProgress";
 import Typography from "@mui/material/Typography";
 
-import {
-	type BaseItemDto,
-	BaseItemKind,
-	SortOrder,
-} from "@jellyfin/sdk/lib/generated-client";
+import { BaseItemKind, SortOrder } from "@jellyfin/sdk/lib/generated-client";
 import { getItemsApi } from "@jellyfin/sdk/lib/utils/api/items-api";
 import { getLibraryApi } from "@jellyfin/sdk/lib/utils/api/library-api";
 import { getUserLibraryApi } from "@jellyfin/sdk/lib/utils/api/user-library-api";
@@ -16,7 +12,7 @@ import { getUserLibraryApi } from "@jellyfin/sdk/lib/utils/api/user-library-api"
 
 import { useQuery } from "@tanstack/react-query";
 
-import { getRuntimeCompact, getRuntimeMusic } from "@/utils/date/time";
+import { getRuntimeCompact } from "@/utils/date/time";
 
 import { Card } from "@/components/card/card";
 import CardScroller from "@/components/cardScroller/cardScroller";
@@ -26,21 +22,16 @@ import PlayButton from "@/components/buttons/playButton";
 import { ErrorNotice } from "@/components/notices/errorNotice/errorNotice";
 
 import { getTypeIcon } from "@/components/utils/iconsCollection";
-import {
-	generateAudioStreamUrl,
-	playAudio,
-	useAudioPlayback,
-} from "@/utils/store/audioPlayback";
 import { useBackdropStore } from "@/utils/store/backdrop";
 import "./album.scss";
 
+import AlbumMusicTrack from "@/components/albumMusicTrack";
 import TagChip from "@/components/tagChip";
 import getImageUrlsApi from "@/utils/methods/getImageUrlsApi";
 import { useCentralStore } from "@/utils/store/central";
-import { setQueue } from "@/utils/store/queue";
+import { Chip } from "@mui/material";
 import { Link, createFileRoute } from "@tanstack/react-router";
-import { useSnackbar } from "notistack";
-import lyricsIcon from "../../../assets/icons/lyrics.svg";
+import { createPortal } from "react-dom";
 
 export const Route = createFileRoute("/_api/album/$id")({
 	component: MusicAlbumTitlePage,
@@ -58,7 +49,6 @@ function MusicAlbumTitlePage() {
 	}
 
 	const user = useCentralStore((s) => s.currentUser);
-	const { enqueueSnackbar } = useSnackbar();
 
 	const item = useQuery({
 		queryKey: ["item", id],
@@ -135,33 +125,6 @@ function MusicAlbumTitlePage() {
 
 	const pageRef = useRef(null);
 
-	const handlePlayback = (
-		index: number,
-		item: BaseItemDto,
-		queue: BaseItemDto[],
-	) => {
-		if (!user?.Id || !api) {
-			console.error("User not logged in");
-			enqueueSnackbar("You need to be logged in to play music", {
-				variant: "error",
-			});
-			return;
-		}
-		if (item.Id) {
-			const url = generateAudioStreamUrl(
-				item.Id,
-				user.Id,
-				api.deviceInfo.id,
-				api.basePath,
-				api.accessToken,
-			);
-			playAudio(url, item, undefined);
-			setQueue(queue, index);
-		}
-	};
-
-	const currentPlayingItem = useAudioPlayback((s) => s.item);
-
 	if (item.isPending || similarItems.isPending) {
 		return (
 			<Box
@@ -184,13 +147,22 @@ function MusicAlbumTitlePage() {
 				className="scrollY padded-top item item-album"
 				ref={pageRef}
 			>
-				<div className="item-info-container">
-					<div className="item-info">
-						<Typography className="item-info-name" variant="h3">
-							{item.data.Name}
-						</Typography>
-						<div className="flex flex-align-center item-info-album-info">
-							<div className="flex flex-align-center">
+				<div className="item-info">
+					<Typography className="item-info-name" variant="h3">
+						{item.data.Name}
+					</Typography>
+					<div className="flex flex-align-center item-info-album-info">
+						{/* @ts-ignore - Using Link as component  */}
+						<Chip
+							component={Link}
+							to="/artist/$id"
+							params={{ id: item.data.AlbumArtists?.[0].Id ?? "" }}
+							className="flex flex-align-center"
+							style={{
+								color: "white",
+								textDecoration: "none",
+							}}
+							icon={
 								<span
 									className="material-symbols-rounded"
 									style={{
@@ -199,186 +171,90 @@ function MusicAlbumTitlePage() {
 								>
 									artist
 								</span>
-								<Typography ml={1}>{item.data.AlbumArtist}</Typography>
-							</div>
-							<Typography className="opacity-07">
-								{item.data.ProductionYear}
-							</Typography>
-							<Typography className="opacity-07">
-								{(musicTracks.data?.TotalRecordCount ?? 0) > 1
-									? `${musicTracks.data?.TotalRecordCount} songs`
-									: "1 song"}
-							</Typography>
-							<Typography className="opacity-07">
-								{getRuntimeCompact(item.data.CumulativeRunTimeTicks ?? 0)}
-							</Typography>
-						</div>
-						<div className="item-info-buttons">
-							<PlayButton
-								item={item.data}
-								audio
-								itemType={item.data.Type ?? "Audio"}
-								userId={user?.Id}
-							/>
-							<LikeButton
-								itemId={item.data.Id}
-								isFavorite={item.data.UserData?.IsFavorite}
-								queryKey={["item", "musicTracks"]}
-								userId={user?.Id}
-								itemName={item.data.Name}
-							/>
-						</div>
-						<div className="item-info-track-container ">
-							{allDiscs.length > 1 ? (
-								allDiscs.map((disc) => (
-									<div className="item-info-disc-container" key={disc}>
-										<div className="item-info-disc-header flex flex-row flex-align-center">
-											<span
-												className="material-symbols-rounded"
-												style={{ fontSize: "2em" }}
-											>
-												album
-											</span>
-											<Typography variant="h5">Disc {disc}</Typography>
-										</div>
-										<div className="item-info-track header">
-											<span className="material-symbols-rounded index">
-												tag
-											</span>
-											<Typography variant="subtitle1">Title</Typography>
-											<Typography variant="subtitle1">Duration</Typography>
-										</div>
-										{musicTracks.data?.Items?.map(
-											(track, index) =>
-												track.ParentIndexNumber === disc && (
-													<div
-														className={
-															currentPlayingItem?.Id === track.Id
-																? "item-info-track playing"
-																: "item-info-track"
-														}
-														key={track.Id}
-														onClick={() => {
-															if (musicTracks.data.Items) {
-																handlePlayback(
-																	index,
-																	track,
-																	musicTracks.data.Items,
-																);
-															}
-														}}
-													>
-														<div className="index-container">
-															<span className="material-symbols-rounded fill ">
-																play_arrow
-															</span>
-															<Typography className="index">
-																{track.IndexNumber ?? "-"}
-															</Typography>
-														</div>
-														<div className="item-info-track-info">
-															<Typography className="item-info-track-info-name">
-																{track.Name}
-															</Typography>
-															<Typography
-																variant="subtitle2"
-																style={{
-																	opacity: 0.6,
-																	display: "flex",
-																	alignItems: "center",
-																	gap: "0.6em",
-																}}
-																fontWeight={300}
-															>
-																{track.HasLyrics && (
-																	<img src={lyricsIcon} alt="lyrics" />
-																)}
-																{track.Artists?.join(", ")}
-															</Typography>
-														</div>
-														<Typography>
-															{getRuntimeMusic(track.RunTimeTicks ?? 0)}
-														</Typography>
-														<div className="flex flex-align-center">
-															<LikeButton
-																itemId={track.Id}
-																isFavorite={track.UserData?.IsFavorite}
-																queryKey={["item", "musicTracks"]}
-																userId={user?.Id}
-																itemName={track.Name}
-															/>
-														</div>
-													</div>
-												),
-										)}
+							}
+							label={item.data.AlbumArtist}
+						/>
+						<Typography className="opacity-07">
+							{item.data.ProductionYear}
+						</Typography>
+						<Typography className="opacity-07">
+							{(musicTracks.data?.TotalRecordCount ?? 0) > 1
+								? `${musicTracks.data?.TotalRecordCount} songs`
+								: "1 song"}
+						</Typography>
+						<Typography className="opacity-07">
+							{getRuntimeCompact(item.data.CumulativeRunTimeTicks ?? 0)}
+						</Typography>
+					</div>
+					<div className="item-info-buttons">
+						<PlayButton
+							item={item.data}
+							audio
+							itemType={item.data.Type ?? "Audio"}
+							userId={user?.Id}
+						/>
+						<LikeButton
+							itemId={item.data.Id}
+							isFavorite={item.data.UserData?.IsFavorite}
+							queryKey={["item", "musicTracks"]}
+							userId={user?.Id}
+							itemName={item.data.Name}
+						/>
+					</div>
+					<div className="item-info-track-container ">
+						{allDiscs.length > 1 ? (
+							allDiscs.map((disc) => (
+								<div className="item-info-disc-container" key={disc}>
+									<div
+										className="item-info-disc-header flex flex-row flex-align-center"
+										style={{ marginBottom: "1em" }}
+									>
+										<span
+											className="material-symbols-rounded"
+											style={{ fontSize: "2em" }}
+										>
+											album
+										</span>
+										<Typography variant="h5">Disc {disc}</Typography>
 									</div>
-								))
-							) : (
-								<>
 									<div className="item-info-track header">
 										<span className="material-symbols-rounded index">tag</span>
 										<Typography variant="subtitle1">Title</Typography>
 										<Typography variant="subtitle1">Duration</Typography>
 									</div>
-									{musicTracks.data?.Items?.map((track, index) => (
-										<div
-											className={
-												currentPlayingItem?.Id === track.Id
-													? "item-info-track playing"
-													: "item-info-track"
-											}
-											key={track.Id}
-											onClick={() =>
-												musicTracks.data.Items &&
-												handlePlayback(index, track, musicTracks.data.Items)
-											}
-										>
-											<div className="index-container">
-												<span className="material-symbols-rounded fill ">
-													play_arrow
-												</span>
-												<Typography className="index">
-													{track.IndexNumber ?? "-"}
-												</Typography>
-											</div>
-											<div className="item-info-track-info">
-												<Typography className="item-info-track-info-name">
-													{track.Name}
-												</Typography>
-												<Typography
-													variant="subtitle2"
-													style={{
-														opacity: 0.6,
-														display: "flex",
-														alignItems: "center",
-														gap: "0.6em",
-													}}
-													fontWeight={300}
-												>
-													{track.HasLyrics && (
-														<img src={lyricsIcon} alt="lyrics" />
-													)}
-													{track.Artists?.join(", ")}
-												</Typography>
-											</div>
-											<Typography>
-												{getRuntimeMusic(track.RunTimeTicks ?? 0)}
-											</Typography>
-											<div className="flex flex-align-center">
-												<LikeButton
-													itemId={track.Id}
-													isFavorite={track.UserData?.IsFavorite}
-													queryKey={["item", "musicTracks"]}
-													userId={user?.Id}
-													itemName={track.Name}
+									{musicTracks.data?.Items?.map(
+										(track, index) =>
+											track.ParentIndexNumber === disc && (
+												<AlbumMusicTrack
+													key={track.Id}
+													track={track}
+													trackIndex={index}
+													musicTracks={musicTracks.data}
 												/>
-											</div>
-										</div>
-									))}
-								</>
-							)}
-						</div>
+											),
+									)}
+								</div>
+							))
+						) : (
+							<div>
+								<div className="item-info-track header">
+									<span className="material-symbols-rounded index">tag</span>
+									<Typography variant="subtitle1">Title</Typography>
+									<Typography variant="subtitle1">Duration</Typography>
+								</div>
+								{musicTracks.data?.Items?.map((track, index) => (
+									<AlbumMusicTrack
+										key={track.Id}
+										track={track}
+										trackIndex={index}
+										musicTracks={musicTracks.data}
+									/>
+								))}
+							</div>
+						)}
 					</div>
+				</div>
+				{createPortal(
 					<div className="item-info-sidebar">
 						<div className="item-info-sidebar-image-container">
 							{item.data.ImageTags?.Primary ? (
@@ -440,12 +316,13 @@ function MusicAlbumTitlePage() {
 								</Link>
 							))}
 						</div>
-					</div>
-				</div>
-				{(similarItems.data?.TotalRecordCount ?? -1) > 0 && (
+					</div>,
+					document.body,
+				)}
+				{(similarItems.data?.TotalRecordCount ?? 0) > 0 && (
 					<CardScroller
 						title="You might also like"
-						displayCards={7}
+						displayCards={5}
 						disableDecoration
 					>
 						{similarItems.data?.Items?.map((similar) => {

@@ -39,7 +39,7 @@ export const useAudioPlayback = createWithEqualityFn<AudioPlaybackStore>(
 export const playAudio = (
 	url: string,
 	item: BaseItemDto | undefined | null,
-	playlistItemId: string | undefined,
+	playlistItemId?: string | undefined,
 ): void => {
 	useAudioPlayback.setState({
 		display: true,

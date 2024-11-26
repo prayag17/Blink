@@ -8,6 +8,7 @@
 		height: 16em;
 		box-shadow: $shadow-card-image;
 		position: relative;
+		flex-shrink: 0;
 		&-icon {
 			color: rgb(255 255 255 / 0.5);
 				font-variation-settings: "FILL" 1, "wght" 300, "GRAD" 25, "opsz" 40;

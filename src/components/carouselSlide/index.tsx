@@ -176,7 +176,7 @@ const CarouselSlide = ({ item }: { item: BaseItemDto }) => {
 				>
 					{item.PremiereDate && (
 						<Typography style={{ opacity: "0.8" }} variant="subtitle2">
-							{item.ProductionYear ?? ""}
+							{item.ProductionYear}
 						</Typography>
 					)}
 					{item.OfficialRating && (

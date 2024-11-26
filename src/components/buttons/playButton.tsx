@@ -336,11 +336,6 @@ const PlayButton = ({
 				enqueueSnackbar("No item ID found", { variant: "error" });
 				return;
 			}
-			if (!result?.mediaSource?.MediaSources?.[0]?.Id) {
-				console.error("No media source ID found");
-				enqueueSnackbar("No media source ID found", { variant: "error" });
-				return;
-			}
 
 			if (trackIndex) {
 				// Playlist Playback
@@ -363,9 +358,9 @@ const PlayButton = ({
 					navigate({ to: "/player/photos" });
 				}
 			} else {
-				if (!result?.mediaSource) {
-					enqueueSnackbar("No media source found", { variant: "error" });
-					console.error("No media source found");
+				if (!result?.mediaSource?.MediaSources?.[0]?.Id) {
+					console.error("No media source ID found");
+					enqueueSnackbar("No media source ID found", { variant: "error" });
 					return;
 				}
 				const episodeIndex = result.episodeIndex;

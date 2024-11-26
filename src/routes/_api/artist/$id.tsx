@@ -31,7 +31,7 @@ import { ArtistAlbum } from "@/components/layouts/artist/artistAlbum";
 import MusicTrack from "@/components/musicTrack";
 import { ErrorNotice } from "@/components/notices/errorNotice/errorNotice";
 import ShowMoreText from "@/components/showMoreText";
-import { setBackdrop, useBackdropStore } from "@/utils/store/backdrop";
+import { useBackdropStore } from "@/utils/store/backdrop";
 import "./artist.scss";
 
 import IconLink from "@/components/iconLink";
@@ -168,6 +168,7 @@ function ArtistTitlePage() {
 
 	const [animationDirection, setAnimationDirection] = useState("forward");
 
+	const { setBackdrop } = useBackdropStore();
 	useEffect(() => {
 		if (item.isSuccess) {
 			setBackdrop(
