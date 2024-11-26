@@ -114,7 +114,6 @@ const PlayButton = ({
 			let result: undefined | AxiosResponse<BaseItemDtoQueryResult, any>;
 			let mediaSource: undefined | AxiosResponse<PlaybackInfoResponse, any>;
 			let introInfo: undefined | MediaSegmentDtoQueryResult;
-			const indexNumber = item.IndexNumber ? item.IndexNumber - 1 : 0;
 			if (!api) {
 				throw new Error("API is not available");
 			}
@@ -144,24 +143,24 @@ const PlayButton = ({
 								seasonId: item.SeasonId,
 								// startItemId: item.Id,
 							});
+							const index = result.data.Items?.map((i) => i.Id).indexOf(item.Id) ?? 0;
 							mediaSource = await getMediaInfoApi(api).getPostedPlaybackInfo({
 								audioStreamIndex: currentAudioTrack,
 								subtitleStreamIndex:
 									currentSubTrack === "nosub" ? -1 : currentSubTrack,
-								itemId: result.data.Items?.[indexNumber]?.Id ?? "",
+								itemId: result.data.Items?.[index]?.Id ?? "",
 								startTimeTicks:
-									result.data.Items?.[indexNumber].UserData
-										?.PlaybackPositionTicks,
+									result.data.Items?.[index].UserData?.PlaybackPositionTicks,
 								userId: userId,
 								mediaSourceId:
-									result.data.Items?.[indexNumber].MediaSources?.[0]?.Id ?? "",
+									result.data.Items?.[index].MediaSources?.[0]?.Id ?? "",
 								playbackInfoDto: {
 									DeviceProfile: playbackProfile,
 								},
 							});
 							introInfo = (
 								await getMediaSegmentsApi(api).getItemSegments({
-									itemId: result.data.Items?.[indexNumber]?.Id ?? "",
+									itemId: result.data.Items?.[index]?.Id ?? "",
 								})
 							)?.data;
 						}

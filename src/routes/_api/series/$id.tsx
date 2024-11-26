@@ -1026,9 +1026,7 @@ function SeriesTitlePage() {
 												<div className="item-detail-episode-image-overlay">
 													<PlayButton
 														item={episode}
-														itemId={episode.Id}
 														itemType={BaseItemKind.Episode}
-														itemUserData={episode.UserData}
 														userId={user?.Id}
 														currentAudioTrack={0}
 														currentVideoTrack={0}
