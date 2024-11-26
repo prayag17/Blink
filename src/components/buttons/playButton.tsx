@@ -148,20 +148,20 @@ const PlayButton = ({
 								audioStreamIndex: currentAudioTrack,
 								subtitleStreamIndex:
 									currentSubTrack === "nosub" ? -1 : currentSubTrack,
-								itemId: result.data.Items?.[indexNumber].Id ?? "",
+								itemId: result.data.Items?.[indexNumber]?.Id ?? "",
 								startTimeTicks:
 									result.data.Items?.[indexNumber].UserData
 										?.PlaybackPositionTicks,
 								userId: userId,
 								mediaSourceId:
-									result.data.Items?.[indexNumber].MediaSources?.[0].Id ?? "",
+									result.data.Items?.[indexNumber].MediaSources?.[0]?.Id ?? "",
 								playbackInfoDto: {
 									DeviceProfile: playbackProfile,
 								},
 							});
 							introInfo = (
 								await getMediaSegmentsApi(api).getItemSegments({
-									itemId: result.data.Items?.[indexNumber].Id ?? "",
+									itemId: result.data.Items?.[indexNumber]?.Id ?? "",
 								})
 							)?.data;
 						}
@@ -180,8 +180,8 @@ const PlayButton = ({
 							userId: userId,
 						});
 						if (
-							result.data.Items?.[0].Id &&
-							result.data.Items?.[0].MediaSources?.[0].Id
+							result.data.Items?.[0]?.Id &&
+							result.data.Items?.[0].MediaSources?.[0]?.Id
 						) {
 							mediaSource = await getMediaInfoApi(api).getPostedPlaybackInfo({
 								audioStreamIndex: currentAudioTrack,
@@ -244,7 +244,7 @@ const PlayButton = ({
 						});
 						break;
 					case BaseItemKind.Photo:
-						if (item.Id) {
+						{
 							const photo = (
 								await getUserLibraryApi(api).getItem({
 									itemId: item.Id,
@@ -282,7 +282,7 @@ const PlayButton = ({
 							startTimeTicks:
 								result.data.Items?.[0].UserData?.PlaybackPositionTicks,
 							userId: userId,
-							mediaSourceId: result.data.Items?.[0].MediaSources?.[0].Id ?? "",
+							mediaSourceId: result.data.Items?.[0].MediaSources?.[0]?.Id ?? "",
 							playbackInfoDto: {
 								DeviceProfile: playbackProfile,
 							},
@@ -308,9 +308,14 @@ const PlayButton = ({
 				enqueueSnackbar("No items found", { variant: "error" });
 				return;
 			}
-			if (!result?.item?.Items?.[0].Id) {
+			if (!result?.item?.Items?.[0]?.Id) {
 				console.error("No item ID found");
 				enqueueSnackbar("No item ID found", { variant: "error" });
+				return;
+			}
+			if (!result?.mediaSource?.MediaSources?.[0]?.Id) {
+				console.error("No media source ID found");
+				enqueueSnackbar("No media source ID found", { variant: "error" });
 				return;
 			}
 			
