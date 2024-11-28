@@ -379,7 +379,7 @@ const PlayButton = ({
 				// Subtitle
 				const subtitle = getSubtitle(
 					currentSubTrack,
-					result?.mediaSource?.MediaSources?.[0].MediaStreams,
+					result?.mediaSource?.MediaSources?.[0]?.MediaStreams,
 				);
 				// URL generation
 				const urlOptions: URLSearchParams = {

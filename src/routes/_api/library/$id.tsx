@@ -28,11 +28,11 @@ import { getMusicGenresApi } from "@jellyfin/sdk/lib/utils/api/music-genres-api"
 import { getPersonsApi } from "@jellyfin/sdk/lib/utils/api/persons-api";
 import { getStudiosApi } from "@jellyfin/sdk/lib/utils/api/studios-api";
 
-import GenreView from "@/components/layouts/library/genreView";
 import MusicTrack from "@/components/musicTrack";
 import { ErrorNotice } from "@/components/notices/errorNotice/errorNotice";
 import { useBackdropStore } from "@/utils/store/backdrop";
 import {
+	type BaseItemDto,
 	type BaseItemDtoQueryResult,
 	BaseItemKind,
 	CollectionType,
@@ -43,13 +43,7 @@ import {
 } from "@jellyfin/sdk/lib/generated-client";
 
 import { getUserLibraryApi } from "@jellyfin/sdk/lib/utils/api/user-library-api";
-import {
-	FormControl,
-	Menu,
-	Select,
-	Stack,
-	useScrollTrigger,
-} from "@mui/material";
+import { FormControl, Menu, Stack, useScrollTrigger } from "@mui/material";
 import { useWindowVirtualizer } from "@tanstack/react-virtual";
 import type { AxiosResponse } from "axios";
 import "./library.scss";
@@ -83,10 +77,10 @@ const useWindowWidth = () => {
 };
 
 export const Route = createFileRoute("/_api/library/$id")({
-	component: LibraryView,
+	component: Library,
 });
 
-function LibraryView() {
+function Library() {
 	const api = useApiInContext((s) => s.api);
 
 	const { id } = Route.useParams();
@@ -94,8 +88,9 @@ function LibraryView() {
 	const user = useCentralStore((s) => s.currentUser);
 
 	const currentLib = useQuery({
-		queryKey: ["libraryView", "currentLib", id],
+		queryKey: ["library", "currentLib", id],
 		queryFn: async () => {
+			if (!api) return null;
 			const result = await getUserLibraryApi(api).getItem({
 				userId: user?.Id,
 				itemId: id,
@@ -107,9 +102,58 @@ function LibraryView() {
 		staleTime: 0,
 	});
 
-	const [currentViewType, setCurrentViewType] = useState<BaseItemKind | "Artist">(
-		undefined!,
+	const genres = useQuery({
+		queryKey: ["library", "genreItem", id],
+		queryFn: async () => {
+			if (!api) return null;
+			if (currentLib.data?.CollectionType === "music") {
+				const result = await getMusicGenresApi(api).getMusicGenres({
+					parentId: id,
+					userId: user?.Id,
+				});
+				return result.data;
+			}
+			const result = await getGenresApi(api).getGenres({
+				parentId: id,
+				userId: user?.Id,
+			});
+			return result.data;
+		},
+	});
+
+	const [genreFilter, setGenreFilter] = useState<string[]>(() => {
+		const cachedVal = sessionStorage.getItem(
+			`library-${currentLib.data?.Id}-config_genreFilter`,
+		);
+		if (cachedVal) {
+			return JSON.parse(cachedVal);
+		}
+		return [];
+	});
+	const handleGenreFilter = useCallback(
+		(e: ChangeEvent<HTMLInputElement>, genre: BaseItemDto) => {
+			if (e.target.checked) {
+				const genreFilterTemp = [...genreFilter, genre.Id];
+				setGenreFilter((s) => (genre.Id ? [...s, genre.Id] : s));
+				sessionStorage.setItem(
+					`library-${currentLib.data?.Id}-config_genreFilter`,
+					JSON.stringify(genreFilterTemp),
+				);
+			} else {
+				const genreFilterTemp = genreFilter.filter((id) => id !== genre.Id);
+				setGenreFilter((s) => s.filter((id) => id !== genre.Id));
+				sessionStorage.setItem(
+					`library-${currentLib.data?.Id}-config_genreFilter`,
+					JSON.stringify(genreFilterTemp),
+				);
+			}
+		},
+		[genres.data?.Items?.length, id],
 	);
+
+	const [currentViewType, setCurrentViewType] = useState<
+		BaseItemKind | "Artist"
+	>(undefined!);
 	const availableViewTypes: ViewObject[] = useMemo(() => {
 		let result: ViewObject[] = undefined!;
 		switch (currentLib.data?.CollectionType) {
@@ -486,7 +530,7 @@ function LibraryView() {
 
 	const items = useQuery({
 		queryKey: [
-			"libraryView",
+			"library",
 			"currentLibItems",
 			id,
 			{
@@ -495,9 +539,11 @@ function LibraryView() {
 				sortBy: sortBy,
 				filters,
 				videoTypesState,
+				genreFilter,
 			},
 		],
 		queryFn: async () => {
+			if (!api) return null;
 			let result: AxiosResponse<BaseItemDtoQueryResult, any>;
 			if (currentViewType === "MusicArtist") {
 				result = await getArtistsApi(api).getAlbumArtists({
@@ -513,16 +559,6 @@ function LibraryView() {
 				result = await getPersonsApi(api).getPersons({
 					userId: user?.Id,
 					personTypes: ["Actor"],
-				});
-			} else if (currentViewType === "Genre") {
-				result = await getGenresApi(api).getGenres({
-					userId: user?.Id,
-					parentId: id,
-				});
-			} else if (currentViewType === "MusicGenre") {
-				result = await getMusicGenresApi(api).getMusicGenres({
-					userId: user?.Id,
-					parentId: id,
 				});
 			} else if (currentViewType === "Studio") {
 				result = await getStudiosApi(api).getStudios({
@@ -563,6 +599,7 @@ function LibraryView() {
 					is4K: filters.is4K || undefined,
 					is3D: filters.is3D || undefined,
 					enableUserData: true,
+					genreIds: genreFilter,
 				});
 			} else {
 				const videoTypes: VideoType[] = [];
@@ -598,14 +635,13 @@ function LibraryView() {
 					is4K: filters.is4K || undefined,
 					is3D: filters.is3D || undefined,
 					enableUserData: true,
+					genreIds: genreFilter,
 				});
 			}
 			return result.data;
 		},
-		// enabled: false,
 		enabled: !!user?.Id && Boolean(currentViewType) && currentLib.isSuccess,
 		networkMode: "always",
-		// gcTime: 0,
 	});
 
 	const disableSort = useMemo(() => {
@@ -646,7 +682,7 @@ function LibraryView() {
 				? 260
 				: 356,
 		[items.dataUpdatedAt],
-	); // This sets the approx height of each card in libraryView to estimate no of virtual rows to render
+	); // This sets the approx height of each card in library to estimate no of virtual rows to render
 	const windowWidth = useWindowWidth();
 	const itemsPerRow = useMemo(
 		() => Math.max(1, Math.floor(windowWidth / 200)),
@@ -694,10 +730,10 @@ function LibraryView() {
 
 	const backdropItems = useMemo(() => {
 		if (items.isSuccess) {
-			const temp = items.data.Items?.filter(
+			const temp = items.data?.Items?.filter(
 				(item) => item.BackdropImageTags?.length,
 			);
-			if (temp?.[0]?.Id) {
+			if (temp?.[0]?.Id && api) {
 				setBackdrop(
 					getImageUrlsApi(api).getItemImageUrlById(temp?.[0]?.Id, "Backdrop", {
 						tag: temp?.[0]?.BackdropImageTags?.[0],
@@ -710,7 +746,7 @@ function LibraryView() {
 	}, [items]);
 
 	useEffect(() => {
-		if (backdropItems?.length) {
+		if (backdropItems?.length && api) {
 			const intervalId = setInterval(() => {
 				const itemIndex = Math.floor(Math.random() * backdropItems?.length);
 				const backdropItem = backdropItems[itemIndex];
@@ -729,8 +765,6 @@ function LibraryView() {
 			return () => clearInterval(intervalId);
 		}
 	}, [backdropItems]);
-
-	const [test, setTest] = useState(1);
 
 	if (items.isError) {
 		console.error(items.error);
@@ -778,7 +812,7 @@ function LibraryView() {
 							{currentLib.isPending ? (
 								<CircularProgress sx={{ p: 1 }} />
 							) : (
-								currentLib.data.Name
+								currentLib.data?.Name
 							)}
 						</Typography>
 						<Chip
@@ -786,7 +820,7 @@ function LibraryView() {
 								!items.isSuccess ? (
 									<CircularProgress sx={{ p: 1.5 }} />
 								) : (
-									items.data.TotalRecordCount
+									items.data?.TotalRecordCount
 								)
 							}
 						/>
@@ -880,7 +914,7 @@ function LibraryView() {
 									</TextField>
 								)}
 								{!disableFilters && (
-									<>
+									<div>
 										<Button
 											startIcon={
 												<span className="material-symbols-rounded">
@@ -907,260 +941,339 @@ function LibraryView() {
 												},
 											}}
 										>
-											<Typography
-												variant="h6"
-												fontWeight={600}
-												mx="0.4em"
-												mb={0.5}
-											>
-												Filters
-											</Typography>
-											<FormControl
-												style={{
-													background: "rgb(0 0 0 / 0.4)",
-													width: "100%",
-													padding: "0.4em 1em",
-													borderRadius: "6px",
-												}}
-											>
-												<FormControlLabel
-													control={
-														<Checkbox
-															checked={filters.isPlayed}
-															onChange={(e: ChangeEvent<HTMLInputElement>) =>
-																setFilters((s) => ({
-																	...s,
-																	isPlayed: e.target.checked,
-																}))
+											{currentViewType !== "Audio" && (
+												<div>
+													<Typography
+														variant="h6"
+														fontWeight={600}
+														mx="0.4em"
+														mb={0.5}
+													>
+														Filters
+													</Typography>
+													<FormControl
+														style={{
+															background: "rgb(0 0 0 / 0.4)",
+															width: "100%",
+															padding: "0.4em 1em",
+															borderRadius: "6px",
+														}}
+													>
+														<FormControlLabel
+															control={
+																<Checkbox
+																	checked={filters.isPlayed}
+																	onChange={(
+																		e: ChangeEvent<HTMLInputElement>,
+																	) =>
+																		setFilters((s) => ({
+																			...s,
+																			isPlayed: e.target.checked,
+																		}))
+																	}
+																/>
 															}
+															label="Played"
 														/>
-													}
-													label="Played"
-												/>
-												<FormControlLabel
-													control={
-														<Checkbox
-															checked={filters.isUnPlayed}
-															onChange={(e: ChangeEvent<HTMLInputElement>) =>
-																setFilters((s) => ({
-																	...s,
-																	isUnPlayed: e.target.checked,
-																}))
+														<FormControlLabel
+															control={
+																<Checkbox
+																	checked={filters.isUnPlayed}
+																	onChange={(
+																		e: ChangeEvent<HTMLInputElement>,
+																	) =>
+																		setFilters((s) => ({
+																			...s,
+																			isUnPlayed: e.target.checked,
+																		}))
+																	}
+																/>
 															}
+															label="Unplayed"
 														/>
-													}
-													label="Unplayed"
-												/>
-												<FormControlLabel
-													control={
-														<Checkbox
-															checked={filters.isResumable}
-															onChange={(e: ChangeEvent<HTMLInputElement>) =>
-																setFilters((s) => ({
-																	...s,
-																	isResumable: e.target.checked,
-																}))
+														<FormControlLabel
+															control={
+																<Checkbox
+																	checked={filters.isResumable}
+																	onChange={(
+																		e: ChangeEvent<HTMLInputElement>,
+																	) =>
+																		setFilters((s) => ({
+																			...s,
+																			isResumable: e.target.checked,
+																		}))
+																	}
+																/>
 															}
+															label="Resumable"
 														/>
-													}
-													label="Resumable"
-												/>
-												<FormControlLabel
-													control={
-														<Checkbox
-															checked={filters.isFavorite}
-															onChange={(e: ChangeEvent<HTMLInputElement>) =>
-																setFilters((s) => ({
-																	...s,
-																	isFavorite: e.target.checked,
-																}))
+														<FormControlLabel
+															control={
+																<Checkbox
+																	checked={filters.isFavorite}
+																	onChange={(
+																		e: ChangeEvent<HTMLInputElement>,
+																	) =>
+																		setFilters((s) => ({
+																			...s,
+																			isFavorite: e.target.checked,
+																		}))
+																	}
+																/>
 															}
+															label="Favorites"
 														/>
-													}
-													label="Favorites"
-												/>
-											</FormControl>
-											<Typography
-												variant="h6"
-												fontWeight={600}
-												mx="0.4em"
-												mb={0.5}
-											>
-												Features
-											</Typography>
-											<FormControl
-												style={{
-													background: "rgb(0 0 0 / 0.4)",
-													width: "100%",
-													padding: "0.4em 1em",
-													borderRadius: "6px",
-												}}
-											>
-												<FormControlLabel
-													control={
-														<Checkbox
-															checked={filters.hasSubtitles}
-															onChange={(e: ChangeEvent<HTMLInputElement>) =>
-																setFilters((s) => ({
-																	...s,
-																	hasSubtitles: e.target.checked,
-																}))
+													</FormControl>
+												</div>
+											)}
+											{currentViewType !== "Audio" && (
+												<div>
+													<Typography
+														variant="h6"
+														fontWeight={600}
+														mx="0.4em"
+														mb={0.5}
+													>
+														Features
+													</Typography>
+													<FormControl
+														style={{
+															background: "rgb(0 0 0 / 0.4)",
+															width: "100%",
+															padding: "0.4em 1em",
+															borderRadius: "6px",
+														}}
+													>
+														<FormControlLabel
+															control={
+																<Checkbox
+																	checked={filters.hasSubtitles}
+																	onChange={(
+																		e: ChangeEvent<HTMLInputElement>,
+																	) =>
+																		setFilters((s) => ({
+																			...s,
+																			hasSubtitles: e.target.checked,
+																		}))
+																	}
+																/>
 															}
+															label="Subtitles"
 														/>
-													}
-													label="Subtitles"
-												/>
-												<FormControlLabel
-													control={
-														<Checkbox
-															checked={filters.hasTrailer}
-															onChange={(e: ChangeEvent<HTMLInputElement>) =>
-																setFilters((s) => ({
-																	...s,
-																	hasTrailer: e.target.checked,
-																}))
+														<FormControlLabel
+															control={
+																<Checkbox
+																	checked={filters.hasTrailer}
+																	onChange={(
+																		e: ChangeEvent<HTMLInputElement>,
+																	) =>
+																		setFilters((s) => ({
+																			...s,
+																			hasTrailer: e.target.checked,
+																		}))
+																	}
+																/>
 															}
+															label="Trailer"
 														/>
-													}
-													label="Trailer"
-												/>
-												<FormControlLabel
-													control={
-														<Checkbox
-															checked={filters.hasSpecialFeature}
-															onChange={(e: ChangeEvent<HTMLInputElement>) =>
-																setFilters((s) => ({
-																	...s,
-																	hasSpecialFeature: e.target.checked,
-																}))
+														<FormControlLabel
+															control={
+																<Checkbox
+																	checked={filters.hasSpecialFeature}
+																	onChange={(
+																		e: ChangeEvent<HTMLInputElement>,
+																	) =>
+																		setFilters((s) => ({
+																			...s,
+																			hasSpecialFeature: e.target.checked,
+																		}))
+																	}
+																/>
 															}
+															label="Special Features"
 														/>
-													}
-													label="Special Features"
-												/>
-												<FormControlLabel
-													control={
-														<Checkbox
-															checked={filters.hasThemeSong}
-															onChange={(e: ChangeEvent<HTMLInputElement>) =>
-																setFilters((s) => ({
-																	...s,
-																	hasThemeSong: e.target.checked,
-																}))
+														<FormControlLabel
+															control={
+																<Checkbox
+																	checked={filters.hasThemeSong}
+																	onChange={(
+																		e: ChangeEvent<HTMLInputElement>,
+																	) =>
+																		setFilters((s) => ({
+																			...s,
+																			hasThemeSong: e.target.checked,
+																		}))
+																	}
+																/>
 															}
+															label="Theme Song"
 														/>
-													}
-													label="Theme Song"
-												/>
-												<FormControlLabel
-													control={
-														<Checkbox
-															checked={filters.hasThemeVideo}
-															onChange={(e: ChangeEvent<HTMLInputElement>) =>
-																setFilters((s) => ({
-																	...s,
-																	hasThemeVideo: e.target.checked,
-																}))
+														<FormControlLabel
+															control={
+																<Checkbox
+																	checked={filters.hasThemeVideo}
+																	onChange={(
+																		e: ChangeEvent<HTMLInputElement>,
+																	) =>
+																		setFilters((s) => ({
+																			...s,
+																			hasThemeVideo: e.target.checked,
+																		}))
+																	}
+																/>
 															}
+															label="Theme Video"
 														/>
-													}
-													label="Theme Video"
-												/>
-											</FormControl>
-											<Typography
-												variant="h6"
-												fontWeight={600}
-												mx="0.4em"
-												mb={0.5}
-											>
-												Video Types
-											</Typography>
-											<FormControl
-												style={{
-													background: "rgb(0 0 0 / 0.4)",
-													width: "100%",
-													padding: "0.4em 1em",
-													borderRadius: "6px",
-												}}
-											>
-												<FormControlLabel
-													control={
-														<Checkbox
-															checked={videoTypesState.BluRay}
-															onChange={(e: ChangeEvent<HTMLInputElement>) =>
-																setVideoTypesState((s) => ({
-																	...s,
-																	BluRay: e.target.checked,
-																}))
+													</FormControl>
+												</div>
+											)}
+											{currentViewType !== "Audio" && (
+												<div>
+													<Typography
+														variant="h6"
+														fontWeight={600}
+														mx="0.4em"
+														mb={0.5}
+													>
+														Video Types
+													</Typography>
+													<FormControl
+														style={{
+															background: "rgb(0 0 0 / 0.4)",
+															width: "100%",
+															padding: "0.4em 1em",
+															borderRadius: "6px",
+														}}
+													>
+														<FormControlLabel
+															control={
+																<Checkbox
+																	checked={videoTypesState.BluRay}
+																	onChange={(
+																		e: ChangeEvent<HTMLInputElement>,
+																	) =>
+																		setVideoTypesState((s) => ({
+																			...s,
+																			BluRay: e.target.checked,
+																		}))
+																	}
+																/>
 															}
+															label="BluRay"
 														/>
-													}
-													label="BluRay"
-												/>
-												<FormControlLabel
-													control={
-														<Checkbox
-															checked={videoTypesState.Dvd}
-															onChange={(e: ChangeEvent<HTMLInputElement>) =>
-																setVideoTypesState((s) => ({
-																	...s,
-																	Dvd: e.target.checked,
-																}))
+														<FormControlLabel
+															control={
+																<Checkbox
+																	checked={videoTypesState.Dvd}
+																	onChange={(
+																		e: ChangeEvent<HTMLInputElement>,
+																	) =>
+																		setVideoTypesState((s) => ({
+																			...s,
+																			Dvd: e.target.checked,
+																		}))
+																	}
+																/>
 															}
+															label="DVD"
 														/>
-													}
-													label="DVD"
-												/>
-												<FormControlLabel
-													control={
-														<Checkbox
-															checked={filters.isHD}
-															onChange={(e: ChangeEvent<HTMLInputElement>) => {
-																setFilters((s) => ({
-																	...s,
-																	isHD: e.target.checked,
-																}));
+														<FormControlLabel
+															control={
+																<Checkbox
+																	checked={filters.isHD}
+																	onChange={(
+																		e: ChangeEvent<HTMLInputElement>,
+																	) => {
+																		setFilters((s) => ({
+																			...s,
+																			isHD: e.target.checked,
+																		}));
+																	}}
+																/>
+															}
+															label="HD"
+														/>
+														<FormControlLabel
+															control={
+																<Checkbox
+																	checked={filters.is4K}
+																	onChange={(
+																		e: ChangeEvent<HTMLInputElement>,
+																	) =>
+																		setFilters((s) => ({
+																			...s,
+																			is4K: e.target.checked,
+																		}))
+																	}
+																/>
+															}
+															label="4k"
+														/>
+														<FormControlLabel
+															control={<Checkbox checked={false} />}
+															label="SD"
+															disabled
+														/>
+														<FormControlLabel
+															control={
+																<Checkbox
+																	value={filters.is3D}
+																	onChange={(e) =>
+																		setFilters((s) => ({
+																			...s,
+																			is3D: e.target.checked,
+																		}))
+																	}
+																/>
+															}
+															label="3D"
+														/>
+													</FormControl>
+												</div>
+											)}
+											{genres.isSuccess &&
+												(genres.data?.TotalRecordCount ?? 0) > 0 && (
+													<div>
+														<Typography
+															variant="h6"
+															fontWeight={600}
+															mx="0.4em"
+															mb={0.5}
+														>
+															Genres
+														</Typography>
+														<FormControl
+															style={{
+																background: "rgb(0 0 0 / 0.4)",
+																width: "100%",
+																padding: "0.4em 1em",
+																borderRadius: "6px",
 															}}
-														/>
-													}
-													label="HD"
-												/>
-												<FormControlLabel
-													control={
-														<Checkbox
-															checked={filters.is4K}
-															onChange={(e: ChangeEvent<HTMLInputElement>) =>
-																setFilters((s) => ({
-																	...s,
-																	is4K: e.target.checked,
-																}))
-															}
-														/>
-													}
-													label="4k"
-												/>
-												<FormControlLabel
-													control={<Checkbox checked={false} />}
-													label="SD"
-													disabled
-												/>
-												<FormControlLabel
-													control={
-														<Checkbox
-															value={filters.is3D}
-															onChange={(e) =>
-																setFilters((s) => ({
-																	...s,
-																	is3D: e.target.checked,
-																}))
-															}
-														/>
-													}
-													label="3D"
-												/>
-											</FormControl>
+														>
+															{genres.data?.Items?.map(
+																(genre) =>
+																	genre.Id && (
+																		<FormControlLabel
+																			key={genre.Id}
+																			control={
+																				<Checkbox
+																					checked={genreFilter.includes(
+																						genre.Id,
+																					)}
+																					onChange={(e) =>
+																						handleGenreFilter(e, genre)
+																					}
+																				/>
+																			}
+																			label={genre.Name}
+																		/>
+																	),
+															)}
+														</FormControl>
+													</div>
+												)}
 										</Menu>
-									</>
+									</div>
 								)}
 							</Stack>
 						</div>
@@ -1174,18 +1287,6 @@ function LibraryView() {
 								"Install the trailers channel to enhance your movie experience by adding a library of internet trailers."
 							}
 						/>
-					) : currentViewType === BaseItemKind.Genre ? (
-						items.data?.Items?.map((item) => {
-							return (
-								<GenreView
-									key={item.Id}
-									libraryId={currentLib.data.Id}
-									genreId={item.Id}
-									genreName={item.Name}
-									userId={user?.Id}
-								/>
-							);
-						})
 					) : currentViewType !== BaseItemKind.Audio ? (
 						<div
 							style={{
@@ -1204,6 +1305,7 @@ function LibraryView() {
 								);
 								for (let i = fromIndex; i < toIndex; i++) {
 									const item = items.data?.Items?.[i];
+									if (!item) return null;
 									displayItems.push(
 										<div
 											className="library-virtual-item"
@@ -1212,7 +1314,7 @@ function LibraryView() {
 											ref={virtualizer.measureElement}
 										>
 											<Card
-												item={item ?? null}
+												item={item}
 												seriesId={item?.SeriesId}
 												cardTitle={
 													item?.Type === BaseItemKind.Episode
@@ -1286,6 +1388,7 @@ function LibraryView() {
 						>
 							{rowVirtualizer.getVirtualItems().map((virtualRow) => {
 								const item = items.data?.Items?.[virtualRow.index];
+								if (!item) return null;
 								return (
 									<div
 										key={item?.Id}
@@ -1299,31 +1402,8 @@ function LibraryView() {
 										}}
 									>
 										<MusicTrack
-											item={item ?? null}
-											// queryKey={[
-											// 	"libraryView",
-											// 	"currentLibItems",
-											// 	id,
-											// 	{
-											// 		currentViewType: currentViewType,
-											// 		sortAscending: sortAscending,
-											// 		sortBy: sortBy,
-											// 		extraFilters: {
-											// 			hasSubtitles: hasSubtitles,
-											// 			hasTrailer: hasTrailer,
-											// 			hasSpecialFeature: hasSpecialFeature,
-											// 			hasThemeSong: hasThemeSong,
-											// 			hasThemeVideo: hasThemeVideo,
-											// 		},
-											// 		qualityFilters: {
-											// 			isBluRay: isBluRay,
-											// 			isDVD: isDVD,
-											// 			isHD: isHD,
-											// 			is4K: is4K,
-											// 			is3D: is3D,
-											// 		},
-											// 	},
-											// ]}
+											item={item}
+											queryKey={["library"]}
 											userId={user?.Id}
 										/>
 									</div>
@@ -1341,5 +1421,3 @@ function LibraryView() {
 		return <ErrorNotice error={currentLib.error} />;
 	}
 }
-
-export default LibraryView;

@@ -12,21 +12,8 @@ import type { BaseItemDto } from "@jellyfin/sdk/lib/generated-client";
 import lyrics_icon from "../../assets/icons/lyrics.svg";
 
 /**
- * @typedef {Object} Props
- * @property {import("@jellyfin/sdk/lib/generated-client/models").BaseItemDto} item
- * @property {Array} queryKey
- * @property {string} userId
- * @property {bool} playlistItem
- * @property {number} trackIndex
- * @property {string | undefined} playlistItemId
- */
-
-/**
  * @description Music Track element displayed in ArtistTitlePage and Songs library
- * @param {Props}
- * @returns {React.Component}
  */
-
 const MusicTrack = ({
 	item,
 	queryKey,

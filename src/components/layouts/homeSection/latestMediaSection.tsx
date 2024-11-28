@@ -10,7 +10,6 @@ import {
 	type BaseItemDto,
 	BaseItemKind,
 } from "@jellyfin/sdk/lib/generated-client";
-import { getUserApi } from "@jellyfin/sdk/lib/utils/api/user-api";
 import { getUserLibraryApi } from "@jellyfin/sdk/lib/utils/api/user-library-api";
 
 /**
@@ -22,8 +21,9 @@ export const LatestMediaSection = ({
 	const api = useApiInContext((s) => s.api);
 	const user = useCentralStore((s) => s.currentUser);
 	const fetchLatestMedia = async (library: BaseItemDto) => {
+		if (!api || !user?.Id) return null;
 		const media = await getUserLibraryApi(api).getLatestMedia({
-			userId: user?.Id,
+			userId: user.Id,
 			parentId: library.Id,
 			limit: 16,
 			fields: ["PrimaryImageAspectRatio", "ParentId"],
@@ -39,10 +39,10 @@ export const LatestMediaSection = ({
 	if (data.isPending) {
 		return <CardsSkeleton />;
 	}
-	if (data.isSuccess && data.data.length >= 1) {
+	if (data.isSuccess && (data.data?.length ?? 0) >= 1) {
 		return (
 			<CardScroller displayCards={7} title={`Latest ${latestMediaLib.Name}`}>
-				{data.data.map((item) => {
+				{data.data?.map((item) => {
 					return (
 						<Card
 							key={item.Id}
@@ -73,14 +73,8 @@ export const LatestMediaSection = ({
 									? "square"
 									: "portrait"
 							}
-							queryKey={["home", "latestMedia", latestMediaLib.Id]}
+							queryKey={["home", "latestMedia", latestMediaLib.Id ?? ""]}
 							userId={user?.Id}
-							imageBlurhash={
-								!!item.ImageBlurHashes?.Primary &&
-								item.ImageBlurHashes?.Primary[
-									Object.keys(item.ImageBlurHashes.Primary)[0]
-								]
-							}
 						/>
 					);
 				})}
