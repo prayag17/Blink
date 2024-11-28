@@ -3,7 +3,7 @@ import { useAudioPlayback } from "@/utils/store/audioPlayback";
 import useQueue, { setQueue } from "@/utils/store/queue";
 import { Fab, IconButton, Slider, Typography } from "@mui/material";
 import { createFileRoute } from "@tanstack/react-router";
-import React, { useEffect, useMemo, useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 
 import "./audio.scss";
 import PlayNextButton from "@/components/buttons/playNextButton";
@@ -49,11 +49,12 @@ function AudioPlayerRoute() {
 		s.player.ref,
 	]);
 	const [audioPlayer, setAudioPlayer] = useState<HTMLAudioElement | null>(
-		audioPlayerRef?.current,
+		audioPlayerRef?.current ? audioPlayerRef?.current : null,
 	);
 	useEffect(() => {
-		console.log(audioPlayerRef);
-		setAudioPlayer(audioPlayerRef.current);
+		if (audioPlayerRef?.current) {
+			setAudioPlayer(audioPlayerRef?.current);
+		}
 	}, [audioPlayerRef?.current]);
 
 	console.log(audioPlayer?.paused);
@@ -68,12 +69,16 @@ function AudioPlayerRoute() {
 
 	const lyrics = useQuery({
 		queryKey: ["player", "audio", item?.Id, "lyrics"],
-		queryFn: async () =>
-			(
-				await getLyricsApi(api).searchRemoteLyrics({
+		queryFn: async () => {
+			if (!item?.Id || !api) {
+				return null;
+			}
+			return (
+				await getLyricsApi(api).getLyrics({
 					itemId: item?.Id,
 				})
-			).data,
+			).data;
+		},
 		enabled: Boolean(item?.Id),
 	});
 
@@ -110,15 +115,31 @@ function AudioPlayerRoute() {
 		const { active, over } = event;
 		if (active.id !== over?.id) {
 			const prevState = queue;
-			const oldIndex = prevState?.map((item) => item.Id).indexOf(active.id);
-			const newIndex = prevState?.map((item) => item.Id).indexOf(over.id);
+			const oldIndex = prevState
+				?.map((item) => item.Id)
+				.indexOf(String(active.id));
+			const newIndex = prevState
+				?.map((item) => item.Id)
+				.indexOf(String(over?.id));
 
+			if (oldIndex === newIndex) {
+				return;
+			}
+			if (!oldIndex || !newIndex) {
+				return;
+			}
+			if (oldIndex === -1 || newIndex === -1) {
+				return;
+			}
 			const newState = prevState
 				? arrayMove(prevState, oldIndex, newIndex)
 				: prevState;
 
 			const currentTrack = newState?.map((item) => item.Id).indexOf(item?.Id);
 
+			if (!currentTrack) {
+				return;
+			}
 			setQueue(newState, currentTrack);
 			// setQueue(newState);
 		}
@@ -139,13 +160,16 @@ function AudioPlayerRoute() {
 					{item?.ImageTags?.Primary ? (
 						<img
 							alt={item.Name ?? "Music"}
-							src={getImageUrlsApi(api).getItemImageUrlById(
-								item.Id ?? "",
-								"Primary",
-								{
-									tag: item.ImageTags.Primary,
-								},
-							)}
+							src={
+								api &&
+								getImageUrlsApi(api).getItemImageUrlById(
+									item.Id ?? "",
+									"Primary",
+									{
+										tag: item.ImageTags.Primary,
+									},
+								)
+							}
 							className="audio-info-image"
 						/>
 					) : (
@@ -284,26 +308,24 @@ function AudioPlayerRoute() {
 			{showLyrics && (
 				<div
 					className="audio-lyrics"
-					data-has-synced-lyrics={Boolean(
-						lyrics.data?.[0]?.Lyrics?.Metadata?.IsSynced,
-					)}
+					data-has-synced-lyrics={Boolean(lyrics.data?.Metadata?.IsSynced)}
 				>
 					<div className="audio-lyrics-container" ref={lyricsContainer}>
-						{lyrics.data?.[1]?.Lyrics?.Lyrics?.map((lyric, index) => (
+						{lyrics.data?.Lyrics?.map((lyric, index) => (
 							<div
 								className="audio-lyrics-line"
 								key={`${lyric.Text}${index}`}
 								data-active-lyric={
 									secToTicks(audioPlayer?.currentTime) >= (lyric.Start ?? 0) &&
 									secToTicks(audioPlayer?.currentTime) <
-										(lyrics.data?.[0]?.Lyrics?.Lyrics?.[index + 1]?.Start ?? 0)
+										(lyrics.data?.Lyrics?.[index + 1]?.Start ?? 0)
 								}
 							>
 								{lyric.Text}
 							</div>
 						))}
 					</div>
-					{!lyrics.data?.[0]?.Lyrics?.Metadata?.IsSynced && (
+					{!lyrics.data?.Metadata?.IsSynced && (
 						<Typography
 							className="flex flex-align-center"
 							style={{
@@ -326,7 +348,7 @@ function AudioPlayerRoute() {
 				onDragStart={(event) => {
 					const { active } = event;
 					setCurrentDraggingIndex(
-						queue?.map((item) => item.Id).indexOf(active.id),
+						queue?.map((item) => item.Id).indexOf(String(active.id) ?? "") ?? 0,
 					);
 				}}
 				modifiers={[restrictToVerticalAxis]}
@@ -335,6 +357,7 @@ function AudioPlayerRoute() {
 					<div className="audio-queue-container">
 						<Typography variant="h5">Queue:</Typography>
 						<SortableContext
+							//@ts-ignore
 							items={queue?.map((track) => track.Id)}
 							strategy={verticalListSortingStrategy}
 						>
@@ -345,7 +368,7 @@ function AudioPlayerRoute() {
 							</div>
 						</SortableContext>
 						<DragOverlay modifiers={[restrictToWindowEdges]}>
-							{(currentDraggingIndex ?? -1) >= 0 && (
+							{currentDraggingIndex && currentDraggingIndex >= 0 && (
 								<div className="audio-queue-track dragging">
 									<span className="material-symbols-rounded">drag_handle</span>
 									<div className="audio-queue-track-info">

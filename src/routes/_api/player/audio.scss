@@ -87,6 +87,7 @@
         position: relative;
         margin-bottom: 2em;
         border-radius: 20px;
+        overscroll-behavior: contain;
         &-line {
             width: fit-content;
             white-space: wrap;

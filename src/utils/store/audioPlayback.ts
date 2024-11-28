@@ -18,7 +18,7 @@ type AudioPlaybackStore = {
 	player: {
 		currentTick: number;
 		playing: boolean;
-		ref: React.Ref<HTMLAudioElement> | null;
+		ref: React.RefObject<HTMLAudioElement> | null;
 	};
 };
 export const useAudioPlayback = createWithEqualityFn<AudioPlaybackStore>(
