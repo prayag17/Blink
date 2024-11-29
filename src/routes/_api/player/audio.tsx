@@ -308,7 +308,9 @@ function AudioPlayerRoute() {
 			{showLyrics && (
 				<div
 					className="audio-lyrics"
-					data-has-synced-lyrics={Boolean(lyrics.data?.Metadata?.IsSynced)}
+					data-has-synced-lyrics={Boolean(
+						(lyrics.data?.Lyrics?.[0].Start ?? -1) >= 0,
+					)}
 				>
 					<div className="audio-lyrics-container" ref={lyricsContainer}>
 						{lyrics.data?.Lyrics?.map((lyric, index) => (
@@ -325,7 +327,7 @@ function AudioPlayerRoute() {
 							</div>
 						))}
 					</div>
-					{!lyrics.data?.Metadata?.IsSynced && (
+					{!((lyrics.data?.Lyrics?.[0].Start ?? -1) >= 0) && (
 						<Typography
 							className="flex flex-align-center"
 							style={{
