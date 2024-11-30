@@ -5,15 +5,13 @@ import type {
 	MediaStream,
 } from "@jellyfin/sdk/lib/generated-client";
 import { getMediaInfoApi } from "@jellyfin/sdk/lib/utils/api/media-info-api";
+import { getMediaSegmentsApi } from "@jellyfin/sdk/lib/utils/api/media-segments-api";
 import { getPlaystateApi } from "@jellyfin/sdk/lib/utils/api/playstate-api";
-import type { AxiosResponse } from "axios";
 import { shallow } from "zustand/shallow";
 import { createWithEqualityFn } from "zustand/traditional";
 import getSubtitle from "../methods/getSubtitles";
 import playbackProfile from "../playback-profiles";
-import type IntroMediaInfo from "../types/introMediaInfo";
 import type subtitlePlaybackInfo from "../types/subtitlePlaybackInfo";
-import { axiosClient } from "./api";
 import { generateAudioStreamUrl, playAudio } from "./audioPlayback";
 import useQueue, { setQueue } from "./queue";
 
@@ -101,6 +99,19 @@ export const playItem = (
 		playsessionId,
 		intro,
 	});
+
+	if (!queue) {
+		throw new Error("No queue found");
+	}
+
+	if (!mediaSourceId) {
+		throw new Error("No media source id found");
+	}
+
+	if (!subtitle) {
+		throw new Error("No subtitle config found");
+	}
+	
 	usePlaybackStore.setState({
 		itemName,
 		episodeTitle,
@@ -113,8 +124,8 @@ export const playItem = (
 		},
 		playbackStream,
 		userId,
-		startPosition,
-		itemDuration,
+		startPosition: startPosition ?? 0,
+		itemDuration: itemDuration ?? 0,
 		item,
 		playsessionId,
 		intro,
@@ -162,6 +173,15 @@ export const playItemFromQueue = async (
 		playAudio(playbackUrl, item, undefined);
 		setQueue(queueItems, requestedItemIndex);
 	} else {
+		if (!userId) {
+			console.error("No user id provided");
+			return;
+		}
+		if (!item.MediaSources?.[0]?.Id) {
+			console.error("No media source id found");
+			return;
+		}
+
 		const mediaSource = (
 			await getMediaInfoApi(api).getPostedPlaybackInfo({
 				audioStreamIndex: item.MediaSources?.[0]?.DefaultAudioStreamIndex ?? 0,
@@ -184,14 +204,16 @@ export const playItemFromQueue = async (
 				item.IndexNumber ?? 0
 			} ${item.Name}`;
 		}
+
 		// Subtitle
 		const subtitle = getSubtitle(
 			mediaSource.MediaSources?.[0].DefaultSubtitleStreamIndex ?? "nosub",
 			mediaSource.MediaSources?.[0].MediaStreams,
 		);
-		console.log(subtitle);
+
 		// URL generation
-		const urlOptions = {
+		const urlOptions: URLSearchParams = {
+			//@ts-ignore
 			Static: true,
 			tag: mediaSource.MediaSources?.[0].ETag,
 			mediaSourceId: mediaSource.MediaSources?.[0].Id,
@@ -211,24 +233,14 @@ export const playItemFromQueue = async (
 			(value) => value.Type === "Video",
 		);
 
-		let introInfo: undefined | AxiosResponse<IntroMediaInfo, any>;
-		try {
-			introInfo = (
-				await axiosClient.get(
-					`${api.basePath}/Episode/${item.Id}/IntroSkipperSegments`,
-					{
-						headers: {
-							Authorization: `MediaBrowser Token=${api.accessToken}`,
-						},
-					},
-				)
-			)?.data;
-		} catch (error) {
-			console.error(error);
-		}
+		const introInfo = (
+			await getMediaSegmentsApi(api).getItemSegments({
+				itemId: item.Id ?? "",
+			})
+		)?.data;
 
 		// Report playback stop to jellyfin server for previous episode allowing next episode to report playback
-		getPlaystateApi(api).reportPlaybackStopped({
+		await getPlaystateApi(api).reportPlaybackStopped({
 			playbackStopInfo: {
 				Failed: false,
 				ItemId: prevItem?.Id,
@@ -240,8 +252,8 @@ export const playItemFromQueue = async (
 		playItem(
 			itemName,
 			episodeTitle,
-			videoTrack[0].Index,
-			mediaSource.MediaSources?.[0].DefaultAudioStreamIndex,
+			videoTrack?.[0].Index ?? 0,
+			mediaSource.MediaSources?.[0].DefaultAudioStreamIndex ?? 0,
 			mediaSource?.MediaSources?.[0].Container ?? "mkv",
 			playbackUrl,
 			userId,

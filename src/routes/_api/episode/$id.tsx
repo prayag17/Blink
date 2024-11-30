@@ -684,12 +684,10 @@ function EpisodeTitlePage() {
 						<div className="flex flex-row">
 							<PlayButton
 								item={item.data}
-								itemId={item.data.Id}
-								itemType={item.data.Type}
-								itemUserData={item.data.UserData}
-								currentVideoTrack={selectedVideoTrack}
-								currentAudioTrack={selectedAudioTrack}
-								currentSubTrack={selectedSubtitleTrack}
+								itemType="Episode"
+								currentVideoTrack={selectedVideoTrack ?? 0}
+								currentAudioTrack={selectedAudioTrack ?? 0}
+								currentSubTrack={selectedSubtitleTrack ?? "nosub"}
 								userId={user?.Id}
 							/>
 						</div>

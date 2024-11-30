@@ -145,8 +145,11 @@ const PlayButton = ({
 								seasonId: item.SeasonId,
 								// startItemId: item.Id,
 							});
+
 							if (result.data.Items?.map((i) => i.Id).indexOf(currentEpisodeId) === -1) {
-								throw new Error("Episode not found, index return -1");
+								throw new Error(
+									`Episode having id ${currentEpisodeId} not found, index return -1`,
+								);
 							}
 							index = result.data.Items?.map((i) => i.Id).indexOf(currentEpisodeId) ?? 0;
 							mediaSource = await getMediaInfoApi(api).getPostedPlaybackInfo({
@@ -183,10 +186,23 @@ const PlayButton = ({
 							enableUserData: true,
 							userId: userId,
 						});
-						if (result.data.Items?.map((i) => i.Id).indexOf(currentEpisodeId) === -1) {
-							throw new Error("Episode not found, index return -1");
+						console.log(result.data);
+						if (
+							currentEpisodeId &&
+							result.data.Items?.map((i) => i.Id).indexOf(currentEpisodeId) ===
+								-1
+						) {
+							throw new Error(
+								`Episode having id=${currentEpisodeId} not found, index return -1`,
+							);
 						}
-						index = result.data.Items?.map((i) => i.Id).indexOf(currentEpisodeId) ?? 0;
+						if (!currentEpisodeId) {
+							index = 0;
+						} else {
+							index =
+								result.data.Items?.map((i) => i.Id).indexOf(currentEpisodeId) ??
+								0;
+						}
 						if (
 							result.data.Items?.[index]?.Id &&
 							result.data.Items?.[index].MediaSources?.[0]?.Id
@@ -372,6 +388,7 @@ const PlayButton = ({
 					currentSubTrack,
 					result?.mediaSource?.MediaSources?.[0]?.MediaStreams,
 				);
+				console.log(subtitle);
 				// URL generation
 				const urlOptions: URLSearchParams = {
 					//@ts-ignore
@@ -430,7 +447,7 @@ const PlayButton = ({
 	});
 	const handleClick = (
 		e: MouseEvent<HTMLAnchorElement | MouseEvent>,
-		currentEpisodeId: string | undefined,
+		currentEpisodeId?: string | undefined,
 	) => {
 		e.stopPropagation();
 		itemQuery.mutate(currentEpisodeId);
@@ -442,7 +459,9 @@ const PlayButton = ({
 				color="primary"
 				aria-label="Play"
 				className={className}
-				onClick={(e) => handleClick(e, item.Id)}
+				onClick={(e) =>
+					item.Type === "Episode" ? handleClick(e, item.Id) : handleClick(e)
+				}
 				sx={sx}
 				size={size}
 				{...buttonProps}
@@ -579,7 +598,9 @@ const PlayButton = ({
 			<Button
 				className={className ?? "play-button"}
 				variant="contained"
-				onClick={handleClick}
+				onClick={(e) =>
+					item.Type === "Episode" ? handleClick(e, item.Id) : handleClick(e)
+				}
 				startIcon={
 					<div
 						className="material-symbols-rounded fill"

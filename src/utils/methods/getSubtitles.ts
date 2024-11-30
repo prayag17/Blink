@@ -28,7 +28,6 @@ export default function getSubtitle(
 		(stream) => stream.Index === track,
 	);
 	const url = requiredSubtitle?.[0]?.DeliveryUrl;
-	console.log(track);
 	if (track) {
 		return {
 			track,
@@ -36,6 +35,15 @@ export default function getSubtitle(
 			format: requiredSubtitle?.[0]?.Codec,
 			allTracks: availableSubtitles,
 			url,
+		};
+	}
+	if (track === 0) {
+		return {
+			track: 0,
+			enable: false,
+			format: null,
+			allTracks: availableSubtitles,
+			url: null,
 		};
 	}
 }
