@@ -1115,24 +1115,14 @@ function SeriesTitlePage() {
 													itemId={episode.Id}
 													itemName={episode.Name}
 													isFavorite={episode.UserData?.IsFavorite}
-													queryKey={[
-														"item",
-														id,
-														`season ${currentSeason + 1}`,
-														"episodes",
-													]}
+													queryKey={["item", id]}
 													userId={user?.Id}
 												/>
 												<MarkPlayedButton
 													itemId={episode.Id}
 													itemName={episode.Name}
 													isPlayed={episode.UserData?.Played}
-													queryKey={[
-														"item",
-														id,
-														`season ${currentSeason + 1}`,
-														"episodes",
-													]}
+													queryKey={["item", id]}
 													userId={user?.Id}
 												/>
 											</div>

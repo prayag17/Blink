@@ -145,15 +145,10 @@ const PlayButton = ({
 								seasonId: item.SeasonId,
 								// startItemId: item.Id,
 							});
-							if (
-								result.data.Items?.map((i) => i.Id).indexOf(currentEpisodeId) &&
-								result.data.Items?.map((i) => i.Id).indexOf(currentEpisodeId) >
-									-1
-							) {
-								index = result.data.Items?.map((i) => i.Id).indexOf(
-									currentEpisodeId,
-								);
+							if (result.data.Items?.map((i) => i.Id).indexOf(currentEpisodeId) === -1) {
+								throw new Error("Episode not found, index return -1");
 							}
+							index = result.data.Items?.map((i) => i.Id).indexOf(currentEpisodeId) ?? 0;
 							mediaSource = await getMediaInfoApi(api).getPostedPlaybackInfo({
 								audioStreamIndex: currentAudioTrack,
 								subtitleStreamIndex:
@@ -188,14 +183,10 @@ const PlayButton = ({
 							enableUserData: true,
 							userId: userId,
 						});
-						if (
-							result.data.Items?.map((i) => i.Id).indexOf(currentEpisodeId) &&
-							result.data.Items?.map((i) => i.Id).indexOf(currentEpisodeId) > -1
-						) {
-							index = result.data.Items?.map((i) => i.Id).indexOf(
-								currentEpisodeId,
-							);
+						if (result.data.Items?.map((i) => i.Id).indexOf(currentEpisodeId) === -1) {
+							throw new Error("Episode not found, index return -1");
 						}
+						index = result.data.Items?.map((i) => i.Id).indexOf(currentEpisodeId) ?? 0;
 						if (
 							result.data.Items?.[index]?.Id &&
 							result.data.Items?.[index].MediaSources?.[0]?.Id
@@ -451,7 +442,7 @@ const PlayButton = ({
 				color="primary"
 				aria-label="Play"
 				className={className}
-				onClick={handleClick}
+				onClick={(e) => handleClick(e, item.Id)}
 				sx={sx}
 				size={size}
 				{...buttonProps}
