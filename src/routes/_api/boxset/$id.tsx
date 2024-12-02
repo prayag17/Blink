@@ -125,7 +125,7 @@ function BoxSetTitlePage() {
 		if (item.isSuccess) {
 			if (item.data.BackdropImageTags?.length > 0) {
 				setBackdrop(
-					api?.getItemImageUrl(item.data.Id, "Backdrop", {
+					getImageUrlsApi(api).getItemImageUrlById(item.data.Id, "Backdrop", {
 						tag: item.data.BackdropImageTags[0],
 					}),
 					item.data.Id,
