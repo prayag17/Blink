@@ -74,7 +74,7 @@ function LoginPublicUsersList() {
 	}, []);
 	if (users.isSuccess) {
 		return (
-			<div className="login-container">
+			<div className="login-container scrollY">
 				<Typography variant="h4" align="center">
 					Users
 				</Typography>

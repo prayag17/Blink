@@ -16,6 +16,7 @@
 		"notification:default",
 		"core:webview:allow-internal-toggle-devtools",
 		"dialog:default",
-		"upload:allow-download"
+		"upload:allow-download",
+		"clipboard-manager:allow-write-text"
 	]
 }

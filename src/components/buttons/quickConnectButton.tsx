@@ -1,6 +1,8 @@
 import useInterval from "@/utils/hooks/useInterval";
+import { saveUser } from "@/utils/storage/user";
 import { useApiInContext } from "@/utils/store/api";
 import { getQuickConnectApi } from "@jellyfin/sdk/lib/utils/api/quick-connect-api";
+import { getUserApi } from "@jellyfin/sdk/lib/utils/api/user-api";
 import { LoadingButton, type LoadingButtonProps } from "@mui/lab";
 import {
 	Button,
@@ -16,6 +18,7 @@ import {
 } from "@mui/material";
 import type { TransitionProps } from "@mui/material/transitions";
 import { skipToken, useMutation, useQuery } from "@tanstack/react-query";
+import { useNavigate } from "@tanstack/react-router";
 import { writeText } from "@tauri-apps/plugin-clipboard-manager";
 import { useSnackbar } from "notistack";
 import React, { useState } from "react";
@@ -40,15 +43,19 @@ const Transition = React.forwardRef(function Transition(
 
 const QuickConnectButton = (props: LoadingButtonProps) => {
 	const api = useApiInContext((s) => s.api);
+	const createApi = useApiInContext((s) => s.createApi);
 	// if (!api) {
 	// 	console.error(
 	// 		"Unable to display quick connect button, api is not available",
 	// 	);
 	// 	return null;
 	// }
+
 	const headers = {
 		"X-Emby-Authorization": `MediaBrowser Client="${api?.clientInfo.name}", Device="${api?.deviceInfo.name}", DeviceId="${api?.deviceInfo.id}", Version="${api?.clientInfo.version}"`,
 	};
+
+	const navigate = useNavigate();
 
 	const quickConnectEnabled = useQuery({
 		queryKey: ["quick-connect-button", "check-quick-connect-enabled"],
@@ -60,7 +67,38 @@ const QuickConnectButton = (props: LoadingButtonProps) => {
 
 	const { enqueueSnackbar } = useSnackbar();
 	const [quickConnectCode, setQuickConnectCode] = useState<string | null>();
+	const [quickConnectSecret, setQuickConnectSecret] = useState<string | null>();
+	const [checkForQuickConnect, setCheckForQuickConnect] = useState(false);
 	const [rememberUser, setRememberUser] = useState(true);
+	const authenticateUser = useMutation({
+		mutationKey: ["quick-connect-button", "authenticate-user"],
+		mutationFn: async () => {
+			if (api && quickConnectSecret) {
+				return await getUserApi(api).authenticateWithQuickConnect(
+					{ quickConnectDto: { Secret: quickConnectSecret } },
+					{ headers },
+				);
+			}
+		},
+		onSuccess: (result) => {
+			if (api && result?.data?.AccessToken && result.data.User?.Name) {
+				setCheckForQuickConnect(false);
+				// saveUser({ username, password, rememberMe: rememberUser });
+				enqueueSnackbar(`Logged in as ${result.data.User?.Name}!`, {
+					variant: "success",
+				});
+				createApi(api.basePath, result.data.AccessToken);
+				if (rememberUser) {
+					saveUser(result.data.User?.Name, result.data.AccessToken);
+				}
+				navigate({ to: "/home", replace: true });
+			}
+		},
+		onError: (error) => {
+			enqueueSnackbar("Error authenticating user.", { variant: "error" });
+			console.error(error);
+		},
+	});
 	const checkQuickConnectStatus = useMutation({
 		mutationKey: ["quick-connect-button", "check-quick-connect-status"],
 		mutationFn: async (secret: string) =>
@@ -71,6 +109,14 @@ const QuickConnectButton = (props: LoadingButtonProps) => {
 					{ headers },
 				)
 			).data,
+		onSuccess: (result) => {
+			if (result?.Authenticated) {
+				setQuickConnectCode(null);
+				initQuickConnect.reset();
+				checkQuickConnectStatus.reset();
+				authenticateUser.mutate();
+			}
+		},
 	});
 	const initQuickConnect = useMutation({
 		mutationKey: ["quick-connect-button", "initiate-connection"],
@@ -86,6 +132,8 @@ const QuickConnectButton = (props: LoadingButtonProps) => {
 		},
 		onSuccess: (result) => {
 			setQuickConnectCode(result?.data.Code);
+			setQuickConnectSecret(result?.data.Secret);
+			setCheckForQuickConnect(true);
 		},
 		onError: (error) => {
 			enqueueSnackbar("Error initiating Quick Connect.", { variant: "error" });
@@ -95,11 +143,11 @@ const QuickConnectButton = (props: LoadingButtonProps) => {
 
 	useInterval(
 		() => {
-			if (quickConnectCode) {
-				checkQuickConnectStatus.mutate(quickConnectCode);
+			if (quickConnectSecret) {
+				checkQuickConnectStatus.mutate(quickConnectSecret);
 			}
 		},
-		quickConnectCode ? 1000 : null,
+		checkForQuickConnect ? 1500 : null,
 	);
 
 	return (
@@ -119,7 +167,9 @@ const QuickConnectButton = (props: LoadingButtonProps) => {
 				variant={props.variant ?? "contained"}
 				onClick={initQuickConnect.mutate}
 			>
-				Use Quick Connect
+				{quickConnectEnabled.data?.data
+					? "Use Quick Connect"
+					: "Quick Connect Disabled"}
 			</LoadingButton>
 			<Dialog
 				open={Boolean(quickConnectCode)}
