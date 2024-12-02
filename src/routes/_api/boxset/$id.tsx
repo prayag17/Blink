@@ -140,6 +140,7 @@ function BoxSetTitlePage() {
 	const { scrollYProgress } = useScroll({
 		target: pageRef,
 		offset: ["start start", "60vh start"],
+		layoutEffect: false,
 	});
 	const parallax = useParallax(scrollYProgress, 50);
 
