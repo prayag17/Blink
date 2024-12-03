@@ -1,22 +1,15 @@
-import Box from "@mui/material/Box";
-import Paper from "@mui/material/Paper";
 import Skeleton from "@mui/material/Skeleton";
 import Typography from "@mui/material/Typography";
 import React from "react";
-import { theme } from "../../theme";
 export const CarouselSkeleton = () => {
 	return (
-		<Paper
-			className="hero-carousel-skeleton"
-			elevation={0}
-			sx={{
+		<div
+			className="hero-carousel hero-carousel-skeleton"
+			style={{
 				height: "70vh",
-				marginBottom: "3.2em",
 				position: "relative",
-				background: "black",
-				border: "1px solid rgb(255 255 255 / 0.2)",
-				borderRadius: "10px",
-				overflow: "hidden",
+				width: "100vw",
+				marginLeft: "-4.4em",
 			}}
 		>
 			<div className="hero-carousel-detail">
@@ -29,9 +22,13 @@ export const CarouselSkeleton = () => {
 					/>
 				</Typography>
 				<Typography
-					variant="p"
+					variant="body1"
 					className="hero-carousel-text"
-					style={{ display: "flex", flexDirection: "column" }}
+					style={{
+						display: "flex",
+						flexDirection: "column",
+						paddingBottom: "4.4em",
+					}}
 				>
 					<Skeleton
 						variant="text"
@@ -53,6 +50,6 @@ export const CarouselSkeleton = () => {
 					/>
 				</Typography>
 			</div>
-		</Paper>
+		</div>
 	);
 };

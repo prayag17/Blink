@@ -1,15 +1,20 @@
 import Button from "@mui/material/Button";
 import Typography from "@mui/material/Typography";
+import React from "react";
 import { useEffect, useRef, useState } from "react";
 
 const ShowMoreText = ({
 	content,
 	collapsedLines,
 	extraProps,
-}: { content: string; collapsedLines: number; extraProps?: unknown }) => {
+}: {
+	content: string;
+	collapsedLines: number;
+	extraProps?: Record<string, any>;
+}) => {
 	const [displayFull, setDisplayFull] = useState(false);
 	const [isOverflowing, setIsOverflowing] = useState(false);
-	const textRef = useRef(null);
+	const textRef = useRef<HTMLDivElement>(null);
 
 	useEffect(() => {
 		if (textRef.current) {
@@ -33,7 +38,7 @@ const ShowMoreText = ({
 		>
 			<Typography
 				ref={textRef}
-				key={displayFull}
+				key={displayFull ? "full" : "collapsed"}
 				style={{
 					display: "-webkit-box",
 					textOverflow: "ellipsis",
@@ -49,6 +54,7 @@ const ShowMoreText = ({
 			</Typography>
 			{content.length > 0 && isOverflowing && (
 				<Button
+					//@ts-ignore
 					color="white"
 					variant="outlined"
 					onClick={() => setDisplayFull((state) => !state)}

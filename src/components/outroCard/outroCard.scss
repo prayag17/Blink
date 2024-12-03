@@ -22,7 +22,7 @@
 
         &-image {
             grid-area: img;
-            max-height: 14em;
+            aspect-ratio: 16/9;
             width: 20em;
             object-fit: cover;
             border-radius: $border-radius-default;

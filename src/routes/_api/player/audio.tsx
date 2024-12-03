@@ -370,24 +370,24 @@ function AudioPlayerRoute() {
 							</div>
 						</SortableContext>
 						<DragOverlay modifiers={[restrictToWindowEdges]}>
-							{currentDraggingIndex && currentDraggingIndex >= 0 && (
+							{(currentDraggingIndex ?? -1) >= 0 && (
 								<div className="audio-queue-track dragging">
 									<span className="material-symbols-rounded">drag_handle</span>
 									<div className="audio-queue-track-info">
 										<Typography className="audio-queue-track-info-name">
-											{queue[currentDraggingIndex].Name}
+											{queue[currentDraggingIndex ?? 0].Name}
 										</Typography>
 										<Typography
 											fontWeight={300}
 											className="opacity-07"
 											variant="subtitle2"
 										>
-											{queue[currentDraggingIndex].Artists?.join(", ")}
+											{queue[currentDraggingIndex ?? 0].Artists?.join(", ")}
 										</Typography>
 									</div>
 									<Typography className="opacity-07">
 										{getRuntimeMusic(
-											queue[currentDraggingIndex].RunTimeTicks ?? 0,
+											queue[currentDraggingIndex ?? 0].RunTimeTicks ?? 0,
 										)}
 									</Typography>
 								</div>

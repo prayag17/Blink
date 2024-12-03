@@ -1,5 +1,5 @@
 import { useApiInContext } from "@/utils/store/api";
-import { playItemFromQueue, usePlaybackStore } from "@/utils/store/playback";
+import { playItemFromQueue } from "@/utils/store/playback";
 import useQueue from "@/utils/store/queue";
 import { Button, Typography } from "@mui/material";
 import React from "react";
@@ -7,8 +7,8 @@ import { getTypeIcon } from "../utils/iconsCollection";
 
 import "./outroCard.scss";
 import getImageUrlsApi from "@/utils/methods/getImageUrlsApi";
-import { getUserApi } from "@jellyfin/sdk/lib/utils/api/user-api";
-import { useMutation, useQuery } from "@tanstack/react-query";
+import { useCentralStore } from "@/utils/store/central";
+import { useMutation } from "@tanstack/react-query";
 
 const OutroCard = (props: { handleShowCredits: () => void }) => {
 	const api = useApiInContext((s) => s.api);
@@ -16,19 +16,14 @@ const OutroCard = (props: { handleShowCredits: () => void }) => {
 		s.currentItemIndex,
 		s.tracks,
 	]);
-	const item = queueItems[nextItemIndex + 1];
-	const user = useQuery({
-		queryKey: ["user"],
-		queryFn: async () => {
-			const result = await getUserApi(api).getCurrentUser();
-			return result.data;
-		},
-	});
+	const item = queueItems?.[nextItemIndex + 1];
+	const user = useCentralStore((s) => s.currentUser);
 	const handlePlayNext = useMutation({
 		mutationKey: ["playNextButton"],
-		mutationFn: () => playItemFromQueue("next", user.data?.Id, api),
+		mutationFn: () => playItemFromQueue("next", user?.Id, api),
 		onError: (error) => [console.error(error)],
 	});
+	if (!item || !item.Type) return null;
 	return (
 		<div className="outro-card">
 			<Typography variant="h4">Up Next</Typography>
@@ -37,14 +32,21 @@ const OutroCard = (props: { handleShowCredits: () => void }) => {
 					<img
 						className="outro-card-content-image"
 						alt={item.Name ?? "Cover"}
-						src={getImageUrlsApi(api).getItemImageUrlById(item.Id, "Primary", {
-							tag: item.ImageTags.Primary,
-							quality: 80,
-						})}
+						src={
+							api &&
+							getImageUrlsApi(api).getItemImageUrlById(
+								item.Id ?? "",
+								"Primary",
+								{
+									tag: item.ImageTags.Primary,
+									quality: 80,
+								},
+							)
+						}
 					/>
 				) : (
 					<div className="outro-card-content-image icon">
-						{getTypeIcon(item?.Type)}
+						{getTypeIcon(item.Type)}
 					</div>
 				)}
 				<Typography variant="h5" className="outro-card-content-title">
@@ -56,6 +58,7 @@ const OutroCard = (props: { handleShowCredits: () => void }) => {
 				<div className="outro-card-content-buttons">
 					<Button
 						onClick={handlePlayNext.mutate}
+						//@ts-ignore
 						color="white"
 						variant="contained"
 						startIcon={
@@ -74,6 +77,7 @@ const OutroCard = (props: { handleShowCredits: () => void }) => {
 					</Button>
 					<Button
 						onClick={props.handleShowCredits}
+						//@ts-ignore
 						color="white"
 						variant="outlined"
 					>

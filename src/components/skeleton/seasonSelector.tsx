@@ -1,12 +1,13 @@
 import Divider from "@mui/material/Divider";
-import Grid from "@mui/material/Grid2";
+import Grid2 from "@mui/material/Grid2";
 import Skeleton from "@mui/material/Skeleton";
 import Typography from "@mui/material/Typography";
+import React from "react";
 import EpisodeSkeleton from "./episode";
 
 export const SeasonSelectorSkeleton = () => {
 	return (
-		<Grid
+		<Grid2
 			container
 			columns={{
 				xs: 2,
@@ -44,8 +45,8 @@ export const SeasonSelectorSkeleton = () => {
 				}}
 			/>
 			<div className="item-detail-episode-container">
-				<EpisodeSkeleton/>
+				<EpisodeSkeleton />
 			</div>
-		</Grid>
+		</Grid2>
 	);
 };
