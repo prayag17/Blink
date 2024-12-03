@@ -84,8 +84,8 @@ importers:
         specifier: 2.0.0
         version: 2.0.0
       '@tauri-apps/plugin-upload':
-        specifier: 2.1.0
-        version: 2.1.0
+        specifier: 2.2.1
+        version: 2.2.1
       '@types/node':
         specifier: ^22.10.1
         version: 22.10.1
@@ -1670,8 +1670,8 @@ packages:
   '@tauri-apps/plugin-updater@2.0.0':
     resolution: {integrity: sha512-N0cl71g7RPr7zK2Fe5aoIwzw14NcdLcz7XMGFWZVjprsqgDRWoxbnUkknyCQMZthjhGkppCd/wN2MIsUz+eAhQ==}
 
-  '@tauri-apps/plugin-upload@2.1.0':
-    resolution: {integrity: sha512-nSIyxp2sAHsj+1RMs3obTP2lC1rzeWcMxHtzLYjnXLnJMXvWlFG0T7jEZ9Sg/OErvQxPVIvDW+12evuFKa5t8Q==}
+  '@tauri-apps/plugin-upload@2.2.1':
+    resolution: {integrity: sha512-2EyVhJYLAp2mJH0UzO3QGU0vPk/YWvAfdI2wXbczyzEZY/AZVa9wConyB1TV/NGhyJRim4LwWgkmnEvcKLkECw==}
 
   '@tsconfig/svelte@1.0.13':
     resolution: {integrity: sha512-5lYJP45Xllo4yE/RUBccBT32eBlRDbqN8r1/MIvQbKxW3aFqaYPCNgm8D5V20X4ShHcwvYWNlKg3liDh1MlBoA==}
@@ -4439,7 +4439,7 @@ snapshots:
     dependencies:
       '@tauri-apps/api': 2.1.1
 
-  '@tauri-apps/plugin-upload@2.1.0':
+  '@tauri-apps/plugin-upload@2.2.1':
     dependencies:
       '@tauri-apps/api': 2.1.1
 
