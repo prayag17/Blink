@@ -422,10 +422,10 @@ const Settings = () => {
 											icon={
 												<span
 													className="material-symbols-rounded"
-													style={{ "--wght": 500 }}
+													// style={{ "--wght": 500 }}
 												>
 													{updateInfo.data?.available
-														? "new_release"
+														? "release_alert"
 														: "new_releases"}
 												</span>
 											}

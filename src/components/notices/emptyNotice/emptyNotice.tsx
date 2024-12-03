@@ -4,7 +4,7 @@ import Typography from "@mui/material/Typography";
 import { yellow } from "@mui/material/colors";
 import React from "react";
 
-export const EmptyNotice = ({ extraMsg }) => {
+export const EmptyNotice = ({ extraMsg }: { extraMsg?: string }) => {
 	return (
 		<Box
 			sx={{

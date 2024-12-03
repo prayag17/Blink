@@ -1,7 +1,7 @@
 {
 	"name": "blink",
 	"private": true,
-	"version": "0.0.7-dev",
+	"version": "0.0.6-dev",
 	"type": "module",
 	"scripts": {
 		"dev": "vite --force && tsr watch",
