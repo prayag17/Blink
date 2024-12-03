@@ -3,7 +3,7 @@
  * @param {number} ticks - C# ticks of a particular item
  * @return {number} Converted ticks to Milliseconds
  */
-export const ticksToMs = (ticks) => {
+export const ticksToMs = (ticks: number) => {
 	return Math.round(ticks / 10000);
 };
 
@@ -12,7 +12,7 @@ export const ticksToMs = (ticks) => {
  * @param {number} ticks - C# ticks of a particular item
  * @return {number} Converted ticks to Seconds
  */
-export const ticksToSec = (ticks) => {
+export const ticksToSec = (ticks: number) => {
 	return Math.round(ticksToMs(ticks) / 1000);
 };
 
@@ -21,7 +21,7 @@ export const ticksToSec = (ticks) => {
  * @param {number} sec - Sec of a particular item
  * @return {number} Converted Seconds to C# ticks
  */
-export const secToTicks = (ticks) => {
+export const secToTicks = (ticks: number) => {
 	return Math.round(ticks * 10000000);
 };
 
@@ -30,7 +30,7 @@ export const secToTicks = (ticks) => {
  * @param {number} ticks - C# ticks of a particular item
  * @return {number} Converted ticks to Hhr Mmin formate
  */
-export const getRuntime = (ticks) => {
+export const getRuntime = (ticks: number) => {
 	const time = ticksToMs(ticks);
 	let formatedTime = "";
 	let timeSec = Math.floor(time / 1000);
@@ -51,7 +51,7 @@ export const getRuntime = (ticks) => {
  * @param {number} ticks - C# ticks of a particular item
  * @return {number} Converted ticks to hh:mm:ss formate
  */
-export const getRuntimeMusic = (ticks) => {
+export const getRuntimeMusic = (ticks: number) => {
 	const time = ticksToMs(ticks);
 	let formatedTime = "";
 	let timeSec = Math.floor(time / 1000);
@@ -82,7 +82,7 @@ export const getRuntimeMusic = (ticks) => {
  * @param {number} ticks - C# ticks of a particular item
  * @return {number} Converted ticks to H hour M minutes formate
  */
-export const getRuntimeFull = (ticks) => {
+export const getRuntimeFull = (ticks: number) => {
 	const time = ticksToMs(ticks);
 	let formatedTime = "";
 	let timeSec = Math.floor(time / 1000);
@@ -103,7 +103,7 @@ export const getRuntimeFull = (ticks) => {
  * @param {number} ticks - C# ticks of a particular item
  * @return {number} Converted ticks to Hh Mm formate
  */
-export const getRuntimeCompact = (ticks) => {
+export const getRuntimeCompact = (ticks: number) => {
 	const time = ticksToMs(ticks);
 	let formatedTime = "";
 	let timeSec = Math.floor(time / 1000);
@@ -124,7 +124,7 @@ export const getRuntimeCompact = (ticks) => {
  * @param {number} ticks - C# ticks of a particular item
  * @return {number} End time of an item
  */
-export const endsAt = (ticks) => {
+export const endsAt = (ticks: number) => {
 	const current = new Date();
 	const currentTime = current.getTime();
 	const time = ticksToMs(ticks);

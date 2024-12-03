@@ -1,28 +1,21 @@
-import { createStore } from "zustand";
 import { shallow } from "zustand/shallow";
-import { useStoreWithEqualityFn } from "zustand/traditional";
+import { createWithEqualityFn } from "zustand/traditional";
 
 type BackdropStore = {
 	backdropUrl: string;
 	backdropId: string;
-	setBackdrop: (
-		url: string | undefined | null,
-		id: string | undefined | null,
-	) => void;
+	setBackdrop: (url: string | undefined, id: string | undefined) => void;
 };
 
-export const backdropStore = createStore((set) => ({
-	backdropUrl: "",
-	backdropId: "",
-	setBackdrop: (
-		url: string | undefined | null,
-		id: string | undefined | null,
-	) => set(() => ({ backdropUrl: url, backdropId: id })),
-}));
+export const useBackdropStore = createWithEqualityFn<BackdropStore>(
+	(set) => ({
+		backdropUrl: "",
+		backdropId: "",
+		setBackdrop: (url, id) => set(() => ({ backdropUrl: url, backdropId: id })),
+	}),
+	shallow,
+);
 
-export function useBackdropStore<T>(selector?: (state: BackdropStore) => T) {
-	return useStoreWithEqualityFn(backdropStore, selector!, shallow);
-}
 /**
  * @deprecated Please use setBackdrop method from the store
  */

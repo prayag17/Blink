@@ -1,6 +1,6 @@
 import React from "react";
 
-import { Divider, LinearProgress, Skeleton } from "@mui/material";
+import { Skeleton } from "@mui/material";
 import { motion } from "framer-motion";
 
 const ItemSkeleton = () => {

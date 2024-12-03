@@ -1,13 +1,8 @@
 import type { BaseItemDto } from "@jellyfin/sdk/lib/generated-client";
-import { create } from "zustand";
-import { setQueue } from "./queue";
 
-import { start } from "repl";
-import { max } from "lodash";
 import type React from "react";
 import { shallow } from "zustand/shallow";
 import { createWithEqualityFn } from "zustand/traditional";
-import { secToTicks } from "../date/time";
 import playbackProfile from "../playback-profiles";
 
 type AudioPlaybackStore = {
@@ -90,11 +85,11 @@ export const generateAudioStreamUrl = (
 		enableRemoteMedia: false,
 		enableAudioVbrEncoding: true,
 	};
-	const urlParams = new URLSearchParams(urlOptions).toString();
+	const urlParams = new URLSearchParams(urlOptions as any).toString();
 	return `${basePath}/Audio/${itemId}/universal?${urlParams}`;
 };
 
-export const setAudioRef = (ref) => {
+export const setAudioRef = (ref: React.RefObject<HTMLAudioElement>) => {
 	const state = useAudioPlayback.getState();
 	state.player.ref = ref;
 	useAudioPlayback.setState(state);

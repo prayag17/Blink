@@ -8,7 +8,6 @@ import { version as appVer } from "../../../package.json";
 
 // Initial custom axios client to use tauri's http module
 import axios from "axios";
-import axiosTauriApiAdapter from "axios-tauri-api-adapter";
 
 type ApiStore = {
 	api: Api | undefined;

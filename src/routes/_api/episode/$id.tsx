@@ -419,38 +419,41 @@ function EpisodeTitlePage() {
 						)}
 					</div>
 					<div className="item-hero-detail">
-						<TextLink
-							otherProps={{
-								fontWeight: 200,
-								mb: 2,
-								style: {
-									textDecoration: "none",
-								},
+						<Typography
+							variant="h2"
+							fontWeight="200"
+							mb={2}
+							style={{
+								textDecoration: "none",
 							}}
-							variant={"h2"}
-							location={`/series/${item.data.SeriesId}`}
 						>
-							{item.data.ParentLogoItemId?.length > 0 ? (
-								<img
-									alt={item.data.SeriesName}
-									src={getImageUrlsApi(api).getItemImageUrlById(
-										item.data.ParentLogoItemId,
-										"Logo",
-										{
-											quality: 90,
-											fillWidth: 592,
-											fillHeight: 592,
-										},
-									)}
-									onLoad={(e) => {
-										e.currentTarget.style.opacity = 1;
-									}}
-									className="item-hero-logo"
-								/>
-							) : (
-								item.data.SeriesName
-							)}
-						</TextLink>
+							<Link
+								style={{ textDecoration: "none", color: "white" }}
+								to="/series/$id"
+								params={{ id: item.data.SeriesId ?? "" }}
+							>
+								{item.data.ParentLogoItemId?.length > 0 ? (
+									<img
+										alt={item.data.SeriesName}
+										src={getImageUrlsApi(api).getItemImageUrlById(
+											item.data.ParentLogoItemId,
+											"Logo",
+											{
+												quality: 90,
+												fillWidth: 592,
+												fillHeight: 592,
+											},
+										)}
+										onLoad={(e) => {
+											e.currentTarget.style.opacity = 1;
+										}}
+										className="item-hero-logo"
+									/>
+								) : (
+									item.data.SeriesName
+								)}
+							</Link>
+						</Typography>
 						<Typography variant="h4" fontWeight={300} mb={2}>
 							S{item.data.ParentIndexNumber ?? 0}:E
 							{item.data.IndexNumberEnd

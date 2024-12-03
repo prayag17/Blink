@@ -4,11 +4,11 @@ import { getRuntimeMusic } from "../../utils/date/time";
 import { useAudioPlayback } from "../../utils/store/audioPlayback";
 import LikeButton from "../buttons/likeButton";
 import PlayButton from "../buttons/playButton";
-import TextLink from "../textLink";
 import "./musicTrack.scss";
 import getImageUrlsApi from "@/utils/methods/getImageUrlsApi";
 import { useApiInContext } from "@/utils/store/api";
 import type { BaseItemDto } from "@jellyfin/sdk/lib/generated-client";
+import { Link } from "@tanstack/react-router";
 import lyrics_icon from "../../assets/icons/lyrics.svg";
 
 /**
@@ -114,18 +114,21 @@ const MusicTrack = ({
 							style={{ display: "inline-flex", alignItems: "center" }}
 							key={artist.Id}
 						>
-							<TextLink
-								variant={"subtitle2"}
-								location={`/artist/${artist.Id}`}
-								otherProps={{
-									fontWeight: 400,
-									style: {
-										textDecoration: "none",
-									},
+							<Typography
+								variant="subtitle2"
+								fontWeight="400"
+								style={{
+									textDecoration: "none",
 								}}
 							>
-								{artist.Name}
-							</TextLink>
+								<Link
+									style={{ textDecoration: "none", color: "white" }}
+									to="/artist/$id"
+									params={{ id: artist.Id ?? "" }}
+								>
+									{artist.Name}
+								</Link>
+							</Typography>
 							{index !== (item.ArtistItems?.length ?? 0) - 1 && (
 								<span
 									style={{

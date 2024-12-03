@@ -1,4 +1,4 @@
-import { MotionValue, useTransform } from "framer-motion";
+import { type MotionValue, useTransform } from "framer-motion";
 
 export default function useParallax(
 	value: MotionValue<number>,

@@ -1,8 +1,11 @@
-import { create } from "zustand";
 import { shallow } from "zustand/shallow";
 import { createWithEqualityFn } from "zustand/traditional";
 
-export const useCarouselStore = createWithEqualityFn(
+type CarouselStore = {
+	direction: "left" | "right";
+	setDirection: (dir: "left" | "right") => void;
+};
+export const useCarouselStore = createWithEqualityFn<CarouselStore>(
 	(set) => ({
 		direction: "right",
 		setDirection: (dir) => set(() => ({ direction: dir })),
