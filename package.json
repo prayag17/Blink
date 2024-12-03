@@ -38,7 +38,7 @@
 		"@tauri-apps/plugin-process": "2.0.0",
 		"@tauri-apps/plugin-store": "github:tauri-apps/tauri-plugin-store#v2",
 		"@tauri-apps/plugin-updater": "2.0.0",
-		"@tauri-apps/plugin-upload": "2.1.0",
+		"@tauri-apps/plugin-upload": "2.2.1",
 		"@types/node": "^22.10.1",
 		"@types/react": "^18.3.12",
 		"@types/react-dom": "^18.3.1",
