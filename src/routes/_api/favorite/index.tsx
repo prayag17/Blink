@@ -2,7 +2,6 @@ import React, { useEffect } from "react";
 
 import { useBackdropStore } from "@/utils/store/backdrop";
 
-import Typography from "@mui/material/Typography";
 import { useQuery } from "@tanstack/react-query";
 import "./favorite.scss";
 
@@ -11,7 +10,6 @@ import CardScroller  from "@/components/cardScroller/cardScroller";
 import { useCentralStore } from "@/utils/store/central";
 import { BaseItemKind } from "@jellyfin/sdk/lib/generated-client";
 import { getItemsApi } from "@jellyfin/sdk/lib/utils/api/items-api";
-import { getUserApi } from "@jellyfin/sdk/lib/utils/api/user-api";
 import { createFileRoute } from "@tanstack/react-router";
 
 export const Route = createFileRoute("/_api/favorite/")({
@@ -27,6 +25,7 @@ function FavoritePage() {
 	const movies = useQuery({
 		queryKey: ["favorite", "movies"],
 		queryFn: async () => {
+			if (!api) return null;
 			const result = await getItemsApi(api).getItems({
 				userId: user?.Id,
 				isFavorite: true,
@@ -40,6 +39,7 @@ function FavoritePage() {
 	const series = useQuery({
 		queryKey: ["favorite", "series"],
 		queryFn: async () => {
+			if (!api) return null;
 			const result = await getItemsApi(api).getItems({
 				userId: user?.Id,
 				isFavorite: true,
@@ -53,6 +53,7 @@ function FavoritePage() {
 	const musicAlbum = useQuery({
 		queryKey: ["favorite", "musicAlbum"],
 		queryFn: async () => {
+			if (!api) return null;
 			const result = await getItemsApi(api).getItems({
 				userId: user?.Id,
 				isFavorite: true,
@@ -66,6 +67,7 @@ function FavoritePage() {
 	const audio = useQuery({
 		queryKey: ["favorite", "audio"],
 		queryFn: async () => {
+			if (!api) return null;
 			const result = await getItemsApi(api).getItems({
 				userId: user?.Id,
 				isFavorite: true,
@@ -79,6 +81,7 @@ function FavoritePage() {
 	const book = useQuery({
 		queryKey: ["favorite", "book"],
 		queryFn: async () => {
+			if (!api) return null;
 			const result = await getItemsApi(api).getItems({
 				userId: user?.Id,
 				isFavorite: true,
@@ -92,6 +95,7 @@ function FavoritePage() {
 	const musicArtists = useQuery({
 		queryKey: ["favorite", "musicArtist"],
 		queryFn: async () => {
+			if (!api) return null;
 			const result = await getItemsApi(api).getItems({
 				userId: user?.Id,
 				isFavorite: true,
@@ -105,6 +109,7 @@ function FavoritePage() {
 	const person = useQuery({
 		queryKey: ["favorite", "person"],
 		queryFn: async () => {
+			if (!api) return null;
 			const result = await getItemsApi(api).getItems({
 				userId: user?.Id,
 				isFavorite: true,
@@ -120,7 +125,7 @@ function FavoritePage() {
 	});
 
 	return (
-		<main
+		<div
 			className="scrollY"
 			style={{
 				display: "flex",
@@ -130,9 +135,9 @@ function FavoritePage() {
 				paddingTop: "4.2em",
 			}}
 		>
-			{movies.isSuccess && movies.data.Items.length > 0 && (
+			{movies.isSuccess && (movies.data?.Items?.length ?? 0) > 0 && (
 				<CardScroller displayCards={8} title="Movies">
-					{movies.data.Items.map((item) => (
+					{movies.data?.Items?.map((item) => (
 						<Card
 							key={item.Id}
 							item={item}
@@ -142,19 +147,13 @@ function FavoritePage() {
 							cardType="portrait"
 							queryKey={["favorite", "movies"]}
 							userId={user?.Id}
-							imageBlurhash={
-								!!item.ImageBlurHashes?.Primary &&
-								item.ImageBlurHashes?.Primary[
-									Object.keys(item.ImageBlurHashes.Primary)[0]
-								]
-							}
 						/>
 					))}
 				</CardScroller>
 			)}
-			{series.isSuccess && series.data.Items.length > 0 && (
+			{series.isSuccess && (series.data?.Items?.length ?? 0) > 0 && (
 				<CardScroller title="TV Shows" displayCards={8} disableDecoration>
-					{series.data.Items.map((item) => (
+					{series.data?.Items?.map((item) => (
 						<Card
 							key={item.Id}
 							item={item}
@@ -170,19 +169,13 @@ function FavoritePage() {
 							cardType="portrait"
 							queryKey={["favorite", "series"]}
 							userId={user?.Id}
-							imageBlurhash={
-								!!item.ImageBlurHashes?.Primary &&
-								item.ImageBlurHashes?.Primary[
-									Object.keys(item.ImageBlurHashes.Primary)[0]
-								]
-							}
 						/>
 					))}
 				</CardScroller>
 			)}
-			{audio.isSuccess && audio.data.Items.length > 0 && (
+			{audio.isSuccess && (audio.data?.Items?.length ?? 0) > 0 && (
 				<CardScroller title="Audio" displayCards={8} disableDecoration>
-					{audio.data.Items.map((item) => (
+					{audio.data?.Items?.map((item) => (
 						<Card
 							key={item.Id}
 							item={item}
@@ -192,19 +185,13 @@ function FavoritePage() {
 							cardType="square"
 							queryKey={["favorite", "audio"]}
 							userId={user?.Id}
-							imageBlurhash={
-								!!item.ImageBlurHashes?.Primary &&
-								item.ImageBlurHashes?.Primary[
-									Object.keys(item.ImageBlurHashes.Primary)[0]
-								]
-							}
 						/>
 					))}
 				</CardScroller>
 			)}
-			{musicAlbum.isSuccess && musicAlbum.data.Items.length > 0 && (
+			{musicAlbum.isSuccess && (musicAlbum.data?.Items?.length ?? 0) > 0 && (
 				<CardScroller title="Albums" displayCards={8} disableDecoration>
-					{musicAlbum.data.Items.map((item) => (
+					{musicAlbum.data?.Items?.map((item) => (
 						<Card
 							key={item.Id}
 							item={item}
@@ -215,19 +202,13 @@ function FavoritePage() {
 							cardType={"square"}
 							queryKey={["favorite", "musicAlbum"]}
 							userId={user?.Id}
-							imageBlurhash={
-								!!item.ImageBlurHashes?.Primary &&
-								item.ImageBlurHashes?.Primary[
-									Object.keys(item.ImageBlurHashes.Primary)[0]
-								]
-							}
 						/>
 					))}
 				</CardScroller>
 			)}
-			{book.isSuccess && book.data.Items.length > 0 && (
+			{book.isSuccess && (book.data?.Items?.length ?? 0) > 0 && (
 				<CardScroller title="Books" displayCards={8} disableDecoration>
-					{book.data.Items.map((item) => (
+					{book.data?.Items?.map((item) => (
 						<Card
 							key={item.Id}
 							item={item}
@@ -238,41 +219,30 @@ function FavoritePage() {
 							cardType={"portrait"}
 							queryKey={["favorite", "book"]}
 							userId={user?.Id}
-							imageBlurhash={
-								!!item.ImageBlurHashes?.Primary &&
-								item.ImageBlurHashes?.Primary[
-									Object.keys(item.ImageBlurHashes.Primary)[0]
-								]
-							}
 						/>
 					))}
 				</CardScroller>
 			)}
-			{musicArtists.isSuccess && musicArtists.data.Items.length > 0 && (
-				<CardScroller title="Artists" displayCards={8} disableDecoration>
-					{musicArtists.data.Items.map((item) => (
-						<Card
-							key={item.Id}
-							item={item}
-							cardTitle={item.Name}
-							imageType={"Primary"}
-							disableOverlay
-							cardType={"square"}
-							queryKey={["favorite", "musicArtist"]}
-							userId={user?.Id}
-							imageBlurhash={
-								!!item.ImageBlurHashes?.Primary &&
-								item.ImageBlurHashes?.Primary[
-									Object.keys(item.ImageBlurHashes.Primary)[0]
-								]
-							}
-						/>
-					))}
-				</CardScroller>
-			)}
-			{person.isSuccess && person.data.Items.length > 0 && (
+			{musicArtists.isSuccess &&
+				(musicArtists.data?.Items?.length ?? 0) > 0 && (
+					<CardScroller title="Artists" displayCards={8} disableDecoration>
+						{musicArtists.data?.Items?.map((item) => (
+							<Card
+								key={item.Id}
+								item={item}
+								cardTitle={item.Name}
+								imageType={"Primary"}
+								disableOverlay
+								cardType={"square"}
+								queryKey={["favorite", "musicArtist"]}
+								userId={user?.Id}
+							/>
+						))}
+					</CardScroller>
+				)}
+			{person.isSuccess && (person.data?.Items?.length ?? 0) > 0 && (
 				<CardScroller title="People" displayCards={8} disableDecoration>
-					{person.data.Items.map((item) => (
+					{person.data?.Items?.map((item) => (
 						<Card
 							key={item.Id}
 							item={item}
@@ -282,17 +252,11 @@ function FavoritePage() {
 							cardType={"square"}
 							queryKey={["favorite", "person"]}
 							userId={user?.Id}
-							imageBlurhash={
-								!!item.ImageBlurHashes?.Primary &&
-								item.ImageBlurHashes?.Primary[
-									Object.keys(item.ImageBlurHashes.Primary)[0]
-								]
-							}
 						/>
 					))}
 				</CardScroller>
 			)}
-		</main>
+		</div>
 	);
 }
 

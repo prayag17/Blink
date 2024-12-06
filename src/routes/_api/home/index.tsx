@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useCallback, useMemo } from "react";
 
 import { useQuery } from "@tanstack/react-query";
 
@@ -135,278 +135,268 @@ function Home() {
 		refetchOnMount: true,
 	});
 
-	const [latestMediaLibs, setLatestMediaLibs] = useState<
-		BaseItemDto[] | undefined
-	>([]);
-
-	const navigate = useNavigate();
-
-	const setBackdrop = useBackdropStore((s) => s.setBackdrop);
-
-	const [excludeTypes] = useState(
-		() => new Set(["boxsets", "playlists", "livetv", "channels"]),
-	);
-
-	useEffect(() => {
-		if (libraries.isSuccess) {
-			const latestMediaLibsTemp = libraries.data?.Items?.reduce(
+	const excludeTypes = ["boxsets", "playlists", "livetv", "channels"];
+	const latestMediaLibs = useMemo(() => {
+		if (libraries.data?.Items?.length) {
+			return libraries.data?.Items?.reduce(
 				(filteredItems: BaseItemDto[], currentItem) => {
-					if (currentItem.Type && !excludeTypes.has(currentItem.Type)) {
+					if (currentItem.Type && !excludeTypes.includes(currentItem.Type)) {
 						filteredItems.push(currentItem);
 					}
 					return filteredItems;
 				},
 				[],
 			);
-			setLatestMediaLibs(latestMediaLibsTemp);
 		}
-	}, [libraries.isSuccess]);
+	}, [libraries.data?.Items?.length]);
+
+	const navigate = useNavigate();
+
+	const setBackdrop = useBackdropStore((s) => s.setBackdrop);
+
+	const handleOnChangeCarousel = useCallback(
+		(now: number) => {
+			if (api && latestMedia.isSuccess && (latestMedia.data?.length ?? 0) > 0) {
+				if (latestMedia.data?.[now]?.ParentBackdropImageTags) {
+					setBackdrop(
+						getImageUrlsApi(api).getItemImageUrlById(
+							latestMedia.data[now].Id ?? "",
+							"Backdrop",
+							{
+								tag: latestMedia.data[now].ParentBackdropImageTags[0],
+							},
+						),
+						latestMedia.data[now]?.ParentBackdropImageTags[0] ??
+							latestMedia.data[now].Id,
+					);
+				} else {
+					setBackdrop(
+						getImageUrlsApi(api).getItemImageUrlById(
+							latestMedia.data?.[now].Id ?? "",
+							"Backdrop",
+							{
+								tag: latestMedia.data?.[now].BackdropImageTags?.[0],
+							},
+						),
+						latestMedia.data?.[now]?.BackdropImageTags?.[0] ??
+							latestMedia.data?.[now].Id,
+					);
+				}
+			}
+		},
+		[latestMedia.data?.map((item) => item.Id).join("")],
+	);
 
 	return (
-		<>
-			<main
-				className="scrollY home padded-top"
-				style={{
-					flexGrow: 1,
-					position: "relative",
-				}}
-			>
-				<ErrorBoundary FallbackComponent={ErrorNotice}>
-					{latestMedia.isPending ? (
-						<CarouselSkeleton />
-					) : (
-						latestMedia.data?.length && (
-							<Carousel
-								content={latestMedia.data}
-								onChange={(now: number) => {
-									if (
-										api &&
-										latestMedia.isSuccess &&
-										(latestMedia.data?.length ?? 0) > 0
-									) {
-										if (latestMedia.data?.[now]?.ParentBackdropImageTags) {
-											setBackdrop(
-												getImageUrlsApi(api).getItemImageUrlById(
-													latestMedia.data[now].Id ?? "",
-													"Backdrop",
-													{
-														tag: latestMedia.data[now]
-															.ParentBackdropImageTags[0],
-													},
-												),
-												latestMedia.data[now]?.ParentBackdropImageTags[0] ??
-													latestMedia.data[now].Id,
-											);
-										} else {
-											setBackdrop(
-												getImageUrlsApi(api).getItemImageUrlById(
-													latestMedia.data?.[now].Id ?? "",
-													"Backdrop",
-													{
-														tag: latestMedia.data?.[now].BackdropImageTags?.[0],
-													},
-												),
-												latestMedia.data?.[now]?.BackdropImageTags?.[0] ??
-													latestMedia.data?.[now].Id,
-											);
-										}
-									}
-								}}
-							/>
-						)
-					)}
-				</ErrorBoundary>
+		<main
+			className="scrollY home padded-top"
+			style={{
+				flexGrow: 1,
+				position: "relative",
+			}}
+		>
+			<ErrorBoundary FallbackComponent={ErrorNotice}>
+				{latestMedia.isPending ? (
+					<CarouselSkeleton />
+				) : (
+					latestMedia.data?.length && (
+						<Carousel
+							content={latestMedia.data}
+							onChange={handleOnChangeCarousel}
+						/>
+					)
+				)}
+			</ErrorBoundary>
 
-				<ErrorBoundary
-					fallback={
-						<div className="error">
-							<Typography>Error with Carousel</Typography>
-						</div>
-					}
-				>
-					{libraries.isPending ? (
-						<CardsSkeleton />
-					) : (
-						<CardScroller displayCards={4} title="Libraries">
-							{libraries.status === "success" &&
-								libraries.data?.Items?.map((item) => {
-									return (
-										<Card
-											key={item.Id}
-											item={item}
-											cardTitle={item.Name}
-											imageType="Primary"
-											cardType="thumb"
-											disableOverlay
-											onClick={() => {
-												if (item.Id) {
-													navigate({
-														to: "/library/$id",
-														params: { id: item.Id },
-													});
-												}
-											}}
-											overrideIcon={item.CollectionType}
-										/>
-									);
-								})}
-						</CardScroller>
-					)}
-				</ErrorBoundary>
-				<ErrorBoundary
-					fallback={
-						<div className="error">
-							<Typography>Error with Libraries</Typography>
-						</div>
-					}
-				>
-					{upNextItems.isPending ? (
-						<CardsSkeleton />
-					) : upNextItems.isSuccess && !upNextItems.data?.TotalRecordCount ? (
-						<></>
-					) : (
-						<CardScroller displayCards={4} title="Up Next">
-							{upNextItems.data?.Items?.map((item) => {
-								return (
-									<Card
-										key={item.Id}
-										item={item}
-										cardTitle={
-											item.Type === BaseItemKind.Episode
-												? item.SeriesName
-												: item.Name
-										}
-										imageType={
-											item.Type === BaseItemKind.Episode
-												? "Primary"
-												: item.ImageTags?.Thumb
-													? "Thumb"
-													: "Backdrop"
-										}
-										cardCaption={
-											item.Type === BaseItemKind.Episode
-												? item.ParentIndexNumber === 0
-													? `${item.SeasonName} - ${item.Name}`
-													: item.IndexNumberEnd
-														? `${item.IndexNumber}-${item.IndexNumberEnd}. ${item.Name}`
-														: `${item.IndexNumber}. ${item.Name}`
-												: item.Type === BaseItemKind.Series
-													? `${item.ProductionYear} - ${
-															item.EndDate
-																? new Date(item.EndDate).toLocaleString([], {
-																		year: "numeric",
-																	})
-																: "Present"
-														}`
-													: item.ProductionYear
-										}
-										cardType="thumb"
-										queryKey={["home", "upNext"]}
-										userId={user?.Id}
-									/>
-								);
-							})}
-						</CardScroller>
-					)}
-				</ErrorBoundary>
-				<ErrorBoundary
-					fallback={
-						<div className="error">
-							<Typography>Error with resumeItemsVideo</Typography>
-						</div>
-					}
-				>
-					{resumeItemsVideo.isPending ? (
-						<CardsSkeleton />
-					) : resumeItemsVideo.isSuccess &&
-						!resumeItemsVideo.data?.TotalRecordCount ? (
-						<></>
-					) : (
-						<CardScroller displayCards={4} title="Continue Watching">
-							{resumeItemsVideo.data?.Items?.map((item) => {
-								return (
-									<Card
-										key={item.Id}
-										item={item}
-										cardTitle={
-											item.Type === BaseItemKind.Episode
-												? item.SeriesName
-												: item.Name
-										}
-										imageType={
-											item.Type === BaseItemKind.Episode
-												? "Primary"
-												: item.ImageTags?.Thumb
-													? "Thumb"
-													: "Backdrop"
-										}
-										cardCaption={
-											item.Type === BaseItemKind.Episode
-												? `S${item.ParentIndexNumber}:E${item.IndexNumber} - ${item.Name}`
-												: item.Type === BaseItemKind.Series
-													? `${item.ProductionYear} - ${
-															item.EndDate
-																? new Date(item.EndDate).toLocaleString([], {
-																		year: "numeric",
-																	})
-																: "Present"
-														}`
-													: item.ProductionYear
-										}
-										cardType="thumb"
-										queryKey={["home", "resume", "video"]}
-										userId={user?.Id}
-									/>
-								);
-							})}
-						</CardScroller>
-					)}
-				</ErrorBoundary>
-				<ErrorBoundary
-					fallback={
-						<div className="error">
-							<Typography>Error with resumeItemsAudio</Typography>
-						</div>
-					}
-				>
-					{resumeItemsAudio.isPending ? (
-						<CardsSkeleton />
-					) : resumeItemsAudio.isSuccess &&
-						!resumeItemsAudio.data?.TotalRecordCount ? (
-						<></>
-					) : (
-						<CardScroller displayCards={4} title="Continue Listening">
-							{resumeItemsAudio.data?.Items?.map((item) => {
+			<ErrorBoundary
+				fallback={
+					<div className="error">
+						<Typography>Error with Carousel</Typography>
+					</div>
+				}
+			>
+				{libraries.isPending ? (
+					<CardsSkeleton />
+				) : (
+					<CardScroller displayCards={4} title="Libraries">
+						{libraries.status === "success" &&
+							libraries.data?.Items?.map((item) => {
 								return (
 									<Card
 										key={item.Id}
 										item={item}
 										cardTitle={item.Name}
 										imageType="Primary"
-										cardCaption={item.ProductionYear}
 										cardType="thumb"
-										queryKey={["home", "resume", "audio"]}
-										userId={user?.Id}
+										disableOverlay
+										onClick={() => {
+											if (item.Id) {
+												navigate({
+													to: "/library/$id",
+													params: { id: item.Id },
+												});
+											}
+										}}
+										overrideIcon={item.CollectionType}
 									/>
 								);
 							})}
-						</CardScroller>
-					)}
-				</ErrorBoundary>
-				<ErrorBoundary
-					fallback={
-						<div className="error">
-							<Typography>Error with LatestMediaSections</Typography>
-						</div>
-					}
-				>
-					{latestMediaLibs?.map((lib) => {
-						return <LatestMediaSection key={lib.Id} latestMediaLib={lib} />;
-					})}
-				</ErrorBoundary>
-			</main>
-		</>
+					</CardScroller>
+				)}
+			</ErrorBoundary>
+			<ErrorBoundary
+				fallback={
+					<div className="error">
+						<Typography>Error with Libraries</Typography>
+					</div>
+				}
+			>
+				{upNextItems.isPending ? (
+					<CardsSkeleton />
+				) : upNextItems.isSuccess && !upNextItems.data?.TotalRecordCount ? (
+					<></>
+				) : (
+					<CardScroller displayCards={4} title="Up Next">
+						{upNextItems.data?.Items?.map((item) => {
+							return (
+								<Card
+									key={item.Id}
+									item={item}
+									cardTitle={
+										item.Type === BaseItemKind.Episode
+											? item.SeriesName
+											: item.Name
+									}
+									imageType={
+										item.Type === BaseItemKind.Episode
+											? "Primary"
+											: item.ImageTags?.Thumb
+												? "Thumb"
+												: "Backdrop"
+									}
+									cardCaption={
+										item.Type === BaseItemKind.Episode
+											? item.ParentIndexNumber === 0
+												? `${item.SeasonName} - ${item.Name}`
+												: item.IndexNumberEnd
+													? `${item.IndexNumber}-${item.IndexNumberEnd}. ${item.Name}`
+													: `${item.IndexNumber}. ${item.Name}`
+											: item.Type === BaseItemKind.Series
+												? `${item.ProductionYear} - ${
+														item.EndDate
+															? new Date(item.EndDate).toLocaleString([], {
+																	year: "numeric",
+																})
+															: "Present"
+													}`
+												: item.ProductionYear
+									}
+									cardType="thumb"
+									queryKey={["home", "upNext"]}
+									userId={user?.Id}
+								/>
+							);
+						})}
+					</CardScroller>
+				)}
+			</ErrorBoundary>
+			<ErrorBoundary
+				fallback={
+					<div className="error">
+						<Typography>Error with resumeItemsVideo</Typography>
+					</div>
+				}
+			>
+				{resumeItemsVideo.isPending ? (
+					<CardsSkeleton />
+				) : resumeItemsVideo.isSuccess &&
+					!resumeItemsVideo.data?.TotalRecordCount ? (
+					<></>
+				) : (
+					<CardScroller displayCards={4} title="Continue Watching">
+						{resumeItemsVideo.data?.Items?.map((item) => {
+							return (
+								<Card
+									key={item.Id}
+									item={item}
+									cardTitle={
+										item.Type === BaseItemKind.Episode
+											? item.SeriesName
+											: item.Name
+									}
+									imageType={
+										item.Type === BaseItemKind.Episode
+											? "Primary"
+											: item.ImageTags?.Thumb
+												? "Thumb"
+												: "Backdrop"
+									}
+									cardCaption={
+										item.Type === BaseItemKind.Episode
+											? `S${item.ParentIndexNumber}:E${item.IndexNumber} - ${item.Name}`
+											: item.Type === BaseItemKind.Series
+												? `${item.ProductionYear} - ${
+														item.EndDate
+															? new Date(item.EndDate).toLocaleString([], {
+																	year: "numeric",
+																})
+															: "Present"
+													}`
+												: item.ProductionYear
+									}
+									cardType="thumb"
+									queryKey={["home", "resume", "video"]}
+									userId={user?.Id}
+								/>
+							);
+						})}
+					</CardScroller>
+				)}
+			</ErrorBoundary>
+			<ErrorBoundary
+				fallback={
+					<div className="error">
+						<Typography>Error with resumeItemsAudio</Typography>
+					</div>
+				}
+			>
+				{resumeItemsAudio.isPending ? (
+					<CardsSkeleton />
+				) : resumeItemsAudio.isSuccess &&
+					!resumeItemsAudio.data?.TotalRecordCount ? (
+					<></>
+				) : (
+					<CardScroller displayCards={4} title="Continue Listening">
+						{resumeItemsAudio.data?.Items?.map((item) => {
+							return (
+								<Card
+									key={item.Id}
+									item={item}
+									cardTitle={item.Name}
+									imageType="Primary"
+									cardCaption={item.ProductionYear}
+									cardType="thumb"
+									queryKey={["home", "resume", "audio"]}
+									userId={user?.Id}
+								/>
+							);
+						})}
+					</CardScroller>
+				)}
+			</ErrorBoundary>
+			<ErrorBoundary
+				fallback={
+					<div className="error">
+						<Typography>Error with LatestMediaSections</Typography>
+					</div>
+				}
+			>
+				{latestMediaLibs?.map((lib) => {
+					return <LatestMediaSection key={lib.Id} latestMediaLib={lib} />;
+				})}
+			</ErrorBoundary>
+		</main>
 	);
 }
 
-export default React.memo(Home);
+export default Home;

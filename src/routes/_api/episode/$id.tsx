@@ -1,11 +1,8 @@
-import PropTypes from "prop-types";
-import React, { useState, useLayoutEffect, useRef } from "react";
+import React, { useState, useRef, useMemo, useEffect } from "react";
 
 import Box from "@mui/material/Box";
 import Chip from "@mui/material/Chip";
 import CircularProgress from "@mui/material/CircularProgress";
-import Divider from "@mui/material/Divider";
-import LinearProgress from "@mui/material/LinearProgress";
 import MenuItem from "@mui/material/MenuItem";
 import Stack from "@mui/material/Stack";
 import TextField from "@mui/material/TextField";
@@ -17,20 +14,12 @@ import { Blurhash } from "react-blurhash";
 import useParallax from "@/utils/hooks/useParallax";
 import { motion, useScroll } from "framer-motion";
 
-import {
-	BaseItemKind,
-	ItemFields,
-	MediaStreamType,
-} from "@jellyfin/sdk/lib/generated-client";
-import { getItemsApi } from "@jellyfin/sdk/lib/utils/api/items-api";
-import { getUserApi } from "@jellyfin/sdk/lib/utils/api/user-api";
+import { MediaStreamType } from "@jellyfin/sdk/lib/generated-client";
 import { getUserLibraryApi } from "@jellyfin/sdk/lib/utils/api/user-library-api";
 
 import { useQuery } from "@tanstack/react-query";
 
 import heroBg from "@/assets/herobg.png";
-import { Card } from "@/components/card/card";
-import CardScroller from "@/components/cardScroller/cardScroller";
 
 import LikeButton from "@/components/buttons/likeButton";
 import MarkPlayedButton from "@/components/buttons/markPlayedButton";
@@ -38,7 +27,6 @@ import PlayButton from "@/components/buttons/playButton";
 import TrailerButton from "@/components/buttons/trailerButton";
 import { ErrorNotice } from "@/components/notices/errorNotice/errorNotice";
 import ShowMoreText from "@/components/showMoreText";
-import TextLink from "@/components/textLink";
 import { getTypeIcon } from "@/components/utils/iconsCollection";
 import { endsAt, getRuntime } from "@/utils/date/time";
 import { useBackdropStore } from "@/utils/store/backdrop";
@@ -68,29 +56,6 @@ import getImageUrlsApi from "@/utils/methods/getImageUrlsApi";
 import { useCentralStore } from "@/utils/store/central";
 import { Link, createFileRoute } from "@tanstack/react-router";
 
-function TabPanel(props) {
-	const { children, value, index, ...other } = props;
-
-	return (
-		<div
-			role="tabpanel"
-			hidden={value !== index}
-			id={`full-width-tabpanel-${index}`}
-			aria-labelledby={`full-width-tab-${index}`}
-			{...other}
-			style={{ marginTop: "1em" }}
-		>
-			{value === index && <Box>{children}</Box>}
-		</div>
-	);
-}
-
-TabPanel.propTypes = {
-	children: PropTypes.node,
-	index: PropTypes.number.isRequired,
-	value: PropTypes.number.isRequired,
-};
-
 export const Route = createFileRoute("/_api/episode/$id")({
 	component: EpisodeTitlePage,
 });
@@ -104,10 +69,10 @@ function EpisodeTitlePage() {
 	const item = useQuery({
 		queryKey: ["item", id],
 		queryFn: async () => {
+			if (!api) return null;
 			const result = await getUserLibraryApi(api).getItem({
 				userId: user?.Id,
 				itemId: id,
-				fields: [ItemFields.Crew],
 			});
 			return result.data;
 		},
@@ -116,194 +81,161 @@ function EpisodeTitlePage() {
 		refetchOnWindowFocus: true,
 	});
 
-	const upcomingEpisodes = useQuery({
-		queryKey: ["item", id, "episode", "upcomingEpisodes"],
-		queryFn: async () => {
-			const result = await getItemsApi(api).getItems({
-				userId: user?.Id,
-				parentId: item.data?.ParentId ?? "",
-				startIndex: item.data?.IndexNumber ?? 0,
-			});
-			return result.data;
-		},
-		enabled: item.isSuccess && item.data.Type === BaseItemKind.Episode,
-		networkMode: "always",
-	});
-
 	const [setAppBackdrop] = useBackdropStore((state) => [state.setBackdrop]);
 
-	const [videoTracks, setVideoTracks] = useState([]);
-	const [audioTracks, setAudioTracks] = useState([]);
-	const [subtitleTracks, setSubtitleTracks] = useState([]);
+	const [selectedVideoTrack, setSelectedVideoTrack] = useState(0);
+	const [selectedAudioTrack, setSelectedAudioTrack] = useState(0);
+	const [selectedSubtitleTrack, setSelectedSubtitleTrack] = useState(0);
 
-	const filterMediaStreamVideo = (source) => {
-		if (source.Type === MediaStreamType.Video) {
-			return true;
-		}
-		return false;
-	};
-	const filterMediaStreamAudio = (source) => {
-		if (source.Type === MediaStreamType.Audio) {
-			return true;
-		}
-		return false;
-	};
-	const filterMediaStreamSubtitle = (source) => {
-		if (source.Type === MediaStreamType.Subtitle) {
-			return true;
-		}
-		return false;
-	};
+	const videoTracks = useMemo(() => {
+		const result = item.data?.MediaStreams?.filter((source) => {
+			if (source.Type === MediaStreamType.Video) {
+				return true;
+			}
+			return false;
+		});
+		setSelectedVideoTrack(result?.find((track) => track.IsDefault)?.Index ?? 0);
+		return result ?? [];
+	}, [item.data?.Id]);
+	const audioTracks = useMemo(() => {
+		const result = item.data?.MediaStreams?.filter((source) => {
+			if (source.Type === MediaStreamType.Audio) {
+				return true;
+			}
+			return false;
+		});
+		setSelectedAudioTrack(result?.find((track) => track.IsDefault)?.Index ?? 0);
+		return result ?? [];
+	}, [item.data?.Id]);
+	const subtitleTracks = useMemo(() => {
+		const result = item.data?.MediaStreams?.filter((source) => {
+			if (source.Type === MediaStreamType.Subtitle) {
+				return true;
+			}
+			return false;
+		});
+		setSelectedSubtitleTrack(
+			result?.find((track) => track.IsDefault)?.Index ?? -1,
+		);
+		return result ?? [];
+	}, [item.data?.Id]);
 
-	const [selectedVideoTrack, setSelectedVideoTrack] = useState(null);
-	const [selectedAudioTrack, setSelectedAudioTrack] = useState(null);
-	const [selectedSubtitleTrack, setSelectedSubtitleTrack] = useState(null);
+	const directors = useMemo(() => {
+		return item.data?.People?.filter((itm) => itm.Type === "Director") ?? [];
+	}, [item.data?.Id]);
+	const writers = useMemo(() => {
+		return item.data?.People?.filter((itm) => itm.Type === "Writer") ?? [];
+	}, [item.data?.Id]);
+	const actors = useMemo(() => {
+		return item.data?.People?.filter((itm) => itm.Type === "Actor") ?? [];
+	}, [item.data?.Id]);
+	const producers = useMemo(() => {
+		return item.data?.People?.filter((itm) => itm.Type === "Producer") ?? [];
+	}, [item.data?.Id]);
 
-	const [directors, setDirectors] = useState([]);
-	const [writers, setWriters] = useState([]);
-	const [actors, setActors] = useState([]);
-	const [producers, setProducers] = useState([]);
 
-	const [mediaQualityInfo, setMediaQualityInfo] = useState<MediaQualityInfo>();
+	const mediaQualityInfo = useMemo<MediaQualityInfo>(() => {
+		const checkAtmos = audioTracks.filter((audio) =>
+			audio.DisplayTitle?.toLocaleLowerCase().includes("atmos"),
+		);
+		const checkDolbyVision = videoTracks.filter(
+			(video) =>
+				video.DisplayTitle?.toLocaleLowerCase().includes("dv") ||
+				video.DisplayTitle?.toLocaleLowerCase().includes("dolby vision") ||
+				!!video.VideoDoViTitle ||
+				video.VideoRangeType === "DOVI",
+		);
+		const checkDD = audioTracks.filter(
+			(audio) =>
+				(audio.DisplayTitle?.toLocaleLowerCase().includes("dd") &&
+					!audio.DisplayTitle?.toLocaleLowerCase().includes("ddp")) ||
+				(audio.DisplayTitle?.toLocaleLowerCase().includes("dolby digital") &&
+					!audio.DisplayTitle?.toLocaleLowerCase().includes("dolby digital+")),
+		);
+		const checkDDP = audioTracks.filter(
+			(audio) =>
+				audio.DisplayTitle?.toLocaleLowerCase().includes("ddp") ||
+				audio.DisplayTitle?.toLocaleLowerCase().includes("dolby digital+"),
+		);
+		const checkDts = audioTracks.filter(
+			(audio) =>
+				audio.DisplayTitle?.toLocaleLowerCase().includes("dts") &&
+				!audio.DisplayTitle?.toLocaleLowerCase().includes("dts-hd ma") &&
+				!audio.DisplayTitle?.toLocaleLowerCase().includes("dts-hd.ma"),
+		);
+		const checkDtsHDMA = audioTracks.filter(
+			(audio) =>
+				audio.DisplayTitle?.toLocaleLowerCase().includes("dts-hd ma") ||
+				audio.DisplayTitle?.toLocaleLowerCase().includes("dts-hd.ma"),
+		);
+		const checkUHD = videoTracks.filter(
+			(video) =>
+				video.DisplayTitle?.toLocaleLowerCase().includes("4k") ||
+				video.DisplayTitle?.toLocaleLowerCase().includes("2160p") ||
+				video.DisplayTitle?.toLocaleLowerCase().includes("uhd"),
+		);
+		const checkHD = videoTracks.filter(
+			(video) =>
+				(video.DisplayTitle?.toLocaleLowerCase().includes("hd") &&
+					!video.DisplayTitle?.toLocaleLowerCase().includes("hdr")) ||
+				video.DisplayTitle?.toLocaleLowerCase().includes("1080p") ||
+				video.DisplayTitle?.toLocaleLowerCase().includes("fhd"),
+		);
+		const checkSD = videoTracks.filter(
+			(video) =>
+				(video.DisplayTitle?.toLocaleLowerCase().includes("sd") &&
+					!video.DisplayTitle?.toLocaleLowerCase().includes("sdr")) ||
+				video.DisplayTitle?.toLocaleLowerCase().includes("720p"),
+		);
+		const checkSDR = videoTracks.filter(
+			(video) => video.VideoRangeType === "SDR",
+		);
+		const checkHDR = videoTracks.filter(
+			(video) =>
+				video.VideoRange === "HDR" ||
+				video.DisplayTitle?.toLocaleLowerCase().includes("dv"),
+		);
+		const checkHDR10 = videoTracks.filter(
+			(video) =>
+				video.VideoRangeType === "HDR10" &&
+				!video.DisplayTitle?.toLocaleLowerCase().includes("hdr10+"),
+		);
+		const checkHDR10Plus = videoTracks.filter(
+			(video) =>
+				video.VideoRangeType === "HDR10Plus" ||
+				video.DisplayTitle?.toLocaleLowerCase().includes("hdr10+"),
+		);
+		const checkTrueHD = audioTracks.filter((audio) =>
+			audio.DisplayTitle?.toLocaleLowerCase().includes("truehd"),
+		);
+		const checkIMAX = videoTracks.filter((video) =>
+			video.DisplayTitle?.toLocaleLowerCase().includes("imax"),
+		);
+		return {
+			isAtmos: checkAtmos.length > 0,
+			isDolbyVision: checkDolbyVision.length > 0,
+			isDts: checkDts.length > 0,
+			isDtsHDMA: checkDtsHDMA.length > 0,
+			isDD: checkDD.length > 0,
+			isDDP: checkDDP.length > 0,
+			isUHD: checkUHD.length > 0,
+			isHD: checkHD.length > 0,
+			isSD: checkSD.length > 0,
+			isSDR: checkSDR.length > 0,
+			isHDR: checkHDR.length > 0,
+			isHDR10: checkHDR10.length > 0,
+			isHDR10Plus: checkHDR10Plus.length > 0,
+			isTrueHD: checkTrueHD.length > 0,
+			isIMAX: checkIMAX.length > 0,
+		};
+	}, [item.data?.Id]);
 
-	useLayoutEffect(() => {
-		if (item.isSuccess) {
+	useEffect(() => {
+		if (api && item.isSuccess && item.data) {
 			setAppBackdrop(
-				item.data.Type === BaseItemKind.MusicAlbum ||
-					item.data.Type === BaseItemKind.Episode
-					? `${api.basePath}/Items/${item.data.ParentBackdropItemId}/Images/Backdrop`
-					: `${api.basePath}/Items/${item.data.Id}/Images/Backdrop`,
+				`${api.basePath}/Items/${item.data.ParentBackdropItemId}/Images/Backdrop`,
 				item.data.Id,
 			);
-			const direTp = item.data.People.filter((itm) => itm.Type === "Director");
-			setDirectors(direTp);
-			const writeTp = item.data.People.filter((itm) => itm.Type === "Writer");
-			setWriters(writeTp);
-			const producerTp = item.data.People.filter(
-				(itm) => itm.Type === "Producer",
-			);
-			setProducers(producerTp);
-			const actorTp = item.data.People.filter((itm) => itm.Type === "Actor");
-			setActors(actorTp);
-			if (item.data.MediaStreams && item.data.MediaSources) {
-				const videos = item.data.MediaStreams.filter(filterMediaStreamVideo);
-				const audios = item.data.MediaStreams.filter(filterMediaStreamAudio);
-				const subs = item.data.MediaStreams.filter(filterMediaStreamSubtitle);
-
-				setSelectedVideoTrack(videos[0]?.Index ?? null);
-				setSelectedAudioTrack(
-					item.data.MediaSources[0].DefaultAudioStreamIndex ?? null,
-				);
-				setSelectedSubtitleTrack(
-					item.data.MediaSources[0].DefaultSubtitleStreamIndex === -1 ||
-						!item.data.MediaSources[0].DefaultSubtitleStreamIndex
-						? "nosub"
-						: item.data.MediaSources[0].DefaultSubtitleStreamIndex,
-				);
-
-				setVideoTracks(videos);
-				setAudioTracks(audios);
-				setSubtitleTracks(subs);
-
-				// Analyze item for QualityInfo
-				const checkAtmos = audios.filter((audio) =>
-					audio.DisplayTitle?.toLocaleLowerCase().includes("atmos"),
-				);
-				const checkDolbyVision = videos.filter(
-					(video) =>
-						video.DisplayTitle?.toLocaleLowerCase().includes("dv") ||
-						video.DisplayTitle?.toLocaleLowerCase().includes("dolby vision") ||
-						!!video.VideoDoViTitle ||
-						video.VideoRangeType === "DOVI",
-				);
-				const checkDD = audios.filter(
-					(audio) =>
-						(audio.DisplayTitle?.toLocaleLowerCase().includes("dd") &&
-							!audio.DisplayTitle?.toLocaleLowerCase().includes("ddp")) ||
-						(audio.DisplayTitle?.toLocaleLowerCase().includes(
-							"dolby digital",
-						) &&
-							!audio.DisplayTitle?.toLocaleLowerCase().includes(
-								"dolby digital+",
-							)),
-				);
-				const checkDDP = audios.filter(
-					(audio) =>
-						audio.DisplayTitle?.toLocaleLowerCase().includes("ddp") ||
-						audio.DisplayTitle?.toLocaleLowerCase().includes("dolby digital+"),
-				);
-				const checkDts = audios.filter(
-					(audio) =>
-						audio.DisplayTitle?.toLocaleLowerCase().includes("dts") &&
-						!audio.DisplayTitle?.toLocaleLowerCase().includes("dts-hd ma") &&
-						!audio.DisplayTitle?.toLocaleLowerCase().includes("dts-hd.ma"),
-				);
-				const checkDtsHDMA = audios.filter(
-					(audio) =>
-						audio.DisplayTitle?.toLocaleLowerCase().includes("dts-hd ma") ||
-						audio.DisplayTitle?.toLocaleLowerCase().includes("dts-hd.ma"),
-				);
-				const checkUHD = videos.filter(
-					(video) =>
-						video.DisplayTitle?.toLocaleLowerCase().includes("4k") ||
-						video.DisplayTitle?.toLocaleLowerCase().includes("2160p") ||
-						video.DisplayTitle?.toLocaleLowerCase().includes("uhd"),
-				);
-				const checkHD = videos.filter(
-					(video) =>
-						(video.DisplayTitle?.toLocaleLowerCase().includes("hd") &&
-							!video.DisplayTitle?.toLocaleLowerCase().includes("hdr")) ||
-						video.DisplayTitle?.toLocaleLowerCase().includes("1080p") ||
-						video.DisplayTitle?.toLocaleLowerCase().includes("fhd"),
-				);
-				const checkSD = videos.filter(
-					(video) =>
-						(video.DisplayTitle?.toLocaleLowerCase().includes("sd") &&
-							!video.DisplayTitle?.toLocaleLowerCase().includes("sdr")) ||
-						video.DisplayTitle?.toLocaleLowerCase().includes("720p"),
-				);
-				const checkSDR = videos.filter(
-					(video) => video.VideoRangeType === "SDR",
-				);
-				const checkHDR = videos.filter(
-					(video) =>
-						video.VideoRange === "HDR" ||
-						video.DisplayTitle?.toLocaleLowerCase().includes("dv"),
-				);
-				const checkHDR10 = videos.filter(
-					(video) =>
-						video.VideoRangeType === "HDR10" &&
-						!video.DisplayTitle?.toLocaleLowerCase().includes("hdr10+"),
-				);
-				const checkHDR10Plus = videos.filter(
-					(video) =>
-						video.VideoRangeType === "HDR10+" ||
-						video.DisplayTitle?.toLocaleLowerCase().includes("hdr10+"),
-				);
-				const checkTrueHD = audios.filter((audio) =>
-					audio.DisplayTitle?.toLocaleLowerCase().includes("truehd"),
-				);
-				const checkIMAX = videos.filter((video) =>
-					video.DisplayTitle?.toLocaleLowerCase().includes("imax"),
-				);
-				setMediaQualityInfo({
-					isAtmos: checkAtmos.length > 0,
-					isDolbyVision: checkDolbyVision.length > 0,
-					isDts: checkDts.length > 0,
-					isDtsHDMA: checkDtsHDMA.length > 0,
-					isDD: checkDD.length > 0,
-					isDDP: checkDDP.length > 0,
-					isUHD: checkUHD.length > 0,
-					isHD: checkHD.length > 0,
-					isSD: checkSD.length > 0,
-					isSDR: checkSDR.length > 0,
-					isHDR: checkHDR.length > 0,
-					isHDR10: checkHDR10.length > 0,
-					isHDR10Plus: checkHDR10Plus.length > 0,
-					isTrueHD: checkTrueHD.length > 0,
-					isIMAX: checkIMAX.length > 0,
-				});
-			}
 		}
 	}, [item.isSuccess]);
 
@@ -311,6 +243,7 @@ function EpisodeTitlePage() {
 	const { scrollYProgress } = useScroll({
 		target: pageRef,
 		offset: ["start start", "60vh start"],
+		layoutEffect: false,
 	});
 	const parallax = useParallax(scrollYProgress, 50);
 
@@ -329,7 +262,7 @@ function EpisodeTitlePage() {
 			</Box>
 		);
 	}
-	if (item.isSuccess) {
+	if (item.isSuccess && item.data) {
 		return (
 			<motion.div
 				key={id}
@@ -350,17 +283,20 @@ function EpisodeTitlePage() {
 					<div className="item-hero-backdrop-container">
 						{item.data.ParentBackdropImageTags?.length ? (
 							<motion.img
-								alt={item.data.Name}
-								src={getImageUrlsApi(api).getItemImageUrlById(
-									item.data.ParentBackdropItemId,
-									"Backdrop",
-									{
-										tag: item.data.ParentBackdropImageTags[0],
-									},
-								)}
+								alt={item.data.Name ?? ""}
+								src={
+									api &&
+									getImageUrlsApi(api).getItemImageUrlById(
+										item.data.ParentBackdropItemId ?? "",
+										"Backdrop",
+										{
+											tag: item.data.ParentBackdropImageTags[0],
+										},
+									)
+								}
 								className="item-hero-backdrop"
 								onLoad={(e) => {
-									e.currentTarget.style.opacity = 1;
+									e.currentTarget.style.opacity = "1";
 								}}
 								style={{
 									y: parallax,
@@ -368,11 +304,11 @@ function EpisodeTitlePage() {
 							/>
 						) : (
 							<motion.img
-								alt={item.data.Name}
+								alt={item.data.Name ?? ""}
 								src={heroBg}
 								className="item-hero-backdrop"
 								onLoad={(e) => {
-									e.currentTarget.style.opacity = 1;
+									e.currentTarget.style.opacity = "1";
 								}}
 								style={{
 									y: parallax,
@@ -386,35 +322,38 @@ function EpisodeTitlePage() {
 							aspectRatio: item.data.PrimaryImageAspectRatio ?? 1,
 						}}
 					>
-						{Object.keys(item.data.ImageTags).includes("Primary") ? (
-							<>
+						{item.data.ImageTags?.Primary ? (
+							<div>
 								<Blurhash
 									hash={
-										item.data.ImageBlurHashes.Primary[
+										item.data.ImageBlurHashes?.Primary?.[
 											item.data.ImageTags.Primary
-										]
+										] ?? ""
 									}
 									className="item-hero-image-blurhash"
 								/>
 								<img
-									alt={item.data.Name}
-									src={getImageUrlsApi(api).getItemImageUrlById(
-										item.data.Id,
-										"Primary",
-										{
-											quality: 90,
-											tag: item.data.ImageTags.Primary,
-										},
-									)}
+									alt={item.data.Name ?? ""}
+									src={
+										api &&
+										getImageUrlsApi(api).getItemImageUrlById(
+											item.data.Id ?? "",
+											"Primary",
+											{
+												quality: 90,
+												tag: item.data.ImageTags.Primary,
+											},
+										)
+									}
 									onLoad={(e) => {
-										e.currentTarget.style.opacity = 1;
+										e.currentTarget.style.opacity = "1";
 									}}
 									className="item-hero-image"
 								/>
-							</>
+							</div>
 						) : (
 							<div className="item-hero-image-icon">
-								{getTypeIcon(item.data.Type)}
+								{getTypeIcon(item.data.Type ?? "Episode")}
 							</div>
 						)}
 					</div>
@@ -432,20 +371,23 @@ function EpisodeTitlePage() {
 								to="/series/$id"
 								params={{ id: item.data.SeriesId ?? "" }}
 							>
-								{item.data.ParentLogoItemId?.length > 0 ? (
+								{item.data.ParentLogoItemId ? (
 									<img
-										alt={item.data.SeriesName}
-										src={getImageUrlsApi(api).getItemImageUrlById(
-											item.data.ParentLogoItemId,
-											"Logo",
-											{
-												quality: 90,
-												fillWidth: 592,
-												fillHeight: 592,
-											},
-										)}
+										alt={item.data.SeriesName ?? ""}
+										src={
+											api &&
+											getImageUrlsApi(api).getItemImageUrlById(
+												item.data.ParentLogoItemId,
+												"Logo",
+												{
+													quality: 90,
+													fillWidth: 592,
+													fillHeight: 592,
+												},
+											)
+										}
 										onLoad={(e) => {
-											e.currentTarget.style.opacity = 1;
+											e.currentTarget.style.opacity = "1";
 										}}
 										className="item-hero-logo"
 									/>
@@ -593,7 +535,7 @@ function EpisodeTitlePage() {
 								<Typography style={{ opacity: "0.8" }} variant="subtitle2">
 									{endsAt(
 										item.data.RunTimeTicks -
-											item.data.UserData.PlaybackPositionTicks,
+											(item.data.UserData?.PlaybackPositionTicks ?? 0),
 									)}
 								</Typography>
 							)}
@@ -695,22 +637,24 @@ function EpisodeTitlePage() {
 							/>
 						</div>
 						<div className="flex flex-row" style={{ gap: "1em" }}>
-							<TrailerButton
-								trailerItem={item.data.RemoteTrailers}
-								disabled={item.data.RemoteTrailers?.length === 0}
-							/>
+							{item.data.RemoteTrailers && (
+								<TrailerButton
+									trailerItem={item.data.RemoteTrailers}
+									disabled={item.data.RemoteTrailers?.length === 0}
+								/>
+							)}
 							<LikeButton
 								itemName={item.data.Name}
 								itemId={item.data.Id}
 								queryKey={["item", id]}
-								isFavorite={item.data.UserData.IsFavorite}
+								isFavorite={item.data.UserData?.IsFavorite}
 								userId={user?.Id}
 							/>
 							<MarkPlayedButton
 								itemName={item.data.Name}
 								itemId={item.data.Id}
 								queryKey={["item", id]}
-								isPlayed={item.data.UserData.Played}
+								isPlayed={item.data.UserData?.Played}
 								userId={user?.Id}
 							/>
 						</div>
@@ -734,7 +678,7 @@ function EpisodeTitlePage() {
 								}}
 								value={selectedVideoTrack}
 								variant="filled"
-								onChange={(e) => setSelectedVideoTrack(e.target.value)}
+								onChange={(e) => setSelectedVideoTrack(Number(e.target.value))}
 							>
 								{videoTracks.map((track) => (
 									<MenuItem key={track.Index} value={track.Index}>
@@ -753,7 +697,7 @@ function EpisodeTitlePage() {
 								}}
 								value={selectedAudioTrack}
 								variant="filled"
-								onChange={(e) => setSelectedAudioTrack(e.target.value)}
+								onChange={(e) => setSelectedAudioTrack(Number(e.target.value))}
 							>
 								{audioTracks.map((track) => (
 									<MenuItem key={track.Index} value={track.Index}>
@@ -771,9 +715,11 @@ function EpisodeTitlePage() {
 								}}
 								value={selectedSubtitleTrack}
 								variant="filled"
-								onChange={(e) => setSelectedSubtitleTrack(e.target.value)}
+								onChange={(e) =>
+									setSelectedSubtitleTrack(Number(e.target.value))
+								}
 							>
-								<MenuItem key={-1} value={"nosub"}>
+								<MenuItem key={-1} value={-1}>
 									No Subtitle
 								</MenuItem>
 								{subtitleTracks.map((track) => (
@@ -791,43 +737,18 @@ function EpisodeTitlePage() {
 								marginTop: "1em",
 							}}
 						>
-							{item.data.ExternalUrls.map((url) => (
-								<IconLink url={url.Url} name={url.Name} />
+							{item.data.ExternalUrls?.map((url) => (
+								<IconLink
+									key={url.Url}
+									url={url.Url ?? ""}
+									name={url.Name ?? ""}
+								/>
 							))}
 						</div>
 					</div>
 				</div>
 
-				{upcomingEpisodes.isSuccess &&
-					upcomingEpisodes.data.Items?.length > 0 && (
-						<CardScroller
-							title="Upcoming Episodes"
-							displayCards={4}
-							disableDecoration
-						>
-							{upcomingEpisodes.data.Items?.map((episode) => {
-								return (
-									<Card
-										key={episode.Id}
-										item={episode}
-										cardTitle={episode.SeriesName}
-										imageType="Primary"
-										cardCaption={`S${episode.ParentIndexNumber}:E${episode.IndexNumber} - ${episode.Name}`}
-										cardType="thumb"
-										queryKey={["item", id, "episode", "upcomingEpisodes"]}
-										userId={user?.Id}
-										imageBlurhash={
-											!!episode.ImageBlurHashes?.Primary &&
-											episode.ImageBlurHashes?.Primary[
-												Object.keys(episode.ImageBlurHashes.Primary)[0]
-											]
-										}
-									/>
-								);
-							})}
-						</CardScroller>
-					)}
-				{item.data.People?.length > 0 && (
+				{item.data.People?.length && (
 					<div className="item-detail-cast">
 						<Typography variant="h5" mb={2}>
 							Cast & Crew
@@ -840,23 +761,26 @@ function EpisodeTitlePage() {
 										<Link
 											className="item-detail-cast-card"
 											key={actor.Id}
-											to={`/person/$id`}
+											to="/person/$id"
 											params={{
-												id: actor.Id,
+												id: actor.Id ?? "",
 											}}
 										>
 											{actor.PrimaryImageTag ? (
 												<img
-													alt={actor.Name}
-													src={getImageUrlsApi(api).getItemImageUrlById(
-														actor.Id,
-														"Primary",
-														{
-															quality: 80,
-															fillWidth: 200,
-															fillHeight: 200,
-														},
-													)}
+													alt={actor.Name ?? ""}
+													src={
+														api &&
+														getImageUrlsApi(api).getItemImageUrlById(
+															actor.Id ?? "",
+															"Primary",
+															{
+																quality: 80,
+																fillWidth: 200,
+																fillHeight: 200,
+															},
+														)
+													}
 													className="item-detail-cast-card-image"
 												/>
 											) : (
@@ -890,23 +814,26 @@ function EpisodeTitlePage() {
 										<Link
 											className="item-detail-cast-card"
 											key={actor.Id}
-											to={`/person/$id`}
+											to="/person/$id"
 											params={{
-												id: actor.Id,
+												id: actor.Id ?? "",
 											}}
 										>
 											{actor.PrimaryImageTag ? (
 												<img
-													alt={actor.Name}
-													src={getImageUrlsApi(api).getItemImageUrlById(
-														actor.Id,
-														"Primary",
-														{
-															quality: 80,
-															fillWidth: 200,
-															fillHeight: 200,
-														},
-													)}
+													alt={actor.Name ?? ""}
+													src={
+														api &&
+														getImageUrlsApi(api).getItemImageUrlById(
+															actor.Id ?? "",
+															"Primary",
+															{
+																quality: 80,
+																fillWidth: 200,
+																fillHeight: 200,
+															},
+														)
+													}
 													className="item-detail-cast-card-image"
 												/>
 											) : (
@@ -940,23 +867,26 @@ function EpisodeTitlePage() {
 										<Link
 											className="item-detail-cast-card"
 											key={actor.Id}
-											to={`/person/$id`}
+											to="/person/$id"
 											params={{
-												id: actor.Id,
+												id: actor.Id ?? "",
 											}}
 										>
 											{actor.PrimaryImageTag ? (
 												<img
-													alt={actor.Name}
-													src={getImageUrlsApi(api).getItemImageUrlById(
-														actor.Id,
-														"Primary",
-														{
-															quality: 80,
-															fillWidth: 200,
-															fillHeight: 200,
-														},
-													)}
+													alt={actor.Name ?? ""}
+													src={
+														api &&
+														getImageUrlsApi(api).getItemImageUrlById(
+															actor.Id ?? "",
+															"Primary",
+															{
+																quality: 80,
+																fillWidth: 200,
+																fillHeight: 200,
+															},
+														)
+													}
 													className="item-detail-cast-card-image"
 												/>
 											) : (
@@ -990,23 +920,26 @@ function EpisodeTitlePage() {
 										<Link
 											className="item-detail-cast-card"
 											key={actor.Id}
-											to={`/person/$id`}
+											to="/person/$id"
 											params={{
-												id: actor.Id,
+												id: actor.Id ?? "",
 											}}
 										>
 											{actor.PrimaryImageTag ? (
 												<img
-													alt={actor.Name}
-													src={getImageUrlsApi(api).getItemImageUrlById(
-														actor.Id,
-														"Primary",
-														{
-															quality: 80,
-															fillWidth: 200,
-															fillHeight: 200,
-														},
-													)}
+													alt={actor.Name ?? ""}
+													src={
+														api &&
+														getImageUrlsApi(api).getItemImageUrlById(
+															actor.Id ?? "",
+															"Primary",
+															{
+																quality: 80,
+																fillWidth: 200,
+																fillHeight: 200,
+															},
+														)
+													}
 													className="item-detail-cast-card-image"
 												/>
 											) : (
