@@ -1,5 +1,4 @@
-import PropTypes from "prop-types";
-import React, { useEffect, useRef } from "react";
+import React, { useLayoutEffect, useRef } from "react";
 
 import Box from "@mui/material/Box";
 import Chip from "@mui/material/Chip";
@@ -17,7 +16,6 @@ import {
 } from "@jellyfin/sdk/lib/generated-client";
 import { getItemsApi } from "@jellyfin/sdk/lib/utils/api/items-api";
 import { getLibraryApi } from "@jellyfin/sdk/lib/utils/api/library-api";
-import { getUserApi } from "@jellyfin/sdk/lib/utils/api/user-api";
 import { getUserLibraryApi } from "@jellyfin/sdk/lib/utils/api/user-library-api";
 import { useQuery } from "@tanstack/react-query";
 
@@ -27,7 +25,7 @@ import CardScroller from "@/components/cardScroller/cardScroller";
 import { ErrorNotice } from "@/components/notices/errorNotice/errorNotice";
 import ShowMoreText from "@/components/showMoreText";
 import { endsAt, getRuntime } from "@/utils/date/time";
-import { setBackdrop, useBackdropStore } from "@/utils/store/backdrop";
+import { useBackdropStore } from "@/utils/store/backdrop";
 import { Blurhash } from "react-blurhash";
 
 import LikeButton from "@/components/buttons/likeButton";
@@ -41,30 +39,8 @@ import IconLink from "@/components/iconLink";
 import { getTypeIcon } from "@/components/utils/iconsCollection";
 import getImageUrlsApi from "@/utils/methods/getImageUrlsApi";
 import { useCentralStore } from "@/utils/store/central";
+import { green, red, yellow } from "@mui/material/colors";
 import { createFileRoute } from "@tanstack/react-router";
-
-function TabPanel(props) {
-	const { children, value, index, ...other } = props;
-
-	return (
-		<div
-			role="tabpanel"
-			hidden={value !== index}
-			id={`full-width-tabpanel-${index}`}
-			aria-labelledby={`full-width-tab-${index}`}
-			{...other}
-			style={{ marginTop: "1em" }}
-		>
-			{value === index && <Box>{children}</Box>}
-		</div>
-	);
-}
-
-TabPanel.propTypes = {
-	children: PropTypes.node,
-	index: PropTypes.number.isRequired,
-	value: PropTypes.number.isRequired,
-};
 
 export const Route = createFileRoute("/_api/boxset/$id")({
 	component: BoxSetTitlePage,
@@ -79,6 +55,7 @@ function BoxSetTitlePage() {
 	const item = useQuery({
 		queryKey: ["item", id],
 		queryFn: async () => {
+			if (!api) return null;
 			const result = await getUserLibraryApi(api).getItem({
 				userId: user?.Id,
 				itemId: id,
@@ -93,9 +70,10 @@ function BoxSetTitlePage() {
 	const collectionItems = useQuery({
 		queryKey: ["item", id, "collection"],
 		queryFn: async () => {
+			if (!api) return null;
 			const result = await getItemsApi(api).getItems({
 				userId: user?.Id,
-				parentId: item.data.Id,
+				parentId: item.data?.Id,
 				fields: [ItemFields.SeasonUserData, ItemFields.Overview],
 				excludeLocationTypes: [LocationType.Virtual],
 			});
@@ -107,8 +85,9 @@ function BoxSetTitlePage() {
 	});
 
 	const similarItems = useQuery({
-		queryKey: ["item", id, "similarItem"],
+		queryKey: ["item", "similarItem", id],
 		queryFn: async () => {
+			if (!api || !item.data?.Id) return null;
 			const result = await getLibraryApi(api).getSimilarItems({
 				userId: user?.Id,
 				itemId: item.data?.Id,
@@ -121,13 +100,19 @@ function BoxSetTitlePage() {
 		refetchOnWindowFocus: true,
 	});
 
-	useEffect(() => {
-		if (item.isSuccess) {
-			if (item.data.BackdropImageTags?.length > 0) {
+	const setBackdrop = useBackdropStore((s) => s.setBackdrop);
+
+	useLayoutEffect(() => {
+		if (api && item.isSuccess) {
+			if (item.data?.BackdropImageTags?.length) {
 				setBackdrop(
-					getImageUrlsApi(api).getItemImageUrlById(item.data.Id, "Backdrop", {
-						tag: item.data.BackdropImageTags[0],
-					}),
+					getImageUrlsApi(api).getItemImageUrlById(
+						item.data.Id ?? "",
+						"Backdrop",
+						{
+							tag: item.data.BackdropImageTags[0],
+						},
+					),
 					item.data.Id,
 				);
 			} else {
@@ -159,7 +144,7 @@ function BoxSetTitlePage() {
 			</Box>
 		);
 	}
-	if (item.isSuccess && similarItems.isSuccess) {
+	if (item.isSuccess && item.data && similarItems.isSuccess) {
 		return (
 			<motion.div
 				key={id}
@@ -180,17 +165,20 @@ function BoxSetTitlePage() {
 					<div className="item-hero-backdrop-container">
 						{item.data.BackdropImageTags?.length ? (
 							<motion.img
-								alt={item.data.Name}
-								src={getImageUrlsApi(api).getItemImageUrlById(
-									item.data.Id,
-									"Backdrop",
-									{
-										tag: item.data.BackdropImageTags[0],
-									},
-								)}
+								alt={item.data.Name ?? ""}
+								src={
+									api &&
+									getImageUrlsApi(api).getItemImageUrlById(
+										item.data.Id ?? "",
+										"Backdrop",
+										{
+											tag: item.data.BackdropImageTags[0],
+										},
+									)
+								}
 								className="item-hero-backdrop"
 								onLoad={(e) => {
-									e.currentTarget.style.opacity = 1;
+									e.currentTarget.style.opacity = "1";
 								}}
 								style={{
 									y: parallax,
@@ -198,11 +186,11 @@ function BoxSetTitlePage() {
 							/>
 						) : (
 							<motion.img
-								alt={item.data.Name}
+								alt={item.data.Name ?? ""}
 								src={heroBg}
 								className="item-hero-backdrop"
 								onLoad={(e) => {
-									e.currentTarget.style.opacity = 1;
+									e.currentTarget.style.opacity = "1";
 								}}
 								style={{
 									y: parallax,
@@ -216,53 +204,60 @@ function BoxSetTitlePage() {
 							aspectRatio: item.data.PrimaryImageAspectRatio ?? 1,
 						}}
 					>
-						{Object.keys(item.data.ImageTags).includes("Primary") ? (
-							<>
+						{item.data.ImageTags?.Primary &&
+						item.data.ImageBlurHashes?.Primary ? (
+							<div>
 								<Blurhash
 									hash={
-										item.data.ImageBlurHashes.Primary[
+										item.data.ImageBlurHashes?.Primary?.[
 											item.data.ImageTags.Primary
 										]
 									}
 									className="item-hero-image-blurhash"
 								/>
 								<img
-									alt={item.data.Name}
-									src={getImageUrlsApi(api).getItemImageUrlById(
-										item.data.Id,
-										"Primary",
-										{
-											quality: 90,
-											tag: item.data.ImageTags.Primary,
-										},
-									)}
+									alt={item.data.Name ?? ""}
+									src={
+										api &&
+										getImageUrlsApi(api).getItemImageUrlById(
+											item.data.Id ?? "",
+											"Primary",
+											{
+												quality: 90,
+												tag: item.data.ImageTags.Primary,
+											},
+										)
+									}
 									onLoad={(e) => {
-										e.currentTarget.style.opacity = 1;
+										e.currentTarget.style.opacity = "1";
 									}}
 									className="item-hero-image"
 								/>
-							</>
+							</div>
 						) : (
 							<div className="item-hero-image-icon">
-								{getTypeIcon(item.data.Type)}
+								{getTypeIcon(item.data.Type ?? "BoxSet")}
 							</div>
 						)}
 					</div>
 					<div className="item-hero-detail">
-						{Object.keys(item.data.ImageTags).includes("Logo") ? (
+						{item.data.ImageTags?.Logo ? (
 							<img
-								alt={item.data.Name}
-								src={getImageUrlsApi(api).getItemImageUrlById(
-									item.data.Id,
-									"Logo",
-									{
-										quality: 90,
-										fillWidth: 592,
-										fillHeight: 592,
-									},
-								)}
+								alt={item.data.Name ?? ""}
+								src={
+									api &&
+									getImageUrlsApi(api).getItemImageUrlById(
+										item.data.Id ?? "",
+										"Logo",
+										{
+											quality: 90,
+											fillWidth: 592,
+											fillHeight: 592,
+										},
+									)
+								}
 								onLoad={(e) => {
-									e.currentTarget.style.opacity = 1;
+									e.currentTarget.style.opacity = "1";
 								}}
 								className="item-hero-logo"
 							/>
@@ -357,7 +352,7 @@ function BoxSetTitlePage() {
 								<Typography style={{ opacity: "0.8" }} variant="subtitle2">
 									{endsAt(
 										item.data.RunTimeTicks -
-											item.data.UserData.PlaybackPositionTicks,
+											(item.data.UserData?.PlaybackPositionTicks ?? 0),
 									)}
 								</Typography>
 							)}
@@ -370,9 +365,7 @@ function BoxSetTitlePage() {
 						<div className="flex flex-row fullWidth">
 							<PlayButton
 								item={item.data}
-								itemId={item.data.Id}
-								itemType={item.data.Type}
-								itemUserData={item.data.UserData}
+								itemType={item.data.Type ?? "BoxSet"}
 								currentVideoTrack={0}
 								currentAudioTrack={0}
 								currentSubTrack={0}
@@ -387,14 +380,14 @@ function BoxSetTitlePage() {
 								itemName={item.data.Name}
 								itemId={item.data.Id}
 								queryKey={["item", id]}
-								isFavorite={item.data.UserData.IsFavorite}
+								isFavorite={item.data.UserData?.IsFavorite}
 								userId={user?.Id}
 							/>
 							<MarkPlayedButton
 								itemName={item.data.Name}
 								itemId={item.data.Id}
 								queryKey={["item", id]}
-								isPlayed={item.data.UserData.Played}
+								isPlayed={item.data.UserData?.Played}
 								userId={user?.Id}
 							/>
 						</div>
@@ -420,15 +413,19 @@ function BoxSetTitlePage() {
 								marginTop: "1em",
 							}}
 						>
-							{item.data.ExternalUrls.map((url) => (
-								<IconLink url={url.Url} name={url.Name} />
+							{item.data.ExternalUrls?.map((url) => (
+								<IconLink
+									url={url.Url ?? ""}
+									name={url.Name ?? ""}
+									key={url.Url}
+								/>
 							))}
 						</div>
 					</div>
 				</div>
-				{collectionItems.data.TotalRecordCount > 0 && (
+				{(collectionItems.data?.TotalRecordCount ?? 0) > 0 && (
 					<CardScroller title="" displayCards={7} disableDecoration>
-						{collectionItems.data.Items.map((similar, index) => {
+						{collectionItems.data?.Items?.map((similar) => {
 							return (
 								<Card
 									key={similar.Id}
@@ -442,26 +439,20 @@ function BoxSetTitlePage() {
 									imageType={"Primary"}
 									cardCaption={similar.ProductionYear}
 									cardType={"portrait"}
-									queryKey={["item", id, "collection"]}
+									queryKey={["item", id]}
 									userId={user?.Id}
-									imageBlurhash={
-										!!similar.ImageBlurHashes?.Primary &&
-										similar.ImageBlurHashes?.Primary[
-											Object.keys(similar.ImageBlurHashes.Primary)[0]
-										]
-									}
 								/>
 							);
 						})}
 					</CardScroller>
 				)}
-				{similarItems.data.TotalRecordCount > 0 && (
+				{similarItems.data?.TotalRecordCount && (
 					<CardScroller
 						title="You might also like"
 						displayCards={7}
 						disableDecoration
 					>
-						{similarItems.data.Items.map((similar, index) => {
+						{similarItems.data?.Items?.map((similar) => {
 							return (
 								<Card
 									key={similar.Id}
@@ -494,12 +485,6 @@ function BoxSetTitlePage() {
 									}
 									queryKey={["item", id, "similarItem"]}
 									userId={user?.Id}
-									imageBlurhash={
-										!!similar.ImageBlurHashes?.Primary &&
-										similar.ImageBlurHashes?.Primary[
-											Object.keys(similar.ImageBlurHashes.Primary)[0]
-										]
-									}
 								/>
 							);
 						})}

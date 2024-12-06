@@ -1,5 +1,10 @@
-import PropTypes from "prop-types";
-import React, { useState, useEffect, useLayoutEffect, useRef } from "react";
+import React, {
+	useState,
+	useEffect,
+	useLayoutEffect,
+	useRef,
+	type ReactNode,
+} from "react";
 
 import Box from "@mui/material/Box";
 import CircularProgress from "@mui/material/CircularProgress";
@@ -17,7 +22,6 @@ import {
 	SortOrder,
 } from "@jellyfin/sdk/lib/generated-client";
 import { getItemsApi } from "@jellyfin/sdk/lib/utils/api/items-api";
-import { getUserApi } from "@jellyfin/sdk/lib/utils/api/user-api";
 import { getUserLibraryApi } from "@jellyfin/sdk/lib/utils/api/user-library-api";
 
 import { useQuery } from "@tanstack/react-query";
@@ -26,7 +30,6 @@ import LikeButton from "@/components/buttons/likeButton";
 import { Card } from "@/components/card/card";
 import { Blurhash } from "react-blurhash";
 
-import meshBg from "@/assets/herobg.png";
 import { ArtistAlbum } from "@/components/layouts/artist/artistAlbum";
 import MusicTrack from "@/components/musicTrack";
 import { ErrorNotice } from "@/components/notices/errorNotice/errorNotice";
@@ -40,7 +43,14 @@ import getImageUrlsApi from "@/utils/methods/getImageUrlsApi";
 import { useCentralStore } from "@/utils/store/central";
 import { createFileRoute } from "@tanstack/react-router";
 
-function TabPanel(props) {
+
+type TabPanelProp = {
+	children: ReactNode;
+	index: number;
+	value: number;
+};
+
+function TabPanel(props: TabPanelProp) {
 	const { children, value, index, ...other } = props;
 
 	return (
@@ -57,12 +67,6 @@ function TabPanel(props) {
 	);
 }
 
-TabPanel.propTypes = {
-	children: PropTypes.node,
-	index: PropTypes.number.isRequired,
-	value: PropTypes.number.isRequired,
-};
-
 export const Route = createFileRoute("/_api/artist/$id")({
 	component: ArtistTitlePage,
 });
@@ -76,10 +80,10 @@ function ArtistTitlePage() {
 	const item = useQuery({
 		queryKey: ["item", id],
 		queryFn: async () => {
+			if (!api) return null;
 			const result = await getUserLibraryApi(api).getItem({
 				userId: user?.Id,
 				itemId: id,
-				fields: [ItemFields.Crew],
 			});
 			return result.data;
 		},
@@ -91,8 +95,9 @@ function ArtistTitlePage() {
 	const artistDiscography = useQuery({
 		queryKey: ["item", id, "artist", "discography"],
 		queryFn: async () => {
+			if (!api) return null;
 			const result = await getItemsApi(api).getItems({
-				albumArtistIds: [item.data.Id],
+				albumArtistIds: [item.data?.Id ?? ""],
 				sortBy: ["PremiereDate", "ProductionYear", "SortName"],
 				sortOrder: [SortOrder.Descending],
 				recursive: true,
@@ -102,14 +107,16 @@ function ArtistTitlePage() {
 			});
 			return result.data;
 		},
-		enabled: item.isSuccess && item.data.Type === BaseItemKind.MusicArtist,
+		enabled: item.isSuccess && item.data?.Type === BaseItemKind.MusicArtist,
 	});
 
 	const artistSongs = useQuery({
 		queryKey: ["item", id, "artist", "songs"],
 		queryFn: async () => {
+			if (!api) return null;
+
 			const result = await getItemsApi(api).getItems({
-				artistIds: [item.data.Id],
+				artistIds: [item.data?.Id ?? ""],
 				sortBy: ["PremiereDate", "ProductionYear", "SortName"],
 				sortOrder: [SortOrder.Ascending],
 				recursive: true,
@@ -119,15 +126,16 @@ function ArtistTitlePage() {
 			});
 			return result.data;
 		},
-		enabled: item.isSuccess && item.data.Type === BaseItemKind.MusicArtist,
+		enabled: item.isSuccess && item.data?.Type === BaseItemKind.MusicArtist,
 	});
 
 	const artistAppearances = useQuery({
 		queryKey: ["item", id, "artist", "appearences"],
 		queryFn: async () => {
+			if (!api) return null;
 			const result = await getItemsApi(api).getItems({
-				contributingArtistIds: [item.data.Id],
-				excludeItemIds: [item.data.Id],
+				contributingArtistIds: [item.data?.Id ?? ""],
+				excludeItemIds: [item.data?.Id ?? ""],
 				sortBy: ["PremiereDate", "ProductionYear", "SortName"],
 				sortOrder: [SortOrder.Descending],
 				recursive: true,
@@ -136,7 +144,7 @@ function ArtistTitlePage() {
 			});
 			return result.data;
 		},
-		enabled: item.isSuccess && item.data.Type === BaseItemKind.MusicArtist,
+		enabled: item.isSuccess && item.data?.Type === BaseItemKind.MusicArtist,
 	});
 
 	const artistTabs = [
@@ -150,7 +158,10 @@ function ArtistTitlePage() {
 		if (
 			artistDiscography.isSuccess &&
 			artistSongs.isSuccess &&
-			artistAppearances.isSuccess
+			artistAppearances.isSuccess &&
+			artistDiscography.data &&
+			artistSongs.data &&
+			artistAppearances.data
 		) {
 			if (artistDiscography.data.TotalRecordCount !== 0) {
 				setActiveArtistTab(0);
@@ -170,9 +181,9 @@ function ArtistTitlePage() {
 
 	const { setBackdrop } = useBackdropStore();
 	useEffect(() => {
-		if (item.isSuccess) {
+		if (item.isSuccess && item.data) {
 			setBackdrop(
-				`${api.basePath}/Items/${item.data.Id}/Images/Backdrop`,
+				`${api?.basePath}/Items/${item.data.Id}/Images/Backdrop`,
 				item.data.Id,
 			);
 		}
@@ -200,7 +211,7 @@ function ArtistTitlePage() {
 			</Box>
 		);
 	}
-	if (item.isSuccess) {
+	if (item.isSuccess && item.data) {
 		return (
 			<motion.div
 				key={id}
@@ -220,17 +231,20 @@ function ArtistTitlePage() {
 				<div className="item-hero flex flex-row">
 					<div className="item-hero-backdrop-container">
 						<motion.img
-							alt={item.data.Name}
-							src={getImageUrlsApi(api).getItemImageUrlById(
-								item.data.Id,
-								"Backdrop",
-								{
-									tag: item.data.BackdropImageTags[0],
-								},
-							)}
+							alt={item.data?.Name ?? ""}
+							src={
+								api &&
+								getImageUrlsApi(api).getItemImageUrlById(
+									item.data?.Id ?? "",
+									"Backdrop",
+									{
+										tag: item.data.BackdropImageTags?.[0],
+									},
+								)
+							}
 							className="item-hero-backdrop"
 							onLoad={(e) => {
-								e.currentTarget.style.opacity = 1;
+								e.currentTarget.style.opacity = "1";
 							}}
 							style={{
 								y: parallax,
@@ -243,53 +257,59 @@ function ArtistTitlePage() {
 							aspectRatio: item.data.PrimaryImageAspectRatio ?? 1,
 						}}
 					>
-						{Object.keys(item.data.ImageTags).includes("Primary") ? (
-							<>
+						{item.data.ImageTags?.Primary ? (
+							<div>
 								<Blurhash
 									hash={
-										item.data.ImageBlurHashes.Primary[
+										item.data.ImageBlurHashes?.Primary?.[
 											item.data.ImageTags.Primary
-										]
+										] ?? ""
 									}
 									className="item-hero-image-blurhash"
 								/>
 								<img
-									alt={item.data.Name}
-									src={getImageUrlsApi(api).getItemImageUrlById(
-										item.data.Id,
-										"Primary",
-										{
-											quality: 90,
-											tag: item.data.ImageTags.Primary,
-										},
-									)}
+									alt={item.data.Name ?? ""}
+									src={
+										api &&
+										getImageUrlsApi(api).getItemImageUrlById(
+											item.data.Id ?? "",
+											"Primary",
+											{
+												quality: 90,
+												tag: item.data.ImageTags.Primary,
+											},
+										)
+									}
 									onLoad={(e) => {
-										e.currentTarget.style.opacity = 1;
+										e.currentTarget.style.opacity = "1";
 									}}
 									className="item-hero-image"
 								/>
-							</>
+							</div>
 						) : (
 							<div className="item-hero-image-icon">
-								{getTypeIcon(item.data.Type)}
+								{getTypeIcon(item.data.Type ?? "MusicArtist")}
 							</div>
 						)}
 					</div>
 					<div className="item-hero-detail flex flex-column">
-						{Object.keys(item.data.ImageTags).includes("Logo") ? (
+						{item.data.ImageTags?.Logo ? (
 							<img
-								alt={item.data.Name}
-								src={getImageUrlsApi(api).getItemImageUrlById(
-									item.data.Id,
-									"Logo",
-									{
-										quality: 90,
-										fillWidth: 592,
-										fillHeight: 592,
-									},
-								)}
+								alt={item.data.Name ?? ""}
+								src={
+									api &&
+									getImageUrlsApi(api).getItemImageUrlById(
+										item.data.Id ?? "",
+										"Logo",
+										{
+											quality: 90,
+											fillWidth: 592,
+											fillHeight: 592,
+										},
+									)
+								}
 								onLoad={(e) => {
-									e.currentTarget.style.opacity = 1;
+									e.currentTarget.style.opacity = "1";
 								}}
 								className="item-hero-logo"
 							/>
@@ -323,7 +343,11 @@ function ArtistTitlePage() {
 							}}
 						>
 							{item.data.ExternalUrls?.map((url) => (
-								<IconLink url={url.Url} name={url.Name} />
+								<IconLink
+									url={url.Url ?? ""}
+									name={url.Name ?? ""}
+									key={url.Url}
+								/>
 							))}
 						</div>
 					</div>
@@ -333,22 +357,22 @@ function ArtistTitlePage() {
 						}}
 					>
 						{item.data.PremiereDate && (
-							<>
+							<div>
 								<Typography variant="h5">Born</Typography>
 								<Typography sx={{ opacity: 0.8 }}>
 									{new Date(item.data.PremiereDate).toDateString()}
 								</Typography>
-							</>
+							</div>
 						)}
 						{item.data.EndDate && (
-							<>
+							<div>
 								<Typography variant="h5" mt={2}>
 									Death
 								</Typography>
 								<Typography sx={{ opacity: 0.8 }}>
 									{new Date(item.data.EndDate).toDateString()}
 								</Typography>
-							</>
+							</div>
 						)}
 					</div>
 				</div>
@@ -357,7 +381,7 @@ function ArtistTitlePage() {
 						<Tabs
 							variant="scrollable"
 							value={activeArtistTab}
-							onChange={(e, newVal) => {
+							onChange={(_, newVal) => {
 								if (newVal > activeArtistTab) {
 									setAnimationDirection("forward");
 								} else if (newVal < activeArtistTab) {
@@ -398,8 +422,8 @@ function ArtistTitlePage() {
 									ease: "anticipate",
 								}}
 							>
-								{artistDiscography.isSuccess &&
-									artistDiscography.data.Items?.map((tabitem) => {
+								{user &&
+									artistDiscography.data?.Items?.map((tabitem) => {
 										return (
 											<ArtistAlbum
 												key={tabitem.Id}
@@ -430,7 +454,7 @@ function ArtistTitlePage() {
 								}}
 							>
 								{artistSongs.isSuccess &&
-									artistSongs.data.Items?.map((tabitem) => {
+									artistSongs.data?.Items?.map((tabitem) => {
 										return (
 											<MusicTrack
 												item={tabitem}
@@ -463,7 +487,7 @@ function ArtistTitlePage() {
 								className="grid"
 							>
 								{artistAppearances.isSuccess &&
-									artistAppearances.data.Items?.map((tabitem) => {
+									artistAppearances.data?.Items?.map((tabitem) => {
 										return (
 											<Card
 												key={tabitem.Id}

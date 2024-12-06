@@ -1,4 +1,4 @@
-import React, { useLayoutEffect, useMemo, useRef } from "react";
+import React, { useLayoutEffect, useMemo } from "react";
 
 import Box from "@mui/material/Box";
 import CircularProgress from "@mui/material/CircularProgress";
@@ -26,8 +26,10 @@ import { useBackdropStore } from "@/utils/store/backdrop";
 import "./album.scss";
 
 import AlbumMusicTrack from "@/components/albumMusicTrack";
+import ShowMoreText from "@/components/showMoreText";
 import TagChip from "@/components/tagChip";
 import getImageUrlsApi from "@/utils/methods/getImageUrlsApi";
+import { useApiInContext } from "@/utils/store/api";
 import { useCentralStore } from "@/utils/store/central";
 import { Chip } from "@mui/material";
 import { Link, createFileRoute } from "@tanstack/react-router";
@@ -39,20 +41,14 @@ export const Route = createFileRoute("/_api/album/$id")({
 
 function MusicAlbumTitlePage() {
 	const { id } = Route.useParams();
-	const api = Route.useRouteContext().api;
-
-	if (!api) {
-		throw new Error("API not found", {
-			cause:
-				"API is not set in the context, maybe it is not initialized before the component is rendered.",
-		});
-	}
+	const api = useApiInContext((s) => s.api);
 
 	const user = useCentralStore((s) => s.currentUser);
 
 	const item = useQuery({
 		queryKey: ["item", id],
 		queryFn: async () => {
+			if (!api) return null;
 			const result = await getUserLibraryApi(api).getItem({
 				userId: user?.Id,
 				itemId: id,
@@ -67,7 +63,7 @@ function MusicAlbumTitlePage() {
 	const similarItems = useQuery({
 		queryKey: ["item", id, "similarItem"],
 		queryFn: async () => {
-			if (item.data?.Id) {
+			if (api && item.data?.Id) {
 				const result = await getLibraryApi(api).getSimilarAlbums({
 					userId: user?.Id,
 					itemId: item.data?.Id,
@@ -75,6 +71,7 @@ function MusicAlbumTitlePage() {
 				});
 				return result.data;
 			}
+			return null;
 		},
 		enabled: item.isSuccess,
 		networkMode: "always",
@@ -84,6 +81,7 @@ function MusicAlbumTitlePage() {
 	const musicTracks = useQuery({
 		queryKey: ["item", "musicTracks", id],
 		queryFn: async () => {
+			if (!api) return null;
 			const result = await getItemsApi(api).getItems({
 				userId: user?.Id,
 				parentId: item.data?.Id,
@@ -93,7 +91,7 @@ function MusicAlbumTitlePage() {
 			});
 			return result.data;
 		},
-		enabled: item.isSuccess && item.data.Type === BaseItemKind.MusicAlbum,
+		enabled: item.isSuccess && item.data?.Type === BaseItemKind.MusicAlbum,
 		networkMode: "always",
 	});
 
@@ -117,13 +115,11 @@ function MusicAlbumTitlePage() {
 	useLayoutEffect(() => {
 		if (item.isSuccess) {
 			setAppBackdrop(
-				`${api?.basePath}/Items/${item.data.ParentBackdropItemId}/Images/Backdrop`,
-				item.data.Id,
+				`${api?.basePath}/Items/${item.data?.ParentBackdropItemId}/Images/Backdrop`,
+				item.data?.Id,
 			);
 		}
 	}, [item.isSuccess]);
-
-	const pageRef = useRef(null);
 
 	if (item.isPending || similarItems.isPending) {
 		return (
@@ -140,47 +136,46 @@ function MusicAlbumTitlePage() {
 			</Box>
 		);
 	}
-	if (item.isSuccess && similarItems.isSuccess) {
+	if (item.isSuccess && item.data && similarItems.isSuccess) {
 		return (
-			<div
-				key={id}
-				className="scrollY padded-top item item-album"
-				ref={pageRef}
-			>
+			<div key={id} className="scrollY padded-top item item-album">
 				<div className="item-info">
 					<Typography className="item-info-name" variant="h3">
-						{item.data.Name}
+						{item.data?.Name}
 					</Typography>
 					<div className="flex flex-align-center item-info-album-info">
 						{/* @ts-ignore - Using Link as component  */}
-						<Chip
-							component={Link}
+						<Link
 							to="/artist/$id"
 							params={{ id: item.data.AlbumArtists?.[0].Id ?? "" }}
-							className="flex flex-align-center"
-							style={{
-								color: "white",
-								textDecoration: "none",
-							}}
-							icon={
-								<span
-									className="material-symbols-rounded"
-									style={{
-										opacity: 0.7,
-									}}
-								>
-									artist
-								</span>
-							}
-							label={item.data.AlbumArtist}
-						/>
+						>
+							<Chip
+								// component={Link}
+								className="flex flex-align-center"
+								style={{
+									color: "white",
+									textDecoration: "none",
+								}}
+								icon={
+									<span
+										className="material-symbols-rounded fill"
+										style={{
+											paddingLeft: "0.25em",
+										}}
+									>
+										artist
+									</span>
+								}
+								label={item.data.AlbumArtist}
+							/>
+						</Link>
 						<Typography className="opacity-07">
 							{item.data.ProductionYear}
 						</Typography>
 						<Typography className="opacity-07">
 							{(musicTracks.data?.TotalRecordCount ?? 0) > 1
 								? `${musicTracks.data?.TotalRecordCount} songs`
-								: "1 song"}
+								: "Single"}
 						</Typography>
 						<Typography className="opacity-07">
 							{getRuntimeCompact(item.data.CumulativeRunTimeTicks ?? 0)}
@@ -262,9 +257,9 @@ function MusicAlbumTitlePage() {
 									className="item-info-sidebar-image"
 									alt={item.data.Name ?? "Album"}
 									src={
-										item.data.Id &&
+										api &&
 										getImageUrlsApi(api).getItemImageUrlById(
-											item.data.Id,
+											item.data.Id ?? "",
 											"Primary",
 											{
 												tag: item.data.ImageTags.Primary,
@@ -287,34 +282,11 @@ function MusicAlbumTitlePage() {
 								<TagChip label={genre.Name ?? "genre"} key={genre.Id} />
 							))}
 						</div>
-						<div className="flex flex-column item-info-sidebar-artist-container">
-							{item.data.ArtistItems?.map((artist) => (
-								<Link
-									to="/artist/$id"
-									params={{ id: artist.Id ?? "" }}
-									className="item-info-sidebar-artist"
-									key={artist.Id}
-								>
-									<div className="item-info-sidebar-artist-image-container">
-										<img
-											className="item-info-sidebar-artist-image"
-											alt={artist.Name ?? "Artist"}
-											src={
-												artist.Id &&
-												getImageUrlsApi(api).getItemImageUrlById(
-													artist.Id,
-													"Primary",
-													{
-														quality: 90,
-													},
-												)
-											}
-										/>
-										<span className="material-symbols-rounded">artist</span>
-									</div>
-									<Typography>{artist.Name}</Typography>
-								</Link>
-							))}
+						<div className="item-info-sidebar-overview">
+							<ShowMoreText
+								content={item.data.Overview ?? ""}
+								collapsedLines={4}
+							/>
 						</div>
 					</div>,
 					document.body,

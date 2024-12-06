@@ -204,14 +204,14 @@ const PlayButton = ({
 								0;
 						}
 						if (
-							result.data.Items?.[index]?.Id &&
+							result.data.Items?.[index].Id &&
 							result.data.Items?.[index].MediaSources?.[0]?.Id
 						) {
 							mediaSource = await getMediaInfoApi(api).getPostedPlaybackInfo({
 								audioStreamIndex: currentAudioTrack,
 								subtitleStreamIndex:
 									currentSubTrack === "nosub" ? -1 : currentSubTrack,
-								itemId: result.data.Items?.[index].Id ?? "",
+								itemId: result.data.Items[index].Id ?? "",
 								startTimeTicks:
 									result.data.Items?.[0].UserData?.PlaybackPositionTicks,
 								userId: userId,
@@ -226,6 +226,10 @@ const PlayButton = ({
 									itemId: result.data.Items?.[index].Id ?? "",
 								})
 							)?.data;
+						} else {
+							throw new Error(
+								`No media source id provieded for the episode. Return values are seriesId = ${result.data.Items?.[index].Id}, mediaSourceId = ${result.data.Items?.[index].MediaSources?.[0]?.Id}, index = ${index}`,
+							);
 						}
 						break;
 					case BaseItemKind.Playlist:
@@ -267,6 +271,25 @@ const PlayButton = ({
 							sortOrder: [SortOrder.Ascending],
 							sortBy: ["IndexNumber"],
 						});
+						if (
+							result.data.Items?.[index]?.Id &&
+							result.data.Items?.[index].MediaSources?.[0]?.Id
+						) {
+							mediaSource = await getMediaInfoApi(api).getPostedPlaybackInfo({
+								audioStreamIndex: currentAudioTrack,
+								subtitleStreamIndex:
+									currentSubTrack === "nosub" ? -1 : currentSubTrack,
+								itemId: result.data.Items?.[index].Id ?? "",
+								startTimeTicks:
+									result.data.Items?.[0].UserData?.PlaybackPositionTicks,
+								userId: userId,
+								mediaSourceId:
+									result.data.Items?.[index].MediaSources?.[0].Id ?? "",
+								playbackInfoDto: {
+									DeviceProfile: playbackProfile,
+								},
+							});
+						}
 						break;
 					case BaseItemKind.Photo:
 						{
@@ -383,6 +406,11 @@ const PlayButton = ({
 						result?.item.Items[episodeIndex].IndexNumber ?? 0
 					} ${result?.item.Items[episodeIndex].Name}`;
 				}
+
+				if (itemType === "BoxSet") {
+					itemName = result.item.Items[0].Name;
+				}
+
 				// Subtitle
 				const subtitle = getSubtitle(
 					currentSubTrack,

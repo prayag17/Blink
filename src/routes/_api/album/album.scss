@@ -34,7 +34,7 @@ $border-radius: 20px;
 	flex-direction: column;
 	gap: 1em;
 	position: fixed;
-	max-height: 100vh;
+	// max-height: 100vh;
 	top: 0;
 	right: 0;
 	width: 30vw;
@@ -88,6 +88,11 @@ $border-radius: 20px;
 			overflow-y: auto;
 			overflow-x: hidden;
 		}
+	}
+	&-overview {
+		overflow-y: auto;
+		max-height: 28vh;
+		padding-bottom: 2px;
 	}
 }
 
