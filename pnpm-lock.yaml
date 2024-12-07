@@ -32,6 +32,12 @@ importers:
       '@fontsource-variable/noto-sans':
         specifier: ^5.1.0
         version: 5.1.0
+      '@fontsource-variable/plus-jakarta-sans':
+        specifier: ^5.1.0
+        version: 5.1.0
+      '@fontsource-variable/space-grotesk':
+        specifier: ^5.1.0
+        version: 5.1.0
       '@jellyfin/sdk':
         specifier: 0.11.0
         version: 0.11.0(axios@1.7.8)
@@ -928,6 +934,12 @@ packages:
 
   '@fontsource-variable/noto-sans@5.1.0':
     resolution: {integrity: sha512-mLn33cgmryVFjpHoHy/lx6/DsRvp8kbxDmfMbMNl75eY+bVubad3u6oGSCyc8izcSNZAhAlXdoFW7mCnI2l63w==}
+
+  '@fontsource-variable/plus-jakarta-sans@5.1.0':
+    resolution: {integrity: sha512-K7o2GO7/quVFFyfjTqYZu0ng4KJGf60KSAGbvUWwKuH+/Giyl6Qe/EqnGLcjrl9AmXZzTvtRB1xpkASn8FNFoQ==}
+
+  '@fontsource-variable/space-grotesk@5.1.0':
+    resolution: {integrity: sha512-K2mwQYNyLook6EbtMB+Ix8srQsYZRigfxayoSGl1QsgVAk/J21s0FMZu0FWzTvONyQkYAR704rLfYSstVMi6jQ==}
 
   '@hono/node-server@1.13.7':
     resolution: {integrity: sha512-kTfUMsoloVKtRA2fLiGSd9qBddmru9KadNyhJCwgKBxTiNkaAJEwkVN9KV/rS4HtmmNRtUh6P+YpmjRMl0d9vQ==}
@@ -3749,6 +3761,10 @@ snapshots:
   '@fontsource-variable/jetbrains-mono@5.1.1': {}
 
   '@fontsource-variable/noto-sans@5.1.0': {}
+
+  '@fontsource-variable/plus-jakarta-sans@5.1.0': {}
+
+  '@fontsource-variable/space-grotesk@5.1.0': {}
 
   '@hono/node-server@1.13.7(hono@4.6.12)':
     dependencies:

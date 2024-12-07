@@ -18,6 +18,7 @@ import { theme } from "@/theme";
 // Fonts
 import "@fontsource-variable/jetbrains-mono";
 import "@fontsource-variable/noto-sans";
+import "@fontsource-variable/plus-jakarta-sans";
 
 import "material-symbols/rounded.scss";
 import Backdrop from "@/components/backdrop";

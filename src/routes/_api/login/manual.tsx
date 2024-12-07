@@ -34,7 +34,7 @@ import {
 
 export const Route = createFileRoute("/_api/login/manual")({
 	component: UserLoginManual,
-	validateSearch: (search): { redirect: string } => {
+	validateSearch: (search): { redirect?: string } => {
 		return { redirect: String(search.redirect) };
 	},
 });
