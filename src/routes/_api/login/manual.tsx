@@ -1,4 +1,4 @@
-import { skipToken, useMutation, useQuery } from "@tanstack/react-query";
+import { useMutation, useQuery } from "@tanstack/react-query";
 import React, {
 	type ChangeEvent,
 	type FormEvent,
@@ -24,7 +24,6 @@ import { useApiInContext } from "@/utils/store/api.js";
 import { getBrandingApi } from "@jellyfin/sdk/lib/utils/api/branding-api";
 import "./login.scss";
 
-import QuickConnectButton from "@/components/buttons/quickConnectButton";
 import { useBackdropStore } from "@/utils/store/backdrop.js";
 import { blue } from "@mui/material/colors";
 import {
@@ -32,10 +31,12 @@ import {
 	useNavigate,
 	useRouter,
 } from "@tanstack/react-router";
-import axios from "axios";
 
 export const Route = createFileRoute("/_api/login/manual")({
 	component: UserLoginManual,
+	validateSearch: (search): { redirect: string } => {
+		return { redirect: String(search.redirect) };
+	},
 });
 
 function UserLoginManual() {
@@ -49,7 +50,7 @@ function UserLoginManual() {
 	const server = useQuery({
 		queryKey: ["login", "manual", "serverInfo"],
 		queryFn: async () =>
-			api ? (await getBrandingApi(api).getBrandingOptions()).data : skipToken,
+			api ? (await getBrandingApi(api).getBrandingOptions()).data : null,
 	});
 
 	const navigate = useNavigate();
@@ -64,12 +65,14 @@ function UserLoginManual() {
 		password: "",
 	});
 
-	const handlePassword = (prop: "password" | "showpass") => (event) => {
-		setPassword({
-			...password,
-			[prop]: event.target.value,
-		});
-	};
+	const handlePassword =
+		(prop: "password" | "showpass") =>
+		(event: ChangeEvent<HTMLInputElement>) => {
+			setPassword({
+				...password,
+				[prop]: event.target.value,
+			});
+		};
 
 	const handleShowPassword = () => {
 		setPassword({
@@ -199,7 +202,7 @@ function UserLoginManual() {
 					</div>
 				</form>
 			</div>
-			{server.isSuccess && server.data.LoginDisclaimer && (
+			{server.isSuccess && server.data?.LoginDisclaimer && (
 				<Paper
 					elevation={5}
 					style={{

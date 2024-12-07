@@ -1,21 +1,18 @@
 import { useQuery } from "@tanstack/react-query";
-import React, { useLayoutEffect } from "react";
+import React, { useEffect } from "react";
 
-import { Chip, IconButton, Typography } from "@mui/material";
-import Button from "@mui/material/Button";
+import { Chip, Typography } from "@mui/material";
 
-import { AppBarBackOnly } from "@/components/appBar/backOnly.jsx";
 
 import { getUserApi } from "@jellyfin/sdk/lib/utils/api/user-api";
 
 import { ErrorNotice } from "@/components/notices/errorNotice/errorNotice.jsx";
 import "./login.scss";
 
-import QuickConnectButton from "@/components/buttons/quickConnectButton";
 import { useApiInContext } from "@/utils/store/api";
 import { useBackdropStore } from "@/utils/store/backdrop.js";
 import type { UserDto } from "@jellyfin/sdk/lib/generated-client";
-import { Link, createFileRoute, useNavigate } from "@tanstack/react-router";
+import { Link, createFileRoute } from "@tanstack/react-router";
 
 import avatar from "../../../assets/icons/avatar.png";
 
@@ -36,7 +33,7 @@ const UserCard = ({ user }: { user: UserDto }) => {
 					<img
 						className="user-card-image"
 						alt={"user"}
-						src={`${api.basePath}/Users/${user.Id}/Images/Primary?quality=80&tag=${user.PrimaryImageTag}`}
+						src={`${api?.basePath}/Users/${user.Id}/Images/Primary?quality=80&tag=${user.PrimaryImageTag}`}
 					/>
 				) : (
 					<img className="user-card-image" alt="user" src={avatar} />
@@ -50,13 +47,8 @@ const UserCard = ({ user }: { user: UserDto }) => {
 }
 
 function LoginPublicUsersList() {
-	const navigate = useNavigate();
-
 	const api = useApiInContext((s) => s.api);
 
-	const handleChangeServer = () => {
-		navigate({ to: "/setup/server/list" });
-	};
 	const users = useQuery({
 		queryKey: ["login", "public-users"],
 		queryFn: async () => {
@@ -67,11 +59,11 @@ function LoginPublicUsersList() {
 		enabled: Boolean(api),
 	});
 
-	const setBackdrop = useBackdropStore((state) => state.setBackdrop);	
-
-	useLayoutEffect(() => {
+	const setBackdrop = useBackdropStore((state) => state.setBackdrop);
+	useEffect(() => {
 		setBackdrop("", "");
 	}, []);
+
 	if (users.isSuccess) {
 		return (
 			<div className="login-container scrollY">
@@ -85,17 +77,6 @@ function LoginPublicUsersList() {
 					})}
 				</div>
 
-				{/* <div className="buttons">
-						<Button
-							color="secondary"
-							variant="contained"
-							className="userEventButton"
-							onClick={handleChangeServer}
-						>
-							Change Server
-						</Button>
-						<QuickConnectButton />
-					</div> */}
 				<Chip
 					style={{ marginLeft: "50%", transform: "translateX(-50%)" }}
 					label={
