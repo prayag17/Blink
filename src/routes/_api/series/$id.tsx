@@ -853,7 +853,7 @@ function SeriesTitlePage() {
 								}}
 							>
 								<Typography variant="h5">
-									{seasons.data?.Items?.[Number(currentSeason)].Name}
+									{seasons.data?.Items?.[Number(currentSeason)]?.Name}
 								</Typography>
 								<Chip
 									label={
