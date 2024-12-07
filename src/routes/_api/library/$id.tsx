@@ -1283,8 +1283,9 @@ function Library() {
 					) : items.data?.TotalRecordCount === 0 ? (
 						<EmptyNotice
 							extraMsg={
-								currentViewType === BaseItemKind.Trailer &&
-								"Install the trailers channel to enhance your movie experience by adding a library of internet trailers."
+								currentViewType === BaseItemKind.Trailer
+									? "Install the trailers channel to enhance your movie experience by adding a library of internet trailers."
+									: undefined
 							}
 						/>
 					) : currentViewType !== BaseItemKind.Audio ? (
