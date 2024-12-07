@@ -1,16 +1,10 @@
-import PropTypes from "prop-types";
-import React, { useState, useEffect, useLayoutEffect, useRef } from "react";
+import React, { useState, useEffect, useRef, useMemo } from "react";
 
 import Box from "@mui/material/Box";
-import MuiCard from "@mui/material/Card";
-import CardContent from "@mui/material/CardContent";
-import CardMedia from "@mui/material/CardMedia";
 import Chip from "@mui/material/Chip";
 import CircularProgress from "@mui/material/CircularProgress";
 import Divider from "@mui/material/Divider";
-import LinearProgress from "@mui/material/LinearProgress";
 import MenuItem from "@mui/material/MenuItem";
-import Skeleton from "@mui/material/Skeleton";
 import Stack from "@mui/material/Stack";
 import TextField from "@mui/material/TextField";
 import Typography from "@mui/material/Typography";
@@ -21,14 +15,9 @@ import { AnimatePresence, motion, useScroll } from "framer-motion";
 
 import { Blurhash } from "react-blurhash";
 
-import {
-	BaseItemKind,
-	ItemFields,
-	LocationType,
-} from "@jellyfin/sdk/lib/generated-client";
+import { BaseItemKind, ItemFields } from "@jellyfin/sdk/lib/generated-client";
 import { getLibraryApi } from "@jellyfin/sdk/lib/utils/api/library-api";
 import { getTvShowsApi } from "@jellyfin/sdk/lib/utils/api/tv-shows-api";
-import { getUserApi } from "@jellyfin/sdk/lib/utils/api/user-api";
 import { getUserLibraryApi } from "@jellyfin/sdk/lib/utils/api/user-library-api";
 
 import { useQuery } from "@tanstack/react-query";
@@ -63,29 +52,6 @@ import { useCentralStore } from "@/utils/store/central";
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { Link } from "@tanstack/react-router";
 
-function TabPanel(props) {
-	const { children, value, index, ...other } = props;
-
-	return (
-		<div
-			role="tabpanel"
-			hidden={value !== index}
-			id={`full-width-tabpanel-${index}`}
-			aria-labelledby={`full-width-tab-${index}`}
-			{...other}
-			style={{ marginTop: "1em" }}
-		>
-			{value === index && <Box>{children}</Box>}
-		</div>
-	);
-}
-
-TabPanel.propTypes = {
-	children: PropTypes.node,
-	index: PropTypes.number.isRequired,
-	value: PropTypes.number.isRequired,
-};
-
 const getEpisodeDateString = (date: Date) => {
 	const formatter = new Intl.DateTimeFormat(navigator.language ?? "en-US", {
 		dateStyle: "full",
@@ -109,6 +75,7 @@ function SeriesTitlePage() {
 	const item = useQuery({
 		queryKey: ["item", id],
 		queryFn: async () => {
+			if (!api) return null;
 			const result = await getUserLibraryApi(api).getItem({
 				userId: user?.Id,
 				itemId: id,
@@ -123,48 +90,31 @@ function SeriesTitlePage() {
 	const similarItems = useQuery({
 		queryKey: ["item", id, "similarItem"],
 		queryFn: async () => {
+			if (!api) return null;
 			const result = await getLibraryApi(api).getSimilarShows({
 				userId: user?.Id,
-				itemId: item.data.Id,
+				itemId: item.data?.Id ?? "",
 				limit: 16,
 			});
 			return result.data;
 		},
 		enabled: item.isSuccess,
-		networkMode: "always",
-		refetchOnWindowFocus: true,
 	});
 
 	const seasons = useQuery({
 		queryKey: ["item", id, "seasons"],
 		queryFn: async () => {
+			if (!api) return null;
+			if (!item.data?.Id) return null;
 			const result = await getTvShowsApi(api).getSeasons({
 				userId: user?.Id,
 				seriesId: item.data.Id,
-				// isSpecialSeason: false,
+				isSpecialSeason: false,
+				isMissing: false,
 			});
 			return result.data;
 		},
 		enabled: item.isSuccess,
-		networkMode: "always",
-		refetchOnWindowFocus: true,
-	});
-
-	const nextUpEpisode = useQuery({
-		queryKey: ["item", id, "nextUp"],
-		queryFn: async () => {
-			const result = await getTvShowsApi(api).getNextUp({
-				userId: user?.Id,
-				limit: 1,
-				parentId: item.data.Id,
-				disableFirstEpisode: true,
-				fields: [ItemFields.Overview],
-			});
-			return result.data;
-		},
-		enabled: item.isSuccess && item.data.Type === "Series",
-		networkMode: "always",
-		refetchOnWindowFocus: true,
 	});
 
 	const [backdropImage, setBackdropImage] = useState<SeriesBackdropImage>(() => {
@@ -182,9 +132,10 @@ function SeriesTitlePage() {
 	const currentSeasonItem = useQuery({
 		queryKey: ["item", id, "season", currentSeason],
 		queryFn: async () => {
+			if (!api) return null;
 			const result = await getUserLibraryApi(api).getItem({
 				userId: user?.Id,
-				itemId: seasons.data.Items[currentSeason].Id,
+				itemId: seasons.data?.Items?.[Number(currentSeason)].Id ?? "",
 			});
 			return result.data;
 		},
@@ -196,12 +147,13 @@ function SeriesTitlePage() {
 	const episodes = useQuery({
 		queryKey: ["item", id, "season", currentSeason, "episodes"],
 		queryFn: async () => {
+			if (!api) return null;
 			const result = await getTvShowsApi(api).getEpisodes({
 				userId: user?.Id,
-				seriesId: item.data.Id,
-				seasonId: seasons.data.Items[currentSeason].Id,
+				seriesId: item.data?.Id ?? "",
+				seasonId: seasons.data?.Items?.[Number(currentSeason)].Id,
 				fields: [ItemFields.Overview],
-				excludeLocationTypes: [LocationType.Virtual],
+				isMissing: false,
 			});
 			return result.data;
 		},
@@ -213,8 +165,9 @@ function SeriesTitlePage() {
 	const specialFeatures = useQuery({
 		queryKey: ["item", id, "specialFeatures"],
 		queryFn: async () => {
+			if (!api) return null;
 			const result = await getUserLibraryApi(api).getSpecialFeatures({
-				itemId: item.data.Id,
+				itemId: item.data?.Id ?? "",
 				userId: user?.Id,
 			});
 			return result.data;
@@ -222,125 +175,102 @@ function SeriesTitlePage() {
 		enabled: item.isSuccess,
 	});
 
-	const [directors, setDirectors] = useState([]);
-	const [writers, setWriters] = useState([]);
-	const [actors, setActors] = useState([]);
-	const [producers, setProducers] = useState([]);
-
-	useLayoutEffect(() => {
-		if (item.isSuccess) {
-			// setBackdropImage({
-			// 	url: getImageUrlsApi(api).getItemImageUrlById(item.data?.Id, "Backdrop", {
-			// 		tag: item.data?.BackdropImageTags[0],
-			// 	}),
-			// 	key: item.data?.BackdropImageTags[0],
-			// });
-			// setBackdrop(
-			// 	getImageUrlsApi(api).getItemImageUrlById(item.data?.Id, "Backdrop", {
-			// 		tag: item.data?.BackdropImageTags[0],
-			// 	}),
-			// 	item.data.Id,
-			// );
-			const direTp = item.data.People.filter((itm) => itm.Type === "Director");
-			setDirectors(direTp);
-			const writeTp = item.data.People.filter((itm) => itm.Type === "Writer");
-			setWriters(writeTp);
-			const producerTp = item.data.People.filter(
-				(itm) => itm.Type === "Producer",
-			);
-			setProducers(producerTp);
-			const actorTp = item.data.People.filter((itm) => itm.Type === "Actor");
-			setActors(actorTp);
-		}
-	}, [item.isSuccess]);
-
-	useLayoutEffect(() => {
-		if (
-			seasons.isSuccess &&
-			!sessionStorage.getItem(`season-${item.data?.Id}`)
-		) {
-			if (
-				seasons.data.TotalRecordCount > 1 &&
-				seasons.data.Items[0].Name.toLowerCase().includes("special")
-			) {
-				setCurrentSeason(1);
-			} else {
-				setCurrentSeason(0);
-			}
-		}
-	}, [seasons.isSuccess]);
+	const directors = useMemo(() => {
+		return item.data?.People?.filter((itm) => itm.Type === "Director") ?? [];
+	}, [item.data?.Id]);
+	const writers = useMemo(() => {
+		return item.data?.People?.filter((itm) => itm.Type === "Writer") ?? [];
+	}, [item.data?.Id]);
+	const actors = useMemo(() => {
+		return item.data?.People?.filter((itm) => itm.Type === "Actor") ?? [];
+	}, [item.data?.Id]);
+	const producers = useMemo(() => {
+		return item.data?.People?.filter((itm) => itm.Type === "Producer") ?? [];
+	}, [item.data?.Id]);
 
 	useEffect(() => {
-		if (
-			currentSeasonItem.isSuccess &&
-			currentSeasonItem.data?.BackdropImageTags?.length > 0
-		) {
-			sessionStorage.setItem(
-				`backdrop-${item.data?.Id}`,
-				getImageUrlsApi(api).getItemImageUrlById(
-					currentSeasonItem.data.Id,
-					"Backdrop",
-					{
-						tag: currentSeasonItem.data.BackdropImageTags?.[0],
-					},
-				),
-			);
-			sessionStorage.setItem(
-				`backdrop-${item.data?.Id}-key`,
-				currentSeasonItem.data.BackdropImageTags?.[0],
-			);
-			setBackdropImage({
-				url: getImageUrlsApi(api).getItemImageUrlById(
-					currentSeasonItem.data.Id,
-					"Backdrop",
-					{
-						tag: currentSeasonItem.data.BackdropImageTags?.[0],
-					},
-				),
-				key: currentSeasonItem.data.BackdropImageTags?.[0],
-			});
-			setBackdrop(
-				getImageUrlsApi(api).getItemImageUrlById(
-					currentSeasonItem.data.Id,
-					"Backdrop",
-					{
-						tag: currentSeasonItem.data.BackdropImageTags?.[0],
-					},
-				),
-				currentSeasonItem.data.BackdropImageTags?.[0],
-			);
-			setBackdropImageLoaded(false);
-		} else if (item.isSuccess && item.data?.BackdropImageTags?.length > 0) {
-			sessionStorage.setItem(
-				`backdrop-${item.data?.Id}`,
-				getImageUrlsApi(api).getItemImageUrlById(item.data.Id, "Backdrop", {
-					tag: item.data.BackdropImageTags?.[0],
-				}),
-			);
-			sessionStorage.setItem(
-				`backdrop-${item.data?.Id}-key`,
-				item.data?.BackdropImageTags?.[0],
-			);
-			if (backdropImage.key !== item.data?.BackdropImageTags?.[0]) {
-				setBackdropImageLoaded(false); // Reset Backdrop image load status if previous image is diff then new image
+		if (api && currentSeasonItem.isSuccess && item.isSuccess) {
+			if (
+				currentSeasonItem.isSuccess &&
+				(currentSeasonItem.data?.BackdropImageTags?.length ?? 0) > 0
+			) {
+				sessionStorage.setItem(
+					`backdrop-${item.data?.Id}`,
+					getImageUrlsApi(api).getItemImageUrlById(
+						currentSeasonItem.data?.Id ?? "",
+						"Backdrop",
+						{
+							tag: currentSeasonItem.data?.BackdropImageTags?.[0],
+						},
+					),
+				);
+				sessionStorage.setItem(
+					`backdrop-${item.data?.Id}-key`,
+					currentSeasonItem.data?.BackdropImageTags?.[0] ?? "",
+				);
+				setBackdropImage({
+					url: getImageUrlsApi(api).getItemImageUrlById(
+						currentSeasonItem.data?.Id ?? "",
+						"Backdrop",
+						{
+							tag: currentSeasonItem.data?.BackdropImageTags?.[0],
+						},
+					),
+					key: currentSeasonItem.data?.BackdropImageTags?.[0],
+				});
+				setBackdrop(
+					getImageUrlsApi(api).getItemImageUrlById(
+						currentSeasonItem.data?.Id ?? "",
+						"Backdrop",
+						{
+							tag: currentSeasonItem.data?.BackdropImageTags?.[0],
+						},
+					),
+					currentSeasonItem.data?.BackdropImageTags?.[0],
+				);
+				setBackdropImageLoaded(false);
+			} else if (
+				item.isSuccess &&
+				(item.data?.BackdropImageTags?.length ?? 0) > 0
+			) {
+				sessionStorage.setItem(
+					`backdrop-${item.data?.Id}`,
+					getImageUrlsApi(api).getItemImageUrlById(
+						item.data?.Id ?? "",
+						"Backdrop",
+						{
+							tag: item.data?.BackdropImageTags?.[0],
+						},
+					),
+				);
+				sessionStorage.setItem(
+					`backdrop-${item.data?.Id}-key`,
+					item.data?.BackdropImageTags?.[0] ?? "",
+				);
+				if (backdropImage.key !== item.data?.BackdropImageTags?.[0]) {
+					setBackdropImageLoaded(false); // Reset Backdrop image load status if previous image is diff then new image
+				}
+				setBackdropImage({
+					url: getImageUrlsApi(api).getItemImageUrlById(
+						item.data?.Id ?? "",
+						"Backdrop",
+						{
+							tag: item.data?.BackdropImageTags?.[0],
+						},
+					),
+					key: item.data?.BackdropImageTags?.[0],
+				});
+				setBackdrop(
+					getImageUrlsApi(api).getItemImageUrlById(
+						item.data?.Id ?? "",
+						"Backdrop",
+						{
+							tag: item.data?.BackdropImageTags?.[0],
+						},
+					),
+					item.data?.BackdropImageTags?.[0],
+				);
 			}
-			setBackdropImage({
-				url: getImageUrlsApi(api).getItemImageUrlById(
-					item.data?.Id,
-					"Backdrop",
-					{
-						tag: item.data?.BackdropImageTags?.[0],
-					},
-				),
-				key: item.data?.BackdropImageTags?.[0],
-			});
-			setBackdrop(
-				getImageUrlsApi(api).getItemImageUrlById(item.data.Id, "Backdrop", {
-					tag: item.data.BackdropImageTags?.[0],
-				}),
-				item.data.BackdropImageTags?.[0],
-			);
-			// setBackdropImageLoaded(false);
 		}
 	}, [currentSeasonItem.dataUpdatedAt]);
 
@@ -369,7 +299,7 @@ function SeriesTitlePage() {
 		);
 	}
 
-	if (item.isSuccess && similarItems.isSuccess) {
+	if (item.isSuccess && item.data) {
 		return (
 			<motion.div
 				key={id}
@@ -392,8 +322,8 @@ function SeriesTitlePage() {
 							{item.data.BackdropImageTags ? (
 								<motion.img
 									key={backdropImage.key}
-									alt={item.data.Name}
-									src={backdropImage.url}
+									alt={item.data.Name ?? ""}
+									src={backdropImage.url ?? ""}
 									className="item-hero-backdrop"
 									initial={{
 										opacity: 0,
@@ -417,11 +347,11 @@ function SeriesTitlePage() {
 								/>
 							) : (
 								<motion.img
-									alt={item.data.Name}
+									alt={item.data.Name ?? ""}
 									src={heroBg}
 									className="item-hero-backdrop"
 									onLoad={(e) => {
-										e.currentTarget.style.opacity = 1;
+										e.currentTarget.style.opacity = "1";
 									}}
 									style={{
 										y: parallax,
@@ -436,53 +366,59 @@ function SeriesTitlePage() {
 							aspectRatio: item.data.PrimaryImageAspectRatio ?? 1,
 						}}
 					>
-						{Object.keys(item.data.ImageTags).includes("Primary") ? (
-							<>
+						{item.data.ImageTags?.Primary ? (
+							<div>
 								<Blurhash
 									hash={
-										item.data.ImageBlurHashes.Primary[
+										item.data.ImageBlurHashes?.Primary?.[
 											item.data.ImageTags.Primary
-										]
+										] ?? ""
 									}
 									className="item-hero-image-blurhash"
 								/>
 								<img
-									alt={item.data.Name}
-									src={getImageUrlsApi(api).getItemImageUrlById(
-										item.data.Id,
-										"Primary",
-										{
-											quality: 90,
-											tag: item.data.ImageTags.Primary,
-										},
-									)}
+									alt={item.data.Name ?? ""}
+									src={
+										api &&
+										getImageUrlsApi(api).getItemImageUrlById(
+											item.data.Id ?? "",
+											"Primary",
+											{
+												quality: 90,
+												tag: item.data.ImageTags.Primary,
+											},
+										)
+									}
 									onLoad={(e) => {
-										e.currentTarget.style.opacity = 1;
+										e.currentTarget.style.opacity = "1";
 									}}
 									className="item-hero-image"
 								/>
-							</>
+							</div>
 						) : (
 							<div className="item-hero-image-icon">
-								{getTypeIcon(item.data.Type)}
+								{getTypeIcon(item.data.Type ?? "Series")}
 							</div>
 						)}
 					</div>
 					<div className="item-hero-detail">
-						{Object.keys(item.data.ImageTags).includes("Logo") ? (
+						{item.data.ImageTags?.Logo ? (
 							<img
-								alt={item.data.Name}
-								src={getImageUrlsApi(api).getItemImageUrlById(
-									item.data.Id,
-									"Logo",
-									{
-										quality: 90,
-										fillWidth: 592,
-										fillHeight: 592,
-									},
-								)}
+								alt={item.data.Name ?? ""}
+								src={
+									api &&
+									getImageUrlsApi(api).getItemImageUrlById(
+										item.data.Id ?? "",
+										"Logo",
+										{
+											quality: 90,
+											fillWidth: 592,
+											fillHeight: 592,
+										},
+									)
+								}
 								onLoad={(e) => {
-									e.currentTarget.style.opacity = 1;
+									e.currentTarget.style.opacity = "1";
 								}}
 								className="item-hero-logo"
 							/>
@@ -587,7 +523,7 @@ function SeriesTitlePage() {
 								<Typography style={{ opacity: "0.8" }} variant="subtitle2">
 									{endsAt(
 										item.data.RunTimeTicks -
-											item.data.UserData.PlaybackPositionTicks,
+											(item.data.UserData?.PlaybackPositionTicks ?? 0),
 									)}
 								</Typography>
 							)}
@@ -605,10 +541,8 @@ function SeriesTitlePage() {
 							}}
 						>
 							<PlayButton
-								itemId={item.data.Id}
 								item={item.data}
 								itemType={BaseItemKind.Series}
-								itemUserData={item.data.UserData}
 								currentAudioTrack={0}
 								currentVideoTrack={0}
 								currentSubTrack="nosub"
@@ -619,22 +553,24 @@ function SeriesTitlePage() {
 							/>
 						</div>
 						<div className="flex flex-row" style={{ gap: "1em" }}>
-							<TrailerButton
-								trailerItem={item.data.RemoteTrailers}
-								disabled={item.data.RemoteTrailers?.length === 0}
-							/>
+							{item.data.RemoteTrailers && (
+								<TrailerButton
+									trailerItem={item.data.RemoteTrailers}
+									disabled={item.data.RemoteTrailers?.length === 0}
+								/>
+							)}
 							<LikeButton
 								itemName={item.data.Name}
 								itemId={item.data.Id}
 								queryKey={["item", id]}
-								isFavorite={item.data.UserData.IsFavorite}
+								isFavorite={item.data.UserData?.IsFavorite}
 								userId={user?.Id}
 							/>
 							<MarkPlayedButton
 								itemName={item.data.Name}
 								itemId={item.data.Id}
 								queryKey={["item", id]}
-								isPlayed={item.data.UserData.Played}
+								isPlayed={item.data.UserData?.Played}
 								userId={user?.Id}
 							/>
 						</div>
@@ -642,14 +578,11 @@ function SeriesTitlePage() {
 				</div>
 				<div className="item-detail">
 					<div style={{ width: "100%" }}>
-						{item.data.Taglines?.length > 0 && (
+						{(item.data.Taglines?.length ?? 0) > 0 && (
 							<Typography variant="h5" mb={2}>
-								{item.data.Taglines[0]}
+								{item.data.Taglines?.[0]}
 							</Typography>
 						)}
-						<Typography variant="h5" fontStyle="italic" mb={1}>
-							{item.data.Taglines[0] ?? ""}
-						</Typography>
 						<ShowMoreText
 							content={item.data.Overview ?? ""}
 							collapsedLines={4}
@@ -661,9 +594,13 @@ function SeriesTitlePage() {
 								alignSelf: "end",
 							}}
 						>
-							{item.data.ExternalUrls.map((url) => (
-								<IconLink url={url.Url} name={url.Name} />
-							))}
+							{item.data.ExternalUrls?.map(
+								(url) =>
+									url.Url &&
+									url.Name && (
+										<IconLink key={url.Url} url={url.Url} name={url.Name} />
+									),
+							)}
 						</div>
 					</div>
 					<div
@@ -672,7 +609,7 @@ function SeriesTitlePage() {
 						}}
 					>
 						<div className="item-detail-cast">
-							{actors.length > 0 && (
+							{actors?.length > 0 && (
 								<div className="item-detail-cast-container">
 									<Typography variant="h6" className="item-detail-cast-title">
 										Actors
@@ -682,23 +619,26 @@ function SeriesTitlePage() {
 											<Link
 												className="item-detail-cast-card"
 												key={actor.Id}
-												to={`/person/$id`}
+												to="/person/$id"
 												params={{
-													id: actor.Id,
+													id: actor.Id ?? "",
 												}}
 											>
 												{actor.PrimaryImageTag ? (
 													<img
-														alt={actor.Name}
-														src={getImageUrlsApi(api).getItemImageUrlById(
-															actor.Id,
-															"Primary",
-															{
-																quality: 80,
-																fillWidth: 200,
-																fillHeight: 200,
-															},
-														)}
+														alt={actor.Name ?? ""}
+														src={
+															api &&
+															getImageUrlsApi(api).getItemImageUrlById(
+																actor.Id ?? "",
+																"Primary",
+																{
+																	quality: 80,
+																	fillWidth: 200,
+																	fillHeight: 200,
+																},
+															)
+														}
 														className="item-detail-cast-card-image"
 													/>
 												) : (
@@ -734,23 +674,26 @@ function SeriesTitlePage() {
 											<Link
 												className="item-detail-cast-card"
 												key={actor.Id}
-												to={`/person/$id`}
+												to="/person/$id"
 												params={{
-													id: actor.Id,
+													id: actor.Id ?? "",
 												}}
 											>
 												{actor.PrimaryImageTag ? (
 													<img
-														alt={actor.Name}
-														src={getImageUrlsApi(api).getItemImageUrlById(
-															actor.Id,
-															"Primary",
-															{
-																quality: 80,
-																fillWidth: 200,
-																fillHeight: 200,
-															},
-														)}
+														alt={actor.Name ?? ""}
+														src={
+															api &&
+															getImageUrlsApi(api).getItemImageUrlById(
+																actor.Id ?? "",
+																"Primary",
+																{
+																	quality: 80,
+																	fillWidth: 200,
+																	fillHeight: 200,
+																},
+															)
+														}
 														className="item-detail-cast-card-image"
 													/>
 												) : (
@@ -786,23 +729,26 @@ function SeriesTitlePage() {
 											<Link
 												className="item-detail-cast-card"
 												key={actor.Id}
-												to={`/person/$id`}
+												to="/person/$id"
 												params={{
-													id: actor.Id,
+													id: actor.Id ?? "",
 												}}
 											>
 												{actor.PrimaryImageTag ? (
 													<img
-														alt={actor.Name}
-														src={getImageUrlsApi(api).getItemImageUrlById(
-															actor.Id,
-															"Primary",
-															{
-																quality: 80,
-																fillWidth: 200,
-																fillHeight: 200,
-															},
-														)}
+														alt={actor.Name ?? ""}
+														src={
+															api &&
+															getImageUrlsApi(api).getItemImageUrlById(
+																actor.Id ?? "",
+																"Primary",
+																{
+																	quality: 80,
+																	fillWidth: 200,
+																	fillHeight: 200,
+																},
+															)
+														}
 														className="item-detail-cast-card-image"
 													/>
 												) : (
@@ -838,23 +784,26 @@ function SeriesTitlePage() {
 											<Link
 												className="item-detail-cast-card"
 												key={actor.Id}
-												to={`/person/$id`}
+												to="/person/$id"
 												params={{
-													id: actor.Id,
+													id: actor.Id ?? "",
 												}}
 											>
 												{actor.PrimaryImageTag ? (
 													<img
-														alt={actor.Name}
-														src={getImageUrlsApi(api).getItemImageUrlById(
-															actor.Id,
-															"Primary",
-															{
-																quality: 80,
-																fillWidth: 200,
-																fillHeight: 200,
-															},
-														)}
+														alt={actor.Name ?? ""}
+														src={
+															api &&
+															getImageUrlsApi(api).getItemImageUrlById(
+																actor.Id ?? "",
+																"Primary",
+																{
+																	quality: 80,
+																	fillWidth: 200,
+																	fillHeight: 200,
+																},
+															)
+														}
 														className="item-detail-cast-card-image"
 													/>
 												) : (
@@ -904,7 +853,7 @@ function SeriesTitlePage() {
 								}}
 							>
 								<Typography variant="h5">
-									{seasons.data.Items[currentSeason].Name}
+									{seasons.data?.Items?.[Number(currentSeason)].Name}
 								</Typography>
 								<Chip
 									label={
@@ -918,7 +867,7 @@ function SeriesTitlePage() {
 												}}
 											/>
 										) : (
-											episodes.data.TotalRecordCount
+											episodes.data?.TotalRecordCount
 										)
 									}
 								/>
@@ -931,23 +880,21 @@ function SeriesTitlePage() {
 							>
 								{currentSeasonItem.isSuccess && (
 									<LikeButton
-										itemId={currentSeasonItem.data.Id}
-										isFavorite={currentSeasonItem.data.UserData.IsFavorite}
-										queryKey={["item", id, "season", currentSeason]}
+										itemId={currentSeasonItem.data?.Id}
+										isFavorite={currentSeasonItem.data?.UserData?.IsFavorite}
+										queryKey={["item", id]}
 										userId={user?.Id}
-										itemName={currentSeasonItem.data.Name}
+										itemName={currentSeasonItem.data?.Name}
 									/>
 								)}
 								{currentSeasonItem.isSuccess && (
-									<>
-										<MarkPlayedButton
-											itemId={currentSeasonItem.data.Id}
-											isPlayed={currentSeasonItem.data.UserData.Played}
-											queryKey={["item", id, "season", currentSeason]}
-											userId={user?.Id}
-											itemName={currentSeasonItem.data.Name}
-										/>
-									</>
+									<MarkPlayedButton
+										itemId={currentSeasonItem.data?.Id}
+										isPlayed={currentSeasonItem.data?.UserData?.Played}
+										queryKey={["item", id]}
+										userId={user?.Id}
+										itemName={currentSeasonItem.data?.Name}
+									/>
 								)}
 								<TextField
 									value={currentSeason}
@@ -966,7 +913,7 @@ function SeriesTitlePage() {
 									}}
 									size="small"
 								>
-									{seasons.data.Items.map((season, index) => {
+									{seasons.data?.Items?.map((season, index) => {
 										return (
 											<MenuItem key={season.Id} value={index}>
 												{season.Name}
@@ -981,14 +928,14 @@ function SeriesTitlePage() {
 							{episodes.isPending ? (
 								<EpisodeSkeleton />
 							) : (
-								episodes.data.Items.map((episode, index) => {
+								episodes.data?.Items?.map((episode) => {
 									return (
 										<motion.div
 											key={episode.Id}
 											onClick={() =>
 												navigate({
 													to: "/episode/$id",
-													params: { id: episode.Id },
+													params: { id: episode.Id ?? "" },
 												})
 											}
 											initial={{
@@ -1033,6 +980,7 @@ function SeriesTitlePage() {
 														currentSubTrack="nosub"
 														size="medium"
 														buttonProps={{
+															//@ts-ignore
 															color: "white",
 															style: {
 																color: "black ",
@@ -1047,21 +995,24 @@ function SeriesTitlePage() {
 													</span>
 												</div>
 												<img
-													alt={episode.Name}
-													src={getImageUrlsApi(api).getItemImageUrlById(
-														episode.Id,
-														"Primary",
-														{
-															tag: episode.ImageTags.Primary,
-															fillHeight: 300,
-														},
-													)}
+													alt={episode.Name ?? ""}
+													src={
+														api &&
+														getImageUrlsApi(api).getItemImageUrlById(
+															episode.Id ?? "",
+															"Primary",
+															{
+																tag: episode.ImageTags?.Primary,
+																fillHeight: 300,
+															},
+														)
+													}
 													className="item-detail-episode-image"
 													onLoad={(e) => {
-														e.target.style.opacity = 1;
+														e.currentTarget.style.opacity = "1";
 													}}
 												/>
-												{episode.UserData?.PlaybackPositionTicks > 0 && (
+												{(episode.UserData?.PlaybackPositionTicks ?? 0) > 0 && (
 													<div className="card-progress-container">
 														<div
 															className="card-progress"
@@ -1092,7 +1043,7 @@ function SeriesTitlePage() {
 														/>
 													)}
 													<Typography variant="caption">
-														{getRuntimeCompact(episode.RunTimeTicks)}
+														{getRuntimeCompact(episode.RunTimeTicks ?? 0)}
 													</Typography>
 												</div>
 												<Typography
@@ -1133,43 +1084,38 @@ function SeriesTitlePage() {
 						</div>
 					</div>
 				)}
-				{specialFeatures.isSuccess && specialFeatures.data.length > 0 && (
-					<CardScroller
-						title="Special Features"
-						displayCards={7}
-						disableDecoration
-					>
-						{specialFeatures.data.map((special) => {
-							return (
-								<Card
-									key={special.Id}
-									item={special}
-									seriesId={special.SeriesId}
-									cardTitle={special.Name}
-									imageType="Primary"
-									cardCaption={getRuntimeMusic(special.RunTimeTicks)}
-									cardType="portrait"
-									queryKey={["item", id, "similarItem"]}
-									imageBlurhash={
-										!!special.ImageBlurHashes?.Primary &&
-										special.ImageBlurHashes.Primary[
-											Object.keys(special.ImageBlurHashes.Primary)[0]
-										]
-									}
-									userId={user?.Id}
-									onClick={() => {}}
-								/>
-							);
-						})}
-					</CardScroller>
-				)}
-				{similarItems.data.TotalRecordCount > 0 && (
+				{specialFeatures.isSuccess &&
+					(specialFeatures.data?.length ?? 0) > 0 && (
+						<CardScroller
+							title="Special Features"
+							displayCards={7}
+							disableDecoration
+						>
+							{specialFeatures.data?.map((special) => {
+								return (
+									<Card
+										key={special.Id}
+										item={special}
+										seriesId={special.SeriesId}
+										cardTitle={special.Name}
+										imageType="Primary"
+										cardCaption={getRuntimeMusic(special.RunTimeTicks ?? 0)}
+										cardType="portrait"
+										queryKey={["item", id, "similarItem"]}
+										userId={user?.Id}
+										onClick={() => {}}
+									/>
+								);
+							})}
+						</CardScroller>
+					)}
+				{(similarItems.data?.TotalRecordCount ?? 0) > 0 && (
 					<CardScroller
 						title="You might also like"
 						displayCards={7}
 						disableDecoration
 					>
-						{similarItems.data.Items.map((similar) => {
+						{similarItems.data?.Items?.map((similar) => {
 							return (
 								<Card
 									key={similar.Id}
@@ -1202,12 +1148,6 @@ function SeriesTitlePage() {
 									}
 									queryKey={["item", id, "similarItem"]}
 									userId={user?.Id}
-									imageBlurhash={
-										!!similar.ImageBlurHashes?.Primary &&
-										similar.ImageBlurHashes?.Primary[
-											Object.keys(similar.ImageBlurHashes.Primary)[0]
-										]
-									}
 								/>
 							);
 						})}

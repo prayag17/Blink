@@ -14,7 +14,10 @@ import { Blurhash } from "react-blurhash";
 import useParallax from "@/utils/hooks/useParallax";
 import { motion, useScroll } from "framer-motion";
 
-import { MediaStreamType } from "@jellyfin/sdk/lib/generated-client";
+import {
+	BaseItemKind,
+	MediaStreamType,
+} from "@jellyfin/sdk/lib/generated-client";
 import { getUserLibraryApi } from "@jellyfin/sdk/lib/utils/api/user-library-api";
 
 import { useQuery } from "@tanstack/react-query";
@@ -51,9 +54,12 @@ import sdrIcon from "@/assets/icons/sdr.svg";
 
 import type MediaQualityInfo from "@/utils/types/mediaQualityInfo";
 
+import { Card } from "@/components/card/card";
+import CardScroller from "@/components/cardScroller/cardScroller";
 import IconLink from "@/components/iconLink";
 import getImageUrlsApi from "@/utils/methods/getImageUrlsApi";
 import { useCentralStore } from "@/utils/store/central";
+import { getItemsApi } from "@jellyfin/sdk/lib/utils/api/items-api";
 import { Link, createFileRoute } from "@tanstack/react-router";
 
 export const Route = createFileRoute("/_api/episode/$id")({
@@ -79,6 +85,22 @@ function EpisodeTitlePage() {
 		enabled: !!user?.Id,
 		networkMode: "always",
 		refetchOnWindowFocus: true,
+	});
+
+	const upcomingEpisodes = useQuery({
+		queryKey: ["item", id, "episode", "upcomingEpisodes"],
+		queryFn: async () => {
+			if (!api) return null;
+			const result = await getItemsApi(api).getItems({
+				userId: user?.Id,
+				parentId: item.data?.ParentId ?? "",
+				startIndex: item.data?.IndexNumber ?? 0,
+				excludeLocationTypes: ["Virtual"],
+			});
+			return result.data;
+		},
+		enabled: item.isSuccess && item.data?.Type === BaseItemKind.Episode,
+		networkMode: "always",
 	});
 
 	const [setAppBackdrop] = useBackdropStore((state) => [state.setBackdrop]);
@@ -748,7 +770,7 @@ function EpisodeTitlePage() {
 					</div>
 				</div>
 
-				{item.data.People?.length && (
+				{(item.data.People?.length ?? 0) > 0 && (
 					<div className="item-detail-cast">
 						<Typography variant="h5" mb={2}>
 							Cast & Crew
@@ -967,6 +989,30 @@ function EpisodeTitlePage() {
 						)}
 					</div>
 				)}
+
+				{upcomingEpisodes.isSuccess &&
+					(upcomingEpisodes.data?.Items?.length ?? 0) > 0 && (
+						<CardScroller
+							title="Upcoming Episodes"
+							displayCards={4}
+							disableDecoration
+						>
+							{upcomingEpisodes.data?.Items?.map((episode) => {
+								return (
+									<Card
+										key={episode.Id}
+										item={episode}
+										cardTitle={episode.SeriesName}
+										imageType="Primary"
+										cardCaption={`S${episode.ParentIndexNumber}:E${episode.IndexNumber} - ${episode.Name}`}
+										cardType="thumb"
+										queryKey={["item", id, "episode", "upcomingEpisodes"]}
+										userId={user?.Id}
+									/>
+								);
+							})}
+						</CardScroller>
+					)}
 			</motion.div>
 		);
 	}

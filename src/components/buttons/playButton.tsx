@@ -143,6 +143,7 @@ const PlayButton = ({
 								enableUserData: true,
 								userId: userId,
 								seasonId: item.SeasonId,
+								isMissing: false,
 								// startItemId: item.Id,
 							});
 
@@ -185,8 +186,8 @@ const PlayButton = ({
 							],
 							enableUserData: true,
 							userId: userId,
+							isMissing: false,
 						});
-						console.log(result.data);
 						if (
 							currentEpisodeId &&
 							result.data.Items?.map((i) => i.Id).indexOf(currentEpisodeId) ===
