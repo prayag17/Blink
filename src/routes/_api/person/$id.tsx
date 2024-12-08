@@ -1,5 +1,9 @@
-import PropTypes from "prop-types";
-import React, { useState, useLayoutEffect, useRef } from "react";
+import React, {
+	useState,
+	useLayoutEffect,
+	useRef,
+	type ReactNode,
+} from "react";
 
 import Box from "@mui/material/Box";
 import CircularProgress from "@mui/material/CircularProgress";
@@ -8,16 +12,10 @@ import Tab from "@mui/material/Tab";
 import Tabs from "@mui/material/Tabs";
 import Typography from "@mui/material/Typography";
 
-import useParallax from "@/utils/hooks/useParallax";
-import { AnimatePresence, motion, useScroll } from "framer-motion";
+import { AnimatePresence, motion } from "framer-motion";
 
-import {
-	BaseItemKind,
-	ItemFields,
-	LocationType,
-} from "@jellyfin/sdk/lib/generated-client";
+import { BaseItemKind, LocationType } from "@jellyfin/sdk/lib/generated-client";
 import { getItemsApi } from "@jellyfin/sdk/lib/utils/api/items-api";
-import { getUserApi } from "@jellyfin/sdk/lib/utils/api/user-api";
 import { getUserLibraryApi } from "@jellyfin/sdk/lib/utils/api/user-library-api";
 
 import { Card } from "@/components/card/card";
@@ -27,7 +25,7 @@ import { Blurhash } from "react-blurhash";
 
 import LikeButton from "@/components/buttons/likeButton";
 import { ErrorNotice } from "@/components/notices/errorNotice/errorNotice";
-import { setBackdrop } from "@/utils/store/backdrop";
+import { useBackdropStore } from "@/utils/store/backdrop";
 
 import meshBg from "@/assets/herobg.png";
 import ShowMoreText from "@/components/showMoreText";
@@ -35,10 +33,17 @@ import "./person.scss";
 
 import IconLink from "@/components/iconLink";
 import getImageUrlsApi from "@/utils/methods/getImageUrlsApi";
+import { useApiInContext } from "@/utils/store/api";
 import { useCentralStore } from "@/utils/store/central";
 import { createFileRoute } from "@tanstack/react-router";
 
-function TabPanel(props) {
+type TabPanelProps = {
+	children: ReactNode;
+	index: number;
+	value: number;
+};
+
+function TabPanel(props: TabPanelProps) {
 	const { children, value, index, ...other } = props;
 
 	return (
@@ -55,32 +60,20 @@ function TabPanel(props) {
 	);
 }
 
-TabPanel.propTypes = {
-	children: PropTypes.node,
-	index: PropTypes.number.isRequired,
-	value: PropTypes.number.isRequired,
-};
-
-function a11yProps(index) {
-	return {
-		id: `full-width-tab-${index}`,
-		"aria-controls": `full-width-tabpanel-${index}`,
-	};
-}
-
 export const Route = createFileRoute("/_api/person/$id")({
 	component: PersonTitlePage,
 });
 
 function PersonTitlePage() {
 	const { id } = Route.useParams();
-	const api = Route.useRouteContext().api;
+	const api = useApiInContext((s) => s.api);
 
 	const user = useCentralStore((s) => s.currentUser);
 
 	const item = useQuery({
 		queryKey: ["item", id],
 		queryFn: async () => {
+			if (!api) return null;
 			const result = await getUserLibraryApi(api).getItem({
 				userId: user?.Id,
 				itemId: id,
@@ -95,6 +88,7 @@ function PersonTitlePage() {
 	const personMovies = useQuery({
 		queryKey: ["item", id, "personMovies"],
 		queryFn: async () => {
+			if (!api) return null;
 			const result = await getItemsApi(api).getItems({
 				userId: user?.Id,
 				personIds: [id],
@@ -106,12 +100,13 @@ function PersonTitlePage() {
 			});
 			return result.data;
 		},
-		enabled: item.isSuccess && item.data.Type === BaseItemKind.Person,
+		enabled: item.isSuccess && item.data?.Type === BaseItemKind.Person,
 		networkMode: "always",
 	});
 	const personShows = useQuery({
 		queryKey: ["item", id, "personShows"],
 		queryFn: async () => {
+			if (!api) return null;
 			const result = await getItemsApi(api).getItems({
 				userId: user?.Id,
 				personIds: [id],
@@ -123,13 +118,13 @@ function PersonTitlePage() {
 			});
 			return result.data;
 		},
-		enabled: item.isSuccess && item.data.Type === BaseItemKind.Person,
+		enabled: item.isSuccess && item.data?.Type === BaseItemKind.Person,
 		networkMode: "always",
 	});
-
 	const personBooks = useQuery({
 		queryKey: ["item", id, "personBooks"],
 		queryFn: async () => {
+			if (!api) return null;
 			const result = await getItemsApi(api).getItems({
 				userId: user?.Id,
 				personIds: [id],
@@ -141,12 +136,13 @@ function PersonTitlePage() {
 			});
 			return result.data;
 		},
-		enabled: item.isSuccess && item.data.Type === BaseItemKind.Person,
+		enabled: item.isSuccess && item.data?.Type === BaseItemKind.Person,
 		networkMode: "always",
 	});
 	const personPhotos = useQuery({
 		queryKey: ["item", id, "personPhotos"],
 		queryFn: async () => {
+			if (!api) return null;
 			const result = await getItemsApi(api).getItems({
 				userId: user?.Id,
 				personIds: [id],
@@ -157,12 +153,13 @@ function PersonTitlePage() {
 			});
 			return result.data;
 		},
-		enabled: item.isSuccess && item.data.Type === BaseItemKind.Person,
+		enabled: item.isSuccess && item.data?.Type === BaseItemKind.Person,
 		networkMode: "always",
 	});
 	const personEpisodes = useQuery({
 		queryKey: ["item", id, "personEpisodes"],
 		queryFn: async () => {
+			if (!api) return null;
 			const result = await getItemsApi(api).getItems({
 				userId: user?.Id,
 				personIds: [id],
@@ -175,7 +172,7 @@ function PersonTitlePage() {
 			});
 			return result.data;
 		},
-		enabled: item.isSuccess && item.data.Type === BaseItemKind.Person,
+		enabled: item.isSuccess && item.data?.Type === BaseItemKind.Person,
 		networkMode: "always",
 	});
 
@@ -209,6 +206,8 @@ function PersonTitlePage() {
 		},
 	];
 
+	const setBackdrop = useBackdropStore((s) => s.setBackdrop);
+
 	useLayoutEffect(() => {
 		if (
 			personMovies.isSuccess &&
@@ -217,15 +216,15 @@ function PersonTitlePage() {
 			personPhotos.isSuccess &&
 			personEpisodes.isSuccess
 		) {
-			if (personMovies.data.TotalRecordCount !== 0) {
+			if (personMovies.data?.TotalRecordCount !== 0) {
 				setActivePersonTab(0);
-			} else if (personShows.data.TotalRecordCount !== 0) {
+			} else if (personShows.data?.TotalRecordCount !== 0) {
 				setActivePersonTab(1);
-			} else if (personBooks.data.TotalRecordCount !== 0) {
+			} else if (personBooks.data?.TotalRecordCount !== 0) {
 				setActivePersonTab(2);
-			} else if (personPhotos.data.TotalRecordCount !== 0) {
+			} else if (personPhotos.data?.TotalRecordCount !== 0) {
 				setActivePersonTab(3);
-			} else if (personEpisodes.data.TotalRecordCount !== 0) {
+			} else if (personEpisodes.data?.TotalRecordCount !== 0) {
 				setActivePersonTab(4);
 			}
 		}
@@ -241,11 +240,6 @@ function PersonTitlePage() {
 	const [animationDirection, setAnimationDirection] = useState("forward");
 
 	const pageRef = useRef(null);
-	const { scrollYProgress } = useScroll({
-		target: pageRef,
-		offset: ["start start", "60vh start"],
-	});
-	const parallax = useParallax(scrollYProgress, 50);
 
 	if (item.isPending) {
 		return (
@@ -263,7 +257,7 @@ function PersonTitlePage() {
 		);
 	}
 
-	if (item.isSuccess) {
+	if (item.isSuccess && item.data) {
 		return (
 			<motion.div
 				key={id}
@@ -282,15 +276,12 @@ function PersonTitlePage() {
 			>
 				<div className="item-hero">
 					<div className="item-hero-backdrop-container">
-						<motion.img
-							alt={item.data.Name}
+						<img
+							alt={item.data.Name ?? ""}
 							src={meshBg}
 							className="item-hero-backdrop"
 							onLoad={(e) => {
-								e.currentTarget.style.opacity = 1;
-							}}
-							style={{
-								y: parallax,
+								e.currentTarget.style.opacity = "1";
 							}}
 						/>
 					</div>
@@ -300,34 +291,35 @@ function PersonTitlePage() {
 							aspectRatio: item.data.PrimaryImageAspectRatio ?? 1,
 						}}
 					>
-						{Object.keys(item.data.ImageTags).includes("Primary") ? (
-							<>
+						{item.data.ImageTags?.Primary && (
+							<div>
 								<Blurhash
 									hash={
-										item.data.ImageBlurHashes.Primary[
+										item.data.ImageBlurHashes?.Primary?.[
 											item.data.ImageTags.Primary
-										]
+										] ?? ""
 									}
 									className="item-hero-image-blurhash"
 								/>
 								<img
-									alt={item.data.Name}
-									src={getImageUrlsApi(api).getItemImageUrlById(
-										item.data.Id,
-										"Primary",
-										{
-											quality: 90,
-											tag: item.data.ImageTags.Primary,
-										},
-									)}
+									alt={item.data.Name ?? ""}
+									src={
+										api &&
+										getImageUrlsApi(api).getItemImageUrlById(
+											item.data.Id ?? "",
+											"Primary",
+											{
+												quality: 90,
+												tag: item.data.ImageTags.Primary,
+											},
+										)
+									}
 									onLoad={(e) => {
-										e.currentTarget.style.opacity = 1;
+										e.currentTarget.style.opacity = "1";
 									}}
 									className="item-hero-image"
 								/>
-							</>
-						) : (
-							<></>
+							</div>
 						)}
 					</div>
 					<div className="item-hero-detail flex flex-column">
@@ -339,7 +331,7 @@ function PersonTitlePage() {
 							itemName={item.data.Name}
 							itemId={item.data.Id}
 							queryKey={["item", id]}
-							isFavorite={item.data.UserData.IsFavorite}
+							isFavorite={item.data.UserData?.IsFavorite}
 							userId={user?.Id}
 						/>
 					</div>
@@ -358,9 +350,11 @@ function PersonTitlePage() {
 								marginTop: "1em",
 							}}
 						>
-							{item.data.ExternalUrls.map((url) => (
-								<IconLink url={url.Url} name={url.Name} />
-							))}
+							{item.data.ExternalUrls?.map(
+								(url) =>
+									url.Name &&
+									url.Url && <IconLink url={url.Url} name={url.Name} />,
+							)}
 						</div>
 					</div>
 					<div
@@ -369,22 +363,22 @@ function PersonTitlePage() {
 						}}
 					>
 						{item.data.PremiereDate && (
-							<>
+							<div>
 								<Typography variant="h6">Birth</Typography>
 								<Typography variant="subtitle1" sx={{ opacity: 0.8 }}>
 									{new Date(item.data.PremiereDate).toDateString()}
 								</Typography>
-							</>
+							</div>
 						)}
 						{item.data.EndDate && (
-							<>
+							<div>
 								<Typography variant="h6" mt={2}>
 									Death
 								</Typography>
 								<Typography variant="subtitle2" sx={{ opacity: 0.8 }}>
 									{new Date(item.data.EndDate).toDateString()}
 								</Typography>
-							</>
+							</div>
 						)}
 					</div>
 				</div>
@@ -394,7 +388,7 @@ function PersonTitlePage() {
 						<Tabs
 							variant="scrollable"
 							value={activePersonTab}
-							onChange={(e, newVal) => {
+							onChange={(_, newVal) => {
 								if (newVal > activePersonTab) {
 									setAnimationDirection("forward");
 								} else if (newVal < activePersonTab) {
@@ -427,7 +421,7 @@ function PersonTitlePage() {
 												? "col-7"
 												: "col-4"
 										}`}
-										key={tab.queryKey}
+										key={tab.queryKey.join("")}
 										initial={{
 											opacity: 0,
 											transform:
@@ -445,7 +439,7 @@ function PersonTitlePage() {
 										}}
 									>
 										{tab.data.isSuccess &&
-											tab.data.data.Items.map((tabitem, index) => {
+											tab.data.data?.Items?.map((tabitem) => {
 												return (
 													<Card
 														key={tabitem.Id}
@@ -478,18 +472,12 @@ function PersonTitlePage() {
 														}
 														queryKey={tab.queryKey}
 														userId={user?.Id}
-														imageBlurhash={
-															!!tabitem.ImageBlurHashes?.Primary &&
-															tabitem.ImageBlurHashes?.Primary[
-																Object.keys(tabitem.ImageBlurHashes.Primary)[0]
-															]
-														}
 													/>
 												);
 											})}
 									</motion.div>
 									{tab.data.isSuccess &&
-										tab.data.data.TotalRecordCount > 24 && (
+										(tab.data.data?.TotalRecordCount ?? 0) > 24 && (
 											<Typography
 												variant="h6"
 												style={{

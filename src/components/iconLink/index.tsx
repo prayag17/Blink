@@ -1,5 +1,5 @@
 import { Link, Typography } from "@mui/material";
-import React from "react";
+import React, { memo } from "react";
 
 import anidbIcon from "../../assets/icons/anidb.png";
 import anilistIcon from "../../assets/icons/anilist.svg";
@@ -25,7 +25,7 @@ const knownIcons = [
 	"kitsu",
 ];
 
-const IconLink = ({ name, url }: { name: string; url: string }) => {
+const IconLink = memo(({ name, url }: { name: string; url: string }) => {
 	return (
 		<Link target="_blank" href={url} className="item-detail-link">
 			{name.toLocaleLowerCase() === "imdb" && <img src={imdbIcon} alt="IMDb" />}
@@ -61,6 +61,6 @@ const IconLink = ({ name, url }: { name: string; url: string }) => {
 			)}
 		</Link>
 	);
-};
+});
 
 export default IconLink;

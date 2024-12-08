@@ -514,15 +514,15 @@ function SeriesTitlePage() {
 								</div>
 							)}
 
-							{item.data.RunTimeTicks && (
+							{Boolean(item.data.RunTimeTicks) && (
 								<Typography style={{ opacity: "0.8" }} variant="subtitle2">
-									{getRuntime(item.data.RunTimeTicks)}
+									{getRuntime(item.data.RunTimeTicks ?? 0)}
 								</Typography>
 							)}
-							{item.data.RunTimeTicks && (
+							{Boolean(item.data.RunTimeTicks) && (
 								<Typography style={{ opacity: "0.8" }} variant="subtitle2">
 									{endsAt(
-										item.data.RunTimeTicks -
+										(item.data.RunTimeTicks ?? 0) -
 											(item.data.UserData?.PlaybackPositionTicks ?? 0),
 									)}
 								</Typography>

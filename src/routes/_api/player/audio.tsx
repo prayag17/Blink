@@ -194,10 +194,12 @@ function AudioPlayerRoute() {
 						style={{ gap: "1em", alignItems: "center" }}
 					>
 						<Typography variant="subtitle2" className="opacity-07">
-							{getRuntimeMusic(secToTicks(audioPlayer?.currentTime) ?? 0)}
+							{getRuntimeMusic(secToTicks(audioPlayer?.currentTime ?? 0) ?? 0)}
 						</Typography>
 						<Slider
-							value={isScrubbing ? sliderProgress : secToTicks(progress)}
+							value={
+								isScrubbing ? sliderProgress : secToTicks(Number(progress))
+							}
 							max={item?.RunTimeTicks ?? 1}
 							step={1}
 							key={item?.Id}
@@ -318,8 +320,9 @@ function AudioPlayerRoute() {
 								className="audio-lyrics-line"
 								key={`${lyric.Text}${index}`}
 								data-active-lyric={
-									secToTicks(audioPlayer?.currentTime) >= (lyric.Start ?? 0) &&
-									secToTicks(audioPlayer?.currentTime) <
+									secToTicks(audioPlayer?.currentTime ?? 0) >=
+										(lyric.Start ?? 0) &&
+									secToTicks(audioPlayer?.currentTime ?? 0) <
 										(lyrics.data?.Lyrics?.[index + 1]?.Start ?? 0)
 								}
 							>

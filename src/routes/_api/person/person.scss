@@ -92,7 +92,7 @@ $cardWidth: 18%;
 		}
 		&-backdrop {
 			width: 100vw;
-			height: 100vh;
+			height: 100%;
 			object-fit: cover;
 			object-position: top;
 			opacity: 0;
@@ -103,7 +103,7 @@ $cardWidth: 18%;
 				top: -4.4em;
 				left: -$page-margin;
 				width: 100vw;
-				height: calc(44vh + 4.4em);
+				height: 100vh;
 				z-index: -1;
 				mask-image: linear-gradient(to top, transparent, black);
 				-webkit-mask-image: linear-gradient(

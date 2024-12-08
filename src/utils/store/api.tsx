@@ -35,11 +35,11 @@ if (!localStorage.getItem("deviceId")) {
 
 export const jellyfin = new Jellyfin({
 	clientInfo: {
-		name: "JellyPlayer",
+		name: "Blink",
 		version: appVer,
 	},
 	deviceInfo: {
-		name: "JellyPlayer",
+		name: "Blink",
 		id: deviceId,
 	},
 });
