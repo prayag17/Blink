@@ -12,8 +12,6 @@ import { save } from "@tauri-apps/plugin-dialog";
 import "./photos.scss";
 import getImageUrlsApi from "@/utils/methods/getImageUrlsApi";
 import {
-	Button,
-	CircularProgress,
 	IconButton,
 	ListItemIcon,
 	ListItemText,
@@ -48,12 +46,16 @@ function PhotosPlayer() {
 				>
 					<img
 						src={
-							item.Id
-								? getImageUrlsApi(api).getItemImageUrlById(item.Id, "Primary", {
-										// width: 250,
-										fillWidth: 250,
-										quality: 70,
-									})
+							api
+								? getImageUrlsApi(api).getItemImageUrlById(
+										item.Id ?? "",
+										"Primary",
+										{
+											// width: 250,
+											fillWidth: 250,
+											quality: 70,
+										},
+									)
 								: brokenImage
 						}
 						style={{
@@ -103,7 +105,7 @@ function PhotosPlayer() {
 
 		if (pathToSave) {
 			download(
-				`${api.basePath}/Items/${currentPhoto?.Id}/Download?api_key=${api.accessToken}`,
+				`${api?.basePath}/Items/${currentPhoto?.Id}/Download?api_key=${api?.accessToken}`,
 				pathToSave,
 			);
 			enqueueSnackbar("Image download queued.", { variant: "info" });
@@ -120,7 +122,7 @@ function PhotosPlayer() {
 					key={currentPhoto?.Id ?? "noPhoto"}
 					src={
 						currentPhoto
-							? `${api.basePath}/Items/${currentPhoto.Id}/Download?api_key=${api.accessToken}`
+							? `${api?.basePath}/Items/${currentPhoto.Id}/Download?api_key=${api?.accessToken}`
 							: brokenImage
 					}
 					alt="Item"

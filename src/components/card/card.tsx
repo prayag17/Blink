@@ -20,6 +20,8 @@ import "./card.scss";
 import getImageUrlsApi from "@/utils/methods/getImageUrlsApi";
 import { useApiInContext } from "@/utils/store/api";
 
+import { useInView } from "react-intersection-observer";
+
 const CardComponent = ({
 	item,
 	cardTitle,
@@ -80,8 +82,16 @@ const CardComponent = ({
 		}
 	};
 
+	const { ref, inView } = useInView({
+		threshold: 0,
+	});
+
 	return (
-		<div className="card" onClick={onClick ? onClick : defaultOnClick}>
+		<div
+			className="card"
+			ref={ref}
+			onClick={onClick ? onClick : defaultOnClick}
+		>
 			<div className={`card-image-container ${cardType}`}>
 				<ErrorBoundary fallback>
 					<div
@@ -112,73 +122,74 @@ const CardComponent = ({
 						? getTypeIcon(overrideIcon)
 						: getTypeIcon(item.Type ?? "universal")}
 				</div>
-				<img
-					alt={item.Name ?? "blink"}
-					src={
-						api
-							? overrideIcon === "User"
-								? `${api?.basePath}/Users/${item.Id}/Images/Primary`
-								: getImageUrlsApi(api).getItemImageUrlById(
-										(seriesId ? item.SeriesId : (item.AlbumId ?? item.Id)) ??
-											"",
-										imageType,
-										{
-											quality: 90,
-											fillWidth: cardType === "thumb" ? 560 : 280,
-										},
-									)
-							: ""
-					}
-					style={{
-						height: "100%",
-						width: "100%",
-						opacity: 0,
-					}}
-					loading="lazy"
-					onLoad={(e) => {
-						e.currentTarget.style.setProperty("opacity", "1");
-					}}
-					onLoadStart={(e) => console.log(e)}
-					className="card-image"
-				/>
-				<div className="card-overlay">
-					{!disableOverlay && (
-						<>
-							<PlayButton
-								item={item}
-								userId={userId}
-								itemType={item.Type ?? "Movie"}
-								currentAudioTrack={0}
-								currentSubTrack="nosub"
-								currentVideoTrack={0}
-								className="card-play-button"
-								iconOnly
-								audio={
-									item.Type === BaseItemKind.MusicAlbum ||
-									item.Type === BaseItemKind.Audio ||
-									item.Type === BaseItemKind.AudioBook ||
-									item.Type === BaseItemKind.Playlist
-								}
-								playlistItem={item.Type === BaseItemKind.Playlist}
-								playlistItemId={item.Id}
-							/>
-							<LikeButton
-								itemId={item.Id}
-								itemName={item.Name ?? ""}
-								isFavorite={item.UserData?.IsFavorite}
-								queryKey={queryKey}
-								userId={userId}
-							/>
-							<MarkPlayedButton
-								itemId={item.Id}
-								itemName={item.Name ?? ""}
-								isPlayed={item.UserData?.Played}
-								queryKey={queryKey}
-								userId={userId}
-							/>
-						</>
-					)}
-				</div>
+				{inView && (
+					<img
+						alt={item.Name ?? "blink"}
+						src={
+							api
+								? overrideIcon === "User"
+									? `${api?.basePath}/Users/${item.Id}/Images/Primary`
+									: getImageUrlsApi(api).getItemImageUrlById(
+											(seriesId ? item.SeriesId : (item.AlbumId ?? item.Id)) ??
+												"",
+											imageType,
+											{
+												quality: 90,
+												fillWidth: cardType === "thumb" ? 560 : 280,
+											},
+										)
+								: ""
+						}
+						style={{
+							height: "100%",
+							width: "100%",
+							opacity: 0,
+						}}
+						loading="lazy"
+						onLoad={(e) => {
+							e.currentTarget.style.setProperty("opacity", "1");
+						}}
+						onLoadStart={(e) => console.log(e)}
+						className="card-image"
+					/>
+				)}
+
+				{inView && !disableOverlay && (
+					<div className="card-overlay">
+						<PlayButton
+							item={item}
+							userId={userId}
+							itemType={item.Type ?? "Movie"}
+							currentAudioTrack={0}
+							currentSubTrack="nosub"
+							currentVideoTrack={0}
+							className="card-play-button"
+							iconOnly
+							audio={
+								item.Type === BaseItemKind.MusicAlbum ||
+								item.Type === BaseItemKind.Audio ||
+								item.Type === BaseItemKind.AudioBook ||
+								item.Type === BaseItemKind.Playlist
+							}
+							playlistItem={item.Type === BaseItemKind.Playlist}
+							playlistItemId={item.Id}
+						/>
+						<LikeButton
+							itemId={item.Id}
+							itemName={item.Name ?? ""}
+							isFavorite={item.UserData?.IsFavorite}
+							queryKey={queryKey}
+							userId={userId}
+						/>
+						<MarkPlayedButton
+							itemId={item.Id}
+							itemName={item.Name ?? ""}
+							isPlayed={item.UserData?.Played}
+							queryKey={queryKey}
+							userId={userId}
+						/>
+					</div>
+				)}
 				{(item.UserData?.PlaybackPositionTicks ?? -1) > 0 && (
 					<div className="card-progress-container">
 						<div

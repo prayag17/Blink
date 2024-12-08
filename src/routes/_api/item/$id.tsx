@@ -151,7 +151,9 @@ function ItemDetail() {
 			}
 			return false;
 		});
-		setSelectedVideoTrack(result?.find((track) => track.IsDefault)?.Index ?? 0);
+		setSelectedVideoTrack(
+			result?.find((track) => track.IsDefault)?.Index ?? result?.[0].Index ?? 0,
+		);
 		return result ?? [];
 	}, [item.data?.Id]);
 	const audioTracks = useMemo(() => {
@@ -161,7 +163,9 @@ function ItemDetail() {
 			}
 			return false;
 		});
-		setSelectedAudioTrack(result?.find((track) => track.IsDefault)?.Index ?? 0);
+		setSelectedAudioTrack(
+			result?.find((track) => track.IsDefault)?.Index ?? result?.[0].Index ?? 0,
+		);
 		return result ?? [];
 	}, [item.data?.Id]);
 	const subtitleTracks = useMemo(() => {
@@ -171,9 +175,7 @@ function ItemDetail() {
 			}
 			return false;
 		});
-		setSelectedSubtitleTrack(
-			result?.find((track) => track.IsDefault)?.Index ?? -1,
-		);
+		setSelectedSubtitleTrack(result?.find((track) => track.IsDefault)?.Index ?? -1);
 		return result ?? [];
 	}, [item.data?.Id]);
 

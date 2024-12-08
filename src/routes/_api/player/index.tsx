@@ -53,8 +53,9 @@ import useQueue, { clearQueue } from "@/utils/store/queue";
 import { createFileRoute, useRouter } from "@tanstack/react-router";
 import { toNumber } from "lodash";
 import type { OnProgressProps } from "react-player/base";
-import type { TrackProps } from "react-player/file";
 
+import type subtitlePlaybackInfo from "@/utils/types/subtitlePlaybackInfo";
+//@ts-ignore
 import font from "./Noto-Sans-Indosphere.ttf?url";
 
 const ticksDisplay = (ticks: number) => {
@@ -85,7 +86,7 @@ const VOLUME_SCROLL_INTERVAL = 0.02;
  */
 function addSubtitleTrackToReactPlayer(
 	videoElem: HTMLMediaElement,
-	subtitleTracks,
+	subtitleTracks: subtitlePlaybackInfo,
 	baseUrl: string,
 ) {
 	if (subtitleTracks.url && subtitleTracks.allTracks) {
@@ -191,7 +192,7 @@ function VideoPlayer() {
 	const [clickTimeout, setClickTimeout] = useState<NodeJS.Timeout>(null!);
 
 	const handleReady = async () => {
-		if (!isReady) {
+		if (api && !isReady) {
 			player.current?.seekTo(ticksToSec(startPosition), "seconds");
 			setIsReady(true);
 			// Report Jellyfin server: Playback has begin
@@ -216,6 +217,7 @@ function VideoPlayer() {
 
 	const handleProgress = async (event: OnProgressProps) => {
 		setProgress(secToTicks(event.playedSeconds));
+		if (!api) return null;
 		// Report Jellyfin server: Playback progress
 		getPlaystateApi(api).reportPlaybackProgress({
 			playbackProgressInfo: {
@@ -239,6 +241,7 @@ function VideoPlayer() {
 		appWindow.getCurrent().setFullscreen(false);
 
 		history.back();
+		if (!api) return null;
 		// Report Jellyfin server: Playback has ended/stopped
 		getPlaystateApi(api).reportPlaybackStopped({
 			playbackStopInfo: {
@@ -314,6 +317,7 @@ function VideoPlayer() {
 		};
 	}, [handleKeyPress]);
 
+	const playerOSDRef = useRef<HTMLDivElement>(null);
 	// Volume control with mouse wheel
 	useEffect(() => {
 		const handleMouseWheel = (event: WheelEvent) => {
@@ -327,11 +331,11 @@ function VideoPlayer() {
 		};
 
 		// attach the event listener
-		document.addEventListener("wheel", handleMouseWheel);
+		playerOSDRef.current?.addEventListener("wheel", handleMouseWheel);
 
 		// remove the event listener
 		return () => {
-			document.removeEventListener("wheel", handleMouseWheel);
+			playerOSDRef.current?.removeEventListener("wheel", handleMouseWheel);
 		};
 	}, []);
 
@@ -355,7 +359,7 @@ function VideoPlayer() {
 					video: player.current?.getInternalPlayer(),
 					workerUrl,
 					wasmUrl,
-					subUrl: `${api.basePath}${mediaSource.subtitle.url}`,
+					subUrl: `${api?.basePath}${mediaSource.subtitle.url}`,
 					availableFonts: { "noto sans": font },
 					fallbackFont: "noto sans",
 				});
@@ -369,7 +373,7 @@ function VideoPlayer() {
 				addSubtitleTrackToReactPlayer(
 					player.current.getInternalPlayer() as HTMLMediaElement,
 					mediaSource.subtitle,
-					api.basePath,
+					api?.basePath ?? "",
 				);
 				console.log(videoElem.textTracks);
 			}
@@ -429,7 +433,8 @@ function VideoPlayer() {
 
 	const handleSkipIntro = useCallback(() => {
 		player.current?.seekTo(
-			ticksToSec(introInfo?.EndTicks) ?? player.current?.getCurrentTime(),
+			ticksToSec(Number(introInfo?.EndTicks)) ??
+				player.current?.getCurrentTime(),
 		);
 	}, [item?.Id]);
 
@@ -518,7 +523,7 @@ function VideoPlayer() {
 			const backgroundOffsetY = -(imageOffsetY * trickplayResolution?.Height);
 
 			const imgUrlParamsObject: Record<string, string> = {
-				api_key: api.accessToken,
+				api_key: String(api?.accessToken),
 				MediaSourceId: mediaSource.id ?? "",
 			};
 			const imgUrlParams = new URLSearchParams(imgUrlParamsObject).toString();
@@ -529,7 +534,7 @@ function VideoPlayer() {
 						<div
 							className="video-osd-trickplayBubble"
 							style={{
-								background: `url(${api.basePath}/Videos/${item?.Id}/Trickplay/${trickplayResolution.Width}/${index}.jpg?${imgUrlParams})`,
+								background: `url(${api?.basePath}/Videos/${item?.Id}/Trickplay/${trickplayResolution.Width}/${index}.jpg?${imgUrlParams})`,
 								backgroundPositionX: `${backgroundOffsetX}px`,
 								backgroundPositionY: `${backgroundOffsetY}px`,
 								width: `${trickplayResolution.Width}px`,
@@ -550,7 +555,7 @@ function VideoPlayer() {
 					<div
 						className="video-osd-trickplayBubble"
 						style={{
-							background: `url(${api.basePath}/Videos/${item?.Id}/Trickplay/${trickplayResolution.Width}/${index}.jpg?${imgUrlParams})`,
+							background: `url(${api?.basePath}/Videos/${item?.Id}/Trickplay/${trickplayResolution.Width}/${index}.jpg?${imgUrlParams})`,
 							backgroundPositionX: `${backgroundOffsetX}px`,
 							backgroundPositionY: `${backgroundOffsetY}px`,
 							width: `${trickplayResolution.Width}px`,
@@ -595,7 +600,7 @@ function VideoPlayer() {
 	}, [volume]);
 
 	const handlePlaybackEnded = () => {
-		if (queue[currentQueueItemIndex + 1].Id) {
+		if (queue?.[currentQueueItemIndex + 1].Id) {
 			playItemFromQueue("next", user?.Id, api);
 		} else {
 			handleExitPlayer(); // Exit player if playback has finished and the queue is empty
@@ -603,17 +608,23 @@ function VideoPlayer() {
 	};
 	
 	const [subtitleIsChanging, startSubtitleChange] = useTransition();
-	const handleSubtitleChange = (
-		e: ChangeEventHandler<HTMLInputElement | HTMLTextAreaElement>,
-	) => {
-		startSubtitleChange(() => {
-			if (mediaSource.subtitle.allTracks) {
-				changeSubtitleTrack(toNumber(e.target.value), mediaSource.subtitle.allTracks);
-				console.log(mediaSource.subtitle);
-				setSettingsMenu(null);
-			}
-		});
-	};
+	const handleSubtitleChange: ChangeEventHandler<
+		HTMLInputElement | HTMLTextAreaElement
+	> = useCallback(
+		(e) => {
+			startSubtitleChange(() => {
+				if (mediaSource.subtitle.allTracks) {
+					changeSubtitleTrack(
+						toNumber(e.target.value),
+						mediaSource.subtitle.allTracks,
+					);
+					console.log(mediaSource.subtitle);
+					setSettingsMenu(null);
+				}
+			});
+		},
+		[mediaSource.subtitle.allTracks],
+	);
 
 	return (
 		<div className="video-player">
@@ -687,6 +698,7 @@ function VideoPlayer() {
 						: "video-player-osd"
 				}
 				onMouseMove={handleShowOsd}
+				ref={playerOSDRef}
 				initial={{
 					opacity: 0,
 				}}
@@ -767,10 +779,10 @@ function VideoPlayer() {
 				{(forceShowCredits || !showUpNextCard) && (
 					<div className="video-player-osd-info">
 						<Typography variant="h4" fontWeight={500} mb={2}>
-							{itemName}
+							{String(itemName)}
 							{episodeTitle && (
 								<Typography variant="h6" fontWeight={300} mt={1}>
-									{episodeTitle}
+									{String(episodeTitle)}
 								</Typography>
 							)}
 						</Typography>

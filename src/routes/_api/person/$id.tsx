@@ -168,7 +168,6 @@ function PersonTitlePage() {
 				fields: ["SeasonUserData", "Overview"],
 				sortBy: ["PremiereDate", "ProductionYear", "SortName"],
 				excludeLocationTypes: [LocationType.Virtual],
-				limit: 24,
 			});
 			return result.data;
 		},
@@ -476,17 +475,6 @@ function PersonTitlePage() {
 												);
 											})}
 									</motion.div>
-									{tab.data.isSuccess &&
-										(tab.data.data?.TotalRecordCount ?? 0) > 24 && (
-											<Typography
-												variant="h6"
-												style={{
-													opacity: 0.8,
-												}}
-											>
-												And more...
-											</Typography>
-										)}
 								</TabPanel>
 							);
 						})}
