@@ -14,7 +14,6 @@ import { Route as rootRoute } from './routes/__root'
 import { Route as ApiImport } from './routes/_api'
 import { Route as IndexImport } from './routes/index'
 import { Route as ErrorCodeImport } from './routes/error/$code'
-import { Route as ApiSearchImport } from './routes/_api/search'
 import { Route as ApiLoginImport } from './routes/_api/login'
 import { Route as ApiSearchIndexImport } from './routes/_api/search/index'
 import { Route as ApiPlayerIndexImport } from './routes/_api/player/index'
@@ -57,12 +56,6 @@ const ErrorCodeRoute = ErrorCodeImport.update({
   getParentRoute: () => rootRoute,
 } as any)
 
-const ApiSearchRoute = ApiSearchImport.update({
-  id: '/search',
-  path: '/search',
-  getParentRoute: () => ApiRoute,
-} as any)
-
 const ApiLoginRoute = ApiLoginImport.update({
   id: '/login',
   path: '/login',
@@ -70,9 +63,9 @@ const ApiLoginRoute = ApiLoginImport.update({
 } as any)
 
 const ApiSearchIndexRoute = ApiSearchIndexImport.update({
-  id: '/',
-  path: '/',
-  getParentRoute: () => ApiSearchRoute,
+  id: '/search/',
+  path: '/search/',
+  getParentRoute: () => ApiRoute,
 } as any)
 
 const ApiPlayerIndexRoute = ApiPlayerIndexImport.update({
@@ -220,13 +213,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiLoginImport
       parentRoute: typeof ApiImport
     }
-    '/_api/search': {
-      id: '/_api/search'
-      path: '/search'
-      fullPath: '/search'
-      preLoaderRoute: typeof ApiSearchImport
-      parentRoute: typeof ApiImport
-    }
     '/error/$code': {
       id: '/error/$code'
       path: '/error/$code'
@@ -369,10 +355,10 @@ declare module '@tanstack/react-router' {
     }
     '/_api/search/': {
       id: '/_api/search/'
-      path: '/'
-      fullPath: '/search/'
+      path: '/search'
+      fullPath: '/search'
       preLoaderRoute: typeof ApiSearchIndexImport
-      parentRoute: typeof ApiSearchImport
+      parentRoute: typeof ApiImport
     }
     '/_api/login/$userId/$userName': {
       id: '/_api/login/$userId/$userName'
@@ -402,21 +388,8 @@ const ApiLoginRouteWithChildren = ApiLoginRoute._addFileChildren(
   ApiLoginRouteChildren,
 )
 
-interface ApiSearchRouteChildren {
-  ApiSearchIndexRoute: typeof ApiSearchIndexRoute
-}
-
-const ApiSearchRouteChildren: ApiSearchRouteChildren = {
-  ApiSearchIndexRoute: ApiSearchIndexRoute,
-}
-
-const ApiSearchRouteWithChildren = ApiSearchRoute._addFileChildren(
-  ApiSearchRouteChildren,
-)
-
 interface ApiRouteChildren {
   ApiLoginRoute: typeof ApiLoginRouteWithChildren
-  ApiSearchRoute: typeof ApiSearchRouteWithChildren
   ApiAlbumIdRoute: typeof ApiAlbumIdRoute
   ApiArtistIdRoute: typeof ApiArtistIdRoute
   ApiBoxsetIdRoute: typeof ApiBoxsetIdRoute
@@ -431,11 +404,11 @@ interface ApiRouteChildren {
   ApiFavoriteIndexRoute: typeof ApiFavoriteIndexRoute
   ApiHomeIndexRoute: typeof ApiHomeIndexRoute
   ApiPlayerIndexRoute: typeof ApiPlayerIndexRoute
+  ApiSearchIndexRoute: typeof ApiSearchIndexRoute
 }
 
 const ApiRouteChildren: ApiRouteChildren = {
   ApiLoginRoute: ApiLoginRouteWithChildren,
-  ApiSearchRoute: ApiSearchRouteWithChildren,
   ApiAlbumIdRoute: ApiAlbumIdRoute,
   ApiArtistIdRoute: ApiArtistIdRoute,
   ApiBoxsetIdRoute: ApiBoxsetIdRoute,
@@ -450,6 +423,7 @@ const ApiRouteChildren: ApiRouteChildren = {
   ApiFavoriteIndexRoute: ApiFavoriteIndexRoute,
   ApiHomeIndexRoute: ApiHomeIndexRoute,
   ApiPlayerIndexRoute: ApiPlayerIndexRoute,
+  ApiSearchIndexRoute: ApiSearchIndexRoute,
 }
 
 const ApiRouteWithChildren = ApiRoute._addFileChildren(ApiRouteChildren)
@@ -458,7 +432,6 @@ export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '': typeof ApiRouteWithChildren
   '/login': typeof ApiLoginRouteWithChildren
-  '/search': typeof ApiSearchRouteWithChildren
   '/error/$code': typeof ErrorCodeRoute
   '/album/$id': typeof ApiAlbumIdRoute
   '/artist/$id': typeof ApiArtistIdRoute
@@ -479,7 +452,7 @@ export interface FileRoutesByFullPath {
   '/favorite': typeof ApiFavoriteIndexRoute
   '/home': typeof ApiHomeIndexRoute
   '/player': typeof ApiPlayerIndexRoute
-  '/search/': typeof ApiSearchIndexRoute
+  '/search': typeof ApiSearchIndexRoute
   '/login/$userId/$userName': typeof ApiLoginUserIdUserNameRoute
 }
 
@@ -516,7 +489,6 @@ export interface FileRoutesById {
   '/': typeof IndexRoute
   '/_api': typeof ApiRouteWithChildren
   '/_api/login': typeof ApiLoginRouteWithChildren
-  '/_api/search': typeof ApiSearchRouteWithChildren
   '/error/$code': typeof ErrorCodeRoute
   '/_api/album/$id': typeof ApiAlbumIdRoute
   '/_api/artist/$id': typeof ApiArtistIdRoute
@@ -547,7 +519,6 @@ export interface FileRouteTypes {
     | '/'
     | ''
     | '/login'
-    | '/search'
     | '/error/$code'
     | '/album/$id'
     | '/artist/$id'
@@ -568,7 +539,7 @@ export interface FileRouteTypes {
     | '/favorite'
     | '/home'
     | '/player'
-    | '/search/'
+    | '/search'
     | '/login/$userId/$userName'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -602,7 +573,6 @@ export interface FileRouteTypes {
     | '/'
     | '/_api'
     | '/_api/login'
-    | '/_api/search'
     | '/error/$code'
     | '/_api/album/$id'
     | '/_api/artist/$id'
@@ -671,7 +641,6 @@ export const routeTree = rootRoute
       "filePath": "_api.tsx",
       "children": [
         "/_api/login",
-        "/_api/search",
         "/_api/album/$id",
         "/_api/artist/$id",
         "/_api/boxset/$id",
@@ -685,7 +654,8 @@ export const routeTree = rootRoute
         "/_api/series/$id",
         "/_api/favorite/",
         "/_api/home/",
-        "/_api/player/"
+        "/_api/player/",
+        "/_api/search/"
       ]
     },
     "/_api/login": {
@@ -695,13 +665,6 @@ export const routeTree = rootRoute
         "/_api/login/list",
         "/_api/login/manual",
         "/_api/login/$userId/$userName"
-      ]
-    },
-    "/_api/search": {
-      "filePath": "_api/search.tsx",
-      "parent": "/_api",
-      "children": [
-        "/_api/search/"
       ]
     },
     "/error/$code": {
@@ -782,7 +745,7 @@ export const routeTree = rootRoute
     },
     "/_api/search/": {
       "filePath": "_api/search/index.tsx",
-      "parent": "/_api/search"
+      "parent": "/_api"
     },
     "/_api/login/$userId/$userName": {
       "filePath": "_api/login/$userId.$userName.tsx",

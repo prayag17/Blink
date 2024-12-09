@@ -1,7 +1,5 @@
 import React, { useEffect, useState } from "react";
 
-import CircularProgress from "@mui/material/CircularProgress";
-import InputAdornment from "@mui/material/InputAdornment";
 import TextField from "@mui/material/TextField";
 
 import { useBackdropStore } from "@/utils/store/backdrop";
@@ -9,12 +7,8 @@ import { useBackdropStore } from "@/utils/store/backdrop";
 import { useQuery } from "@tanstack/react-query";
 
 import { EmptyNotice } from "@/components/notices/emptyNotice/emptyNotice";
-import { getUserApi } from "@jellyfin/sdk/lib/utils/api/user-api";
-
-import useDebounce from "@/utils/hooks/useDebounce";
 
 import { Card } from "@/components/card/card";
-import { EpisodeCard } from "@/components/card/episodeCard";
 import CardScroller from "@/components/cardScroller/cardScroller";
 import { BaseItemKind } from "@jellyfin/sdk/lib/generated-client";
 import { getItemsApi } from "@jellyfin/sdk/lib/utils/api/items-api";
@@ -22,7 +16,7 @@ import { getPersonsApi } from "@jellyfin/sdk/lib/utils/api/persons-api";
 import { getSearchApi } from "@jellyfin/sdk/lib/utils/api/search-api";
 import "./search.scss";
 import { useCentralStore } from "@/utils/store/central";
-import { Dialog, Fab } from "@mui/material";
+import { Fab } from "@mui/material";
 import { Outlet, createFileRoute, useNavigate } from "@tanstack/react-router";
 
 export const Route = createFileRoute("/_api/search/")({
@@ -48,6 +42,7 @@ function SearchPage() {
 	const movies = useQuery({
 		queryKey: ["search", "items", "Movie", query],
 		queryFn: async () => {
+			if (!api) return null;
 			const result = await getItemsApi(api).getItems({
 				userId: user?.Id,
 				searchTerm: query,
@@ -62,6 +57,7 @@ function SearchPage() {
 	const series = useQuery({
 		queryKey: ["search", "items", "Series", query],
 		queryFn: async () => {
+			if (!api) return null;
 			const result = await getItemsApi(api).getItems({
 				userId: user?.Id,
 				searchTerm: query,
@@ -76,6 +72,7 @@ function SearchPage() {
 	const musicAlbum = useQuery({
 		queryKey: ["search", "items", "MusicAlbum", query],
 		queryFn: async () => {
+			if (!api) return null;
 			const result = await getItemsApi(api).getItems({
 				userId: user?.Id,
 				searchTerm: query,
@@ -90,6 +87,7 @@ function SearchPage() {
 	const audio = useQuery({
 		queryKey: ["search", "items", "Audio", query],
 		queryFn: async () => {
+			if (!api) return null;
 			const result = await getItemsApi(api).getItems({
 				userId: user?.Id,
 				searchTerm: query,
@@ -104,6 +102,7 @@ function SearchPage() {
 	const book = useQuery({
 		queryKey: ["search", "items", "Book", query],
 		queryFn: async () => {
+			if (!api) return null;
 			const result = await getItemsApi(api).getItems({
 				userId: user?.Id,
 				searchTerm: query,
@@ -118,6 +117,7 @@ function SearchPage() {
 	const musicArtists = useQuery({
 		queryKey: ["search", "items", "MusicArtists", query],
 		queryFn: async () => {
+			if (!api) return null;
 			const result = await getItemsApi(api).getItems({
 				userId: user?.Id,
 				searchTerm: query,
@@ -132,6 +132,7 @@ function SearchPage() {
 	const person = useQuery({
 		queryKey: ["search", "items", "Person", query],
 		queryFn: async () => {
+			if (!api) return null;
 			const result = await getPersonsApi(api).getPersons({
 				userId: user?.Id,
 				searchTerm: query,
@@ -144,6 +145,7 @@ function SearchPage() {
 	const episodes = useQuery({
 		queryKey: ["search", "items", "Episodes", query],
 		queryFn: async () => {
+			if (!api) return null;
 			const result = await getSearchApi(api).getSearchHints({
 				userId: user?.Id,
 				searchTerm: query,
@@ -161,6 +163,7 @@ function SearchPage() {
 		// Removing app's backdrop
 		setBackdrop("", "");
 	}, []);
+
 	return (
 		<div
 			className="scrollY"
@@ -209,9 +212,9 @@ function SearchPage() {
 					height: "100%",
 				}}
 			>
-				{movies.isSuccess && movies.data.Items.length > 0 && (
-					<CardScroller title="Movies" displayCards={8} disableDecoration>
-						{movies.data.Items.map((item) => (
+				{movies.isSuccess && Boolean(movies.data?.Items?.length) && (
+					<CardScroller title="Movies" displayCards={7} disableDecoration>
+						{movies.data?.Items?.map((item) => (
 							<Card
 								key={item.Id}
 								item={item}
@@ -221,19 +224,13 @@ function SearchPage() {
 								cardType="portrait"
 								queryKey={["search", "items", "Movie", query]}
 								userId={user?.Id}
-								imageBlurhash={
-									!!item.ImageBlurHashes?.Primary &&
-									item.ImageBlurHashes?.Primary[
-										Object.keys(item.ImageBlurHashes.Primary)[0]
-									]
-								}
 							/>
 						))}
 					</CardScroller>
 				)}
-				{series.isSuccess && series.data.Items.length > 0 && (
-					<CardScroller title="TV Shows" displayCards={8} disableDecoration>
-						{series.data.Items.map((item, index) => (
+				{series.isSuccess && Boolean(series.data?.Items?.length) && (
+					<CardScroller title="TV Shows" displayCards={7} disableDecoration>
+						{series.data?.Items?.map((item) => (
 							<Card
 								key={item.Id}
 								item={item}
@@ -249,19 +246,13 @@ function SearchPage() {
 								cardType="portrait"
 								queryKey={["search", "items", "Series", query]}
 								userId={user?.Id}
-								imageBlurhash={
-									!!item.ImageBlurHashes?.Primary &&
-									item.ImageBlurHashes?.Primary[
-										Object.keys(item.ImageBlurHashes.Primary)[0]
-									]
-								}
 							/>
 						))}
 					</CardScroller>
 				)}
-				{episodes.isSuccess && episodes.data.TotalRecordCount > 0 && (
+				{episodes.isSuccess && Boolean(episodes.data?.TotalRecordCount) && (
 					<CardScroller title="Episodes" displayCards={4} disableDecoration>
-						{episodes.data.SearchHints?.map((episode) => {
+						{episodes.data?.SearchHints?.map((episode) => {
 							return (
 								<Card
 									key={episode.Id}
@@ -276,9 +267,9 @@ function SearchPage() {
 						})}
 					</CardScroller>
 				)}
-				{audio.isSuccess && audio.data.Items?.length > 0 && (
-					<CardScroller title="Audio" displayCards={8} disableDecoration>
-						{audio.data.Items?.map((item, index) => (
+				{audio.isSuccess && Boolean(audio.data?.Items?.length) && (
+					<CardScroller title="Audio" displayCards={7} disableDecoration>
+						{audio.data?.Items?.map((item) => (
 							<Card
 								key={item.Id}
 								item={item}
@@ -292,9 +283,9 @@ function SearchPage() {
 						))}
 					</CardScroller>
 				)}
-				{musicAlbum.isSuccess && musicAlbum.data.Items?.length > 0 && (
-					<CardScroller title="Albums" displayCards={8} disableDecoration>
-						{musicAlbum.data.Items?.map((item, index) => (
+				{musicAlbum.isSuccess && Boolean(musicAlbum.data?.Items?.length) && (
+					<CardScroller title="Albums" displayCards={7} disableDecoration>
+						{musicAlbum.data?.Items?.map((item) => (
 							<Card
 								key={item.Id}
 								item={item}
@@ -309,9 +300,9 @@ function SearchPage() {
 						))}
 					</CardScroller>
 				)}
-				{book.isSuccess && book.data.Items?.length > 0 && (
-					<CardScroller title="Books" displayCards={8} disableDecoration>
-						{book.data.Items?.map((item, index) => (
+				{book.isSuccess && Boolean(book.data?.Items?.length) && (
+					<CardScroller title="Books" displayCards={7} disableDecoration>
+						{book.data?.Items?.map((item) => (
 							<Card
 								key={item.Id}
 								item={item}
@@ -326,25 +317,26 @@ function SearchPage() {
 						))}
 					</CardScroller>
 				)}
-				{musicArtists.isSuccess && musicArtists.data.Items?.length > 0 && (
-					<CardScroller title="Artists" displayCards={8} disableDecoration>
-						{musicArtists.data.Items?.map((item) => (
-							<Card
-								key={item.Id}
-								item={item}
-								cardTitle={item.Name}
-								imageType={"Primary"}
-								disableOverlay
-								cardType={"square"}
-								queryKey={["search", "items", "MusicArtists", query]}
-								userId={user?.Id}
-							/>
-						))}
-					</CardScroller>
-				)}
-				{person.isSuccess && person.data.Items?.length > 0 && (
-					<CardScroller title="People" displayCards={8} disableDecoration>
-						{person.data.Items?.map((item) => (
+				{musicArtists.isSuccess &&
+					Boolean(musicArtists.data?.Items?.length) && (
+						<CardScroller title="Artists" displayCards={7} disableDecoration>
+							{musicArtists.data?.Items?.map((item) => (
+								<Card
+									key={item.Id}
+									item={item}
+									cardTitle={item.Name}
+									imageType={"Primary"}
+									disableOverlay
+									cardType={"square"}
+									queryKey={["search", "items", "MusicArtists", query]}
+									userId={user?.Id}
+								/>
+							))}
+						</CardScroller>
+					)}
+				{person.isSuccess && Boolean(person.data?.Items?.length) && (
+					<CardScroller title="People" displayCards={7} disableDecoration>
+						{person.data?.Items?.map((item) => (
 							<Card
 								key={item.Id}
 								item={item}
@@ -367,13 +359,13 @@ function SearchPage() {
 				book.isSuccess &&
 				musicArtists.isSuccess &&
 				person.isSuccess &&
-				movies.data.Items?.length === 0 &&
-				series.data.Items?.length === 0 &&
-				audio.data.Items?.length === 0 &&
-				musicAlbum.data.Items?.length === 0 &&
-				book.data.Items?.length === 0 &&
-				musicArtists.data.Items?.length === 0 &&
-				person.data.Items?.length === 0 &&
+				movies.data?.Items?.length === 0 &&
+				series.data?.Items?.length === 0 &&
+				audio.data?.Items?.length === 0 &&
+				musicAlbum.data?.Items?.length === 0 &&
+				book.data?.Items?.length === 0 &&
+				musicArtists.data?.Items?.length === 0 &&
+				person.data?.Items?.length === 0 &&
 				episodes.data?.SearchHints?.length === 0 && (
 					<div
 						style={{

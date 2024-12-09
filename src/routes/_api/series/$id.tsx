@@ -126,7 +126,7 @@ function SeriesTitlePage() {
 
 	const [currentSeason, setCurrentSeason] = useState(() => {
 		const result = sessionStorage.getItem(`season-${item.data?.Id}`);
-		return result ?? seasons.data?.Items?.[0].IndexNumber ?? 0;
+		return result ?? 0;
 	});
 
 	const currentSeasonItem = useQuery({

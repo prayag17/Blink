@@ -68,6 +68,7 @@ const Settings = () => {
 	const systemInfo = useQuery({
 		queryKey: ["about", "systemInfo"],
 		queryFn: async () => {
+			if (!api) return null;
 			const result = await getSystemApi(api).getSystemInfo();
 			return result.data;
 		},
@@ -106,7 +107,7 @@ const Settings = () => {
 	const handleServerChange = useMutation({
 		mutationFn: async (server: RecommendedServerInfo) => {
 			await delUser();
-			await setDefaultServer(server.id);
+			await setDefaultServer(server.systemInfo?.Id ?? "");
 			await defaultServer.refetch();
 			createApi(server.address, undefined);
 			queryClient.removeQueries();
@@ -126,15 +127,15 @@ const Settings = () => {
 	const handleDelete = useMutation({
 		mutationKey: ["server-delete"],
 		mutationFn: async (server: RecommendedServerInfo) => {
-			await delServer(server.id);
+			await delServer(server.systemInfo?.Id ?? "");
 
-			if (server.id === defaultServer.data) {
+			if (server.systemInfo?.Id === defaultServer.data) {
 				await delUser();
 				await serversOnDisk.refetch();
 
-				if (serversOnDisk.data.length > 0) {
+				if (serversOnDisk.data?.length) {
 					setDefaultServer(serversOnDisk.data[0].id);
-					createApi(serversOnDisk.data[0].address, null);
+					createApi(serversOnDisk.data[0].address, undefined);
 				} else {
 					// TODO: Reset api in context
 					// useApi.setState(useApi.getInitialState());
@@ -158,7 +159,7 @@ const Settings = () => {
 		},
 		onSuccess: async (bestServer) => {
 			if (bestServer) {
-				await setServer(bestServer.systemInfo.Id, bestServer);
+				await setServer(bestServer.systemInfo?.Id ?? "", bestServer);
 				setAddServerDialog(false);
 				enqueueSnackbar(
 					"Client added successfully. You might need to refresh client list.",
@@ -620,6 +621,7 @@ const Settings = () => {
 					>
 						Close
 					</Button>
+					{/* @ts-ignore */}
 					<LoadingButton
 						startIcon={
 							<span

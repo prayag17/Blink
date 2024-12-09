@@ -152,7 +152,9 @@ function ItemDetail() {
 			return false;
 		});
 		setSelectedVideoTrack(
-			result?.find((track) => track.IsDefault)?.Index ?? result?.[0].Index ?? 0,
+			result?.find((track) => track.IsDefault)?.Index ??
+				result?.[0]?.Index ??
+				0,
 		);
 		return result ?? [];
 	}, [item.data?.Id]);
@@ -164,7 +166,9 @@ function ItemDetail() {
 			return false;
 		});
 		setSelectedAudioTrack(
-			result?.find((track) => track.IsDefault)?.Index ?? result?.[0].Index ?? 0,
+			result?.find((track) => track.IsDefault)?.Index ??
+				result?.[0]?.Index ??
+				0,
 		);
 		return result ?? [];
 	}, [item.data?.Id]);
@@ -672,6 +676,7 @@ function ItemDetail() {
 							<PlayButton
 								item={item.data}
 								itemType={item.data.Type ?? "Movie"}
+								audio={item.data.Type === "Audio"}
 								currentVideoTrack={selectedVideoTrack}
 								currentAudioTrack={selectedAudioTrack}
 								currentSubTrack={selectedSubtitleTrack}
