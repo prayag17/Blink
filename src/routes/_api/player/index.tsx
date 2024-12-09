@@ -16,6 +16,7 @@ import Typography from "@mui/material/Typography";
 import ReactPlayer from "react-player";
 
 import {
+	changeAudioTrack,
 	changeSubtitleTrack,
 	playItemFromQueue,
 	toggleSubtitleTrack,
@@ -40,7 +41,7 @@ import { AnimatePresence, motion } from "framer-motion";
 
 import { useBackdropStore } from "@/utils/store/backdrop";
 
-import { Button, LinearProgress, TextField } from "@mui/material";
+import { Button, LinearProgress, Popover, TextField } from "@mui/material";
 import JASSUB from "jassub";
 //@ts-ignore
 import workerUrl from "jassub/dist/jassub-worker.js?url";
@@ -105,7 +106,6 @@ function addSubtitleTrackToReactPlayer(
 		track.default = true;
 
 		track.addEventListener("load", () => {
-			console.log("Track loaded");
 			const a = track.track;
 			a.mode = "showing";
 		});
@@ -306,7 +306,6 @@ function VideoPlayer() {
 					// setIsMuted((state) => !state);
 					break;
 				default:
-					console.log(event.key);
 					break;
 			}
 		}
@@ -350,8 +349,6 @@ function VideoPlayer() {
 	}, [item?.Id]);
 
 	useEffect(() => {
-		console.log(mediaSource.subtitle.enable);
-
 		if (player.current?.getInternalPlayer() && mediaSource.subtitle.enable) {
 			let jassubRenderer: JASSUB | undefined;
 			if (
@@ -379,7 +376,6 @@ function VideoPlayer() {
 					mediaSource.subtitle,
 					api?.basePath ?? "",
 				);
-				console.log(videoElem.textTracks);
 			}
 			return () => {
 				if (jassubRenderer) {
@@ -409,7 +405,6 @@ function VideoPlayer() {
 			progress >= (introInfo?.StartTicks ?? 0) &&
 			progress < (introInfo?.EndTicks ?? 0)
 		) {
-			console.log("showing skip intro button");
 			return true;
 		}
 		return false;
@@ -625,11 +620,7 @@ function VideoPlayer() {
 		(e) => {
 			startSubtitleChange(() => {
 				if (mediaSource.subtitle.allTracks) {
-					changeSubtitleTrack(
-						toNumber(e.target.value),
-						mediaSource.subtitle.allTracks,
-					);
-					console.log(mediaSource.subtitle);
+					changeSubtitleTrack(toNumber(e.target.value), mediaSource.subtitle.allTracks);
 					setSettingsMenu(null);
 				}
 			});
@@ -637,10 +628,27 @@ function VideoPlayer() {
 		[mediaSource.subtitle.allTracks],
 	);
 
+	const [audioTackIsChanging, startAudioTrackChange] = useTransition();
+	const handleAudioTrackChange: ChangeEventHandler<
+		HTMLInputElement | HTMLTextAreaElement
+	> = (e) => {
+		// setPlaying(false);
+		startAudioTrackChange(() => {
+			if (api && mediaSource.audio.allTracks) {
+				changeAudioTrack(toNumber(e.target.value), api, progress);
+				setIsReady(false);
+				console.log("Audio change progress", progress);
+				// setSettingsMenu(null);
+			}
+		});
+
+		// setPlaying(true);
+	};
+
 	return (
 		<div className="video-player">
 			<AnimatePresence>
-				{loading && (
+				{(loading || audioTackIsChanging) && (
 					<motion.div
 						initial={{ opacity: 0 }}
 						animate={{
@@ -746,7 +754,7 @@ function VideoPlayer() {
 					<IconButton onClick={(e) => setSettingsMenu(e.currentTarget)}>
 						<span className="material-symbols-rounded">settings</span>
 					</IconButton>
-					<Menu
+					<Popover
 						anchorEl={settingsMenu}
 						open={settingsMenuOpen}
 						onClose={() => setSettingsMenu(null)}
@@ -754,19 +762,40 @@ function VideoPlayer() {
 							paper: {
 								style: {
 									maxHeight: "20em",
+									display: "flex",
+									flexDirection: "column",
+									gap: "1em",
+									width: "24em",
+									padding: "1em",
+									borderRadius: "12px",
 								},
+								className: "glass",
 							},
 						}}
-						MenuListProps={{
-							style: {
-								display: "flex",
-								flexDirection: "column",
-								gap: "1em",
-								width: "24em",
-							},
+						anchorOrigin={{
+							vertical: "bottom",
+							horizontal: "right",
 						}}
-						style={{}}
+						transformOrigin={{
+							vertical: "top",
+							horizontal: "right",
+						}}
 					>
+						<TextField
+							select
+							label="Audio"
+							variant="outlined"
+							value={mediaSource.audio.track}
+							onChange={handleAudioTrackChange}
+							fullWidth
+							disabled={audioTackIsChanging}
+						>
+							{mediaSource.audio.allTracks?.map((sub) => (
+								<MenuItem key={sub.Index} value={sub.Index}>
+									{sub.DisplayTitle}
+								</MenuItem>
+							))}
+						</TextField>
 						<TextField
 							select
 							label="Subtitles"
@@ -785,7 +814,7 @@ function VideoPlayer() {
 								</MenuItem>
 							))}
 						</TextField>
-					</Menu>
+					</Popover>
 				</div>
 				{(forceShowCredits || !showUpNextCard) && (
 					<div className="video-player-osd-info">
@@ -1009,7 +1038,7 @@ function VideoPlayer() {
 				)}
 			</motion.div>
 			<ReactPlayer
-				key={`${item?.Id}${mediaSource.id}`}
+				key={playsessionId}
 				playing={playing}
 				url={playbackStream}
 				ref={player}

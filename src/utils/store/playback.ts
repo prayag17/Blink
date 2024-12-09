@@ -11,6 +11,7 @@ import { shallow } from "zustand/shallow";
 import { createWithEqualityFn } from "zustand/traditional";
 import getSubtitle from "../methods/getSubtitles";
 import playbackProfile from "../playback-profiles";
+import type audioPlaybackInfo from "../types/audioPlaybackInfo";
 import type subtitlePlaybackInfo from "../types/subtitlePlaybackInfo";
 import { generateAudioStreamUrl, playAudio } from "./audioPlayback";
 import useQueue, { setQueue } from "./queue";
@@ -24,6 +25,7 @@ type PlaybackStore = {
 		container: string;
 		id: string | undefined;
 		subtitle: subtitlePlaybackInfo;
+		audio: audioPlaybackInfo;
 	};
 	playbackStream: string;
 	userId: string;
@@ -49,6 +51,10 @@ export const usePlaybackStore = createWithEqualityFn<PlaybackStore>(
 				format: "ass",
 				allTracks: undefined,
 				url: undefined,
+			},
+			audio: {
+				track: undefined!,
+				allTracks: undefined,
 			},
 		},
 		enableSubtitle: true,
@@ -80,6 +86,7 @@ export const playItem = (
 	playsessionId: string | undefined | null,
 	subtitle: subtitlePlaybackInfo | undefined,
 	intro: MediaSegmentDtoQueryResult | undefined,
+	audio: audioPlaybackInfo,
 ) => {
 	console.log({
 		itemName,
@@ -90,6 +97,7 @@ export const playItem = (
 			container,
 			id: mediaSourceId,
 			subtitle,
+			audio,
 		},
 		playbackStream,
 		userId,
@@ -111,7 +119,7 @@ export const playItem = (
 	if (!subtitle) {
 		throw new Error("No subtitle config found");
 	}
-	
+
 	usePlaybackStore.setState({
 		itemName,
 		episodeTitle,
@@ -121,6 +129,7 @@ export const playItem = (
 			container,
 			id: mediaSourceId,
 			subtitle,
+			audio,
 		},
 		playbackStream,
 		userId,
@@ -155,6 +164,8 @@ export const playItemFromQueue = async (
 	const prevMediaSourceId = usePlaybackStore.getState().mediaSource.id;
 	const item = queueItems?.[requestedItemIndex];
 
+	const prevMediaSource = usePlaybackStore.getState().mediaSource;
+
 	console.log("requestedItemIndex", queueItems);
 
 	if (!item?.Id) {
@@ -184,9 +195,14 @@ export const playItemFromQueue = async (
 
 		const mediaSource = (
 			await getMediaInfoApi(api).getPostedPlaybackInfo({
-				audioStreamIndex: item.MediaSources?.[0]?.DefaultAudioStreamIndex ?? 0,
+				audioStreamIndex:
+					prevItem?.Id === item.Id
+						? prevMediaSource.audio.track
+						: (item.MediaSources?.[0]?.DefaultAudioStreamIndex ?? 0),
 				subtitleStreamIndex:
-					item.MediaSources?.[0]?.DefaultSubtitleStreamIndex ?? 0,
+					prevItem?.Id === item.Id
+						? prevMediaSource.subtitle.track
+						: (item?.MediaSources?.[0]?.DefaultSubtitleStreamIndex ?? -1),
 				itemId: item.Id,
 				startTimeTicks: item.UserData?.PlaybackPositionTicks,
 				userId: userId,
@@ -210,6 +226,16 @@ export const playItemFromQueue = async (
 			mediaSource.MediaSources?.[0].DefaultSubtitleStreamIndex ?? "nosub",
 			mediaSource.MediaSources?.[0].MediaStreams,
 		);
+
+		console.log("subtitle", mediaSource);
+
+		// Audio
+		const audio = {
+			track: mediaSource.MediaSources?.[0].DefaultAudioStreamIndex ?? 0,
+			allTracks: mediaSource.MediaSources?.[0].MediaStreams?.filter(
+				(value) => value.Type === "Audio",
+			),
+		};
 
 		// URL generation
 		const urlOptions: URLSearchParams = {
@@ -266,6 +292,7 @@ export const playItemFromQueue = async (
 			mediaSource.PlaySessionId,
 			subtitle,
 			introInfo,
+			audio,
 		);
 	}
 
@@ -315,4 +342,67 @@ export const toggleSubtitleTrack = () => {
 			!prevState.mediaSource.subtitle.enable;
 		usePlaybackStore.setState(prevState);
 	}
+};
+
+/**
+ *
+ * @param trackIndex index of the new audio track
+ * @param api api instance
+ * @param startPosition position of videoPlayer during audio track change (this should be in ticks)
+ */
+export const changeAudioTrack = async (
+	trackIndex: number,
+	api: Api,
+	startPosition: number,
+) => {
+	const prevState = usePlaybackStore.getState();
+	if (!prevState.item?.Id) {
+		throw new Error("item is undefined in changeAudioTrack");
+	}
+	if (!prevState.item.MediaSources?.[0].Id) {
+		throw new Error("Media source id is undefined in changeAudioTrack");
+	}
+	const mediaSource = (
+		await getMediaInfoApi(api).getPostedPlaybackInfo({
+			audioStreamIndex: trackIndex,
+			subtitleStreamIndex: prevState.mediaSource.subtitle.track,
+			itemId: prevState.item.Id,
+			startTimeTicks: prevState.item.UserData?.PlaybackPositionTicks,
+			userId: prevState.userId,
+			mediaSourceId: prevState.item.MediaSources?.[0].Id,
+			playbackInfoDto: {
+				DeviceProfile: playbackProfile,
+			},
+		})
+	).data;
+	prevState.mediaSource.audio.track = trackIndex;
+	prevState.mediaSource.id = mediaSource.MediaSources?.[0].Id ?? "";
+	prevState.mediaSource.container =
+		mediaSource.MediaSources?.[0].Container ?? "";
+
+	// URL generation
+	const urlOptions: URLSearchParams = {
+		//@ts-ignore
+		Static: true,
+		tag: mediaSource.MediaSources?.[0].ETag,
+		mediaSourceId: mediaSource.MediaSources?.[0].Id,
+		deviceId: api?.deviceInfo.id,
+		api_key: api?.accessToken,
+	};
+	const urlParams = new URLSearchParams(urlOptions).toString();
+	let playbackUrl = `${api?.basePath}/Videos/${mediaSource.MediaSources?.[0].Id}/stream.${mediaSource.MediaSources?.[0].Container}?${urlParams}`;
+	if (
+		mediaSource.MediaSources?.[0].SupportsTranscoding &&
+		mediaSource.MediaSources?.[0].TranscodingUrl
+	) {
+		playbackUrl = `${api.basePath}${mediaSource.MediaSources[0].TranscodingUrl}`;
+	}
+
+	prevState.playbackStream = playbackUrl;
+	prevState.startPosition = startPosition;
+	prevState.playsessionId = mediaSource.PlaySessionId;
+
+	usePlaybackStore.setState(prevState);
+	// const currentItemIndex = useQueue.getState().currentItemIndex;
+	// playItemFromQueue(currentItemIndex, prevState.userId, api);
 };

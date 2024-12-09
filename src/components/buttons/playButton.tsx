@@ -417,7 +417,18 @@ const PlayButton = ({
 					currentSubTrack,
 					result?.mediaSource?.MediaSources?.[0]?.MediaStreams,
 				);
-				console.log(subtitle);
+				
+				// Audio
+				const audio = {
+					track:
+						currentAudioTrack ??
+						result.mediaSource.MediaSources?.[0].DefaultAudioStreamIndex ??
+						0,
+					allTracks: result.mediaSource.MediaSources?.[0].MediaStreams?.filter(
+						(value) => value.Type === "Audio",
+					),
+				};
+
 				// URL generation
 				const urlOptions: URLSearchParams = {
 					//@ts-ignore
@@ -460,6 +471,7 @@ const PlayButton = ({
 					result?.mediaSource?.PlaySessionId,
 					subtitle,
 					result?.introInfo,
+					audio,
 				);
 				navigate({ to: "/player" });
 			}
