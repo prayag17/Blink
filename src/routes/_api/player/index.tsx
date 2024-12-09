@@ -104,6 +104,7 @@ function addSubtitleTrackToReactPlayer(
 		track.srclang = reqSubTrack[0].Language ?? "en";
 		track.label = reqSubTrack[0].DisplayTitle ?? "Subtitle";
 		track.default = true;
+		track.id = subtitleTracks.url;
 
 		track.addEventListener("load", () => {
 			const a = track.track;
@@ -113,7 +114,14 @@ function addSubtitleTrackToReactPlayer(
 			console.error(e);
 		});
 
-		videoElem.appendChild(track);
+		const trackAlreadyExists = videoElem.textTracks.getTrackById(
+			subtitleTracks.url,
+		);
+		if (!trackAlreadyExists?.id) {
+			// console.log(trackAlreadyExists.getTrackById(reqSubTrack[0].Index));
+			videoElem.appendChild(track);
+		}
+		
 
 		for (const i of videoElem.textTracks) {
 			if (i.label === reqSubTrack[0].DisplayTitle) {
@@ -487,7 +495,7 @@ function VideoPlayer() {
 		let trickplayResolution: TrickplayInfo | undefined;
 		const trickplayResolutions = mediaSource.id
 			? item?.Trickplay?.[mediaSource.id]
-			: null;	
+			: null;
 		if (trickplayResolutions) {
 			let bestWidth: number | undefined;
 			const maxWidth = window.screen.width * window.devicePixelRatio * 0.2;
@@ -574,7 +582,7 @@ function VideoPlayer() {
 				</div>
 			);
 		}
-	
+
 		if (currentChapter?.[0]?.Name) {
 			return (
 				<div className="flex flex-column video-osb-bubble glass">
@@ -612,7 +620,7 @@ function VideoPlayer() {
 			handleExitPlayer(); // Exit player if playback has finished and the queue is empty
 		}
 	};
-	
+
 	const [subtitleIsChanging, startSubtitleChange] = useTransition();
 	const handleSubtitleChange: ChangeEventHandler<
 		HTMLInputElement | HTMLTextAreaElement
@@ -637,13 +645,42 @@ function VideoPlayer() {
 			if (api && mediaSource.audio.allTracks) {
 				changeAudioTrack(toNumber(e.target.value), api, progress);
 				setIsReady(false);
-				console.log("Audio change progress", progress);
 				// setSettingsMenu(null);
 			}
 		});
 
 		// setPlaying(true);
 	};
+
+	const handlePrevChapter = useCallback(() => {
+		const chapters = item?.Chapters?.filter((chapter, index) => {
+			if ((chapter.StartPositionTicks ?? 0) <= progress) {
+				return true;
+			}
+		});
+		if (!chapters?.length) {
+			player.current?.seekTo(0);
+		}
+		if (chapters?.length === 1) {
+			player.current?.seekTo(ticksToSec(chapters[0].StartPositionTicks ?? 0));
+		} else if (chapters?.length > 1) {
+			player.current?.seekTo(
+				ticksToSec(chapters?.[chapters.length - 2].StartPositionTicks ?? 0),
+			);
+		}
+
+		// const chapter = item?.Chapters?.[Number(currentChapterIndex) - 1];
+		// player.current?.seekTo(ticksToSec(currentChapter?.[0]?.StartPositionTicks ?? 0));
+	}, [progress, playsessionId]);
+	const handleNextChapter = useCallback(() => {
+		const next = item?.Chapters?.filter((chapter, index) => {
+			if ((chapter.StartPositionTicks ?? 0) > progress) {
+				return true;
+			}
+		})[0];
+		console.log("Next Chapter", next);
+		player.current?.seekTo(ticksToSec(next?.StartPositionTicks ?? 0));
+	}, [progress, playsessionId]);
 
 	return (
 		<div className="video-player">
@@ -887,19 +924,29 @@ function VideoPlayer() {
 								<div className="video-player-osd-controls-buttons">
 									<PlayPreviousButton />
 									<IconButton
-										onClick={() =>
+										onClick={() => {
 											player.current?.seekTo(
 												player.current.getCurrentTime() - 15,
-											)
-										}
+											);
+										}}
 									>
 										<span className="material-symbols-rounded fill">
 											fast_rewind
 										</span>
 									</IconButton>
+									<IconButton onClick={handlePrevChapter}>
+										<span className="material-symbols-rounded fill">
+											first_page
+										</span>
+									</IconButton>
 									<IconButton onClick={() => setPlaying((state) => !state)}>
 										<span className="material-symbols-rounded fill">
 											{playing ? "pause" : "play_arrow"}
+										</span>
+									</IconButton>
+									<IconButton onClick={handleNextChapter}>
+										<span className="material-symbols-rounded fill">
+											last_page
 										</span>
 									</IconButton>
 									<IconButton
