@@ -653,7 +653,7 @@ function VideoPlayer() {
 	};
 
 	const handlePrevChapter = useCallback(() => {
-		const chapters = item?.Chapters?.filter((chapter, index) => {
+		const chapters = item?.Chapters?.filter((chapter) => {
 			if ((chapter.StartPositionTicks ?? 0) <= progress) {
 				return true;
 			}
@@ -663,7 +663,7 @@ function VideoPlayer() {
 		}
 		if (chapters?.length === 1) {
 			player.current?.seekTo(ticksToSec(chapters[0].StartPositionTicks ?? 0));
-		} else if (chapters?.length > 1) {
+		} else if ((chapters?.length ?? 0) > 1) {
 			player.current?.seekTo(
 				ticksToSec(chapters?.[chapters.length - 2].StartPositionTicks ?? 0),
 			);
@@ -673,7 +673,7 @@ function VideoPlayer() {
 		// player.current?.seekTo(ticksToSec(currentChapter?.[0]?.StartPositionTicks ?? 0));
 	}, [progress, playsessionId]);
 	const handleNextChapter = useCallback(() => {
-		const next = item?.Chapters?.filter((chapter, index) => {
+		const next = item?.Chapters?.filter((chapter) => {
 			if ((chapter.StartPositionTicks ?? 0) > progress) {
 				return true;
 			}
