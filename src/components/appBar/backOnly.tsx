@@ -5,7 +5,7 @@ import { useRouter } from "@tanstack/react-router";
 import React from "react";
 import QuickConnectButton from "../buttons/quickConnectButton";
 
-export const AppBarBackOnly = () => {
+export default function AppBarBackOnly() {
 	const { history } = useRouter();
 
 	const handleBack = () => {

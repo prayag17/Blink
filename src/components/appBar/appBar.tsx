@@ -14,7 +14,12 @@ import Menu from "@mui/material/Menu";
 import MenuItem from "@mui/material/MenuItem";
 import useScrollTrigger from "@mui/material/useScrollTrigger";
 
-import { Link, useLocation, useNavigate } from "@tanstack/react-router";
+import {
+	Link,
+	useLocation,
+	useNavigate,
+	useRouter,
+} from "@tanstack/react-router";
 
 import { getUserViewsApi } from "@jellyfin/sdk/lib/utils/api/user-views-api";
 
@@ -79,14 +84,19 @@ const MemoizeBackButton = React.memo(BackButton);
 
 export const AppBar = () => {
 	const api = useApiInContext((s) => s.api);
+	const createApi = useApiInContext((s) => s.createApi);
 
 	const navigate = useNavigate();
 
 	const [display, setDisplay] = useState(false);
 
 	const location = useLocation();
+	const router = useRouter();
 
-	const user = useCentralStore((s) => s.currentUser);
+	const [user, resetCurrentUser] = useCentralStore((s) => [
+		s.currentUser,
+		s.resetCurrentUser,
+	]);
 	const libraries = useQuery({
 		queryKey: ["libraries"],
 		queryFn: async () => {
@@ -123,8 +133,12 @@ export const AppBar = () => {
 	const handleLogout = async () => {
 		console.log("Logging out user...");
 		await api?.logout();
+		createApi(api?.basePath ?? "", undefined);
+		console.log(api);
+		resetCurrentUser();
 		delUser();
 		sessionStorage.removeItem("accessToken");
+		await router.invalidate();
 		queryClient.clear();
 		setAnchorEl(null);
 		navigate({ to: "/login" });

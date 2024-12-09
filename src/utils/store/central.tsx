@@ -26,6 +26,7 @@ type CentralStore = {
 	clientVersion: string;
 	currentUser: null | UserDto;
 	fetchCurrentUser: (api: Api | undefined) => Promise<void>;
+	resetCurrentUser: () => void;
 };
 
 /**
@@ -58,10 +59,13 @@ export const CentralProvider = ({ children }: { children: ReactNode }) => {
 			clientVersion: version,
 			currentUser: null,
 			fetchCurrentUser: async (api) => {
-				if (api) {
+				if (api?.accessToken) {
 					const user = (await getUserApi(api).getCurrentUser()).data;
 					set((s) => ({ ...s, currentUser: user }));
 				}
+			},
+			resetCurrentUser: () => {
+				set((s) => ({ ...s, currentUser: null }));
 			},
 		})),
 	);

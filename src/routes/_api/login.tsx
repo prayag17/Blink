@@ -1,4 +1,4 @@
-import { AppBarBackOnly } from "@/components/appBar/backOnly";
+import AppBarBackOnly from "@/components/appBar/backOnly";
 import { getUserApi } from "@jellyfin/sdk/lib/utils/api/user-api";
 import { Outlet, createFileRoute, redirect } from "@tanstack/react-router";
 import React from "react";

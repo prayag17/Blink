@@ -49,6 +49,7 @@ export const queryClient = new QueryClient({
 	},
 });
 
+// biome-ignore lint/nursery/useComponentExportOnlyModules : This is a valid use case for a component export
 function ProviderWrapper() {
 	const [api, createApi, jellyfinSDK] = useApiInContext((s) => [
 		s.api,

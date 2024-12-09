@@ -59,6 +59,7 @@ export const Route = createFileRoute("/_api")({
 		} else if (context.api) {
 			if (context.api.accessToken && location.pathname !== "/login/manual") {
 				try {
+					console.info("AccessToken", context.api.accessToken);
 					await getUserApi(context.api).getCurrentUser(); // Verify user is able to authenticate
 				} catch (error) {
 					console.error(error);

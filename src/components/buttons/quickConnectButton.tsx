@@ -141,9 +141,11 @@ const QuickConnectButton = (props: LoadingButtonProps) => {
 		},
 	});
 
+	
 	useInterval(
 		() => {
 			if (quickConnectSecret) {
+				console.log(checkForQuickConnect);
 				checkQuickConnectStatus.mutate(quickConnectSecret);
 			}
 		},
@@ -175,6 +177,7 @@ const QuickConnectButton = (props: LoadingButtonProps) => {
 				open={Boolean(quickConnectCode)}
 				onClose={() => {
 					setQuickConnectCode(null);
+					setCheckForQuickConnect(false);
 					initQuickConnect.reset();
 					checkQuickConnectStatus.reset();
 				}}

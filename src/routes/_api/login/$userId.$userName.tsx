@@ -134,25 +134,20 @@ function LoginUser() {
 			}}
 		>
 			<AvatarImage userId={userId} />
-			<Typography
-				textAlign="center"
-				variant="h5"
-				sx={{ opacity: 0.8 }}
-				mb={2}
-				mt={2}
-			>
-				Login as{" "}
+			<div style={{ display: "inline-flex", margin: "1em 0" }}>
+				<Typography variant="h5">Login as</Typography>
 				<Typography
 					variant="h5"
 					style={{
 						display: "inline",
 					}}
+					ml={0.5}
 					fontWeight={700}
 					className="gradient-text"
 				>
 					{userName}
 				</Typography>
-			</Typography>
+			</div>
 			<form onSubmit={(e) => handleLogin.mutate(e)}>
 				<FormControl
 					variant="outlined"

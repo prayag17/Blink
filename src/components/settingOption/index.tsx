@@ -1,23 +1,30 @@
 import { getSetting, setSetting } from "@/utils/storage/settings";
 import { FormControlLabel, Switch, Typography } from "@mui/material";
+import { useQuery } from "@tanstack/react-query";
 import React, { useState } from "react";
 
 const SettingOption = ({
 	setting,
 }: { setting: { key: string; name: string; description: string } }) => {
-	const [settingVal, setSettingVal] = useState(
-		async () => (await getSetting(setting.key)) ?? false,
-	);
+	const initValue = useQuery({
+		queryKey: ["setting", setting.key],
+		queryFn: async () => {
+			const result = await getSetting(setting.key);
+			return Boolean(result);
+		},
+	});
+	const [settingVal, setSettingVal] = useState(initValue.data ?? false);
 	return (
 		<FormControlLabel
 			control={
 				<Switch
 					color="primary"
-					checked={settingVal}
-					onChange={(e) => {
-						setSetting(setting.key, e.target.checked);
-						setSettingVal(e.target.checked);
+					checked={Boolean(settingVal)}
+					onChange={(_, checked) => {
+						setSetting(setting.key, checked);
+						setSettingVal(Boolean(checked));
 					}}
+					disabled={initValue.isLoading}
 					name={setting.name}
 				/>
 			}

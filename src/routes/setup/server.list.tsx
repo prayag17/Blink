@@ -6,7 +6,7 @@ import Paper from "@mui/material/Paper";
 import Typography from "@mui/material/Typography";
 import { red } from "@mui/material/colors";
 
-import { AppBarBackOnly } from "@/components/appBar/backOnly";
+import AppBarBackOnly from "@/components/appBar/backOnly";
 import {
 	delServer,
 	getAllServers,
