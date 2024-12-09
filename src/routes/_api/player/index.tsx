@@ -1,5 +1,9 @@
 import { WebviewWindow as appWindow } from "@tauri-apps/api/webviewWindow";
-import React, { type ChangeEventHandler, useTransition } from "react";
+import React, {
+	type ChangeEventHandler,
+	type MouseEventHandler,
+	useTransition,
+} from "react";
 import { useLayoutEffect, useMemo } from "react";
 
 import CircularProgress from "@mui/material/CircularProgress";
@@ -451,6 +455,13 @@ function VideoPlayer() {
 		});
 		return marks;
 	}, [item?.Chapters]);
+
+	const [showChapterList, setShowChapterList] =
+		useState<HTMLButtonElement | null>(null);
+	const handleShowChapterList: MouseEventHandler<HTMLButtonElement> =
+		useCallback((e) => {
+			setShowChapterList(e.currentTarget);
+		}, []);
 
 	const sliderDisplayFormat = (value: number) => {
 		const currentChapter = item?.Chapters?.filter((chapter, index) => {
@@ -935,6 +946,38 @@ function VideoPlayer() {
 										</span>
 									</IconButton>
 									<QueueButton />
+									<IconButton onClick={handleShowChapterList}>
+										<span className="material-symbols-rounded">list</span>
+									</IconButton>
+									<Menu
+										open={Boolean(showChapterList)}
+										anchorEl={showChapterList}
+										onClose={() => setShowChapterList(null)}
+										anchorOrigin={{
+											vertical: "top",
+											horizontal: "center",
+										}}
+										transformOrigin={{
+											vertical: "bottom",
+											horizontal: "center",
+										}}
+									>
+										{chapterMarks &&
+											item?.Chapters?.map((chapter) => (
+												<MenuItem
+													key={chapter.Name}
+													onClick={() => {
+														player.current?.seekTo(
+															ticksToSec(chapter.StartPositionTicks ?? 0),
+															"seconds",
+														);
+														setShowChapterList(null); // Close the chapter list menu
+													}}
+												>
+													{chapter.Name}
+												</MenuItem>
+											))}
+									</Menu>
 									<IconButton
 										disabled={
 											mediaSource.subtitle.track === -2 || subtitleIsChanging
