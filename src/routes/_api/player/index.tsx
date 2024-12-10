@@ -41,7 +41,13 @@ import { AnimatePresence, motion } from "framer-motion";
 
 import { useBackdropStore } from "@/utils/store/backdrop";
 
-import { Button, LinearProgress, Popover, TextField } from "@mui/material";
+import {
+	Button,
+	LinearProgress,
+	Popover,
+	TextField,
+	Tooltip,
+} from "@mui/material";
 import JASSUB from "jassub";
 //@ts-ignore
 import workerUrl from "jassub/dist/jassub-worker.js?url";
@@ -60,6 +66,7 @@ import { toNumber } from "lodash";
 import type { OnProgressProps } from "react-player/base";
 
 import type subtitlePlaybackInfo from "@/utils/types/subtitlePlaybackInfo";
+import type { Instance } from "@popperjs/core";
 //@ts-ignore
 import font from "./Noto-Sans-Indosphere.ttf?url";
 
@@ -493,24 +500,12 @@ function VideoPlayer() {
 			if (index + 1 === item.Chapters?.length) {
 				return chapter;
 			}
-			if (isSeeking) {
-				if (
-					(item.Chapters?.[index + 1]?.StartPositionTicks ?? sliderProgress) -
-						sliderProgress >=
-						0 &&
-					(chapter.StartPositionTicks ?? sliderProgress) - sliderProgress < 0
-				) {
-					return chapter;
-				}
-			} else {
-				if (
-					(item.Chapters?.[index + 1]?.StartPositionTicks ?? progress) -
-						progress >=
-						0 &&
-					(chapter.StartPositionTicks ?? progress) - progress < 0
-				) {
-					return chapter;
-				}
+			if (
+				(item.Chapters?.[index + 1]?.StartPositionTicks ?? value) - value >=
+					0 &&
+				(chapter.StartPositionTicks ?? value) - value < 0
+			) {
+				return chapter;
 			}
 		});
 
@@ -564,41 +559,43 @@ function VideoPlayer() {
 			};
 			const imgUrlParams = new URLSearchParams(imgUrlParamsObject).toString();
 
+			const imageAspectRatio = trickplayResolution.Width / trickplayResolution.Height;
+			
 			if (currentChapter?.[0]?.Name) {
 				return (
-					<div className="flex flex-column video-osb-bubble glass">
+					<div className="flex flex-column video-osb-bubble">
 						<div
 							className="video-osd-trickplayBubble"
 							style={{
 								background: `url(${api?.basePath}/Videos/${item?.Id}/Trickplay/${trickplayResolution.Width}/${index}.jpg?${imgUrlParams})`,
 								backgroundPositionX: `${backgroundOffsetX}px`,
 								backgroundPositionY: `${backgroundOffsetY}px`,
-								width: `${trickplayResolution.Width}px`,
-								height: `${trickplayResolution.Height}px`,
+								width: "100%",
+								aspectRatio: imageAspectRatio,
 							}}
 						/>
-						<Typography variant="h6" px={2} pt={1}>
+						<Typography variant="h6" px="12px" pt={1}>
 							{currentChapter?.[0]?.Name}
 						</Typography>
-						<Typography px={2} pb={1}>
+						<Typography px="12px" pb={1}>
 							{ticksDisplay(value)}
 						</Typography>
 					</div>
 				);
 			}
 			return (
-				<div className="flex flex-column video-osb-bubble glass">
+				<div className="flex flex-column video-osb-bubble">
 					<div
 						className="video-osd-trickplayBubble"
 						style={{
 							background: `url(${api?.basePath}/Videos/${item?.Id}/Trickplay/${trickplayResolution.Width}/${index}.jpg?${imgUrlParams})`,
 							backgroundPositionX: `${backgroundOffsetX}px`,
 							backgroundPositionY: `${backgroundOffsetY}px`,
-							width: `${trickplayResolution.Width}px`,
-							height: `${trickplayResolution.Height}px`,
+							width: "100%",
+							aspectRatio: imageAspectRatio,
 						}}
 					/>
-					<Typography variant="h6" px={2} py={1}>
+					<Typography variant="h6" px="12px" py={1}>
 						{ticksDisplay(value)}
 					</Typography>
 				</div>
@@ -607,8 +604,8 @@ function VideoPlayer() {
 
 		if (currentChapter?.[0]?.Name) {
 			return (
-				<div className="flex flex-column video-osb-bubble glass">
-					<Typography variant="h6" px={2} pt={1}>
+				<div className="flex flex-column video-osb-bubble">
+					<Typography variant="h6" px="12px" pt={1}>
 						{currentChapter?.[0]?.Name}
 					</Typography>
 					<Typography px={2} pb={1}>
@@ -618,8 +615,8 @@ function VideoPlayer() {
 			);
 		}
 		return (
-			<div className="flex flex-column video-osb-bubble glass">
-				<Typography variant="h6" px={2} py={1}>
+			<div className="flex flex-column video-osb-bubble ">
+				<Typography variant="h6" px="12px" py={1}>
 					{ticksDisplay(value)}
 				</Typography>
 			</div>
@@ -703,6 +700,27 @@ function VideoPlayer() {
 		console.log("Next Chapter", next);
 		player.current?.seekTo(ticksToSec(next?.StartPositionTicks ?? 0));
 	}, [progress, playsessionId]);
+
+	const positionRef = React.useRef<{ x: number; y: number }>({
+		x: 0,
+		y: 0,
+	});
+	const popperRef = React.useRef<Instance>(null);
+	const areaRef = React.useRef<HTMLDivElement>(null);
+
+	const [hoverProgress, setHoverProgress] = useState(0);
+
+	const handleSliderHover = (event: React.MouseEvent) => {
+		positionRef.current = { x: event.clientX, y: event.clientY };
+		const rect = areaRef.current!.getBoundingClientRect();
+		const width = rect.width;
+		const distX = event.clientX - rect.left;
+		const percentageCovered = distX / width;
+		setHoverProgress(percentageCovered * itemDuration);
+		if (popperRef.current != null) {
+			popperRef.current.update();
+		}
+	};
 
 	return (
 		<div className="video-player">
@@ -904,54 +922,89 @@ function VideoPlayer() {
 						</Typography>
 						<div className="video-player-osd-controls">
 							<div className="video-player-osd-controls-progress">
-								<Slider
-									value={isSeeking ? sliderProgress : progress}
-									max={itemDuration}
-									step={1}
-									onChange={(_, newValue) => {
-										setIsSeeking(true);
-										Array.isArray(newValue)
-											? setSliderProgress(newValue[0])
-											: setSliderProgress(newValue);
-									}}
-									onChangeCommitted={(_, newValue) => {
-										setIsSeeking(false);
-										Array.isArray(newValue)
-											? setProgress(newValue[0])
-											: setProgress(newValue);
-										if (Array.isArray(newValue)) {
-											player.current?.seekTo(
-												ticksToSec(newValue[0]),
-												"seconds",
-											);
-										} else {
-											player.current?.seekTo(ticksToSec(newValue), "seconds");
-										}
-									}}
-									sx={{
-										"& .MuiSlider-thumb": {
-											width: 14,
-											height: 14,
-											transition: "0.1s ease-in-out",
-											opacity: 0,
-											"&.Mui-active": {
-												width: 20,
-												height: 20,
-												opacity: 1,
+								<Tooltip
+									// title={sliderDisplayFormat(
+									// 	positionRef.current.x - areaRef.current!.getBoundingClientRect().x,
+									// )}
+									key={`${positionRef.current}`}
+									title={sliderDisplayFormat(hoverProgress)}
+									placement="top"
+									slotProps={{
+										popper: {
+											popperRef,
+											anchorEl: {
+												getBoundingClientRect: () => {
+													return new DOMRect(
+														positionRef.current.x,
+														areaRef.current!.getBoundingClientRect().y,
+														0,
+														0,
+													);
+												},
+											},
+											disablePortal: true,
+										},
+										tooltip: {
+											className: "glass",
+											style: {
+												width: "34em",
+												overflow: "hidden",
+												padding: "12px",
+												borderRadius: "20px",
 											},
 										},
-										"&:hover .MuiSlider-thumb": {
-											opacity: 1,
-										},
-										"& .MuiSlider-rail": {
-											opacity: 0.28,
-											background: "white",
-										},
 									}}
-									marks={chapterMarks}
-									valueLabelDisplay="auto"
-									valueLabelFormat={sliderDisplayFormat}
-								/>
+								>
+									<Slider
+										value={isSeeking ? sliderProgress : progress}
+										max={itemDuration}
+										step={1}
+										onChange={(_, newValue) => {
+											setIsSeeking(true);
+											Array.isArray(newValue)
+												? setSliderProgress(newValue[0])
+												: setSliderProgress(newValue);
+										}}
+										onChangeCommitted={(_, newValue) => {
+											setIsSeeking(false);
+											Array.isArray(newValue)
+												? setProgress(newValue[0])
+												: setProgress(newValue);
+											if (Array.isArray(newValue)) {
+												player.current?.seekTo(
+													ticksToSec(newValue[0]),
+													"seconds",
+												);
+											} else {
+												player.current?.seekTo(ticksToSec(newValue), "seconds");
+											}
+										}}
+										sx={{
+											"& .MuiSlider-thumb": {
+												width: 14,
+												height: 14,
+												transition: "0.1s ease-in-out",
+												opacity: 0,
+												"&.Mui-active": {
+													width: 20,
+													height: 20,
+													opacity: 1,
+												},
+											},
+											"&:hover .MuiSlider-thumb": {
+												opacity: 1,
+											},
+											"& .MuiSlider-rail": {
+												opacity: 0.28,
+												background: "white",
+											},
+										}}
+										marks={chapterMarks}
+										valueLabelDisplay="off"
+										ref={areaRef}
+										onMouseMove={handleSliderHover}
+									/>
+								</Tooltip>
 								<div className="video-player-osd-controls-progress-text">
 									<Typography>
 										{ticksDisplay(isSeeking ? sliderProgress : progress)}

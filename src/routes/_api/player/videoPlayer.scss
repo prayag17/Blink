@@ -17,9 +17,9 @@
 				filter: drop-shadow(0 0 10px black);
 			}
 		}
-		&-trick-bubble {
+		&-trickplayBubble {
 			overflow: hidden;
-			border-radius: $border-radius-default;
+			border-radius: 8px;
 		}
 	}
 	&-osd-visible {
@@ -98,10 +98,19 @@ video {
 				align-items: stretch;
 				justify-content: center;
 				margin-bottom: 0.5em;
-					&-text {
+				&-text {
 					display: flex;
 					align-items: stretch;
 					justify-content: space-between;
+				}
+				&-bubble{
+					width: 14em;
+					top: 0;
+					left: 0;
+					transform-origin:bottom center;
+					transform: translate(var(--left, 0), var(--top, 0));
+					position: fixed;
+
 				}
 			}
 			&-buttons {
