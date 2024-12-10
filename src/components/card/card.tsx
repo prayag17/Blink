@@ -135,7 +135,7 @@ const CardComponent = ({
 											imageType,
 											{
 												quality: 90,
-												fillWidth: cardType === "thumb" ? 560 : 280,
+												fillWidth: cardType === "thumb" ? 560 : 320,
 											},
 										)
 								: ""
