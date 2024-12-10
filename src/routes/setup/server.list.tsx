@@ -8,17 +8,23 @@ import { red } from "@mui/material/colors";
 
 import AppBarBackOnly from "@/components/appBar/backOnly";
 import {
+	type ServerInfo,
 	delServer,
 	getAllServers,
 	getDefaultServer,
 	setDefaultServer,
 } from "@/utils/storage/servers";
 import { delUser } from "@/utils/storage/user";
-import { setBackdrop } from "@/utils/store/backdrop";
+import { useBackdropStore } from "@/utils/store/backdrop";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { createFileRoute, useNavigate } from "@tanstack/react-router";
+import {
+	createFileRoute,
+	useNavigate,
+	useRouter,
+} from "@tanstack/react-router";
 import { useSnackbar } from "notistack";
 import "./serverList.scss";
+import AddServerDialog from "@/components/addServerDialog";
 import { useApiInContext } from "@/utils/store/api";
 
 export const Route = createFileRoute("/setup/server/list")({
@@ -27,8 +33,8 @@ export const Route = createFileRoute("/setup/server/list")({
 
 function ServerList() {
 	const navigate = useNavigate();
-	const [serverState, setServerState] = useState(null);
 	const { enqueueSnackbar } = useSnackbar();
+	const router = useRouter();
 
 	const createApi = useApiInContext((s) => s.createApi);
 
@@ -45,12 +51,12 @@ function ServerList() {
 	});
 
 	const handleServerChange = useMutation({
-		mutationFn: async () => {
+		mutationFn: async (server: ServerInfo) => {
 			await delUser();
-			await setDefaultServer(serverState.id);
+			await setDefaultServer(server.id);
 			queryClient.clear();
 			await defaultServer.refetch();
-			createApi(serverState.address, undefined);
+			createApi(server.address, undefined);
 			queryClient.removeQueries();
 		},
 		onSuccess: async () => {
@@ -64,19 +70,21 @@ function ServerList() {
 		},
 	});
 
-	const handleDelete = async (server) => {
+	const handleDelete = async (server: ServerInfo) => {
 		await delServer(server.id);
 
 		if (server.id === defaultServer.data) {
 			await delUser();
 			await servers.refetch();
 
-			if (servers.length > 1) {
-				setDefaultServer(servers.data?.[0].id);
-				createApi(servers.data?.[0].address, undefined);
+			if ((servers.data?.length ?? 0) > 1) {
+				if (servers.data?.[0].id) {
+					setDefaultServer(servers.data?.[0].id);
+					createApi(servers.data?.[0].address, undefined);
+				}
 			} else {
 				await setDefaultServer(null);
-				// TODO: reset api in context here
+				await router.invalidate();
 			}
 			queryClient.removeQueries();
 			navigate({ to: "/" });
@@ -87,9 +95,13 @@ function ServerList() {
 		await defaultServer.refetch();
 	};
 
+	const setBackdrop = useBackdropStore((state) => state.setBackdrop);
+
 	useLayoutEffect(() => {
 		setBackdrop("", "");
 	}, []);
+
+	const [addServerDialog, setAddServerDialog] = useState(false);
 
 	return (
 		<div className="server-list">
@@ -110,15 +122,20 @@ function ServerList() {
 					style={{
 						fontSize: "1.64em",
 					}}
-					onClick={() => navigate({ to: "/setup/server/add" })}
+					onClick={() => setAddServerDialog(true)}
 				>
 					<div className="material-symbols-rounded">add</div>
 				</IconButton>
+				<AddServerDialog
+					open={addServerDialog}
+					sideEffect={() => servers.refetch()}
+					setAddServerDialog={setAddServerDialog}
+				/>
 			</div>
 			<Paper className="server-list-container">
 				{servers.isSuccess &&
-					servers.data.map((server, index) => (
-						<div key={index} className="server-list-item">
+					servers.data.map((server) => (
+						<div key={server.id} className="server-list-item">
 							<div className="material-symbols-rounded server-list-item-icon">
 								dns
 							</div>
@@ -131,15 +148,11 @@ function ServerList() {
 										alignItems: "center",
 									}}
 								>
-									{server.systemInfo.ServerName}
+									{server.systemInfo?.ServerName}
 									{server.id === defaultServer.data && (
 										<Chip
 											label={
-												<Typography
-													variant="caption"
-													fontWeight={600}
-													fontFamily="JetBrains Mono Variable"
-												>
+												<Typography variant="caption" fontWeight={700}>
 													Current
 												</Typography>
 											}
@@ -148,7 +161,7 @@ function ServerList() {
 												ml: 2,
 												width: "5.4em",
 											}}
-											size="medium"
+											size="small"
 										/>
 									)}
 								</Typography>
@@ -168,7 +181,7 @@ function ServerList() {
 									}}
 									fontWeight={300}
 								>
-									Version: {server.systemInfo.Version}
+									Version: {server.systemInfo?.Version}
 								</Typography>
 							</div>
 							<div className="server-list-item-buttons">
@@ -177,8 +190,7 @@ function ServerList() {
 										fontSize: "1.64em",
 									}}
 									onClick={() => {
-										setServerState(server);
-										handleServerChange.mutate();
+										handleServerChange.mutate(server);
 									}}
 									disabled={handleServerChange.isPending}
 								>

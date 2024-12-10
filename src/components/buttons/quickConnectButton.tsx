@@ -21,7 +21,7 @@ import { skipToken, useMutation, useQuery } from "@tanstack/react-query";
 import { useNavigate } from "@tanstack/react-router";
 import { writeText } from "@tauri-apps/plugin-clipboard-manager";
 import { useSnackbar } from "notistack";
-import React, { useState } from "react";
+import React, { useCallback, useState } from "react";
 
 const Transition = React.forwardRef(function Transition(
 	props: TransitionProps & {
@@ -141,7 +141,13 @@ const QuickConnectButton = (props: LoadingButtonProps) => {
 		},
 	});
 
-	
+	const handleQuickConnectClose = useCallback(() => {
+		setQuickConnectCode(null);
+		setCheckForQuickConnect(false);
+		initQuickConnect.reset();
+		checkQuickConnectStatus.reset();
+	}, []);
+
 	useInterval(
 		() => {
 			if (quickConnectSecret) {
@@ -175,12 +181,7 @@ const QuickConnectButton = (props: LoadingButtonProps) => {
 			</LoadingButton>
 			<Dialog
 				open={Boolean(quickConnectCode)}
-				onClose={() => {
-					setQuickConnectCode(null);
-					setCheckForQuickConnect(false);
-					initQuickConnect.reset();
-					checkQuickConnectStatus.reset();
-				}}
+				onClose={handleQuickConnectClose}
 				fullWidth
 				maxWidth="xs"
 				TransitionComponent={Transition}
@@ -249,12 +250,7 @@ const QuickConnectButton = (props: LoadingButtonProps) => {
 						}
 						label="Remember device"
 					/>
-					<Button
-						variant="contained"
-						onClick={() => {
-							setQuickConnectCode(null);
-						}}
-					>
+					<Button variant="contained" onClick={handleQuickConnectClose}>
 						Close
 					</Button>
 				</DialogActions>

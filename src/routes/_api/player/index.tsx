@@ -1036,7 +1036,13 @@ function VideoPlayer() {
 											{playing ? "pause" : "play_arrow"}
 										</span>
 									</IconButton>
-									<IconButton onClick={handleNextChapter}>
+									<IconButton
+										disabled={
+											(item?.Chapters?.[item.Chapters?.length - 1]
+												?.StartPositionTicks ?? 0) <= progress
+										}
+										onClick={handleNextChapter}
+									>
 										<span className="material-symbols-rounded fill">
 											last_page
 										</span>
@@ -1114,7 +1120,10 @@ function VideoPlayer() {
 										</span>
 									</IconButton>
 									<QueueButton />
-									<IconButton onClick={handleShowChapterList}>
+									<IconButton
+										disabled={item?.Chapters?.length === 0}
+										onClick={handleShowChapterList}
+									>
 										<span className="material-symbols-rounded">list</span>
 									</IconButton>
 									<Menu

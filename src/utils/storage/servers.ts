@@ -15,7 +15,10 @@ const store = await load(".servers.dat", { autoSave: true });
 /**
  * Set server in .servers.dat
  */
-export const setServer = async (serverId: string, serverInfo: ServerInfo) => {
+export const setServer = async (
+	serverId: string,
+	serverInfo: RecommendedServerInfo,
+) => {
 	const servers = await getAllServers();
 	const newServers = servers.filter((server) => server.id !== serverId);
 

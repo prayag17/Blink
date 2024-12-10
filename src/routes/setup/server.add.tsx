@@ -1,11 +1,9 @@
-import React, { useState } from "react";
+import React, { type FormEvent, useState } from "react";
 
 import { setDefaultServer, setServer } from "@/utils/storage/servers";
 
 import LoadingButton from "@mui/lab/LoadingButton";
-import Container from "@mui/material/Container";
 import Grid from "@mui/material/Grid";
-import LinearProgress from "@mui/material/LinearProgress";
 import TextField from "@mui/material/TextField";
 import Typography from "@mui/material/Typography";
 
@@ -28,17 +26,18 @@ function ServerSetup() {
 
 	const { enqueueSnackbar } = useSnackbar();
 
-	const navigate = useNavigate({ from: "/setup/server/add" });
+	const navigate = useNavigate();
 
 	const checkServer = useMutation({
-		mutationFn: async () => {
+		mutationFn: async (e: FormEvent<HTMLFormElement>) => {
+			e.preventDefault();
 			const servers =
 				await jellyfin.discovery.getRecommendedServerCandidates(serverIp);
 			const bestServer = jellyfin.discovery.findBestServer(servers);
 			return bestServer;
 		},
 		onSuccess: (bestServer) => {
-			if (bestServer) {
+			if (bestServer?.systemInfo?.Id) {
 				createApi(bestServer.address, undefined);
 
 				setDefaultServer(bestServer.systemInfo?.Id);
@@ -48,12 +47,12 @@ function ServerSetup() {
 					variant: "success",
 				});
 
-				navigate({ to: "/login" });
+				navigate({ to: "/login", replace: true });
 			}
 		},
 		onError: (err) => {
 			console.error(err);
-			enqueueSnackbar(`${err}`, { variant: "error" });
+			enqueueSnackbar(`${JSON.stringify(err)}`, { variant: "error" });
 			enqueueSnackbar("Something went wrong", { variant: "error" });
 		},
 		onSettled: (bestServer) => {
@@ -67,87 +66,69 @@ function ServerSetup() {
 	});
 
 	return (
-		<>
-			<LinearProgress
+		<div
+			className={"centered serverContainer flex flex-column flex-center"}
+			style={{
+				opacity: checkServer.isPending ? "0.5" : "1",
+				transition: "opacity 350ms",
+				width: "40vw",
+			}}
+		>
+			<div style={{ marginBottom: "1em" }}>
+				<Typography variant="h3">Add Server</Typography>
+			</div>
+			<form
+				onSubmit={(e) => checkServer.mutate(e)}
+				className="flex flex-column"
+				style={{ gap: "1em", width: "100%" }}
+			>
+				<TextField
+					className="textbox"
+					label="Server Address:"
+					variant="outlined"
+					// inputRef={serverIp}
+					onChange={(event) => {
+						setServerIp(event.target.value);
+					}}
+				/>
+				<LoadingButton
+					variant="contained"
+					sx={{ width: "100%" }}
+					size="large"
+					loading={checkServer.isPending}
+					endIcon={
+						<span className="material-symbols-rounded">chevron_right</span>
+					}
+					loadingPosition="end"
+					type="submit"
+				>
+					Add Server
+				</LoadingButton>
+			</form>
+			<Grid
+				item
+				xl={5}
+				md={6}
 				sx={{
-					position: "fixed",
-					top: 0,
-					left: 0,
-					right: 0,
-					opacity: checkServer.isPending ? 1 : 0,
-					transition: "opacity 350ms",
-				}}
-			/>
-			<Container
-				maxWidth="sm"
-				className={"centered serverContainer"}
-				style={{
-					opacity: checkServer.isPending ? "0.5" : "1",
-					transition: "opacity 350ms",
+					width: "100%",
+					display: "flex",
+					alignItems: "center",
+					gap: 1,
+					opacity: 0.6,
 				}}
 			>
-				<Grid
-					container
-					spacing={2}
-					direction="column"
-					justifyContent="center"
-					alignItems="center"
+				<span
+					className="material-symbols-rounded"
+					style={{
+						color: yellow[700],
+					}}
 				>
-					<Grid item xl={5} md={6} sx={{ marginBottom: "1em" }}>
-						<Typography variant="h3">Add Server</Typography>
-					</Grid>
-					<Grid item xl={5} md={6} sx={{ width: "100%" }}>
-						<TextField
-							className="textbox"
-							label="Server Address:"
-							variant="outlined"
-							// inputRef={serverIp}
-							onChange={(event) => {
-								setServerIp(event.target.value);
-							}}
-						/>
-					</Grid>
-					<Grid item xl={5} md={6} sx={{ width: "100%" }}>
-						<LoadingButton
-							variant="contained"
-							sx={{ width: "100%" }}
-							size="large"
-							loading={checkServer.isPending}
-							endIcon={
-								<span className="material-symbols-rounded">chevron_right</span>
-							}
-							loadingPosition="end"
-							onClick={checkServer.mutate}
-						>
-							Add Server
-						</LoadingButton>
-					</Grid>
-					<Grid
-						item
-						xl={5}
-						md={6}
-						sx={{
-							width: "100%",
-							display: "flex",
-							alignItems: "center",
-							gap: 1,
-							opacity: 0.6,
-						}}
-					>
-						<span
-							className="material-symbols-rounded"
-							style={{
-								color: yellow[700],
-							}}
-						>
-							info
-						</span>
-						<Typography variant="subtitle1">
-							Example: https://demo.jellyfin.org/stable
-						</Typography>
-					</Grid>
-				</Grid>
-			</Container>
-		</>
+					info
+				</span>
+				<Typography variant="subtitle1">
+					Example: https://demo.jellyfin.org/stable
+				</Typography>
+			</Grid>
+		</div>
 	);
 }

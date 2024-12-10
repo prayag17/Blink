@@ -204,12 +204,12 @@ function UserLoginManual() {
 			</div>
 			{server.isSuccess && server.data?.LoginDisclaimer && (
 				<Paper
-					elevation={5}
+					elevation={0}
 					style={{
 						marginTop: "1em",
 						padding: "1em",
 						borderRadius: "15px",
-						width: "32em",
+						width: "28em",
 					}}
 				>
 					<div
