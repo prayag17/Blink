@@ -175,6 +175,10 @@ function VideoPlayer() {
 		(segment) => segment.Type === "Outro",
 	);
 
+	const recapInfo = mediaSegments?.Items?.find(
+		(segment) => segment.Type === "Recap",
+	);
+
 	const [currentQueueItemIndex, queue] = useQueue((s) => [
 		s.currentItemIndex,
 		s.tracks,
@@ -438,9 +442,27 @@ function VideoPlayer() {
 		return false;
 	}, [progress, item?.Id]);
 
+	const showSkipRecap = useMemo(() => {
+		if (
+			recapInfo &&
+			progress >= (recapInfo?.StartTicks ?? 0) &&
+			progress < (recapInfo?.EndTicks ?? 0)
+		) {
+			return true;
+		}
+		return false;
+	}, [progress, item?.Id]);
+
 	const handleSkipIntro = useCallback(() => {
 		player.current?.seekTo(
 			ticksToSec(Number(introInfo?.EndTicks)) ??
+				player.current?.getCurrentTime(),
+		);
+	}, [item?.Id]);
+
+	const handleSkipRecap = useCallback(() => {
+		player.current?.seekTo(
+			ticksToSec(Number(recapInfo?.EndTicks)) ??
 				player.current?.getCurrentTime(),
 		);
 	}, [item?.Id]);
@@ -723,6 +745,23 @@ function VideoPlayer() {
 					onClick={handleSkipIntro}
 				>
 					Skip Intro
+				</Button>
+			)}
+			{showSkipRecap && (
+				<Button
+					variant="outlined"
+					size="large"
+					//@ts-ignore
+					color="white"
+					style={{
+						position: "absolute",
+						bottom: "18vh",
+						right: "2em",
+						zIndex: 10000,
+					}}
+					onClick={handleSkipRecap}
+				>
+					Skip Recap
 				</Button>
 			)}
 			{!forceShowCredits && showUpNextCard && (

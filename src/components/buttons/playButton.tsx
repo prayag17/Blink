@@ -45,7 +45,7 @@ type PlayButtonProps = {
 	item: BaseItemDto;
 	userId: string | undefined;
 	itemType: BaseItemKind;
-	currentAudioTrack?: number;
+	currentAudioTrack?: number | "auto";
 	currentVideoTrack?: number;
 	currentSubTrack?: number | "nosub";
 	className?: string;
@@ -153,20 +153,40 @@ const PlayButton = ({
 								);
 							}
 							index = result.data.Items?.map((i) => i.Id).indexOf(currentEpisodeId) ?? 0;
-							mediaSource = await getMediaInfoApi(api).getPostedPlaybackInfo({
-								audioStreamIndex: currentAudioTrack,
-								subtitleStreamIndex:
-									currentSubTrack === "nosub" ? -1 : currentSubTrack,
-								itemId: result.data.Items?.[index]?.Id ?? "",
-								startTimeTicks:
-									result.data.Items?.[index].UserData?.PlaybackPositionTicks,
-								userId: userId,
-								mediaSourceId:
-									result.data.Items?.[index].MediaSources?.[0]?.Id ?? "",
-								playbackInfoDto: {
-									DeviceProfile: playbackProfile,
-								},
-							});
+							if (currentAudioTrack === "auto") {
+								const defaultAudioStreamIndex =
+									result.data.Items?.[index].MediaSources?.[0]
+										.DefaultAudioStreamIndex;
+								mediaSource = await getMediaInfoApi(api).getPostedPlaybackInfo({
+									audioStreamIndex: Number(defaultAudioStreamIndex),
+									subtitleStreamIndex:
+										currentSubTrack === "nosub" ? -1 : currentSubTrack,
+									itemId: result.data.Items?.[index]?.Id ?? "",
+									startTimeTicks:
+										result.data.Items?.[index].UserData?.PlaybackPositionTicks,
+									userId: userId,
+									mediaSourceId:
+										result.data.Items?.[index].MediaSources?.[0]?.Id ?? "",
+									playbackInfoDto: {
+										DeviceProfile: playbackProfile,
+									},
+								});
+							} else {
+								mediaSource = await getMediaInfoApi(api).getPostedPlaybackInfo({
+									audioStreamIndex: currentAudioTrack,
+									subtitleStreamIndex:
+										currentSubTrack === "nosub" ? -1 : currentSubTrack,
+									itemId: result.data.Items?.[index]?.Id ?? "",
+									startTimeTicks:
+										result.data.Items?.[index].UserData?.PlaybackPositionTicks,
+									userId: userId,
+									mediaSourceId:
+										result.data.Items?.[index].MediaSources?.[0]?.Id ?? "",
+									playbackInfoDto: {
+										DeviceProfile: playbackProfile,
+									},
+								});
+							}
 							introInfo = (
 								await getMediaSegmentsApi(api).getItemSegments({
 									itemId: result.data.Items?.[index]?.Id ?? "",
@@ -208,20 +228,41 @@ const PlayButton = ({
 							result.data.Items?.[index].Id &&
 							result.data.Items?.[index].MediaSources?.[0]?.Id
 						) {
-							mediaSource = await getMediaInfoApi(api).getPostedPlaybackInfo({
-								audioStreamIndex: currentAudioTrack,
-								subtitleStreamIndex:
-									currentSubTrack === "nosub" ? -1 : currentSubTrack,
-								itemId: result.data.Items[index].Id ?? "",
-								startTimeTicks:
-									result.data.Items?.[0].UserData?.PlaybackPositionTicks,
-								userId: userId,
-								mediaSourceId:
-									result.data.Items?.[index].MediaSources?.[0].Id ?? "",
-								playbackInfoDto: {
-									DeviceProfile: playbackProfile,
-								},
-							});
+							if (currentAudioTrack === "auto") {
+								const defaultAudioStreamIndex =
+									result.data.Items?.[index].MediaSources?.[0]
+										.DefaultAudioStreamIndex;
+								mediaSource = await getMediaInfoApi(api).getPostedPlaybackInfo({
+									audioStreamIndex: Number(defaultAudioStreamIndex),
+									subtitleStreamIndex:
+										currentSubTrack === "nosub" ? -1 : currentSubTrack,
+									itemId: result.data.Items[index].Id ?? "",
+									startTimeTicks:
+										result.data.Items?.[0].UserData?.PlaybackPositionTicks,
+									userId: userId,
+									mediaSourceId:
+										result.data.Items?.[index].MediaSources?.[0].Id ?? "",
+									playbackInfoDto: {
+										DeviceProfile: playbackProfile,
+									},
+								});
+							} else {
+								mediaSource = await getMediaInfoApi(api).getPostedPlaybackInfo({
+									audioStreamIndex: currentAudioTrack,
+									subtitleStreamIndex:
+										currentSubTrack === "nosub" ? -1 : currentSubTrack,
+									itemId: result.data.Items[index].Id ?? "",
+									startTimeTicks:
+										result.data.Items?.[0].UserData?.PlaybackPositionTicks,
+									userId: userId,
+									mediaSourceId:
+										result.data.Items?.[index].MediaSources?.[0].Id ?? "",
+									playbackInfoDto: {
+										DeviceProfile: playbackProfile,
+									},
+								});
+							}
+
 							introInfo = (
 								await getMediaSegmentsApi(api).getItemSegments({
 									itemId: result.data.Items?.[index].Id ?? "",
@@ -276,20 +317,41 @@ const PlayButton = ({
 							result.data.Items?.[index]?.Id &&
 							result.data.Items?.[index].MediaSources?.[0]?.Id
 						) {
-							mediaSource = await getMediaInfoApi(api).getPostedPlaybackInfo({
-								audioStreamIndex: currentAudioTrack,
-								subtitleStreamIndex:
-									currentSubTrack === "nosub" ? -1 : currentSubTrack,
-								itemId: result.data.Items?.[index].Id ?? "",
-								startTimeTicks:
-									result.data.Items?.[0].UserData?.PlaybackPositionTicks,
-								userId: userId,
-								mediaSourceId:
-									result.data.Items?.[index].MediaSources?.[0].Id ?? "",
-								playbackInfoDto: {
-									DeviceProfile: playbackProfile,
-								},
-							});
+							if (currentAudioTrack === "auto") {
+								const defaultAudioStreamIndex =
+									result.data.Items?.[index].MediaSources?.[0]
+										.DefaultAudioStreamIndex;
+								mediaSource = await getMediaInfoApi(api).getPostedPlaybackInfo({
+									audioStreamIndex: Number(defaultAudioStreamIndex),
+									subtitleStreamIndex:
+										currentSubTrack === "nosub" ? -1 : currentSubTrack,
+									itemId: result.data.Items?.[index].Id ?? "",
+									startTimeTicks:
+										result.data.Items?.[0].UserData?.PlaybackPositionTicks,
+									userId: userId,
+									mediaSourceId:
+										result.data.Items?.[index].MediaSources?.[0].Id ?? "",
+									playbackInfoDto: {
+										DeviceProfile: playbackProfile,
+									},
+								});
+							} else {
+								mediaSource = await getMediaInfoApi(api).getPostedPlaybackInfo({
+									audioStreamIndex: currentAudioTrack,
+									subtitleStreamIndex:
+										currentSubTrack === "nosub" ? -1 : currentSubTrack,
+									itemId: result.data.Items?.[index].Id ?? "",
+									startTimeTicks:
+										result.data.Items?.[0].UserData?.PlaybackPositionTicks,
+									userId: userId,
+									mediaSourceId:
+										result.data.Items?.[index].MediaSources?.[0].Id ?? "",
+									playbackInfoDto: {
+										DeviceProfile: playbackProfile,
+									},
+								});
+							}
+							
 						}
 						break;
 					case BaseItemKind.Photo:
@@ -323,19 +385,40 @@ const PlayButton = ({
 							sortOrder: [SortOrder.Ascending],
 							sortBy: ["IndexNumber"],
 						});
-						mediaSource = await getMediaInfoApi(api).getPostedPlaybackInfo({
-							audioStreamIndex: currentAudioTrack,
-							subtitleStreamIndex:
-								currentSubTrack === "nosub" ? -1 : currentSubTrack,
-							itemId: item.Id ?? "",
-							startTimeTicks:
-								result.data.Items?.[0].UserData?.PlaybackPositionTicks,
-							userId: userId,
-							mediaSourceId: result.data.Items?.[0].MediaSources?.[0]?.Id ?? "",
-							playbackInfoDto: {
-								DeviceProfile: playbackProfile,
-							},
-						});
+						if (currentAudioTrack === "auto") {
+							const defaultAudioStreamIndex =
+								result.data.Items?.[index].MediaSources?.[0]
+									.DefaultAudioStreamIndex;
+							mediaSource = await getMediaInfoApi(api).getPostedPlaybackInfo({
+								audioStreamIndex: Number(defaultAudioStreamIndex),
+								subtitleStreamIndex:
+									currentSubTrack === "nosub" ? -1 : currentSubTrack,
+								itemId: item.Id ?? "",
+								startTimeTicks:
+									result.data.Items?.[0].UserData?.PlaybackPositionTicks,
+								userId: userId,
+								mediaSourceId:
+									result.data.Items?.[0].MediaSources?.[0]?.Id ?? "",
+								playbackInfoDto: {
+									DeviceProfile: playbackProfile,
+								},
+							});
+						} else {
+							mediaSource = await getMediaInfoApi(api).getPostedPlaybackInfo({
+								audioStreamIndex: currentAudioTrack,
+								subtitleStreamIndex:
+									currentSubTrack === "nosub" ? -1 : currentSubTrack,
+								itemId: item.Id ?? "",
+								startTimeTicks:
+									result.data.Items?.[0].UserData?.PlaybackPositionTicks,
+								userId: userId,
+								mediaSourceId:
+									result.data.Items?.[0].MediaSources?.[0]?.Id ?? "",
+								playbackInfoDto: {
+									DeviceProfile: playbackProfile,
+								},
+							});
+						}
 						break;
 				}
 			}
@@ -421,9 +504,7 @@ const PlayButton = ({
 				// Audio
 				const audio = {
 					track:
-						currentAudioTrack ??
-						result.mediaSource.MediaSources?.[0].DefaultAudioStreamIndex ??
-						0,
+						result.mediaSource.MediaSources?.[0].DefaultAudioStreamIndex ?? 0,
 					allTracks: result.mediaSource.MediaSources?.[0].MediaStreams?.filter(
 						(value) => value.Type === "Audio",
 					),
@@ -458,7 +539,7 @@ const PlayButton = ({
 					itemName,
 					episodeTitle,
 					currentVideoTrack ?? 0,
-					currentAudioTrack ?? 0,
+					Number(result.mediaSource.MediaSources?.[0].DefaultAudioStreamIndex),
 					result?.mediaSource?.MediaSources?.[0].Container ?? "mkv",
 					playbackUrl,
 					userId ?? "",

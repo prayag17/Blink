@@ -160,8 +160,8 @@ const CardComponent = ({
 							item={item}
 							userId={userId}
 							itemType={item.Type ?? "Movie"}
-							currentAudioTrack={0}
-							currentSubTrack="nosub"
+							currentAudioTrack="auto"
+							currentSubTrack={-1}
 							currentVideoTrack={0}
 							className="card-play-button"
 							iconOnly
