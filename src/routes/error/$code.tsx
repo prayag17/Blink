@@ -1,4 +1,4 @@
-import { Button, ButtonGroup, Typography } from "@mui/material";
+import { Button, Typography } from "@mui/material";
 import { Link, createFileRoute } from "@tanstack/react-router";
 import { relaunch } from "@tauri-apps/plugin-process";
 import React from "react";

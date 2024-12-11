@@ -6,8 +6,6 @@ import { createFileRoute, redirect } from "@tanstack/react-router";
 
 export const Route = createFileRoute("/_api")({
 	beforeLoad: async ({ context, location }) => {
-		// console.log(context.api);
-		console.log(context.user);
 		if (!context.api) {
 			const currentServerId = await getDefaultServer();
 			if (currentServerId) {

@@ -1,8 +1,6 @@
 import { getDefaultServer } from "@/utils/storage/servers";
 import { getUser } from "@/utils/storage/user";
-import { useQueryErrorResetBoundary } from "@tanstack/react-query";
-import { createFileRoute, redirect, useRouter } from "@tanstack/react-router";
-import React from "react";
+import { createFileRoute, redirect } from "@tanstack/react-router";
 
 export const Route = createFileRoute("/")({
 	beforeLoad: async () => {
