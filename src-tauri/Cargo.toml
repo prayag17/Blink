@@ -1,6 +1,6 @@
 [package]
 name = "blink"
-version = "0.0.7-dev"
+version = "1.0.0-alpha.3"
 description = "A Modern Jellyfin Client"
 authors = ["prayag17", "Blink contributors (https://github.com/prayag17/Blink/graphs/contributors)"]
 license = "GPL-3.0-only"
