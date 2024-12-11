@@ -8,15 +8,7 @@ export default function getSubtitle(
 	const availableSubtitles = mediaStreams?.filter(
 		(stream) => stream.Type === "Subtitle",
 	);
-	if (!availableSubtitles?.length)
-		return {
-			track: -2,
-			enable: false,
-			format: "vtt",
-			allTracks: availableSubtitles,
-			url: null,
-		};
-	if (track === "nosub")
+	if (track === "nosub" || track === -1)
 		return {
 			track: -1,
 			enable: false,

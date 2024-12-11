@@ -493,7 +493,7 @@ const PlayButton = ({
 
 				// Subtitle
 				const subtitle = getSubtitle(
-					currentSubTrack,
+					result.mediaSource.MediaSources?.[0].DefaultSubtitleStreamIndex ?? -1,
 					result?.mediaSource?.MediaSources?.[0]?.MediaStreams,
 				);
 

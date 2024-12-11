@@ -293,6 +293,7 @@ function VideoPlayer() {
 
 	const handleKeyPress = useCallback((event: KeyboardEvent) => {
 		if (player.current) {
+			event.preventDefault();
 			switch (event.key) {
 				case "ArrowRight":
 					player.current.seekTo(player.current.getCurrentTime() + 10);
@@ -300,6 +301,7 @@ function VideoPlayer() {
 				case "ArrowLeft":
 					player.current.seekTo(player.current.getCurrentTime() - 10);
 					break;
+				case "F8":
 				case " ":
 					setPlaying((state) => !state);
 					break;
@@ -323,6 +325,12 @@ function VideoPlayer() {
 				case "M":
 				case "m":
 					// setIsMuted((state) => !state);
+					break;
+				case "F7":
+					playItemFromQueue("previous", user?.Id, api);
+					break;
+				case "F9":
+					playItemFromQueue("next", user?.Id, api);
 					break;
 				default:
 					break;
@@ -1157,7 +1165,8 @@ function VideoPlayer() {
 									</Menu>
 									<IconButton
 										disabled={
-											mediaSource.subtitle.track === -2 || subtitleIsChanging
+											mediaSource.subtitle.allTracks?.length === 0 ||
+											subtitleIsChanging
 										}
 										onClick={() => startSubtitleChange(toggleSubtitleTrack)}
 									>
