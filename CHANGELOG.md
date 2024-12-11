@@ -1,3 +1,79 @@
+- # Alpha 3 (11/12/2024)
+    - refactor: prepare for alpha 3
+    - refactor: cleanupo
+    - refactor: remove unused importso
+    - fix: series page not fetching correct seasono
+    - feat: add key binding for macos users #435o
+    - refactor: remove jellyPlayer naming from code #460o
+    - feat: add playlist playback supporto
+    - refactor: improve server add processo
+    - feat: show current time while scrubbing video progress #339o
+    - style: increase the sharpness of card imageso
+    - feat: add skip recap buttono
+    - refactor: cleanup video playero
+    - feat: add chapter navigation buttons to video player #457o
+    - feat: allow changing audio track from video playero
+    - feat: allow changing chapters from a chapter list #457o
+    - refactor: cleanup search routeo
+    - refactor: cleanup some componentso
+    - refactor: unmount card image if not inViewo
+    - refactor: cleanup person routeo
+    - style: replace noto-sans with plus-jakarta-sanso
+    - refactor: cleanup login routeso
+    - fix: library items not of same size #380o
+    - refactor: cleanup item.tsxo
+    - fix: series page breaking if season is not loadedo
+    - fix: do not display missing items in serieso
+    - refactor: move more files to tso
+    - refactor: move more files to tso
+    - refactor: move more files to tso
+    - refactor: move more files to typescripto
+    - refactor: move more components to tso
+    - refactore: cleanup __root.tsxo
+    - chore(deps): update dependencieso
+    - fix: collections page not rendering #447o
+    - fix: quick connect not working #445o
+    - fix: playback error if subtitle is not seto
+    - fix: index not being assigned proper value #420o
+    - fix: synced lyrics not workingo
+    - Merge pull request #446 from prayag17/renovate/node-22.x-lockfileo
+    - refactor: use saved lyricso
+    - refactor: change GenreView to genreFiltero
+    - fix(deps): update dependency @types/node to v22.10.1o
+    - Merge pull request #393 from prayag17/renovate/tanstack-router-monorepoo
+    - Merge pull request #424 from prayag17/renovate/tanstack-query-monorepoo
+    - fix(deps): update tanstack-router monorepoo
+    - Merge pull request #426 from prayag17/renovate/node-22.x-lockfileo
+    - fix(deps): update dependency @types/node to v22.10.0o
+    - Merge pull request #437 from prayag17/dependabot/cargo/src-tauri/rustls-0.23.18o
+    - fix(deps): update tanstack-query monorepo to v5.61.4o
+    - Merge pull request #438 from prayag17/renovate/axios-1.x-lockfileo
+    - Merge pull request #439 from prayag17/renovate/vitejs-plugin-react-4.x-lockfileo
+    - chore(deps): update dependency @vitejs/plugin-react to v4.3.4o
+    - refactore: move more components to typescripto
+    - fix: episode and series not playing if episode is not present in nextUp and continueWatchingo
+    - feat: show current episode in PlayButtono
+    - fix: episode indexing for absolute numbering indexNumbers in PlayButtono
+    - fix: unable to read Id of undefined in PlayButtono
+    - fix(deps): update dependency axios to v1.7.8o
+    - chore(deps): bump rustls from 0.23.16 to 0.23.18 in /src-taurio
+    - fix(ci): not uploading debug buildso
+    - refactor(ci): build debug builds in CIo
+    - Merge pull request #425 from prayag17/renovate/serde_json-1.x-lockfileo
+    - Merge pull request #436 from sambartik/macos-universal-dmgo
+    - chore(deps): update dependencieso
+    - refactor: convert more files to typescripto
+    - fix: improper handling of undefined api leading to crasheso
+    - refactor: move all buttons to tsx #338o
+    - Add universal dmg for macOS in release jobo
+    - fix: audio queue not moving after 2 changes #182o
+    - fix: playing track from album not updating the queue #182o
+    - refactor: use MediaSegments api for intro/outro skippingo
+    - fix: trickplay images not showing upo
+    - refactor: improve login page UI #338 #202o
+    - chore(release): update latest.jsono
+    - fix(deps): update rust crate serde_json to v1.0.133o
+
 - # 0.0.7-dev (20/11/2024)
     - chore(deps): update dependencies
     - refactor: change UI of login/list and fix Api not being defined in context

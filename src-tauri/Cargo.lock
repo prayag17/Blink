@@ -390,7 +390,7 @@ dependencies = [
 
 [[package]]
 name = "blink"
-version = "0.0.7-dev"
+version = "1.0.0-alpha.3"
 dependencies = [
  "log",
  "portpicker",
