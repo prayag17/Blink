@@ -118,12 +118,9 @@ export default function Updater() {
 					onClick={async () => {
 						setUpdateDialogButton(true);
 						await updateInfo.downloadAndInstall();
-						enqueueSnackbar(
-							"Update has been installed! You need to relaunch JellyPlayer.",
-							{
-								variant: "success",
-							},
-						);
+						enqueueSnackbar("Update has been installed! You need to relaunch Blink.", {
+							variant: "success",
+						});
 						await relaunch();
 					}}
 				>

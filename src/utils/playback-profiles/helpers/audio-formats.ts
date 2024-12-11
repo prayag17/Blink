@@ -13,7 +13,7 @@ export function getSupportedAudioCodecs(format: string): boolean {
 	if (format === "flac" && isTv()) {
 		return true;
 	} else if (format === "eac3") {
-		// This is specific to JellyPlayer
+		// This is specific to Blink
 		return true;
 	} else if (format === "wma" && isTizen()) {
 		return true;

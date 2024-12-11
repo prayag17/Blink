@@ -2,9 +2,9 @@
 name = "blink"
 version = "0.0.7-dev"
 description = "A Modern Jellyfin Client"
-authors = ["prayag17", "JellyPlayer contributors (https://github.com/prayag17/JellyPlayer/graphs/contributors)"]
+authors = ["prayag17", "Blink contributors (https://github.com/prayag17/Blink/graphs/contributors)"]
 license = "GPL-3.0-only"
-repository = "https://github.com/prayag17/JellyPlayer/"
+repository = "https://github.com/prayag17/Blink/"
 default-run = "blink"
 edition = "2021"
 rust-version = "1.59"

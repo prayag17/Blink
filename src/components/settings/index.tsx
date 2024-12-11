@@ -414,7 +414,7 @@ const Settings = () => {
 					{/* About */}
 					{tabValue === 10 && (
 						<div className="settings-container settings-about">
-							<img src={logo} className="settings-logo" alt="JellyPlayer" />
+							<img src={logo} className="settings-logo" alt="Blink" />
 							<div className="settings-grid">
 								<div className="settings-info-container">
 									<div className="settings-info">
@@ -485,7 +485,7 @@ const Settings = () => {
 												setUpdating(true);
 												await updateInfo.data?.downloadAndInstall();
 												enqueueSnackbar(
-													"Update has been installed! You need to relaunch JellyPlayer.",
+													"Update has been installed! You need to relaunch Blink.",
 													{
 														variant: "success",
 													},

@@ -18,5 +18,5 @@ fn main() {
         .plugin(tauri_plugin_updater::Builder::default().build())
         // .plugin(tauri_plugin_window_state::Builder::default().build())
         .run(tauri::generate_context!())
-        .expect("error while running JellyPlayer");
+        .expect("error while running Blink");
 }

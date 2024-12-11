@@ -96,7 +96,6 @@ const PlayButton = ({
 	size = "large",
 	playlistItem,
 	playlistItemId = "",
-	trackIndex,
 }: PlayButtonProps) => {
 	const api = useApiInContext((s) => s.api);
 
@@ -596,7 +595,7 @@ const PlayButton = ({
 			</Fab>
 		);
 	}
-	
+
 	if (itemType === BaseItemKind.Series) {
 		const currentEpisode = useQuery({
 			queryKey: ["playButton", "currentEpisode", item?.Id],
