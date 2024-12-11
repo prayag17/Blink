@@ -129,6 +129,10 @@ function SeriesTitlePage() {
 		return result ?? 0;
 	});
 
+	useEffect(() => {
+		setCurrentSeason(sessionStorage.getItem(`season-${item.data?.Id}`) ?? 0);
+	}, [item.data?.Id]);
+
 	const currentSeasonItem = useQuery({
 		queryKey: ["item", id, "season", currentSeason],
 		queryFn: async () => {
