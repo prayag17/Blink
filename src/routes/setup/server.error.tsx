@@ -1,8 +1,8 @@
-import { Link, createFileRoute, useNavigate } from "@tanstack/react-router";
+import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import React from "react";
 
 import "./server.error.scss";
-import { Button, ButtonGroup, Typography } from "@mui/material";
+import { Button, Typography } from "@mui/material";
 import { relaunch } from "@tauri-apps/plugin-process";
 
 export const Route = createFileRoute("/setup/server/error")({
