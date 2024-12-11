@@ -715,7 +715,7 @@ export const routeTree = rootRoute
       "parent": "/_api"
     },
     "/_api/playlist/$id": {
-      "filePath": "_api/playlist/$id.jsx",
+      "filePath": "_api/playlist/$id.tsx",
       "parent": "/_api"
     },
     "/_api/series/$id": {

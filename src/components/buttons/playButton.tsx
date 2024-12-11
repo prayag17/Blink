@@ -147,12 +147,18 @@ const PlayButton = ({
 								// startItemId: item.Id,
 							});
 
-							if (result.data.Items?.map((i) => i.Id).indexOf(currentEpisodeId) === -1) {
+							if (
+								result.data.Items?.map((i) => i.Id).indexOf(
+									currentEpisodeId,
+								) === -1
+							) {
 								throw new Error(
 									`Episode having id ${currentEpisodeId} not found, index return -1`,
 								);
 							}
-							index = result.data.Items?.map((i) => i.Id).indexOf(currentEpisodeId) ?? 0;
+							index =
+								result.data.Items?.map((i) => i.Id).indexOf(currentEpisodeId) ??
+								0;
 							if (currentAudioTrack === "auto") {
 								const defaultAudioStreamIndex =
 									result.data.Items?.[index].MediaSources?.[0]
@@ -275,11 +281,6 @@ const PlayButton = ({
 						}
 						break;
 					case BaseItemKind.Playlist:
-						result = await getPlaylistsApi(api).getPlaylistItems({
-							userId: userId,
-							playlistId: playlistItemId,
-						});
-						break;
 					case BaseItemKind.MusicAlbum:
 						result = await getItemsApi(api).getItems({
 							parentId: item.Id,
@@ -351,7 +352,6 @@ const PlayButton = ({
 									},
 								});
 							}
-							
 						}
 						break;
 					case BaseItemKind.Photo:
@@ -451,10 +451,7 @@ const PlayButton = ({
 				return;
 			}
 
-			if (trackIndex) {
-				// Playlist Playback
-				enqueueSnackbar("Playlist playback is WIP", { variant: "info" });
-			} else if (audio) {
+			if (audio) {
 				// Album/Individual audio track playback
 				const playbackUrl = generateAudioStreamUrl(
 					result?.item?.Items?.[0].Id,
@@ -500,7 +497,7 @@ const PlayButton = ({
 					currentSubTrack,
 					result?.mediaSource?.MediaSources?.[0]?.MediaStreams,
 				);
-				
+
 				// Audio
 				const audio = {
 					track:

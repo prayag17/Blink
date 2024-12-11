@@ -53,7 +53,7 @@ import { useApiInContext } from "@/utils/store/api";
 import { useCentralStore } from "@/utils/store/central";
 import { createFileRoute } from "@tanstack/react-router";
 
-type SortByObject = { title: string; value: ItemSortBy };
+type SortByObject = { title: string; value: string };
 type ViewObject = { title: string; value: BaseItemKind | "Artist" };
 // type allowedFilters = ["movies", "tvshows", "music", "books"];
 
@@ -215,6 +215,9 @@ function Library() {
 					},
 				];
 				break;
+			case CollectionType.Playlists:
+				result = [{ title: "Playlist", value: BaseItemKind.Playlist }];
+				break;
 			default:
 				result = [];
 		}
@@ -243,7 +246,7 @@ function Library() {
 		Dvd: undefined,
 	});
 
-	const [sortBy, setSortBy] = useState<ItemSortBy>("Name");
+	const [sortBy, setSortBy] = useState<string>("Name");
 	const [sortAscending, setSortAscending] = useState(
 		() =>
 			JSON.parse(
@@ -337,6 +340,47 @@ function Library() {
 					{
 						title: "Release Date",
 						value: ItemSortBy.PremiereDate,
+					},
+					{
+						title: "Random",
+						value: ItemSortBy.Random,
+					},
+				];
+				break;
+			case BaseItemKind.Playlist:
+				result = [
+					{
+						title: "Name",
+						value: ItemSortBy.SortName,
+					},
+					{
+						title: "Community Rating",
+						value: ItemSortBy.CommunityRating,
+					},
+					{
+						title: "Critics Rating",
+						value: ItemSortBy.CriticRating,
+					},
+					{
+						title: "Date Added",
+						value: ItemSortBy.DateCreated,
+					},
+					{
+						title: "Date Played",
+						value: ItemSortBy.DatePlayed,
+					},
+					{
+						title: "Folder",
+						value: `${ItemSortBy.IsFolder},${ItemSortBy.SortName}`,
+					},
+					{ title: "Parenal Rating", value: ItemSortBy.OfficialRating },
+					{
+						title: "Play Count",
+						value: ItemSortBy.PlayCount,
+					},
+					{
+						title: "Release Date",
+						value: `${ItemSortBy.ProductionYear},${ItemSortBy.PremiereDate},${ItemSortBy.SortName}`,
 					},
 					{
 						title: "Random",
@@ -587,7 +631,7 @@ function Library() {
 					sortOrder: [
 						sortAscending ? SortOrder.Ascending : SortOrder.Descending,
 					],
-					sortBy: [sortBy],
+					sortBy: sortBy.split(",") as ItemSortBy[],
 					filters: filtersArray,
 					hasSubtitles: filters.hasSubtitles ? true : undefined,
 					hasTrailer: filters.hasTrailer ? true : undefined,
@@ -623,7 +667,7 @@ function Library() {
 					sortOrder: [
 						sortAscending ? SortOrder.Ascending : SortOrder.Descending,
 					],
-					sortBy: [sortBy],
+					sortBy: sortBy.split(",") as ItemSortBy[],
 					filters: filtersArray,
 					hasSubtitles: filters.hasSubtitles ? true : undefined,
 					hasTrailer: filters.hasTrailer ? true : undefined,
@@ -844,7 +888,7 @@ function Library() {
 								gap={1.2}
 								className="library-items-options"
 							>
-								{!disableSort && (
+								{!disableSort && sortBy && (
 									<div className="flex flex-row flex-center">
 										<IconButton
 											onClick={() => {
@@ -874,7 +918,7 @@ function Library() {
 											value={sortBy ?? "Name"}
 											size="small"
 											onChange={(e) => {
-												setSortBy(e.target.value as ItemSortBy);
+												setSortBy(e.target.value);
 												console.info(e);
 												sessionStorage.setItem(
 													`library-${currentLib.data?.Id}-config_sort`,
@@ -886,7 +930,7 @@ function Library() {
 											}}
 										>
 											{sortByOptions.map((item) => (
-												<MenuItem key={item.value} value={item.value}>
+												<MenuItem key={item.title} value={item.value}>
 													{item.title}
 												</MenuItem>
 											))}
