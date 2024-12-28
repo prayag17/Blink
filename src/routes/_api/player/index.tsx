@@ -13,7 +13,7 @@ import MenuItem from "@mui/material/MenuItem";
 import Slider from "@mui/material/Slider";
 import Typography from "@mui/material/Typography";
 
-import ReactPlayer from "react-player";
+import ReactPlayer from "react-player/lazy";
 
 import {
 	changeAudioTrack,
@@ -217,6 +217,7 @@ function VideoPlayer() {
 	const handleReady = async () => {
 		if (api && !isReady) {
 			player.current?.seekTo(ticksToSec(startPosition), "seconds");
+			console.log("Seeking to", ticksToSec(startPosition));
 			setIsReady(true);
 			// Report Jellyfin server: Playback has begin
 			getPlaystateApi(api).reportPlaybackStart({
@@ -567,8 +568,9 @@ function VideoPlayer() {
 			};
 			const imgUrlParams = new URLSearchParams(imgUrlParamsObject).toString();
 
-			const imageAspectRatio = trickplayResolution.Width / trickplayResolution.Height;
-			
+			const imageAspectRatio =
+				trickplayResolution.Width / trickplayResolution.Height;
+
 			if (currentChapter?.[0]?.Name) {
 				return (
 					<div className="flex flex-column video-osb-bubble">
@@ -655,7 +657,10 @@ function VideoPlayer() {
 		(e) => {
 			startSubtitleChange(() => {
 				if (mediaSource.subtitle.allTracks) {
-					changeSubtitleTrack(toNumber(e.target.value), mediaSource.subtitle.allTracks);
+					changeSubtitleTrack(
+						toNumber(e.target.value),
+						mediaSource.subtitle.allTracks,
+					);
 					setSettingsMenu(null);
 				}
 			});
@@ -984,6 +989,7 @@ function VideoPlayer() {
 													"seconds",
 												);
 											} else {
+												console.log("Seeking to", ticksToSec(newValue));
 												player.current?.seekTo(ticksToSec(newValue), "seconds");
 											}
 										}}
@@ -1206,6 +1212,9 @@ function VideoPlayer() {
 					console.error(hls);
 					console.error(hlsG);
 				}}
+				onSeek={(e) => {
+					console.log("Seeking to in Player", e);
+				}}
 				onEnded={handlePlaybackEnded}
 				width="100vw"
 				height="100vh"
@@ -1217,10 +1226,12 @@ function VideoPlayer() {
 				onReady={handleReady}
 				onBuffer={() => setLoading(true)}
 				onBufferEnd={() => setLoading(false)}
+				playsinline
 				config={{
 					file: {
 						attributes: {
 							crossOrigin: "anonymous",
+							preload: "metadata",
 						},
 						tracks: [],
 					},
