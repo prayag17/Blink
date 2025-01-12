@@ -1,14 +1,15 @@
-name: Publish releases to WinGet
+name: Publish Alpha Releases to WinGet
 on:
   release:
     types: [published]
 jobs:
   publish:
     runs-on: ubuntu-latest
+    if: contains(github.event.release.tag_name, '-alpha')
     steps:
-      - uses: vedantmgoyal2009/winget-releaser@v2
+      - uses: vedantmgoyal2009/winget-releaser@a3ac67b0c3026bc335a33b722188e3ec769d6a64
         with:
-          identifier: prayag17.Blink
+          identifier: prayag17.Blink.Alpha
           version: ${{ github.event.release.tag_name }}
           installers-regex: '\.exe$' # Only .exe files
           token: ${{ secrets.WINGET_TOKEN }}
