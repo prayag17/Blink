@@ -1,0 +1,26 @@
+name: Publish Releases to WinGet
+on:
+  release:
+    types: [published]
+jobs:
+  publish-alpha:
+    runs-on: ubuntu-latest
+    if: contains(github.event.release.tag_name, '-alpha')
+    steps:
+      - uses: vedantmgoyal9/winget-releaser@a3ac67b0c3026bc335a33b722188e3ec769d6a64
+        with:
+          identifier: prayag17.Blink.Alpha
+          version: ${{ github.event.release.tag_name }}
+          installers-regex: '\.exe$'
+          token: ${{ secrets.WINGET_TOKEN }}
+
+  publish-stable:
+    runs-on: ubuntu-latest
+    if: "!contains(github.event.release.tag_name, '-alpha')"
+    steps:
+      - uses: vedantmgoyal9/winget-releaser@a3ac67b0c3026bc335a33b722188e3ec769d6a64
+        with:
+          identifier: prayag17.Blink
+          version: ${{ github.event.release.tag_name }}
+          installers-regex: '\.exe$'
+          token: ${{ secrets.WINGET_TOKEN }}
