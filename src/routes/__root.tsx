@@ -2,13 +2,9 @@ import { AppBar } from "@/components/appBar/appBar";
 import NProgress from "@/components/nProgress";
 import AudioPlayer from "@/components/playback/audioPlayer";
 import Settings from "@/components/settings";
-import { EasterEgg } from "@/components/utils/easterEgg";
+// import { EasterEgg } from "@/components/utils/easterEgg";
 import { CssBaseline, ThemeProvider } from "@mui/material";
-import {
-	Outlet,
-	ScrollRestoration,
-	createRootRouteWithContext,
-} from "@tanstack/react-router";
+import { Outlet, createRootRouteWithContext } from "@tanstack/react-router";
 import { SnackbarProvider } from "notistack";
 import React from "react";
 
@@ -46,9 +42,8 @@ export const Route = createRootRouteWithContext<ApiContext>()({
 				<ThemeProvider theme={theme}>
 					<SnackbarProvider maxSnack={5}>
 						<CssBaseline />
-						<ScrollRestoration />
 						<Settings />
-						<EasterEgg />
+						{/* <EasterEgg /> */}
 						<NProgress />
 
 						<RouterLoading />

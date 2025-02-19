@@ -24,6 +24,8 @@ const router = createRouter({
 		fetchCurrentUser: undefined!,
 	},
 	defaultPreload: "intent",
+	scrollRestoration: true,
+	scrollRestorationBehavior: "smooth",
 });
 
 // Register the router instance for type safety
