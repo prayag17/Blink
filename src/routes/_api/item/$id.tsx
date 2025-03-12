@@ -34,6 +34,7 @@ import MarkPlayedButton from "@/components/buttons/markPlayedButton";
 import PlayButton from "@/components/buttons/playButton";
 import TrailerButton from "@/components/buttons/trailerButton";
 import ShowMoreText from "@/components/showMoreText";
+import DownloadButton from "@/components/buttons/downloadButton";
 import { getTypeIcon } from "@/components/utils/iconsCollection";
 import { endsAt, getRuntime } from "@/utils/date/time";
 import { useBackdropStore } from "@/utils/store/backdrop";
@@ -701,6 +702,13 @@ function ItemDetail() {
 								userId={user?.Id}
 							/>
 							<MarkPlayedButton
+								itemName={item.data.Name}
+								itemId={item.data.Id}
+								queryKey={["item", id]}
+								isPlayed={item.data.UserData?.Played}
+								userId={user?.Id}
+							/>
+							<DownloadButton
 								itemName={item.data.Name}
 								itemId={item.data.Id}
 								queryKey={["item", id]}

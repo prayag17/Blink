@@ -28,4 +28,20 @@ export const allSettings = {
 				"Shows a skip button for Intros and End Credit scenes in an episode. Note: this requires jumoog/intro-skipper plugin to be installed on server",
 		},
 	],
+	downloads: [
+		{
+		  key: "showOfflineContent",
+		  type: "boolean",
+		  defaultValue: true,
+		  label: "Show offline content when disconnected",
+		  description: "When enabled, downloaded content will be available in offline mode"
+		},
+		{
+		  key: "autoDeleteWatched",
+		  type: "boolean",
+		  defaultValue: false,
+		  label: "Auto-delete watched content",
+		  description: "Automatically remove downloads after you've finished watching them"
+		}
+	],
 };
