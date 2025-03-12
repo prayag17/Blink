@@ -45,7 +45,7 @@
 		"@types/node": "^22.13.4",
 		"@types/react": "^19.0.10",
 		"@types/react-dom": "^19.0.4",
-		"axios": "^1.7.9",
+		"axios": "^1.8.2",
 		"axios-tauri-api-adapter": "^2.0.6",
 		"blurhash": "^2.0.5",
 		"framer-motion": "^12.4.5",
