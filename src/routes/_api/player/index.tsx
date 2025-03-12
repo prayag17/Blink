@@ -54,6 +54,10 @@ import workerUrl from "jassub/dist/jassub-worker.js?url";
 //@ts-ignore
 import wasmUrl from "jassub/dist/jassub-worker.wasm?url";
 
+import { PgsRenderer } from "libpgs";
+//@ts-ignore
+import pgsWorkerUrl from "libpgs/dist/libpgs.worker.js?url";
+
 import PlayNextButton from "@/components/buttons/playNextButton";
 import PlayPreviousButton from "@/components/buttons/playPreviousButtom";
 import QueueButton from "@/components/buttons/queueButton";
@@ -148,7 +152,7 @@ function VideoPlayer() {
 	const api = useApiInContext((s) => s.api);
 	const { history } = useRouter();
 	const [hoveringOsd, setHoveringOsd] = useState(false);
-	const player = useRef<ReactPlayer | null>(null);
+	const player = useRef<ReactPlayer | null>(null);	
 
 	const user = useCentralStore((s) => s.currentUser);
 
@@ -376,9 +380,11 @@ function VideoPlayer() {
 		setIsReady(false);
 	}, [item?.Id]);
 
+	// Manage Subtitle playback
 	useEffect(() => {
 		if (player.current?.getInternalPlayer() && mediaSource.subtitle.enable) {
 			let jassubRenderer: JASSUB | undefined;
+			let pgsRenderer: PgsRenderer | undefined;
 			if (
 				mediaSource.subtitle.format === "ass" ||
 				mediaSource.subtitle.format === "ssa"
@@ -404,11 +410,20 @@ function VideoPlayer() {
 					mediaSource.subtitle,
 					api?.basePath ?? "",
 				);
+			} else if (mediaSource.subtitle.format === "PGSSUB") {
+				pgsRenderer = new PgsRenderer({
+					workerUrl: pgsWorkerUrl,
+					video: player.current?.getInternalPlayer() as any,
+					subUrl: `${api?.basePath}${mediaSource.subtitle.url}`,
+				});
 			}
 			return () => {
 				if (jassubRenderer) {
 					jassubRenderer.destroy();
 				} // Remove JASSUB renderer when track changes to fix duplicate renders
+				if (pgsRenderer) {
+					pgsRenderer.dispose();
+				}
 			};
 		}
 		if (

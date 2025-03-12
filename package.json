@@ -51,6 +51,7 @@
 		"framer-motion": "^12.4.5",
 		"immer": "^10.1.1",
 		"jassub": "^1.7.17",
+		"libpgs": "^0.8.1",
 		"lodash": "^4.17.21",
 		"material-symbols": "^0.28.2",
 		"million": "^3.1.11",

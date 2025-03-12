@@ -28,6 +28,10 @@ export function getSubtitleProfiles(): SubtitleProfile[] {
 				Format: "ssa",
 				Method: SubtitleDeliveryMethod.External,
 			},
+			{
+				Format: "pgssub",
+				Method: SubtitleDeliveryMethod.External,
+			},
 		);
 
   return SubtitleProfiles;
