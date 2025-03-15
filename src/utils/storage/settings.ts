@@ -21,27 +21,27 @@ export const getSetting = async (settingKey: string) => {
 
 export const allSettings = {
 	general: [
-		{
-			key: "general.enable_skip_intro_outro",
-			name: "Enable Intro-Skipper plugin",
-			description:
-				"Shows a skip button for Intros and End Credit scenes in an episode. Note: this requires jumoog/intro-skipper plugin to be installed on server",
-		},
+	  {
+		key: "general.enable_skip_intro_outro",
+		name: "Enable Intro-Skipper plugin",
+		description:
+		  "Shows a skip button for Intros and End Credit scenes in an episode. Note: this requires jumoog/intro-skipper plugin to be installed on server",
+	  },
 	],
 	downloads: [
-		{
-		  key: "showOfflineContent",
-		  type: "boolean",
-		  defaultValue: true,
-		  label: "Show offline content when disconnected",
-		  description: "When enabled, downloaded content will be available in offline mode"
-		},
-		{
-		  key: "autoDeleteWatched",
-		  type: "boolean",
-		  defaultValue: false,
-		  label: "Auto-delete watched content",
-		  description: "Automatically remove downloads after you've finished watching them"
-		}
+	  {
+		key: "showOfflineContent",
+		type: "boolean",
+		defaultValue: true,
+		name: "Show offline content when disconnected", // Changed from 'label' to 'name'
+		description: "When enabled, downloaded content will be available in offline mode"
+	  },
+	  {
+		key: "autoDeleteWatched",
+		type: "boolean",
+		defaultValue: false,
+		name: "Auto-delete watched content", // Changed from 'label' to 'name'
+		description: "Automatically remove downloads after you've finished watching them"
+	  }
 	],
 };

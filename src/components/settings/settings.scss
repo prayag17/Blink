@@ -8,6 +8,11 @@
     }
     &-container {
         margin: 14px 0 14px 14px;
+        
+        // Added spacing for section headers
+        h5 {
+            margin-bottom: 16px;
+        }
     }
     &-tab {
         display: grid !important;
@@ -85,10 +90,87 @@
         padding: 0 !important;
         margin: 0 !important;
         margin-bottom: 0.6em !important;
-        &-info-caption {
-            opacity: 0.6;
+        &-info {
+            display: flex;
+            flex-direction: column;
+            &-caption {
+                opacity: 0.6;
+            }
         }
     }
+    
+    // Path input styling
+    &-path {
+        &-option {
+          display: flex;
+          flex-direction: column;
+          width: 100%;
+          background: rgb(0 0 0 / 0.2);
+          padding: 12px;
+          border-radius: $border-radius-default;
+          margin-bottom: 16px;
+          gap: 12px;
+        }
+        
+        &-input {
+          width: 100%;
+          
+          .MuiTextField-root {
+            width: 100%;
+          }
+        }
+    }
+    
+    // Section styling for downloads
+    &-section {
+        background: rgb(0 0 0 / 0.3);
+        padding: 16px;
+        border-radius: $border-radius-default;
+        margin-bottom: 16px;
+        
+        h6 {
+            margin-bottom: 12px;
+            font-weight: 500;
+        }
+    }
+    
+    // Downloads list styling
+    &-downloads {
+        &-list {
+            background: rgb(0 0 0 / 0.2);
+            border-radius: $border-radius-default;
+            overflow: hidden;
+            
+            &-item {
+                padding: 12px 16px;
+                border-bottom: 1px solid rgb(255 255 255 / 0.1);
+                
+                &:last-child {
+                    border-bottom: none;
+                }
+            }
+        }
+        
+        &-empty {
+            padding: 24px;
+            text-align: center;
+            background: rgb(0 0 0 / 0.2);
+            border-radius: $border-radius-default;
+        }
+        
+        &-actions {
+            margin-top: 12px;
+            display: flex;
+            justify-content: flex-end;
+        }
+    }
+
+    &-download-path-info {
+        margin-top: 16px;
+        padding-top: 16px;
+        border-top: 1px solid rgba(255, 255, 255, 0.1);
+    }
+    
     //serverList
     &-server {
         display: grid;

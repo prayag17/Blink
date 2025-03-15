@@ -1,9 +1,9 @@
-import React, { useState, useEffect, useMemo, useCallback } from "react";
 import useSettingsStore, {
   setSettingsDialogOpen,
   setSettingsTabValue,
 } from "@/utils/store/settings";
 import {
+  Box,
   Button,
   Chip,
   Dialog,
@@ -12,19 +12,19 @@ import {
   DialogTitle,
   Fab,
   IconButton,
+  LinearProgress,
   Link,
+  List,
+  ListItem,
+  ListItemText,
   Skeleton,
   Tab,
   Tabs,
   TextField,
   Typography,
-  List,
-  ListItem,
-  ListItemText,
-  Box,
-  LinearProgress,
 } from "@mui/material";
 import { AnimatePresence, motion } from "framer-motion";
+import React, { useState, useEffect, useMemo, useCallback } from "react";
 
 import logo from "@/assets/logo.png";
 
@@ -34,6 +34,11 @@ import { getSystemApi } from "@jellyfin/sdk/lib/utils/api/system-api";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import "./settings.scss";
 
+import { 
+  clearDownloads,
+  getDownloadedItems, 
+  removeDownloadedItem, 
+} from "@/utils/storage/downloads";
 import {
   delServer,
   getAllServers,
@@ -41,11 +46,6 @@ import {
   setDefaultServer,
   setServer,
 } from "@/utils/storage/servers";
-import { 
-  getDownloadedItems, 
-  removeDownloadedItem, 
-  clearDownloads,
-} from "@/utils/storage/downloads";
 import { allSettings } from "@/utils/storage/settings";
 import { delUser } from "@/utils/storage/user";
 import type { RecommendedServerInfo } from "@jellyfin/sdk";
@@ -55,6 +55,7 @@ import { useNavigate } from "@tanstack/react-router";
 import { relaunch } from "@tauri-apps/plugin-process";
 import { check } from "@tauri-apps/plugin-updater";
 import { useSnackbar } from "notistack";
+
 import SettingOption from "../settingOption";
 
 const motionConfig = {
@@ -463,31 +464,42 @@ const Settings = () => {
           {/* Downloads */}
           {tabValue === 3 && (
             <div className="settings-container">
-              <Typography variant="h5" mb={2}>Downloads</Typography>
+              <Typography variant="h5" gutterBottom>Downloads</Typography>
               
-              {/* Download Settings */}
-              {allSettings.downloads && (
-                <div className="settings-server">
-                  <Typography variant="h6">Download Settings</Typography>
-                  <div>
-                    {allSettings.downloads.map((setting) => (
-                      <SettingOption key={setting.key} setting={setting} />
-                    ))}
-                  </div>
-                </div>
-              )}
+              {/* Download Settings Section */}
+              <div className="settings-section">
+                <Typography variant="h6" gutterBottom>Download Settings</Typography>
+                
+                {/* Existing settings */}
+                {allSettings.downloads.map((setting) => (
+                  <SettingOption key={setting.key} setting={setting} />
+                ))}
+              </div>
               
-              {/* Downloaded Content */}
-              <div className="settings-server">
-                <Typography variant="h6">Downloaded Content</Typography>
+              {/* Downloaded Content Section */}
+              <div className="settings-section">
+                <Typography variant="h6" sx={{ mb: 2, fontWeight: 500 }}>Downloaded Content</Typography>
                 {downloads.length > 0 ? (
-                  <div>
-                    <List>
+                  <div className="downloads-list-container">
+                    <List sx={{ width: '100%', bgcolor: 'rgba(0, 0, 0, 0.2)', borderRadius: '8px' }}>
                       {downloads.map((item) => (
-                        <ListItem key={item.id} divider>
+                        <ListItem 
+                          key={item.id} 
+                          divider 
+                          sx={{ 
+                            borderBottom: '1px solid rgba(255, 255, 255, 0.1)',
+                            '&:last-child': { borderBottom: 'none' }
+                          }}
+                        >
                           <ListItemText
-                            primary={item.name}
-                            secondary={`Downloaded: ${new Date(item.downloadDate).toLocaleDateString()}`}
+                            primary={
+                              <Typography variant="body1" fontWeight={500}>{item.name}</Typography>
+                            }
+                            secondary={
+                              <Typography variant="caption" color="text.secondary">
+                                Downloaded: {new Date(item.downloadDate).toLocaleDateString()}
+                              </Typography>
+                            }
                           />
                           {item.progress > 0 && (
                             <Box sx={{ width: '40%', mr: 2 }}>
@@ -496,13 +508,14 @@ const Settings = () => {
                                 value={item.progress} 
                                 sx={{ height: 8, borderRadius: 4 }}
                               />
-                              <Typography variant="caption" align="center" display="block">
+                              <Typography variant="caption" align="center" display="block" sx={{ mt: 0.5 }}>
                                 {item.progress}% watched
                               </Typography>
                             </Box>
                           )}
                           <IconButton
                             edge="end"
+                            color="error"
                             onClick={() => handleRemoveDownload(item.id, item.name)}
                           >
                             <span className="material-symbols-rounded">delete</span>
@@ -521,23 +534,15 @@ const Settings = () => {
                     </Button>
                   </div>
                 ) : (
-                  <Typography variant="body2" color="text.secondary">
-                    No downloaded content
+                  <Typography variant="body1" color="text.secondary" sx={{ 
+                    p: 3, 
+                    bgcolor: 'rgba(0, 0, 0, 0.2)', 
+                    borderRadius: '8px',
+                    textAlign: 'center'
+                  }}>
+                    No downloaded content available
                   </Typography>
                 )}
-              </div>
-              
-              {/* Refresh Downloads Button */}
-              <div className="settings-server-fab-container" style={{ marginTop: '16px' }}>
-                <Fab
-                  onClick={refreshDownloads}
-                  size="medium"
-                  color="info"
-                >
-                  <span className="material-symbols-rounded">
-                    autorenew
-                  </span>
-                </Fab>
               </div>
             </div>
           )}

@@ -196,6 +196,10 @@ export const AppBar = () => {
 		navigate({ to: "/favorite" });
 	}, []);
 
+	const handleNavigateToDownloads = useCallback(() => {
+		navigate({ to: "/downloads" });
+	}, [navigate]);
+
 	const menuButtonSx = useMemo(() => ({ p: 0 }), []);
 
 	if (!display) {
@@ -238,6 +242,17 @@ export const AppBar = () => {
 						</IconButton>
 						<IconButton onClick={handleNavigateToFavorite}>
 							<div className="material-symbols-rounded">favorite</div>
+						</IconButton>
+						<IconButton onClick={handleNavigateToDownloads}>
+							<div
+							className={
+								location.pathname === "/downloads"
+								? "material-symbols-rounded fill"
+								: "material-symbols-rounded"
+							}
+							>
+							download_done
+							</div>
 						</IconButton>
 						<IconButton sx={menuButtonSx} onClick={handleMenuOpen}>
 							{!!user?.Id &&
@@ -340,6 +355,7 @@ export const AppBar = () => {
 									primary={library.Name ?? "Library"}
 								/>
 							))}
+						<ListItemLink to="/downloads" icon="download_done" primary="Downloads" />
 					</List>
 					<Divider variant="middle" />
 					<List>
