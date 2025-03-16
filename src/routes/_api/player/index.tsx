@@ -174,6 +174,10 @@ function VideoPlayer() {
 		state.intro,
 	]);
 
+	const isLocalFile = useMemo(() => {
+		return playbackStream?.startsWith('file://') || mediaSource?.isLocal;
+	}, [playbackStream, mediaSource]);
+
 	const introInfo = mediaSegments?.Items?.find(
 		(segment) => segment.Type === "Intro",
 	);

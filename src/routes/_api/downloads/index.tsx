@@ -1,17 +1,19 @@
 // Fix the import path to your card component
 import { Card } from "@/components/card/card";
-import { type DownloadedItem, getUserDownloadedItems, removeDownloadedItem } from "@/utils/storage/downloads";
+import { type DownloadedItem, getUserDownloadedItems } from "@/utils/storage/downloads";
 import { useApiInContext } from "@/utils/store/api";
 import { useCentralStore } from "@/utils/store/central";
+import { usePlaybackStore } from "@/utils/store/playback";
 import type { BaseItemDto } from "@jellyfin/sdk/lib/generated-client";
 import { getItemsApi } from "@jellyfin/sdk/lib/utils/api/items-api";
 import { Box, CircularProgress, Container, Grid, Typography } from "@mui/material";
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import React, { useEffect, useState } from "react";
+import { v4 as uuidv4 } from "uuid";
 import "./downloads.scss";
 
 // Define proper route path that matches your router configuration
-export const Route = createFileRoute('/_api/downloads')({
+export const Route = createFileRoute('/_api/downloads/')({
   component: DownloadedMoviesPage,
   loader: ({ context }) => {
     const { user } = context;
@@ -33,17 +35,23 @@ export const Route = createFileRoute('/_api/downloads')({
   }
 });
 
+// Define interface for downloaded movie items
+interface DownloadedMovieItem extends BaseItemDto {
+  progress?: number;
+  downloadDate?: string;
+  localFilePath?: string; // Add field for local file path
+}
+
 // The component to render
 function DownloadedMoviesPage() {
   const api = useApiInContext((s) => s.api);
   const user = useCentralStore((s) => s.currentUser);
   const loaderData = Route.useLoaderData();
-  const [downloadedMovies, setDownloadedMovies] = useState<(BaseItemDto & {
-    progress?: number;
-    downloadDate?: string;
-  })[]>([]);
+  const [downloadedMovies, setDownloadedMovies] = useState<DownloadedMovieItem[]>([]);
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [error, setError] = useState<Error | null>(null);
+  const navigate = useNavigate();
+  const setPlaybackInfo = usePlaybackStore((s) => s.setPlaybackInfo);
 
   useEffect(() => {
     const fetchDownloadedMovies = async () => {
@@ -51,8 +59,7 @@ function DownloadedMoviesPage() {
         setIsLoading(true);
         
         // Get locally stored downloaded movies from the loader data
-        // Fix the property name to match what's returned in the loader
-        const localDownloads: DownloadedItem[] = loaderData.downloadedItems || [];
+        const localDownloads: DownloadedItem[] = loaderData?.downloadedItems || [];
         
         // Filter to only show movies (if your app differentiates types)
         const movieDownloads = localDownloads.filter(item => item.type === 'movie');
@@ -76,7 +83,8 @@ function DownloadedMoviesPage() {
                     return {
                       ...item,
                       progress: download.progress,
-                      downloadDate: download.downloadDate
+                      downloadDate: download.downloadDate,
+                      localFilePath: download.filePath // Add local file path
                     };
                   } else {
                     throw new Error(`Item not found: ${download.id}`);
@@ -89,8 +97,9 @@ function DownloadedMoviesPage() {
                     Name: download.name,
                     progress: download.progress,
                     downloadDate: download.downloadDate,
+                    localFilePath: download.filePath, // Add local file path
                     ImageTags: download.imageTag ? { Primary: download.imageTag } : undefined
-                  } as BaseItemDto & { progress?: number; downloadDate?: string };
+                  } as DownloadedMovieItem;
                 }
               })
             );
@@ -104,8 +113,9 @@ function DownloadedMoviesPage() {
               Name: download.name,
               progress: download.progress,
               downloadDate: download.downloadDate,
+              localFilePath: download.filePath, // Add local file path
               ImageTags: download.imageTag ? { Primary: download.imageTag } : undefined
-            })) as (BaseItemDto & { progress?: number; downloadDate?: string })[];
+            })) as DownloadedMovieItem[];
             
             setDownloadedMovies(fallbackMovies);
           }
@@ -116,8 +126,9 @@ function DownloadedMoviesPage() {
             Name: download.name,
             progress: download.progress,
             downloadDate: download.downloadDate,
+            localFilePath: download.filePath, // Add local file path
             ImageTags: download.imageTag ? { Primary: download.imageTag } : undefined
-          })) as (BaseItemDto & { progress?: number; downloadDate?: string })[];
+          })) as DownloadedMovieItem[];
           
           setDownloadedMovies(fallbackMovies);
         } else {
@@ -136,19 +147,46 @@ function DownloadedMoviesPage() {
     fetchDownloadedMovies();
   }, [api, user, loaderData]);
 
-  // Function to delete a download
-  const handleDeleteDownload = (movieId: string) => {
-    try {
-      removeDownloadedItem(movieId);
-      
-      // Update the UI by removing the deleted movie
-      setDownloadedMovies(prevMovies => 
-        prevMovies.filter(movie => movie.Id !== movieId)
-      );
-    } catch (err) {
-      console.error("Error deleting download:", err);
-      // Handle error (show notification, etc.)
+  // Function to play a local file
+  const playLocalVideo = (movie: DownloadedMovieItem) => {
+    if (!movie.localFilePath) {
+      console.error("No local file path available for this movie");
+      return;
     }
+
+    // Generate a unique session ID for this playback
+    const sessionId = uuidv4();
+    
+    // Set up playback info in the store
+    setPlaybackInfo({
+      playbackStream: `file://${movie.localFilePath}`, // Use file:// protocol for local files
+      item: movie,
+      itemName: movie.Name || "Unknown",
+      itemDuration: movie.RunTimeTicks || 0,
+      startPosition: movie.UserData?.PlaybackPositionTicks || 0,
+      episodeTitle: "",
+      mediaSource: {
+        id: movie.Id || "",
+        subtitle: {
+          enable: false,
+          track: -1,
+          format: "subrip",
+          url: "",
+          allTracks: []
+        },
+        audio: {
+          track: 0,
+          allTracks: []
+        },
+        playMethod: "DirectPlay", // Set to DirectPlay for local files
+        isLocal: true // Flag to indicate this is a local file
+      },
+      playsessionId: sessionId,
+      intro: null
+    });
+
+    // Navigate to the player
+    navigate({ to: "/player" });
   };
 
   // Loading state
@@ -208,11 +246,14 @@ function DownloadedMoviesPage() {
       <Grid container spacing={2}>
         {downloadedMovies.map((movie) => (
           <Grid item xs={6} sm={4} md={3} lg={2} key={movie.Id}>
-            {/* Adjust the props to match your Card component's API */}
             <Card 
-              item={movie} 
-              onDeleteDownload={() => handleDeleteDownload(movie.Id || "")}
-              isDownloaded={true}
+              item={movie}
+              cardTitle={movie.Name || ""}
+              cardCaption={movie.Overview || ""}
+              imageType="Primary"
+              cardType="portrait"
+              overrideIcon="Movie"
+              onClick={() => playLocalVideo(movie)}
             />
           </Grid>
         ))}
