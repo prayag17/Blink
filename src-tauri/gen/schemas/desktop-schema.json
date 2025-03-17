@@ -902,6 +902,11 @@
           "const": "core:webview:allow-reparent"
         },
         {
+          "description": "Enables the set_webview_background_color command without any pre-configured scope.",
+          "type": "string",
+          "const": "core:webview:allow-set-webview-background-color"
+        },
+        {
           "description": "Enables the set_webview_focus command without any pre-configured scope.",
           "type": "string",
           "const": "core:webview:allow-set-webview-focus"
@@ -980,6 +985,11 @@
           "description": "Denies the reparent command without any pre-configured scope.",
           "type": "string",
           "const": "core:webview:deny-reparent"
+        },
+        {
+          "description": "Denies the set_webview_background_color command without any pre-configured scope.",
+          "type": "string",
+          "const": "core:webview:deny-set-webview-background-color"
         },
         {
           "description": "Denies the set_webview_focus command without any pre-configured scope.",
@@ -1197,6 +1207,21 @@
           "const": "core:window:allow-set-always-on-top"
         },
         {
+          "description": "Enables the set_background_color command without any pre-configured scope.",
+          "type": "string",
+          "const": "core:window:allow-set-background-color"
+        },
+        {
+          "description": "Enables the set_badge_count command without any pre-configured scope.",
+          "type": "string",
+          "const": "core:window:allow-set-badge-count"
+        },
+        {
+          "description": "Enables the set_badge_label command without any pre-configured scope.",
+          "type": "string",
+          "const": "core:window:allow-set-badge-label"
+        },
+        {
           "description": "Enables the set_closable command without any pre-configured scope.",
           "type": "string",
           "const": "core:window:allow-set-closable"
@@ -1280,6 +1305,11 @@
           "description": "Enables the set_minimizable command without any pre-configured scope.",
           "type": "string",
           "const": "core:window:allow-set-minimizable"
+        },
+        {
+          "description": "Enables the set_overlay_icon command without any pre-configured scope.",
+          "type": "string",
+          "const": "core:window:allow-set-overlay-icon"
         },
         {
           "description": "Enables the set_position command without any pre-configured scope.",
@@ -1542,6 +1572,21 @@
           "const": "core:window:deny-set-always-on-top"
         },
         {
+          "description": "Denies the set_background_color command without any pre-configured scope.",
+          "type": "string",
+          "const": "core:window:deny-set-background-color"
+        },
+        {
+          "description": "Denies the set_badge_count command without any pre-configured scope.",
+          "type": "string",
+          "const": "core:window:deny-set-badge-count"
+        },
+        {
+          "description": "Denies the set_badge_label command without any pre-configured scope.",
+          "type": "string",
+          "const": "core:window:deny-set-badge-label"
+        },
+        {
           "description": "Denies the set_closable command without any pre-configured scope.",
           "type": "string",
           "const": "core:window:deny-set-closable"
@@ -1625,6 +1670,11 @@
           "description": "Denies the set_minimizable command without any pre-configured scope.",
           "type": "string",
           "const": "core:window:deny-set-minimizable"
+        },
+        {
+          "description": "Denies the set_overlay_icon command without any pre-configured scope.",
+          "type": "string",
+          "const": "core:window:deny-set-overlay-icon"
         },
         {
           "description": "Denies the set_position command without any pre-configured scope.",
@@ -1957,7 +2007,7 @@
           "const": "notification:deny-show"
         },
         {
-          "description": "This permission set configures which\nprocess feeatures are by default exposed.\n\n#### Granted Permissions\n\nThis enables to quit via `allow-exit` and restart via `allow-restart`\nthe application.\n",
+          "description": "This permission set configures which\nprocess features are by default exposed.\n\n#### Granted Permissions\n\nThis enables to quit via `allow-exit` and restart via `allow-restart`\nthe application.\n",
           "type": "string",
           "const": "process:default"
         },

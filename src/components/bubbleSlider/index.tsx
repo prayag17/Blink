@@ -248,7 +248,7 @@ const BubbleSlider = ({
 					// disablePortal: true,
 				},
 				tooltip: {
-					className: "glass",
+					// className: "glass",
 					style: {
 						width: "34em",
 						overflow: "hidden",

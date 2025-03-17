@@ -4,6 +4,7 @@ use tauri_plugin_log::{fern::colors::ColoredLevelConfig, Target, TargetKind};
 
 fn main() {
     tauri::Builder::default()
+        .plugin(tauri_plugin_window_state::Builder::new().build())
         .plugin(tauri_plugin_dialog::init())
         .plugin(tauri_plugin_upload::init())
         .plugin(tauri_plugin_notification::init())

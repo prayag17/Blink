@@ -77,7 +77,8 @@
 				"center": true,
 				"label": "main",
 				"dragDropEnabled": false,
-				"backgroundColor": "#08001f"
+				"backgroundColor": "#08001f",
+				"transparent": false
 			}
 		],
 		"security": {

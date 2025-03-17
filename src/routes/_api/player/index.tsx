@@ -819,14 +819,16 @@ function VideoPlayer() {
 				</div>
 				{(forceShowCredits || !showUpNextCard) && (
 					<div className="video-player-osd-info">
-						<Typography variant="h4" fontWeight={500} mb={2}>
-							{String(itemName)}
+						<div>
+							<Typography variant="h4" fontWeight={500} mb={2}>
+								{String(itemName)}
+							</Typography>
 							{episodeTitle && (
 								<Typography variant="h6" fontWeight={300} mt={1}>
 									{String(episodeTitle)}
 								</Typography>
 							)}
-						</Typography>
+						</div>
 						<div className="video-player-osd-controls">
 							<div className="video-player-osd-controls-progress">
 								{item && api && (
