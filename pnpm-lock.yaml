@@ -40,7 +40,7 @@ importers:
         version: 5.1.1
       '@jellyfin/sdk':
         specifier: 0.11.0
-        version: 0.11.0(axios@1.7.9)
+        version: 0.11.0(axios@1.8.2)
       '@million/lint':
         specifier: ^1.0.14
         version: 1.0.14(rollup@4.34.8)
@@ -88,7 +88,7 @@ importers:
         version: 2.2.0
       '@tauri-apps/plugin-store':
         specifier: github:tauri-apps/tauri-plugin-store#v2
-        version: https://codeload.github.com/tauri-apps/tauri-plugin-store/tar.gz/5d4e618824ffe45d52bd4785b699805ceb7a7d3b
+        version: https://codeload.github.com/tauri-apps/tauri-plugin-store/tar.gz/d61941715f0eb8d091bb85980150b4971d4c8fe3
       '@tauri-apps/plugin-updater':
         specifier: 2.5.0
         version: 2.5.0
@@ -106,7 +106,7 @@ importers:
         version: 19.0.4(@types/react@19.0.10)
       axios:
         specifier: ^1.7.9
-        version: 1.7.9
+        version: 1.8.2
       axios-tauri-api-adapter:
         specifier: ^2.0.6
         version: 2.0.6
@@ -289,6 +289,11 @@ packages:
     resolution: {integrity: sha512-Mz/4+y8udxBKdmzt/UjPACs4G3j5SshJJEFFKxlCGPydG4JAHXxjWjAwjd09tf6oINvl1VfMJo+nB7H2YKQ0dA==}
     engines: {node: '>=6.9.0'}
 
+  '@babel/parser@7.26.10':
+    resolution: {integrity: sha512-6aQR2zGE/QFi8JpDLjUZEPYOs7+mhKXm86VaKFiLP35JQwQb6bwUE+XbvkH0EptsYhbNBSUGaUBLKqxH1xSgsA==}
+    engines: {node: '>=6.0.0'}
+    hasBin: true
+
   '@babel/parser@7.26.9':
     resolution: {integrity: sha512-81NWa1njQblgZbQHxWHpxxCzNsa3ZwvFqpUg7P+NNUU6f3UU2jBEg4OlF/J6rl8+PQGh1q6/zWScd001YwcA5A==}
     engines: {node: '>=6.0.0'}
@@ -350,6 +355,10 @@ packages:
 
   '@babel/types@7.26.0':
     resolution: {integrity: sha512-Z/yiTPj+lDVnF7lWeKCIJzaIkI0vYO87dMpZ4bg4TDrFe4XXLFWL1TbXU27gBP3QccxV9mZICCrnjnYlJjXHOA==}
+    engines: {node: '>=6.9.0'}
+
+  '@babel/types@7.26.10':
+    resolution: {integrity: sha512-emqcG3vHrpxUKTrxcblR36dcrcoRDvKmnL/dCL6ZsHaShW80qxCAcNhzQZrpeM765VzEos+xOi4s+r4IXzTwdQ==}
     engines: {node: '>=6.9.0'}
 
   '@babel/types@7.26.9':
@@ -1726,8 +1735,8 @@ packages:
   '@tauri-apps/plugin-process@2.2.0':
     resolution: {integrity: sha512-uypN2Crmyop9z+KRJr3zl71OyVFgTuvHFjsJ0UxxQ/J5212jVa5w4nPEYjIewcn8bUEXacRebwE6F7owgrbhSw==}
 
-  '@tauri-apps/plugin-store@https://codeload.github.com/tauri-apps/tauri-plugin-store/tar.gz/5d4e618824ffe45d52bd4785b699805ceb7a7d3b':
-    resolution: {tarball: https://codeload.github.com/tauri-apps/tauri-plugin-store/tar.gz/5d4e618824ffe45d52bd4785b699805ceb7a7d3b}
+  '@tauri-apps/plugin-store@https://codeload.github.com/tauri-apps/tauri-plugin-store/tar.gz/d61941715f0eb8d091bb85980150b4971d4c8fe3':
+    resolution: {tarball: https://codeload.github.com/tauri-apps/tauri-plugin-store/tar.gz/d61941715f0eb8d091bb85980150b4971d4c8fe3}
     version: 2.2.0
 
   '@tauri-apps/plugin-updater@2.5.0':
@@ -1864,8 +1873,8 @@ packages:
     resolution: {integrity: sha512-VhoCtu+oZBZlFUAWIOEmIwZtp9/39oUzBo0fOutjB8wv0Y0P0HfLdZmGKsq0nvysAm661Cxy3hFZz/QTypxmCQ==}
     engines: {node: '>=16', pnpm: '>=7'}
 
-  axios@1.7.9:
-    resolution: {integrity: sha512-LhLcE7Hbiryz8oMDdDptSrWowmB4Bl6RCt6sIJKpRB4XtVf0iEgewX3au/pJqm+Py1kCASkb/FFKjxQaLtxJvw==}
+  axios@1.8.2:
+    resolution: {integrity: sha512-ls4GYBm5aig9vWx8AWDSGLpnpDQRtWAfrjU+EuytuODrFBkqesN2RkOQCBzrA1RQNHw1SmRMSDDDSwzNAYQ6Rg==}
 
   babel-dead-code-elimination@1.0.9:
     resolution: {integrity: sha512-JLIhax/xullfInZjtu13UJjaLHDeTzt3vOeomaSUdO/nAMEL/pWC/laKrSvWylXMnVWyL5bpmG9njqBZlUQOdg==}
@@ -2102,8 +2111,8 @@ packages:
     resolution: {integrity: sha512-KIN/nDJBQRcXw0MLVhZE9iQHmG68qAVIBg9CqmUYjmQIhgij9U5MFvrqkUL5FbtyyzZuOeOt0zdeRe4UY7ct+A==}
     engines: {node: '>= 0.4'}
 
-  effect@3.13.2:
-    resolution: {integrity: sha512-/w+CPqHDJ33Wq7xC4YKAchrEEPtjvxh563xH9kDTZp99seNYBoBs87vl8DJwartEjj+KLQLP8PzoDne+XmGT2A==}
+  effect@3.13.11:
+    resolution: {integrity: sha512-SOUwX2E1ciNDPZDbSfx+YszGfIIg90sluKyx0BB6VwLIt8+NOA6tEAR3N2XI9MEOWfO/EpWzbARLnXI2hXcvaQ==}
 
   electron-to-chromium@1.5.102:
     resolution: {integrity: sha512-eHhqaja8tE/FNpIiBrvBjFV/SSKpyWHLvxuR9dPTdo+3V9ppdLmFB7ZZQ98qNovcngPLYIz0oOBF9P0FfZef5Q==}
@@ -2264,8 +2273,8 @@ packages:
     resolution: {integrity: sha512-DyFP3BM/3YHTQOCUL/w0OZHR0lpKeGrxotcHWcqNEdnltqFwXVfhEBQ94eIo34AfQpo0rGki4cyIiftY06h2Fg==}
     engines: {node: 6.* || 8.* || >= 10.*}
 
-  get-intrinsic@1.2.7:
-    resolution: {integrity: sha512-VW6Pxhsrk0KAOqs3WEd0klDiF/+V7gQOpAvY1jVU/LHmaD/kQO4523aiJuikX/QAKYiW6x8Jh+RJej1almdtCA==}
+  get-intrinsic@1.3.0:
+    resolution: {integrity: sha512-9fSjSaos/fRIVIp+xSJlE6lfwhES7LNtKaCBIamHsjr2na1BiABJPo0mOjjz8GJDURarmCPGqaiVg5mfjb98CQ==}
     engines: {node: '>= 0.4'}
 
   get-proto@1.0.1:
@@ -2911,8 +2920,8 @@ packages:
     resolution: {integrity: sha512-GDhwkLfywWL2s6vEjyhri+eXmfH6j1L7JE27WhqLeYzoh/A3DBaYGEj2H/HFZCn/kMfim73FXxEJTw06WtxQwg==}
     engines: {node: '>= 14.18.0'}
 
-  recast@0.23.9:
-    resolution: {integrity: sha512-Hx/BGIbwj+Des3+xy5uAtAbdCyqK9y9wbBcDFDYanLS9JnMqf7OeF87HQwUimE87OEc72mr6tkKUKMBBL+hF9Q==}
+  recast@0.23.11:
+    resolution: {integrity: sha512-YTUo+Flmw4ZXiWfQKGcwwc11KnoRAYgzAE2E7mXKCjSviTKShtxBsN6YUUBB2gtaBzKzeKunxhUwNHQuRryhWA==}
     engines: {node: '>= 4'}
 
   redux@4.2.1:
@@ -3449,6 +3458,10 @@ snapshots:
       '@babel/template': 7.26.9
       '@babel/types': 7.26.9
 
+  '@babel/parser@7.26.10':
+    dependencies:
+      '@babel/types': 7.26.10
+
   '@babel/parser@7.26.9':
     dependencies:
       '@babel/types': 7.26.9
@@ -3520,6 +3533,11 @@ snapshots:
       - supports-color
 
   '@babel/types@7.26.0':
+    dependencies:
+      '@babel/helper-string-parser': 7.25.9
+      '@babel/helper-validator-identifier': 7.25.9
+
+  '@babel/types@7.26.10':
     dependencies:
       '@babel/helper-string-parser': 7.25.9
       '@babel/helper-validator-identifier': 7.25.9
@@ -3944,9 +3962,9 @@ snapshots:
     dependencies:
       hono: 4.7.2
 
-  '@jellyfin/sdk@0.11.0(axios@1.7.9)':
+  '@jellyfin/sdk@0.11.0(axios@1.8.2)':
     dependencies:
-      axios: 1.7.9
+      axios: 1.8.2
 
   '@jridgewell/gen-mapping@0.3.8':
     dependencies:
@@ -3969,15 +3987,15 @@ snapshots:
     dependencies:
       '@antfu/ni': 0.21.12
       '@axiomhq/js': 1.0.0-rc.3
-      '@babel/parser': 7.26.9
+      '@babel/parser': 7.26.10
       '@babel/types': 7.26.0
       '@clack/prompts': 0.7.0
       ast-types: 0.14.2
       cli-high: 0.4.3
       diff: 5.2.0
-      effect: 3.13.2
+      effect: 3.13.11
       nanoid: 5.1.0
-      recast: 0.23.9
+      recast: 0.23.11
       xycolors: 0.1.2
 
   '@million/lint@1.0.14(rollup@4.34.8)':
@@ -4436,7 +4454,7 @@ snapshots:
 
   '@svgr/hast-util-to-babel-ast@8.0.0':
     dependencies:
-      '@babel/types': 7.26.9
+      '@babel/types': 7.26.10
       entities: 4.5.0
 
   '@svgr/plugin-jsx@8.1.0(@svgr/core@8.1.0(typescript@5.7.3))':
@@ -4641,7 +4659,7 @@ snapshots:
     dependencies:
       '@tauri-apps/api': 2.2.0
 
-  '@tauri-apps/plugin-store@https://codeload.github.com/tauri-apps/tauri-plugin-store/tar.gz/5d4e618824ffe45d52bd4785b699805ceb7a7d3b':
+  '@tauri-apps/plugin-store@https://codeload.github.com/tauri-apps/tauri-plugin-store/tar.gz/d61941715f0eb8d091bb85980150b4971d4c8fe3':
     dependencies:
       '@tauri-apps/api': 2.2.0
 
@@ -4782,12 +4800,12 @@ snapshots:
   axios-tauri-api-adapter@2.0.6:
     dependencies:
       '@tauri-apps/plugin-http': 2.3.0
-      axios: 1.7.9
+      axios: 1.8.2
       http-status-codes: 2.3.0
     transitivePeerDependencies:
       - debug
 
-  axios@1.7.9:
+  axios@1.8.2:
     dependencies:
       follow-redirects: 1.15.9
       form-data: 4.0.2
@@ -5026,7 +5044,7 @@ snapshots:
       es-errors: 1.3.0
       gopd: 1.2.0
 
-  effect@3.13.2:
+  effect@3.13.11:
     dependencies:
       '@standard-schema/spec': 1.0.0
       fast-check: 3.23.2
@@ -5082,7 +5100,7 @@ snapshots:
   es-set-tostringtag@2.1.0:
     dependencies:
       es-errors: 1.3.0
-      get-intrinsic: 1.2.7
+      get-intrinsic: 1.3.0
       has-tostringtag: 1.0.2
       hasown: 2.0.2
 
@@ -5235,7 +5253,7 @@ snapshots:
 
   get-caller-file@2.0.5: {}
 
-  get-intrinsic@1.2.7:
+  get-intrinsic@1.3.0:
     dependencies:
       call-bind-apply-helpers: 1.0.2
       es-define-property: 1.0.1
@@ -6062,7 +6080,7 @@ snapshots:
 
   readdirp@4.1.2: {}
 
-  recast@0.23.9:
+  recast@0.23.11:
     dependencies:
       ast-types: 0.16.1
       esprima: 4.0.1
