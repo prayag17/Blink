@@ -2,6 +2,7 @@ import { WebviewWindow as appWindow } from "@tauri-apps/api/webviewWindow";
 import React, {
 	type ChangeEventHandler,
 	type MouseEventHandler,
+	useReducer,
 	useTransition,
 } from "react";
 import { useLayoutEffect, useMemo } from "react";
@@ -23,7 +24,7 @@ import {
 	usePlaybackStore,
 } from "@/utils/store/playback";
 
-import { secToTicks, ticksToMs, ticksToSec } from "@/utils/date/time";
+import { secToTicks, ticksToSec } from "@/utils/date/time";
 import { useCallback, useEffect, useRef, useState } from "react";
 
 import { getPlaystateApi } from "@jellyfin/sdk/lib/utils/api/playstate-api";
@@ -32,22 +33,12 @@ import "./videoPlayer.scss";
 
 import { endsAt } from "@/utils/date/time";
 
-import {
-	PlayMethod,
-	RepeatMode,
-	type TrickplayInfo,
-} from "@jellyfin/sdk/lib/generated-client";
+import { PlayMethod, RepeatMode } from "@jellyfin/sdk/lib/generated-client";
 import { AnimatePresence, motion } from "framer-motion";
 
 import { useBackdropStore } from "@/utils/store/backdrop";
 
-import {
-	Button,
-	LinearProgress,
-	Popover,
-	TextField,
-	Tooltip,
-} from "@mui/material";
+import { Button, LinearProgress, Popover, TextField } from "@mui/material";
 import JASSUB from "jassub";
 //@ts-ignore
 import workerUrl from "jassub/dist/jassub-worker.js?url";
@@ -70,9 +61,13 @@ import { toNumber } from "lodash";
 import type { OnProgressProps } from "react-player/base";
 
 import type subtitlePlaybackInfo from "@/utils/types/subtitlePlaybackInfo";
-import type { Instance } from "@popperjs/core";
 //@ts-ignore
 import font from "./Noto-Sans-Indosphere.ttf?url";
+
+import BubbleSlider from "@/components/bubbleSlider";
+import videoPlayerReducer, {
+	VideoPlayerActionKind,
+} from "@/utils/reducers/videoPlayerReducer";
 
 const ticksDisplay = (ticks: number) => {
 	const time = Math.round(ticks / 10000);
@@ -152,7 +147,7 @@ function VideoPlayer() {
 	const api = useApiInContext((s) => s.api);
 	const { history } = useRouter();
 	const [hoveringOsd, setHoveringOsd] = useState(false);
-	const player = useRef<ReactPlayer | null>(null);	
+	const player = useRef<ReactPlayer | null>(null);
 
 	const user = useCentralStore((s) => s.currentUser);
 
@@ -203,15 +198,43 @@ function VideoPlayer() {
 	const [showVolumeControl, setShowVolumeControl] = useState(false);
 
 	// Control States
-	const [isReady, setIsReady] = useState(false);
-	const [playing, setPlaying] = useState(true);
-	const [isSeeking, setIsSeeking] = useState(false);
-	const [sliderProgress, setSliderProgress] = useState(startPosition);
-	const [progress, setProgress] = useState(startPosition);
-	const [appFullscreen, setAppFullscreen] = useState(false);
+
+	const [
+		{
+			ref,
+			isPlayerReady,
+			isPlayerPlaying,
+			isPlayerMuted,
+			isPlayerFullscreen,
+			playerVolume,
+			isSeeking,
+			sliderSeek,
+			progress,
+			isHovering,
+		},
+		dispatch,
+	] = useReducer(videoPlayerReducer, {
+		ref: player,
+		isPlayerReady: false,
+		isPlayerPlaying: true,
+		isPlayerMuted: false,
+		isPlayerFullscreen: false,
+		playerVolume: 1,
+		isSeeking: false,
+		sliderSeek: startPosition,
+		progress: startPosition,
+		isHovering: false,
+	});
+
+	// const [isReady, setIsReady] = useState(false);
+	// const [playing, setPlaying] = useState(true);
+	// const [isSeeking, setIsSeeking] = useState(false);
+	// const [sliderProgress, setSliderProgress] = useState(startPosition);
+	// const [progress, setProgress] = useState(startPosition);
+	// const [appFullscreen, setAppFullscreen] = useState(false);
 	// const [showSubtitles, setShowSubtitles] = useState(mediaSource.subtitle.enable);
-	const [volume, setVolume] = useState(1);
-	const [muted, setMuted] = useState(false);
+	// const [volume, setVolume] = useState(1);
+	// const [muted, setMuted] = useState(false);
 
 	const setBackdrop = useBackdropStore((s) => s.setBackdrop);
 	useEffect(() => setBackdrop("", ""), []);
@@ -219,10 +242,10 @@ function VideoPlayer() {
 	const [clickTimeout, setClickTimeout] = useState<NodeJS.Timeout>(null!);
 
 	const handleReady = async () => {
-		if (api && !isReady) {
+		if (api && !isPlayerReady) {
 			player.current?.seekTo(ticksToSec(startPosition), "seconds");
 			console.log("Seeking to", ticksToSec(startPosition));
-			setIsReady(true);
+			dispatch({ type: VideoPlayerActionKind.SET_PLAYER_READY, payload: true });
 			// Report Jellyfin server: Playback has begin
 			getPlaystateApi(api).reportPlaybackStart({
 				playbackStartInfo: {
@@ -237,22 +260,25 @@ function VideoPlayer() {
 					PlaybackStartTimeTicks: startPosition,
 					PositionTicks: startPosition,
 					RepeatMode: RepeatMode.RepeatNone,
-					VolumeLevel: volume,
+					VolumeLevel: playerVolume,
 				},
 			});
 		}
 	};
 
 	const handleProgress = async (event: OnProgressProps) => {
-		setProgress(secToTicks(event.playedSeconds));
+		dispatch({
+			type: VideoPlayerActionKind.SET_PROGRESS,
+			payload: secToTicks(event.playedSeconds),
+		});
 		if (!api) return null;
 		// Report Jellyfin server: Playback progress
 		getPlaystateApi(api).reportPlaybackProgress({
 			playbackProgressInfo: {
 				AudioStreamIndex: mediaSource.audioTrack,
 				CanSeek: true,
-				IsMuted: muted,
-				IsPaused: !playing,
+				IsMuted: isPlayerMuted,
+				IsPaused: !isPlayerPlaying,
 				ItemId: item?.Id,
 				MediaSourceId: mediaSource.id,
 				PlayMethod: PlayMethod.DirectPlay,
@@ -260,7 +286,7 @@ function VideoPlayer() {
 				PlaybackStartTimeTicks: startPosition,
 				PositionTicks: secToTicks(event.playedSeconds),
 				RepeatMode: RepeatMode.RepeatNone,
-				VolumeLevel: Math.floor(volume * 100),
+				VolumeLevel: Math.floor(playerVolume * 100),
 			},
 		});
 	};
@@ -308,7 +334,7 @@ function VideoPlayer() {
 					break;
 				case "F8":
 				case " ":
-					setPlaying((state) => !state);
+					dispatch({ type: VideoPlayerActionKind.TOGGLE_PLAYER_PLAYING });
 					break;
 				case "ArrowUp":
 					// setVolume((state) => (state <= 0.9 ? state + 0.1 : state));
@@ -318,10 +344,7 @@ function VideoPlayer() {
 					break;
 				case "F":
 				case "f":
-					setAppFullscreen((state) => {
-						appWindow.getCurrent().setFullscreen(!state);
-						return !state;
-					});
+					dispatch({ type: VideoPlayerActionKind.TOGGLE_PLAYER_FULLSCREEN });
 					break;
 				case "P":
 				case "p":
@@ -329,7 +352,7 @@ function VideoPlayer() {
 					break;
 				case "M":
 				case "m":
-					// setIsMuted((state) => !state);
+					dispatch({ type: VideoPlayerActionKind.TOGGLE_PLAYER_MUTED });
 					break;
 				case "F7":
 					playItemFromQueue("previous", user?.Id, api);
@@ -358,10 +381,16 @@ function VideoPlayer() {
 		const handleMouseWheel = (event: WheelEvent) => {
 			if (event.deltaY < 0) {
 				// increase volume
-				setVolume((state) => Math.min(1, state + VOLUME_SCROLL_INTERVAL));
+				dispatch({
+					type: VideoPlayerActionKind.SET_PLAYER_VOLUME_UP_BY_STEP,
+					payload: VOLUME_SCROLL_INTERVAL,
+				});
 			} else if (event.deltaY > 0) {
 				// decrease volume
-				setVolume((state) => Math.max(0, state - VOLUME_SCROLL_INTERVAL));
+				dispatch({
+					type: VideoPlayerActionKind.SET_PLAYER_VOLUME_DOWN_BY_STEP,
+					payload: VOLUME_SCROLL_INTERVAL,
+				});
 			}
 		};
 
@@ -376,8 +405,8 @@ function VideoPlayer() {
 
 	// Set playing state to true when a new item is loaded
 	useLayoutEffect(() => {
-		setPlaying(true);
-		setIsReady(false);
+		dispatch({ type: VideoPlayerActionKind.SET_PLAYER_PLAYING, payload: true });
+		dispatch({ type: VideoPlayerActionKind.SET_PLAYER_READY, payload: false });
 	}, [item?.Id]);
 
 	// Manage Subtitle playback
@@ -519,135 +548,6 @@ function VideoPlayer() {
 			setShowChapterList(e.currentTarget);
 		}, []);
 
-	const sliderDisplayFormat = (value: number) => {
-		const currentChapter = item?.Chapters?.filter((chapter, index) => {
-			if (index + 1 === item.Chapters?.length) {
-				return chapter;
-			}
-			if (
-				(item.Chapters?.[index + 1]?.StartPositionTicks ?? value) - value >=
-					0 &&
-				(chapter.StartPositionTicks ?? value) - value < 0
-			) {
-				return chapter;
-			}
-		});
-
-		let trickplayResolution: TrickplayInfo | undefined;
-		const trickplayResolutions = mediaSource.id
-			? item?.Trickplay?.[mediaSource.id]
-			: null;
-		if (trickplayResolutions) {
-			let bestWidth: number | undefined;
-			const maxWidth = window.screen.width * window.devicePixelRatio * 0.2;
-			for (const [_, trickInfo] of Object.entries(trickplayResolutions)) {
-				if (
-					!bestWidth ||
-					(trickInfo.Width &&
-						((trickInfo.Width < bestWidth && bestWidth > maxWidth) ||
-							(trickInfo.Width > bestWidth && bestWidth <= maxWidth)))
-				) {
-					bestWidth = trickInfo.Width;
-				}
-			}
-			if (bestWidth) {
-				trickplayResolution = trickplayResolutions[bestWidth];
-			}
-		}
-		if (
-			trickplayResolution?.TileWidth &&
-			trickplayResolution.TileHeight &&
-			trickplayResolution.Width &&
-			trickplayResolution.Height
-		) {
-			const currentTrickplayImage = trickplayResolution?.Interval
-				? Math.floor(ticksToMs(value) / trickplayResolution?.Interval)
-				: 0;
-			const trickplayImageSize =
-				trickplayResolution?.TileWidth * trickplayResolution?.TileHeight; // this gives the area of a single tile
-
-			const trickplayImageOffset = currentTrickplayImage % trickplayImageSize; // this gives the tile index inside a trickplay image
-			const index = Math.floor(currentTrickplayImage / trickplayImageSize); // this gives the index of trickplay image
-
-			const imageOffsetX =
-				trickplayImageOffset % trickplayResolution?.TileWidth; // this gives the x coordinate of tile in trickplay image
-			const imageOffsetY = Math.floor(
-				trickplayImageOffset / trickplayResolution?.TileWidth,
-			); // this gives the y coordinate of tile in trickplay image
-			const backgroundOffsetX = -(imageOffsetX * trickplayResolution?.Width);
-			const backgroundOffsetY = -(imageOffsetY * trickplayResolution?.Height);
-
-			const imgUrlParamsObject: Record<string, string> = {
-				api_key: String(api?.accessToken),
-				MediaSourceId: mediaSource.id ?? "",
-			};
-			const imgUrlParams = new URLSearchParams(imgUrlParamsObject).toString();
-
-			const imageAspectRatio =
-				trickplayResolution.Width / trickplayResolution.Height;
-
-			if (currentChapter?.[0]?.Name) {
-				return (
-					<div className="flex flex-column video-osb-bubble">
-						<div
-							className="video-osd-trickplayBubble"
-							style={{
-								background: `url(${api?.basePath}/Videos/${item?.Id}/Trickplay/${trickplayResolution.Width}/${index}.jpg?${imgUrlParams})`,
-								backgroundPositionX: `${backgroundOffsetX}px`,
-								backgroundPositionY: `${backgroundOffsetY}px`,
-								width: "100%",
-								aspectRatio: imageAspectRatio,
-							}}
-						/>
-						<Typography variant="h6" px="12px" pt={1}>
-							{currentChapter?.[0]?.Name}
-						</Typography>
-						<Typography px="12px" pb={1}>
-							{ticksDisplay(value)}
-						</Typography>
-					</div>
-				);
-			}
-			return (
-				<div className="flex flex-column video-osb-bubble">
-					<div
-						className="video-osd-trickplayBubble"
-						style={{
-							background: `url(${api?.basePath}/Videos/${item?.Id}/Trickplay/${trickplayResolution.Width}/${index}.jpg?${imgUrlParams})`,
-							backgroundPositionX: `${backgroundOffsetX}px`,
-							backgroundPositionY: `${backgroundOffsetY}px`,
-							width: "100%",
-							aspectRatio: imageAspectRatio,
-						}}
-					/>
-					<Typography variant="h6" px="12px" py={1}>
-						{ticksDisplay(value)}
-					</Typography>
-				</div>
-			);
-		}
-
-		if (currentChapter?.[0]?.Name) {
-			return (
-				<div className="flex flex-column video-osb-bubble">
-					<Typography variant="h6" px="12px" pt={1}>
-						{currentChapter?.[0]?.Name}
-					</Typography>
-					<Typography px={2} pb={1}>
-						{ticksDisplay(value)}
-					</Typography>
-				</div>
-			);
-		}
-		return (
-			<div className="flex flex-column video-osb-bubble ">
-				<Typography variant="h6" px="12px" py={1}>
-					{ticksDisplay(value)}
-				</Typography>
-			</div>
-		);
-	};
-
 	const [showVolumeIndicator, setVolumeIndicator] = useState(false);
 	useEffect(() => {
 		setVolumeIndicator(true);
@@ -655,7 +555,7 @@ function VideoPlayer() {
 			setVolumeIndicator(false);
 		}, 1000);
 		return () => clearTimeout(timeout);
-	}, [volume]);
+	}, [playerVolume]);
 
 	const handlePlaybackEnded = () => {
 		if (queue?.[currentQueueItemIndex + 1].Id) {
@@ -691,7 +591,10 @@ function VideoPlayer() {
 		startAudioTrackChange(() => {
 			if (api && mediaSource.audio.allTracks) {
 				changeAudioTrack(toNumber(e.target.value), api, progress);
-				setIsReady(false);
+				dispatch({
+					type: VideoPlayerActionKind.SET_PLAYER_READY,
+					payload: false,
+				});
 				// setSettingsMenu(null);
 			}
 		});
@@ -728,27 +631,6 @@ function VideoPlayer() {
 		console.log("Next Chapter", next);
 		player.current?.seekTo(ticksToSec(next?.StartPositionTicks ?? 0));
 	}, [progress, playsessionId]);
-
-	const positionRef = React.useRef<{ x: number; y: number }>({
-		x: 0,
-		y: 0,
-	});
-	const popperRef = React.useRef<Instance>(null);
-	const areaRef = React.useRef<HTMLDivElement>(null);
-
-	const [hoverProgress, setHoverProgress] = useState(0);
-
-	const handleSliderHover = (event: React.MouseEvent) => {
-		positionRef.current = { x: event.clientX, y: event.clientY };
-		const rect = areaRef.current!.getBoundingClientRect();
-		const width = rect.width;
-		const distX = event.clientX - rect.left;
-		const percentageCovered = distX / width;
-		setHoverProgress(percentageCovered * itemDuration);
-		if (popperRef.current != null) {
-			popperRef.current.update();
-		}
-	};
 
 	return (
 		<div className="video-player">
@@ -822,11 +704,11 @@ function VideoPlayer() {
 						className="video-volume-indicator glass"
 					>
 						<div className="material-symbols-rounded">
-							{volume > 0.7 ? "volume_up" : "volume_down"}
+							{playerVolume > 0.7 ? "volume_up" : "volume_down"}
 						</div>
 						<LinearProgress
 							style={{ width: "100%" }}
-							value={volume * 100}
+							value={playerVolume * 100}
 							variant="determinate"
 						/>
 					</motion.div>
@@ -834,7 +716,7 @@ function VideoPlayer() {
 			</AnimatePresence>
 			<motion.div
 				className={
-					hoveringOsd || !playing || isSeeking
+					hoveringOsd || !isPlayerPlaying || isSeeking
 						? "video-player-osd hovering"
 						: "video-player-osd"
 				}
@@ -844,7 +726,7 @@ function VideoPlayer() {
 					opacity: 0,
 				}}
 				animate={{
-					opacity: hoveringOsd || !playing || isSeeking ? 1 : 0,
+					opacity: hoveringOsd || !isPlayerPlaying || isSeeking ? 1 : 0,
 				}}
 				style={{
 					zIndex: 2,
@@ -857,15 +739,12 @@ function VideoPlayer() {
 					if (event.detail === 1) {
 						setClickTimeout(
 							setTimeout(() => {
-								setPlaying((state) => !state);
+								dispatch({ type: VideoPlayerActionKind.TOGGLE_PLAYER_PLAYING });
 							}, 200),
 						);
 					} else if (event.detail === 2) {
 						clearTimeout(clickTimeout);
-						setAppFullscreen((state) => {
-							appWindow.getCurrent().setFullscreen(!state);
-							return !state;
-						});
+						dispatch({ type: VideoPlayerActionKind.TOGGLE_PLAYER_FULLSCREEN });
 					}
 				}}
 			>
@@ -950,93 +829,25 @@ function VideoPlayer() {
 						</Typography>
 						<div className="video-player-osd-controls">
 							<div className="video-player-osd-controls-progress">
-								<Tooltip
-									// title={sliderDisplayFormat(
-									// 	positionRef.current.x - areaRef.current!.getBoundingClientRect().x,
-									// )}
-									key={`${positionRef.current}`}
-									title={sliderDisplayFormat(hoverProgress)}
-									placement="top"
-									slotProps={{
-										popper: {
-											popperRef,
-											anchorEl: {
-												getBoundingClientRect: () => {
-													return new DOMRect(
-														positionRef.current.x,
-														areaRef.current!.getBoundingClientRect().y,
-														0,
-														0,
-													);
-												},
-											},
-											disablePortal: true,
-										},
-										tooltip: {
-											className: "glass",
-											style: {
-												width: "34em",
-												overflow: "hidden",
-												padding: "12px",
-												borderRadius: "20px",
-											},
-										},
-									}}
-								>
-									<Slider
-										value={isSeeking ? sliderProgress : progress}
-										max={itemDuration}
-										step={1}
-										onChange={(_, newValue) => {
-											setIsSeeking(true);
-											Array.isArray(newValue)
-												? setSliderProgress(newValue[0])
-												: setSliderProgress(newValue);
+								{item && api && (
+									<BubbleSlider
+										itemDuration={itemDuration}
+										item={item}
+										mediaSource={mediaSource}
+										api={api}
+										chapterMarks={chapterMarks}
+										sliderState={{
+											isSeeking,
+											sliderSeek,
+											progress,
 										}}
-										onChangeCommitted={(_, newValue) => {
-											setIsSeeking(false);
-											Array.isArray(newValue)
-												? setProgress(newValue[0])
-												: setProgress(newValue);
-											if (Array.isArray(newValue)) {
-												player.current?.seekTo(
-													ticksToSec(newValue[0]),
-													"seconds",
-												);
-											} else {
-												console.log("Seeking to", ticksToSec(newValue));
-												player.current?.seekTo(ticksToSec(newValue), "seconds");
-											}
-										}}
-										sx={{
-											"& .MuiSlider-thumb": {
-												width: 14,
-												height: 14,
-												transition: "0.1s ease-in-out",
-												opacity: 0,
-												"&.Mui-active": {
-													width: 20,
-													height: 20,
-													opacity: 1,
-												},
-											},
-											"&:hover .MuiSlider-thumb": {
-												opacity: 1,
-											},
-											"& .MuiSlider-rail": {
-												opacity: 0.28,
-												background: "white",
-											},
-										}}
-										marks={chapterMarks}
-										valueLabelDisplay="off"
-										ref={areaRef}
-										onMouseMove={handleSliderHover}
+										dispatch={dispatch}
+										player={player}
 									/>
-								</Tooltip>
+								)}
 								<div className="video-player-osd-controls-progress-text">
 									<Typography>
-										{ticksDisplay(isSeeking ? sliderProgress : progress)}
+										{ticksDisplay(isSeeking ? sliderSeek : progress)}
 									</Typography>
 									<Typography>{ticksDisplay(itemDuration)}</Typography>
 								</div>
@@ -1060,9 +871,15 @@ function VideoPlayer() {
 											first_page
 										</span>
 									</IconButton>
-									<IconButton onClick={() => setPlaying((state) => !state)}>
+									<IconButton
+										onClick={() =>
+											dispatch({
+												type: VideoPlayerActionKind.TOGGLE_PLAYER_PLAYING,
+											})
+										}
+									>
 										<span className="material-symbols-rounded fill">
-											{playing ? "pause" : "play_arrow"}
+											{isPlayerPlaying ? "pause" : "play_arrow"}
 										</span>
 									</IconButton>
 									<IconButton
@@ -1090,7 +907,7 @@ function VideoPlayer() {
 									<PlayNextButton />
 									<Typography variant="subtitle1">
 										{isSeeking
-											? endsAt(itemDuration - sliderProgress)
+											? endsAt(itemDuration - sliderSeek)
 											: endsAt(itemDuration - progress)}
 									</Typography>
 								</div>
@@ -1118,32 +935,50 @@ function VideoPlayer() {
 										onMouseLeave={() => setShowVolumeControl(false)}
 									>
 										<Typography textAlign="center">
-											{muted ? 0 : Math.round(volume * 100)}
+											{isPlayerMuted ? 0 : Math.round(playerVolume * 100)}
 										</Typography>
 										<Slider
 											step={0.01}
 											max={1}
 											size="small"
-											value={muted ? 0 : volume}
-											onChange={(_, newVal) => {
-												Array.isArray(newVal)
-													? setVolume(newVal[0])
-													: setVolume(newVal);
-												if (newVal === 0) setMuted(true);
-												else setMuted(false);
+											value={isPlayerMuted ? 0 : playerVolume}
+											onChange={(_, newValue) => {
+												Array.isArray(newValue)
+													? dispatch({
+															type: VideoPlayerActionKind.SET_PLAYER_VOLUME,
+															payload: newValue[0],
+														})
+													: dispatch({
+															type: VideoPlayerActionKind.SET_PLAYER_VOLUME,
+															payload: newValue,
+														});
+												if (newValue === 0)
+													dispatch({
+														type: VideoPlayerActionKind.SET_PLAYER_MUTED,
+														payload: true,
+													});
+												else
+													dispatch({
+														type: VideoPlayerActionKind.SET_PLAYER_MUTED,
+														payload: true,
+													});
 											}}
 										/>
 									</motion.div>
 									<IconButton
-										onClick={() => setMuted((state) => !state)}
+										onClick={() =>
+											dispatch({
+												type: VideoPlayerActionKind.TOGGLE_PLAYER_MUTED,
+											})
+										}
 										onMouseMoveCapture={() => {
 											setShowVolumeControl(true);
 										}}
 									>
 										<span className="material-symbols-rounded">
-											{muted
+											{isPlayerMuted
 												? "volume_off"
-												: volume < 0.4
+												: playerVolume < 0.4
 													? "volume_down"
 													: "volume_up"}
 										</span>
@@ -1199,14 +1034,13 @@ function VideoPlayer() {
 									</IconButton>
 									<IconButton
 										onClick={async () => {
-											setAppFullscreen((state) => {
-												appWindow.getCurrent().setFullscreen(!state);
-												return !state;
+											dispatch({
+												type: VideoPlayerActionKind.TOGGLE_PLAYER_FULLSCREEN,
 											});
 										}}
 									>
 										<span className="material-symbols-rounded fill">
-											{appFullscreen ? "fullscreen_exit" : "fullscreen"}
+											{isPlayerFullscreen ? "fullscreen_exit" : "fullscreen"}
 										</span>
 									</IconButton>
 								</div>
@@ -1217,7 +1051,7 @@ function VideoPlayer() {
 			</motion.div>
 			<ReactPlayer
 				key={playsessionId}
-				playing={playing}
+				playing={isPlayerPlaying}
 				url={playbackStream}
 				ref={player}
 				onProgress={handleProgress}
@@ -1237,7 +1071,7 @@ function VideoPlayer() {
 					position: "fixed",
 					zIndex: 1,
 				}}
-				volume={muted ? 0 : volume}
+				volume={isPlayerMuted ? 0 : playerVolume}
 				onReady={handleReady}
 				onBuffer={() => setLoading(true)}
 				onBufferEnd={() => setLoading(false)}
