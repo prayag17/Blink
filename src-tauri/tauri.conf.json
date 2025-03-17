@@ -63,6 +63,9 @@
 				"installMode": "passive"
 			}
 
+		},
+		"fs": {
+			"scope": ["$APPDATA/*", "$APPDATA/downloads/*"]
 		}
 	},
 	"app": {

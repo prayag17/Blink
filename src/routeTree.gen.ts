@@ -19,6 +19,7 @@ import { Route as ApiSearchIndexImport } from './routes/_api/search/index'
 import { Route as ApiPlayerIndexImport } from './routes/_api/player/index'
 import { Route as ApiHomeIndexImport } from './routes/_api/home/index'
 import { Route as ApiFavoriteIndexImport } from './routes/_api/favorite/index'
+import { Route as ApiDownloadsIndexImport } from './routes/_api/downloads/index'
 import { Route as SetupServerListImport } from './routes/setup/server.list'
 import { Route as SetupServerErrorImport } from './routes/setup/server.error'
 import { Route as SetupServerAddImport } from './routes/setup/server.add'
@@ -83,6 +84,12 @@ const ApiHomeIndexRoute = ApiHomeIndexImport.update({
 const ApiFavoriteIndexRoute = ApiFavoriteIndexImport.update({
   id: '/favorite/',
   path: '/favorite/',
+  getParentRoute: () => ApiRoute,
+} as any)
+
+const ApiDownloadsIndexRoute = ApiDownloadsIndexImport.update({
+  id: '/downloads/',
+  path: '/downloads/',
   getParentRoute: () => ApiRoute,
 } as any)
 
@@ -332,6 +339,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof SetupServerListImport
       parentRoute: typeof rootRoute
     }
+    '/_api/downloads/': {
+      id: '/_api/downloads/'
+      path: '/downloads'
+      fullPath: '/downloads'
+      preLoaderRoute: typeof ApiDownloadsIndexImport
+      parentRoute: typeof ApiImport
+    }
     '/_api/favorite/': {
       id: '/_api/favorite/'
       path: '/favorite'
@@ -401,6 +415,7 @@ interface ApiRouteChildren {
   ApiPlayerPhotosRoute: typeof ApiPlayerPhotosRoute
   ApiPlaylistIdRoute: typeof ApiPlaylistIdRoute
   ApiSeriesIdRoute: typeof ApiSeriesIdRoute
+  ApiDownloadsIndexRoute: typeof ApiDownloadsIndexRoute
   ApiFavoriteIndexRoute: typeof ApiFavoriteIndexRoute
   ApiHomeIndexRoute: typeof ApiHomeIndexRoute
   ApiPlayerIndexRoute: typeof ApiPlayerIndexRoute
@@ -420,6 +435,7 @@ const ApiRouteChildren: ApiRouteChildren = {
   ApiPlayerPhotosRoute: ApiPlayerPhotosRoute,
   ApiPlaylistIdRoute: ApiPlaylistIdRoute,
   ApiSeriesIdRoute: ApiSeriesIdRoute,
+  ApiDownloadsIndexRoute: ApiDownloadsIndexRoute,
   ApiFavoriteIndexRoute: ApiFavoriteIndexRoute,
   ApiHomeIndexRoute: ApiHomeIndexRoute,
   ApiPlayerIndexRoute: ApiPlayerIndexRoute,
@@ -449,6 +465,7 @@ export interface FileRoutesByFullPath {
   '/setup/server/add': typeof SetupServerAddRoute
   '/setup/server/error': typeof SetupServerErrorRoute
   '/setup/server/list': typeof SetupServerListRoute
+  '/downloads': typeof ApiDownloadsIndexRoute
   '/favorite': typeof ApiFavoriteIndexRoute
   '/home': typeof ApiHomeIndexRoute
   '/player': typeof ApiPlayerIndexRoute
@@ -477,6 +494,7 @@ export interface FileRoutesByTo {
   '/setup/server/add': typeof SetupServerAddRoute
   '/setup/server/error': typeof SetupServerErrorRoute
   '/setup/server/list': typeof SetupServerListRoute
+  '/downloads': typeof ApiDownloadsIndexRoute
   '/favorite': typeof ApiFavoriteIndexRoute
   '/home': typeof ApiHomeIndexRoute
   '/player': typeof ApiPlayerIndexRoute
@@ -506,6 +524,7 @@ export interface FileRoutesById {
   '/setup/server/add': typeof SetupServerAddRoute
   '/setup/server/error': typeof SetupServerErrorRoute
   '/setup/server/list': typeof SetupServerListRoute
+  '/_api/downloads/': typeof ApiDownloadsIndexRoute
   '/_api/favorite/': typeof ApiFavoriteIndexRoute
   '/_api/home/': typeof ApiHomeIndexRoute
   '/_api/player/': typeof ApiPlayerIndexRoute
@@ -536,6 +555,7 @@ export interface FileRouteTypes {
     | '/setup/server/add'
     | '/setup/server/error'
     | '/setup/server/list'
+    | '/downloads'
     | '/favorite'
     | '/home'
     | '/player'
@@ -563,6 +583,7 @@ export interface FileRouteTypes {
     | '/setup/server/add'
     | '/setup/server/error'
     | '/setup/server/list'
+    | '/downloads'
     | '/favorite'
     | '/home'
     | '/player'
@@ -590,6 +611,7 @@ export interface FileRouteTypes {
     | '/setup/server/add'
     | '/setup/server/error'
     | '/setup/server/list'
+    | '/_api/downloads/'
     | '/_api/favorite/'
     | '/_api/home/'
     | '/_api/player/'
@@ -652,6 +674,7 @@ export const routeTree = rootRoute
         "/_api/player/photos",
         "/_api/playlist/$id",
         "/_api/series/$id",
+        "/_api/downloads/",
         "/_api/favorite/",
         "/_api/home/",
         "/_api/player/",
@@ -730,6 +753,10 @@ export const routeTree = rootRoute
     },
     "/setup/server/list": {
       "filePath": "setup/server.list.tsx"
+    },
+    "/_api/downloads/": {
+      "filePath": "_api/downloads/index.tsx",
+      "parent": "/_api"
     },
     "/_api/favorite/": {
       "filePath": "_api/favorite/index.tsx",

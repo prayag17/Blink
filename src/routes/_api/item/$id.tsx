@@ -29,6 +29,7 @@ import "./item.scss";
 
 import { ErrorNotice } from "@/components/notices/errorNotice/errorNotice";
 
+import DownloadButton from "@/components/buttons/downloadButton";
 import LikeButton from "@/components/buttons/likeButton";
 import MarkPlayedButton from "@/components/buttons/markPlayedButton";
 import PlayButton from "@/components/buttons/playButton";
@@ -707,6 +708,12 @@ function ItemDetail() {
 								isPlayed={item.data.UserData?.Played}
 								userId={user?.Id}
 							/>
+							<DownloadButton
+								itemName={item.data.Name}
+								itemId={item.data.Id}
+								queryKey={["item", id]}
+								userId={user?.Id}
+							/>
 						</div>
 					</div>
 				</div>
@@ -877,7 +884,10 @@ function ItemDetail() {
 										<Link
 											className="item-detail-cast-card"
 											key={actor.Id}
-											to={`/person/${actor.Id}`}
+											to="/person/$id"  // CORRECT: Using the route pattern
+											params={{
+												id: actor.Id ?? "",  // CORRECT: Providing parameter values separately
+											}}
 										>
 											{actor.PrimaryImageTag ? (
 												<img
