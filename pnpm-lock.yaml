@@ -61,10 +61,10 @@ importers:
         version: 5.0.55(react-dom@19.0.0(react@19.0.0))(react@19.0.0)
       '@tanstack/react-query':
         specifier: ^5.68.0
-        version: 5.68.0(react@19.0.0)
+        version: 5.69.0(react@19.0.0)
       '@tanstack/react-query-devtools':
         specifier: ^5.68.0
-        version: 5.68.0(@tanstack/react-query@5.68.0(react@19.0.0))(react@19.0.0)
+        version: 5.69.0(@tanstack/react-query@5.69.0(react@19.0.0))(react@19.0.0)
       '@tanstack/react-router':
         specifier: ^1.114.23
         version: 1.114.23(react-dom@19.0.0(react@19.0.0))(react@19.0.0)
@@ -1394,20 +1394,20 @@ packages:
     resolution: {integrity: sha512-CNwKraj/Xa8H7DUyzrFBQC3wL96JzIxT4i9CW0hxqFNNmLDyUcMJr8264iqqfxC0u1lFSG96URad08T2Qhadpw==}
     engines: {node: '>=12'}
 
-  '@tanstack/query-core@5.68.0':
-    resolution: {integrity: sha512-r8rFYYo8/sY/LNaOqX84h12w7EQev4abFXDWy4UoDVUJzJ5d9Fbmb8ayTi7ScG+V0ap44SF3vNs/45mkzDGyGw==}
+  '@tanstack/query-core@5.69.0':
+    resolution: {integrity: sha512-Kn410jq6vs1P8Nm+ZsRj9H+U3C0kjuEkYLxbiCyn3MDEiYor1j2DGVULqAz62SLZtUZ/e9Xt6xMXiJ3NJ65WyQ==}
 
   '@tanstack/query-devtools@5.67.2':
     resolution: {integrity: sha512-O4QXFFd7xqp6EX7sdvc9tsVO8nm4lpWBqwpgjpVLW5g7IeOY6VnS/xvs/YzbRhBVkKTMaJMOUGU7NhSX+YGoNg==}
 
-  '@tanstack/react-query-devtools@5.68.0':
-    resolution: {integrity: sha512-h9ArHkfa7SD5eGnJ9h+9M5uYWBdeVeY+WalrtGLCAtJJvHx6/RrtbbzxeoEQbPyx3f0kPcwJ58DGQ+7CBXelpg==}
+  '@tanstack/react-query-devtools@5.69.0':
+    resolution: {integrity: sha512-sYklnou3IKAemqB5wJeBwjmG5bUGDKAL5/I4pVA+aqSnsNibVLt8/pAU976uuJ5K71w71bHtI/AMxiIs3gtkEA==}
     peerDependencies:
-      '@tanstack/react-query': ^5.68.0
+      '@tanstack/react-query': ^5.69.0
       react: ^18 || ^19
 
-  '@tanstack/react-query@5.68.0':
-    resolution: {integrity: sha512-mMOdGDKlwTP/WV72QqSNf4PAMeoBp/DqBHQ222wBfb51Looi8QUqnCnb9O98ZgvNISmy6fzxRGBJdZ+9IBvX2Q==}
+  '@tanstack/react-query@5.69.0':
+    resolution: {integrity: sha512-Ift3IUNQqTcaFa1AiIQ7WCb/PPy8aexZdq9pZWLXhfLcLxH0+PZqJ2xFImxCpdDZrFRZhLJrh76geevS5xjRhA==}
     peerDependencies:
       react: ^18 || ^19
 
@@ -1981,8 +1981,8 @@ packages:
     resolution: {integrity: sha512-KIN/nDJBQRcXw0MLVhZE9iQHmG68qAVIBg9CqmUYjmQIhgij9U5MFvrqkUL5FbtyyzZuOeOt0zdeRe4UY7ct+A==}
     engines: {node: '>= 0.4'}
 
-  effect@3.13.11:
-    resolution: {integrity: sha512-SOUwX2E1ciNDPZDbSfx+YszGfIIg90sluKyx0BB6VwLIt8+NOA6tEAR3N2XI9MEOWfO/EpWzbARLnXI2hXcvaQ==}
+  effect@3.13.12:
+    resolution: {integrity: sha512-XHvZA8lOX7vxk+ME3Q+4BN6EVYsyo8csdHmHsD4oYEtWPb2Ou3WPkpavlHOD+DNap8QIwfZjmDtshcGlgV34hA==}
 
   electron-to-chromium@1.5.119:
     resolution: {integrity: sha512-Ku4NMzUjz3e3Vweh7PhApPrZSS4fyiCIbcIrG9eKrriYVLmbMepETR/v6SU7xPm98QTqMSYiCwfO89QNjXLkbQ==}
@@ -3790,7 +3790,7 @@ snapshots:
       ast-types: 0.14.2
       cli-high: 0.4.3
       diff: 5.2.0
-      effect: 3.13.11
+      effect: 3.13.12
       nanoid: 5.1.4
       recast: 0.23.11
       xycolors: 0.1.2
@@ -4273,19 +4273,19 @@ snapshots:
 
   '@tanstack/history@1.114.22': {}
 
-  '@tanstack/query-core@5.68.0': {}
+  '@tanstack/query-core@5.69.0': {}
 
   '@tanstack/query-devtools@5.67.2': {}
 
-  '@tanstack/react-query-devtools@5.68.0(@tanstack/react-query@5.68.0(react@19.0.0))(react@19.0.0)':
+  '@tanstack/react-query-devtools@5.69.0(@tanstack/react-query@5.69.0(react@19.0.0))(react@19.0.0)':
     dependencies:
       '@tanstack/query-devtools': 5.67.2
-      '@tanstack/react-query': 5.68.0(react@19.0.0)
+      '@tanstack/react-query': 5.69.0(react@19.0.0)
       react: 19.0.0
 
-  '@tanstack/react-query@5.68.0(react@19.0.0)':
+  '@tanstack/react-query@5.69.0(react@19.0.0)':
     dependencies:
-      '@tanstack/query-core': 5.68.0
+      '@tanstack/query-core': 5.69.0
       react: 19.0.0
 
   '@tanstack/react-router-devtools@1.114.23(@tanstack/react-router@1.114.23(react-dom@19.0.0(react@19.0.0))(react@19.0.0))(@tanstack/router-core@1.114.23)(csstype@3.1.3)(react-dom@19.0.0(react@19.0.0))(react@19.0.0)(tiny-invariant@1.3.3)':
@@ -4873,7 +4873,7 @@ snapshots:
       es-errors: 1.3.0
       gopd: 1.2.0
 
-  effect@3.13.11:
+  effect@3.13.12:
     dependencies:
       '@standard-schema/spec': 1.0.0
       fast-check: 3.23.2
