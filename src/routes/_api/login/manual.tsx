@@ -144,13 +144,13 @@ function UserLoginManual() {
 						onChange={(e) => setUsername(e.currentTarget.value)}
 					/>
 					<FormControl sx={{ width: "100%" }} variant="outlined">
-						<InputLabel htmlFor="user-password">Password:</InputLabel>
+						<InputLabel htmlFor="user-password">Password</InputLabel>
 						<OutlinedInput
 							fullWidth
 							id="user-password"
 							type={password.showpass ? "text" : "password"}
 							onChange={handlePassword("password")}
-							label="Password:"
+							label="Password"
 							endAdornment={
 								<InputAdornment position="end">
 									<IconButton
