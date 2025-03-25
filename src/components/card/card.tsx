@@ -122,38 +122,36 @@ const CardComponent = ({
 						? getTypeIcon(overrideIcon)
 						: getTypeIcon(item.Type ?? "universal")}
 				</div>
-				{inView && (
-					<img
-						alt={item.Name ?? "blink"}
-						src={
-							api
-								? overrideIcon === "User"
-									? `${api?.basePath}/Users/${item.Id}/Images/Primary`
-									: getImageUrlsApi(api).getItemImageUrlById(
-											(seriesId ? item.SeriesId : (item.AlbumId ?? item.Id)) ??
-												"",
-											imageType,
-											{
-												quality: 90,
-												fillWidth: cardType === "thumb" ? 560 : 320,
-											},
-										)
-								: ""
-						}
-						style={{
-							height: "100%",
-							width: "100%",
-							opacity: 0,
-						}}
-						loading="lazy"
-						onLoad={(e) => {
-							e.currentTarget.style.setProperty("opacity", "1");
-						}}
-						onLoadStart={(e) => console.log(e)}
-						className="card-image"
-					/>
-				)}
-
+				<img
+					alt={item.Name ?? "blink"}
+					src={
+						api
+							? overrideIcon === "User"
+								? `${api?.basePath}/Users/${item.Id}/Images/Primary`
+								: getImageUrlsApi(api).getItemImageUrlById(
+										(seriesId ? item.SeriesId : (item.AlbumId ?? item.Id)) ??
+											"",
+										imageType,
+										{
+											quality: 90,
+											fillWidth: cardType === "thumb" ? 560 : 320,
+										},
+									)
+							: ""
+					}
+					style={{
+						height: "100%",
+						width: "100%",
+						opacity: 0,
+						display: inView ? "block" : "none",
+					}}
+					loading="lazy"
+					onLoad={(e) => {
+						e.currentTarget.style.setProperty("opacity", "1");
+					}}
+					onLoadStart={(e) => console.log(e)}
+					className="card-image"
+				/>
 				{inView && !disableOverlay && (
 					<div className="card-overlay">
 						<PlayButton

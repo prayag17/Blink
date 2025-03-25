@@ -80,6 +80,12 @@
 			align-items: center;
 			justify-content: center;
 		}
+		&-container{
+			display: grid;
+			grid-template-columns: repeat(auto-fit, minmax(10em, 1fr)) ;
+			gap: 1.6em;
+			padding: 1em 4.4em;
+		}
 	}
 	&-filter {
 		width: 100%;

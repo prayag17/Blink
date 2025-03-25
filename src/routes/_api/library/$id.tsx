@@ -218,6 +218,9 @@ function Library() {
 			case CollectionType.Playlists:
 				result = [{ title: "Playlist", value: BaseItemKind.Playlist }];
 				break;
+			case CollectionType.Books:
+				result = [{ title: "Books", value: BaseItemKind.Book }];
+				break;
 			default:
 				result = [];
 		}
@@ -517,6 +520,14 @@ function Library() {
 					},
 				];
 				break;
+			case CollectionType.Books:
+				result = [
+					{
+						title: "Name",
+						value: ItemSortBy.SortName,
+					},
+				];
+				break;
 		}
 		// And they say typescript makes your code better :|
 		const cachedVal = JSON.parse(
@@ -661,8 +672,7 @@ function Library() {
 				result = await getItemsApi(api).getItems({
 					userId: user?.Id,
 					parentId: currentLib.data?.Id,
-					recursive:
-						currentLib.data?.CollectionType === "boxsets" ? undefined : true,
+					recursive: true,
 					includeItemTypes: [currentViewType],
 					sortOrder: [
 						sortAscending ? SortOrder.Ascending : SortOrder.Descending,
@@ -1333,95 +1343,51 @@ function Library() {
 							}
 						/>
 					) : currentViewType !== BaseItemKind.Audio ? (
-						<div
-							style={{
-								height: virtualizer.getTotalSize(),
-								width: "100%",
-								position: "relative",
-							}}
-						>
-							{virtualizer.getVirtualItems().map((virtualRow) => {
-								const index = virtualRow.index;
-								const displayItems = [];
-								const fromIndex = index * itemsPerRow;
-								const toIndex = Math.min(
-									fromIndex + itemsPerRow,
-									items.data?.TotalRecordCount ?? 0,
-								);
-								for (let i = fromIndex; i < toIndex; i++) {
-									const item = items.data?.Items?.[i];
-									if (!item) return null;
-									displayItems.push(
-										<div
-											className="library-virtual-item"
-											key={i}
-											data-index={virtualRow.index}
-											ref={virtualizer.measureElement}
-										>
-											<Card
-												item={item}
-												seriesId={item?.SeriesId}
-												cardTitle={
-													item?.Type === BaseItemKind.Episode
-														? item.SeriesName
-														: item?.Name
-												}
-												imageType={"Primary"}
-												cardCaption={
-													item?.Type === BaseItemKind.Episode
-														? `S${item.ParentIndexNumber}:E${item.IndexNumber} - ${item.Name}`
-														: item?.Type === BaseItemKind.Series
-															? `${item.ProductionYear} - ${
-																	item.EndDate
-																		? new Date(item.EndDate).toLocaleString(
-																				[],
-																				{
-																					year: "numeric",
-																				},
-																			)
-																		: "Present"
-																}`
-															: item?.ProductionYear
-												}
-												disableOverlay={
-													item?.Type === BaseItemKind.Person ||
-													item?.Type === BaseItemKind.Genre ||
-													item?.Type === BaseItemKind.MusicGenre ||
-													item?.Type === BaseItemKind.Studio
-												}
-												cardType={
-													item?.Type === BaseItemKind.MusicAlbum ||
-													item?.Type === BaseItemKind.Audio ||
-													item?.Type === BaseItemKind.Genre ||
-													item?.Type === BaseItemKind.MusicGenre ||
-													item?.Type === BaseItemKind.Studio ||
-													item?.Type === BaseItemKind.Playlist
-														? "square"
-														: "portrait"
-												}
-												// queryKey={items}
-												userId={user?.Id}
-											/>
-										</div>,
-									);
-								}
-								return (
-									<div
-										className="library-virtual-item-row"
-										key={virtualRow.key}
-										style={{
-											position: "absolute",
-											top: 0,
-											left: 0,
-											width: "100%",
-											height: virtualRow.size,
-											transform: `translateY(${virtualRow.start}px)`,
-										}}
-									>
-										{displayItems}
-									</div>
-								);
-							})}
+						<div className="library-items-container">
+							{items.data?.Items?.map((item) => (
+								<Card
+									item={item}
+									key={item?.Id}
+									seriesId={item?.SeriesId}
+									cardTitle={
+										item?.Type === BaseItemKind.Episode
+											? item.SeriesName
+											: item?.Name
+									}
+									imageType={"Primary"}
+									cardCaption={
+										item?.Type === BaseItemKind.Episode
+											? `S${item.ParentIndexNumber}:E${item.IndexNumber} - ${item.Name}`
+											: item?.Type === BaseItemKind.Series
+												? `${item.ProductionYear} - ${
+														item.EndDate
+															? new Date(item.EndDate).toLocaleString([], {
+																	year: "numeric",
+																})
+															: "Present"
+													}`
+												: item?.ProductionYear
+									}
+									disableOverlay={
+										item?.Type === BaseItemKind.Person ||
+										item?.Type === BaseItemKind.Genre ||
+										item?.Type === BaseItemKind.MusicGenre ||
+										item?.Type === BaseItemKind.Studio
+									}
+									cardType={
+										item?.Type === BaseItemKind.MusicAlbum ||
+										item?.Type === BaseItemKind.Audio ||
+										item?.Type === BaseItemKind.Genre ||
+										item?.Type === BaseItemKind.MusicGenre ||
+										item?.Type === BaseItemKind.Studio ||
+										item?.Type === BaseItemKind.Playlist
+											? "square"
+											: "portrait"
+									}
+									// queryKey={items}
+									userId={user?.Id}
+								/>
+							))}
 						</div>
 					) : (
 						<div
