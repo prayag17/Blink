@@ -84,7 +84,7 @@
 		"@vitejs/plugin-react": "^4.3.4",
 		"prop-types": "^15.8.1",
 		"sass": "^1.85.1",
-		"vite": "^6.2.2"
+		"vite": "^6.2.5"
 	},
 	"license": "GPL-3.0-only"
 }
