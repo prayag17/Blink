@@ -40,7 +40,7 @@ importers:
         version: 5.2.6
       '@jellyfin/sdk':
         specifier: 0.11.0
-        version: 0.11.0(axios@1.8.3)
+        version: 0.11.0(axios@1.8.4)
       '@million/lint':
         specifier: ^1.0.14
         version: 1.0.14(rollup@4.36.0)
@@ -88,7 +88,7 @@ importers:
         version: 2.2.0
       '@tauri-apps/plugin-store':
         specifier: github:tauri-apps/tauri-plugin-store#v2
-        version: https://codeload.github.com/tauri-apps/tauri-plugin-store/tar.gz/d61941715f0eb8d091bb85980150b4971d4c8fe3
+        version: https://codeload.github.com/tauri-apps/tauri-plugin-store/tar.gz/5545fe864b15f10a3e7b643fd7e01122999ac9de
       '@tauri-apps/plugin-updater':
         specifier: 2.6.1
         version: 2.6.1
@@ -109,7 +109,7 @@ importers:
         version: 19.0.4(@types/react@19.0.10)
       axios:
         specifier: ^1.8.3
-        version: 1.8.3
+        version: 1.8.4
       axios-tauri-api-adapter:
         specifier: ^2.0.6
         version: 2.0.6
@@ -297,6 +297,11 @@ packages:
     engines: {node: '>=6.0.0'}
     hasBin: true
 
+  '@babel/parser@7.27.0':
+    resolution: {integrity: sha512-iaepho73/2Pz7w2eMS0Q5f83+0RKI7i4xmiYeBmDzfRVbQtTOG7Ts0S4HzJVsTMGI9keU8rNfuZr8DKfSt7Yyg==}
+    engines: {node: '>=6.0.0'}
+    hasBin: true
+
   '@babel/plugin-proposal-optional-chaining-assign@7.25.9':
     resolution: {integrity: sha512-63C8l8u1qXmNo0j/zTYs40fhHOTptwbWO1qapLH3GTjvs6mncouNaCiUQQYIDzWhv9u3EsDqmf6y+GSFkqb3HQ==}
     engines: {node: '>=6.9.0'}
@@ -357,6 +362,10 @@ packages:
 
   '@babel/types@7.26.10':
     resolution: {integrity: sha512-emqcG3vHrpxUKTrxcblR36dcrcoRDvKmnL/dCL6ZsHaShW80qxCAcNhzQZrpeM765VzEos+xOi4s+r4IXzTwdQ==}
+    engines: {node: '>=6.9.0'}
+
+  '@babel/types@7.27.0':
+    resolution: {integrity: sha512-H45s8fVLYjbhFH62dIJ3WtmJ6RSPt/3DRO0ZcT2SUiYiQyz3BLVb9ADEnLl91m74aQPS3AzzeajZHYOalWe3bg==}
     engines: {node: '>=6.9.0'}
 
   '@biomejs/biome@1.9.4':
@@ -1602,8 +1611,8 @@ packages:
   '@tauri-apps/plugin-process@2.2.0':
     resolution: {integrity: sha512-uypN2Crmyop9z+KRJr3zl71OyVFgTuvHFjsJ0UxxQ/J5212jVa5w4nPEYjIewcn8bUEXacRebwE6F7owgrbhSw==}
 
-  '@tauri-apps/plugin-store@https://codeload.github.com/tauri-apps/tauri-plugin-store/tar.gz/d61941715f0eb8d091bb85980150b4971d4c8fe3':
-    resolution: {tarball: https://codeload.github.com/tauri-apps/tauri-plugin-store/tar.gz/d61941715f0eb8d091bb85980150b4971d4c8fe3}
+  '@tauri-apps/plugin-store@https://codeload.github.com/tauri-apps/tauri-plugin-store/tar.gz/5545fe864b15f10a3e7b643fd7e01122999ac9de':
+    resolution: {tarball: https://codeload.github.com/tauri-apps/tauri-plugin-store/tar.gz/5545fe864b15f10a3e7b643fd7e01122999ac9de}
     version: 2.2.0
 
   '@tauri-apps/plugin-updater@2.6.1':
@@ -1743,8 +1752,8 @@ packages:
     resolution: {integrity: sha512-VhoCtu+oZBZlFUAWIOEmIwZtp9/39oUzBo0fOutjB8wv0Y0P0HfLdZmGKsq0nvysAm661Cxy3hFZz/QTypxmCQ==}
     engines: {node: '>=16', pnpm: '>=7'}
 
-  axios@1.8.3:
-    resolution: {integrity: sha512-iP4DebzoNlP/YN2dpwCgb8zoCmhtkajzS48JvwmkSkXvPI3DHc7m+XYL5tGnSlJtR6nImXZmdCuN5aP8dh1d8A==}
+  axios@1.8.4:
+    resolution: {integrity: sha512-eBSYY4Y68NNlHbHBMdeDmKNtDgXWhQsJcGqzO3iLUM0GraQFSS9cVgPX5I9b3lbdFKyYoAEGAZF1DwhTaljNAw==}
 
   babel-dead-code-elimination@1.0.9:
     resolution: {integrity: sha512-JLIhax/xullfInZjtu13UJjaLHDeTzt3vOeomaSUdO/nAMEL/pWC/laKrSvWylXMnVWyL5bpmG9njqBZlUQOdg==}
@@ -1981,8 +1990,8 @@ packages:
     resolution: {integrity: sha512-KIN/nDJBQRcXw0MLVhZE9iQHmG68qAVIBg9CqmUYjmQIhgij9U5MFvrqkUL5FbtyyzZuOeOt0zdeRe4UY7ct+A==}
     engines: {node: '>= 0.4'}
 
-  effect@3.13.11:
-    resolution: {integrity: sha512-SOUwX2E1ciNDPZDbSfx+YszGfIIg90sluKyx0BB6VwLIt8+NOA6tEAR3N2XI9MEOWfO/EpWzbARLnXI2hXcvaQ==}
+  effect@3.14.6:
+    resolution: {integrity: sha512-/QMsBfMw2Gt10x3y2jVqDanLpKFrhc4L/3vqjrD36GWeuOcjN+1mvsvw9+RseAq9hmmkc3MFvLznfiEopqcPuw==}
 
   electron-to-chromium@1.5.119:
     resolution: {integrity: sha512-Ku4NMzUjz3e3Vweh7PhApPrZSS4fyiCIbcIrG9eKrriYVLmbMepETR/v6SU7xPm98QTqMSYiCwfO89QNjXLkbQ==}
@@ -3343,6 +3352,10 @@ snapshots:
     dependencies:
       '@babel/types': 7.26.10
 
+  '@babel/parser@7.27.0':
+    dependencies:
+      '@babel/types': 7.27.0
+
   '@babel/plugin-proposal-optional-chaining-assign@7.25.9(@babel/core@7.26.10)':
     dependencies:
       '@babel/core': 7.26.10
@@ -3415,6 +3428,11 @@ snapshots:
       '@babel/helper-validator-identifier': 7.25.9
 
   '@babel/types@7.26.10':
+    dependencies:
+      '@babel/helper-string-parser': 7.25.9
+      '@babel/helper-validator-identifier': 7.25.9
+
+  '@babel/types@7.27.0':
     dependencies:
       '@babel/helper-string-parser': 7.25.9
       '@babel/helper-validator-identifier': 7.25.9
@@ -3759,9 +3777,9 @@ snapshots:
     dependencies:
       hono: 4.7.4
 
-  '@jellyfin/sdk@0.11.0(axios@1.8.3)':
+  '@jellyfin/sdk@0.11.0(axios@1.8.4)':
     dependencies:
-      axios: 1.8.3
+      axios: 1.8.4
 
   '@jridgewell/gen-mapping@0.3.8':
     dependencies:
@@ -3784,13 +3802,13 @@ snapshots:
     dependencies:
       '@antfu/ni': 0.21.12
       '@axiomhq/js': 1.0.0-rc.3
-      '@babel/parser': 7.26.10
+      '@babel/parser': 7.27.0
       '@babel/types': 7.26.0
       '@clack/prompts': 0.7.0
       ast-types: 0.14.2
       cli-high: 0.4.3
       diff: 5.2.0
-      effect: 3.13.11
+      effect: 3.14.6
       nanoid: 5.1.4
       recast: 0.23.11
       xycolors: 0.1.2
@@ -4484,7 +4502,7 @@ snapshots:
     dependencies:
       '@tauri-apps/api': 2.3.0
 
-  '@tauri-apps/plugin-store@https://codeload.github.com/tauri-apps/tauri-plugin-store/tar.gz/d61941715f0eb8d091bb85980150b4971d4c8fe3':
+  '@tauri-apps/plugin-store@https://codeload.github.com/tauri-apps/tauri-plugin-store/tar.gz/5545fe864b15f10a3e7b643fd7e01122999ac9de':
     dependencies:
       '@tauri-apps/api': 2.3.0
 
@@ -4629,12 +4647,12 @@ snapshots:
   axios-tauri-api-adapter@2.0.6:
     dependencies:
       '@tauri-apps/plugin-http': 2.4.2
-      axios: 1.8.3
+      axios: 1.8.4
       http-status-codes: 2.3.0
     transitivePeerDependencies:
       - debug
 
-  axios@1.8.3:
+  axios@1.8.4:
     dependencies:
       follow-redirects: 1.15.9
       form-data: 4.0.2
@@ -4873,7 +4891,7 @@ snapshots:
       es-errors: 1.3.0
       gopd: 1.2.0
 
-  effect@3.13.11:
+  effect@3.14.6:
     dependencies:
       '@standard-schema/spec': 1.0.0
       fast-check: 3.23.2
