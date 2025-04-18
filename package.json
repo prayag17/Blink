@@ -57,11 +57,11 @@
 		"material-symbols": "^0.31.2",
 		"million": "^3.1.11",
 		"notistack": "^3.0.2",
-		"react": "19.1.0",
+		"react": "^18.3.1",
 		"react-blurhash": "^0.3.0",
 		"react-dnd": "^16.0.1",
 		"react-dnd-html5-backend": "^16.0.1",
-		"react-dom": "19.1.0",
+		"react-dom": "^18.3.1",
 		"react-error-boundary": "^5.0.0",
 		"react-intersection-observer": "^9.16.0",
 		"react-markdown": "^10.1.0",
@@ -84,7 +84,7 @@
 		"@vitejs/plugin-react": "^4.4.0",
 		"prop-types": "^15.8.1",
 		"sass": "^1.86.3",
-		"vite": "^6.3.1"
+		"vite": "^6.2.2"
 	},
 	"license": "GPL-3.0-only"
 }
