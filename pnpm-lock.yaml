@@ -178,7 +178,7 @@ importers:
         version: 5.8.3
       vite-plugin-svgr:
         specifier: ^4.3.0
-        version: 4.3.0(rollup@4.40.0)(typescript@5.8.3)(vite@6.2.2(@types/node@22.14.1)(sass@1.86.3)(tsx@4.19.3)(yaml@2.7.1))
+        version: 4.3.0(rollup@4.40.0)(typescript@5.8.3)(vite@6.2.6(@types/node@22.14.1)(sass@1.86.3)(tsx@4.19.3)(yaml@2.7.1))
       wavesurfer.js:
         specifier: ^7.9.4
         version: 7.9.4
@@ -200,7 +200,7 @@ importers:
         version: 1.116.0(@tanstack/react-router@1.116.0(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(@tanstack/router-core@1.115.3)(csstype@3.1.3)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(tiny-invariant@1.3.3)
       '@tanstack/router-vite-plugin':
         specifier: ^1.116.1
-        version: 1.116.1(@tanstack/react-router@1.116.0(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(vite@6.2.2(@types/node@22.14.1)(sass@1.86.3)(tsx@4.19.3)(yaml@2.7.1))
+        version: 1.116.1(@tanstack/react-router@1.116.0(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(vite@6.2.6(@types/node@22.14.1)(sass@1.86.3)(tsx@4.19.3)(yaml@2.7.1))
       '@tauri-apps/cli':
         specifier: 2.5.0
         version: 2.5.0
@@ -209,7 +209,7 @@ importers:
         version: 4.17.16
       '@vitejs/plugin-react':
         specifier: ^4.4.0
-        version: 4.4.0(vite@6.2.2(@types/node@22.14.1)(sass@1.86.3)(tsx@4.19.3)(yaml@2.7.1))
+        version: 4.4.0(vite@6.2.6(@types/node@22.14.1)(sass@1.86.3)(tsx@4.19.3)(yaml@2.7.1))
       prop-types:
         specifier: ^15.8.1
         version: 15.8.1
@@ -218,7 +218,7 @@ importers:
         version: 1.86.3
       vite:
         specifier: ^6.2.2
-        version: 6.2.2(@types/node@22.14.1)(sass@1.86.3)(tsx@4.19.3)(yaml@2.7.1)
+        version: 6.2.6(@types/node@22.14.1)(sass@1.86.3)(tsx@4.19.3)(yaml@2.7.1)
 
 packages:
 
@@ -3144,8 +3144,8 @@ packages:
     peerDependencies:
       vite: '>=2.6.0'
 
-  vite@6.2.2:
-    resolution: {integrity: sha512-yW7PeMM+LkDzc7CgJuRLMW2Jz0FxMOsVJ8Lv3gpgW9WLcb9cTW+121UEr1hvmfR7w3SegR5ItvYyzVz1vxNJgQ==}
+  vite@6.2.6:
+    resolution: {integrity: sha512-9xpjNl3kR4rVDZgPNdTL0/c6ao4km69a/2ihNQbcANz8RuCOK3hQBmLSJf3bRKVQjVMda+YvizNE8AwvogcPbw==}
     engines: {node: ^18.0.0 || ^20.0.0 || >=22.0.0}
     hasBin: true
     peerDependencies:
@@ -4409,7 +4409,7 @@ snapshots:
     optionalDependencies:
       '@tanstack/react-router': 1.116.0(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
 
-  '@tanstack/router-plugin@1.116.1(@tanstack/react-router@1.116.0(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(vite@6.2.2(@types/node@22.14.1)(sass@1.86.3)(tsx@4.19.3)(yaml@2.7.1))':
+  '@tanstack/router-plugin@1.116.1(@tanstack/react-router@1.116.0(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(vite@6.2.6(@types/node@22.14.1)(sass@1.86.3)(tsx@4.19.3)(yaml@2.7.1))':
     dependencies:
       '@babel/core': 7.26.10
       '@babel/plugin-syntax-jsx': 7.25.9(@babel/core@7.26.10)
@@ -4430,7 +4430,7 @@ snapshots:
       zod: 3.24.3
     optionalDependencies:
       '@tanstack/react-router': 1.116.0(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
-      vite: 6.2.2(@types/node@22.14.1)(sass@1.86.3)(tsx@4.19.3)(yaml@2.7.1)
+      vite: 6.2.6(@types/node@22.14.1)(sass@1.86.3)(tsx@4.19.3)(yaml@2.7.1)
     transitivePeerDependencies:
       - supports-color
 
@@ -4441,9 +4441,9 @@ snapshots:
       ansis: 3.17.0
       diff: 7.0.0
 
-  '@tanstack/router-vite-plugin@1.116.1(@tanstack/react-router@1.116.0(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(vite@6.2.2(@types/node@22.14.1)(sass@1.86.3)(tsx@4.19.3)(yaml@2.7.1))':
+  '@tanstack/router-vite-plugin@1.116.1(@tanstack/react-router@1.116.0(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(vite@6.2.6(@types/node@22.14.1)(sass@1.86.3)(tsx@4.19.3)(yaml@2.7.1))':
     dependencies:
-      '@tanstack/router-plugin': 1.116.1(@tanstack/react-router@1.116.0(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(vite@6.2.2(@types/node@22.14.1)(sass@1.86.3)(tsx@4.19.3)(yaml@2.7.1))
+      '@tanstack/router-plugin': 1.116.1(@tanstack/react-router@1.116.0(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(vite@6.2.6(@types/node@22.14.1)(sass@1.86.3)(tsx@4.19.3)(yaml@2.7.1))
     transitivePeerDependencies:
       - '@rsbuild/core'
       - '@tanstack/react-router'
@@ -4620,14 +4620,14 @@ snapshots:
 
   '@ungap/structured-clone@1.3.0': {}
 
-  '@vitejs/plugin-react@4.4.0(vite@6.2.2(@types/node@22.14.1)(sass@1.86.3)(tsx@4.19.3)(yaml@2.7.1))':
+  '@vitejs/plugin-react@4.4.0(vite@6.2.6(@types/node@22.14.1)(sass@1.86.3)(tsx@4.19.3)(yaml@2.7.1))':
     dependencies:
       '@babel/core': 7.26.10
       '@babel/plugin-transform-react-jsx-self': 7.25.9(@babel/core@7.26.10)
       '@babel/plugin-transform-react-jsx-source': 7.25.9(@babel/core@7.26.10)
       '@types/babel__core': 7.20.5
       react-refresh: 0.17.0
-      vite: 6.2.2(@types/node@22.14.1)(sass@1.86.3)(tsx@4.19.3)(yaml@2.7.1)
+      vite: 6.2.6(@types/node@22.14.1)(sass@1.86.3)(tsx@4.19.3)(yaml@2.7.1)
     transitivePeerDependencies:
       - supports-color
 
@@ -6317,18 +6317,18 @@ snapshots:
       '@types/unist': 3.0.3
       vfile-message: 4.0.2
 
-  vite-plugin-svgr@4.3.0(rollup@4.40.0)(typescript@5.8.3)(vite@6.2.2(@types/node@22.14.1)(sass@1.86.3)(tsx@4.19.3)(yaml@2.7.1)):
+  vite-plugin-svgr@4.3.0(rollup@4.40.0)(typescript@5.8.3)(vite@6.2.6(@types/node@22.14.1)(sass@1.86.3)(tsx@4.19.3)(yaml@2.7.1)):
     dependencies:
       '@rollup/pluginutils': 5.1.4(rollup@4.40.0)
       '@svgr/core': 8.1.0(typescript@5.8.3)
       '@svgr/plugin-jsx': 8.1.0(@svgr/core@8.1.0(typescript@5.8.3))
-      vite: 6.2.2(@types/node@22.14.1)(sass@1.86.3)(tsx@4.19.3)(yaml@2.7.1)
+      vite: 6.2.6(@types/node@22.14.1)(sass@1.86.3)(tsx@4.19.3)(yaml@2.7.1)
     transitivePeerDependencies:
       - rollup
       - supports-color
       - typescript
 
-  vite@6.2.2(@types/node@22.14.1)(sass@1.86.3)(tsx@4.19.3)(yaml@2.7.1):
+  vite@6.2.6(@types/node@22.14.1)(sass@1.86.3)(tsx@4.19.3)(yaml@2.7.1):
     dependencies:
       esbuild: 0.25.2
       postcss: 8.5.3
