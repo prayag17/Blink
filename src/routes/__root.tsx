@@ -44,7 +44,7 @@ export const Route = createRootRouteWithContext<ApiContext>()({
 						<CssBaseline />
 						<Settings />
 						{/* <EasterEgg /> */}
-						<NProgress />
+						{/* <NProgress /> */}
 
 						<RouterLoading />
 
