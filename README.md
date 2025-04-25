@@ -64,7 +64,7 @@
 ## 📷 Screenshots
 
 - Home
-  ![home](https://github.com/prayag17/Blink/assets/55829513/ffda4dc5-c147-4278-a232-bb58b1051501)
+  ![home](https://github.com/user-attachments/assets/6d892160-4513-4496-a220-4c3ce6af20a4)
 - Title Page - Movie
   ![title-movie](https://github.com/prayag17/Blink/assets/55829513/1086f51b-a743-46e4-a761-c9f70a0d21bd)
 - Title Page - Show
@@ -73,8 +73,6 @@
   ![show-episodes](https://github.com/prayag17/Blink/assets/55829513/9fe69ddd-ffa3-4a6b-a2a7-c2e639b6b2e4)
 - Video Player
   ![playback-video](https://github.com/prayag17/Blink/assets/55829513/a84850e6-3be7-41c5-8cf7-e14c3cd0df29)
-- About Dialog
-  ![about](https://github.com/prayag17/Blink/assets/55829513/fc3adf83-87fd-4901-8abd-39b148418f8d)
 
 ## 📃 Roadmap
 
