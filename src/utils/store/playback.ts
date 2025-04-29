@@ -34,6 +34,7 @@ type PlaybackStore = {
 	item: BaseItemDto | null;
 	playsessionId: string | undefined | null;
 	intro: MediaSegmentDtoQueryResult | undefined;
+	volume: number | undefined;
 };
 
 export const usePlaybackStore = createWithEqualityFn<PlaybackStore>(
@@ -65,6 +66,7 @@ export const usePlaybackStore = createWithEqualityFn<PlaybackStore>(
 		item: null,
 		playsessionId: "",
 		intro: undefined,
+		volume: 1,
 	}),
 	shallow,
 );
@@ -87,6 +89,7 @@ export const playItem = (
 	subtitle: subtitlePlaybackInfo | undefined,
 	intro: MediaSegmentDtoQueryResult | undefined,
 	audio: audioPlaybackInfo,
+	volume: number | undefined = 1,
 ) => {
 	console.log({
 		itemName,
@@ -106,6 +109,7 @@ export const playItem = (
 		item,
 		playsessionId,
 		intro,
+		volume,
 	});
 
 	if (!queue) {
@@ -138,6 +142,7 @@ export const playItem = (
 		item,
 		playsessionId,
 		intro,
+		volume,
 	});
 	setQueue(queue, queueItemIndex);
 };

@@ -5,6 +5,22 @@ import ReactDOM from "react-dom/client";
 // Import the generated route tree
 import { routeTree } from "./routeTree.gen";
 
+import { ErrorBoundary } from "react-error-boundary";
+import { ErrorNotice } from "./components/notices/errorNotice/errorNotice";
+import { ApiProvider, useApiInContext } from "./utils/store/api";
+import { CentralProvider, useCentralStore } from "./utils/store/central";
+
+export const queryClient = new QueryClient({
+	defaultOptions: {
+		queries: {
+			networkMode: "always",
+		},
+		mutations: {
+			networkMode: "always",
+		},
+	},
+});
+
 //TODO: Need help implementing modal routes in TanStack Router
 // const SearchMask = createRouteMask({
 // 	routeTree,
@@ -22,8 +38,11 @@ const router = createRouter({
 		user: undefined,
 		jellyfinSDK: undefined!,
 		fetchCurrentUser: undefined!,
+		queryClient,
 	},
 	defaultPreload: "intent",
+	defaultPreloadStaleTime: 0,
+	defaultViewTransition: true,
 	// scrollRestoration: true,
 	// scrollRestorationBehavior: "smooth",
 });
@@ -34,22 +53,6 @@ declare module "@tanstack/react-router" {
 		router: typeof router;
 	}
 }
-
-import { ErrorBoundary } from "react-error-boundary";
-import { ErrorNotice } from "./components/notices/errorNotice/errorNotice";
-import { ApiProvider, useApiInContext } from "./utils/store/api";
-import { CentralProvider, useCentralStore } from "./utils/store/central";
-
-export const queryClient = new QueryClient({
-	defaultOptions: {
-		queries: {
-			networkMode: "always",
-		},
-		mutations: {
-			networkMode: "always",
-		},
-	},
-});
 
 // biome-ignore lint/nursery/useComponentExportOnlyModules : This is a valid use case for a component export
 function ProviderWrapper() {
@@ -77,7 +80,14 @@ function ProviderWrapper() {
 	return (
 		<RouterProvider
 			router={router}
-			context={{ api, createApi, user, jellyfinSDK, fetchCurrentUser }}
+			context={{
+				api,
+				createApi,
+				user,
+				jellyfinSDK,
+				fetchCurrentUser,
+				// queryClient,
+			}}
 		/>
 	);
 }
@@ -85,16 +95,11 @@ function ProviderWrapper() {
 ReactDOM.createRoot(document.getElementById("root")!).render(
 	<React.StrictMode>
 		<QueryClientProvider client={queryClient}>
-			{/* TODO: Create a proper loading fallback component */}
-			<ErrorBoundary FallbackComponent={ErrorNotice}>
-				<Suspense fallback={<h1>Loading in main.tsx</h1>}>
-					<CentralProvider>
-						<ApiProvider>
-							<ProviderWrapper />
-						</ApiProvider>
-					</CentralProvider>
-				</Suspense>
-			</ErrorBoundary>
+			<CentralProvider>
+				<ApiProvider>
+					<ProviderWrapper />
+				</ApiProvider>
+			</CentralProvider>
 		</QueryClientProvider>
 	</React.StrictMode>,
 );

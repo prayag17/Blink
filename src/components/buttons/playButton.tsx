@@ -34,6 +34,7 @@ import getSubtitle from "@/utils/methods/getSubtitles";
 import playbackProfile from "@/utils/playback-profiles";
 import { useApiInContext } from "@/utils/store/api";
 import { usePhotosPlayback } from "@/utils/store/photosPlayback";
+import { getDisplayPreferencesApi } from "@jellyfin/sdk/lib/utils/api/display-preferences-api";
 import { getMediaInfoApi } from "@jellyfin/sdk/lib/utils/api/media-info-api";
 import { getMediaSegmentsApi } from "@jellyfin/sdk/lib/utils/api/media-segments-api";
 import { getUserLibraryApi } from "@jellyfin/sdk/lib/utils/api/user-library-api";
@@ -428,7 +429,7 @@ const PlayButton = ({
 				episodeIndex: index,
 			};
 		},
-		onSuccess: (result: PlayResult | null) => {
+		onSuccess: async (result: PlayResult | null) => {
 			if (!api) {
 				console.error("API is not available");
 				enqueueSnackbar("API is not available", { variant: "error" });
@@ -449,6 +450,14 @@ const PlayButton = ({
 				enqueueSnackbar("No item ID found", { variant: "error" });
 				return;
 			}
+
+			const displayPreferences = await getDisplayPreferencesApi(
+				api,
+			).getDisplayPreferences({
+				userId: userId,
+				displayPreferencesId: api.deviceInfo.id,
+				client: "blink",
+			});
 
 			if (audio) {
 				// Album/Individual audio track playback
@@ -531,6 +540,14 @@ const PlayButton = ({
 				const startPosition =
 					result?.item?.Items?.[episodeIndex].UserData?.PlaybackPositionTicks;
 
+				let initVolume = "1";
+				if (
+					displayPreferences.data.CustomPrefs?.RememberVolume &&
+					displayPreferences.data.CustomPrefs?.Volume
+				) {
+					initVolume = displayPreferences.data.CustomPrefs?.Volume;
+				}
+
 				playItem(
 					itemName,
 					episodeTitle,
@@ -549,6 +566,7 @@ const PlayButton = ({
 					subtitle,
 					result?.introInfo,
 					audio,
+					Number(initVolume),
 				);
 				navigate({ to: "/player" });
 			}

@@ -14,6 +14,7 @@ import { Route as rootRoute } from './routes/__root'
 import { Route as ApiImport } from './routes/_api'
 import { Route as IndexImport } from './routes/index'
 import { Route as ErrorCodeImport } from './routes/error/$code'
+import { Route as ApiSettingsImport } from './routes/_api/settings'
 import { Route as ApiLoginImport } from './routes/_api/login'
 import { Route as ApiSearchIndexImport } from './routes/_api/search/index'
 import { Route as ApiPlayerIndexImport } from './routes/_api/player/index'
@@ -22,6 +23,7 @@ import { Route as ApiFavoriteIndexImport } from './routes/_api/favorite/index'
 import { Route as SetupServerListImport } from './routes/setup/server.list'
 import { Route as SetupServerErrorImport } from './routes/setup/server.error'
 import { Route as SetupServerAddImport } from './routes/setup/server.add'
+import { Route as ApiSettingsPreferencesImport } from './routes/_api/settings/preferences'
 import { Route as ApiSeriesIdImport } from './routes/_api/series/$id'
 import { Route as ApiPlaylistIdImport } from './routes/_api/playlist/$id'
 import { Route as ApiPlayerPhotosImport } from './routes/_api/player/photos'
@@ -54,6 +56,12 @@ const ErrorCodeRoute = ErrorCodeImport.update({
   id: '/error/$code',
   path: '/error/$code',
   getParentRoute: () => rootRoute,
+} as any)
+
+const ApiSettingsRoute = ApiSettingsImport.update({
+  id: '/settings',
+  path: '/settings',
+  getParentRoute: () => ApiRoute,
 } as any)
 
 const ApiLoginRoute = ApiLoginImport.update({
@@ -102,6 +110,12 @@ const SetupServerAddRoute = SetupServerAddImport.update({
   id: '/setup/server/add',
   path: '/setup/server/add',
   getParentRoute: () => rootRoute,
+} as any)
+
+const ApiSettingsPreferencesRoute = ApiSettingsPreferencesImport.update({
+  id: '/preferences',
+  path: '/preferences',
+  getParentRoute: () => ApiSettingsRoute,
 } as any)
 
 const ApiSeriesIdRoute = ApiSeriesIdImport.update({
@@ -213,6 +227,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiLoginImport
       parentRoute: typeof ApiImport
     }
+    '/_api/settings': {
+      id: '/_api/settings'
+      path: '/settings'
+      fullPath: '/settings'
+      preLoaderRoute: typeof ApiSettingsImport
+      parentRoute: typeof ApiImport
+    }
     '/error/$code': {
       id: '/error/$code'
       path: '/error/$code'
@@ -311,6 +332,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiSeriesIdImport
       parentRoute: typeof ApiImport
     }
+    '/_api/settings/preferences': {
+      id: '/_api/settings/preferences'
+      path: '/preferences'
+      fullPath: '/settings/preferences'
+      preLoaderRoute: typeof ApiSettingsPreferencesImport
+      parentRoute: typeof ApiSettingsImport
+    }
     '/setup/server/add': {
       id: '/setup/server/add'
       path: '/setup/server/add'
@@ -388,8 +416,21 @@ const ApiLoginRouteWithChildren = ApiLoginRoute._addFileChildren(
   ApiLoginRouteChildren,
 )
 
+interface ApiSettingsRouteChildren {
+  ApiSettingsPreferencesRoute: typeof ApiSettingsPreferencesRoute
+}
+
+const ApiSettingsRouteChildren: ApiSettingsRouteChildren = {
+  ApiSettingsPreferencesRoute: ApiSettingsPreferencesRoute,
+}
+
+const ApiSettingsRouteWithChildren = ApiSettingsRoute._addFileChildren(
+  ApiSettingsRouteChildren,
+)
+
 interface ApiRouteChildren {
   ApiLoginRoute: typeof ApiLoginRouteWithChildren
+  ApiSettingsRoute: typeof ApiSettingsRouteWithChildren
   ApiAlbumIdRoute: typeof ApiAlbumIdRoute
   ApiArtistIdRoute: typeof ApiArtistIdRoute
   ApiBoxsetIdRoute: typeof ApiBoxsetIdRoute
@@ -409,6 +450,7 @@ interface ApiRouteChildren {
 
 const ApiRouteChildren: ApiRouteChildren = {
   ApiLoginRoute: ApiLoginRouteWithChildren,
+  ApiSettingsRoute: ApiSettingsRouteWithChildren,
   ApiAlbumIdRoute: ApiAlbumIdRoute,
   ApiArtistIdRoute: ApiArtistIdRoute,
   ApiBoxsetIdRoute: ApiBoxsetIdRoute,
@@ -432,6 +474,7 @@ export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '': typeof ApiRouteWithChildren
   '/login': typeof ApiLoginRouteWithChildren
+  '/settings': typeof ApiSettingsRouteWithChildren
   '/error/$code': typeof ErrorCodeRoute
   '/album/$id': typeof ApiAlbumIdRoute
   '/artist/$id': typeof ApiArtistIdRoute
@@ -446,6 +489,7 @@ export interface FileRoutesByFullPath {
   '/player/photos': typeof ApiPlayerPhotosRoute
   '/playlist/$id': typeof ApiPlaylistIdRoute
   '/series/$id': typeof ApiSeriesIdRoute
+  '/settings/preferences': typeof ApiSettingsPreferencesRoute
   '/setup/server/add': typeof SetupServerAddRoute
   '/setup/server/error': typeof SetupServerErrorRoute
   '/setup/server/list': typeof SetupServerListRoute
@@ -460,6 +504,7 @@ export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '': typeof ApiRouteWithChildren
   '/login': typeof ApiLoginRouteWithChildren
+  '/settings': typeof ApiSettingsRouteWithChildren
   '/error/$code': typeof ErrorCodeRoute
   '/album/$id': typeof ApiAlbumIdRoute
   '/artist/$id': typeof ApiArtistIdRoute
@@ -474,6 +519,7 @@ export interface FileRoutesByTo {
   '/player/photos': typeof ApiPlayerPhotosRoute
   '/playlist/$id': typeof ApiPlaylistIdRoute
   '/series/$id': typeof ApiSeriesIdRoute
+  '/settings/preferences': typeof ApiSettingsPreferencesRoute
   '/setup/server/add': typeof SetupServerAddRoute
   '/setup/server/error': typeof SetupServerErrorRoute
   '/setup/server/list': typeof SetupServerListRoute
@@ -489,6 +535,7 @@ export interface FileRoutesById {
   '/': typeof IndexRoute
   '/_api': typeof ApiRouteWithChildren
   '/_api/login': typeof ApiLoginRouteWithChildren
+  '/_api/settings': typeof ApiSettingsRouteWithChildren
   '/error/$code': typeof ErrorCodeRoute
   '/_api/album/$id': typeof ApiAlbumIdRoute
   '/_api/artist/$id': typeof ApiArtistIdRoute
@@ -503,6 +550,7 @@ export interface FileRoutesById {
   '/_api/player/photos': typeof ApiPlayerPhotosRoute
   '/_api/playlist/$id': typeof ApiPlaylistIdRoute
   '/_api/series/$id': typeof ApiSeriesIdRoute
+  '/_api/settings/preferences': typeof ApiSettingsPreferencesRoute
   '/setup/server/add': typeof SetupServerAddRoute
   '/setup/server/error': typeof SetupServerErrorRoute
   '/setup/server/list': typeof SetupServerListRoute
@@ -519,6 +567,7 @@ export interface FileRouteTypes {
     | '/'
     | ''
     | '/login'
+    | '/settings'
     | '/error/$code'
     | '/album/$id'
     | '/artist/$id'
@@ -533,6 +582,7 @@ export interface FileRouteTypes {
     | '/player/photos'
     | '/playlist/$id'
     | '/series/$id'
+    | '/settings/preferences'
     | '/setup/server/add'
     | '/setup/server/error'
     | '/setup/server/list'
@@ -546,6 +596,7 @@ export interface FileRouteTypes {
     | '/'
     | ''
     | '/login'
+    | '/settings'
     | '/error/$code'
     | '/album/$id'
     | '/artist/$id'
@@ -560,6 +611,7 @@ export interface FileRouteTypes {
     | '/player/photos'
     | '/playlist/$id'
     | '/series/$id'
+    | '/settings/preferences'
     | '/setup/server/add'
     | '/setup/server/error'
     | '/setup/server/list'
@@ -573,6 +625,7 @@ export interface FileRouteTypes {
     | '/'
     | '/_api'
     | '/_api/login'
+    | '/_api/settings'
     | '/error/$code'
     | '/_api/album/$id'
     | '/_api/artist/$id'
@@ -587,6 +640,7 @@ export interface FileRouteTypes {
     | '/_api/player/photos'
     | '/_api/playlist/$id'
     | '/_api/series/$id'
+    | '/_api/settings/preferences'
     | '/setup/server/add'
     | '/setup/server/error'
     | '/setup/server/list'
@@ -641,6 +695,7 @@ export const routeTree = rootRoute
       "filePath": "_api.tsx",
       "children": [
         "/_api/login",
+        "/_api/settings",
         "/_api/album/$id",
         "/_api/artist/$id",
         "/_api/boxset/$id",
@@ -665,6 +720,13 @@ export const routeTree = rootRoute
         "/_api/login/list",
         "/_api/login/manual",
         "/_api/login/$userId/$userName"
+      ]
+    },
+    "/_api/settings": {
+      "filePath": "_api/settings.tsx",
+      "parent": "/_api",
+      "children": [
+        "/_api/settings/preferences"
       ]
     },
     "/error/$code": {
@@ -721,6 +783,10 @@ export const routeTree = rootRoute
     "/_api/series/$id": {
       "filePath": "_api/series/$id.tsx",
       "parent": "/_api"
+    },
+    "/_api/settings/preferences": {
+      "filePath": "_api/settings/preferences.tsx",
+      "parent": "/_api/settings"
     },
     "/setup/server/add": {
       "filePath": "setup/server.add.tsx"

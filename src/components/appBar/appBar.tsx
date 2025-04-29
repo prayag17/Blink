@@ -45,40 +45,8 @@ import {
 	ListItemText,
 } from "@mui/material";
 import BackButton from "../buttons/backButton";
+import ListItemLink from "../listItemLink";
 
-interface ListItemLinkProps {
-	icon?: ReactNode;
-	primary: string;
-	to: string;
-}
-
-function ListItemLink(props: ListItemLinkProps) {
-	const { icon, primary, to } = props;
-
-	return (
-		<li>
-			{/* @ts-ignore */}
-			<ListItem
-				component={Link}
-				activeClassName="active"
-				className="library-drawer-item"
-				to={to}
-			>
-				<ListItemButton
-					style={{
-						borderRadius: "100px",
-						gap: "0.85em",
-						color: "white",
-						textDecoration: "none",
-					}}
-				>
-					<div className="material-symbols-rounded">{icon}</div>
-					<ListItemText primary={primary} />
-				</ListItemButton>
-			</ListItem>
-		</li>
-	);
-}
 
 const MemoizeBackButton = React.memo(BackButton);
 
@@ -151,7 +119,8 @@ export const AppBar = () => {
 			location.pathname.includes("server") ||
 			location.pathname === "/player" ||
 			location.pathname.includes("error") ||
-			location.pathname === "/"
+			location.pathname === "/" ||
+			location.pathname.includes("settings")
 		) {
 			setDisplay(false);
 		} else {
@@ -292,6 +261,18 @@ export const AppBar = () => {
 							</MenuItem>
 							<MenuItem
 								onClick={() => {
+									navigate({ to: "/settings/preferences" });
+									setSettingsTabValue(1);
+									handleMenuClose();
+								}}
+							>
+								<ListItemIcon>
+									<div className="material-symbols-rounded">tune</div>
+								</ListItemIcon>
+								Preferences
+							</MenuItem>
+							<MenuItem
+								onClick={() => {
 									setSettingsDialogOpen(true);
 									setSettingsTabValue(10);
 									handleMenuClose();
@@ -327,10 +308,16 @@ export const AppBar = () => {
 					</List>
 					<Divider variant="middle" />
 					<List>
-						<ListItemLink to="/home" icon="home" primary="Home" />
+						<ListItemLink
+							className="library-drawer-item"
+							to="/home"
+							icon="home"
+							primary="Home"
+						/>
 						{libraries.isSuccess &&
 							libraries.data?.Items?.map((library) => (
 								<ListItemLink
+									className="library-drawer-item"
 									key={library.Id}
 									to={`/library/${library.Id}`}
 									icon={

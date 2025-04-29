@@ -83,7 +83,7 @@ const CardComponent = ({
 	};
 
 	const { ref, inView } = useInView({
-		threshold: 0,
+		threshold: 0.1,
 	});
 
 	return (

@@ -4,7 +4,6 @@ import { createFileRoute, redirect } from "@tanstack/react-router";
 
 export const Route = createFileRoute("/")({
 	beforeLoad: async () => {
-		console.log("Hello");
 		const currentServerId = await getDefaultServer();
 		const userOnDisk = await getUser();
 		if (currentServerId) {

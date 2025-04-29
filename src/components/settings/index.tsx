@@ -25,6 +25,8 @@ import logo from "@/assets/logo.png";
 
 import { jellyfin, useApiInContext } from "@/utils/store/api";
 import { useCentralStore } from "@/utils/store/central";
+import { getDisplayPreferencesApi } from "@jellyfin/sdk/lib/utils/api/display-preferences-api";
+import { getLocalizationApi } from "@jellyfin/sdk/lib/utils/api/localization-api";
 import { getSystemApi } from "@jellyfin/sdk/lib/utils/api/system-api";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import "./settings.scss";
@@ -46,6 +48,7 @@ import { relaunch } from "@tauri-apps/plugin-process";
 import { check } from "@tauri-apps/plugin-updater";
 import { useSnackbar } from "notistack";
 import SettingOption from "../settingOption";
+import SettingOptionSelect from "../settingOptionSelect";
 
 const motionConfig = {
 	initial: {
@@ -65,6 +68,8 @@ const Settings = () => {
 	const api = useApiInContext((s) => s.api);
 	const createApi = useApiInContext((s) => s.createApi);
 
+	const user = useCentralStore((state) => state.currentUser);
+	
 	const systemInfo = useQuery({
 		queryKey: ["about", "systemInfo"],
 		queryFn: async () => {
@@ -98,8 +103,34 @@ const Settings = () => {
 		enabled: open,
 	});
 
+	const cultures = useQuery({
+		queryKey: ["settings", "cultures"],
+		queryFn: async () => {
+			if (!api) return;
+			const result = await getLocalizationApi(api).getCultures();
+			return result.data;
+		},
+		enabled: open,
+	});
+
+	const clientSettingsOnServer = useQuery({
+		queryKey: ["settings", "clientSettings"],
+		queryFn: async () => {
+			if (!api) return;
+			const result = await getDisplayPreferencesApi(api).getDisplayPreferences({
+				client: "blink",
+				userId: user?.Id,
+				displayPreferencesId: api.deviceInfo.id,
+			});
+			return result.data;
+		},
+		enabled: open,
+	});
+
+
 	const queryClient = useQueryClient();
 
+	// Server Management
 	const [updating, setUpdating] = useState(false);
 	const [addServerDialog, setAddServerDialog] = useState(false);
 	const [serverIp, setServerIp] = useState("");
@@ -203,7 +234,7 @@ const Settings = () => {
 			open={open}
 			fullWidth
 			maxWidth="md"
-			PaperProps={paperProps}
+			slotProps={{ paper: paperProps }}
 			hideBackdrop
 			onClose={handleClose}
 		>
@@ -233,6 +264,17 @@ const Settings = () => {
 					iconPosition="start"
 					value={2}
 					label="Servers"
+					className="settings-tab"
+					sx={{
+						minHeight: "48px",
+						height: "48px",
+					}}
+				/>
+				<Tab
+					icon={<span className="material-symbols-rounded">tune</span>}
+					iconPosition="start"
+					value={3}
+					label="Perferences"
 					className="settings-tab"
 					sx={{
 						minHeight: "48px",
@@ -409,6 +451,22 @@ const Settings = () => {
 								</Fab>
 							</div>
 						</motion.div>
+					)}
+
+					{/* Preferences */}
+					{tabValue === 3 && cultures.isSuccess && (
+						<div className="settings-container">
+							<SettingOptionSelect
+								setting={{
+									name: "Preferred Audio Language",
+									description: "Select your preferred audio language.",
+								}}
+								userValue={
+									user?.Configuration?.AudioLanguagePreference ?? "anyLanguage"
+								}
+								options={cultures.data ?? []}
+							/>
+						</div>
 					)}
 
 					{/* About */}

@@ -1,0 +1,67 @@
+.settings {
+    &-page {
+        &-container {
+            display: grid;
+            grid-template-columns: 16em 1fr;
+            padding: 0;
+            width: 100vw;
+            height: 100vh;
+        }
+        &-scrollY {
+            padding: 2em;
+        }
+    }
+    &-form{
+        display: flex;
+        flex-direction: column;
+        align-items: flex-end;
+        justify-content: flex-start;
+        gap: 1em;
+        width: 100%;
+        margin-top: 2em;
+    }
+    &-sidebar {
+        // padding-top: 4.4em !important;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: flex-start;
+        background: rgb(0 0 0 / 0.4);
+        border-right: 1px solid rgba(255, 255, 255, 0.12);
+        // padding-top: 1em;s
+        &-controls {
+            display: flex;
+            flex-direction: row;
+            align-items: center;
+            justify-content: flex-start;
+            gap: 0.5em;
+            width: 100%;
+            padding: 1em;
+        }
+        &-header {
+            display: flex;
+            align-items: center;
+            justify-content: flex-start;
+            width: 100%;
+            padding: 1em;
+            flex-direction: row;
+            gap: 1em;
+            &-image {
+                $size: 3em;
+                width: $size;
+                height: $size;
+                border-radius: 50%;
+            }
+        }
+        &-list-item {
+            width: 100%;
+            .MuiButtonBase-root {
+                border-radius: 5px !important;
+            }
+            &.active .MuiButtonBase-root {
+                --fill: 1;
+                background: $clr-gradient-default;
+            }
+        }
+    }
+}

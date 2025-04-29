@@ -68,6 +68,7 @@ import BubbleSlider from "@/components/bubbleSlider";
 import videoPlayerReducer, {
 	VideoPlayerActionKind,
 } from "@/utils/reducers/videoPlayerReducer";
+import { getDisplayPreferencesApi } from "@jellyfin/sdk/lib/utils/api/display-preferences-api";
 
 const ticksDisplay = (ticks: number) => {
 	const time = Math.round(ticks / 10000);
@@ -161,6 +162,7 @@ function VideoPlayer() {
 		mediaSource,
 		playsessionId,
 		mediaSegments,
+		initVolume,
 	] = usePlaybackStore((state) => [
 		state.playbackStream,
 		state.item,
@@ -171,6 +173,7 @@ function VideoPlayer() {
 		state.mediaSource,
 		state.playsessionId,
 		state.intro,
+		state.volume,
 	]);
 
 	const introInfo = mediaSegments?.Items?.find(
@@ -198,7 +201,6 @@ function VideoPlayer() {
 	const [showVolumeControl, setShowVolumeControl] = useState(false);
 
 	// Control States
-
 	const [
 		{
 			ref,
@@ -219,7 +221,7 @@ function VideoPlayer() {
 		isPlayerPlaying: true,
 		isPlayerMuted: false,
 		isPlayerFullscreen: false,
-		playerVolume: 1,
+		playerVolume: initVolume ?? 1,
 		isSeeking: false,
 		sliderSeek: startPosition,
 		progress: startPosition,
@@ -632,6 +634,25 @@ function VideoPlayer() {
 		player.current?.seekTo(ticksToSec(next?.StartPositionTicks ?? 0));
 	}, [progress, playsessionId]);
 
+	useEffect(() => {
+		async function setVolumeInServer() {
+			if (!api) return null;
+			await getDisplayPreferencesApi(api).updateDisplayPreferences({
+				userId: user?.Id,
+				client: "blink",
+				displayPreferencesId: api.deviceInfo.id,
+				displayPreferencesDto: {
+					CustomPrefs: {
+						Volume: String(playerVolume),
+					},
+				},
+			});
+		}
+		if (user?.Id && initVolume !== playerVolume && initVolume !== undefined) {
+			setVolumeInServer();
+		}
+	}, [playerVolume]);
+
 	return (
 		<div className="video-player">
 			<AnimatePresence>
@@ -944,16 +965,18 @@ function VideoPlayer() {
 											max={1}
 											size="small"
 											value={isPlayerMuted ? 0 : playerVolume}
-											onChange={(_, newValue) => {
-												Array.isArray(newValue)
-													? dispatch({
-															type: VideoPlayerActionKind.SET_PLAYER_VOLUME,
-															payload: newValue[0],
-														})
-													: dispatch({
-															type: VideoPlayerActionKind.SET_PLAYER_VOLUME,
-															payload: newValue,
-														});
+											onChange={async (_, newValue) => {
+												if (api && Array.isArray(newValue)) {
+													dispatch({
+														type: VideoPlayerActionKind.SET_PLAYER_VOLUME,
+														payload: newValue[0],
+													});
+												} else {
+													dispatch({
+														type: VideoPlayerActionKind.SET_PLAYER_VOLUME,
+														payload: newValue,
+													});
+												}
 												if (newValue === 0)
 													dispatch({
 														type: VideoPlayerActionKind.SET_PLAYER_MUTED,

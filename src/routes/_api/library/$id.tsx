@@ -57,25 +57,6 @@ type SortByObject = { title: string; value: string };
 type ViewObject = { title: string; value: BaseItemKind | "Artist" };
 // type allowedFilters = ["movies", "tvshows", "music", "books"];
 
-const useWindowWidth = () => {
-	const [width, setWidth] = React.useState(window.innerWidth);
-
-	React.useEffect(() => {
-		const onResize = () => setWidth(window.innerWidth);
-
-		window.addEventListener("resize", onResize, {
-			capture: false,
-			passive: true,
-		});
-
-		return () => {
-			window.removeEventListener("resize", onResize);
-		};
-	}, []);
-
-	return width;
-};
-
 export const Route = createFileRoute("/_api/library/$id")({
 	component: Library,
 });
@@ -724,36 +705,6 @@ function Library() {
 				return true;
 		}
 	}, [currentViewType]);
-
-	const cardSize = useMemo(
-		() =>
-			items.data?.Items?.[0]?.Type === BaseItemKind.MusicAlbum ||
-			items.data?.Items?.[0]?.Type === BaseItemKind.Audio ||
-			items.data?.Items?.[0]?.Type === BaseItemKind.Genre ||
-			items.data?.Items?.[0]?.Type === BaseItemKind.MusicGenre ||
-			items.data?.Items?.[0]?.Type === BaseItemKind.Studio ||
-			items.data?.Items?.[0]?.Type === BaseItemKind.Playlist
-				? 260
-				: 356,
-		[items.dataUpdatedAt],
-	); // This sets the approx height of each card in library to estimate no of virtual rows to render
-	const windowWidth = useWindowWidth();
-	const itemsPerRow = useMemo(
-		() => Math.max(1, Math.floor(windowWidth / 200)),
-		[windowWidth],
-	);
-	const count = useMemo(
-		() =>
-			(items.data?.TotalRecordCount ?? 1) > itemsPerRow
-				? Math.ceil((items.data?.TotalRecordCount ?? 1) / itemsPerRow)
-				: 1,
-		[itemsPerRow, items.dataUpdatedAt],
-	);
-	const virtualizer = useWindowVirtualizer({
-		count,
-		estimateSize: () => cardSize,
-		overscan: 1,
-	});
 
 	const rowVirtualizer = useWindowVirtualizer({
 		count: items.data?.TotalRecordCount ?? 1,
