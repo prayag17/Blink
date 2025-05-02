@@ -204,6 +204,7 @@ function VideoPlayer() {
   const [showVolumeControl, setShowVolumeControl] = useState(false);
 
   // Control States
+  const [isInitialVolumeSet, setIsInitialVolumeSet] = useState(false);
 
   const [
     {
@@ -246,15 +247,21 @@ function VideoPlayer() {
         type: VideoPlayerActionKind.SET_PLAYER_MUTED,
         payload: savedMuted,
       });
-
-      console.log("Loaded audio settings:", {
-        volume: savedVolume,
-        muted: savedMuted,
-      });
+      setIsInitialVolumeSet(true);
     };
 
     loadAudioSettings();
   }, []);
+
+  useEffect(() => {
+    if (!isInitialVolumeSet) return;
+    setVolume(playerVolume);
+  }, [playerVolume, isInitialVolumeSet]);
+
+  useEffect(() => {
+    if (!isInitialVolumeSet) return;
+    setIsMuted(isPlayerMuted);
+  }, [isPlayerMuted, isInitialVolumeSet]);
 
   // const [isReady, setIsReady] = useState(false);
   // const [playing, setPlaying] = useState(true);
@@ -989,9 +996,6 @@ function VideoPlayer() {
                           type: VideoPlayerActionKind.SET_PLAYER_MUTED,
                           payload: shouldMute,
                         });
-
-                        setVolume(volume);
-                        setIsMuted(shouldMute);
                       }}
                     />
                   </motion.div>
