@@ -49,6 +49,13 @@ import { PgsRenderer } from "libpgs";
 //@ts-ignore
 import pgsWorkerUrl from "libpgs/dist/libpgs.worker.js?url";
 
+import {
+	getVolume,
+	setVolume,
+	getMuted,
+	setIsMuted,
+} from "@/utils/storage/volume";
+
 import PlayNextButton from "@/components/buttons/playNextButton";
 import PlayPreviousButton from "@/components/buttons/playPreviousButtom";
 import QueueButton from "@/components/buttons/queueButton";
@@ -127,7 +134,6 @@ function addSubtitleTrackToReactPlayer(
 			// console.log(trackAlreadyExists.getTrackById(reqSubTrack[0].Index));
 			videoElem.appendChild(track);
 		}
-		
 
 		for (const i of videoElem.textTracks) {
 			if (i.label === reqSubTrack[0].DisplayTitle) {
@@ -198,6 +204,7 @@ function VideoPlayer() {
 	const [showVolumeControl, setShowVolumeControl] = useState(false);
 
 	// Control States
+	const [isInitialVolumeSet, setIsInitialVolumeSet] = useState(false);
 
 	const [
 		{
@@ -226,15 +233,45 @@ function VideoPlayer() {
 		isHovering: false,
 	});
 
+	useEffect(() => {
+		const loadAudioSettings = async () => {
+			const savedVolume = await getVolume();
+			const savedMuted = await getMuted();
+
+			dispatch({
+				type: VideoPlayerActionKind.SET_PLAYER_VOLUME,
+				payload: savedVolume,
+			});
+
+			dispatch({
+				type: VideoPlayerActionKind.SET_PLAYER_MUTED,
+				payload: savedMuted,
+			});
+			setIsInitialVolumeSet(true);
+		};
+
+		loadAudioSettings();
+	}, []);
+
+	useEffect(() => {
+		if (!isInitialVolumeSet) return;
+		setVolume(playerVolume);
+	}, [playerVolume, isInitialVolumeSet]);
+
+	useEffect(() => {
+		if (!isInitialVolumeSet) return;
+		setIsMuted(isPlayerMuted);
+	}, [isPlayerMuted, isInitialVolumeSet]);
+
 	// const [isReady, setIsReady] = useState(false);
 	// const [playing, setPlaying] = useState(true);
 	// const [isSeeking, setIsSeeking] = useState(false);
 	// const [sliderProgress, setSliderProgress] = useState(startPosition);
 	// const [progress, setProgress] = useState(startPosition);
 	// const [appFullscreen, setAppFullscreen] = useState(false);
-	// const [showSubtitles, setShowSubtitles] = useState(mediaSource.subtitle.enable);
 	// const [volume, setVolume] = useState(1);
 	// const [muted, setMuted] = useState(false);
+	// const [showSubtitles, setShowSubtitles] = useState(mediaSource.subtitle.enable);
 
 	const setBackdrop = useBackdropStore((s) => s.setBackdrop);
 	useEffect(() => setBackdrop("", ""), []);
@@ -515,15 +552,13 @@ function VideoPlayer() {
 
 	const handleSkipIntro = useCallback(() => {
 		player.current?.seekTo(
-			ticksToSec(Number(introInfo?.EndTicks)) ??
-				player.current?.getCurrentTime(),
+			ticksToSec(Number(introInfo?.EndTicks)) ?? player.current?.getCurrentTime(),
 		);
 	}, [item?.Id]);
 
 	const handleSkipRecap = useCallback(() => {
 		player.current?.seekTo(
-			ticksToSec(Number(recapInfo?.EndTicks)) ??
-				player.current?.getCurrentTime(),
+			ticksToSec(Number(recapInfo?.EndTicks)) ?? player.current?.getCurrentTime(),
 		);
 	}, [item?.Id]);
 
@@ -859,19 +894,13 @@ function VideoPlayer() {
 									<PlayPreviousButton />
 									<IconButton
 										onClick={() => {
-											player.current?.seekTo(
-												player.current.getCurrentTime() - 15,
-											);
+											player.current?.seekTo(player.current.getCurrentTime() - 15);
 										}}
 									>
-										<span className="material-symbols-rounded fill">
-											fast_rewind
-										</span>
+										<span className="material-symbols-rounded fill">fast_rewind</span>
 									</IconButton>
 									<IconButton onClick={handlePrevChapter}>
-										<span className="material-symbols-rounded fill">
-											first_page
-										</span>
+										<span className="material-symbols-rounded fill">first_page</span>
 									</IconButton>
 									<IconButton
 										onClick={() =>
@@ -886,25 +915,19 @@ function VideoPlayer() {
 									</IconButton>
 									<IconButton
 										disabled={
-											(item?.Chapters?.[item.Chapters?.length - 1]
-												?.StartPositionTicks ?? 0) <= progress
+											(item?.Chapters?.[item.Chapters?.length - 1]?.StartPositionTicks ??
+												0) <= progress
 										}
 										onClick={handleNextChapter}
 									>
-										<span className="material-symbols-rounded fill">
-											last_page
-										</span>
+										<span className="material-symbols-rounded fill">last_page</span>
 									</IconButton>
 									<IconButton
 										onClick={() =>
-											player.current?.seekTo(
-												player.current.getCurrentTime() + 15,
-											)
+											player.current?.seekTo(player.current.getCurrentTime() + 15)
 										}
 									>
-										<span className="material-symbols-rounded fill">
-											fast_forward
-										</span>
+										<span className="material-symbols-rounded fill">fast_forward</span>
 									</IconButton>
 									<PlayNextButton />
 									<Typography variant="subtitle1">
@@ -945,25 +968,18 @@ function VideoPlayer() {
 											size="small"
 											value={isPlayerMuted ? 0 : playerVolume}
 											onChange={(_, newValue) => {
-												Array.isArray(newValue)
-													? dispatch({
-															type: VideoPlayerActionKind.SET_PLAYER_VOLUME,
-															payload: newValue[0],
-														})
-													: dispatch({
-															type: VideoPlayerActionKind.SET_PLAYER_VOLUME,
-															payload: newValue,
-														});
-												if (newValue === 0)
-													dispatch({
-														type: VideoPlayerActionKind.SET_PLAYER_MUTED,
-														payload: true,
-													});
-												else
-													dispatch({
-														type: VideoPlayerActionKind.SET_PLAYER_MUTED,
-														payload: true,
-													});
+												const volume = Array.isArray(newValue) ? newValue[0] : newValue;
+												const shouldMute = volume === 0;
+
+												dispatch({
+													type: VideoPlayerActionKind.SET_PLAYER_VOLUME,
+													payload: volume,
+												});
+
+												dispatch({
+													type: VideoPlayerActionKind.SET_PLAYER_MUTED,
+													payload: shouldMute,
+												});
 											}}
 										/>
 									</motion.div>
@@ -1023,8 +1039,7 @@ function VideoPlayer() {
 									</Menu>
 									<IconButton
 										disabled={
-											mediaSource.subtitle.allTracks?.length === 0 ||
-											subtitleIsChanging
+											mediaSource.subtitle.allTracks?.length === 0 || subtitleIsChanging
 										}
 										onClick={() => startSubtitleChange(toggleSubtitleTrack)}
 									>
