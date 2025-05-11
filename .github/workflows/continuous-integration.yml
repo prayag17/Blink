@@ -120,3 +120,125 @@ jobs:
                  with:
                       name: Blink-${{ matrix.platform }}-dev${{ github.sha }}
                       path: src-tauri/target/debug/bundle/*
+
+     # Create or update nightly release
+     nightly_release:
+          needs: build
+          if: github.repository == 'prayag17/Blink' && github.event_name == 'push' && github.ref == 'refs/heads/main'
+          runs-on: ubuntu-latest
+          permissions:
+               contents: write     # Required for creating/updating releases
+          steps:
+               - name: Checkout repository
+                 uses: actions/checkout@v4.2.2
+
+               - name: Download all artifacts
+                 uses: actions/download-artifact@v4.3.0
+                 with:
+                    path: artifacts
+
+               - name: Get commit details
+                 id: commit-details
+                 run: |
+                   echo "message=$(git log -1 --pretty=%s)" >> $GITHUB_OUTPUT
+               - name: Create or update nightly release
+                 uses: actions/github-script@v7.0.1
+                 env:
+                    COMMIT_MESSAGE: ${{ steps.commit-details.outputs.message }}
+                 with:
+                    github-token: ${{ secrets.GITHUB_TOKEN }}
+                    script: |
+                      const fs = require('fs');
+                      const path = require('path');
+                      
+                      // Get today's date in YYYY-MM-DD format
+                      const today = new Date().toISOString().split('T')[0];
+                      const releaseTag = 'nightly';
+                      const releaseName = `Nightly Build (${today})`;
+                      
+                      // Check if nightly release already exists
+                      console.log("Checking for existing nightly release...");
+                      let release;
+                      try {
+                        release = await github.rest.repos.getReleaseByTag({
+                          owner: context.repo.owner,
+                          repo: context.repo.repo,
+                          tag: releaseTag
+                        });
+                        console.log("Found existing nightly release");
+                      } catch (error) {
+                        if (error.status === 404) {
+                          console.log("No existing nightly release found, creating one...");                          
+                          release = await github.rest.repos.createRelease({
+                            owner: context.repo.owner,
+                            repo: context.repo.repo,
+                            tag_name: releaseTag,
+                            name: releaseName,
+                            body: `Nightly build created on ${today} from the latest main branch\nLast commit: ${context.sha}\nCommit message: ${process.env.COMMIT_MESSAGE || "No commit message available"}`,
+                            prerelease: true
+                          });
+                          release = release.data;
+                        } else {
+                          throw error;
+                        }
+                      }
+                      
+                      if (release && release.data) {
+                        // Update existing release
+                        console.log("Updating existing nightly release...");
+                        const updateResult = await github.rest.repos.updateRelease({
+                          owner: context.repo.owner,
+                          repo: context.repo.repo,
+                          release_id: release.data.id,
+                          name: releaseName,
+                          body: `Nightly build updated on ${today} from the latest main branch.\nLast commit: ${context.sha}\nCommit message: ${process.env.COMMIT_MESSAGE || "No commit message available"}`,
+                          prerelease: true
+                        });
+                        release = updateResult.data;
+                      }
+                      
+                      // Delete existing assets to replace them with new ones
+                      if (release.assets && release.assets.length > 0) {
+                        console.log("Deleting existing release assets...");
+                        for (const asset of release.assets) {
+                          await github.rest.repos.deleteReleaseAsset({
+                            owner: context.repo.owner,
+                            repo: context.repo.repo,
+                            asset_id: asset.id
+                          });
+                        }
+                      }
+                      
+                      // Upload new artifacts
+                      console.log("Uploading new artifacts...");
+                      const artifactsDir = 'artifacts';
+                      const platforms = ['macos-latest', 'ubuntu-22.04', 'windows-latest'];
+                      
+                      for (const platform of platforms) {
+                        const platformDir = path.join(artifactsDir, `Blink-${platform}-dev${context.sha}`);
+                        
+                        if (!fs.existsSync(platformDir)) {
+                          console.log(`No artifacts found for ${platform}`);
+                          continue;
+                        }
+                        
+                        const files = fs.readdirSync(platformDir, { recursive: true });
+                        for (const file of files) {
+                          if (typeof file === 'string' && !fs.statSync(path.join(platformDir, file)).isDirectory()) {
+                            const filePath = path.join(platformDir, file);
+                            const fileContent = fs.readFileSync(filePath);
+                            const fileName = path.basename(filePath);
+                            
+                            console.log(`Uploading ${fileName} from ${platform}...`);
+                            await github.rest.repos.uploadReleaseAsset({
+                              owner: context.repo.owner,
+                              repo: context.repo.repo,
+                              release_id: release.id,
+                              name: `${platform.replace(/-/g, '_')}-${fileName}`,
+                              data: fileContent
+                            });
+                          }
+                        }
+                      }
+                      
+                      console.log("Nightly release updated successfully!");
