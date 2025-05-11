@@ -136,6 +136,9 @@ jobs:
                  uses: actions/download-artifact@v4.3.0
                  with:
                     path: artifacts
+                    
+               - name: Install dependencies
+                 run: npm install mime-types
 
                - name: Get commit details
                  id: commit-details
@@ -182,22 +185,24 @@ jobs:
                           throw error;
                         }
                       }
+                        // Handle the case where we have an existing release
+                      // The release object structure differs depending on whether it came from getReleaseByTag or createRelease
+                      const releaseId = release.data ? release.data.id : release.id;
                       
-                      if (release && release.data) {
+                      if (releaseId) {
                         // Update existing release
                         console.log("Updating existing nightly release...");
                         const updateResult = await github.rest.repos.updateRelease({
                           owner: context.repo.owner,
                           repo: context.repo.repo,
-                          release_id: release.data.id,
+                          release_id: releaseId,
                           name: releaseName,
                           body: `Nightly build updated on ${today} from the latest main branch.\nLast commit: ${context.sha}\nCommit message: ${process.env.COMMIT_MESSAGE || "No commit message available"}`,
                           prerelease: true
                         });
                         release = updateResult.data;
                       }
-                      
-                      // Delete existing assets to replace them with new ones
+                        // Delete existing assets to replace them with new ones
                       if (release.assets && release.assets.length > 0) {
                         console.log("Deleting existing release assets...");
                         for (const asset of release.assets) {
@@ -208,11 +213,11 @@ jobs:
                           });
                         }
                       }
-                      
-                      // Upload new artifacts
+                        // Upload new artifacts
                       console.log("Uploading new artifacts...");
                       const artifactsDir = 'artifacts';
                       const platforms = ['macos-latest', 'ubuntu-22.04', 'windows-latest'];
+                      const mime = require('mime-types');
                       
                       for (const platform of platforms) {
                         const platformDir = path.join(artifactsDir, `Blink-${platform}-dev${context.sha}`);
@@ -226,17 +231,22 @@ jobs:
                         for (const file of files) {
                           if (typeof file === 'string' && !fs.statSync(path.join(platformDir, file)).isDirectory()) {
                             const filePath = path.join(platformDir, file);
-                            const fileContent = fs.readFileSync(filePath);
                             const fileName = path.basename(filePath);
+                            const contentType = mime.lookup(fileName) || 'application/octet-stream';
                             
                             console.log(`Uploading ${fileName} from ${platform}...`);
+                            
+                            // Use Octokit's uploadReleaseAsset with proper content type for binary data
                             await github.rest.repos.uploadReleaseAsset({
                               owner: context.repo.owner,
                               repo: context.repo.repo,
                               release_id: release.id,
                               name: `${platform.replace(/-/g, '_')}-${fileName}`,
-                              data: fileContent
-                            });
+                              data: fs.readFileSync(filePath),
+                              headers: {
+                                'content-type': contentType,
+                                'content-length': fs.statSync(filePath).size
+                              }
                           }
                         }
                       }
