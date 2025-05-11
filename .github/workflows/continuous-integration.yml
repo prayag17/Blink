@@ -236,7 +236,7 @@ jobs:
                             
                             console.log(`Uploading ${fileName} from ${platform}...`);
                             
-                            // Use Octokit's uploadReleaseAsset with proper content type for binary data
+                            // Use Octokit's uploadReleaseAsset with proper content type for binary data                            
                             await github.rest.repos.uploadReleaseAsset({
                               owner: context.repo.owner,
                               repo: context.repo.repo,
@@ -247,6 +247,7 @@ jobs:
                                 'content-type': contentType,
                                 'content-length': fs.statSync(filePath).size
                               }
+                            });
                           }
                         }
                       }
