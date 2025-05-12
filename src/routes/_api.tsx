@@ -6,6 +6,7 @@ import { createFileRoute, redirect } from "@tanstack/react-router";
 
 export const Route = createFileRoute("/_api")({
 	beforeLoad: async ({ context, location }) => {
+		console.log("RUNNING API CHECK");
 		if (!context.api) {
 			const currentServerId = await getDefaultServer();
 			if (currentServerId) {
@@ -55,20 +56,20 @@ export const Route = createFileRoute("/_api")({
 				}
 			}
 		} else if (context.api) {
-			if (context.api.accessToken && location.pathname !== "/login/manual") {
-				try {
-					console.info("AccessToken", context.api.accessToken);
-					await getUserApi(context.api).getCurrentUser(); // Verify user is able to authenticate
-				} catch (error) {
-					console.error(error);
-					throw redirect({
-						to: "/login/manual",
-						search: {
-							redirect: location.href,
-						},
-					});
-				}
-			}
+			// if (context.api.accessToken && location.pathname !== "/login/manual") {
+			// 	try {
+			// 		console.info("AccessToken", context.api.accessToken);
+			// 		await getUserApi(context.api).getCurrentUser(); // Verify user is able to authenticate
+			// 	} catch (error) {
+			// 		console.error(error);
+			// 		throw redirect({
+			// 			to: "/login/manual",
+			// 			search: {
+			// 				redirect: location.href,
+			// 			},
+			// 		});
+			// 	}
+			// }
 		}
 	},
 });

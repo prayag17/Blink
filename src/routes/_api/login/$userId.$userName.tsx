@@ -155,12 +155,12 @@ function LoginUser() {
 						width: "100%",
 					}}
 				>
-					<InputLabel htmlFor="user-password">Password:</InputLabel>
+					<InputLabel htmlFor="user-password">Password</InputLabel>
 					<OutlinedInput
 						id="user-password"
 						type={password.showpass ? "text" : "password"}
 						onChange={handlePassword("password")}
-						label="Password:"
+						label="Password"
 						endAdornment={
 							<InputAdornment position="end">
 								<IconButton

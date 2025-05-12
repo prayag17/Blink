@@ -21,7 +21,7 @@ export default function NProgress() {
 		isAnimating,
 	});
 
-	return createPortal(
+	return (
 		<div
 			style={{
 				pointerEvents: "none",
@@ -44,8 +44,7 @@ export default function NProgress() {
 					variant="determinate"
 				/>
 			)}
-		</div>,
-		document.body,
+		</div>
 	);
 };
 
