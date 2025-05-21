@@ -1,6 +1,6 @@
 import React, { useEffect, useMemo, useRef, useState } from "react";
 
-import { motion } from "framer-motion";
+import { motion } from "motion/react";
 
 import Fab from "@mui/material/Fab";
 import IconButton from "@mui/material/IconButton";
@@ -10,7 +10,7 @@ import Typography from "@mui/material/Typography";
 import { setAudioRef, useAudioPlayback } from "@/utils/store/audioPlayback";
 import useQueue from "@/utils/store/queue";
 
-import { AnimatePresence } from "framer-motion";
+import { AnimatePresence } from "motion/react";
 import "./audioPlayer.scss";
 
 import { getRuntimeMusic, secToTicks, ticksToSec } from "@/utils/date/time";

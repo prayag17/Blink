@@ -1,7 +1,7 @@
 import React from "react";
 
 import { Skeleton } from "@mui/material";
-import { motion } from "framer-motion";
+import { motion } from "motion/react";
 
 const ItemSkeleton = () => {
 	return (

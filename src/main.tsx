@@ -43,8 +43,8 @@ const router = createRouter({
 	defaultPreload: "intent",
 	defaultPreloadStaleTime: 0,
 	defaultViewTransition: true,
-	// scrollRestoration: true,
-	// scrollRestorationBehavior: "smooth",
+	scrollRestoration: true,
+	scrollRestorationBehavior: "smooth",
 });
 
 // Register the router instance for type safety

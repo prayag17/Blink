@@ -34,7 +34,7 @@ import "./videoPlayer.scss";
 import { endsAt } from "@/utils/date/time";
 
 import { PlayMethod, RepeatMode } from "@jellyfin/sdk/lib/generated-client";
-import { AnimatePresence, motion } from "framer-motion";
+import { AnimatePresence, motion } from "motion/react";
 
 import { useBackdropStore } from "@/utils/store/backdrop";
 

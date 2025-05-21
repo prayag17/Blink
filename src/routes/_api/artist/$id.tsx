@@ -14,7 +14,7 @@ import Tabs from "@mui/material/Tabs";
 import Typography from "@mui/material/Typography";
 
 import useParallax from "@/utils/hooks/useParallax";
-import { AnimatePresence, motion, useScroll } from "framer-motion";
+import { AnimatePresence, motion, useScroll } from "motion/react";
 
 import {
 	BaseItemKind,

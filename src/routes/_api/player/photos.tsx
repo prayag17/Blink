@@ -3,7 +3,7 @@ import { usePhotosPlayback } from "@/utils/store/photosPlayback";
 import { createFileRoute } from "@tanstack/react-router";
 import React, { type MouseEvent, useCallback, useMemo, useState } from "react";
 
-import { AnimatePresence, motion } from "framer-motion";
+import { AnimatePresence, motion } from "motion/react";
 //@ts-ignore
 import brokenImage from "/assetsStatic/broken-image.png?url";
 

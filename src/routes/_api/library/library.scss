@@ -45,6 +45,9 @@
 		grid-template-columns: repeat(var(--number-of-cols), minmax(0, 1fr));
 		justify-items: center;
 		align-items: start;
+		> * {
+			max-width: 11em;
+		}
 	}
 	&-items {
 		height: fit-content;
@@ -85,6 +88,11 @@
 			grid-template-columns: repeat(auto-fit, minmax(10em, 1fr)) ;
 			gap: 1.6em;
 			padding: 1em 4.4em;
+			align-content: center;
+			justify-items: center;
+			> .card {
+				max-width: 11em;
+			}
 		}
 	}
 	&-filter {

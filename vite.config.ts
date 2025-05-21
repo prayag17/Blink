@@ -14,8 +14,11 @@ const plugins = [react({
       ["@babel/plugin-proposal-optional-chaining-assign",
       {
         version: "2023-07"
-      }]
-    ]
+      }],
+      ["babel-plugin-react-compiler", {
+        compilationMode: "annotation",
+      }],
+    ],
   }
 }), svgr(), TanStackRouterVite()];
 export default defineConfig({

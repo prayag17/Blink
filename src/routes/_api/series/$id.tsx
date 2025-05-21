@@ -11,7 +11,7 @@ import Typography from "@mui/material/Typography";
 import { green, red, yellow } from "@mui/material/colors";
 
 import useParallax from "@/utils/hooks/useParallax";
-import { AnimatePresence, motion, useScroll } from "framer-motion";
+import { AnimatePresence, motion, useScroll } from "motion/react";
 
 import { Blurhash } from "react-blurhash";
 

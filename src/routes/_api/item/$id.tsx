@@ -10,16 +10,15 @@ import { green, red, yellow } from "@mui/material/colors";
 import { Blurhash } from "react-blurhash";
 
 import useParallax from "@/utils/hooks/useParallax";
-import { motion, useScroll } from "framer-motion";
+import { motion, useScroll } from "motion/react";
 
 import {
 	BaseItemKind,
 	MediaStreamType,
 } from "@jellyfin/sdk/lib/generated-client";
 import { getLibraryApi } from "@jellyfin/sdk/lib/utils/api/library-api";
-import { getUserLibraryApi } from "@jellyfin/sdk/lib/utils/api/user-library-api";
 
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useSuspenseQuery } from "@tanstack/react-query";
 
 import heroBg from "@/assets/herobg.png";
 import { Card } from "@/components/card/card";
@@ -61,11 +60,20 @@ import type MediaQualityInfo from "@/utils/types/mediaQualityInfo";
 
 import IconLink from "@/components/iconLink";
 import getImageUrlsApi from "@/utils/methods/getImageUrlsApi";
+import { getItemQueryOptions } from "@/utils/queries/items";
 import { useCentralStore } from "@/utils/store/central";
 import { Link, createFileRoute } from "@tanstack/react-router";
 
 export const Route = createFileRoute("/_api/item/$id")({
 	component: ItemDetail,
+	pendingComponent: () => <ItemSkeleton />,
+	// pendingMs: 5000,
+	loader: async ({ context: { queryClient, api, user }, params }) => {
+		if (!api || !user?.Id) return null;
+		await queryClient.ensureQueryData(
+			getItemQueryOptions(params.id, api, user?.Id),
+		);
+	},
 });
 
 function ItemDetail() {
@@ -75,25 +83,14 @@ function ItemDetail() {
 
 	const user = useCentralStore((s) => s.currentUser);
 
-	const item = useQuery({
-		queryKey: ["item", id],
-		queryFn: async () => {
-			if (!api) return null;
-			const result = await getUserLibraryApi(api).getItem({
-				userId: user?.Id,
-				itemId: id,
-			});
-			return result.data;
-		},
-		enabled: !!user?.Id,
-		networkMode: "always",
-		refetchOnWindowFocus: true,
-	});
+	const item = useSuspenseQuery(getItemQueryOptions(id, api, user?.Id));
 
 	const similarItems = useQuery({
 		queryKey: ["item", id, "similarItem"],
 		queryFn: async () => {
-			if (!api) return null;
+			if (!item.isSuccess) return null;
+			if (!api || !user?.Id) return null;
+
 			if (!item.data?.Id) return null;
 			if (item.data?.Type === "Movie") {
 				return (
@@ -135,7 +132,6 @@ function ItemDetail() {
 				})
 			).data;
 		},
-		enabled: item.isSuccess,
 		networkMode: "always",
 		refetchOnWindowFocus: true,
 	});
@@ -321,11 +317,6 @@ function ItemDetail() {
 	});
 	const parallax = useParallax(scrollYProgress, 50);
 
-	if (item.isPending || similarItems.isPending) {
-		return <ItemSkeleton />;
-	}
-
-	if (item.isSuccess && item.data) {
 		return (
 			<motion.div
 				key={id}
@@ -877,7 +868,10 @@ function ItemDetail() {
 										<Link
 											className="item-detail-cast-card"
 											key={actor.Id}
-											to={`/person/${actor.Id}`}
+											to="/person/$id"
+											params={{
+												id: actor.Id ?? "",
+											}}
 										>
 											{actor.PrimaryImageTag ? (
 												<img
@@ -1073,10 +1067,6 @@ function ItemDetail() {
 				)}
 			</motion.div>
 		);
-	}
-	if (item.isError || similarItems.isError) {
-		return <ErrorNotice />;
-	}
 }
 
 export default ItemDetail;

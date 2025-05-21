@@ -1,5 +1,5 @@
 import { useBackdropStore } from "@/utils/store/backdrop";
-import { AnimatePresence, motion } from "framer-motion";
+import { AnimatePresence, motion } from "motion/react";
 import React, { useLayoutEffect, useState } from "react";
 
 export default function Backdrop() {

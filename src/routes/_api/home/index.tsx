@@ -1,6 +1,6 @@
 import React, { useCallback, useMemo } from "react";
 
-import { useQuery } from "@tanstack/react-query";
+import { useSuspenseQuery } from "@tanstack/react-query";
 
 import "./home.scss";
 
@@ -10,22 +10,22 @@ import Carousel from "@/components/carousel";
 import { Card } from "@/components/card/card";
 import CardScroller from "@/components/cardScroller/cardScroller";
 import { LatestMediaSection } from "@/components/layouts/homeSection/latestMediaSection";
-import { CardsSkeleton } from "@/components/skeleton/cards";
-import { CarouselSkeleton } from "@/components/skeleton/carousel";
 
 import { getItemsApi } from "@jellyfin/sdk/lib/utils/api/items-api";
 import { getTvShowsApi } from "@jellyfin/sdk/lib/utils/api/tv-shows-api";
-import { getUserLibraryApi } from "@jellyfin/sdk/lib/utils/api/user-library-api";
 import { getUserViewsApi } from "@jellyfin/sdk/lib/utils/api/user-views-api";
 
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 
 import { useBackdropStore } from "@/utils/store/backdrop";
 
+import CircularPageLoadingAnimation from "@/components/circularPageLoadingAnimation";
 import { ErrorNotice } from "@/components/notices/errorNotice/errorNotice";
 import getImageUrlsApi from "@/utils/methods/getImageUrlsApi";
+import { getLatestItemsQueryOptions } from "@/utils/queries/items";
 import { useApiInContext } from "@/utils/store/api";
 import { useCentralStore } from "@/utils/store/central";
+import type { Api } from "@jellyfin/sdk";
 import {
 	type BaseItemDto,
 	BaseItemKind,
@@ -36,58 +36,37 @@ import { ErrorBoundary } from "react-error-boundary";
 
 export const Route = createFileRoute("/_api/home/")({
 	component: Home,
+	pendingComponent: () => <CircularPageLoadingAnimation />,
+	loader: ({ context: { api, user, queryClient } }) => {
+		if (!api || !user?.Id) return null;
+		queryClient.ensureQueryData(getLatestItemsQueryOptions(api, user?.Id));
+	},
 });
 
 function Home() {
 	const api = useApiInContext((s) => s.api);
 	const user = useCentralStore((s) => s.currentUser);
 
-	const libraries = useQuery({
+	const libraries = useSuspenseQuery({
 		queryKey: ["libraries"],
 		queryFn: async () => {
-			if (!api) return;
+			if (!api || !user?.Id) return null;
 			const libs = await getUserViewsApi(api).getUserViews({
-				userId: user?.Id,
+				userId: user.Id,
 			});
 			return libs.data;
 		},
-		enabled: !!user?.Id && !!api?.accessToken,
 		networkMode: "always",
 	});
 
-	const latestMedia = useQuery({
-		queryKey: ["home", "latestMedia"],
-		queryFn: async () => {
-			if (!api) return;
-			const media = await getUserLibraryApi(api).getLatestMedia({
-				userId: user?.Id,
-				fields: [
-					ItemFields.Overview,
-					ItemFields.ParentId,
-					ItemFields.SeasonUserData,
-					ItemFields.IsHd,
-					ItemFields.MediaStreams,
-					ItemFields.MediaSources,
-				],
-				includeItemTypes: [
-					BaseItemKind.Movie,
-					BaseItemKind.Series,
-					BaseItemKind.MusicAlbum,
-				],
-				enableUserData: true,
-				enableImages: true,
-			});
-			return media.data;
-		},
-		enabled: !!user?.Id,
-	});
+	const latestMedia = useSuspenseQuery(getLatestItemsQueryOptions(api, user?.Id));
 
-	const resumeItemsVideo = useQuery({
+	const resumeItemsVideo = useSuspenseQuery({
 		queryKey: ["home", "resume", "video"],
 		queryFn: async () => {
-			if (!api) return;
+			if (!api || !user?.Id) return null;
 			const resumeItems = await getItemsApi(api).getResumeItems({
-				userId: user?.Id,
+				userId: user.Id,
 				limit: 10,
 				mediaTypes: ["Video"],
 				enableUserData: true,
@@ -95,14 +74,12 @@ function Home() {
 			});
 			return resumeItems.data;
 		},
-		enabled: !!user?.Id,
-		refetchOnMount: true,
 	});
 
-	const resumeItemsAudio = useQuery({
+	const resumeItemsAudio = useSuspenseQuery({
 		queryKey: ["home", "resume", "audio"],
 		queryFn: async () => {
-			if (!api) return;
+			if (!api || !user?.Id) return null;
 			const resumeItems = await getItemsApi(api).getResumeItems({
 				userId: user?.Id,
 				limit: 10,
@@ -112,13 +89,12 @@ function Home() {
 			});
 			return resumeItems.data;
 		},
-		enabled: !!user?.Id,
 	});
 
-	const upNextItems = useQuery({
+	const upNextItems = useSuspenseQuery({
 		queryKey: ["home", "upNext"],
 		queryFn: async () => {
-			if (!api) return;
+			if (!api || !user?.Id) return null;
 			const upNext = await getTvShowsApi(api).getNextUp({
 				userId: user?.Id,
 				fields: [
@@ -131,8 +107,6 @@ function Home() {
 			});
 			return upNext.data;
 		},
-		enabled: !!user?.Id,
-		refetchOnMount: true,
 	});
 
 	const excludeTypes = ["boxsets", "playlists", "livetv", "channels"];
@@ -154,37 +128,39 @@ function Home() {
 
 	const setBackdrop = useBackdropStore((s) => s.setBackdrop);
 
+	const setBackdropForItem = useCallback(
+		(item: BaseItemDto, api: Api) => {
+			if (item?.ParentBackdropImageTags) {
+				setBackdrop(
+					getImageUrlsApi(api).getItemImageUrlById(item.Id ?? "", "Backdrop", {
+						tag: item.ParentBackdropImageTags[0],
+					}),
+					item.ParentBackdropImageTags[0] ?? item.Id,
+				);
+			} else {
+				setBackdrop(
+					getImageUrlsApi(api).getItemImageUrlById(item.Id ?? "", "Backdrop", {
+						tag: item.BackdropImageTags?.[0],
+					}),
+					item.BackdropImageTags?.[0] ?? item.Id,
+				);
+			}
+		},
+		[setBackdrop],
+	);
+
 	const handleOnChangeCarousel = useCallback(
 		(now: number) => {
 			if (api && latestMedia.isSuccess && (latestMedia.data?.length ?? 0) > 0) {
-				if (latestMedia.data?.[now]?.ParentBackdropImageTags) {
-					setBackdrop(
-						getImageUrlsApi(api).getItemImageUrlById(
-							latestMedia.data[now].Id ?? "",
-							"Backdrop",
-							{
-								tag: latestMedia.data[now].ParentBackdropImageTags[0],
-							},
-						),
-						latestMedia.data[now]?.ParentBackdropImageTags[0] ??
-							latestMedia.data[now].Id,
-					);
-				} else {
-					setBackdrop(
-						getImageUrlsApi(api).getItemImageUrlById(
-							latestMedia.data?.[now].Id ?? "",
-							"Backdrop",
-							{
-								tag: latestMedia.data?.[now].BackdropImageTags?.[0],
-							},
-						),
-						latestMedia.data?.[now]?.BackdropImageTags?.[0] ??
-							latestMedia.data?.[now].Id,
-					);
-				}
+				const currentItem = latestMedia.data?.[now];
+				if (!currentItem) return;
+
+				// Extract this logic to a separate function
+				setBackdropForItem(currentItem, api);
 			}
 		},
-		[latestMedia.data?.map((item) => item.Id).join("")],
+		// Only depend on what you need
+		[latestMedia.isSuccess, api, setBackdrop],
 	);
 
 	return (
@@ -196,15 +172,11 @@ function Home() {
 			}}
 		>
 			<ErrorBoundary FallbackComponent={ErrorNotice}>
-				{latestMedia.isPending ? (
-					<CarouselSkeleton />
-				) : (
-					latestMedia.data?.length && (
-						<Carousel
-							content={latestMedia.data}
-							onChange={handleOnChangeCarousel}
-						/>
-					)
+				{latestMedia.data?.length && (
+					<Carousel
+						content={latestMedia.data}
+						onChange={handleOnChangeCarousel}
+					/>
 				)}
 			</ErrorBoundary>
 
@@ -215,34 +187,29 @@ function Home() {
 					</div>
 				}
 			>
-				{libraries.isPending ? (
-					<CardsSkeleton />
-				) : (
-					<CardScroller displayCards={4} title="Libraries">
-						{libraries.status === "success" &&
-							libraries.data?.Items?.map((item) => {
-								return (
-									<Card
-										key={item.Id}
-										item={item}
-										cardTitle={item.Name}
-										imageType="Primary"
-										cardType="thumb"
-										disableOverlay
-										onClick={() => {
-											if (item.Id) {
-												navigate({
-													to: "/library/$id",
-													params: { id: item.Id },
-												});
-											}
-										}}
-										overrideIcon={item.CollectionType}
-									/>
-								);
-							})}
-					</CardScroller>
-				)}
+				<CardScroller displayCards={4} title="Libraries">
+					{libraries.data?.Items?.map((item) => {
+						return (
+							<Card
+								key={item.Id}
+								item={item}
+								cardTitle={item.Name}
+								imageType="Primary"
+								cardType="thumb"
+								disableOverlay
+								onClick={() => {
+									if (item.Id) {
+										navigate({
+											to: "/library/$id",
+											params: { id: item.Id },
+										});
+									}
+								}}
+								overrideIcon={item.CollectionType}
+							/>
+						);
+					})}
+				</CardScroller>
 			</ErrorBoundary>
 			<ErrorBoundary
 				fallback={
@@ -251,9 +218,7 @@ function Home() {
 					</div>
 				}
 			>
-				{upNextItems.isPending ? (
-					<CardsSkeleton />
-				) : upNextItems.isSuccess && !upNextItems.data?.TotalRecordCount ? (
+				{upNextItems.isSuccess && !upNextItems.data?.TotalRecordCount ? (
 					<></>
 				) : (
 					<CardScroller displayCards={4} title="Up Next">
@@ -307,10 +272,8 @@ function Home() {
 					</div>
 				}
 			>
-				{resumeItemsVideo.isPending ? (
-					<CardsSkeleton />
-				) : resumeItemsVideo.isSuccess &&
-					!resumeItemsVideo.data?.TotalRecordCount ? (
+				{resumeItemsVideo.isSuccess &&
+				!resumeItemsVideo.data?.TotalRecordCount ? (
 					<></>
 				) : (
 					<CardScroller displayCards={4} title="Continue Watching">
@@ -360,10 +323,8 @@ function Home() {
 					</div>
 				}
 			>
-				{resumeItemsAudio.isPending ? (
-					<CardsSkeleton />
-				) : resumeItemsAudio.isSuccess &&
-					!resumeItemsAudio.data?.TotalRecordCount ? (
+				{resumeItemsAudio.isSuccess &&
+				!resumeItemsAudio.data?.TotalRecordCount ? (
 					<></>
 				) : (
 					<CardScroller displayCards={4} title="Continue Listening">

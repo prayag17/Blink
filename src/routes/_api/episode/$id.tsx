@@ -12,7 +12,7 @@ import { green, red, yellow } from "@mui/material/colors";
 import { Blurhash } from "react-blurhash";
 
 import useParallax from "@/utils/hooks/useParallax";
-import { motion, useScroll } from "framer-motion";
+import { motion, useScroll } from "motion/react";
 
 import {
 	BaseItemKind,

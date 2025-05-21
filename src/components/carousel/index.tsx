@@ -1,5 +1,5 @@
-import { AnimatePresence, motion } from "framer-motion";
-import type { PanInfo } from "framer-motion";
+import { AnimatePresence, motion } from "motion/react";
+import type { PanInfo } from "motion/react";
 import React, { useEffect, useState, useMemo, useCallback } from "react";
 import type { MouseEvent, PointerEvent } from "react";
 

@@ -86,17 +86,6 @@ body {
 	opacity: 0.35;
 }
 
-/**
- * Page transitions
- */
-:root{
-	view-transition-name: fadeingPage;
-}
-
-::view-transition-group(fadeingPage) {
-	animation-duration: .3s;
-}
-
 .fadeIn {
 	animation: 0.5s fadeInPage forwards;
 }
