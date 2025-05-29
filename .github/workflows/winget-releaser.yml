@@ -7,7 +7,7 @@ jobs:
     runs-on: ubuntu-latest
     if: contains(github.event.release.tag_name, '-alpha')
     steps:
-      - uses: vedantmgoyal9/winget-releaser@a3ac67b0c3026bc335a33b722188e3ec769d6a64
+      - uses: vedantmgoyal9/winget-releaser@19e706d4c9121098010096f9c495a70a7518b30f
         with:
           identifier: prayag17.Blink.Alpha
           version: ${{ github.event.release.tag_name }}
@@ -18,7 +18,7 @@ jobs:
     runs-on: ubuntu-latest
     if: "!contains(github.event.release.tag_name, '-alpha')"
     steps:
-      - uses: vedantmgoyal9/winget-releaser@a3ac67b0c3026bc335a33b722188e3ec769d6a64
+      - uses: vedantmgoyal9/winget-releaser@19e706d4c9121098010096f9c495a70a7518b30f
         with:
           identifier: prayag17.Blink
           version: ${{ github.event.release.tag_name }}
