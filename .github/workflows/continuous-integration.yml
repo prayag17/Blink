@@ -115,6 +115,10 @@ jobs:
                       TAURI_SIGNING_PRIVATE_KEY: ${{ secrets.TAURI_SIGNING_PRIVATE_KEY }}
                       TAURI_SIGNING_PRIVATE_KEY_PASSWORD: ${{ secrets.TAURI_SIGNING_PRIVATE_KEY_PASSWORD }}
 
+                      # TODO: Remove the below command after upstream issue is fixed
+                      # Related issue: https://github.com/tauri-apps/tauri/issues/10702
+                      WEBKIT_DISABLE_DMABUF_RENDERER: 1 # Disable DMABUF renderer on Wayland
+
                - name: Upload build Artifacts
                  uses: actions/upload-artifact@v4
                  with:
