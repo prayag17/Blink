@@ -184,7 +184,7 @@ importers:
         version: 5.8.3
       vite-plugin-svgr:
         specifier: ^4.3.0
-        version: 4.3.0(rollup@4.41.1)(typescript@5.8.3)(vite@6.3.5(@types/node@22.15.28)(sass@1.89.0)(tsx@4.19.4)(yaml@2.8.0))
+        version: 4.3.0(rollup@4.41.1)(typescript@5.8.3)(vite@6.3.5(@types/node@22.15.28)(sass@1.89.1)(tsx@4.19.4)(yaml@2.8.0))
       wavesurfer.js:
         specifier: ^7.9.5
         version: 7.9.5
@@ -206,7 +206,7 @@ importers:
         version: 1.120.13(@tanstack/react-router@1.120.13(react-dom@19.1.0(react@19.1.0))(react@19.1.0))(@tanstack/router-core@1.120.13)(csstype@3.1.3)(react-dom@19.1.0(react@19.1.0))(react@19.1.0)(tiny-invariant@1.3.3)
       '@tanstack/router-vite-plugin':
         specifier: ^1.120.13
-        version: 1.120.13(@tanstack/react-router@1.120.13(react-dom@19.1.0(react@19.1.0))(react@19.1.0))(vite@6.3.5(@types/node@22.15.28)(sass@1.89.0)(tsx@4.19.4)(yaml@2.8.0))
+        version: 1.120.13(@tanstack/react-router@1.120.13(react-dom@19.1.0(react@19.1.0))(react@19.1.0))(vite@6.3.5(@types/node@22.15.28)(sass@1.89.1)(tsx@4.19.4)(yaml@2.8.0))
       '@tauri-apps/cli':
         specifier: 2.5.0
         version: 2.5.0
@@ -215,7 +215,7 @@ importers:
         version: 4.17.17
       '@vitejs/plugin-react':
         specifier: ^4.5.0
-        version: 4.5.0(vite@6.3.5(@types/node@22.15.28)(sass@1.89.0)(tsx@4.19.4)(yaml@2.8.0))
+        version: 4.5.0(vite@6.3.5(@types/node@22.15.28)(sass@1.89.1)(tsx@4.19.4)(yaml@2.8.0))
       babel-plugin-react-compiler:
         specifier: 19.1.0-rc.2
         version: 19.1.0-rc.2
@@ -227,10 +227,10 @@ importers:
         version: 15.8.1
       sass:
         specifier: ^1.89.0
-        version: 1.89.0
+        version: 1.89.1
       vite:
         specifier: ^6.3.5
-        version: 6.3.5(@types/node@22.15.28)(sass@1.89.0)(tsx@4.19.4)(yaml@2.8.0)
+        version: 6.3.5(@types/node@22.15.28)(sass@1.89.1)(tsx@4.19.4)(yaml@2.8.0)
 
 packages:
 
@@ -330,6 +330,11 @@ packages:
 
   '@babel/parser@7.27.4':
     resolution: {integrity: sha512-BRmLHGwpUqLFR2jzx9orBuX/ABDkj2jLKOXrHDTN2aOKL+jFDDKaRNo9nyYsIl9h/UE/7lMKdDjKQQyxKKDZ7g==}
+    engines: {node: '>=6.0.0'}
+    hasBin: true
+
+  '@babel/parser@7.27.5':
+    resolution: {integrity: sha512-OsQd175SxWkGlzbny8J3K8TnnDD0N3lrIUtB92xwyRpzaenGZhxDvxN/JgU00U3CDZNj9tPuDJ5H0WS4Nt3vKg==}
     engines: {node: '>=6.0.0'}
     hasBin: true
 
@@ -2122,8 +2127,8 @@ packages:
     resolution: {integrity: sha512-KIN/nDJBQRcXw0MLVhZE9iQHmG68qAVIBg9CqmUYjmQIhgij9U5MFvrqkUL5FbtyyzZuOeOt0zdeRe4UY7ct+A==}
     engines: {node: '>= 0.4'}
 
-  effect@3.16.2:
-    resolution: {integrity: sha512-lOZ9Q7PUDncgOItoyD/avjiGXfxb4Ot9M49KgB89Koy6aIfyNbKxEDLsJEx6LWX6o0MH5/bKfP1XID2A9Sc/5g==}
+  effect@3.16.3:
+    resolution: {integrity: sha512-SWndb1UavNWvet1+hnkU4qp3EHtnmDKhUeP14eB+7vf/2nCFlM77/oIjdDeZctveibNjE65P9H/sBBmF0NTy/w==}
 
   electron-to-chromium@1.5.161:
     resolution: {integrity: sha512-hwtetwfKNZo/UlwHIVBlKZVdy7o8bIZxxKs0Mv/ROPiQQQmDgdm5a+KvKtBsxM8ZjFzTaCeLoodZ8jiBE3o9rA==}
@@ -3239,8 +3244,8 @@ packages:
   rvfc-polyfill@1.0.7:
     resolution: {integrity: sha512-seBl7J1J3/k0LuzW2T9fG6JIOpni5AbU+/87LA+zTYKgTVhsfShmS8K/yOo1eeEjGJHnAdkVAUUM+PEjN9Mpkw==}
 
-  sass@1.89.0:
-    resolution: {integrity: sha512-ld+kQU8YTdGNjOLfRWBzewJpU5cwEv/h5yyqlSeJcj6Yh8U4TDA9UA5FPicqDz/xgRPWRSYIQNiFks21TbA9KQ==}
+  sass@1.89.1:
+    resolution: {integrity: sha512-eMLLkl+qz7tx/0cJ9wI+w09GQ2zodTkcE/aVfywwdlRcI3EO19xGnbmJwg/JMIm+5MxVJ6outddLZ4Von4E++Q==}
     engines: {node: '>=14.0.0'}
     hasBin: true
 
@@ -3807,6 +3812,10 @@ snapshots:
     dependencies:
       '@babel/types': 7.27.3
 
+  '@babel/parser@7.27.5':
+    dependencies:
+      '@babel/types': 7.27.3
+
   '@babel/plugin-proposal-optional-chaining-assign@7.27.1(@babel/core@7.27.4)':
     dependencies:
       '@babel/core': 7.27.4
@@ -4294,13 +4303,13 @@ snapshots:
     dependencies:
       '@antfu/ni': 0.21.12
       '@axiomhq/js': 1.0.0-rc.3
-      '@babel/parser': 7.27.4
+      '@babel/parser': 7.27.5
       '@babel/types': 7.26.0
       '@clack/prompts': 0.7.0
       ast-types: 0.14.2
       cli-high: 0.4.3
       diff: 5.2.0
-      effect: 3.16.2
+      effect: 3.16.3
       nanoid: 5.1.5
       recast: 0.23.11
       xycolors: 0.1.2
@@ -4887,7 +4896,7 @@ snapshots:
     optionalDependencies:
       '@tanstack/react-router': 1.120.13(react-dom@19.1.0(react@19.1.0))(react@19.1.0)
 
-  '@tanstack/router-plugin@1.120.13(@tanstack/react-router@1.120.13(react-dom@19.1.0(react@19.1.0))(react@19.1.0))(vite@6.3.5(@types/node@22.15.28)(sass@1.89.0)(tsx@4.19.4)(yaml@2.8.0))':
+  '@tanstack/router-plugin@1.120.13(@tanstack/react-router@1.120.13(react-dom@19.1.0(react@19.1.0))(react@19.1.0))(vite@6.3.5(@types/node@22.15.28)(sass@1.89.1)(tsx@4.19.4)(yaml@2.8.0))':
     dependencies:
       '@babel/core': 7.27.4
       '@babel/plugin-syntax-jsx': 7.27.1(@babel/core@7.27.4)
@@ -4908,7 +4917,7 @@ snapshots:
       zod: 3.25.42
     optionalDependencies:
       '@tanstack/react-router': 1.120.13(react-dom@19.1.0(react@19.1.0))(react@19.1.0)
-      vite: 6.3.5(@types/node@22.15.28)(sass@1.89.0)(tsx@4.19.4)(yaml@2.8.0)
+      vite: 6.3.5(@types/node@22.15.28)(sass@1.89.1)(tsx@4.19.4)(yaml@2.8.0)
     transitivePeerDependencies:
       - supports-color
 
@@ -4919,9 +4928,9 @@ snapshots:
       ansis: 3.17.0
       diff: 7.0.0
 
-  '@tanstack/router-vite-plugin@1.120.13(@tanstack/react-router@1.120.13(react-dom@19.1.0(react@19.1.0))(react@19.1.0))(vite@6.3.5(@types/node@22.15.28)(sass@1.89.0)(tsx@4.19.4)(yaml@2.8.0))':
+  '@tanstack/router-vite-plugin@1.120.13(@tanstack/react-router@1.120.13(react-dom@19.1.0(react@19.1.0))(react@19.1.0))(vite@6.3.5(@types/node@22.15.28)(sass@1.89.1)(tsx@4.19.4)(yaml@2.8.0))':
     dependencies:
-      '@tanstack/router-plugin': 1.120.13(@tanstack/react-router@1.120.13(react-dom@19.1.0(react@19.1.0))(react@19.1.0))(vite@6.3.5(@types/node@22.15.28)(sass@1.89.0)(tsx@4.19.4)(yaml@2.8.0))
+      '@tanstack/router-plugin': 1.120.13(@tanstack/react-router@1.120.13(react-dom@19.1.0(react@19.1.0))(react@19.1.0))(vite@6.3.5(@types/node@22.15.28)(sass@1.89.1)(tsx@4.19.4)(yaml@2.8.0))
     transitivePeerDependencies:
       - '@rsbuild/core'
       - '@tanstack/react-router'
@@ -5100,7 +5109,7 @@ snapshots:
 
   '@ungap/structured-clone@1.3.0': {}
 
-  '@vitejs/plugin-react@4.5.0(vite@6.3.5(@types/node@22.15.28)(sass@1.89.0)(tsx@4.19.4)(yaml@2.8.0))':
+  '@vitejs/plugin-react@4.5.0(vite@6.3.5(@types/node@22.15.28)(sass@1.89.1)(tsx@4.19.4)(yaml@2.8.0))':
     dependencies:
       '@babel/core': 7.27.4
       '@babel/plugin-transform-react-jsx-self': 7.27.1(@babel/core@7.27.4)
@@ -5108,7 +5117,7 @@ snapshots:
       '@rolldown/pluginutils': 1.0.0-beta.9
       '@types/babel__core': 7.20.5
       react-refresh: 0.17.0
-      vite: 6.3.5(@types/node@22.15.28)(sass@1.89.0)(tsx@4.19.4)(yaml@2.8.0)
+      vite: 6.3.5(@types/node@22.15.28)(sass@1.89.1)(tsx@4.19.4)(yaml@2.8.0)
     transitivePeerDependencies:
       - supports-color
 
@@ -5435,7 +5444,7 @@ snapshots:
       es-errors: 1.3.0
       gopd: 1.2.0
 
-  effect@3.16.2:
+  effect@3.16.3:
     dependencies:
       '@standard-schema/spec': 1.0.0
       fast-check: 3.23.2
@@ -6752,7 +6761,7 @@ snapshots:
 
   rvfc-polyfill@1.0.7: {}
 
-  sass@1.89.0:
+  sass@1.89.1:
     dependencies:
       chokidar: 4.0.3
       immutable: 5.1.2
@@ -7028,18 +7037,18 @@ snapshots:
       '@types/unist': 3.0.3
       vfile-message: 4.0.2
 
-  vite-plugin-svgr@4.3.0(rollup@4.41.1)(typescript@5.8.3)(vite@6.3.5(@types/node@22.15.28)(sass@1.89.0)(tsx@4.19.4)(yaml@2.8.0)):
+  vite-plugin-svgr@4.3.0(rollup@4.41.1)(typescript@5.8.3)(vite@6.3.5(@types/node@22.15.28)(sass@1.89.1)(tsx@4.19.4)(yaml@2.8.0)):
     dependencies:
       '@rollup/pluginutils': 5.1.4(rollup@4.41.1)
       '@svgr/core': 8.1.0(typescript@5.8.3)
       '@svgr/plugin-jsx': 8.1.0(@svgr/core@8.1.0(typescript@5.8.3))
-      vite: 6.3.5(@types/node@22.15.28)(sass@1.89.0)(tsx@4.19.4)(yaml@2.8.0)
+      vite: 6.3.5(@types/node@22.15.28)(sass@1.89.1)(tsx@4.19.4)(yaml@2.8.0)
     transitivePeerDependencies:
       - rollup
       - supports-color
       - typescript
 
-  vite@6.3.5(@types/node@22.15.28)(sass@1.89.0)(tsx@4.19.4)(yaml@2.8.0):
+  vite@6.3.5(@types/node@22.15.28)(sass@1.89.1)(tsx@4.19.4)(yaml@2.8.0):
     dependencies:
       esbuild: 0.25.5
       fdir: 6.4.5(picomatch@4.0.2)
@@ -7050,7 +7059,7 @@ snapshots:
     optionalDependencies:
       '@types/node': 22.15.28
       fsevents: 2.3.3
-      sass: 1.89.0
+      sass: 1.89.1
       tsx: 4.19.4
       yaml: 2.8.0
 
