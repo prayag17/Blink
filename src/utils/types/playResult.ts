@@ -8,7 +8,7 @@ import type IntroMediaInfo from "./introMediaInfo";
 interface PlayResult {
 	item: BaseItemDtoQueryResult | undefined;
 	mediaSource: PlaybackInfoResponse | undefined;
-	introInfo: MediaSegmentDtoQueryResult | undefined;
+	mediaSegments: MediaSegmentDtoQueryResult | undefined;
 	episodeIndex: number;
 }
 

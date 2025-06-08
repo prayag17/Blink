@@ -26,13 +26,14 @@ import { useSnackbar } from "notistack";
 
 import { setQueue } from "@/utils/store/queue";
 
-import { playItem, usePlaybackDataLoadStore } from "@/utils/store/playback";
+import { playItem } from "@/utils/store/playback";
 
 import type PlayResult from "@//utils/types/playResult";
 import { getRuntimeCompact } from "@/utils/date/time";
 import getSubtitle from "@/utils/methods/getSubtitles";
 import playbackProfile from "@/utils/playback-profiles";
 import { useApiInContext } from "@/utils/store/api";
+import { useCentralStore } from "@/utils/store/central";
 import { usePhotosPlayback } from "@/utils/store/photosPlayback";
 import { getDisplayPreferencesApi } from "@jellyfin/sdk/lib/utils/api/display-preferences-api";
 import { getMediaInfoApi } from "@jellyfin/sdk/lib/utils/api/media-info-api";
@@ -99,11 +100,11 @@ const PlayButton = ({
 	playlistItemId = "",
 }: PlayButtonProps) => {
 	const api = useApiInContext((s) => s.api);
-
+	const user = useCentralStore((s) => s.currentUser);
 	const navigate = useNavigate();
-	const setPlaybackDataLoading = usePlaybackDataLoadStore(
-		(state) => state.setisPending,
-	);
+	// const setPlaybackDataLoading = usePlaybackDataLoadStore(
+	// 	(state) => state.setisPending,
+	// );
 	const playPhotos = usePhotosPlayback((s) => s.playPhotos);
 
 	const { enqueueSnackbar } = useSnackbar();
@@ -111,10 +112,23 @@ const PlayButton = ({
 	const itemQuery = useMutation({
 		mutationKey: ["playButton", item?.Id, userId],
 		mutationFn: async (currentEpisodeId?: string) => {
-			setPlaybackDataLoading(true);
+			// setPlaybackDataLoading(true);
+
+			/**
+			 * Item / Items QueryResult
+			 */
 			let result: undefined | AxiosResponse<BaseItemDtoQueryResult, any>;
+			/**
+			 * Current item MediaSource info
+			 */
 			let mediaSource: undefined | AxiosResponse<PlaybackInfoResponse, any>;
-			let introInfo: undefined | MediaSegmentDtoQueryResult;
+			/**
+			 * Current item MediaSegments
+			 */
+			let mediaSegments: undefined | MediaSegmentDtoQueryResult;
+			/**
+			 * Index of episode or item in queue
+			 */
 			let index = 0;
 			if (!api) {
 				throw new Error("API is not available");
@@ -193,7 +207,7 @@ const PlayButton = ({
 									},
 								});
 							}
-							introInfo = (
+							mediaSegments = (
 								await getMediaSegmentsApi(api).getItemSegments({
 									itemId: result.data.Items?.[index]?.Id ?? "",
 								})
@@ -236,6 +250,18 @@ const PlayButton = ({
 						) {
 							if (currentAudioTrack === "auto") {
 								const defaultAudioStreamIndex =
+									result?.data.Items?.[
+										index
+									].MediaSources?.[0].MediaStreams?.find(
+										(track) => track.IsDefault,
+									)?.Index ??
+									result?.data.Items?.[
+										index
+									].MediaSources?.[0].MediaStreams?.find(
+										(track) =>
+											track.Language ===
+											user?.Configuration?.AudioLanguagePreference,
+									)?.Index ??
 									result.data.Items?.[index].MediaSources?.[0]
 										.DefaultAudioStreamIndex;
 								mediaSource = await getMediaInfoApi(api).getPostedPlaybackInfo({
@@ -269,7 +295,7 @@ const PlayButton = ({
 								});
 							}
 
-							introInfo = (
+							mediaSegments = (
 								await getMediaSegmentsApi(api).getItemSegments({
 									itemId: result.data.Items?.[index].Id ?? "",
 								})
@@ -425,7 +451,7 @@ const PlayButton = ({
 			return {
 				item: result?.data,
 				mediaSource: mediaSource?.data,
-				introInfo,
+				mediaSegments,
 				episodeIndex: index,
 			};
 		},
@@ -564,7 +590,7 @@ const PlayButton = ({
 					result?.mediaSource?.MediaSources?.[0]?.Id,
 					result?.mediaSource?.PlaySessionId,
 					subtitle,
-					result?.introInfo,
+					result?.mediaSegments,
 					audio,
 					Number(initVolume),
 				);
@@ -572,7 +598,7 @@ const PlayButton = ({
 			}
 		},
 		onSettled: () => {
-			setPlaybackDataLoading(false);
+			// setPlaybackDataLoading(false);
 		},
 		onError: (error) => {
 			console.error(error);

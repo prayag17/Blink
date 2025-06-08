@@ -45,6 +45,11 @@ function RouteComponent() {
 			preferredAudioLanguage:
 				user?.Configuration?.AudioLanguagePreference ?? "anyLanguage",
 			playDefaultAudioTrack: user?.Configuration?.PlayDefaultAudioTrack,
+			preferredSubtitleLanguage: user?.Configuration?.SubtitleLanguagePreference
+				? user?.Configuration?.SubtitleLanguagePreference
+				: "anyLanguage",
+			rememberSubtitleSelections:
+				user?.Configuration?.RememberSubtitleSelections,
 		},
 		onSubmit: async (values) => {
 			if (!api) return;
@@ -53,6 +58,8 @@ function RouteComponent() {
 				userConfiguration: {
 					AudioLanguagePreference: values.value.preferredAudioLanguage,
 					PlayDefaultAudioTrack: values.value.playDefaultAudioTrack,
+					SubtitleLanguagePreference: values.value.preferredSubtitleLanguage,
+					RememberSubtitleSelections: values.value.rememberSubtitleSelections,
 				},
 			});
 			// await getDisplayPreferencesApi(api).updateDisplayPreferences({
@@ -163,6 +170,91 @@ function RouteComponent() {
 										>
 											Play the default audio track of the media item, even if it
 											does not match your preferred audio language.
+										</Typography>
+									</div>
+								}
+								labelPlacement="start"
+								className="settings-option"
+							/>
+						);
+					}}
+				</form.Field>
+				<form.Field
+					name="preferredSubtitleLanguage"
+					// children={}
+				>
+					{(field) => {
+						return (
+							<FormControlLabel
+								control={
+									<TextField
+										defaultValue={field.state.value}
+										select
+										hiddenLabel
+										variant="filled"
+										onChange={(e) => field.handleChange(e.target.value)}
+										onBlur={field.handleBlur}
+										style={{
+											width: "18em",
+										}}
+									>
+										<MenuItem key={"anyLanguage"} value={"anyLanguage"}>
+											Any Language
+										</MenuItem>
+										{cultures.data?.map((option) => (
+											<MenuItem
+												key={option.ThreeLetterISOLanguageName}
+												value={option.ThreeLetterISOLanguageName ?? "none"}
+											>
+												{option.DisplayName}
+											</MenuItem>
+										))}
+									</TextField>
+								}
+								label={
+									<div className="settings-option-info">
+										<Typography variant="subtitle1" fontWeight={400}>
+											Preferred Subtitle Language
+										</Typography>
+										<Typography
+											variant="caption"
+											className="settings-option-info-caption"
+										>
+											Choose your preferred subtitle language.
+										</Typography>
+									</div>
+								}
+								labelPlacement="start"
+								className="settings-option"
+							/>
+						);
+					}}
+				</form.Field>
+				<form.Field
+					name="rememberSubtitleSelections"
+					// children={}
+				>
+					{(field) => {
+						return (
+							<FormControlLabel
+								control={
+									<Switch
+										checked={field.state.value}
+										onChange={(_, checked) => field.handleChange(checked)}
+										onBlur={field.handleBlur}
+									/>
+								}
+								label={
+									<div className="settings-option-info">
+										<Typography variant="subtitle1" fontWeight={400}>
+											Set subtitle track based on previous item
+										</Typography>
+										<Typography
+											variant="caption"
+											className="settings-option-info-caption"
+										>
+											Try to set the subtitle track to the closest match to the
+											last video.
 										</Typography>
 									</div>
 								}

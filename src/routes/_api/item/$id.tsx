@@ -161,21 +161,19 @@ function ItemDetail() {
 			}
 			return false;
 		});
-		setSelectedAudioTrack(
-			result?.find((track) => track.IsDefault)?.Index ??
-				result?.[0]?.Index ??
-				0,
-		);
+		setSelectedAudioTrack(item.data.MediaSources?.[0].DefaultAudioStreamIndex ?? 0);
 		return result ?? [];
 	}, [item.data?.Id]);
 	const subtitleTracks = useMemo(() => {
-		const result = item.data?.MediaStreams?.filter((source) => {
+		const result = item.data.MediaStreams?.filter((source) => {
 			if (source.Type === MediaStreamType.Subtitle) {
 				return true;
 			}
 			return false;
 		});
-		setSelectedSubtitleTrack(result?.find((track) => track.IsDefault)?.Index ?? -1);
+		setSelectedSubtitleTrack(
+			item.data.MediaSources?.[0].DefaultSubtitleStreamIndex ?? -1,
+		);
 		return result ?? [];
 	}, [item.data?.Id]);
 

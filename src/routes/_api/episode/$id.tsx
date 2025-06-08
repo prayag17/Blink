@@ -126,7 +126,9 @@ function EpisodeTitlePage() {
 			}
 			return false;
 		});
-		setSelectedAudioTrack(result?.find((track) => track.IsDefault)?.Index ?? 0);
+		setSelectedAudioTrack(
+			item.data?.MediaSources?.[0].DefaultAudioStreamIndex ?? 0,
+		);
 		return result ?? [];
 	}, [item.data?.Id]);
 	const subtitleTracks = useMemo(() => {
