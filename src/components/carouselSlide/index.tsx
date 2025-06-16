@@ -25,11 +25,14 @@ import LikeButton from "../buttons/likeButton";
 import MarkPlayedButton from "../buttons/markPlayedButton";
 import PlayButton from "../buttons/playButton";
 
+import { useTranslation } from "react-i18next";
+
 const CarouselSlide = ({ item }: { item: BaseItemDto }) => {
 	const api = useApiInContext((s) => s.api);
 	const navigate = useNavigate();
 
 	const user = useCentralStore((s) => s.currentUser);
+	const { t } = useTranslation();
 
 	const handleMoreInfo = () => {
 		if (item.Id) {
@@ -345,7 +348,7 @@ const CarouselSlide = ({ item }: { item: BaseItemDto }) => {
 						}
 						onClick={handleMoreInfo}
 					>
-						More info
+						{t("buttons.moreinfo")}
 					</Button>
 					<Stack direction="row" gap={1}>
 						<LikeButton

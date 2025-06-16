@@ -9,9 +9,9 @@ import {
 	DialogActions,
 	DialogContent,
 	DialogTitle,
-	Fab,
+	Fab, FormControlLabel,
 	IconButton,
-	Link,
+	Link, MenuItem,
 	Skeleton,
 	Tab,
 	Tabs,
@@ -29,6 +29,7 @@ import { getDisplayPreferencesApi } from "@jellyfin/sdk/lib/utils/api/display-pr
 import { getLocalizationApi } from "@jellyfin/sdk/lib/utils/api/localization-api";
 import { getSystemApi } from "@jellyfin/sdk/lib/utils/api/system-api";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+
 import "./settings.scss";
 
 import {
@@ -50,6 +51,9 @@ import { useSnackbar } from "notistack";
 import SettingOption from "../settingOption";
 import SettingOptionSelect from "../settingOptionSelect";
 
+import i18next from "i18next";
+import { useTranslation } from "react-i18next";
+
 const motionConfig = {
 	initial: {
 		opacity: 0,
@@ -59,17 +63,35 @@ const motionConfig = {
 	},
 };
 
+type languageOption = { language: string; code: string };
+
+const languageOptions: languageOption[] = [
+	{ language: "English", code: "en" },
+	{ language: "Français", code: "fr" },
+];
+
 const Settings = () => {
 	const [open, tabValue] = useSettingsStore((state) => [
 		state.dialogOpen,
 		state.tabValue,
 	]);
-	
+
+	// Set the initial language from i18next's detected or default language
+	const [language, setLanguage] = useState(i18next.language);
+
+	const { t } = useTranslation();
+
+	const handleLanguageChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+		const selectedLanguage = e.target.value;
+		setLanguage(selectedLanguage);
+		i18next.changeLanguage(selectedLanguage); // Update language in i18next
+	};
+
 	const api = useApiInContext((s) => s.api);
 	const createApi = useApiInContext((s) => s.createApi);
 
 	const user = useCentralStore((state) => state.currentUser);
-	
+
 	const systemInfo = useQuery({
 		queryKey: ["about", "systemInfo"],
 		queryFn: async () => {
@@ -149,7 +171,7 @@ const Settings = () => {
 		},
 		onError: (error) => {
 			console.error(error);
-			enqueueSnackbar("Error changing the server", {
+			enqueueSnackbar(t("settings.servers.errors.changing_server"), {
 				variant: "error",
 			});
 		},
@@ -175,7 +197,7 @@ const Settings = () => {
 				await queryClient.removeQueries();
 				navigate({ to: "/" });
 			}
-			enqueueSnackbar("Server deleted successfully!", { variant: "success" });
+			enqueueSnackbar(t("settings.servers.success.deleting_server"), { variant: "success" });
 			await serversOnDisk.refetch();
 			await defaultServer.refetch();
 		},
@@ -193,7 +215,7 @@ const Settings = () => {
 				await setServer(bestServer.systemInfo?.Id ?? "", bestServer);
 				setAddServerDialog(false);
 				enqueueSnackbar(
-					"Client added successfully. You might need to refresh client list.",
+					t("settings.servers.success.client_added"),
 					{
 						variant: "success",
 					},
@@ -204,11 +226,11 @@ const Settings = () => {
 		onError: (err) => {
 			console.error(err);
 			enqueueSnackbar(`${err}`, { variant: "error" });
-			enqueueSnackbar("Something went wrong", { variant: "error" });
+			enqueueSnackbar(t("settings.servers.errors.unknow"), { variant: "error" });
 		},
 		onSettled: async (bestServer) => {
 			if (!bestServer) {
-				enqueueSnackbar("Provided server address is not a Jellyfin server.", {
+				enqueueSnackbar(t("settings.servers.errors.invalid_jellyfin_server"), {
 					variant: "error",
 				});
 			}
@@ -252,7 +274,7 @@ const Settings = () => {
 					icon={<span className="material-symbols-rounded">settings</span>}
 					iconPosition="start"
 					value={1}
-					label="General"
+					label={t("settings.general.navtitle")}
 					className="settings-tab"
 					sx={{
 						minHeight: "48px",
@@ -263,7 +285,7 @@ const Settings = () => {
 					icon={<span className="material-symbols-rounded">dns</span>}
 					iconPosition="start"
 					value={2}
-					label="Servers"
+					label={t("settings.servers.navtitle")}
 					className="settings-tab"
 					sx={{
 						minHeight: "48px",
@@ -274,7 +296,7 @@ const Settings = () => {
 					icon={<span className="material-symbols-rounded">tune</span>}
 					iconPosition="start"
 					value={3}
-					label="Perferences"
+					label={t("settings.preferences.navtitle")}
 					className="settings-tab"
 					sx={{
 						minHeight: "48px",
@@ -285,7 +307,7 @@ const Settings = () => {
 					icon={<span className="material-symbols-rounded">info</span>}
 					iconPosition="start"
 					value={10}
-					label="About"
+					label={t("settings.about.navtitle")}
 					className="settings-tab"
 					sx={{
 						minHeight: "48px",
@@ -447,7 +469,7 @@ const Settings = () => {
 									>
 										add_circle
 									</span>
-									Add server
+									{t("settings.general.add_server")}
 								</Fab>
 							</div>
 						</motion.div>
@@ -458,14 +480,45 @@ const Settings = () => {
 						<div className="settings-container">
 							<SettingOptionSelect
 								setting={{
-									name: "Preferred Audio Language",
-									description: "Select your preferred audio language.",
+									name: t("settings.preferences.audiolang.name"),
+									description: t("settings.preferences.audiolang.name"),
 								}}
 								userValue={
 									user?.Configuration?.AudioLanguagePreference ?? "anyLanguage"
 								}
 								options={cultures.data ?? []}
 							/>
+							<FormControlLabel
+								value={language}
+								control={
+									<TextField select onChange={handleLanguageChange}>
+										{languageOptions.map(({ language, code }, key) => (
+											<MenuItem
+												key={code}
+												value={code ?? "none"}
+											>
+											{language}
+											</MenuItem>
+										))}
+									</TextField>
+								}
+								label={
+									<div className="settings-option-info">
+										<Typography variant="subtitle1" fontWeight={400}>
+											{t("settings.preferences.interfacelang.name")}
+										</Typography>
+										<Typography
+											variant="caption"
+											className="settings-option-info-caption"
+										>
+											{t("settings.preferences.interfacelang.description")}
+										</Typography>
+									</div>
+								}
+								labelPlacement="start"
+								className="settings-option"
+							/>
+
 						</div>
 					)}
 
@@ -476,7 +529,7 @@ const Settings = () => {
 							<div className="settings-grid">
 								<div className="settings-info-container">
 									<div className="settings-info">
-										<Typography variant="subtitle2">Client Version:</Typography>
+										<Typography variant="subtitle2">{t("settings.about.version.client_version")}</Typography>
 										<Chip
 											icon={
 												<span
@@ -502,11 +555,11 @@ const Settings = () => {
 									</div>
 									<div className="settings-info">
 										<Typography variant="subtitle2">
-											Update Available:
+											{t("settings.about.version.update_available")}
 										</Typography>
 										<Typography variant="subtitle2">
 											{updateInfo.isFetching ? (
-												"Checking for new updates..."
+												t("settings.about.version.checking_update")
 											) : updateInfo.data?.available ? (
 												<Chip
 													icon={
@@ -526,7 +579,7 @@ const Settings = () => {
 													}}
 												/>
 											) : (
-												"No update found."
+												t("settings.about.version.no_update")
 											)}
 										</Typography>
 									</div>
@@ -543,7 +596,7 @@ const Settings = () => {
 												setUpdating(true);
 												await updateInfo.data?.downloadAndInstall();
 												enqueueSnackbar(
-													"Update has been installed! You need to relaunch Blink.",
+													t("settings.about.version.button.update_installed"),
 													{
 														variant: "success",
 													},
@@ -553,23 +606,23 @@ const Settings = () => {
 										}}
 									>
 										{updateInfo.isFetching
-											? "Checking for Update..."
+											? t("settings.about.version.button.checking_update")
 											: updateInfo.data?.available
-												? "Update"
-												: "No Update Found"}
+												? t("settings.about.version.button.update")
+												: t("settings.about.version.button.no_update")}
 									</LoadingButton>
 								</div>
 								{systemInfo.isSuccess ? (
 									<div className="settings-info-container">
 										<div className="settings-info">
-											<Typography variant="subtitle2">Server:</Typography>
+											<Typography variant="subtitle2">{t("settings.about.server_information.server")}</Typography>
 											<Typography variant="subtitle2">
 												{systemInfo.data?.ServerName}
 											</Typography>
 										</div>
 										<div className="settings-info">
 											<Typography variant="subtitle2">
-												Jellyfin Version:
+												{t("settings.about.server_information.version")}
 											</Typography>
 											<Typography variant="subtitle2">
 												{systemInfo.data?.Version}
@@ -577,7 +630,7 @@ const Settings = () => {
 										</div>
 										<div className="settings-info">
 											<Typography variant="subtitle2">
-												Server Architecture:
+												{t("settings.about.server_information.architecture")}
 											</Typography>
 											<Typography variant="subtitle2">
 												{systemInfo.data?.SystemArchitecture}
@@ -603,7 +656,7 @@ const Settings = () => {
 								}}
 							>
 								<Typography variant="subtitle1" mb={1}>
-									Links:
+									{t("settings.about.links")}
 								</Typography>
 								<div
 									style={{

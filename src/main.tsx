@@ -4,6 +4,7 @@ import React, { Suspense, useEffect } from "react";
 import ReactDOM from "react-dom/client";
 // Import the generated route tree
 import { routeTree } from "./routeTree.gen";
+import "./i18n.tsx";
 
 import { ErrorBoundary } from "react-error-boundary";
 import { ErrorNotice } from "./components/notices/errorNotice/errorNotice";

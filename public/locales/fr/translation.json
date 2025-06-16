@@ -1,0 +1,76 @@
+{
+  "buttons": {
+    "errors" : {
+      "api": "L'API est indisponible",
+      "item": "L'identifiant de l'Item est indisponible",
+      "user": "L'identifiant de l'utilisateur est indisponible",
+      "noMediaSourceId": "Aucun identifiant du média source",
+      "episodeNotFound": "Episode having id {{EpisodeId}} not found, index return -1",
+      "noMediaSource": "No media source id provieded for the episode. Return values are seriesId = {{seriesId}}, mediaSourceId = {{mediaSourceId}}, index = {{index}}"
+    },
+    "play": "Regarder",
+    "playnow": "Regarder maintenant",
+    "watch": "Regarder maintenant",
+    "continue": "Continuer",
+    "moreinfo": "Plus d'informations",
+    "credits": "Voir les crédits"
+  },
+  "home": {
+    "continue": "Continuer",
+    "latest": "Dernier "
+  },
+  "settings": {
+    "general": {
+      "navtitle": "Général",
+      "introskipper": {
+        "name": "Enable Intro-Skippe plugin",
+        "description" : "Shows a skip button for Intros and End Credit scenes in an episode. Note: this requires jumoog/intro-skipper plugin to be installed on server"
+      }
+    },
+    "servers": {
+      "navtitle": "Serveurs",
+      "add_server": "Ajouter un serveur",
+      "errors": {
+        "unknow": "Something went wrong",
+        "changing_server": "Error changing the server",
+        "invalid_jellyfin_server": "Provided server address is not a Jellyfin server."
+      },
+      "success": {
+        "deleting_server": "Server deleted successfully!",
+        "client_added": "Client added successfully. You might need to refresh client list."
+      }
+    },
+    "preferences": {
+      "navtitle": "Préférences",
+      "audiolang": {
+        "name": "Preferred Audio Language",
+        "description" : "Select your preferred audio language."
+      },
+      "interfacelang": {
+        "name": "Langue de l'interface",
+        "description" : "Sélectonne la langue de l'application."
+      }
+    },
+    "about": {
+      "navtitle": "ABOUT",
+      "version" : {
+        "client_version": "Client Version:",
+        "update_available": "Update available:",
+        "no_update": "No update found.",
+        "checking_update": "Checking for new updates...",
+        "button": {
+          "update_installed": "Update has been installed! You need to relaunch Blink.",
+          "checking_update": "Checking for update",
+          "update": "Update",
+          "no_update": "No Update Found"
+        }
+      },
+      "server_information": {
+        "server": "Server:",
+        "version": "Jellyfin Version:",
+        "architecture": "Server Architecture:"
+      },
+      "links": "Links:"
+    }
+  }
+}
