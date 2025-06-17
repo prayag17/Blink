@@ -380,7 +380,7 @@ const Settings = () => {
 																	fontWeight={600}
 																	fontFamily="JetBrains Mono Variable"
 																>
-																	Current
+																	{t("settings.servers.current")}
 																</Typography>
 															}
 															color="info"

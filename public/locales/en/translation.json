@@ -3,11 +3,16 @@
   "libraries": "Libraries",
   "close": "Close",
   "add": "Add",
+  "endat": "Ends at {{time}}",
+  "errors": {
+    "api": "API is not available",
+    "item": "Item ID is not available",
+    "user": "User ID is not available",
+    "accesstoken": "Access token not available",
+    "apiOrUser": "API or User ID is not defined"
+  },
   "buttons": {
     "errors" : {
-      "api": "API is not available",
-      "item": "Item ID is not available",
-      "user": "User ID is not available",
       "noMediaSourceId": "No media source ID found",
       "episodeNotFound": "Episode having id {{EpisodeId}} not found, index return -1",
       "noMediaSource": "No media source id provieded for the episode. Return values are seriesId = {{seriesId}}, mediaSourceId = {{mediaSourceId}}, index = {{index}}"
@@ -15,9 +20,34 @@
     "play": "Play",
     "playnow": "Play now",
     "watch": "Watch now",
+    "watch_episode": "Watch S{{season}} E{{episode}}",
     "continue": "Continue watching",
     "moreinfo": "More Info",
     "credits": "Watch Credits"
+  },
+  "accounts": {
+    "login": "Login",
+    "username": "Username",
+    "password": "Password",
+    "rememberme": "Remember Me",
+    "changeserver": "Change Server",
+    "notice": "Notice"
+  },
+  "quickconnect": {
+    "logged": "Logged in as {{username}} !",
+    "not_enabled": "Quick Connect is not enabled on server.",
+    "code": "Quick Connect Code:",
+    "helpcode": "Use this code in the Quick Connect tab in your server to login.",
+    "code_tooltip": "Click to copy",
+    "remember": "Remember device",
+    "copied": "Quick Connect Code copied!",
+    "errors": {
+      "init" : "Error initiating Quick Connect."
+    },
+    "buttons": {
+      "use": "Use Quick Connect",
+      "disabled": "Quick Connect Disabled"
+    }
   },
   "navbar": {
     "logout": "Logout",
@@ -48,6 +78,7 @@
     "servers": {
       "navtitle": "SERVERS",
       "add_server": "Add Server",
+      "current": "Current",
       "errors": {
         "unknow": "Something went wrong",
         "changing_server": "Error changing the server",

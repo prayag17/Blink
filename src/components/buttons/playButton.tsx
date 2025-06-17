@@ -133,10 +133,10 @@ const PlayButton = ({
 			 */
 			let index = 0;
 			if (!api) {
-				throw new Error(t("buttons.errors.api"));
+				throw new Error(t("buttons.api"));
 			}
 			if (!item.Id) {
-				throw new Error(t("buttons.errors.item"));
+				throw new Error(t("buttons.item"));
 			}
 			if (playlistItem) {
 				result = await getPlaylistsApi(api).getPlaylistItems({
@@ -647,13 +647,13 @@ const PlayButton = ({
 			queryKey: ["playButton", "currentEpisode", item?.Id],
 			queryFn: async () => {
 				if (!api) {
-					throw new Error(t('buttons.errors.api'));
+					throw new Error(t('buttons.api'));
 				}
 				if (!userId) {
-					throw new Error(t('buttons.errors.user'));
+					throw new Error(t('buttons.user'));
 				}
 				if (!item.Id) {
-					throw new Error(t('buttons.errors.item'));
+					throw new Error(t('buttons.item'));
 				}
 				let data: BaseItemDtoQueryResult | null = null;
 				const continueWatching = await getItemsApi(api).getResumeItems({
@@ -713,8 +713,10 @@ const PlayButton = ({
 					color="white"
 					size={size}
 				>
-					Watch S{currentEpisode.data?.Items?.[0].ParentIndexNumber ?? 1}E
-					{currentEpisode.data?.Items?.[0]?.IndexNumber ?? 1}
+					{t("buttons.watch_episode", {
+						season: currentEpisode.data?.Items?.[0].ParentIndexNumber ?? 1,
+						episode: currentEpisode.data?.Items?.[0]?.IndexNumber ?? 1
+					})}
 					<MemoizedLinearProgress
 						//@ts-ignore
 						value={

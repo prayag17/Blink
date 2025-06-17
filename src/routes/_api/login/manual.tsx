@@ -31,6 +31,7 @@ import {
 	useNavigate,
 	useRouter,
 } from "@tanstack/react-router";
+import { useTranslation } from "react-i18next";
 
 export const Route = createFileRoute("/_api/login/manual")({
 	component: UserLoginManual,
@@ -46,6 +47,7 @@ function UserLoginManual() {
 	const createApi = useApiInContext((s) => s.createApi);
 	const router = useRouter();
 	const searchParams = Route.useSearch();
+	const { t } = useTranslation();
 
 	const server = useQuery({
 		queryKey: ["login", "manual", "serverInfo"],
@@ -85,14 +87,14 @@ function UserLoginManual() {
 		event.preventDefault();
 		try {
 			if (!api) {
-				throw new Error("Api is not available");
+				throw new Error(t("buttons.api"));
 			}
 			const authenticate = await api.authenticateUserByName(
 				username,
 				password.password,
 			);
 			if (!authenticate.data?.AccessToken) {
-				throw new Error("Access token not available");
+				throw new Error(t("buttons.accesstoken"));
 			}
 			createApi(api.basePath, authenticate.data?.AccessToken);
 
@@ -135,22 +137,22 @@ function UserLoginManual() {
 				}`}
 			>
 				<Typography variant="h4" color="textPrimary">
-					Login
+					{t("accounts.login")}
 				</Typography>
 				<form className="login-form" onSubmit={(e) => handleLogin.mutate(e)}>
 					<TextField
 						variant="outlined"
-						label="Username"
+						label={t('accounts.username')}
 						onChange={(e) => setUsername(e.currentTarget.value)}
 					/>
 					<FormControl sx={{ width: "100%" }} variant="outlined">
-						<InputLabel htmlFor="user-password">Password</InputLabel>
+						<InputLabel htmlFor="user-password">{t("accounts.password")}</InputLabel>
 						<OutlinedInput
 							fullWidth
 							id="user-password"
 							type={password.showpass ? "text" : "password"}
 							onChange={handlePassword("password")}
-							label="Password"
+							label="{t('accounts.password')}"
 							endAdornment={
 								<InputAdornment position="end">
 									<IconButton
@@ -175,7 +177,7 @@ function UserLoginManual() {
 						control={
 							<Checkbox checked={rememberMe} onChange={handleCheckRememberMe} />
 						}
-						label="Remember me"
+						label={t("accounts.rememberme")}
 					/>
 					<div
 						className="flex flex-row"
@@ -187,7 +189,7 @@ function UserLoginManual() {
 							loading={handleLogin.isPending}
 							sx={{ width: "100%" }}
 						>
-							Login
+							{t("accounts.login")}
 						</LoadingButton>
 						<Button
 							color="secondary"
@@ -197,7 +199,7 @@ function UserLoginManual() {
 							style={{ flex: 1 }}
 							onClick={() => navigate({ to: "/setup/server/list" })}
 						>
-							Change Server
+							{t("accounts.changeserver")}
 						</Button>
 					</div>
 				</form>
@@ -226,7 +228,7 @@ function UserLoginManual() {
 						>
 							info
 						</span>
-						Notice
+						{t("accounts.notice")}
 					</div>
 					<Typography variant="subtitle2" style={{ opacity: 0.8 }}>
 						{server.data.LoginDisclaimer}

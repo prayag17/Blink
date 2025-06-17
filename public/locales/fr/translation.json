@@ -3,11 +3,16 @@
   "libraries": "Librairies",
   "close": "Fermer",
   "add": "Ajouter",
+  "endat": "Fini à {{time}}",
+  "errors": {
+    "api": "L'API est indisponible",
+    "item": "L'identifiant de l'Item est indisponible",
+    "user": "L'identifiant de l'utilisateur est indisponible",
+    "accesstoken": "Le token d'accès n'est pas disponible",
+    "apiOrUser": "L'API or l'identifiant de l'utilisateur est indisponible"
+  },
   "buttons": {
     "errors": {
-      "api": "L'API est indisponible",
-      "item": "L'identifiant de l'Item est indisponible",
-      "user": "L'identifiant de l'utilisateur est indisponible",
       "noMediaSourceId": "Aucun identifiant du média source",
       "episodeNotFound": "L'Episode d'identifiant {{EpisodeId}} est introuvable, index renvoie -1",
       "noMediaSource": "Aucune média source n'est disponible pour cet épisode. Les valeurs retournés sont : seriesId = {{seriesId}}, mediaSourceId = {{mediaSourceId}}, index = {{index}}"
@@ -15,9 +20,34 @@
     "play": "Regarder",
     "playnow": "Regarder maintenant",
     "watch": "Voir maintenant",
+    "watch_episode": "Regarder S{{season}} E{{episode}}",
     "continue": "Continuer de regarder",
     "moreinfo": "Plus d'informations",
     "credits": "Voir les crédits"
+  },
+  "accounts": {
+    "login": "Se connecter",
+    "username": "Nom d'utilisateur",
+    "password": "Mot de passe",
+    "rememberme": "Se souvenir de moi",
+    "changeserver": "Changer de serveur",
+    "notice": "Note: "
+  },
+  "quickconnect": {
+    "logged": "Connecté en tant que {{username}} !",
+    "not_enabled": "La connexion rapide n'est pas disponible.",
+    "code": "Code de connexion rapide :",
+    "helpcode": "Utilise ce code pour la connexion rapide.",
+    "code_tooltip": "Cliquer pour copier",
+    "remember": "Se souvenir de cet appareil",
+    "copied": "Code copié !",
+    "errors": {
+      "init" : "Impossible d'initialiser la connexion rapide"
+    },
+    "buttons": {
+      "use": "Utiliser la connexion rapide",
+      "disabled": "Connexion rapide désactivé"
+    }
   },
   "navbar": {
     "logout": "Se déconnecter",
@@ -35,19 +65,20 @@
   },
   "home": {
     "continue": "Continuer",
-    "latest": "Dernier "
+    "latest": "Derniers "
   },
   "settings": {
     "general": {
       "navtitle": "Général",
       "introskipper": {
-        "name": "Enable Intro-Skippe plugin",
-        "description" : "Shows a skip button for Intros and End Credit scenes in an episode. Note: this requires jumoog/intro-skipper plugin to be installed on server"
+        "name": "Activer le plugin Intro-Skipper",
+        "description" : "Afficher un bouton pour passer l'introduction et les crédits. Note: Nécessite le plugin jumoog/intro-skipper sur le serveur"
       }
     },
     "servers": {
       "navtitle": "Serveurs",
       "add_server": "Ajouter un serveur",
+      "current": "Courant",
       "errors": {
         "unknow": "Une erreur est survenue",
         "changing_server": "Erreur lors du changement de serveur",

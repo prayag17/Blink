@@ -23,9 +23,8 @@ export const allSettings = {
 	general: [
 		{
 			key: "general.enable_skip_intro_outro",
-			name: "Enable Intro-Skipper plugin",
-			description:
-				"Shows a skip button for Intros and End Credit scenes in an episode. Note: this requires jumoog/intro-skipper plugin to be installed on server",
+			name: "settings.general.introskipper.name",
+			description: "settings.general.introskipper.description",
 		},
 	],
 };

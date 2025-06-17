@@ -2,6 +2,7 @@ import type { Api } from "@jellyfin/sdk";
 import { BaseItemKind, ItemFields } from "@jellyfin/sdk/lib/generated-client";
 import { getUserLibraryApi } from "@jellyfin/sdk/lib/utils/api/user-library-api";
 import { queryOptions } from "@tanstack/react-query";
+import { useTranslation } from "react-i18next";
 
 /**
  * @param id itemId
@@ -19,7 +20,7 @@ export const getItemQueryOptions = (
 		queryKey: ["item", id],
 		queryFn: async () => {
 			if (!api || !userId) {
-				throw Error("API or User ID is not defined");
+				throw Error(useTranslation().t("errors.apiOrUser"));
 			}
 			const result = await getUserLibraryApi(api).getItem({
 				userId: userId,
@@ -43,7 +44,7 @@ export const getLatestItemsQueryOptions = (
 		queryKey: ["home", "latestMedia"],
 		queryFn: async () => {
 			if (!api || !userId) {
-				throw Error("API or User ID is not defined");
+				throw Error(useTranslation().t("errors.apiOrUser"));
 			}
 			const media = await getUserLibraryApi(api).getLatestMedia({
 				userId: userId,

@@ -313,7 +313,7 @@ export const AppBar = () => {
 							className="library-drawer-item"
 							to="/home"
 							icon="home"
-							primary="Home"
+							primary={t('navbar.home')}
 						/>
 						{libraries.isSuccess &&
 							libraries.data?.Items?.map((library) => (
