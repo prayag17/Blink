@@ -1,6 +1,8 @@
 {
   "upnext": "Up Next",
   "libraries": "Libraries",
+  "close": "Close",
+  "add": "Add",
   "buttons": {
     "errors" : {
       "api": "API is not available",
@@ -16,6 +18,20 @@
     "continue": "Continue watching",
     "moreinfo": "More Info",
     "credits": "Watch Credits"
+  },
+  "navbar": {
+    "logout": "Logout",
+    "settings": "Settings",
+    "preferences": "Preferences",
+    "about": "About",
+    "close": "Close",
+    "home": "Home",
+    "changeserver": "Changer Server"
+  },
+  "musics": {
+    "errors": {
+      "needToLogin": "You need to be logged in to play music"
+    }
   },
   "home": {
     "continue": "Continue Watching",

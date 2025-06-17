@@ -19,6 +19,7 @@ import lyricsIcon from "../../assets/icons/lyrics.svg";
 import LikeButton from "../buttons/likeButton";
 
 import "./albumMusicTrack.scss";
+import { useTranslation } from "react-i18next";
 
 type AlbumMusicTrackProps = {
 	track: BaseItemDto;
@@ -37,6 +38,7 @@ export default function AlbumMusicTrack(props: AlbumMusicTrackProps) {
 	const api = useApiInContext((s) => s.api);
 
 	const { enqueueSnackbar } = useSnackbar();
+	const { t } = useTranslation();
 
 	const handlePlayback = (
 		index: number,
@@ -45,7 +47,7 @@ export default function AlbumMusicTrack(props: AlbumMusicTrackProps) {
 	) => {
 		if (!user?.Id || !api) {
 			console.error("User not logged in");
-			enqueueSnackbar("You need to be logged in to play music", {
+			enqueueSnackbar(t("musics.errors.needToLogin") , {
 				variant: "error",
 			});
 			return;

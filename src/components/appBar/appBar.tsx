@@ -46,7 +46,7 @@ import {
 } from "@mui/material";
 import BackButton from "../buttons/backButton";
 import ListItemLink from "../listItemLink";
-
+import { useTranslation } from "react-i18next";
 
 const MemoizeBackButton = React.memo(BackButton);
 
@@ -97,6 +97,7 @@ export const AppBar = () => {
 		setAnchorEl(null);
 	}, []);
 	const queryClient = useQueryClient();
+	const { t } = useTranslation();
 
 	const handleLogout = async () => {
 		console.log("Logging out user...");
@@ -244,7 +245,7 @@ export const AppBar = () => {
 								<ListItemIcon>
 									<div className="material-symbols-rounded">logout</div>
 								</ListItemIcon>
-								Logout
+								{t("navbar.logout")}
 							</MenuItem>
 							<Divider />
 							<MenuItem
@@ -257,7 +258,7 @@ export const AppBar = () => {
 								<ListItemIcon>
 									<div className="material-symbols-rounded">settings</div>
 								</ListItemIcon>
-								Settings
+								{t("navbar.settings")}
 							</MenuItem>
 							<MenuItem
 								onClick={() => {
@@ -269,7 +270,7 @@ export const AppBar = () => {
 								<ListItemIcon>
 									<div className="material-symbols-rounded">tune</div>
 								</ListItemIcon>
-								Preferences
+								{t("navbar.preferences")}
 							</MenuItem>
 							<MenuItem
 								onClick={() => {
@@ -281,7 +282,7 @@ export const AppBar = () => {
 								<ListItemIcon>
 									<div className="material-symbols-rounded">info</div>
 								</ListItemIcon>
-								About
+								{t("navbar.about")}
 							</MenuItem>
 						</Menu>
 					</div>
@@ -302,7 +303,7 @@ export const AppBar = () => {
 								}}
 							>
 								<span className="material-symbols-rounded">menu_open</span>
-								Close
+								{t("navbar.close")}
 							</ListItemButton>
 						</ListItem>
 					</List>
@@ -342,7 +343,7 @@ export const AppBar = () => {
 								}}
 							>
 								<span className="material-symbols-rounded">settings</span>
-								Settings
+								{t("navbar.settings")}
 							</ListItemButton>
 						</ListItem>
 						<ListItem>
@@ -357,7 +358,7 @@ export const AppBar = () => {
 								}}
 							>
 								<span className="material-symbols-rounded">dns</span>
-								Change Server
+								{t("navbar.changeserver")}
 							</ListItemButton>
 						</ListItem>
 						<ListItem>
@@ -372,7 +373,7 @@ export const AppBar = () => {
 								}}
 							>
 								<span className="material-symbols-rounded">info</span>
-								About
+								{t("navbar.about")}
 							</ListItemButton>
 						</ListItem>
 					</List>

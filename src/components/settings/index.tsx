@@ -469,7 +469,7 @@ const Settings = () => {
 									>
 										add_circle
 									</span>
-									{t("settings.general.add_server")}
+									{t("settings.servers.add_server")}
 								</Fab>
 							</div>
 						</motion.div>
