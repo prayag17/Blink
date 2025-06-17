@@ -1,3 +1,5 @@
+import { useTranslation } from "react-i18next";
+
 /**
  * @format
  * @param {number} ticks - C# ticks of a particular item
@@ -135,5 +137,5 @@ export const endsAt = (ticks: number) => {
 	});
 	// let formated = `${hr - 12}:${min}`;
 	// return `Ends at ${formated.getHours()}:${formated.getMinutes()}`;
-	return `Ends at ${formated}`;
+	return useTranslation().t("endat", {time: formated});
 };

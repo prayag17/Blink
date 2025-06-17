@@ -11,6 +11,7 @@ import {
 	BaseItemKind,
 } from "@jellyfin/sdk/lib/generated-client";
 import { getUserLibraryApi } from "@jellyfin/sdk/lib/utils/api/user-library-api";
+import { useTranslation } from "react-i18next";
 
 /**
  * @description Latest Media Section
@@ -20,6 +21,8 @@ export const LatestMediaSection = ({
 }: { latestMediaLib: BaseItemDto }) => {
 	const api = useApiInContext((s) => s.api);
 	const user = useCentralStore((s) => s.currentUser);
+	const { t } = useTranslation();
+
 	const fetchLatestMedia = async (library: BaseItemDto) => {
 		if (!api || !user?.Id) return null;
 		const media = await getUserLibraryApi(api).getLatestMedia({
@@ -41,7 +44,7 @@ export const LatestMediaSection = ({
 	}
 	if (data.isSuccess && (data.data?.length ?? 0) >= 1) {
 		return (
-			<CardScroller displayCards={7} title={`Latest ${latestMediaLib.Name}`}>
+			<CardScroller displayCards={7} title={t("home.latest") + `${latestMediaLib.Name}`}>
 				{data.data?.map((item) => {
 					return (
 						<Card

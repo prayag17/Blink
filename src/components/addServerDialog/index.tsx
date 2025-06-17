@@ -12,6 +12,7 @@ import {
 import { useMutation } from "@tanstack/react-query";
 import { enqueueSnackbar } from "notistack";
 import React, { useState } from "react";
+import { useTranslation } from "react-i18next";
 
 type AddServerDialogProps = {
 	open: boolean;
@@ -22,6 +23,7 @@ type AddServerDialogProps = {
 
 export default function AddServerDialog(props: AddServerDialogProps) {
 	const { open, setAddServerDialog, sideEffect, hideBackdrop } = props;
+	const { t } = useTranslation();
 
 	const [serverIp, setServerIp] = useState("");
 	const addServer = useMutation({
@@ -37,7 +39,7 @@ export default function AddServerDialog(props: AddServerDialogProps) {
 				await setServer(bestServer.systemInfo?.Id ?? "", bestServer);
 				setAddServerDialog(false);
 				enqueueSnackbar(
-					"Client added successfully. You might need to refresh client list.",
+					t("settings.servers.success.client_added"),
 					{
 						variant: "success",
 					},
@@ -54,7 +56,7 @@ export default function AddServerDialog(props: AddServerDialogProps) {
 		},
 		onSettled: async (bestServer) => {
 			if (!bestServer) {
-				enqueueSnackbar("Provided server address is not a Jellyfin server.", {
+				enqueueSnackbar(t("settings.servers.errors.invalid_jellyfin_server"), {
 					variant: "error",
 				});
 			}
@@ -70,6 +72,7 @@ export default function AddServerDialog(props: AddServerDialogProps) {
 			disableScrollLock={true}
 		>
 			<DialogTitle variant="h4" align="center" mb={1}>
+				{t("settings.servers.add_server")}
 				Add Server
 			</DialogTitle>
 			<DialogContent className="settings-server-add">
@@ -105,7 +108,7 @@ export default function AddServerDialog(props: AddServerDialogProps) {
 					color="error"
 					onClick={() => setAddServerDialog(false)}
 				>
-					Close
+					{t("close")}
 				</Button>
 				{/* @ts-ignore */}
 				<LoadingButton
@@ -127,7 +130,7 @@ export default function AddServerDialog(props: AddServerDialogProps) {
 					onClick={addServer.mutate}
 					color="success"
 				>
-					Add
+					{t("add")}
 				</LoadingButton>
 			</DialogActions>
 		</Dialog>

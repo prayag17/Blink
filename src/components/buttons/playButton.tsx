@@ -39,6 +39,7 @@ import { getDisplayPreferencesApi } from "@jellyfin/sdk/lib/utils/api/display-pr
 import { getMediaInfoApi } from "@jellyfin/sdk/lib/utils/api/media-info-api";
 import { getMediaSegmentsApi } from "@jellyfin/sdk/lib/utils/api/media-segments-api";
 import { getUserLibraryApi } from "@jellyfin/sdk/lib/utils/api/user-library-api";
+import { useTranslation } from "react-i18next";
 import { LoadingButton } from "@mui/lab";
 import type { SxProps } from "@mui/material";
 import type { AxiosResponse } from "axios";
@@ -108,6 +109,7 @@ const PlayButton = ({
 	const playPhotos = usePhotosPlayback((s) => s.playPhotos);
 
 	const { enqueueSnackbar } = useSnackbar();
+	const { t } = useTranslation();
 
 	const itemQuery = useMutation({
 		mutationKey: ["playButton", item?.Id, userId],
@@ -131,10 +133,10 @@ const PlayButton = ({
 			 */
 			let index = 0;
 			if (!api) {
-				throw new Error("API is not available");
+				throw new Error(t("buttons.api"));
 			}
 			if (!item.Id) {
-				throw new Error("Item ID is not available");
+				throw new Error(t("buttons.item"));
 			}
 			if (playlistItem) {
 				result = await getPlaylistsApi(api).getPlaylistItems({
@@ -167,7 +169,7 @@ const PlayButton = ({
 								) === -1
 							) {
 								throw new Error(
-									`Episode having id ${currentEpisodeId} not found, index return -1`,
+									t("buttons.errors.episodeNotFound", { EpisodeId: currentEpisodeId }),
 								);
 							}
 							index =
@@ -234,7 +236,7 @@ const PlayButton = ({
 								-1
 						) {
 							throw new Error(
-								`Episode having id=${currentEpisodeId} not found, index return -1`,
+								t("buttons.errors.episodeNotFound", { EpisodeId: currentEpisodeId })
 							);
 						}
 						if (!currentEpisodeId) {
@@ -302,7 +304,7 @@ const PlayButton = ({
 							)?.data;
 						} else {
 							throw new Error(
-								`No media source id provieded for the episode. Return values are seriesId = ${result.data.Items?.[index].Id}, mediaSourceId = ${result.data.Items?.[index].MediaSources?.[0]?.Id}, index = ${index}`,
+								t("buttons.errors.noMediaSource", { seriesId: result.data.Items?.[index].Id, mediaSourceId: result.data.Items?.[index].MediaSources?.[0]?.Id, index: index })
 							);
 						}
 						break;
@@ -505,7 +507,7 @@ const PlayButton = ({
 			} else {
 				if (!result?.mediaSource?.MediaSources?.[0]?.Id) {
 					console.error("No media source ID found");
-					enqueueSnackbar("No media source ID found", { variant: "error" });
+					enqueueSnackbar(t("buttons.errors.noMediaSourceId"), { variant: "error" });
 					return;
 				}
 				const episodeIndex = result.episodeIndex;
@@ -619,7 +621,7 @@ const PlayButton = ({
 			//@ts-ignore
 			<Fab
 				color="primary"
-				aria-label="Play"
+				aria-label="{t('buttons.play')}"
 				className={className}
 				onClick={(e) =>
 					item.Type === "Episode" ? handleClick(e, item.Id) : handleClick(e)
@@ -645,13 +647,13 @@ const PlayButton = ({
 			queryKey: ["playButton", "currentEpisode", item?.Id],
 			queryFn: async () => {
 				if (!api) {
-					throw new Error("API is not available");
+					throw new Error(t('buttons.api'));
 				}
 				if (!userId) {
-					throw new Error("User ID is not available");
+					throw new Error(t('buttons.user'));
 				}
 				if (!item.Id) {
-					throw new Error("Item ID is not available");
+					throw new Error(t('buttons.item'));
 				}
 				let data: BaseItemDtoQueryResult | null = null;
 				const continueWatching = await getItemsApi(api).getResumeItems({
@@ -711,8 +713,10 @@ const PlayButton = ({
 					color="white"
 					size={size}
 				>
-					Watch S{currentEpisode.data?.Items?.[0].ParentIndexNumber ?? 1}E
-					{currentEpisode.data?.Items?.[0]?.IndexNumber ?? 1}
+					{t("buttons.watch_episode", {
+						season: currentEpisode.data?.Items?.[0].ParentIndexNumber ?? 1,
+						episode: currentEpisode.data?.Items?.[0]?.IndexNumber ?? 1
+					})}
 					<MemoizedLinearProgress
 						//@ts-ignore
 						value={
@@ -784,14 +788,14 @@ const PlayButton = ({
 				size={size}
 			>
 				{item.UserData?.PlaybackPositionTicks
-					? "Continue Watching"
+					? t('buttons.continue')
 					: item?.Type === "MusicAlbum" ||
 							item?.Type === "Audio" ||
 							item?.Type === "AudioBook" ||
 							item?.Type === "Playlist" ||
 							audio
-						? "Play Now"
-						: "Watch Now"}
+						? t('buttons.playnow')
+						: t('buttons.watch')}
 				<MemoizedLinearProgress
 					//@ts-ignore
 					value={

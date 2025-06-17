@@ -22,6 +22,7 @@ import { useNavigate } from "@tanstack/react-router";
 import { writeText } from "@tauri-apps/plugin-clipboard-manager";
 import { useSnackbar } from "notistack";
 import React, { useCallback, useState } from "react";
+import { useTranslation } from "react-i18next";
 
 const Transition = React.forwardRef(function Transition(
 	props: TransitionProps & {
@@ -44,6 +45,7 @@ const Transition = React.forwardRef(function Transition(
 const QuickConnectButton = (props: LoadingButtonProps) => {
 	const api = useApiInContext((s) => s.api);
 	const createApi = useApiInContext((s) => s.createApi);
+	const { t } = useTranslation();
 	// if (!api) {
 	// 	console.error(
 	// 		"Unable to display quick connect button, api is not available",
@@ -84,7 +86,7 @@ const QuickConnectButton = (props: LoadingButtonProps) => {
 			if (api && result?.data?.AccessToken && result.data.User?.Name) {
 				setCheckForQuickConnect(false);
 				// saveUser({ username, password, rememberMe: rememberUser });
-				enqueueSnackbar(`Logged in as ${result.data.User?.Name}!`, {
+				enqueueSnackbar(t("quickconnect.logged", { username: result.data.User?.Name }), {
 					variant: "success",
 				});
 				createApi(api.basePath, result.data.AccessToken);
@@ -122,7 +124,7 @@ const QuickConnectButton = (props: LoadingButtonProps) => {
 		mutationKey: ["quick-connect-button", "initiate-connection"],
 		mutationFn: async () => {
 			if (!quickConnectEnabled.data?.data) {
-				enqueueSnackbar("Quick Connect is not enabled on server.", {
+				enqueueSnackbar(t("quickconnect.not_enabled"), {
 					variant: "error",
 				});
 			}
@@ -136,7 +138,7 @@ const QuickConnectButton = (props: LoadingButtonProps) => {
 			setCheckForQuickConnect(true);
 		},
 		onError: (error) => {
-			enqueueSnackbar("Error initiating Quick Connect.", { variant: "error" });
+			enqueueSnackbar(t("quickconnect.errors.init"), { variant: "error" });
 			console.error(error);
 		},
 	});
@@ -176,8 +178,8 @@ const QuickConnectButton = (props: LoadingButtonProps) => {
 				onClick={initQuickConnect.mutate}
 			>
 				{quickConnectEnabled.data?.data
-					? "Use Quick Connect"
-					: "Quick Connect Disabled"}
+					? t("quickconnect.buttons.use")
+					: t("quickconnect.buttons.disabled")}
 			</LoadingButton>
 			<Dialog
 				open={Boolean(quickConnectCode)}
@@ -200,16 +202,17 @@ const QuickConnectButton = (props: LoadingButtonProps) => {
 							width: "100%",
 						}}
 					>
-						Quick Connect Code:
+						{t("quickconnect.code")}
+
 					</Typography>
 					<DialogContentText>
-						Use this code in the Quick Connect tab in your server to login.
+						{t("quickconnect.helpcode")}
 					</DialogContentText>
 					<div
 						className="flex flex-row"
 						style={{ gap: "1em", alignItems: "center", marginTop: "1em" }}
 					>
-						<Tooltip title="Click to copy" arrow placement="top">
+						<Tooltip title={t('quickconnect.code_tooltip')} arrow placement="top">
 							<Typography
 								variant="h3"
 								color="textPrimary"
@@ -223,7 +226,7 @@ const QuickConnectButton = (props: LoadingButtonProps) => {
 								}}
 								onClick={async () => {
 									quickConnectCode && (await writeText(quickConnectCode));
-									enqueueSnackbar("Quick Connect Code copied!", {
+									enqueueSnackbar(t("quickconnect.copied"), {
 										variant: "info",
 										key: "copiedText",
 									});
@@ -248,10 +251,10 @@ const QuickConnectButton = (props: LoadingButtonProps) => {
 								onChange={(e) => setRememberUser(e.target.checked)}
 							/>
 						}
-						label="Remember device"
+						label={t('quickconnect.remember')}
 					/>
 					<Button variant="contained" onClick={handleQuickConnectClose}>
-						Close
+						{t("close")}
 					</Button>
 				</DialogActions>
 			</Dialog>

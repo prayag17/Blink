@@ -33,6 +33,7 @@ import {
 } from "@jellyfin/sdk/lib/generated-client";
 import Typography from "@mui/material/Typography";
 import { ErrorBoundary } from "react-error-boundary";
+import {useTranslation} from "react-i18next";
 
 export const Route = createFileRoute("/_api/home/")({
 	component: Home,
@@ -46,6 +47,7 @@ export const Route = createFileRoute("/_api/home/")({
 function Home() {
 	const api = useApiInContext((s) => s.api);
 	const user = useCentralStore((s) => s.currentUser);
+	const { t } = useTranslation();
 
 	const libraries = useSuspenseQuery({
 		queryKey: ["libraries"],
@@ -187,7 +189,7 @@ function Home() {
 					</div>
 				}
 			>
-				<CardScroller displayCards={4} title="Libraries">
+				<CardScroller displayCards={4} title={t('libraries')}>
 					{libraries.data?.Items?.map((item) => {
 						return (
 							<Card
@@ -221,7 +223,7 @@ function Home() {
 				{upNextItems.isSuccess && !upNextItems.data?.TotalRecordCount ? (
 					<></>
 				) : (
-					<CardScroller displayCards={4} title="Up Next">
+					<CardScroller displayCards={4} title={t('upnext')}>
 						{upNextItems.data?.Items?.map((item) => {
 							return (
 								<Card
@@ -276,7 +278,7 @@ function Home() {
 				!resumeItemsVideo.data?.TotalRecordCount ? (
 					<></>
 				) : (
-					<CardScroller displayCards={4} title="Continue Watching">
+					<CardScroller displayCards={4} title={t('home.continue')}>
 						{resumeItemsVideo.data?.Items?.map((item) => {
 							return (
 								<Card

@@ -9,6 +9,7 @@ import "./outroCard.scss";
 import getImageUrlsApi from "@/utils/methods/getImageUrlsApi";
 import { useCentralStore } from "@/utils/store/central";
 import { useMutation } from "@tanstack/react-query";
+import {useTranslation} from "react-i18next";
 
 const OutroCard = (props: { handleShowCredits: () => void }) => {
 	const api = useApiInContext((s) => s.api);
@@ -23,10 +24,12 @@ const OutroCard = (props: { handleShowCredits: () => void }) => {
 		mutationFn: () => playItemFromQueue("next", user?.Id, api),
 		onError: (error) => [console.error(error)],
 	});
+	const { t } = useTranslation();
+
 	if (!item || !item.Type) return null;
 	return (
 		<div className="outro-card">
-			<Typography variant="h4">Up Next</Typography>
+			<Typography variant="h4">{t("upnext")}</Typography>
 			<div className="outro-card-content">
 				{item?.ImageTags?.Primary ? (
 					<img
@@ -81,7 +84,7 @@ const OutroCard = (props: { handleShowCredits: () => void }) => {
 						color="white"
 						variant="outlined"
 					>
-						Watch Credits
+						{t("buttons.credits")}
 					</Button>
 				</div>
 			</div>
