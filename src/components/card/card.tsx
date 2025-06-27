@@ -1,26 +1,24 @@
 /** @format */
 
-import React, { memo } from "react";
-
-import { useNavigate } from "@tanstack/react-router";
-
-import Typography from "@mui/material/Typography";
 
 import {
 	type BaseItemDto,
 	BaseItemKind,
 	type ImageType,
 } from "@jellyfin/sdk/lib/generated-client";
+import Typography from "@mui/material/Typography";
+import { useNavigate } from "@tanstack/react-router";
+import React, { memo } from "react";
 import { ErrorBoundary } from "react-error-boundary";
 import LikeButton from "../buttons/likeButton";
 import MarkPlayedButton from "../buttons/markPlayedButton";
 import PlayButton from "../buttons/playButton";
 import { getTypeIcon } from "../utils/iconsCollection";
 import "./card.scss";
-import getImageUrlsApi from "@/utils/methods/getImageUrlsApi";
-import { useApiInContext } from "@/utils/store/api";
 
 import { useInView } from "react-intersection-observer";
+import getImageUrlsApi from "@/utils/methods/getImageUrlsApi";
+import { useApiInContext } from "@/utils/store/api";
 
 const CardComponent = ({
 	item,
@@ -122,36 +120,38 @@ const CardComponent = ({
 						? getTypeIcon(overrideIcon)
 						: getTypeIcon(item.Type ?? "universal")}
 				</div>
-				<img
-					alt={item.Name ?? "blink"}
-					src={
-						api
-							? overrideIcon === "User"
-								? `${api?.basePath}/Users/${item.Id}/Images/Primary`
-								: getImageUrlsApi(api).getItemImageUrlById(
-										(seriesId ? item.SeriesId : (item.AlbumId ?? item.Id)) ??
-											"",
-										imageType,
-										{
-											quality: 90,
-											fillWidth: cardType === "thumb" ? 560 : 320,
-										},
-									)
-							: ""
-					}
-					style={{
-						height: "100%",
-						width: "100%",
-						opacity: 0,
-						display: inView ? "block" : "none",
-					}}
-					loading="lazy"
-					onLoad={(e) => {
-						e.currentTarget.style.setProperty("opacity", "1");
-					}}
-					onLoadStart={(e) => console.log(e)}
-					className="card-image"
-				/>
+				{inView && (
+					<img
+						alt={item.Name ?? "blink"}
+						src={
+							api
+								? overrideIcon === "User"
+									? `${api?.basePath}/Users/${item.Id}/Images/Primary`
+									: getImageUrlsApi(api).getItemImageUrlById(
+											(seriesId ? item.SeriesId : (item.AlbumId ?? item.Id)) ??
+												"",
+											imageType,
+											{
+												quality: 90,
+												fillWidth: cardType === "thumb" ? 560 : 320,
+											},
+										)
+								: ""
+						}
+						style={{
+							height: "100%",
+							width: "100%",
+							opacity: 0,
+							display: "block",
+						}}
+						loading="lazy"
+						onLoad={(e) => {
+							e.currentTarget.style.setProperty("opacity", "1");
+						}}
+						onLoadStart={(e) => console.log(e)}
+						className="card-image"
+					/>
+				)}
 				{inView && !disableOverlay && (
 					<div className="card-overlay">
 						<PlayButton
