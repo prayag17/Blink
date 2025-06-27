@@ -7,8 +7,12 @@ import type {
 import { getMediaInfoApi } from "@jellyfin/sdk/lib/utils/api/media-info-api";
 import { getMediaSegmentsApi } from "@jellyfin/sdk/lib/utils/api/media-segments-api";
 import { getPlaystateApi } from "@jellyfin/sdk/lib/utils/api/playstate-api";
+import { WebviewWindow as appWindow } from "@tauri-apps/api/webviewWindow";
+import { create } from "zustand";
+import { immer } from "zustand/middleware/immer";
 import { shallow } from "zustand/shallow";
 import { createWithEqualityFn } from "zustand/traditional";
+import { secToTicks, ticksToSec } from "../date/time";
 import getSubtitle from "../methods/getSubtitles";
 import playbackProfile from "../playback-profiles";
 import type audioPlaybackInfo from "../types/audioPlaybackInfo";
@@ -16,9 +20,7 @@ import type subtitlePlaybackInfo from "../types/subtitlePlaybackInfo";
 import { generateAudioStreamUrl, playAudio } from "./audioPlayback";
 import useQueue, { setQueue } from "./queue";
 
-type PlaybackStore = {
-	itemName: string | React.Component | undefined | null;
-	episodeTitle: string | React.Component;
+type PlaybackStoreState = {
 	mediaSource: {
 		videoTrack: number;
 		audioTrack: number;
@@ -28,123 +30,549 @@ type PlaybackStore = {
 		audio: audioPlaybackInfo;
 	};
 	playbackStream: string;
-	userId: string;
-	startPosition: number;
-	itemDuration: number;
-	item: BaseItemDto | null;
 	playsessionId: string | undefined | null;
-	intro: MediaSegmentDtoQueryResult | undefined;
-	volume: number | undefined;
+	metadata: {
+		itemName: string;
+		episodeTitle?: string;
+		isEpisode: boolean;
+		/**
+		 * Duration of the item in C# ticks
+		 * This is used to calculate the progress bar and the total duration of the item
+		 */
+		itemDuration: number;
+		item: BaseItemDto;
+		mediaSegments?: MediaSegmentDtoQueryResult;
+		userDataLastPlayedPositionTicks?: number;
+	};
+	playerState: {
+		/**
+		 * Persistent volume level between player instances
+		 */
+		volume: number;
+		/**
+		 * Prop for ReactPlayer to mute and unmute audio volume regardless of the volume value
+		 */
+		isPlayerMuted: boolean;
+		isPlayerPlaying: boolean;
+		/**
+		 * Used to check if ReactPlayer component has finished initial fetch of playbackStream
+		 * true -> Player is ready for playback
+		 * false -> Player is not ready for playback/is still fetching data/possible error while fetching
+		 */
+		isPlayerReady: boolean;
+		isBuffering: boolean;
+		/**
+		 * Current playback time in C# ticks
+		 * This is used to update the playback time in the UI
+		 * Initially should be set to UserData.PlaybackPositionTicks in seconds
+		 * Source: ReactPlayer's onProgress event
+		 * */
+		currentTime: number;
+		/**
+		 * Used to toggle the fullscreen state of the player
+		 * This is used to toggle the fullscreen state of the player
+		 * This should be set to true when the user clicks on the fullscreen button
+		 */
+		isPlayerFullscreen: boolean;
+		/**
+		 * Used to see if user is seeking/scrubbing progress bar
+		 * Used to temporarily switch to seek progress for the progress bar
+		 */
+		isUserSeeking: boolean;
+		/**
+		 * Seek value
+		 * This value should be in C# ticks
+		 */
+		seekValue: number;
+		/**
+		 * Used to display controls/see if user is hovering the media player
+		 */
+		isUserHovering: boolean;
+		/**
+		 * Used to show the buffering spinner in the UI
+		 * This should be set to true when the player is buffering
+		 */
+		isLoading: boolean;
+	};
+	/**
+	 * Index of the next segment to be played
+	 */
+	nextSegmentIndex: number;
+	/**
+	 * Id of the active segment
+	 * Set if null if no segment is active
+	 */
+	activeSegmentId: string | null;
+	/**
+	 * User id of the user who is currently playing the item
+	 */
+	userId: string;
+	/**
+	 * Volume change indicator
+	 * This is used to show the volume change indicator in the UI
+	 */
+	isVolumeInidcatorVisible: boolean;
+	volumeIndicatorVisibleTimeoutId: NodeJS.Timeout | null;
 };
 
-export const usePlaybackStore = createWithEqualityFn<PlaybackStore>(
-	() => ({
-		itemName: undefined!,
-		episodeTitle: "",
+type PlaybackStoreActions = {
+	// Player state related actions
+	/**
+	 * Set the volume of the player
+	 * This is used to set the volume of the player
+	 * This should be set to a value between 0 and 1
+	 */
+	setVolume: (volume: number) => void;
+	/**
+	 * Increase the volume of the player by a step
+	 * This is used to increase the volume of the player by a step
+	 * This should be set to a value between 0 and 1
+	 */
+	increaseVolumeByStep: (step: number) => void;
+	/**
+	 * Decrease the volume of the player by a step
+	 * This is used to decrease the volume of the player by a step
+	 * This should be set to a value between 0 and 1
+	 */
+	decreaseVolumeByStep: (step: number) => void;
+	/**
+	 * Toggle the player state between playing and paused
+	 * This is used to toggle the player state
+	 */
+	toggleIsPlaying: () => void;
+	/**
+	 * Set the player state to playing
+	 */
+	setIsPlaying: (isPlaying: boolean) => void;
+	/**
+	 * Set the player state to buffering
+	 * This is used to show the buffering spinner in the UI
+	 * This should be set to true when the player is buffering
+	 */
+	setIsBuffering: (isBuffering: boolean) => void;
+	/**
+	 * Set the current time of the player
+	 */
+	setCurrentTime: (currentTime: number) => void;
+	/**
+	 * Set the player state to ready
+	 * This is used to check if the player is ready for playback
+	 * This should be set to true when the player has finished fetching the playback stream
+	 */
+	setPlayerReady: (isPlayerReady: boolean) => void;
+	/**
+	 * Toggle the player state to fullscreen
+	 * This is used to toggle the fullscreen state of the player
+	 * This should be set to true when the user clicks on the fullscreen button
+	 */
+	toggleIsPlayerFullscreen: () => void;
+	/**
+	 * Set the user hover state
+	 * This is used to show/hide the player controls
+	 * This should be set to true when the user hovers over the player
+	 * This should be set to false when the user stops hovering over the player
+	 */
+	setIsUserHovering: (isUserHovering: boolean) => void;
+	/**
+	 * Set the user seeking state
+	 * This is used to temporarily switch to seek progress for the progress bar
+	 * This should be set to true when the user is seeking/scrubbing the progress bar
+	 */
+	setIsUserSeeking: (isUserSeeking: boolean) => void;
+	/**
+	 * Set the seek value
+	 * This is used to update the seek value in the UI
+	 * This should be set to the value of the progress bar when the user is seeking/scrubbing
+	 * This value should be in C# ticks
+	 */
+	setSeekValue: (seekValue: number) => void;
+	/**
+	 * Toggle the player muted state
+	 * This is used to toggle the player muted state
+	 */
+	toggleIsPlayerMuted: () => void;
+	/**
+	 * Set the loading state of the player
+	 * This is used to show/hide the loading spinner in the UI
+	 * This should be set to true when the player is loading
+	 * This should be set to false when the player has finished loading
+	 */
+	setIsLoading: (isLoading: boolean) => void;
+	setPlayerState: (playerState: PlaybackStoreState["playerState"]) => void;
+
+	// Playback information related actions
+	setMetadata: (
+		itemName: string,
+		episodeTitle: string,
+		isEpisode: boolean,
+		itemDuration: number,
+		item: BaseItemDto,
+		mediaSegments?: MediaSegmentDtoQueryResult,
+		userDataLastPlayedPositionTicks?: number,
+	) => void;
+	setMediaSource: (
+		videoTrack: number,
+		audioTrack: number,
+		container: string,
+		id: string | undefined,
+		subtitle: subtitlePlaybackInfo,
+		audio: audioPlaybackInfo,
+	) => void;
+	setPlaybackStream: (playbackStream: string) => void;
+	setPlaysessionId: (playsessionId: string | undefined | null) => void;
+	setUserId: (userId: string) => void;
+	setActiveSegment: (segmentIndex: number) => void;
+	clearActiveSegment: () => void;
+
+	/**
+	 * Trigger volume change indicator
+	 * This is used to show the volume change indicator in the UI
+	 */
+	tiggerVolumeIndicator: () => void;
+
+	// ReactPlayer related actions
+	_playerActions: {
+		seekTo: (seconds: number) => void;
+		getCurrentTime: () => number;
+	};
+	registerPlayerActions: (
+		actions: PlaybackStoreActions["_playerActions"],
+	) => void;
+	seekTo: (seconds: number) => void;
+	seekForward: (seconds: number) => void;
+	seekBackward: (seconds: number) => void;
+	getCurrentTime: () => number;
+	seekToNextChapter: () => void;
+	seekToPrevChapter: () => void;
+	handleStartSeek: (ticks: number) => void;
+	handleStopSeek: (ticks: number) => void;
+	/**
+	 * Skip current media segment
+	 */
+	skipSegment: () => void;
+};
+
+export const usePlaybackStore = create<
+	PlaybackStoreState & PlaybackStoreActions
+>()(
+	immer((set, get) => ({
 		mediaSource: {
-			videoTrack: 0,
-			audioTrack: 0,
-			container: "",
-			id: undefined,
-			subtitle: {
-				enable: false,
-				track: undefined!,
-				format: "ass",
-				allTracks: undefined,
-				url: undefined,
-			},
-			audio: {
-				track: undefined!,
-				allTracks: undefined,
+			videoTrack: undefined!,
+			audioTrack: undefined!,
+			container: undefined!,
+			id: undefined!,
+			subtitle: undefined!,
+			audio: undefined!,
+		},
+		playbackStream: undefined!,
+		playsessionId: undefined!,
+		metadata: {
+			itemName: undefined!,
+			episodeTitle: undefined,
+			isEpisode: false,
+			itemDuration: undefined!,
+			item: undefined!,
+			mediaSegments: undefined,
+			userDataLastPlayedPositionTicks: 0,
+		},
+		playerState: {
+			volume: 1,
+			isPlayerMuted: false,
+			isPlayerPlaying: true,
+			isPlayerReady: false,
+			isPlayerFullscreen: false,
+			isUserHovering: false,
+			isBuffering: true,
+			currentTime: undefined!,
+			isUserSeeking: false,
+			seekValue: 0,
+			isLoading: true,
+		},
+		userId: undefined!,
+		// -- MediaSegment skip feature --
+		nextSegmentIndex: 0,
+		activeSegmentId: null,
+
+		// -- Volume change indicator --
+		isVolumeInidcatorVisible: false,
+		volumeIndicatorVisibleTimeoutId: null,
+
+		// -- Player state related actions --
+		setVolume: (volume) => {
+			if (volume < 0 || volume > 1) {
+				console.warn("Volume must be between 0 and 1");
+			}
+			set((state) => {
+				state.playerState.volume = volume;
+				state.playerState.isPlayerMuted = volume === 0; // Mute if volume is 0
+			});
+			get().tiggerVolumeIndicator(); // Trigger volume change indicator
+		},
+		increaseVolumeByStep: (step) => {
+			set((state) => {
+				state.playerState.volume = Math.min(
+					1,
+					Math.max(0, state.playerState.volume + step),
+				);
+			});
+			get().tiggerVolumeIndicator(); // Trigger volume change indicator
+		},
+		decreaseVolumeByStep: (step) => {
+			set((state) => {
+				state.playerState.volume = Math.min(
+					1,
+					Math.max(0, state.playerState.volume - step),
+				);
+			});
+			get().tiggerVolumeIndicator(); // Trigger volume change indicator
+		},
+		toggleIsPlaying: () => {
+			set((state) => {
+				state.playerState.isPlayerPlaying = !state.playerState.isPlayerPlaying;
+			});
+		},
+		setIsPlaying: (isPlaying) =>
+			set((state) => {
+				state.playerState.isPlayerPlaying = isPlaying;
+			}),
+		setIsBuffering: (isBuffering) =>
+			set((state) => {
+				state.playerState.isBuffering = isBuffering;
+			}),
+		setCurrentTime: (currentTime) =>
+			set((state) => {
+				state.playerState.currentTime = currentTime;
+			}),
+		setPlayerReady: (isPlayerReady) =>
+			set((state) => {
+				state.playerState.isPlayerReady = isPlayerReady;
+			}),
+		setMetadata: (
+			itemName: string,
+			episodeTitle: string,
+			isEpisode: boolean,
+			itemDuration: number,
+			item: BaseItemDto,
+			mediaSegments?: MediaSegmentDtoQueryResult,
+		) =>
+			set((state) => {
+				state.metadata.itemName = itemName;
+				state.metadata.episodeTitle = episodeTitle;
+				state.metadata.isEpisode = isEpisode;
+				state.metadata.itemDuration = itemDuration;
+				state.metadata.item = item;
+				state.metadata.mediaSegments = mediaSegments;
+			}),
+		setMediaSource: (
+			videoTrack: number,
+			audioTrack: number,
+			container: string,
+			id: string | undefined,
+			subtitle: subtitlePlaybackInfo,
+			audio: audioPlaybackInfo,
+		) =>
+			set((state) => {
+				state.mediaSource.videoTrack = videoTrack;
+				state.mediaSource.audioTrack = audioTrack;
+				state.mediaSource.container = container;
+				state.mediaSource.id = id;
+				state.mediaSource.subtitle = subtitle;
+				state.mediaSource.audio = audio;
+			}),
+		setPlaybackStream: (playbackStream: string) =>
+			set((state) => {
+				state.playbackStream = playbackStream;
+			}),
+		setPlaysessionId: (playsessionId) =>
+			set((state) => {
+				state.playsessionId = playsessionId;
+			}),
+		toggleIsPlayerFullscreen: async () => {
+			await appWindow
+				.getCurrent()
+				.setFullscreen(!get().playerState.isPlayerFullscreen);
+			set((state) => {
+				state.playerState.isPlayerFullscreen =
+					!state.playerState.isPlayerFullscreen;
+			});
+		},
+		setIsUserHovering: (isUserHovering) =>
+			set((state) => {
+				state.playerState.isUserHovering = isUserHovering;
+			}),
+		setIsUserSeeking: (isUserSeeking) =>
+			set((state) => {
+				state.playerState.isUserSeeking = isUserSeeking;
+			}),
+		setSeekValue: (seekValue) =>
+			set((state) => {
+				state.playerState.seekValue = seekValue;
+			}),
+		toggleIsPlayerMuted: () =>
+			set((state) => {
+				state.playerState.isPlayerMuted = !state.playerState.isPlayerMuted;
+			}),
+		setIsLoading: (isLoading) =>
+			set((state) => {
+				state.playerState.isLoading = isLoading;
+			}),
+		setPlayerState: (playerState) =>
+			set((state) => ({
+				...state,
+				playerState: {
+					...state.playerState,
+					...playerState,
+				},
+			})),
+		setUserId: (userId) =>
+			set(() => ({
+				userId: userId,
+			})),
+		setActiveSegment: (segmentIndex) => {
+			const segment = get().metadata.mediaSegments?.Items?.[segmentIndex];
+			set((state) => {
+				state.nextSegmentIndex = segmentIndex + 1;
+				state.activeSegmentId = segment?.Id ?? null;
+			});
+		},
+		clearActiveSegment: () => {
+			set((state) => {
+				state.activeSegmentId = null;
+			});
+		},
+
+		// -- Volume change indicator Action --
+		tiggerVolumeIndicator: () => {
+			const timeoutId = get().volumeIndicatorVisibleTimeoutId;
+			if (timeoutId) {
+				clearTimeout(timeoutId); // Volume indicator is already visible
+			}
+			set((state) => {
+				state.isVolumeInidcatorVisible = true;
+				state.volumeIndicatorVisibleTimeoutId = setTimeout(() => {
+					set((state) => {
+						state.isVolumeInidcatorVisible = false;
+					});
+				}, 1000);
+			});
+		},
+
+		// -- ReactPlayer related actions --
+		_playerActions: {
+			seekTo: (seconds: number) =>
+				console.warn(
+					"ReactPlayer has not yet initialized. Please wait until the player is ready to seek.",
+				),
+			getCurrentTime: () => {
+				console.warn(
+					"ReactPlayer has not yet initialized. Please wait until the player is ready to get current time.",
+				);
+				return 0;
 			},
 		},
-		enableSubtitle: true,
-		playbackStream: "",
-		userId: "",
-		startPosition: 0,
-		itemDuration: 0,
-		item: null,
-		playsessionId: "",
-		intro: undefined,
-		volume: 1,
-	}),
-	shallow,
+		registerPlayerActions: (actions) =>
+			set({
+				_playerActions: actions,
+			}),
+		seekTo: (seconds: number) => {
+			const playerActions = get()._playerActions;
+			playerActions.seekTo(seconds);
+		},
+		seekForward: (seconds: number) => {
+			const playerActions = get()._playerActions;
+			const currentTime = playerActions.getCurrentTime();
+			playerActions.seekTo(currentTime + seconds);
+		},
+		seekBackward: (seconds: number) => {
+			const playerActions = get()._playerActions;
+			const currentTime = playerActions.getCurrentTime();
+			playerActions.seekTo(Math.max(0, currentTime - seconds));
+		},
+		getCurrentTime: () => {
+			const playerActions = get()._playerActions;
+			return playerActions.getCurrentTime();
+		},
+		seekToNextChapter: () => {
+			const playerActions = get()._playerActions;
+			const next = get().metadata.item?.Chapters?.filter((chapter) => {
+				if (
+					(chapter.StartPositionTicks ?? 0) > playerActions.getCurrentTime()
+				) {
+					return true;
+				}
+			})[0];
+			playerActions.seekTo(ticksToSec(next?.StartPositionTicks ?? 0));
+		},
+		seekToPrevChapter: () => {
+			const playerActions = get()._playerActions;
+			const chapters = get().metadata.item.Chapters?.filter((chapter) => {
+				if (
+					(chapter.StartPositionTicks ?? 0) <=
+					secToTicks(playerActions.getCurrentTime())
+				) {
+					return true;
+				}
+			});
+			if (!chapters?.length) {
+				playerActions.seekTo(0);
+			}
+			if (chapters?.length === 1) {
+				playerActions.seekTo(ticksToSec(chapters[0].StartPositionTicks ?? 0));
+			} else if ((chapters?.length ?? 0) > 1) {
+				playerActions.seekTo(
+					ticksToSec(chapters?.[chapters.length - 2].StartPositionTicks ?? 0),
+				);
+			}
+		},
+		skipSegment: () => {
+			const activeSegmentId = get().activeSegmentId;
+			const activeSegment = get().metadata.mediaSegments?.Items?.find(
+				(s) => s.Id === activeSegmentId,
+			);
+			if (!activeSegment) {
+				console.warn("No segment to skip");
+				return;
+			}
+			get()._playerActions.seekTo(activeSegment.EndTicks ?? 0);
+		},
+		handleStartSeek: (ticks) => {
+			set((state) => {
+				state.playerState.isUserSeeking = true;
+				state.playerState.seekValue = ticks;
+			});
+		},
+		handleStopSeek: (ticks) => {
+			const playerActions = get()._playerActions;
+			playerActions.seekTo(ticksToSec(ticks));
+			// Update current time to the new seek value
+			set((state) => {
+				state.playerState.isUserSeeking = false;
+				state.playerState.currentTime = ticks;
+			});
+		},
+	})),
 );
 
-export const playItem = (
-	itemName: string | React.Component | undefined | null,
-	episodeTitle: string,
-	videoTrack: number,
-	audioTrack: number,
-	container: string,
-	playbackStream: string,
-	userId: string,
-	startPosition: number | undefined | null,
-	itemDuration: number | undefined | null,
-	item: BaseItemDto,
-	queue: BaseItemDto[] | undefined | null,
-	queueItemIndex: number,
-	mediaSourceId: string | undefined | null,
-	playsessionId: string | undefined | null,
-	subtitle: subtitlePlaybackInfo | undefined,
-	intro: MediaSegmentDtoQueryResult | undefined,
-	audio: audioPlaybackInfo,
-	volume: number | undefined = 1,
-) => {
-	console.log({
-		itemName,
-		episodeTitle,
-		mediaSource: {
-			videoTrack,
-			audioTrack,
-			container,
-			id: mediaSourceId,
-			subtitle,
-			audio,
-		},
-		playbackStream,
-		userId,
-		startPosition,
-		itemDuration,
-		item,
-		playsessionId,
-		intro,
-		volume,
+export const playItem = (args: {
+	mediaSource: PlaybackStoreState["mediaSource"];
+	playbackStream: PlaybackStoreState["playbackStream"];
+	playsessionId: PlaybackStoreState["playsessionId"];
+	metadata: PlaybackStoreState["metadata"];
+	userDataPlayedPositionTicks: number;
+	userId: string;
+	queueItems: BaseItemDto[];
+	queueItemIndex: number;
+}) => {
+	usePlaybackStore.setState((state) => {
+		state.mediaSource = args.mediaSource;
+		state.playbackStream = args.playbackStream;
+		state.playsessionId = args.playsessionId;
+		state.metadata = args.metadata;
+		state.playerState.currentTime = args.userDataPlayedPositionTicks;
+		state.userId = args.userId;
 	});
 
-	if (!queue) {
-		throw new Error("No queue found");
-	}
-
-	if (!mediaSourceId) {
-		throw new Error("No media source id found");
-	}
-
-	if (!subtitle) {
-		throw new Error("No subtitle config found");
-	}
-
-	usePlaybackStore.setState({
-		itemName,
-		episodeTitle,
-		mediaSource: {
-			videoTrack,
-			audioTrack,
-			container,
-			id: mediaSourceId,
-			subtitle,
-			audio,
-		},
-		playbackStream,
-		userId,
-		startPosition: startPosition ?? 0,
-		itemDuration: itemDuration ?? 0,
-		item,
-		playsessionId,
-		intro,
-		volume,
-	});
-	setQueue(queue, queueItemIndex);
+	setQueue(args.queueItems, args.queueItemIndex ?? 0);
 };
 
 export const playItemFromQueue = async (
@@ -197,6 +625,18 @@ export const playItemFromQueue = async (
 			console.error("No media source id found");
 			return;
 		}
+		if (!item) {
+			throw new Error("Item is undefined in playItemFromQueue");
+		}
+		if (!item.Name) {
+			throw new Error("Item name is undefined in playItemFromQueue");
+		}
+		if (!item.RunTimeTicks) {
+			throw new Error("Item run time ticks is undefined in playItemFromQueue");
+		}
+		if (!item.Id) {
+			throw new Error("Item id is undefined in playItemFromQueue");
+		}
 
 		const mediaSource = (
 			await getMediaInfoApi(api).getPostedPlaybackInfo({
@@ -217,9 +657,13 @@ export const playItemFromQueue = async (
 				},
 			})
 		).data;
+		if (!mediaSource.MediaSources?.[0]?.Id) {
+			throw new Error("Media source is undefined in playItemFromQueue");
+		}
+
 		let itemName = item.Name;
 		let episodeTitle = "";
-		if (item.SeriesId) {
+		if (item.SeriesId && item.SeriesName) {
 			itemName = item.SeriesName;
 			episodeTitle = `S${item.ParentIndexNumber ?? 0}:E${
 				item.IndexNumber ?? 0
@@ -264,7 +708,7 @@ export const playItemFromQueue = async (
 			(value) => value.Type === "Video",
 		);
 
-		const introInfo = (
+		const mediaSegments = (
 			await getMediaSegmentsApi(api).getItemSegments({
 				itemId: item.Id ?? "",
 			})
@@ -280,25 +724,40 @@ export const playItemFromQueue = async (
 			},
 		});
 
-		playItem(
-			itemName,
-			episodeTitle,
-			videoTrack?.[0].Index ?? 0,
-			mediaSource.MediaSources?.[0].DefaultAudioStreamIndex ?? 0,
-			mediaSource?.MediaSources?.[0].Container ?? "mkv",
-			playbackUrl,
+		playItem({
+			metadata: {
+				itemName,
+				episodeTitle: episodeTitle,
+				isEpisode: !!item.SeriesId,
+				itemDuration: item.RunTimeTicks,
+				item: item,
+				mediaSegments: mediaSegments,
+				userDataLastPlayedPositionTicks:
+					item.UserData?.PlaybackPositionTicks ?? 0,
+			},
+			mediaSource: {
+				videoTrack: videoTrack?.[0]?.Index ?? 0,
+				audioTrack: audio.track,
+				container: mediaSource.MediaSources?.[0].Container ?? "",
+				id: mediaSource.MediaSources?.[0]?.Id,
+				subtitle: {
+					url: subtitle?.url,
+					track: subtitle?.track ?? -1,
+					format: subtitle?.format ?? "nosub",
+					allTracks: mediaSource.MediaSources?.[0].MediaStreams?.filter(
+						(value) => value.Type === "Subtitle",
+					),
+					enable: subtitle?.enable ?? false,
+				},
+				audio: audio,
+			},
+			playbackStream: playbackUrl,
+			playsessionId: mediaSource.PlaySessionId,
+			userDataPlayedPositionTicks: item.UserData?.PlaybackPositionTicks ?? 0,
 			userId,
-			item.UserData?.PlaybackPositionTicks,
-			item.RunTimeTicks,
-			item,
-			queueItems,
-			requestedItemIndex,
-			mediaSource.MediaSources?.[0]?.Id,
-			mediaSource.PlaySessionId,
-			subtitle,
-			introInfo,
-			audio,
-		);
+			queueItems: queueItems,
+			queueItemIndex: requestedItemIndex,
+		});
 	}
 
 	return "playing"; // Return any value to end mutation pending status
@@ -355,26 +814,23 @@ export const toggleSubtitleTrack = () => {
  * @param api api instance
  * @param startPosition position of videoPlayer during audio track change (this should be in ticks)
  */
-export const changeAudioTrack = async (
-	trackIndex: number,
-	api: Api,
-	startPosition: number,
-) => {
+export const changeAudioTrack = async (trackIndex: number, api: Api) => {
 	const prevState = usePlaybackStore.getState();
-	if (!prevState.item?.Id) {
+
+	if (!prevState.metadata.item?.Id) {
 		throw new Error("item is undefined in changeAudioTrack");
 	}
-	if (!prevState.item.MediaSources?.[0].Id) {
+	if (!prevState.metadata.item.MediaSources?.[0].Id) {
 		throw new Error("Media source id is undefined in changeAudioTrack");
 	}
 	const mediaSource = (
 		await getMediaInfoApi(api).getPostedPlaybackInfo({
 			audioStreamIndex: trackIndex,
 			subtitleStreamIndex: prevState.mediaSource.subtitle.track,
-			itemId: prevState.item.Id,
-			startTimeTicks: prevState.item.UserData?.PlaybackPositionTicks,
+			itemId: prevState.metadata.item.Id,
+			startTimeTicks: prevState.metadata.item.UserData?.PlaybackPositionTicks,
 			userId: prevState.userId,
-			mediaSourceId: prevState.item.MediaSources?.[0].Id,
+			mediaSourceId: prevState.metadata.item.MediaSources?.[0].Id,
 			playbackInfoDto: {
 				DeviceProfile: playbackProfile,
 			},
@@ -404,7 +860,7 @@ export const changeAudioTrack = async (
 	}
 
 	prevState.playbackStream = playbackUrl;
-	prevState.startPosition = startPosition;
+	// prevState.item = startPosition;
 	prevState.playsessionId = mediaSource.PlaySessionId;
 
 	usePlaybackStore.setState(prevState);

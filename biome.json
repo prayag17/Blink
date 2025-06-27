@@ -1,19 +1,27 @@
 {
-	"$schema": "https://biomejs.dev/schemas/1.9.2/schema.json",
-	"organizeImports": {
-		"enabled": true
-	},
+	"$schema": "https://biomejs.dev/schemas/2.0.5/schema.json",
+	"assist": { "actions": { "source": { "organizeImports": "on" } } },
 	"linter": {
 		"enabled": true,
 		"rules": {
 			"recommended": true,
 			"style": {
 				"noNonNullAssertion": "off",
-				"useEnumInitializers": "off"
+				"useEnumInitializers": "off",
+				"noParameterAssign": "error",
+				"useAsConstAssertion": "error",
+				"useDefaultParameterLast": "error",
+				"useSelfClosingElements": "error",
+				"useSingleVarDeclarator": "error",
+				"noUnusedTemplateLiteral": "error",
+				"useNumberNamespace": "error",
+				"noInferrableTypes": "error",
+				"noUselessElse": "error"
 			},
 			"a11y": {
 				"useKeyWithClickEvents": "off",
-				"useMediaCaption": "off"
+				"useMediaCaption": "off",
+				"noStaticElementInteractions": "off"
 			},
 			"correctness": {
 				"useExhaustiveDependencies": "off",
@@ -22,19 +30,17 @@
 			"suspicious": {
 				"noExplicitAny": "off"
 			},
-			"nursery": {
-				"useComponentExportOnlyModules": "error"
-			}
+			"nursery": {}
 		}
 	},
 	"files": {
-		"include": [
-			"src/**/*.ts",
-			"src/**/*.tsx",
-			"src/**/*.jsx",
-			"src/**/*.js",
-			"*.json",
-			"*.scss"
+		"includes": [
+			"**/src/**/*.ts",
+			"**/src/**/*.tsx",
+			"**/src/**/*.jsx",
+			"**/src/**/*.js",
+			"**/*.json",
+			"**/*.scss"
 		],
 		"ignoreUnknown": true
 	},

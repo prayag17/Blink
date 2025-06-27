@@ -1,20 +1,24 @@
-import { useBackdropStore } from "@/utils/store/backdrop";
 import { AnimatePresence, motion } from "motion/react";
 import React, { useLayoutEffect, useState } from "react";
+import { useBackdropStore } from "@/utils/store/backdrop";
 
 export default function Backdrop() {
 	const [backdropLoading, setBackdropLoading] = useState(true);
-
+	
 	const [backdropId, backdropUrl] = useBackdropStore((state) => [
 		state.backdropId,
 		state.backdropUrl,
 	]);
-
+	
 	// Reset loading status for backdrop
 	useLayoutEffect(() => {
 		setBackdropLoading(true);
 	}, [backdropId]);
-
+	
+	if (!backdropUrl) {
+		return null;
+	}
+	
 	return (
 		<div className="app-backdrop-container">
 			<AnimatePresence>

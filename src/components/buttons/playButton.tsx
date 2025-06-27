@@ -1,11 +1,3 @@
-import React, { memo, type MouseEvent } from "react"; // Import memo
-
-import Button, { type ButtonProps } from "@mui/material/Button";
-import Fab from "@mui/material/Fab";
-import LinearProgress from "@mui/material/LinearProgress";
-import Typography from "@mui/material/Typography";
-
-import { generateAudioStreamUrl, playAudio } from "@/utils/store/audioPlayback";
 import {
 	type BaseItemDto,
 	type BaseItemDtoQueryResult,
@@ -17,31 +9,34 @@ import {
 	type PlaybackInfoResponse,
 	SortOrder,
 } from "@jellyfin/sdk/lib/generated-client";
+import { getDisplayPreferencesApi } from "@jellyfin/sdk/lib/utils/api/display-preferences-api";
 import { getItemsApi } from "@jellyfin/sdk/lib/utils/api/items-api";
+import { getMediaInfoApi } from "@jellyfin/sdk/lib/utils/api/media-info-api";
+import { getMediaSegmentsApi } from "@jellyfin/sdk/lib/utils/api/media-segments-api";
 import { getPlaylistsApi } from "@jellyfin/sdk/lib/utils/api/playlists-api";
 import { getTvShowsApi } from "@jellyfin/sdk/lib/utils/api/tv-shows-api";
+import { getUserLibraryApi } from "@jellyfin/sdk/lib/utils/api/user-library-api";
+import { LoadingButton } from "@mui/lab";
+import type { SxProps } from "@mui/material";
+import Button, { type ButtonProps } from "@mui/material/Button";
+import Fab from "@mui/material/Fab";
+import LinearProgress from "@mui/material/LinearProgress";
+import Typography from "@mui/material/Typography";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { useNavigate } from "@tanstack/react-router";
+import type { AxiosResponse } from "axios";
 import { useSnackbar } from "notistack";
-
-import { setQueue } from "@/utils/store/queue";
-
-import { playItem } from "@/utils/store/playback";
-
+import React, { type MouseEvent, memo } from "react"; // Import memo
 import type PlayResult from "@//utils/types/playResult";
 import { getRuntimeCompact } from "@/utils/date/time";
 import getSubtitle from "@/utils/methods/getSubtitles";
 import playbackProfile from "@/utils/playback-profiles";
 import { useApiInContext } from "@/utils/store/api";
+import { generateAudioStreamUrl, playAudio } from "@/utils/store/audioPlayback";
 import { useCentralStore } from "@/utils/store/central";
 import { usePhotosPlayback } from "@/utils/store/photosPlayback";
-import { getDisplayPreferencesApi } from "@jellyfin/sdk/lib/utils/api/display-preferences-api";
-import { getMediaInfoApi } from "@jellyfin/sdk/lib/utils/api/media-info-api";
-import { getMediaSegmentsApi } from "@jellyfin/sdk/lib/utils/api/media-segments-api";
-import { getUserLibraryApi } from "@jellyfin/sdk/lib/utils/api/user-library-api";
-import { LoadingButton } from "@mui/lab";
-import type { SxProps } from "@mui/material";
-import type { AxiosResponse } from "axios";
+import { playItem } from "@/utils/store/playback";
+import { setQueue } from "@/utils/store/queue";
 
 type PlayButtonProps = {
 	item: BaseItemDto;
@@ -89,7 +84,7 @@ const PlayButton = ({
 	itemType,
 	currentAudioTrack,
 	currentSubTrack,
-	currentVideoTrack,
+	// currentVideoTrack,
 	className,
 	sx,
 	buttonProps,
@@ -574,26 +569,46 @@ const PlayButton = ({
 					initVolume = displayPreferences.data.CustomPrefs?.Volume;
 				}
 
-				playItem(
-					itemName,
-					episodeTitle,
-					currentVideoTrack ?? 0,
-					Number(result.mediaSource.MediaSources?.[0].DefaultAudioStreamIndex),
-					result?.mediaSource?.MediaSources?.[0].Container ?? "mkv",
-					playbackUrl,
-					userId ?? "",
-					startPosition,
-					result?.item?.Items?.[episodeIndex].RunTimeTicks,
-					playItemValue ?? item,
-					queue,
-					episodeIndex,
-					result?.mediaSource?.MediaSources?.[0]?.Id,
-					result?.mediaSource?.PlaySessionId,
-					subtitle,
-					result?.mediaSegments,
-					audio,
-					Number(initVolume),
-				);
+				const videoTrack =
+					result.mediaSource.MediaSources?.[0].MediaStreams?.filter(
+						(value) => value.Type === "Video",
+					);
+
+				playItem({
+					metadata: {
+						itemName: itemName ?? "",
+						episodeTitle: episodeTitle,
+						isEpisode: !!item.SeriesId,
+						itemDuration: item.RunTimeTicks ?? 0,
+						item: playItemValue ?? item,
+						mediaSegments: result.mediaSegments,
+						userDataLastPlayedPositionTicks: startPosition ?? 0,
+					},
+					mediaSource: {
+						videoTrack: videoTrack?.[0]?.Index ?? 0,
+						audioTrack: audio.track,
+						container: result.mediaSource.MediaSources?.[0].Container ?? "",
+						id: result.mediaSource.MediaSources?.[0]?.Id,
+						subtitle: {
+							url: subtitle?.url,
+							track: subtitle?.track ?? -1,
+							format: subtitle?.format ?? "nosub",
+							allTracks:
+								result.mediaSource.MediaSources?.[0].MediaStreams?.filter(
+									(value) => value.Type === "Subtitle",
+								),
+							enable: subtitle?.enable ?? false,
+						},
+						audio: audio,
+					},
+					playbackStream: playbackUrl,
+					playsessionId: result.mediaSource.PlaySessionId,
+					userDataPlayedPositionTicks:
+						item.UserData?.PlaybackPositionTicks ?? 0,
+					userId,
+					queueItems: queue ?? [],
+					queueItemIndex: episodeIndex,
+				});
 				navigate({ to: "/player" });
 			}
 		},
@@ -686,7 +701,7 @@ const PlayButton = ({
 					position: "relative",
 				}}
 			>
-				<LoadingButton
+				<Button
 					loading={currentEpisode.isPending}
 					className={className ?? "play-button"}
 					variant="contained"
@@ -725,7 +740,7 @@ const PlayButton = ({
 								: 0
 						}
 					/>
-				</LoadingButton>
+				</Button>
 				{(currentEpisode.data?.Items?.[0].UserData?.PlaybackPositionTicks ??
 					0) > 0 && (
 					<Typography

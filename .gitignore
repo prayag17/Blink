@@ -40,3 +40,5 @@ target/
 *.pdb
 
 generateBanner
+# Million Lint
+.million

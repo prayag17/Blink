@@ -1,46 +1,11 @@
-import { ticksToMs, ticksToSec } from "@/utils/date/time";
-import {
-	type VideoPlayerAction,
-	VideoPlayerActionKind,
-} from "@/utils/reducers/videoPlayerReducer";
-import type audioPlaybackInfo from "@/utils/types/audioPlaybackInfo";
-import type subtitlePlaybackInfo from "@/utils/types/subtitlePlaybackInfo";
-import type { Api } from "@jellyfin/sdk";
-import type {
-	BaseItemDto,
-	TrickplayInfo,
-} from "@jellyfin/sdk/lib/generated-client";
+import type { TrickplayInfo } from "@jellyfin/sdk/lib/generated-client";
 import { Slider, Tooltip, Typography } from "@mui/material";
 import type { Instance } from "@popperjs/core";
-import React, {
-	type RefObject,
-	type ActionDispatch,
-	type MouseEvent,
-} from "react";
-import { useRef, useState } from "react";
-import type ReactPlayer from "react-player";
-
-type BubbleSliderProps = {
-	itemDuration: number;
-	item: BaseItemDto;
-	mediaSource: {
-		videoTrack: number;
-		audioTrack: number;
-		container: string;
-		id: string | undefined;
-		subtitle: subtitlePlaybackInfo;
-		audio: audioPlaybackInfo;
-	};
-	api: Api;
-	chapterMarks: { value: number }[];
-	sliderState: {
-		isSeeking: boolean;
-		sliderSeek: number;
-		progress: number;
-	};
-	dispatch: ActionDispatch<[action: VideoPlayerAction]>;
-	player: RefObject<ReactPlayer | null>;
-};
+import React, { type MouseEvent, useMemo, useRef, useState } from "react";
+import { useShallow } from "zustand/shallow";
+import { ticksToMs } from "@/utils/date/time";
+import { useApiInContext } from "@/utils/store/api";
+import { usePlaybackStore } from "@/utils/store/playback";
 
 const ticksDisplay = (ticks: number) => {
 	const time = Math.round(ticks / 10000);
@@ -64,16 +29,40 @@ const ticksDisplay = (ticks: number) => {
 	return formatedTime;
 };
 
-const BubbleSlider = ({
-	itemDuration,
-	item,
-	mediaSource,
-	api,
-	chapterMarks,
-	sliderState,
-	dispatch,
-	player,
-}: BubbleSliderProps) => {
+const BubbleSlider = () => {
+	const api = useApiInContext((state) => state.api);
+	const {
+		seekValue,
+		currentTime,
+		isUserSeeking,
+		// setIsUserSeeking,
+		// setSeekValue,
+		// seekTo,
+		itemDuration,
+		itemChapters,
+		mediaSource,
+		itemTrickplay,
+		itemId,
+		handleStartSeek,
+		handleStopSeek,
+	} = usePlaybackStore(
+		useShallow((state) => ({
+			seekValue: state.playerState.seekValue,
+			currentTime: state.playerState.currentTime,
+			isUserSeeking: state.playerState.isUserSeeking,
+			// setIsUserSeeking: state.setIsUserSeeking,
+			// setSeekValue: state.setSeekValue,
+			// seekTo: state.seekTo,
+			itemDuration: state.metadata.item.RunTimeTicks,
+			itemChapters: state.metadata.item.Chapters,
+			mediaSource: state.mediaSource,
+			itemTrickplay: state.metadata.item.Trickplay,
+			itemId: state.metadata.item.Id,
+			handleStartSeek: state.handleStartSeek,
+			handleStopSeek: state.handleStopSeek,
+		})),
+	);
+
 	const positionRef = useRef<{ x: number; y: number }>({
 		x: 0,
 		y: 0,
@@ -89,20 +78,27 @@ const BubbleSlider = ({
 		const width = rect.width;
 		const distX = event.clientX - rect.left;
 		const percentageCovered = distX / width;
-		setHoverProgress(percentageCovered * itemDuration);
+		setHoverProgress(percentageCovered * (itemDuration ?? 0));
 		if (popperRef.current != null) {
 			popperRef.current.update();
 		}
 	};
 
+	const chapterMarks = useMemo(() => {
+		const marks: { value: number }[] = [];
+		itemChapters?.map((val) => {
+			marks.push({ value: val.StartPositionTicks ?? 0 });
+		});
+		return marks;
+	}, [itemChapters]);
+
 	const sliderDisplayFormat = (value: number) => {
-		const currentChapter = item?.Chapters?.filter((chapter, index) => {
-			if (index + 1 === item.Chapters?.length) {
+		const currentChapter = itemChapters?.filter((chapter, index) => {
+			if (index + 1 === itemChapters?.length) {
 				return chapter;
 			}
 			if (
-				(item.Chapters?.[index + 1]?.StartPositionTicks ?? value) - value >=
-					0 &&
+				(itemChapters?.[index + 1]?.StartPositionTicks ?? value) - value >= 0 &&
 				(chapter.StartPositionTicks ?? value) - value < 0
 			) {
 				return chapter;
@@ -111,7 +107,7 @@ const BubbleSlider = ({
 
 		let trickplayResolution: TrickplayInfo | undefined;
 		const trickplayResolutions = mediaSource.id
-			? item?.Trickplay?.[mediaSource.id]
+			? itemTrickplay?.[mediaSource.id]
 			: null;
 		if (trickplayResolutions) {
 			let bestWidth: number | undefined;
@@ -168,7 +164,7 @@ const BubbleSlider = ({
 						<div
 							className="video-osd-trickplayBubble"
 							style={{
-								background: `url(${api?.basePath}/Videos/${item?.Id}/Trickplay/${trickplayResolution.Width}/${index}.jpg?${imgUrlParams})`,
+								background: `url(${api?.basePath}/Videos/${itemId}/Trickplay/${trickplayResolution.Width}/${index}.jpg?${imgUrlParams})`,
 								backgroundPositionX: `${backgroundOffsetX}px`,
 								backgroundPositionY: `${backgroundOffsetY}px`,
 								width: "100%",
@@ -189,7 +185,7 @@ const BubbleSlider = ({
 					<div
 						className="video-osd-trickplayBubble"
 						style={{
-							background: `url(${api?.basePath}/Videos/${item?.Id}/Trickplay/${trickplayResolution.Width}/${index}.jpg?${imgUrlParams})`,
+							background: `url(${api?.basePath}/Videos/${itemId}/Trickplay/${trickplayResolution.Width}/${index}.jpg?${imgUrlParams})`,
 							backgroundPositionX: `${backgroundOffsetX}px`,
 							backgroundPositionY: `${backgroundOffsetY}px`,
 							width: "100%",
@@ -259,44 +255,24 @@ const BubbleSlider = ({
 			}}
 		>
 			<Slider
-				value={
-					sliderState.isSeeking ? sliderState.sliderSeek : sliderState.progress
-				}
-				max={itemDuration}
+				value={isUserSeeking ? seekValue : currentTime}
+				max={itemDuration ?? 0}
 				step={1}
 				onChange={(_, newValue) => {
-					dispatch({
-						type: VideoPlayerActionKind.SET_SEEKING,
-						payload: true,
-					});
+					// setIsUserSeeking(true);
 					Array.isArray(newValue)
-						? dispatch({
-								type: VideoPlayerActionKind.SET_SLIDER_SEEK,
-								payload: newValue[0],
-							})
-						: dispatch({
-								type: VideoPlayerActionKind.SET_SLIDER_SEEK,
-								payload: newValue,
-							});
+						? handleStartSeek(newValue[0])
+						: handleStartSeek(newValue);
 				}}
 				onChangeCommitted={(_, newValue) => {
-					dispatch({
-						type: VideoPlayerActionKind.SET_SEEKING,
-						payload: false,
-					});
-					Array.isArray(newValue)
-						? dispatch({
-								type: VideoPlayerActionKind.SET_SLIDER_SEEK,
-								payload: newValue[0],
-							})
-						: dispatch({
-								type: VideoPlayerActionKind.SET_SLIDER_SEEK,
-								payload: newValue,
-							});
+					// setIsUserSeeking(false);
+					// Array.isArray(newValue)
+					// 	? setSeekValue(newValue[0])
+					// 	: setSeekValue(newValue);
 					if (Array.isArray(newValue)) {
-						player.current?.seekTo(ticksToSec(newValue[0]), "seconds");
+						handleStopSeek(newValue[0]);
 					} else {
-						player.current?.seekTo(ticksToSec(newValue), "seconds");
+						handleStopSeek(newValue);
 					}
 				}}
 				sx={{
