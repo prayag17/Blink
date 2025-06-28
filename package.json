@@ -73,7 +73,7 @@
 		"typescript": "^5.8.3",
 		"vite-plugin-svgr": "^4.3.0",
 		"wavesurfer.js": "^7.9.8",
-		"zustand": "5.0.5"
+		"zustand": "5.0.6"
 	},
 	"devDependencies": {
 		"@babel/plugin-proposal-optional-chaining-assign": "^7.27.1",
