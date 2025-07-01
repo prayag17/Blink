@@ -339,10 +339,38 @@ export const usePlaybackStore = create<
 			set((state) => {
 				state.playerState.isBuffering = isBuffering;
 			}),
-		setCurrentTime: (currentTime) =>
+		setCurrentTime: (ticks) => {
+			const { nextSegmentIndex, activeSegmentId, metadata } = get();
+			if (activeSegmentId) {
+				const activeSegment = metadata.mediaSegments?.Items?.find(
+					(s) => s.Id === activeSegmentId,
+				);
+				if (activeSegment && ticks > (activeSegment.EndTicks ?? ticks)) {
+					// If the current time is past the active segment's end time, clear it.
+					set((state) => {
+						state.activeSegmentId = null;
+					});
+				}
+			}
+
+			if (nextSegmentIndex !== -1) {
+				const nextSegment = metadata.mediaSegments?.Items?.[nextSegmentIndex];
+				console.info("Next segment:", nextSegment);
+				if (nextSegment && ticks >= (nextSegment.StartTicks ?? ticks + 1)) {
+					// If the current time is past the next segment's start time, set it as active.
+					// clearActiveSegment();
+					set((state) => {
+						state.activeSegmentId = null;
+						state.nextSegmentIndex = nextSegmentIndex + 1;
+						state.activeSegmentId = nextSegment?.Id ?? null;
+					});
+				}
+			}
+
 			set((state) => {
-				state.playerState.currentTime = currentTime;
-			}),
+				state.playerState.currentTime = ticks;
+			});
+		},
 		setPlayerReady: (isPlayerReady) =>
 			set((state) => {
 				state.playerState.isPlayerReady = isPlayerReady;
@@ -533,7 +561,8 @@ export const usePlaybackStore = create<
 				console.warn("No segment to skip");
 				return;
 			}
-			get()._playerActions.seekTo(activeSegment.EndTicks ?? 0);
+			console.info("Skipping segment:", activeSegment);
+			get()._playerActions.seekTo(ticksToSec(activeSegment.EndTicks ?? 0));
 		},
 		handleStartSeek: (ticks) => {
 			set((state) => {
@@ -547,7 +576,7 @@ export const usePlaybackStore = create<
 			// Update current time to the new seek value
 			set((state) => {
 				state.playerState.isUserSeeking = false;
-				state.playerState.currentTime = ticks;
+				// state.playerState.currentTime = ticks;
 			});
 		},
 	})),

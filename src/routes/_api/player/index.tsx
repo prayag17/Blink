@@ -1,15 +1,8 @@
 import { getPlaystateApi } from "@jellyfin/sdk/lib/utils/api/playstate-api";
 import CircularProgress from "@mui/material/CircularProgress";
 import { WebviewWindow as appWindow } from "@tauri-apps/api/webviewWindow";
-import React, {
-	useCallback,
-	useEffect,
-	// useLayoutEffect,
-	useMemo,
-	useRef,
-	useState,
-} from "react";
-import ReactPlayer from "react-player/lazy";
+import React, { useCallback, useEffect, useRef, useState } from "react";
+import ReactPlayer from "react-player";
 import { secToTicks, ticksToSec } from "@/utils/date/time";
 import { playItemFromQueue, usePlaybackStore } from "@/utils/store/playback";
 
@@ -25,7 +18,7 @@ import wasmUrl from "jassub/dist/jassub-worker.wasm?url";
 import { PgsRenderer } from "libpgs";
 //@ts-ignore
 import pgsWorkerUrl from "libpgs/dist/libpgs.worker.js?url";
-import type { OnProgressProps } from "react-player/base";
+// import type { OnProgressProps } from "react-player";
 import { useShallow } from "zustand/shallow";
 import SkipSegmentButton from "@/components/playback/videoPlayer/buttons/SkipSegmentButton";
 import VideoPlayerControls from "@/components/playback/videoPlayer/controls";
@@ -88,14 +81,14 @@ function addSubtitleTrackToReactPlayer(
 export function VideoPlayer() {
 	const api = useApiInContext((s) => s.api);
 	const { history } = useRouter();
-	const player = useRef<ReactPlayer | null>(null);
+	const player = useRef<HTMLVideoElement | null>(null);
 
 	const user = useCentralStore((s) => s.currentUser);
 
 	const {
 		itemId,
 		userDataLastPlayedPositionTicks,
-		mediaSegments,
+		// mediaSegments,
 		setCurrentTime,
 		volume,
 		isPlayerPlaying,
@@ -106,10 +99,10 @@ export function VideoPlayer() {
 		playsessionId,
 		toggleIsPlaying,
 		toggleIsPlayerMuted,
-		nextSegmentIndex,
-		activeSegmentId,
-		clearActiveSegment,
-		setActiveSegment,
+		// nextSegmentIndex,
+		// activeSegmentId,
+		// clearActiveSegment,
+		// setActiveSegment,
 		playbackStream,
 		setIsBuffering,
 		registerPlayerActions,
@@ -119,7 +112,7 @@ export function VideoPlayer() {
 			itemId: state.metadata.item?.Id,
 			userDataLastPlayedPositionTicks:
 				state.metadata.userDataLastPlayedPositionTicks,
-			mediaSegments: state.metadata.mediaSegments,
+			// mediaSegments: state.metadata.mediaSegments,
 			setCurrentTime: state.setCurrentTime,
 			volume: state.playerState.volume,
 			isPlayerPlaying: state.playerState.isPlayerPlaying,
@@ -132,10 +125,10 @@ export function VideoPlayer() {
 			toggleIsPlaying: state.toggleIsPlaying,
 			toggleIsPlayerMuted: state.toggleIsPlayerMuted,
 			toggleIsPlayerFullscreen: state.toggleIsPlayerFullscreen,
-			nextSegmentIndex: state.nextSegmentIndex,
-			activeSegmentId: state.activeSegmentId,
-			clearActiveSegment: state.clearActiveSegment,
-			setActiveSegment: state.setActiveSegment,
+			// nextSegmentIndex: state.nextSegmentIndex,
+			// activeSegmentId: state.activeSegmentId,
+			// clearActiveSegment: state.clearActiveSegment,
+			// setActiveSegment: state.setActiveSegment,
 			playbackStream: state.playbackStream,
 			setIsBuffering: state.setIsBuffering,
 			registerPlayerActions: state.registerPlayerActions,
@@ -152,26 +145,23 @@ export function VideoPlayer() {
 
 	const handleReady = async () => {
 		if (api && !isPlayerReady && player.current) {
-			player.current.seekTo(
-				ticksToSec(userDataLastPlayedPositionTicks ?? 0),
-				"seconds",
-			);
+			player.current.fastSeek(ticksToSec(userDataLastPlayedPositionTicks ?? 0));
 			registerPlayerActions({
 				seekTo: (seconds: number) => {
 					const internalPlayer = player.current;
-					internalPlayer?.seekTo(seconds, "seconds");
-					console.log("Seeking to", seconds, "seconds");
+					if (internalPlayer) {
+						internalPlayer.currentTime = seconds;
+						console.log("Seeking to", seconds, "seconds");
+					}
+					console.warn("ReactPlayer is not ready yet");
 					// If you want to report the seek action
 					// if (internalPlayer && typeof internalPlayer.seekTo === "function") {
 					// }
 				},
 				getCurrentTime: () => {
 					const internalPlayer = player.current;
-					if (
-						internalPlayer &&
-						typeof internalPlayer.getCurrentTime === "function"
-					) {
-						return internalPlayer.getCurrentTime();
+					if (internalPlayer) {
+						return internalPlayer.currentTime;
 					}
 					console.warn("ReactPlayer is not ready yet");
 					return 0;
@@ -199,54 +189,33 @@ export function VideoPlayer() {
 		}
 	};
 
-	const handleProgress = useCallback(
-		async (event: OnProgressProps) => {
-			const ticks = secToTicks(event.playedSeconds);
+	const handleTimeUpdate = useCallback(async () => {
+		const ticks = secToTicks(player.current?.currentTime ?? 0);
 
-			if (activeSegmentId) {
-				const activeSegment = mediaSegments?.Items?.find(
-					(s) => s.Id === activeSegmentId,
-				);
-				// If the current time is past the active segment's end time, clear it.
-				if (activeSegment && ticks > (activeSegment.EndTicks ?? ticks)) {
-					clearActiveSegment();
-				}
-			}
+		setCurrentTime(ticks);
+		if (!api) {
+			console.warn("API is not available, cannot report playback progress.");
+			return;
+		}
 
-			if (nextSegmentIndex !== -1) {
-				const nextSegment = mediaSegments?.Items?.[nextSegmentIndex];
-				if (nextSegment && ticks >= (nextSegment.StartTicks ?? ticks)) {
-					clearActiveSegment();
-					setActiveSegment(nextSegmentIndex);
-				}
-			}
-
-			setCurrentTime(secToTicks(event.playedSeconds));
-			if (!api) {
-				console.warn("API is not available, cannot report playback progress.");
-				return;
-			}
-
-			// Report Jellyfin server: Playback progress
-			getPlaystateApi(api).reportPlaybackProgress({
-				playbackProgressInfo: {
-					AudioStreamIndex: mediaSource.audioTrack,
-					CanSeek: true,
-					IsMuted: isPlayerMuted,
-					IsPaused: player.current?.getInternalPlayer()?.paused,
-					ItemId: itemId,
-					MediaSourceId: mediaSource.id,
-					PlayMethod: PlayMethod.DirectPlay,
-					PlaySessionId: playsessionId,
-					PlaybackStartTimeTicks: userDataLastPlayedPositionTicks,
-					PositionTicks: secToTicks(event.playedSeconds),
-					RepeatMode: RepeatMode.RepeatNone,
-					VolumeLevel: Math.floor(volume * 100),
-				},
-			});
-		},
-		[setCurrentTime],
-	);
+		// Report Jellyfin server: Playback progress
+		getPlaystateApi(api).reportPlaybackProgress({
+			playbackProgressInfo: {
+				AudioStreamIndex: mediaSource.audioTrack,
+				CanSeek: true,
+				IsMuted: isPlayerMuted,
+				IsPaused: player.current?.paused,
+				ItemId: itemId,
+				MediaSourceId: mediaSource.id,
+				PlayMethod: PlayMethod.DirectPlay,
+				PlaySessionId: playsessionId,
+				PlaybackStartTimeTicks: userDataLastPlayedPositionTicks,
+				PositionTicks: ticks,
+				RepeatMode: RepeatMode.RepeatNone,
+				VolumeLevel: Math.floor(volume * 100),
+			},
+		});
+	}, [setCurrentTime]);
 
 	const handleExitPlayer = useCallback(async () => {
 		appWindow.getCurrent().setFullscreen(false);
@@ -256,65 +225,62 @@ export function VideoPlayer() {
 			throw Error("API is not available, cannot report playback stopped.");
 		}
 		// Report Jellyfin server: Playback has ended/stopped
-		/* getPlaystateApi(api).reportPlaybackStopped({
+		getPlaystateApi(api).reportPlaybackStopped({
 			playbackStopInfo: {
 				Failed: false,
 				ItemId: itemId,
 				MediaSourceId: mediaSource.id,
 				PlaySessionId: playsessionId,
-				PositionTicks: secToTicks(player.current?.getCurrentTime() ?? 0),
+				PositionTicks: secToTicks(player.current?.currentTime ?? 0),
 			},
-		}); */
+		});
 		usePlaybackStore.setState(usePlaybackStore.getInitialState());
 		clearQueue();
 	}, []);
 
-	const handleKeyPress = useCallback(
-		(event: KeyboardEvent) => {
-			if (player.current) {
-				event.preventDefault();
-				switch (event.key) {
-					case "ArrowRight":
-						player.current.seekTo(player.current.getCurrentTime() + 10);
-						break;
-					case "ArrowLeft":
-						player.current.seekTo(player.current.getCurrentTime() - 10);
-						break;
-					case "F8":
-					case " ":
-						toggleIsPlaying();
-						break;
-					case "ArrowUp":
-						// setVolume((state) => (state <= 0.9 ? state + 0.1 : state));
-						break;
-					case "ArrowDown":
-						// setVolume((state) => (state >= 0.1 ? state - 0.1 : state));
-						break;
-					case "F":
-					case "f":
-						toggleIsPlayerFullscreen();
-						break;
-					case "P":
-					case "p":
-						// setIsPIP((state) => !state);
-						break;
-					case "M":
-					case "m":
-						toggleIsPlayerMuted();
-						break;
-					case "F7":
-						playItemFromQueue("previous", user?.Id, api);
-						break;
-					case "F9":
-						playItemFromQueue("next", user?.Id, api);
-						break;
-					default:
-						break;
-				}
+	const handleKeyPress = useCallback((event: KeyboardEvent) => {
+		if (player.current) {
+			event.preventDefault();
+			switch (event.key) {
+				case "ArrowRight":
+					player.current.currentTime = player.current.currentTime + 10;
+					break;
+				case "ArrowLeft":
+					player.current.currentTime = player.current.currentTime - 10;
+					break;
+				case "F8":
+				case " ":
+					toggleIsPlaying();
+					break;
+				case "ArrowUp":
+					// setVolume((state) => (state <= 0.9 ? state + 0.1 : state));
+					break;
+				case "ArrowDown":
+					// setVolume((state) => (state >= 0.1 ? state - 0.1 : state));
+					break;
+				case "F":
+				case "f":
+					toggleIsPlayerFullscreen();
+					break;
+				case "P":
+				case "p":
+					// setIsPIP((state) => !state);
+					break;
+				case "M":
+				case "m":
+					toggleIsPlayerMuted();
+					break;
+				case "F7":
+					playItemFromQueue("previous", user?.Id, api);
+					break;
+				case "F9":
+					playItemFromQueue("next", user?.Id, api);
+					break;
+				default:
+					break;
 			}
-		},
-		[player.current?.seekTo],
-	);
+		}
+	}, []);
 
 	useEffect(() => {
 		// attach the event listener
@@ -328,7 +294,7 @@ export function VideoPlayer() {
 
 	// Manage Subtitle playback
 	useEffect(() => {
-		if (player.current?.getInternalPlayer() && mediaSource.subtitle.enable) {
+		if (player.current && mediaSource.subtitle.enable) {
 			let jassubRenderer: JASSUB | undefined;
 			let pgsRenderer: PgsRenderer | undefined;
 			if (
@@ -337,7 +303,7 @@ export function VideoPlayer() {
 			) {
 				jassubRenderer = new JASSUB({
 					//@ts-ignore
-					video: player.current?.getInternalPlayer(),
+					video: player.current,
 					workerUrl,
 					wasmUrl,
 					subUrl: `${api?.basePath}${mediaSource.subtitle.url}`,
@@ -349,14 +315,14 @@ export function VideoPlayer() {
 				mediaSource.subtitle.format === "vtt"
 			) {
 				addSubtitleTrackToReactPlayer(
-					player.current.getInternalPlayer() as HTMLMediaElement,
+					player.current as HTMLMediaElement,
 					mediaSource.subtitle,
 					api?.basePath ?? "",
 				);
 			} else if (mediaSource.subtitle.format === "PGSSUB") {
 				pgsRenderer = new PgsRenderer({
 					workerUrl: pgsWorkerUrl,
-					video: player.current?.getInternalPlayer() as any,
+					video: player.current as any,
 					subUrl: `${api?.basePath}${mediaSource.subtitle.url}`,
 				});
 			}
@@ -369,26 +335,14 @@ export function VideoPlayer() {
 				}
 			};
 		}
-		if (
-			player.current?.getInternalPlayer() &&
-			mediaSource.subtitle.enable === false
-		) {
+		if (player.current && mediaSource.subtitle.enable === false) {
 			// @ts-ignore internalPlayer here provides the HTML video player element
-			const videoElem: HTMLMediaElement =
-				player.current.getInternalPlayer() as HTMLMediaElement;
+			const videoElem: HTMLMediaElement = player.current as HTMLMediaElement;
 			for (const i of videoElem.textTracks) {
 				i.mode = "hidden";
 			}
 		}
 	}, [mediaSource.subtitle?.track, mediaSource.subtitle?.enable]);
-
-	// const chapterMarks = useMemo(() => {
-	// 	const marks: { value: number }[] = [];
-	// 	item?.Chapters?.map((val) => {
-	// 		marks.push({ value: val.StartPositionTicks ?? 0 });
-	// 	});
-	// 	return marks;
-	// }, [item?.Chapters]);
 
 	const handlePlaybackEnded = useCallback(() => {
 		if (queue?.length !== currentQueueItemIndex + 1) {
@@ -451,35 +405,12 @@ export function VideoPlayer() {
 		setAreControlsVisible(false);
 	}, [clearIdleTimer]);
 
-	const playerConfig = useMemo(
-		() => ({
-			file: {
-				attributes: {
-					crossOrigin: "anonymous",
-					preload: "metadata",
-				},
-				tracks: [],
-			},
-		}),
-		[],
-	);
-
 	const handleOnBuffer = useCallback(() => {
 		setIsBuffering(true);
 	}, [setIsBuffering]);
 	const handleOnBufferEnd = useCallback(() => {
 		setIsBuffering(false);
 	}, [setIsBuffering]);
-
-	const handleError = useCallback(
-		(error: any, data: any, hls: any, hlsG: any) => {
-			console.error(error.target.error);
-			console.error(data);
-			console.error(hls);
-			console.error(hlsG);
-		},
-		[],
-	);
 
 	if (!playbackStream) {
 		return (
@@ -516,11 +447,11 @@ export function VideoPlayer() {
 			<ReactPlayer
 				key={playsessionId}
 				playing={isPlayerPlaying}
-				url={playbackStream}
+				src={playbackStream}
 				ref={player}
 				onReady={handleReady}
-				onProgress={handleProgress}
-				onError={handleError}
+				onTimeUpdate={handleTimeUpdate}
+				// onError={handleError}
 				onEnded={handlePlaybackEnded}
 				width="100vw"
 				height="100vh"
@@ -529,10 +460,9 @@ export function VideoPlayer() {
 					zIndex: 1,
 				}}
 				volume={isPlayerMuted ? 0 : volume}
-				onBuffer={handleOnBuffer}
-				onBufferEnd={handleOnBufferEnd}
-				playsinline
-				config={playerConfig}
+				onWaiting={handleOnBuffer}
+				onPlaying={handleOnBufferEnd}
+				playsInline
 			/>
 		</div>
 	);

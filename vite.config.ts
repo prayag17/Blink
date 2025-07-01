@@ -2,7 +2,7 @@ import { defineConfig } from "vite";
 import react from "@vitejs/plugin-react";
 import svgr from "vite-plugin-svgr";
 import { tanstackRouter } from '@tanstack/router-vite-plugin'
-import MillionLint from "@million/lint";
+// import MillionLint from "@million/lint";
 import path from "path";
 
 // const ReactCompilerConfig = {compilationMode: "annotation"}
@@ -20,11 +20,7 @@ const plugins = [react({
       }],
     ],
   }
-}), svgr(), tanstackRouter(), MillionLint.vite({
-  // Enable Million's linting capabilities
-  enabled: true,
-  
-})];
+}), svgr(), tanstackRouter()];
 export default defineConfig({
   plugins: plugins,
   css: {
