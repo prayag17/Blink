@@ -101,7 +101,7 @@ export function VideoPlayer() {
 		toggleIsPlayerMuted,
 		// nextSegmentIndex,
 		// activeSegmentId,
-		// clearActiveSegment,
+		clearActiveSegment,
 		// setActiveSegment,
 		playbackStream,
 		setIsBuffering,
@@ -127,7 +127,7 @@ export function VideoPlayer() {
 			toggleIsPlayerFullscreen: state.toggleIsPlayerFullscreen,
 			// nextSegmentIndex: state.nextSegmentIndex,
 			// activeSegmentId: state.activeSegmentId,
-			// clearActiveSegment: state.clearActiveSegment,
+			clearActiveSegment: state.clearActiveSegment,
 			// setActiveSegment: state.setActiveSegment,
 			playbackStream: state.playbackStream,
 			setIsBuffering: state.setIsBuffering,
@@ -145,7 +145,7 @@ export function VideoPlayer() {
 
 	const handleReady = async () => {
 		if (api && !isPlayerReady && player.current) {
-			player.current.fastSeek(ticksToSec(userDataLastPlayedPositionTicks ?? 0));
+			player.current.currentTime = ticksToSec(userDataLastPlayedPositionTicks ?? 0);
 			registerPlayerActions({
 				seekTo: (seconds: number) => {
 					const internalPlayer = player.current;
@@ -346,6 +346,7 @@ export function VideoPlayer() {
 
 	const handlePlaybackEnded = useCallback(() => {
 		if (queue?.length !== currentQueueItemIndex + 1) {
+			clearActiveSegment(); // Clear active segment when playback ends
 			playItemFromQueue("next", user?.Id, api);
 		} else {
 			handleExitPlayer(); // Exit player if playback has finished and the queue is empty

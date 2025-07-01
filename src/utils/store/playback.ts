@@ -498,10 +498,12 @@ export const usePlaybackStore = create<
 				return 0;
 			},
 		},
-		registerPlayerActions: (actions) =>
+		registerPlayerActions: (actions) => {
+			console.info("Registering player actions:", actions);
 			set({
 				_playerActions: actions,
-			}),
+			});
+		},
 		seekTo: (seconds: number) => {
 			const playerActions = get()._playerActions;
 			playerActions.seekTo(seconds);
@@ -576,7 +578,7 @@ export const usePlaybackStore = create<
 			// Update current time to the new seek value
 			set((state) => {
 				state.playerState.isUserSeeking = false;
-				// state.playerState.currentTime = ticks;
+				state.playerState.currentTime = ticks;
 			});
 		},
 	})),
