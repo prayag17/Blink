@@ -4597,9 +4597,9 @@ dependencies = [
 
 [[package]]
 name = "tauri-plugin-upload"
-version = "2.2.2"
+version = "2.3.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "197cb8aa0bdcd2d14145c97338ee8e9a8a936bcabce5da1a2097e0832bb76d34"
+checksum = "cd656b778aac683ee72bccfa01aad95d6526a501413240bc560832831b1fb885"
 dependencies = [
  "futures-util",
  "log",
