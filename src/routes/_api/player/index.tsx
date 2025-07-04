@@ -107,6 +107,7 @@ export function VideoPlayer() {
 		setIsBuffering,
 		registerPlayerActions,
 		toggleIsPlayerFullscreen,
+		setIsUserHovering,
 	} = usePlaybackStore(
 		useShallow((state) => ({
 			itemId: state.metadata.item?.Id,
@@ -132,6 +133,7 @@ export function VideoPlayer() {
 			playbackStream: state.playbackStream,
 			setIsBuffering: state.setIsBuffering,
 			registerPlayerActions: state.registerPlayerActions,
+			setIsUserHovering: state.setIsUserHovering,
 		})),
 	);
 
@@ -372,7 +374,7 @@ export function VideoPlayer() {
 	// 	}
 	// }, [playerVolume]);
 
-	const [areControlsVisible, setAreControlsVisible] = useState(false);
+	const [_areControlsVisible, _setAreControlsVisiblee] = useState(false);
 	const idleTimerRef = useRef<NodeJS.Timeout | null>(null);
 
 	// Function to clear the existing idle timer
@@ -388,7 +390,7 @@ export function VideoPlayer() {
 		clearIdleTimer();
 		// Set a timer to hide the controls after 3 seconds of inactivity
 		idleTimerRef.current = setTimeout(() => {
-			setAreControlsVisible(false);
+			setIsUserHovering(false);
 		}, 3000);
 	}, [clearIdleTimer]);
 
@@ -396,14 +398,14 @@ export function VideoPlayer() {
 
 	const handleMouseMove = useCallback(() => {
 		// When the mouse moves, show the controls and restart the idle timer.
-		setAreControlsVisible(true);
+		setIsUserHovering(true);
 		startIdleTimer();
 	}, [startIdleTimer]);
 
 	const handleMouseLeave = useCallback(() => {
 		// When the mouse leaves the player, clear the timer and hide the controls.
 		clearIdleTimer();
-		setAreControlsVisible(false);
+		setIsUserHovering(false);
 	}, [clearIdleTimer]);
 
 	const handleOnBuffer = useCallback(() => {
@@ -438,7 +440,7 @@ export function VideoPlayer() {
 		>
 			<LoadingIndicator />
 			<VideoPlayerControls
-				isVisible={areControlsVisible}
+				// isVisible={areControlsVisible}
 				onHover={handleMouseMove}
 				onLeave={handleMouseLeave}
 			/>

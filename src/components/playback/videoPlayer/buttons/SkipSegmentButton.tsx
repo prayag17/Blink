@@ -4,25 +4,32 @@ import { useShallow } from "zustand/shallow";
 import { usePlaybackStore } from "@/utils/store/playback";
 
 const SkipSegmentButton = () => {
-	const { mediaSegments, currentSegmentIndex, skipSegment, activeSegmentId } =
-		usePlaybackStore(
-			useShallow((state) => ({
-				mediaSegments: state.metadata.mediaSegments,
-				currentSegmentIndex: state.nextSegmentIndex - 1,
-				skipSegment: state.skipSegment,
-				activeSegmentId: state.activeSegmentId,
-			})),
-		);
+	const {
+		mediaSegments,
+		currentSegmentIndex,
+		skipSegment,
+		activeSegmentId,
+		isUserHovering,
+		isPlayerPlaying,
+		isUserSeeking,
+	} = usePlaybackStore(
+		useShallow((state) => ({
+			mediaSegments: state.metadata.mediaSegments,
+			currentSegmentIndex: state.nextSegmentIndex - 1,
+			skipSegment: state.skipSegment,
+			activeSegmentId: state.activeSegmentId,
+			isUserHovering: state.playerState.isUserHovering,
+			isPlayerPlaying: state.playerState.isPlayerPlaying,
+			isUserSeeking: state.playerState.isUserSeeking,
+		})),
+	);
 
-	console.info("Active segment ID:", activeSegmentId);
-	console.info("Current segment index:", currentSegmentIndex);
-	console.info("Media segments:", mediaSegments?.Items);
 	if (
 		!mediaSegments?.Items?.length ||
 		currentSegmentIndex < 0 ||
 		!activeSegmentId
 	) {
-		return <></>; // No segments to skip
+		return null; // No segments to skip
 	}
 
 	return (
@@ -33,8 +40,10 @@ const SkipSegmentButton = () => {
 			color="white"
 			style={{
 				position: "absolute",
-				bottom: "18vh",
+				bottom:
+					isUserHovering || !isPlayerPlaying || isUserSeeking ? "18vh" : "2em",
 				right: "2em",
+				transition: "bottom 0.3s ease-in-out",
 				zIndex: 10000,
 			}}
 			onClick={skipSegment}

@@ -38,13 +38,13 @@ import ProgressDislay from "./ProgressDisplay";
 const VOLUME_SCROLL_INTERVAL = 0.02;
 
 type VideoPlayerControlsProps = {
-	isVisible: boolean;
+	// isVisible: boolean;
 	onHover?: (event: MouseEvent<HTMLDivElement>) => void;
 	onLeave?: (event: MouseEvent<HTMLDivElement>) => void;
 };
 
 const VideoPlayerControls = ({
-	isVisible,
+	// isVisible,
 	onHover,
 	onLeave,
 }: VideoPlayerControlsProps) => {
@@ -69,6 +69,7 @@ const VideoPlayerControls = ({
 		increaseVolumeByStep,
 		decreaseVolumeByStep,
 		getCurrentTime,
+		isUserHovering,
 	} = usePlaybackStore(
 		useShallow((state) => ({
 			mediaSourceId: state.mediaSource.id,
@@ -90,6 +91,7 @@ const VideoPlayerControls = ({
 			increaseVolumeByStep: state.increaseVolumeByStep,
 			decreaseVolumeByStep: state.decreaseVolumeByStep,
 			getCurrentTime: state.getCurrentTime,
+			isUserHovering: state.playerState.isUserHovering,
 		})),
 	);
 
@@ -168,7 +170,7 @@ const VideoPlayerControls = ({
 	return (
 		<motion.div
 			className={
-				isVisible || isUserSeeking || !isPlayerPlaying
+				isUserHovering || isUserSeeking || !isPlayerPlaying
 					? "video-player-osd hovering"
 					: "video-player-osd"
 			}
@@ -179,7 +181,7 @@ const VideoPlayerControls = ({
 				opacity: 0,
 			}}
 			animate={{
-				opacity: isVisible || isUserSeeking || !isPlayerPlaying ? 1 : 0,
+				opacity: isUserHovering || isUserSeeking || !isPlayerPlaying ? 1 : 0,
 			}}
 			style={{
 				zIndex: 2,
