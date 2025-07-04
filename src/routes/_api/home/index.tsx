@@ -1,38 +1,31 @@
-import React, { useCallback, useMemo } from "react";
-
 import { useSuspenseQuery } from "@tanstack/react-query";
+import React, { useCallback, useMemo } from "react";
 
 import "./home.scss";
 
-import Carousel from "@/components/carousel";
-
-// Custom Components
-import { Card } from "@/components/card/card";
-import CardScroller from "@/components/cardScroller/cardScroller";
-import { LatestMediaSection } from "@/components/layouts/homeSection/latestMediaSection";
-
-import { getItemsApi } from "@jellyfin/sdk/lib/utils/api/items-api";
-import { getTvShowsApi } from "@jellyfin/sdk/lib/utils/api/tv-shows-api";
-import { getUserViewsApi } from "@jellyfin/sdk/lib/utils/api/user-views-api";
-
-import { createFileRoute, useNavigate } from "@tanstack/react-router";
-
-import { useBackdropStore } from "@/utils/store/backdrop";
-
-import CircularPageLoadingAnimation from "@/components/circularPageLoadingAnimation";
-import { ErrorNotice } from "@/components/notices/errorNotice/errorNotice";
-import getImageUrlsApi from "@/utils/methods/getImageUrlsApi";
-import { getLatestItemsQueryOptions } from "@/utils/queries/items";
-import { useApiInContext } from "@/utils/store/api";
-import { useCentralStore } from "@/utils/store/central";
-import type { Api } from "@jellyfin/sdk";
 import {
 	type BaseItemDto,
 	BaseItemKind,
 	ItemFields,
 } from "@jellyfin/sdk/lib/generated-client";
+import { getItemsApi } from "@jellyfin/sdk/lib/utils/api/items-api";
+import { getTvShowsApi } from "@jellyfin/sdk/lib/utils/api/tv-shows-api";
+import { getUserViewsApi } from "@jellyfin/sdk/lib/utils/api/user-views-api";
 import Typography from "@mui/material/Typography";
+import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { ErrorBoundary } from "react-error-boundary";
+import { useShallow } from "zustand/shallow";
+// Custom Components
+import { Card } from "@/components/card/card";
+import CardScroller from "@/components/cardScroller/cardScroller";
+import Carousel from "@/components/carousel";
+import CircularPageLoadingAnimation from "@/components/circularPageLoadingAnimation";
+import { LatestMediaSection } from "@/components/layouts/homeSection/latestMediaSection";
+import { ErrorNotice } from "@/components/notices/errorNotice/errorNotice";
+import { getLatestItemsQueryOptions } from "@/utils/queries/items";
+import { useApiInContext } from "@/utils/store/api";
+import { useBackdropStore } from "@/utils/store/backdrop";
+import { useCentralStore } from "@/utils/store/central";
 
 export const Route = createFileRoute("/_api/home/")({
 	component: Home,
@@ -126,23 +119,21 @@ function Home() {
 
 	const navigate = useNavigate();
 
-	const setBackdrop = useBackdropStore((s) => s.setBackdrop);
+	const setBackdrop = useBackdropStore(useShallow((s) => s.setBackdrop));
 
 	const setBackdropForItem = useCallback(
-		(item: BaseItemDto, api: Api) => {
+		(item: BaseItemDto) => {
 			if (item?.ParentBackdropImageTags) {
 				setBackdrop(
-					getImageUrlsApi(api).getItemImageUrlById(item.Id ?? "", "Backdrop", {
-						tag: item.ParentBackdropImageTags[0],
-					}),
-					item.ParentBackdropImageTags[0] ?? item.Id,
+					item.ImageBlurHashes?.Backdrop?.[item.ParentBackdropImageTags[0]],
 				);
 			} else {
+				if (!item?.BackdropImageTags) {
+					setBackdrop(undefined);
+					return;
+				}
 				setBackdrop(
-					getImageUrlsApi(api).getItemImageUrlById(item.Id ?? "", "Backdrop", {
-						tag: item.BackdropImageTags?.[0],
-					}),
-					item.BackdropImageTags?.[0] ?? item.Id,
+					item.ImageBlurHashes?.Backdrop?.[item.BackdropImageTags[0]],
 				);
 			}
 		},
@@ -156,7 +147,7 @@ function Home() {
 				if (!currentItem) return;
 
 				// Extract this logic to a separate function
-				setBackdropForItem(currentItem, api);
+				setBackdropForItem(currentItem);
 			}
 		},
 		// Only depend on what you need

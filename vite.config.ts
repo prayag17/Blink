@@ -1,6 +1,7 @@
 import { defineConfig } from "vite";
 import react from "@vitejs/plugin-react";
 import svgr from "vite-plugin-svgr";
+import wasm from "vite-plugin-wasm";
 import { tanstackRouter } from '@tanstack/router-vite-plugin'
 // import MillionLint from "@million/lint";
 import path from "path";
@@ -20,7 +21,7 @@ const plugins = [react({
       }],
     ],
   }
-}), svgr(), tanstackRouter()];
+}), svgr(), tanstackRouter(), wasm()];
 export default defineConfig({
   plugins: plugins,
   css: {

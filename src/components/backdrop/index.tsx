@@ -1,50 +1,38 @@
-import { AnimatePresence, motion } from "motion/react";
-import React, { useLayoutEffect, useState } from "react";
+import React from "react";
+import { useShallow } from "zustand/shallow";
 import { useBackdropStore } from "@/utils/store/backdrop";
+import BlurhashCanvas from "../blurhash-canvas";
 
 export default function Backdrop() {
-	const [backdropLoading, setBackdropLoading] = useState(true);
-	
-	const [backdropId, backdropUrl] = useBackdropStore((state) => [
-		state.backdropId,
-		state.backdropUrl,
-	]);
-	
-	// Reset loading status for backdrop
-	useLayoutEffect(() => {
-		setBackdropLoading(true);
-	}, [backdropId]);
-	
-	if (!backdropUrl) {
+	// const [backdropLoading, setBackdropLoading] = useState(true);
+
+	const { backdropHash } = useBackdropStore(
+		useShallow((state) => ({
+			backdropHash: state.backdropHash,
+		})),
+	);
+
+	if (!backdropHash) {
 		return null;
 	}
-	
+
 	return (
 		<div className="app-backdrop-container">
-			<AnimatePresence>
-				<motion.img
-					key={backdropId}
-					src={backdropUrl}
-					alt=""
-					className="app-backdrop"
-					initial={{
-						opacity: 0,
-					}}
-					animate={{
-						opacity: backdropLoading ? 0 : 1,
-					}}
-					exit={{
-						opacity: 0,
-					}}
-					transition={{
-						opacity: {
-							duration: 1.2,
-						},
-					}}
-					onLoad={() => setBackdropLoading(false)}
-					loading="lazy"
-				/>
-			</AnimatePresence>
+			<BlurhashCanvas
+				key={backdropHash}
+				blurhashString={backdropHash}
+				width={300}
+				height={150}
+				canvasProps={{
+					style: {
+						display: "block",
+						width: "100vw",
+						height: "100vh",
+						margin: "0 auto",
+						filter: "brightness(0.8) contrast(1.6) saturate(1.6)",
+					},
+				}}
+			/>
 		</div>
 	);
 }

@@ -140,8 +140,8 @@ export function VideoPlayer() {
 		s.tracks,
 	]);
 
-	const setBackdrop = useBackdropStore((s) => s.setBackdrop);
-	useEffect(() => setBackdrop("", ""), []);
+	const setBackdrop = useBackdropStore(useShallow((s) => s.setBackdrop));
+	useEffect(() => setBackdrop(""), []);
 
 	const handleReady = async () => {
 		if (api && !isPlayerReady && player.current) {

@@ -119,6 +119,9 @@ importers:
       blurhash:
         specifier: ^2.0.5
         version: 2.0.5
+      blurhash-wasm:
+        specifier: ^0.2.0
+        version: 0.2.0
       immer:
         specifier: ^10.1.1
         version: 10.1.1
@@ -225,6 +228,9 @@ importers:
       vite:
         specifier: ^7.0.0
         version: 7.0.0(@types/node@24.0.8)(sass@1.89.2)(tsx@4.20.3)(yaml@2.8.0)
+      vite-plugin-wasm:
+        specifier: ^3.4.1
+        version: 3.4.1(vite@7.0.0(@types/node@24.0.8)(sass@1.89.2)(tsx@4.20.3)(yaml@2.8.0))
 
 packages:
 
@@ -1605,6 +1611,9 @@ packages:
     resolution: {integrity: sha512-Ceh+7ox5qe7LJuLHoY0feh3pHuUDHAcRUeyL2VYghZwfpkNIy/+8Ocg0a3UuSoYzavmylwuLWQOf3hl0jjMMIw==}
     engines: {node: '>=8'}
 
+  blurhash-wasm@0.2.0:
+    resolution: {integrity: sha512-d/jOMANMlth4VNQRs3Xr/bDj7K3S2/QuRvrwC3QldeOTX9/5MLHUn2+JQV11Ja2J4/kY+HbRJOCGCy9T4BBvJw==}
+
   blurhash@2.0.5:
     resolution: {integrity: sha512-cRygWd7kGBQO3VEhPiTgq4Wc43ctsM+o46urrmPOiuAe+07fzlSB9OJVdpgDL0jPqXUVQ9ht7aq7kxOeJHRK+w==}
 
@@ -2930,6 +2939,11 @@ packages:
     resolution: {integrity: sha512-Jy9qLB2/PyWklpYy0xk0UU3TlU0t2UMpJXZvf+hWII1lAmRHrOUKi11Uw8N3rxoNk7atZNYO3pR3vI1f7oi+6w==}
     peerDependencies:
       vite: '>=2.6.0'
+
+  vite-plugin-wasm@3.4.1:
+    resolution: {integrity: sha512-ja3nSo2UCkVeitltJGkS3pfQHAanHv/DqGatdI39ja6McgABlpsZ5hVgl6wuR8Qx5etY3T5qgDQhOWzc5RReZA==}
+    peerDependencies:
+      vite: ^2 || ^3 || ^4 || ^5 || ^6
 
   vite@7.0.0:
     resolution: {integrity: sha512-ixXJB1YRgDIw2OszKQS9WxGHKwLdCsbQNkpJN171udl6szi/rIySHL6/Os3s2+oE4P/FLD4dxg4mD7Wust+u5g==}
@@ -4422,6 +4436,8 @@ snapshots:
       is-decimal: 2.0.1
 
   binary-extensions@2.3.0: {}
+
+  blurhash-wasm@0.2.0: {}
 
   blurhash@2.0.5: {}
 
@@ -5947,6 +5963,10 @@ snapshots:
       - rollup
       - supports-color
       - typescript
+
+  vite-plugin-wasm@3.4.1(vite@7.0.0(@types/node@24.0.8)(sass@1.89.2)(tsx@4.20.3)(yaml@2.8.0)):
+    dependencies:
+      vite: 7.0.0(@types/node@24.0.8)(sass@1.89.2)(tsx@4.20.3)(yaml@2.8.0)
 
   vite@7.0.0(@types/node@24.0.8)(sass@1.89.2)(tsx@4.20.3)(yaml@2.8.0):
     dependencies:

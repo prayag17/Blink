@@ -1,5 +1,6 @@
 // import { EasterEgg } from "@/components/utils/easterEgg";
-import { CssBaseline, ThemeProvider } from "@mui/material";
+import { CssBaseline } from "@mui/material";
+import { ThemeProvider } from "@mui/material/styles";
 import { createRootRouteWithContext, Outlet } from "@tanstack/react-router";
 import { SnackbarProvider } from "notistack";
 import React from "react";

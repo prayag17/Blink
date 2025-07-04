@@ -1,68 +1,58 @@
-import React, { useState, useLayoutEffect, useRef, useMemo } from "react";
-
-import Chip from "@mui/material/Chip";
-import MenuItem from "@mui/material/MenuItem";
-import Stack from "@mui/material/Stack";
-import TextField from "@mui/material/TextField";
-import Typography from "@mui/material/Typography";
-import { green, red, yellow } from "@mui/material/colors";
-
-import { Blurhash } from "react-blurhash";
-
-import useParallax from "@/utils/hooks/useParallax";
-import { motion, useScroll } from "motion/react";
-
 import {
 	BaseItemKind,
 	MediaStreamType,
 } from "@jellyfin/sdk/lib/generated-client";
 import { getLibraryApi } from "@jellyfin/sdk/lib/utils/api/library-api";
-
+import Chip from "@mui/material/Chip";
+import { green, red, yellow } from "@mui/material/colors";
+import MenuItem from "@mui/material/MenuItem";
+import Stack from "@mui/material/Stack";
+import TextField from "@mui/material/TextField";
+import Typography from "@mui/material/Typography";
 import { useQuery, useSuspenseQuery } from "@tanstack/react-query";
-
+import { motion, useScroll } from "motion/react";
+import React, { useLayoutEffect, useMemo, useRef, useState } from "react";
+import { Blurhash } from "react-blurhash";
 import heroBg from "@/assets/herobg.png";
 import { Card } from "@/components/card/card";
 import CardScroller from "@/components/cardScroller/cardScroller";
+import useParallax from "@/utils/hooks/useParallax";
 
 import "./item.scss";
 
-import { ErrorNotice } from "@/components/notices/errorNotice/errorNotice";
-
+import { createFileRoute, Link } from "@tanstack/react-router";
+import { useShallow } from "zustand/shallow";
+import ultraHdIcon from "@/assets/icons/4k.svg";
+import dolbyAtmosIcon from "@/assets/icons/dolby-atmos.svg";
+import dolbyDigitalIcon from "@/assets/icons/dolby-digital.svg";
+import dolbyDigitalPlusIcon from "@/assets/icons/dolby-digital-plus.svg";
+import dolbyTrueHDIcon from "@/assets/icons/dolby-truehd.svg";
+import dolbyVisionIcon from "@/assets/icons/dolby-vision.svg";
+import dolbyVisionAtmosIcon from "@/assets/icons/dolby-vision-atmos.png";
+import dtsIcon from "@/assets/icons/dts.svg";
+import dtsHdMaIcon from "@/assets/icons/dts-hd-ma.svg";
+import hdIcon from "@/assets/icons/hd.svg";
+import hdrIcon from "@/assets/icons/hdr.svg";
+import hdr10Icon from "@/assets/icons/hdr10.svg";
+import hdr10PlusIcon from "@/assets/icons/hdr10-plus.svg";
+import imaxIcon from "@/assets/icons/imax.svg";
+import sdIcon from "@/assets/icons/sd.svg";
+import sdrIcon from "@/assets/icons/sdr.svg";
 import LikeButton from "@/components/buttons/likeButton";
 import MarkPlayedButton from "@/components/buttons/markPlayedButton";
 import PlayButton from "@/components/buttons/playButton";
 import TrailerButton from "@/components/buttons/trailerButton";
+import IconLink from "@/components/iconLink";
+import { ErrorNotice } from "@/components/notices/errorNotice/errorNotice";
 import ShowMoreText from "@/components/showMoreText";
+import ItemSkeleton from "@/components/skeleton/item";
 import { getTypeIcon } from "@/components/utils/iconsCollection";
 import { endsAt, getRuntime } from "@/utils/date/time";
-import { useBackdropStore } from "@/utils/store/backdrop";
-
-import ItemSkeleton from "@/components/skeleton/item";
-
-import ultraHdIcon from "@/assets/icons/4k.svg";
-import dolbyAtmosIcon from "@/assets/icons/dolby-atmos.svg";
-import dolbyDigitalPlusIcon from "@/assets/icons/dolby-digital-plus.svg";
-import dolbyDigitalIcon from "@/assets/icons/dolby-digital.svg";
-import dolbyTrueHDIcon from "@/assets/icons/dolby-truehd.svg";
-import dolbyVisionAtmosIcon from "@/assets/icons/dolby-vision-atmos.png";
-import dolbyVisionIcon from "@/assets/icons/dolby-vision.svg";
-import dtsHdMaIcon from "@/assets/icons/dts-hd-ma.svg";
-import dtsIcon from "@/assets/icons/dts.svg";
-import hdIcon from "@/assets/icons/hd.svg";
-import hdrIcon from "@/assets/icons/hdr.svg";
-import hdr10PlusIcon from "@/assets/icons/hdr10-plus.svg";
-import hdr10Icon from "@/assets/icons/hdr10.svg";
-import imaxIcon from "@/assets/icons/imax.svg";
-import sdIcon from "@/assets/icons/sd.svg";
-import sdrIcon from "@/assets/icons/sdr.svg";
-
-import type MediaQualityInfo from "@/utils/types/mediaQualityInfo";
-
-import IconLink from "@/components/iconLink";
 import getImageUrlsApi from "@/utils/methods/getImageUrlsApi";
 import { getItemQueryOptions } from "@/utils/queries/items";
+import { useBackdropStore } from "@/utils/store/backdrop";
 import { useCentralStore } from "@/utils/store/central";
-import { Link, createFileRoute } from "@tanstack/react-router";
+import type MediaQualityInfo from "@/utils/types/mediaQualityInfo";
 
 export const Route = createFileRoute("/_api/item/$id")({
 	component: ItemDetail,
@@ -286,23 +276,18 @@ function ItemDetail() {
 		};
 	}, [item.data?.Id]);
 
-	const setBackdrop = useBackdropStore((state) => state.setBackdrop);
+	const setBackdrop = useBackdropStore(useShallow((state) => state.setBackdrop));
 
 	useLayoutEffect(() => {
 		if (api && item.isSuccess && item.data) {
-			if ((item.data?.BackdropImageTags?.length ?? 0) > 0) {
+			if (item.data?.BackdropImageTags?.length) {
 				setBackdrop(
-					getImageUrlsApi(api).getItemImageUrlById(
-						item.data.Id ?? "",
-						"Backdrop",
-						{
-							tag: item.data.BackdropImageTags?.[0],
-						},
-					),
-					item.data.BackdropImageTags?.[0],
+					item.data.ImageBlurHashes?.Backdrop?.[
+						item.data.BackdropImageTags?.[0]
+					],
 				);
 			} else {
-				setBackdrop("", "");
+				setBackdrop("");
 			}
 		}
 	}, [item.isSuccess]);

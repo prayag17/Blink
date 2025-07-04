@@ -50,6 +50,7 @@
 		"axios": "^1.10.0",
 		"axios-tauri-api-adapter": "^2.0.6",
 		"blurhash": "^2.0.5",
+		"blurhash-wasm": "^0.2.0",
 		"immer": "^10.1.1",
 		"jassub": "^1.8.6",
 		"libpgs": "^0.8.1",
@@ -86,7 +87,8 @@
 		"eslint-plugin-react-hooks": "6.0.0-rc1",
 		"prop-types": "^15.8.1",
 		"sass": "^1.89.2",
-		"vite": "^7.0.0"
+		"vite": "^7.0.0",
+		"vite-plugin-wasm": "^3.4.1"
 	},
 	"license": "GPL-3.0-only"
 }
