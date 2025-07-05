@@ -250,6 +250,7 @@ type PlaybackStoreActions = {
 	 * Skip current media segment
 	 */
 	skipSegment: () => void;
+	handleOnSeek: (seconds: number) => void;
 };
 
 export const usePlaybackStore = create<
@@ -487,7 +488,7 @@ export const usePlaybackStore = create<
 
 		// -- ReactPlayer related actions --
 		_playerActions: {
-			seekTo: (seconds: number) =>
+			seekTo: (_seconds: number) =>
 				console.warn(
 					"ReactPlayer has not yet initialized. Please wait until the player is ready to seek.",
 				),
@@ -580,6 +581,34 @@ export const usePlaybackStore = create<
 				state.playerState.isUserSeeking = false;
 				state.playerState.currentTime = ticks;
 			});
+		},
+		handleOnSeek: (seconds) => {
+			const ticks = secToTicks(seconds);
+			const segments = get().metadata.mediaSegments?.Items;
+			if (!segments || segments.length === 0) {
+				console.warn("No segments available for seeking");
+				return;
+			}
+			const segment = segments.find(
+				(s) =>
+					(s.StartTicks ?? ticks) <= ticks && (s.EndTicks ?? ticks) >= ticks,
+			);
+			const nextIndex = segments.findIndex(
+				(s) => (s.StartTicks ?? ticks) > ticks,
+			);
+			if (segment?.Id) {
+				// If the segment is found, set it as active
+				set({
+					activeSegmentId: segment.Id,
+					nextSegmentIndex: nextIndex !== -1 ? nextIndex : segments.length,
+				});
+			} else {
+				// If no segment is found, clear the active segment
+				set({
+					activeSegmentId: null,
+					nextSegmentIndex: nextIndex !== -1 ? nextIndex : segments.length,
+				});
+			}
 		},
 	})),
 );

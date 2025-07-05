@@ -23,6 +23,7 @@ import { useShallow } from "zustand/shallow";
 import SkipSegmentButton from "@/components/playback/videoPlayer/buttons/SkipSegmentButton";
 import VideoPlayerControls from "@/components/playback/videoPlayer/controls";
 import LoadingIndicator from "@/components/playback/videoPlayer/LoadingIndicator";
+import UpNextFlyout from "@/components/playback/videoPlayer/upNextFlyout";
 import VolumeChangeOverlay from "@/components/playback/videoPlayer/VolumeChangeOverlay";
 import { useApiInContext } from "@/utils/store/api";
 import { useBackdropStore } from "@/utils/store/backdrop";
@@ -108,6 +109,7 @@ export function VideoPlayer() {
 		registerPlayerActions,
 		toggleIsPlayerFullscreen,
 		setIsUserHovering,
+		handleOnSeek,
 	} = usePlaybackStore(
 		useShallow((state) => ({
 			itemId: state.metadata.item?.Id,
@@ -134,6 +136,7 @@ export function VideoPlayer() {
 			setIsBuffering: state.setIsBuffering,
 			registerPlayerActions: state.registerPlayerActions,
 			setIsUserHovering: state.setIsUserHovering,
+			handleOnSeek: state.handleOnSeek,
 		})),
 	);
 
@@ -446,6 +449,7 @@ export function VideoPlayer() {
 			/>
 			<SkipSegmentButton />
 			<VolumeChangeOverlay />
+			<UpNextFlyout />
 
 			<ReactPlayer
 				key={playsessionId}
@@ -465,6 +469,7 @@ export function VideoPlayer() {
 				volume={isPlayerMuted ? 0 : volume}
 				onWaiting={handleOnBuffer}
 				onPlaying={handleOnBufferEnd}
+				onSeeking={(e) => handleOnSeek(e.currentTarget.currentTime)}
 				playsInline
 			/>
 		</div>

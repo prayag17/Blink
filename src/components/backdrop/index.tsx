@@ -19,7 +19,6 @@ export default function Backdrop() {
 	return (
 		<div className="app-backdrop-container">
 			<BlurhashCanvas
-				key={backdropHash}
 				blurhashString={backdropHash}
 				width={300}
 				height={150}

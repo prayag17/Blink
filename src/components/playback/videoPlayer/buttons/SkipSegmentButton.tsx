@@ -27,7 +27,8 @@ const SkipSegmentButton = () => {
 	if (
 		!mediaSegments?.Items?.length ||
 		currentSegmentIndex < 0 ||
-		!activeSegmentId
+		!activeSegmentId ||
+		mediaSegments?.Items?.[currentSegmentIndex].Type === "Outro"
 	) {
 		return null; // No segments to skip
 	}
