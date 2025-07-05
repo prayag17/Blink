@@ -11,6 +11,7 @@ import Typography from "@mui/material/Typography";
 import { green, red, yellow } from "@mui/material/colors";
 
 import useParallax from "@/utils/hooks/useParallax";
+import useDefaultSeason from "@/utils/hooks/useDefaultSeason";
 import { AnimatePresence, motion, useScroll } from "motion/react";
 
 import { Blurhash } from "react-blurhash";
@@ -109,7 +110,6 @@ function SeriesTitlePage() {
 			const result = await getTvShowsApi(api).getSeasons({
 				userId: user?.Id,
 				seriesId: item.data.Id,
-				isSpecialSeason: false,
 				isMissing: false,
 			});
 			return result.data;
@@ -124,14 +124,9 @@ function SeriesTitlePage() {
 	});
 	const [backdropImageLoaded, setBackdropImageLoaded] = useState(false);
 
-	const [currentSeason, setCurrentSeason] = useState(() => {
-		const result = sessionStorage.getItem(`season-${item.data?.Id}`);
-		return result ?? 0;
-	});
+	const [currentSeason, setCurrentSeason] = useDefaultSeason(seasons, item.data?.Id);
 
-	useEffect(() => {
-		setCurrentSeason(sessionStorage.getItem(`season-${item.data?.Id}`) ?? 0);
-	}, [item.data?.Id]);
+	const currentSeasonNumber = Number(currentSeason);
 
 	const currentSeasonItem = useQuery({
 		queryKey: ["item", id, "season", currentSeason],
@@ -901,13 +896,16 @@ function SeriesTitlePage() {
 									/>
 								)}
 								<TextField
-									value={currentSeason}
+									value={currentSeasonNumber}
 									onChange={(e) => {
-										setCurrentSeason(e.target.value);
-										sessionStorage.setItem(
-											`season-${item.data?.Id}`,
-											e.target.value,
-										);
+										const seasonIndex = Number(e.target.value);
+										if (!isNaN(seasonIndex) && isFinite(seasonIndex)) {
+											setCurrentSeason(seasonIndex);
+											sessionStorage.setItem(
+												`season-${item.data?.Id}`,
+												seasonIndex.toString(),
+											);
+										}
 									}}
 									select
 									SelectProps={{
