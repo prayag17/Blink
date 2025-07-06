@@ -22,6 +22,7 @@ import { Route as SetupServerListRouteImport } from './routes/setup/server.list'
 import { Route as SetupServerErrorRouteImport } from './routes/setup/server.error'
 import { Route as SetupServerAddRouteImport } from './routes/setup/server.add'
 import { Route as ApiSettingsPreferencesRouteImport } from './routes/_api/settings/preferences'
+import { Route as ApiSettingsAboutRouteImport } from './routes/_api/settings/about'
 import { Route as ApiSeriesIdRouteImport } from './routes/_api/series/$id'
 import { Route as ApiPlaylistIdRouteImport } from './routes/_api/playlist/$id'
 import { Route as ApiPlayerPhotosRouteImport } from './routes/_api/player/photos'
@@ -99,6 +100,11 @@ const SetupServerAddRoute = SetupServerAddRouteImport.update({
 const ApiSettingsPreferencesRoute = ApiSettingsPreferencesRouteImport.update({
   id: '/preferences',
   path: '/preferences',
+  getParentRoute: () => ApiSettingsRoute,
+} as any)
+const ApiSettingsAboutRoute = ApiSettingsAboutRouteImport.update({
+  id: '/about',
+  path: '/about',
   getParentRoute: () => ApiSettingsRoute,
 } as any)
 const ApiSeriesIdRoute = ApiSeriesIdRouteImport.update({
@@ -190,6 +196,7 @@ export interface FileRoutesByFullPath {
   '/player/photos': typeof ApiPlayerPhotosRoute
   '/playlist/$id': typeof ApiPlaylistIdRoute
   '/series/$id': typeof ApiSeriesIdRoute
+  '/settings/about': typeof ApiSettingsAboutRoute
   '/settings/preferences': typeof ApiSettingsPreferencesRoute
   '/setup/server/add': typeof SetupServerAddRoute
   '/setup/server/error': typeof SetupServerErrorRoute
@@ -218,6 +225,7 @@ export interface FileRoutesByTo {
   '/player/photos': typeof ApiPlayerPhotosRoute
   '/playlist/$id': typeof ApiPlaylistIdRoute
   '/series/$id': typeof ApiSeriesIdRoute
+  '/settings/about': typeof ApiSettingsAboutRoute
   '/settings/preferences': typeof ApiSettingsPreferencesRoute
   '/setup/server/add': typeof SetupServerAddRoute
   '/setup/server/error': typeof SetupServerErrorRoute
@@ -248,6 +256,7 @@ export interface FileRoutesById {
   '/_api/player/photos': typeof ApiPlayerPhotosRoute
   '/_api/playlist/$id': typeof ApiPlaylistIdRoute
   '/_api/series/$id': typeof ApiSeriesIdRoute
+  '/_api/settings/about': typeof ApiSettingsAboutRoute
   '/_api/settings/preferences': typeof ApiSettingsPreferencesRoute
   '/setup/server/add': typeof SetupServerAddRoute
   '/setup/server/error': typeof SetupServerErrorRoute
@@ -278,6 +287,7 @@ export interface FileRouteTypes {
     | '/player/photos'
     | '/playlist/$id'
     | '/series/$id'
+    | '/settings/about'
     | '/settings/preferences'
     | '/setup/server/add'
     | '/setup/server/error'
@@ -306,6 +316,7 @@ export interface FileRouteTypes {
     | '/player/photos'
     | '/playlist/$id'
     | '/series/$id'
+    | '/settings/about'
     | '/settings/preferences'
     | '/setup/server/add'
     | '/setup/server/error'
@@ -335,6 +346,7 @@ export interface FileRouteTypes {
     | '/_api/player/photos'
     | '/_api/playlist/$id'
     | '/_api/series/$id'
+    | '/_api/settings/about'
     | '/_api/settings/preferences'
     | '/setup/server/add'
     | '/setup/server/error'
@@ -446,6 +458,13 @@ declare module '@tanstack/react-router' {
       path: '/preferences'
       fullPath: '/settings/preferences'
       preLoaderRoute: typeof ApiSettingsPreferencesRouteImport
+      parentRoute: typeof ApiSettingsRoute
+    }
+    '/_api/settings/about': {
+      id: '/_api/settings/about'
+      path: '/about'
+      fullPath: '/settings/about'
+      preLoaderRoute: typeof ApiSettingsAboutRouteImport
       parentRoute: typeof ApiSettingsRoute
     }
     '/_api/series/$id': {
@@ -566,10 +585,12 @@ const ApiLoginRouteWithChildren = ApiLoginRoute._addFileChildren(
 )
 
 interface ApiSettingsRouteChildren {
+  ApiSettingsAboutRoute: typeof ApiSettingsAboutRoute
   ApiSettingsPreferencesRoute: typeof ApiSettingsPreferencesRoute
 }
 
 const ApiSettingsRouteChildren: ApiSettingsRouteChildren = {
+  ApiSettingsAboutRoute: ApiSettingsAboutRoute,
   ApiSettingsPreferencesRoute: ApiSettingsPreferencesRoute,
 }
 

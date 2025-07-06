@@ -9,6 +9,8 @@
         }
         &-scrollY {
             padding: 2em;
+            overflow-x: hidden;
+            width: 100%;
         }
     }
     &-form{

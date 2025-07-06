@@ -1,11 +1,4 @@
-import React, {
-	type MouseEventHandler,
-	useCallback,
-	useMemo,
-	type ReactNode,
-} from "react";
-import { useEffect, useState } from "react";
-
+import { getUserViewsApi } from "@jellyfin/sdk/lib/utils/api/user-views-api";
 import MuiAppBar from "@mui/material/AppBar";
 import Avatar from "@mui/material/Avatar";
 import IconButton from "@mui/material/IconButton";
@@ -13,22 +6,21 @@ import ListItemIcon from "@mui/material/ListItemIcon";
 import Menu from "@mui/material/Menu";
 import MenuItem from "@mui/material/MenuItem";
 import useScrollTrigger from "@mui/material/useScrollTrigger";
-
-import {
-	Link,
-	useLocation,
-	useNavigate,
-	useRouter,
-} from "@tanstack/react-router";
-
-import { getUserViewsApi } from "@jellyfin/sdk/lib/utils/api/user-views-api";
-
 import { useQuery, useQueryClient } from "@tanstack/react-query";
+
+import { useLocation, useNavigate, useRouter } from "@tanstack/react-router";
+import React, {
+	type MouseEventHandler,
+	useCallback,
+	useEffect,
+	useMemo,
+	useState,
+} from "react";
 
 import { delUser } from "@/utils/storage/user";
 import "./appBar.scss";
 
-import { getTypeIcon } from "../utils/iconsCollection";
+import { Divider, Drawer, List, ListItem, ListItemButton } from "@mui/material";
 
 import { useApiInContext } from "@/utils/store/api";
 import { useCentralStore } from "@/utils/store/central";
@@ -36,16 +28,9 @@ import {
 	setSettingsDialogOpen,
 	setSettingsTabValue,
 } from "@/utils/store/settings";
-import {
-	Divider,
-	Drawer,
-	List,
-	ListItem,
-	ListItemButton,
-	ListItemText,
-} from "@mui/material";
 import BackButton from "../buttons/backButton";
 import ListItemLink from "../listItemLink";
+import { getTypeIcon } from "../utils/iconsCollection";
 
 
 const MemoizeBackButton = React.memo(BackButton);
@@ -262,7 +247,6 @@ export const AppBar = () => {
 							<MenuItem
 								onClick={() => {
 									navigate({ to: "/settings/preferences" });
-									setSettingsTabValue(1);
 									handleMenuClose();
 								}}
 							>
@@ -273,8 +257,7 @@ export const AppBar = () => {
 							</MenuItem>
 							<MenuItem
 								onClick={() => {
-									setSettingsDialogOpen(true);
-									setSettingsTabValue(10);
+									navigate({ to: "/settings/about" });
 									handleMenuClose();
 								}}
 							>
@@ -319,7 +302,10 @@ export const AppBar = () => {
 								<ListItemLink
 									className="library-drawer-item"
 									key={library.Id}
-									to={`/library/${library.Id}`}
+									to="/library/$id"
+									params={{
+										id: library.Id ?? "",
+									}}
 									icon={
 										library.CollectionType &&
 										getTypeIcon(library.CollectionType)

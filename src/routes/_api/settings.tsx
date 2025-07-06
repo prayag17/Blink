@@ -1,29 +1,25 @@
-import { useBackdropStore } from "@/utils/store/backdrop";
-import {
-	Link,
-	Outlet,
-	createFileRoute,
-	useNavigate,
-} from "@tanstack/react-router";
+import { createFileRoute, Outlet, useNavigate } from "@tanstack/react-router";
 import React, { useCallback, useEffect } from "react";
+import { useBackdropStore } from "@/utils/store/backdrop";
 
 import "./settings.scss";
+import { Divider, IconButton, List, Typography } from "@mui/material";
+import { useShallow } from "zustand/shallow";
 import BackButton from "@/components/buttons/backButton";
 import ListItemLink from "@/components/listItemLink";
 import { useApiInContext } from "@/utils/store/api";
 import { useCentralStore } from "@/utils/store/central";
-import { Button, Divider, IconButton, List, Typography } from "@mui/material";
 
 export const Route = createFileRoute("/_api/settings")({
 	component: SettingsRoute,
 });
 
 function SettingsRoute() {
-	const setBackdrop = useBackdropStore((s) => s.setBackdrop);
+	const setBackdrop = useBackdropStore(useShallow((s) => s.setBackdrop));
 	const api = useApiInContext((s) => s.api);
 	const user = useCentralStore((s) => s.currentUser);
 	useEffect(() => {
-		setBackdrop("", "none");
+		setBackdrop("");
 	});
 	const navigate = useNavigate();
 	const handleNavigateHome = useCallback(() => {
@@ -65,6 +61,12 @@ function SettingsRoute() {
 						to="/settings/preferences"
 						icon="tune"
 						primary="Preferences"
+						className="settings-sidebar-list-item"
+					/>
+					<ListItemLink
+						to="/settings/about"
+						icon="info"
+						primary="About"
 						className="settings-sidebar-list-item"
 					/>
 				</List>
