@@ -12,7 +12,6 @@ import { useLocation, useNavigate, useRouter } from "@tanstack/react-router";
 import React, {
 	type MouseEventHandler,
 	useCallback,
-	useEffect,
 	useMemo,
 	useState,
 } from "react";
@@ -35,16 +34,27 @@ import { getTypeIcon } from "../utils/iconsCollection";
 
 const MemoizeBackButton = React.memo(BackButton);
 
+const HIDDEN_PATHS = [
+	"/login",
+	"/setup",
+	"/server",
+	"/player",
+	"/error",
+	"/settings",
+];
+
 export const AppBar = () => {
 	const api = useApiInContext((s) => s.api);
 	const createApi = useApiInContext((s) => s.createApi);
 
 	const navigate = useNavigate();
-
-	const [display, setDisplay] = useState(false);
-
 	const location = useLocation();
 	const router = useRouter();
+
+	const display = !HIDDEN_PATHS.some(
+		(path) => location.pathname.startsWith(path) || location.pathname === "/",
+	);
+
 
 	const [user, resetCurrentUser] = useCentralStore((s) => [
 		s.currentUser,
@@ -83,7 +93,7 @@ export const AppBar = () => {
 	}, []);
 	const queryClient = useQueryClient();
 
-	const handleLogout = async () => {
+	const handleLogout = useCallback(async () => {
 		console.log("Logging out user...");
 		await api?.logout();
 		createApi(api?.basePath ?? "", undefined);
@@ -91,27 +101,12 @@ export const AppBar = () => {
 		resetCurrentUser();
 		delUser();
 		sessionStorage.removeItem("accessToken");
-		await router.invalidate();
 		queryClient.clear();
+		await router.invalidate();
 		setAnchorEl(null);
-		navigate({ to: "/login" });
-	};
+		navigate({ to: "/login", replace: true });
+	}, [api]);
 
-	useEffect(() => {
-		if (
-			location.pathname.includes("login") ||
-			location.pathname.includes("setup") ||
-			location.pathname.includes("server") ||
-			location.pathname === "/player" ||
-			location.pathname.includes("error") ||
-			location.pathname === "/" ||
-			location.pathname.includes("settings")
-		) {
-			setDisplay(false);
-		} else {
-			setDisplay(true);
-		}
-	}, [location]);
 
 	const [showDrawer, setShowDrawer] = useState(false);
 
@@ -153,7 +148,7 @@ export const AppBar = () => {
 	const menuButtonSx = useMemo(() => ({ p: 0 }), []);
 
 	if (!display) {
-		return <></>;
+		return null;
 	}
 	if (display) {
 		return (
@@ -271,7 +266,7 @@ export const AppBar = () => {
 				</MuiAppBar>
 				<Drawer
 					open={showDrawer}
-					PaperProps={drawerPaperProps}
+					slotProps={{ paper: drawerPaperProps }}
 					className="library-drawer"
 					onClose={handleDrawerClose}
 				>
