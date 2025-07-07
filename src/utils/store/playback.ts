@@ -630,6 +630,8 @@ export const playItem = (args: {
 		state.metadata = args.metadata;
 		state.playerState.currentTime = args.userDataPlayedPositionTicks;
 		state.userId = args.userId;
+		state.playerState.isPlayerPlaying = true;
+		state.playerState.isPlayerReady = false; // Reset player ready state
 	});
 
 	setQueue(args.queueItems, args.queueItemIndex ?? 0);

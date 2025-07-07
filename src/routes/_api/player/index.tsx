@@ -1,7 +1,7 @@
 import { getPlaystateApi } from "@jellyfin/sdk/lib/utils/api/playstate-api";
 import CircularProgress from "@mui/material/CircularProgress";
 import { WebviewWindow as appWindow } from "@tauri-apps/api/webviewWindow";
-import React, { useCallback, useEffect, useRef, useState } from "react";
+import React, { useCallback, useEffect, useRef } from "react";
 import ReactPlayer from "react-player";
 import { secToTicks, ticksToSec } from "@/utils/date/time";
 import { playItemFromQueue, usePlaybackStore } from "@/utils/store/playback";
@@ -9,6 +9,7 @@ import { playItemFromQueue, usePlaybackStore } from "@/utils/store/playback";
 import "./videoPlayer.scss";
 
 import { PlayMethod, RepeatMode } from "@jellyfin/sdk/lib/generated-client";
+import { useMutation } from "@tanstack/react-query";
 import { createFileRoute, useRouter } from "@tanstack/react-router";
 import JASSUB from "jassub";
 //@ts-ignore
@@ -25,6 +26,7 @@ import VideoPlayerControls from "@/components/playback/videoPlayer/controls";
 import LoadingIndicator from "@/components/playback/videoPlayer/LoadingIndicator";
 import UpNextFlyout from "@/components/playback/videoPlayer/upNextFlyout";
 import VolumeChangeOverlay from "@/components/playback/videoPlayer/VolumeChangeOverlay";
+import getImageUrlsApi from "@/utils/methods/getImageUrlsApi";
 import { useApiInContext } from "@/utils/store/api";
 import { useBackdropStore } from "@/utils/store/backdrop";
 import { useCentralStore } from "@/utils/store/central";
@@ -110,6 +112,9 @@ export function VideoPlayer() {
 		toggleIsPlayerFullscreen,
 		setIsUserHovering,
 		handleOnSeek,
+		itemName,
+		isEpisode,
+		episodeTitle,
 	} = usePlaybackStore(
 		useShallow((state) => ({
 			itemId: state.metadata.item?.Id,
@@ -121,6 +126,9 @@ export function VideoPlayer() {
 			isPlayerPlaying: state.playerState.isPlayerPlaying,
 			isPlayerMuted: state.playerState.isPlayerMuted,
 			isPlayerReady: state.playerState.isPlayerReady,
+			itemName: state.metadata.item?.Name,
+			isEpisode: state.metadata.isEpisode,
+			episodeTitle: state.metadata.episodeTitle,
 
 			setPlayerReady: state.setPlayerReady,
 			mediaSource: state.mediaSource,
@@ -148,9 +156,64 @@ export function VideoPlayer() {
 	const setBackdrop = useBackdropStore(useShallow((s) => s.setBackdrop));
 	useEffect(() => setBackdrop(""), []);
 
+	const handlePlayNext = useMutation({
+		mutationKey: ["playNextButton"],
+		mutationFn: () => playItemFromQueue("next", user?.Id, api),
+		onError: (error) => console.error(error),
+	});
+	const handlePlayPrev = useMutation({
+		mutationKey: ["playPreviousButton"],
+		mutationFn: () => playItemFromQueue("previous", user?.Id, api),
+		onError: (error) => [console.error(error)],
+	});
+
 	const handleReady = async () => {
 		if (api && !isPlayerReady && player.current) {
 			player.current.currentTime = ticksToSec(userDataLastPlayedPositionTicks ?? 0);
+			
+			if (navigator.mediaSession && mediaSource) {
+				navigator.mediaSession.metadata = new MediaMetadata({
+					title: isEpisode ? episodeTitle : (itemName ?? "Blink"),
+					album: isEpisode ? (itemName ?? "Blink") : undefined,
+					artwork: [
+						{
+							src: getImageUrlsApi(api).getItemImageUrlById(
+								itemId ?? "",
+								"Primary",
+								{
+									quality: 80,
+								},
+							),
+							sizes: "512x512",
+							type: "image/png",
+						},
+					],
+				});
+				navigator.mediaSession.setActionHandler("play", () => {
+					toggleIsPlaying();
+				});
+				navigator.mediaSession.setActionHandler("pause", () => {
+					toggleIsPlaying();
+				});
+				navigator.mediaSession.setActionHandler("stop", () => {
+					handleExitPlayer();
+				});
+				navigator.mediaSession.setActionHandler("nexttrack", () => {
+					if (queue?.length !== currentQueueItemIndex + 1) {
+						handlePlayNext.mutate();
+					} else {
+						console.warn("No next item in the queue");
+					}
+				});
+				navigator.mediaSession.setActionHandler("previoustrack", () => {
+					if (currentQueueItemIndex > 0) {
+						handlePlayPrev.mutate();
+					} else {
+						console.warn("No previous item in the queue");
+					}
+				});
+			}
+		
 			registerPlayerActions({
 				seekTo: (seconds: number) => {
 					const internalPlayer = player.current;
@@ -377,7 +440,6 @@ export function VideoPlayer() {
 	// 	}
 	// }, [playerVolume]);
 
-	const [_areControlsVisible, _setAreControlsVisiblee] = useState(false);
 	const idleTimerRef = useRef<NodeJS.Timeout | null>(null);
 
 	// Function to clear the existing idle timer

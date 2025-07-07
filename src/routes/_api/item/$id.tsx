@@ -279,7 +279,7 @@ function ItemDetail() {
 	const setBackdrop = useBackdropStore(useShallow((state) => state.setBackdrop));
 
 	useLayoutEffect(() => {
-		if (api && item.isSuccess && item.data) {
+		if (api && item.data) {
 			if (item.data?.BackdropImageTags?.length) {
 				setBackdrop(
 					item.data.ImageBlurHashes?.Backdrop?.[
@@ -290,7 +290,7 @@ function ItemDetail() {
 				setBackdrop("");
 			}
 		}
-	}, [item.isSuccess]);
+	}, [item.data.Id]);
 
 	const pageRef = useRef(null);
 	const { scrollYProgress } = useScroll({

@@ -9,6 +9,17 @@ const RewindButton = () => {
 			seekBackward: state.seekBackward,
 		})),
 	);
+
+	React.useEffect(() => {
+		navigator.mediaSession.setActionHandler("seekbackward", (details) => {
+			if (details.seekOffset) {
+				seekBackward(details.seekOffset);
+			} else {
+				seekBackward(10); // Default to 10 seconds
+			}
+		});
+	}, [seekBackward]);
+
 	return (
 		<IconButton
 			onClick={() => {

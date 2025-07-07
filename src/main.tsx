@@ -41,7 +41,7 @@ const router = createRouter({
 	defaultPreloadStaleTime: 0,
 	defaultViewTransition: true,
 	scrollRestoration: true,
-	scrollRestorationBehavior: "smooth",
+	scrollRestorationBehavior: "auto",
 });
 
 // Register the router instance for type safety
