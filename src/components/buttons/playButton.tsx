@@ -15,8 +15,8 @@ import { getMediaInfoApi } from "@jellyfin/sdk/lib/utils/api/media-info-api";
 import { getMediaSegmentsApi } from "@jellyfin/sdk/lib/utils/api/media-segments-api";
 import { getPlaylistsApi } from "@jellyfin/sdk/lib/utils/api/playlists-api";
 import { getTvShowsApi } from "@jellyfin/sdk/lib/utils/api/tv-shows-api";
+import { getUserApi } from "@jellyfin/sdk/lib/utils/api/user-api";
 import { getUserLibraryApi } from "@jellyfin/sdk/lib/utils/api/user-library-api";
-import { LoadingButton } from "@mui/lab";
 import type { SxProps } from "@mui/material";
 import Button, { type ButtonProps } from "@mui/material/Button";
 import Fab from "@mui/material/Fab";
@@ -522,18 +522,36 @@ const PlayButton = ({
 				}
 
 				// Subtitle
+				const userSubtitleLanguagePreference = (await getUserApi(api).getCurrentUser()).data.Configuration?.SubtitleLanguagePreference;
+				// Get all subtitle streams
+				const allSubtitles = result?.mediaSource?.MediaSources?.[0]?.MediaStreams?.filter(
+					(stream) => stream.Type === "Subtitle"
+				);
+				// Find preferred subtitle based on user's language preference
+				const preferredSubtitle =
+					allSubtitles?.find(sub => sub.Language === userSubtitleLanguagePreference)
+					|| null;
+
 				const subtitle = getSubtitle(
-					result.mediaSource.MediaSources?.[0].DefaultSubtitleStreamIndex ?? -1,
+					preferredSubtitle?.Index ?? result.mediaSource.MediaSources?.[0].DefaultSubtitleStreamIndex ?? -1,
 					result?.mediaSource?.MediaSources?.[0]?.MediaStreams,
 				);
 
 				// Audio
+				const userAudioLanguagePreference = (await getUserApi(api).getCurrentUser()).data.Configuration?.AudioLanguagePreference;
+				// Get all audio streams
+				const allAudioTracks = result.mediaSource.MediaSources?.[0].MediaStreams?.filter(
+					(value) => value.Type === "Audio",
+				);
+				// Find preferred audio track based on user's language preference
+				const preferredAudioTrack = 
+					allAudioTracks?.find(track => track.Language === userAudioLanguagePreference)
+					|| allAudioTracks?.find(track => track.IsDefault)
+					|| allAudioTracks?.[0];
+
 				const audio = {
-					track:
-						result.mediaSource.MediaSources?.[0].DefaultAudioStreamIndex ?? 0,
-					allTracks: result.mediaSource.MediaSources?.[0].MediaStreams?.filter(
-						(value) => value.Type === "Audio",
-					),
+					track: preferredAudioTrack?.Index ?? result.mediaSource.MediaSources?.[0].DefaultAudioStreamIndex ?? 0,
+					allTracks: allAudioTracks,
 				};
 
 				// URL generation
