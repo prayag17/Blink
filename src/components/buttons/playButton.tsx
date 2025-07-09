@@ -15,8 +15,8 @@ import { getMediaInfoApi } from "@jellyfin/sdk/lib/utils/api/media-info-api";
 import { getMediaSegmentsApi } from "@jellyfin/sdk/lib/utils/api/media-segments-api";
 import { getPlaylistsApi } from "@jellyfin/sdk/lib/utils/api/playlists-api";
 import { getTvShowsApi } from "@jellyfin/sdk/lib/utils/api/tv-shows-api";
+import { getUserApi } from "@jellyfin/sdk/lib/utils/api/user-api";
 import { getUserLibraryApi } from "@jellyfin/sdk/lib/utils/api/user-library-api";
-import { LoadingButton } from "@mui/lab";
 import type { SxProps } from "@mui/material";
 import Button, { type ButtonProps } from "@mui/material/Button";
 import Fab from "@mui/material/Fab";
@@ -522,18 +522,36 @@ const PlayButton = ({
 				}
 
 				// Subtitle
+				const userSubtitleLanguagePreference = (await getUserApi(api).getCurrentUser()).data.Configuration?.SubtitleLanguagePreference;
+				// Get all subtitle streams
+				const allSubtitles = result?.mediaSource?.MediaSources?.[0]?.MediaStreams?.filter(
+					(stream) => stream.Type === "Subtitle"
+				);
+				// Find preferred subtitle based on user's language preference
+				const preferredSubtitle =
+					allSubtitles?.find(sub => sub.Language === userSubtitleLanguagePreference)
+					|| null;
+
 				const subtitle = getSubtitle(
-					result.mediaSource.MediaSources?.[0].DefaultSubtitleStreamIndex ?? -1,
+					preferredSubtitle?.Index ?? result.mediaSource.MediaSources?.[0].DefaultSubtitleStreamIndex ?? -1,
 					result?.mediaSource?.MediaSources?.[0]?.MediaStreams,
 				);
 
 				// Audio
+				const userAudioLanguagePreference = (await getUserApi(api).getCurrentUser()).data.Configuration?.AudioLanguagePreference;
+				// Get all audio streams
+				const allAudioTracks = result.mediaSource.MediaSources?.[0].MediaStreams?.filter(
+					(value) => value.Type === "Audio",
+				);
+				// Find preferred audio track based on user's language preference
+				const preferredAudioTrack = 
+					allAudioTracks?.find(track => track.Language === userAudioLanguagePreference)
+					|| allAudioTracks?.find(track => track.IsDefault)
+					|| allAudioTracks?.[0];
+
 				const audio = {
-					track:
-						result.mediaSource.MediaSources?.[0].DefaultAudioStreamIndex ?? 0,
-					allTracks: result.mediaSource.MediaSources?.[0].MediaStreams?.filter(
-						(value) => value.Type === "Audio",
-					),
+					track: preferredAudioTrack?.Index ?? result.mediaSource.MediaSources?.[0].DefaultAudioStreamIndex ?? 0,
+					allTracks: allAudioTracks,
 				};
 
 				// URL generation
@@ -629,6 +647,44 @@ const PlayButton = ({
 		e.stopPropagation();
 		itemQuery.mutate(currentEpisodeId);
 	};
+	const currentEpisode = useQuery({
+		queryKey: ["playButton", "currentEpisode", item?.Id],
+		queryFn: async () => {
+			if (!api) {
+				throw new Error("API is not available");
+			}
+			if (!userId) {
+				throw new Error("User ID is not available");
+			}
+			if (!item.Id) {
+				throw new Error("Item ID is not available");
+			}
+			let data: BaseItemDtoQueryResult | null = null;
+			const continueWatching = await getItemsApi(api).getResumeItems({
+				userId: userId,
+				limit: 1,
+				mediaTypes: ["Video"],
+				parentId: item.Id,
+				enableUserData: true,
+				fields: [ItemFields.MediaStreams, ItemFields.MediaSources],
+			});
+			const nextUp = await getTvShowsApi(api).getNextUp({
+				userId: userId,
+				parentId: item.Id,
+				limit: 1,
+			});
+			if ((continueWatching.data.Items?.length ?? 0) > 0) {
+				data = continueWatching.data;
+			} else if ((nextUp.data.Items?.length ?? 0) > 0) {
+				data = nextUp.data;
+			} else {
+				return null;
+			}
+			return data;
+		},
+		// enabled: itemType === BaseItemKind.Series,
+	});
+
 	if (iconOnly) {
 		return (
 			//@ts-ignore
@@ -636,11 +692,24 @@ const PlayButton = ({
 				color="primary"
 				aria-label="Play"
 				className={className}
-				onClick={(e) =>
-					item.Type === "Episode" ? handleClick(e, item.Id) : handleClick(e)
-				}
+				onClick={(e) => {
+					if (item.Type === "Episode") {
+						handleClick(e, item.Id)
+					} else if (itemType === BaseItemKind.Series) {
+						handleClick(e, currentEpisode.data?.Items?.[0]?.Id)
+					} else {
+						handleClick(e)
+					}
+				}}
 				sx={sx}
 				size={size}
+				disabled={
+					currentEpisode.isPending ||
+					(itemType === BaseItemKind.Series &&
+						(!currentEpisode.data ||
+							!currentEpisode.data.Items ||
+							currentEpisode.data.Items.length === 0))
+				}
 				{...buttonProps}
 			>
 				<div
@@ -656,43 +725,6 @@ const PlayButton = ({
 	}
 
 	if (itemType === BaseItemKind.Series) {
-		const currentEpisode = useQuery({
-			queryKey: ["playButton", "currentEpisode", item?.Id],
-			queryFn: async () => {
-				if (!api) {
-					throw new Error("API is not available");
-				}
-				if (!userId) {
-					throw new Error("User ID is not available");
-				}
-				if (!item.Id) {
-					throw new Error("Item ID is not available");
-				}
-				let data: BaseItemDtoQueryResult | null = null;
-				const continueWatching = await getItemsApi(api).getResumeItems({
-					userId: userId,
-					limit: 1,
-					mediaTypes: ["Video"],
-					parentId: item.Id,
-					enableUserData: true,
-					fields: [ItemFields.MediaStreams, ItemFields.MediaSources],
-				});
-				const nextUp = await getTvShowsApi(api).getNextUp({
-					userId: userId,
-					parentId: item.Id,
-					limit: 1,
-				});
-				if ((continueWatching.data.Items?.length ?? 0) > 0) {
-					data = continueWatching.data;
-				} else if ((nextUp.data.Items?.length ?? 0) > 0) {
-					data = nextUp.data;
-				} else {
-					return null;
-				}
-				return data;
-			},
-			// enabled: itemType === BaseItemKind.Series,
-		});
 		return (
 			<div
 				className="play-button"
@@ -705,7 +737,12 @@ const PlayButton = ({
 					loading={currentEpisode.isPending}
 					className={className ?? "play-button"}
 					variant="contained"
-					onClick={(e) => handleClick(e, currentEpisode.data?.Items?.[0]?.Id)}
+					onClick={(e) => {
+						const episodeId = currentEpisode.data?.Items?.[0]?.Id;
+						if (episodeId) {
+							handleClick(e, episodeId);
+						}
+					}}
 					startIcon={
 						<div
 							className="material-symbols-rounded fill"
@@ -725,23 +762,41 @@ const PlayButton = ({
 					//@ts-ignore - white color is a custom color in the theme which mui's types don't know about
 					color="white"
 					size={size}
+					disabled={
+						currentEpisode.isPending ||
+						!currentEpisode.data ||
+						!currentEpisode.data.Items ||
+						currentEpisode.data.Items.length === 0 ||
+						!currentEpisode.data.Items[0].Id
+					}
 				>
-					Watch S{currentEpisode.data?.Items?.[0].ParentIndexNumber ?? 1}E
-					{currentEpisode.data?.Items?.[0]?.IndexNumber ?? 1}
-					<MemoizedLinearProgress
-						//@ts-ignore
-						value={
-							100 >
-								(currentEpisode.data?.Items?.[0].UserData?.PlayedPercentage ??
-									100) &&
-							(currentEpisode.data?.Items?.[0].UserData?.PlayedPercentage ??
-								0) > 0
-								? currentEpisode.data?.Items?.[0].UserData?.PlayedPercentage
-								: 0
-						}
-					/>
+					{currentEpisode.isPending
+						? "Loading..."
+						: !currentEpisode.data ||
+						  !currentEpisode.data.Items ||
+						  currentEpisode.data.Items.length === 0
+						? "No episodes to watch found"
+						: (
+							<>
+								Watch S{currentEpisode.data.Items[0].ParentIndexNumber ?? 1}E
+								{currentEpisode.data.Items[0]?.IndexNumber ?? 1}
+								<MemoizedLinearProgress
+									//@ts-ignore
+									value={
+										100 >
+											(currentEpisode.data.Items[0].UserData?.PlayedPercentage ??
+												100) &&
+										(currentEpisode.data.Items[0].UserData?.PlayedPercentage ??
+											0) > 0
+											? currentEpisode.data.Items[0].UserData?.PlayedPercentage
+											: 0
+									}
+								/>
+							</>
+						)
+					}
 				</Button>
-				{(currentEpisode.data?.Items?.[0].UserData?.PlaybackPositionTicks ??
+				{(currentEpisode.data?.Items?.[0]?.UserData?.PlaybackPositionTicks ??
 					0) > 0 && (
 					<Typography
 						sx={{
@@ -754,8 +809,8 @@ const PlayButton = ({
 						variant="caption"
 					>
 						{getRuntimeCompact(
-							(currentEpisode.data?.Items?.[0].RunTimeTicks ?? 0) -
-								(currentEpisode.data?.Items?.[0].UserData
+							(currentEpisode.data?.Items?.[0]?.RunTimeTicks ?? 0) -
+								(currentEpisode.data?.Items?.[0]?.UserData
 									?.PlaybackPositionTicks ?? 0),
 						)}{" "}
 						left
