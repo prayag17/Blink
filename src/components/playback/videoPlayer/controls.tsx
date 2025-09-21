@@ -42,12 +42,16 @@ type VideoPlayerControlsProps = {
 	// isVisible: boolean;
 	onHover?: (event: MouseEvent<HTMLDivElement>) => void;
 	onLeave?: (event: MouseEvent<HTMLDivElement>) => void;
+	onTogglePiP?: () => void;
+	isPiPActive?: boolean;
 };
 
 const VideoPlayerControls = ({
 	// isVisible,
 	onHover,
 	onLeave,
+	onTogglePiP,
+	isPiPActive,
 }: VideoPlayerControlsProps) => {
 	const playerOSDRef = useRef<HTMLDivElement>(null);
 
@@ -325,7 +329,10 @@ const VideoPlayerControls = ({
 							<ChaptersListButton />
 
 							<CaptionsButton />
-							<PictureInPictureButton />
+							<PictureInPictureButton 
+								onTogglePiP={onTogglePiP || (() => {})} 
+								isPiPActive={isPiPActive || false} 
+							/>
 							<FullscreenButton />
 						</div>
 					</div>

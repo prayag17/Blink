@@ -27,11 +27,6 @@ import LoadingIndicator from "@/components/playback/videoPlayer/LoadingIndicator
 import UpNextFlyout from "@/components/playback/videoPlayer/upNextFlyout";
 import VolumeChangeOverlay from "@/components/playback/videoPlayer/VolumeChangeOverlay";
 import getImageUrlsApi from "@/utils/methods/getImageUrlsApi";
-import { 
-	addPictureInPictureEventListeners,
-	getVideoElementFromReactPlayer, 
-	isPictureInPictureSupported
-} from "@/utils/methods/pictureInPicture";
 import { useApiInContext } from "@/utils/store/api";
 import { useBackdropStore } from "@/utils/store/backdrop";
 import { useCentralStore } from "@/utils/store/central";
@@ -90,6 +85,14 @@ export function VideoPlayer() {
 	const api = useApiInContext((s) => s.api);
 	const { history } = useRouter();
 	const player = useRef<HTMLVideoElement | null>(null);
+	
+	// Native PiP state for ReactPlayer
+	const [isPiPActive, setIsPiPActive] = React.useState(false);
+
+	// Toggle Picture-in-Picture mode
+	const handleTogglePiP = () => {
+		setIsPiPActive(!isPiPActive);
+	};
 
 	const user = useCentralStore((s) => s.currentUser);
 
@@ -120,8 +123,6 @@ export function VideoPlayer() {
 		itemName,
 		isEpisode,
 		episodeTitle,
-		setPictureInPictureSupported,
-		setPictureInPicture,
 	} = usePlaybackStore(
 		useShallow((state) => ({
 			itemId: state.metadata.item?.Id,
@@ -152,8 +153,6 @@ export function VideoPlayer() {
 			registerPlayerActions: state.registerPlayerActions,
 			setIsUserHovering: state.setIsUserHovering,
 			handleOnSeek: state.handleOnSeek,
-			setPictureInPictureSupported: state.setPictureInPictureSupported,
-			setPictureInPicture: state.setPictureInPicture,
 		})),
 	);
 
@@ -245,25 +244,6 @@ export function VideoPlayer() {
 				},
 			});
 			setPlayerReady(true);
-
-			// Initialize Picture-in-Picture support
-			const pipSupported = isPictureInPictureSupported();
-			setPictureInPictureSupported(pipSupported);
-
-			if (pipSupported && player.current) {
-				const videoElement = getVideoElementFromReactPlayer(player);
-				if (videoElement) {
-					// Add PiP event listeners
-					const cleanupPipListeners = addPictureInPictureEventListeners(videoElement, {
-						onEnterPiP: () => setPictureInPicture(true),
-						onLeavePiP: () => setPictureInPicture(false),
-					});
-
-					// Store cleanup function for later use
-					// This will be called when the component unmounts or player changes
-					return cleanupPipListeners;
-				}
-			}
 
 			// Report Jellyfin server: Playback has begin
 			getPlaystateApi(api).reportPlaybackStart({
@@ -535,6 +515,8 @@ export function VideoPlayer() {
 				// isVisible={areControlsVisible}
 				onHover={handleMouseMove}
 				onLeave={handleMouseLeave}
+				onTogglePiP={handleTogglePiP}
+				isPiPActive={isPiPActive}
 			/>
 			<SkipSegmentButton />
 			<VolumeChangeOverlay />
@@ -560,6 +542,7 @@ export function VideoPlayer() {
 				onPlaying={handleOnBufferEnd}
 				onSeeking={(e) => handleOnSeek(e.currentTarget.currentTime)}
 				playsInline
+				pip={isPiPActive}
 			/>
 		</div>
 	);
