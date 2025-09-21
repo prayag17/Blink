@@ -565,23 +565,15 @@ export const usePlaybackStore = create<
 		seekToNextChapter: () => {
 			const playerActions = get()._playerActions;
 			const next = get().metadata.item?.Chapters?.filter((chapter) => {
-				if (
-					(chapter.StartPositionTicks ?? 0) > playerActions.getCurrentTime()
-				) {
-					return true;
-				}
+				return (chapter.StartPositionTicks ?? 0) > playerActions.getCurrentTime();
 			})[0];
 			playerActions.seekTo(ticksToSec(next?.StartPositionTicks ?? 0));
 		},
 		seekToPrevChapter: () => {
 			const playerActions = get()._playerActions;
 			const chapters = get().metadata.item.Chapters?.filter((chapter) => {
-				if (
-					(chapter.StartPositionTicks ?? 0) <=
-					secToTicks(playerActions.getCurrentTime())
-				) {
-					return true;
-				}
+				return (chapter.StartPositionTicks ?? 0) <=
+					secToTicks(playerActions.getCurrentTime());
 			});
 			if (!chapters?.length) {
 				playerActions.seekTo(0);

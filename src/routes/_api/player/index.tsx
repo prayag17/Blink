@@ -398,7 +398,6 @@ export function VideoPlayer() {
 				mediaSource.subtitle.format === "ssa"
 			) {
 				jassubRenderer = new JASSUB({
-					//@ts-expect-error
 					video: player.current,
 					workerUrl,
 					wasmUrl,
@@ -432,7 +431,7 @@ export function VideoPlayer() {
 			};
 		}
 		if (player.current && mediaSource.subtitle.enable === false) {
-			// @ts-expect-error internalPlayer here provides the HTML video player element
+			// internalPlayer here provides the HTML video player element
 			const videoElem: HTMLMediaElement = player.current as HTMLMediaElement;
 			for (const i of videoElem.textTracks) {
 				i.mode = "hidden";
