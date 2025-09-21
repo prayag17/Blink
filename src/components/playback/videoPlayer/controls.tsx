@@ -22,6 +22,7 @@ import ChaptersListButton from "./buttons/ChaptersListButton";
 import ForwardButton from "./buttons/ForwardButton";
 import FullscreenButton from "./buttons/FullscreenButton";
 import NextChapterButton from "./buttons/NextChapterButton";
+import PictureInPictureButton from "./buttons/PictureInPictureButton";
 import PlayPauseButton from "./buttons/PlayPauseButton";
 import PrevChapterButton from "./buttons/PrevChapterButton";
 import RewindButton from "./buttons/RewindButton";
@@ -324,6 +325,7 @@ const VideoPlayerControls = ({
 							<ChaptersListButton />
 
 							<CaptionsButton />
+							<PictureInPictureButton />
 							<FullscreenButton />
 						</div>
 					</div>

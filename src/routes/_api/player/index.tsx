@@ -12,12 +12,12 @@ import { PlayMethod, RepeatMode } from "@jellyfin/sdk/lib/generated-client";
 import { useMutation } from "@tanstack/react-query";
 import { createFileRoute, useRouter } from "@tanstack/react-router";
 import JASSUB from "jassub";
-//@ts-ignore
+//@ts-expect-error
 import workerUrl from "jassub/dist/jassub-worker.js?url";
-//@ts-ignore
+//@ts-expect-error
 import wasmUrl from "jassub/dist/jassub-worker.wasm?url";
 import { PgsRenderer } from "libpgs";
-//@ts-ignore
+//@ts-expect-error
 import pgsWorkerUrl from "libpgs/dist/libpgs.worker.js?url";
 // import type { OnProgressProps } from "react-player";
 import { useShallow } from "zustand/shallow";
@@ -27,12 +27,17 @@ import LoadingIndicator from "@/components/playback/videoPlayer/LoadingIndicator
 import UpNextFlyout from "@/components/playback/videoPlayer/upNextFlyout";
 import VolumeChangeOverlay from "@/components/playback/videoPlayer/VolumeChangeOverlay";
 import getImageUrlsApi from "@/utils/methods/getImageUrlsApi";
+import { 
+	addPictureInPictureEventListeners,
+	getVideoElementFromReactPlayer, 
+	isPictureInPictureSupported
+} from "@/utils/methods/pictureInPicture";
 import { useApiInContext } from "@/utils/store/api";
 import { useBackdropStore } from "@/utils/store/backdrop";
 import { useCentralStore } from "@/utils/store/central";
 import useQueue, { clearQueue } from "@/utils/store/queue";
 import type subtitlePlaybackInfo from "@/utils/types/subtitlePlaybackInfo";
-//@ts-ignore
+//@ts-expect-error
 import font from "./Noto-Sans-Indosphere.ttf?url";
 
 /**
@@ -115,6 +120,8 @@ export function VideoPlayer() {
 		itemName,
 		isEpisode,
 		episodeTitle,
+		setPictureInPictureSupported,
+		setPictureInPicture,
 	} = usePlaybackStore(
 		useShallow((state) => ({
 			itemId: state.metadata.item?.Id,
@@ -145,6 +152,8 @@ export function VideoPlayer() {
 			registerPlayerActions: state.registerPlayerActions,
 			setIsUserHovering: state.setIsUserHovering,
 			handleOnSeek: state.handleOnSeek,
+			setPictureInPictureSupported: state.setPictureInPictureSupported,
+			setPictureInPicture: state.setPictureInPicture,
 		})),
 	);
 
@@ -236,6 +245,25 @@ export function VideoPlayer() {
 				},
 			});
 			setPlayerReady(true);
+
+			// Initialize Picture-in-Picture support
+			const pipSupported = isPictureInPictureSupported();
+			setPictureInPictureSupported(pipSupported);
+
+			if (pipSupported && player.current) {
+				const videoElement = getVideoElementFromReactPlayer(player);
+				if (videoElement) {
+					// Add PiP event listeners
+					const cleanupPipListeners = addPictureInPictureEventListeners(videoElement, {
+						onEnterPiP: () => setPictureInPicture(true),
+						onLeavePiP: () => setPictureInPicture(false),
+					});
+
+					// Store cleanup function for later use
+					// This will be called when the component unmounts or player changes
+					return cleanupPipListeners;
+				}
+			}
 
 			// Report Jellyfin server: Playback has begin
 			getPlaystateApi(api).reportPlaybackStart({
@@ -370,7 +398,7 @@ export function VideoPlayer() {
 				mediaSource.subtitle.format === "ssa"
 			) {
 				jassubRenderer = new JASSUB({
-					//@ts-ignore
+					//@ts-expect-error
 					video: player.current,
 					workerUrl,
 					wasmUrl,
@@ -404,7 +432,7 @@ export function VideoPlayer() {
 			};
 		}
 		if (player.current && mediaSource.subtitle.enable === false) {
-			// @ts-ignore internalPlayer here provides the HTML video player element
+			// @ts-expect-error internalPlayer here provides the HTML video player element
 			const videoElem: HTMLMediaElement = player.current as HTMLMediaElement;
 			for (const i of videoElem.textTracks) {
 				i.mode = "hidden";

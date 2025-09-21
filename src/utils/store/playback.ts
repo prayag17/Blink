@@ -93,6 +93,16 @@ type PlaybackStoreState = {
 		 * This should be set to true when the player is buffering
 		 */
 		isLoading: boolean;
+		/**
+		 * Used to track if Picture-in-Picture mode is active
+		 * This should be set to true when the video is in PiP mode
+		 */
+		isPictureInPicture: boolean;
+		/**
+		 * Used to check if Picture-in-Picture is supported by the browser
+		 * This should be set to true if the browser supports PiP API
+		 */
+		isPictureInPictureSupported: boolean;
 	};
 	/**
 	 * Index of the next segment to be played
@@ -192,6 +202,21 @@ type PlaybackStoreActions = {
 	 */
 	toggleIsPlayerMuted: () => void;
 	/**
+	 * Toggle Picture-in-Picture mode
+	 * This is used to enter/exit Picture-in-Picture mode
+	 */
+	togglePictureInPicture: () => void;
+	/**
+	 * Set Picture-in-Picture state
+	 * This is used to update the PiP state when the browser PiP events occur
+	 */
+	setPictureInPicture: (isPictureInPicture: boolean) => void;
+	/**
+	 * Set Picture-in-Picture support
+	 * This is used to check if the browser supports PiP
+	 */
+	setPictureInPictureSupported: (isSupported: boolean) => void;
+	/**
 	 * Set the loading state of the player
 	 * This is used to show/hide the loading spinner in the UI
 	 * This should be set to true when the player is loading
@@ -288,6 +313,8 @@ export const usePlaybackStore = create<
 			isUserSeeking: false,
 			seekValue: 0,
 			isLoading: true,
+			isPictureInPicture: false,
+			isPictureInPictureSupported: false,
 		},
 		userId: undefined!,
 		// -- MediaSegment skip feature --
@@ -440,6 +467,18 @@ export const usePlaybackStore = create<
 		toggleIsPlayerMuted: () =>
 			set((state) => {
 				state.playerState.isPlayerMuted = !state.playerState.isPlayerMuted;
+			}),
+		togglePictureInPicture: () => {
+			// This will be handled by the PiP utility functions
+			// The actual PiP API calls will be made in the component
+		},
+		setPictureInPicture: (isPictureInPicture) =>
+			set((state) => {
+				state.playerState.isPictureInPicture = isPictureInPicture;
+			}),
+		setPictureInPictureSupported: (isSupported) =>
+			set((state) => {
+				state.playerState.isPictureInPictureSupported = isSupported;
 			}),
 		setIsLoading: (isLoading) =>
 			set((state) => {
@@ -750,7 +789,7 @@ export const playItemFromQueue = async (
 
 		// URL generation
 		const urlOptions: URLSearchParams = {
-			//@ts-ignore
+			//@ts-expect-error
 			Static: true,
 			tag: mediaSource.MediaSources?.[0].ETag,
 			mediaSourceId: mediaSource.MediaSources?.[0].Id,
@@ -905,7 +944,7 @@ export const changeAudioTrack = async (trackIndex: number, api: Api) => {
 
 	// URL generation
 	const urlOptions: URLSearchParams = {
-		//@ts-ignore
+		//@ts-expect-error
 		Static: true,
 		tag: mediaSource.MediaSources?.[0].ETag,
 		mediaSourceId: mediaSource.MediaSources?.[0].Id,
