@@ -75,6 +75,10 @@ jobs:
                       TAURI_KEY_PASSWORD: ${{ secrets.TAURI_KEY_PASSWORD }}
                       TAURI_SIGNING_PRIVATE_KEY: ${{ secrets.TAURI_SIGNING_PRIVATE_KEY }}
                       TAURI_SIGNING_PRIVATE_KEY_PASSWORD: ${{ secrets.TAURI_SIGNING_PRIVATE_KEY_PASSWORD }}
+
+                      # TODO: Remove the below command after upstream issue is fixed
+                      # Related issue: https://github.com/tauri-apps/tauri/issues/10702
+                      WEBKIT_DISABLE_DMABUF_RENDERER: 1 # Disable DMABUF renderer on Wayland
                  with:
                       tagName: ${{ github.ref_name }} # This only works if your workflow triggers on new tags.
                       releaseName: "App Name v__VERSION__" # tauri-action replaces \_\_VERSION\_\_ with the app version.
