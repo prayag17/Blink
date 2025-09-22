@@ -12,12 +12,12 @@ import { PlayMethod, RepeatMode } from "@jellyfin/sdk/lib/generated-client";
 import { useMutation } from "@tanstack/react-query";
 import { createFileRoute, useRouter } from "@tanstack/react-router";
 import JASSUB from "jassub";
-//@ts-ignore
+//@ts-expect-error
 import workerUrl from "jassub/dist/jassub-worker.js?url";
-//@ts-ignore
+//@ts-expect-error
 import wasmUrl from "jassub/dist/jassub-worker.wasm?url";
 import { PgsRenderer } from "libpgs";
-//@ts-ignore
+//@ts-expect-error
 import pgsWorkerUrl from "libpgs/dist/libpgs.worker.js?url";
 // import type { OnProgressProps } from "react-player";
 import { useShallow } from "zustand/shallow";
@@ -32,7 +32,7 @@ import { useBackdropStore } from "@/utils/store/backdrop";
 import { useCentralStore } from "@/utils/store/central";
 import useQueue, { clearQueue } from "@/utils/store/queue";
 import type subtitlePlaybackInfo from "@/utils/types/subtitlePlaybackInfo";
-//@ts-ignore
+//@ts-expect-error
 import font from "./Noto-Sans-Indosphere.ttf?url";
 
 /**
@@ -85,6 +85,14 @@ export function VideoPlayer() {
 	const api = useApiInContext((s) => s.api);
 	const { history } = useRouter();
 	const player = useRef<HTMLVideoElement | null>(null);
+	
+	// Native PiP state for ReactPlayer
+	const [isPiPActive, setIsPiPActive] = React.useState(false);
+
+	// Toggle Picture-in-Picture mode
+	const handleTogglePiP = () => {
+		setIsPiPActive(!isPiPActive);
+	};
 
 	const user = useCentralStore((s) => s.currentUser);
 
@@ -370,7 +378,6 @@ export function VideoPlayer() {
 				mediaSource.subtitle.format === "ssa"
 			) {
 				jassubRenderer = new JASSUB({
-					//@ts-ignore
 					video: player.current,
 					workerUrl,
 					wasmUrl,
@@ -404,7 +411,7 @@ export function VideoPlayer() {
 			};
 		}
 		if (player.current && mediaSource.subtitle.enable === false) {
-			// @ts-ignore internalPlayer here provides the HTML video player element
+			// internalPlayer here provides the HTML video player element
 			const videoElem: HTMLMediaElement = player.current as HTMLMediaElement;
 			for (const i of videoElem.textTracks) {
 				i.mode = "hidden";
@@ -508,6 +515,8 @@ export function VideoPlayer() {
 				// isVisible={areControlsVisible}
 				onHover={handleMouseMove}
 				onLeave={handleMouseLeave}
+				onTogglePiP={handleTogglePiP}
+				isPiPActive={isPiPActive}
 			/>
 			<SkipSegmentButton />
 			<VolumeChangeOverlay />
@@ -533,6 +542,7 @@ export function VideoPlayer() {
 				onPlaying={handleOnBufferEnd}
 				onSeeking={(e) => handleOnSeek(e.currentTarget.currentTime)}
 				playsInline
+				pip={isPiPActive}
 			/>
 		</div>
 	);

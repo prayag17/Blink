@@ -191,6 +191,7 @@ type PlaybackStoreActions = {
 	 * This is used to toggle the player muted state
 	 */
 	toggleIsPlayerMuted: () => void;
+
 	/**
 	 * Set the loading state of the player
 	 * This is used to show/hide the loading spinner in the UI
@@ -441,6 +442,7 @@ export const usePlaybackStore = create<
 			set((state) => {
 				state.playerState.isPlayerMuted = !state.playerState.isPlayerMuted;
 			}),
+
 		setIsLoading: (isLoading) =>
 			set((state) => {
 				state.playerState.isLoading = isLoading;
@@ -526,23 +528,15 @@ export const usePlaybackStore = create<
 		seekToNextChapter: () => {
 			const playerActions = get()._playerActions;
 			const next = get().metadata.item?.Chapters?.filter((chapter) => {
-				if (
-					(chapter.StartPositionTicks ?? 0) > playerActions.getCurrentTime()
-				) {
-					return true;
-				}
+				return (chapter.StartPositionTicks ?? 0) > playerActions.getCurrentTime();
 			})[0];
 			playerActions.seekTo(ticksToSec(next?.StartPositionTicks ?? 0));
 		},
 		seekToPrevChapter: () => {
 			const playerActions = get()._playerActions;
 			const chapters = get().metadata.item.Chapters?.filter((chapter) => {
-				if (
-					(chapter.StartPositionTicks ?? 0) <=
-					secToTicks(playerActions.getCurrentTime())
-				) {
-					return true;
-				}
+				return (chapter.StartPositionTicks ?? 0) <=
+					secToTicks(playerActions.getCurrentTime());
 			});
 			if (!chapters?.length) {
 				playerActions.seekTo(0);
@@ -750,7 +744,7 @@ export const playItemFromQueue = async (
 
 		// URL generation
 		const urlOptions: URLSearchParams = {
-			//@ts-ignore
+			//@ts-expect-error
 			Static: true,
 			tag: mediaSource.MediaSources?.[0].ETag,
 			mediaSourceId: mediaSource.MediaSources?.[0].Id,
@@ -905,7 +899,7 @@ export const changeAudioTrack = async (trackIndex: number, api: Api) => {
 
 	// URL generation
 	const urlOptions: URLSearchParams = {
-		//@ts-ignore
+		//@ts-expect-error
 		Static: true,
 		tag: mediaSource.MediaSources?.[0].ETag,
 		mediaSourceId: mediaSource.MediaSources?.[0].Id,

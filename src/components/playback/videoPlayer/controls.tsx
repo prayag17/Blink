@@ -22,6 +22,7 @@ import ChaptersListButton from "./buttons/ChaptersListButton";
 import ForwardButton from "./buttons/ForwardButton";
 import FullscreenButton from "./buttons/FullscreenButton";
 import NextChapterButton from "./buttons/NextChapterButton";
+import PictureInPictureButton from "./buttons/PictureInPictureButton";
 import PlayPauseButton from "./buttons/PlayPauseButton";
 import PrevChapterButton from "./buttons/PrevChapterButton";
 import RewindButton from "./buttons/RewindButton";
@@ -41,12 +42,16 @@ type VideoPlayerControlsProps = {
 	// isVisible: boolean;
 	onHover?: (event: MouseEvent<HTMLDivElement>) => void;
 	onLeave?: (event: MouseEvent<HTMLDivElement>) => void;
+	onTogglePiP?: () => void;
+	isPiPActive?: boolean;
 };
 
 const VideoPlayerControls = ({
 	// isVisible,
 	onHover,
 	onLeave,
+	onTogglePiP,
+	isPiPActive,
 }: VideoPlayerControlsProps) => {
 	const playerOSDRef = useRef<HTMLDivElement>(null);
 
@@ -324,6 +329,10 @@ const VideoPlayerControls = ({
 							<ChaptersListButton />
 
 							<CaptionsButton />
+							<PictureInPictureButton 
+								onTogglePiP={onTogglePiP || (() => {})} 
+								isPiPActive={isPiPActive || false} 
+							/>
 							<FullscreenButton />
 						</div>
 					</div>
