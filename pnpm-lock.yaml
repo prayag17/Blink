@@ -91,7 +91,7 @@ importers:
         version: 2.3.0
       '@tauri-apps/plugin-store':
         specifier: github:tauri-apps/tauri-plugin-store#v2
-        version: https://codeload.github.com/tauri-apps/tauri-plugin-store/tar.gz/d93ca742bda14ca679e19d8311ae93da9f2edc83
+        version: https://codeload.github.com/tauri-apps/tauri-plugin-store/tar.gz/98ab1e1e53899f78de7bc2b02d257845ebd15b5d
       '@tauri-apps/plugin-updater':
         specifier: 2.9.0
         version: 2.9.0
@@ -103,7 +103,7 @@ importers:
         version: 2.3.0
       '@types/node':
         specifier: ^24.0.8
-        version: 24.0.8
+        version: 24.9.1
       '@types/react':
         specifier: ^19.1.8
         version: 19.1.8
@@ -151,7 +151,7 @@ importers:
         version: 0.3.0(blurhash@2.0.5)(react@19.1.0)
       react-dnd:
         specifier: ^16.0.1
-        version: 16.0.1(@types/node@24.0.8)(@types/react@19.1.8)(react@19.1.0)
+        version: 16.0.1(@types/node@24.9.1)(@types/react@19.1.8)(react@19.1.0)
       react-dnd-html5-backend:
         specifier: ^16.0.1
         version: 16.0.1
@@ -181,7 +181,7 @@ importers:
         version: 5.8.3
       vite-plugin-svgr:
         specifier: ^4.3.0
-        version: 4.3.0(rollup@4.44.1)(typescript@5.8.3)(vite@7.0.0(@types/node@24.0.8)(sass@1.89.2)(tsx@4.20.3)(yaml@2.8.0))
+        version: 4.3.0(rollup@4.44.1)(typescript@5.8.3)(vite@7.0.0(@types/node@24.9.1)(sass@1.89.2)(tsx@4.20.3)(yaml@2.8.0))
       wavesurfer.js:
         specifier: ^7.9.9
         version: 7.9.9
@@ -206,7 +206,7 @@ importers:
         version: 1.123.2(@tanstack/react-router@1.123.2(react-dom@19.1.0(react@19.1.0))(react@19.1.0))(@tanstack/router-core@1.123.2)(csstype@3.1.3)(react-dom@19.1.0(react@19.1.0))(react@19.1.0)(solid-js@1.9.7)(tiny-invariant@1.3.3)
       '@tanstack/router-vite-plugin':
         specifier: ^1.123.2
-        version: 1.123.2(@tanstack/react-router@1.123.2(react-dom@19.1.0(react@19.1.0))(react@19.1.0))(vite@7.0.0(@types/node@24.0.8)(sass@1.89.2)(tsx@4.20.3)(yaml@2.8.0))
+        version: 1.123.2(@tanstack/react-router@1.123.2(react-dom@19.1.0(react@19.1.0))(react@19.1.0))(vite@7.0.0(@types/node@24.9.1)(sass@1.89.2)(tsx@4.20.3)(yaml@2.8.0))
       '@tauri-apps/cli':
         specifier: 2.6.2
         version: 2.6.2
@@ -215,7 +215,7 @@ importers:
         version: 4.17.19
       '@vitejs/plugin-react':
         specifier: ^4.6.0
-        version: 4.6.0(vite@7.0.0(@types/node@24.0.8)(sass@1.89.2)(tsx@4.20.3)(yaml@2.8.0))
+        version: 4.6.0(vite@7.0.0(@types/node@24.9.1)(sass@1.89.2)(tsx@4.20.3)(yaml@2.8.0))
       babel-plugin-react-compiler:
         specifier: 19.1.0-rc.2
         version: 19.1.0-rc.2
@@ -230,10 +230,10 @@ importers:
         version: 1.89.2
       vite:
         specifier: ^7.0.0
-        version: 7.0.0(@types/node@24.0.8)(sass@1.89.2)(tsx@4.20.3)(yaml@2.8.0)
+        version: 7.0.0(@types/node@24.9.1)(sass@1.89.2)(tsx@4.20.3)(yaml@2.8.0)
       vite-plugin-wasm:
         specifier: ^3.4.1
-        version: 3.4.1(vite@7.0.0(@types/node@24.0.8)(sass@1.89.2)(tsx@4.20.3)(yaml@2.8.0))
+        version: 3.4.1(vite@7.0.0(@types/node@24.9.1)(sass@1.89.2)(tsx@4.20.3)(yaml@2.8.0))
 
 packages:
 
@@ -691,8 +691,8 @@ packages:
     cpu: [x64]
     os: [win32]
 
-  '@eslint-community/eslint-utils@4.7.0':
-    resolution: {integrity: sha512-dyybb3AcajC7uha6CvhdVRJqaKyn7w2YKqKyAN37NKYgZT36w+iRb0Dymmc5qEJ549c/S31cMMSFd75bteCpCw==}
+  '@eslint-community/eslint-utils@4.9.0':
+    resolution: {integrity: sha512-ayVFHdtZ+hsq1t2Dy24wCmGXGe4q9Gu3smhLYALJrr473ZH27MsnSL+LKUlimp4BWJqMDMLmPpx/Q9R3OAlL4g==}
     engines: {node: ^12.22.0 || ^14.17.0 || >=16.0.0}
     peerDependencies:
       eslint: ^6.0.0 || ^7.0.0 || >=8.0.0
@@ -701,20 +701,20 @@ packages:
     resolution: {integrity: sha512-CCZCDJuduB9OUkFkY2IgppNZMi2lBQgD2qzwXkEia16cge2pijY/aXi96CJMquDMn3nJdlPV1A5KrJEXwfLNzQ==}
     engines: {node: ^12.0.0 || ^14.0.0 || >=16.0.0}
 
-  '@eslint/config-array@0.21.0':
-    resolution: {integrity: sha512-ENIdc4iLu0d93HeYirvKmrzshzofPw6VkZRKQGe9Nv46ZnWUzcF1xV01dcvEg/1wXUR61OmmlSfyeyO7EvjLxQ==}
+  '@eslint/config-array@0.21.1':
+    resolution: {integrity: sha512-aw1gNayWpdI/jSYVgzN5pL0cfzU02GT3NBpeT/DXbx1/1x7ZKxFPd9bwrzygx/qiwIQiJ1sw/zD8qY/kRvlGHA==}
     engines: {node: ^18.18.0 || ^20.9.0 || >=21.1.0}
 
-  '@eslint/config-helpers@0.3.0':
-    resolution: {integrity: sha512-ViuymvFmcJi04qdZeDc2whTHryouGcDlaxPqarTD0ZE10ISpxGUVZGZDx4w01upyIynL3iu6IXH2bS1NhclQMw==}
+  '@eslint/config-helpers@0.3.1':
+    resolution: {integrity: sha512-xR93k9WhrDYpXHORXpxVL5oHj3Era7wo6k/Wd8/IsQNnZUTzkGS29lyn3nAT05v6ltUuTFVCCYDEGfy2Or/sPA==}
     engines: {node: ^18.18.0 || ^20.9.0 || >=21.1.0}
 
   '@eslint/core@0.14.0':
     resolution: {integrity: sha512-qIbV0/JZr7iSDjqAc60IqbLdsj9GDt16xQtWD+B78d/HAlvysGdZZ6rpJHGAc2T0FQx1X6thsSPdnoiGKdNtdg==}
     engines: {node: ^18.18.0 || ^20.9.0 || >=21.1.0}
 
-  '@eslint/core@0.15.1':
-    resolution: {integrity: sha512-bkOp+iumZCCbt1K1CmWf0R9pM5yKpDv+ZXtvSyQpudrI9kuFLp+bM2WOPXImuD/ceQuaa8f5pj93Y7zyECIGNA==}
+  '@eslint/core@0.15.2':
+    resolution: {integrity: sha512-78Md3/Rrxh83gCxoUc0EiciuOHsIITzLy53m3d9UyiW8y9Dj2D29FeETqyKA+BRK76tnTp6RXWb3pCay8Oyomg==}
     engines: {node: ^18.18.0 || ^20.9.0 || >=21.1.0}
 
   '@eslint/eslintrc@3.3.1':
@@ -725,12 +725,12 @@ packages:
     resolution: {integrity: sha512-Wzw3wQwPvc9sHM+NjakWTcPx11mbZyiYHuwWa/QfZ7cIRX7WK54PSk7bdyXDaoaopUcMatv1zaQvOAAO8hCdww==}
     engines: {node: ^18.18.0 || ^20.9.0 || >=21.1.0}
 
-  '@eslint/object-schema@2.1.6':
-    resolution: {integrity: sha512-RBMg5FRL0I0gs51M/guSAj5/e14VQ4tpZnQNWwuDT66P14I43ItmPfIZRhO9fUVIPOAQXU47atlywZ/czoqFPA==}
+  '@eslint/object-schema@2.1.7':
+    resolution: {integrity: sha512-VtAOaymWVfZcmZbp6E2mympDIHvyjXs/12LqWYjVw6qjrfF+VK+fyG33kChz3nnK+SU5/NeHOqrTEHS8sXO3OA==}
     engines: {node: ^18.18.0 || ^20.9.0 || >=21.1.0}
 
-  '@eslint/plugin-kit@0.3.3':
-    resolution: {integrity: sha512-1+WqvgNMhmlAambTvT3KPtCl/Ibr68VldY2XY40SL1CE0ZXiakFR/cbTspaF5HsnpDMvcYYoJHfl4980NBjGag==}
+  '@eslint/plugin-kit@0.3.5':
+    resolution: {integrity: sha512-Z5kJ+wU3oA7MMIqVR9tyZRtjYPr4OC004Q4Rw7pgOKUOKkJfZ3O24nz3WYfGRpMDNmcOi3TwQOmgm7B7Tpii0w==}
     engines: {node: ^18.18.0 || ^20.9.0 || >=21.1.0}
 
   '@fontsource-variable/jetbrains-mono@5.2.6':
@@ -749,17 +749,13 @@ packages:
     resolution: {integrity: sha512-5DyQ4+1JEUzejeK1JGICcideyfUbGixgS9jNgex5nqkW+cY7WZhxBigmieN5Qnw9ZosSNVC9KQKyb+GUaGyKUA==}
     engines: {node: '>=18.18.0'}
 
-  '@humanfs/node@0.16.6':
-    resolution: {integrity: sha512-YuI2ZHQL78Q5HbhDiBA1X4LmYdXCKCMQIfw0pw7piHJwyREFebJUvrQN4cMssyES6x+vfUbx1CIpaQUKYdQZOw==}
+  '@humanfs/node@0.16.7':
+    resolution: {integrity: sha512-/zUx+yOsIrG4Y43Eh2peDeKCxlRt/gET6aHfaKpuq267qXdYDFViVHfMaLyygZOnl0kGWxFIgsBy8QFuTLUXEQ==}
     engines: {node: '>=18.18.0'}
 
   '@humanwhocodes/module-importer@1.0.1':
     resolution: {integrity: sha512-bxveV4V8v5Yb4ncFTT3rPSgZBOpCkjfK0y4oVVVJwIuDVBRMDXrPyXRL988i5ap9m9bnyEEjWfm5WkBmtffLfA==}
     engines: {node: '>=12.22'}
-
-  '@humanwhocodes/retry@0.3.1':
-    resolution: {integrity: sha512-JBxkERygn7Bv/GbN5Rv8Ul6LVknS+5Bp6RgDC/O8gEBU/yeH5Ui5C/OlWrTb6qct7LjjfT6Re2NxB0ln0yYybA==}
-    engines: {node: '>=18.18'}
 
   '@humanwhocodes/retry@0.4.3':
     resolution: {integrity: sha512-bV0Tgo9K4hfPCek+aMAn81RppFKv2ySDQeMoSZuvTASywNTnVJCArCZE2FWqpvIatKu7VMRLWlR1EazvVhDyhQ==}
@@ -1361,6 +1357,9 @@ packages:
   '@tauri-apps/api@2.6.0':
     resolution: {integrity: sha512-hRNcdercfgpzgFrMXWwNDBN0B7vNzOzRepy6ZAmhxi5mDLVPNrTpo9MGg2tN/F7JRugj4d2aF7E1rtPXAHaetg==}
 
+  '@tauri-apps/api@2.9.0':
+    resolution: {integrity: sha512-qD5tMjh7utwBk9/5PrTA/aGr3i5QaJ/Mlt7p8NilQ45WgbifUNPyKWsA63iQ8YfQq6R8ajMapU+/Q8nMcPRLNw==}
+
   '@tauri-apps/cli-darwin-arm64@2.6.2':
     resolution: {integrity: sha512-YlvT+Yb7u2HplyN2Cf/nBplCQARC/I4uedlYHlgtxg6rV7xbo9BvG1jLOo29IFhqA2rOp5w1LtgvVGwsOf2kxw==}
     engines: {node: '>= 10'}
@@ -1447,9 +1446,9 @@ packages:
   '@tauri-apps/plugin-process@2.3.0':
     resolution: {integrity: sha512-0DNj6u+9csODiV4seSxxRbnLpeGYdojlcctCuLOCgpH9X3+ckVZIEj6H7tRQ7zqWr7kSTEWnrxtAdBb0FbtrmQ==}
 
-  '@tauri-apps/plugin-store@https://codeload.github.com/tauri-apps/tauri-plugin-store/tar.gz/d93ca742bda14ca679e19d8311ae93da9f2edc83':
-    resolution: {tarball: https://codeload.github.com/tauri-apps/tauri-plugin-store/tar.gz/d93ca742bda14ca679e19d8311ae93da9f2edc83}
-    version: 2.3.0
+  '@tauri-apps/plugin-store@https://codeload.github.com/tauri-apps/tauri-plugin-store/tar.gz/98ab1e1e53899f78de7bc2b02d257845ebd15b5d':
+    resolution: {tarball: https://codeload.github.com/tauri-apps/tauri-plugin-store/tar.gz/98ab1e1e53899f78de7bc2b02d257845ebd15b5d}
+    version: 2.4.0
 
   '@tauri-apps/plugin-updater@2.9.0':
     resolution: {integrity: sha512-j++sgY8XpeDvzImTrzWA08OqqGqgkNyxczLD7FjNJJx/uXxMZFz5nDcfkyoI/rCjYuj2101Tci/r/HFmOmoxCg==}
@@ -1496,8 +1495,8 @@ packages:
   '@types/ms@2.1.0':
     resolution: {integrity: sha512-GsCCIZDE/p3i96vtEqx+7dBUGXrc7zeSK3wwPHIaRThS+9OhWIXRqzs4d6k1SVU8g91DrNRWxWUGhp5KXQb2VA==}
 
-  '@types/node@24.0.8':
-    resolution: {integrity: sha512-WytNrFSgWO/esSH9NbpWUfTMGQwCGIKfCmNlmFDNiI5gGhgMmEA+V1AEvKLeBNvvtBnailJtkrEa2OIISwrVAA==}
+  '@types/node@24.9.1':
+    resolution: {integrity: sha512-QoiaXANRkSXK6p0Duvt56W208du4P9Uye9hWLWgGMDTEoKPhuenzNcC4vGUmrNkiOKTlIrBoyNQYNpSwfEZXSg==}
 
   '@types/parse-json@4.0.2':
     resolution: {integrity: sha512-dISoDXWWQwUquiKsyZ4Ng+HX2KsPL7LyHKHQwgGFEA3IaKac4Obd+h2a/a6waisAoepJlBcx9paWqjA8/HVjCw==}
@@ -1760,6 +1759,15 @@ packages:
 
   debug@4.4.1:
     resolution: {integrity: sha512-KcKCqiftBJcZr++7ykoDIEwSa3XWowTfNPo92BYxjXiyYEVrUQh2aLyhxBCwww+heortUFxEJYcRzosstTEBYQ==}
+    engines: {node: '>=6.0'}
+    peerDependencies:
+      supports-color: '*'
+    peerDependenciesMeta:
+      supports-color:
+        optional: true
+
+  debug@4.4.3:
+    resolution: {integrity: sha512-RGwwWnwQvkVfavKVt22FGLw+xYSdzARwm0ru6DhTVA3umU5hZc28V3kO4stgYryrTlLpuvgI9GiijltAjNbcqA==}
     engines: {node: '>=6.0'}
     peerDependencies:
       supports-color: '*'
@@ -2768,8 +2776,8 @@ packages:
     resolution: {integrity: sha512-BR7VvDCVHO+q2xBEWskxS6DJE1qRnb7DxzUrogb71CWoSficBxYsiAGd+Kl0mmq/MprG9yArRkyrQxTO6XjMzA==}
     hasBin: true
 
-  seroval-plugins@1.3.2:
-    resolution: {integrity: sha512-0QvCV2lM3aj/U3YozDiVwx9zpH0q8A60CTWIv4Jszj/givcudPb48B+rkU5D51NJ0pTpweGMttHjboPa9/zoIQ==}
+  seroval-plugins@1.3.3:
+    resolution: {integrity: sha512-16OL3NnUBw8JG1jBLUoZJsLnQq0n5Ua6aHalhJK4fMQkz1lqR7Osz1sA30trBtd9VUDc2NgkuRCn8+/pBwqZ+w==}
     engines: {node: '>=10'}
     peerDependencies:
       seroval: ^1.0
@@ -2890,8 +2898,8 @@ packages:
     resolution: {integrity: sha512-z6PJ8Lml+v3ichVojCiB8toQJBuwR42ySM4ezjXIqXK3M0HczmKQ3LF4rhU55PfD99KEEXQG6yb7iOMyvYuHew==}
     hasBin: true
 
-  undici-types@7.8.0:
-    resolution: {integrity: sha512-9UJ2xGDvQ43tYyVMpuHlsgApydB8ZKfVYTsLDhXkFL/6gfkp+U8xTGdh8pMJv1SpZna0zxG1DwsKZsreLbXBxw==}
+  undici-types@7.16.0:
+    resolution: {integrity: sha512-Zz+aZWSj8LE6zoxD+xrjh4VfkIG8Ya6LvYkZqtUQGJPZjYl53ypCaUwWqo7eI0x66KBGeRo+mlBEkMSeSZ38Nw==}
 
   unified@11.0.5:
     resolution: {integrity: sha512-xKvGhPWw3k84Qjh8bI3ZeJjqnyadK+GEFtazSfZv/rKeTkTjOJho6mFqh2SM96iIcZokxiOpg78GazTSg8+KHA==}
@@ -3538,35 +3546,35 @@ snapshots:
   '@esbuild/win32-x64@0.25.5':
     optional: true
 
-  '@eslint-community/eslint-utils@4.7.0(eslint@9.30.0)':
+  '@eslint-community/eslint-utils@4.9.0(eslint@9.30.0)':
     dependencies:
       eslint: 9.30.0
       eslint-visitor-keys: 3.4.3
 
   '@eslint-community/regexpp@4.12.1': {}
 
-  '@eslint/config-array@0.21.0':
+  '@eslint/config-array@0.21.1':
     dependencies:
-      '@eslint/object-schema': 2.1.6
-      debug: 4.4.1
+      '@eslint/object-schema': 2.1.7
+      debug: 4.4.3
       minimatch: 3.1.2
     transitivePeerDependencies:
       - supports-color
 
-  '@eslint/config-helpers@0.3.0': {}
+  '@eslint/config-helpers@0.3.1': {}
 
   '@eslint/core@0.14.0':
     dependencies:
       '@types/json-schema': 7.0.15
 
-  '@eslint/core@0.15.1':
+  '@eslint/core@0.15.2':
     dependencies:
       '@types/json-schema': 7.0.15
 
   '@eslint/eslintrc@3.3.1':
     dependencies:
       ajv: 6.12.6
-      debug: 4.4.1
+      debug: 4.4.3
       espree: 10.4.0
       globals: 14.0.0
       ignore: 5.3.2
@@ -3579,11 +3587,11 @@ snapshots:
 
   '@eslint/js@9.30.0': {}
 
-  '@eslint/object-schema@2.1.6': {}
+  '@eslint/object-schema@2.1.7': {}
 
-  '@eslint/plugin-kit@0.3.3':
+  '@eslint/plugin-kit@0.3.5':
     dependencies:
-      '@eslint/core': 0.15.1
+      '@eslint/core': 0.15.2
       levn: 0.4.1
 
   '@fontsource-variable/jetbrains-mono@5.2.6': {}
@@ -3596,14 +3604,12 @@ snapshots:
 
   '@humanfs/core@0.19.1': {}
 
-  '@humanfs/node@0.16.6':
+  '@humanfs/node@0.16.7':
     dependencies:
       '@humanfs/core': 0.19.1
-      '@humanwhocodes/retry': 0.3.1
+      '@humanwhocodes/retry': 0.4.3
 
   '@humanwhocodes/module-importer@1.0.1': {}
-
-  '@humanwhocodes/retry@0.3.1': {}
 
   '@humanwhocodes/retry@0.4.3': {}
 
@@ -4130,7 +4136,7 @@ snapshots:
     transitivePeerDependencies:
       - supports-color
 
-  '@tanstack/router-plugin@1.123.2(@tanstack/react-router@1.123.2(react-dom@19.1.0(react@19.1.0))(react@19.1.0))(vite@7.0.0(@types/node@24.0.8)(sass@1.89.2)(tsx@4.20.3)(yaml@2.8.0))':
+  '@tanstack/router-plugin@1.123.2(@tanstack/react-router@1.123.2(react-dom@19.1.0(react@19.1.0))(react@19.1.0))(vite@7.0.0(@types/node@24.9.1)(sass@1.89.2)(tsx@4.20.3)(yaml@2.8.0))':
     dependencies:
       '@babel/core': 7.27.7
       '@babel/plugin-syntax-jsx': 7.27.1(@babel/core@7.27.7)
@@ -4148,7 +4154,7 @@ snapshots:
       zod: 3.25.67
     optionalDependencies:
       '@tanstack/react-router': 1.123.2(react-dom@19.1.0(react@19.1.0))(react@19.1.0)
-      vite: 7.0.0(@types/node@24.0.8)(sass@1.89.2)(tsx@4.20.3)(yaml@2.8.0)
+      vite: 7.0.0(@types/node@24.9.1)(sass@1.89.2)(tsx@4.20.3)(yaml@2.8.0)
     transitivePeerDependencies:
       - supports-color
 
@@ -4163,9 +4169,9 @@ snapshots:
     transitivePeerDependencies:
       - supports-color
 
-  '@tanstack/router-vite-plugin@1.123.2(@tanstack/react-router@1.123.2(react-dom@19.1.0(react@19.1.0))(react@19.1.0))(vite@7.0.0(@types/node@24.0.8)(sass@1.89.2)(tsx@4.20.3)(yaml@2.8.0))':
+  '@tanstack/router-vite-plugin@1.123.2(@tanstack/react-router@1.123.2(react-dom@19.1.0(react@19.1.0))(react@19.1.0))(vite@7.0.0(@types/node@24.9.1)(sass@1.89.2)(tsx@4.20.3)(yaml@2.8.0))':
     dependencies:
-      '@tanstack/router-plugin': 1.123.2(@tanstack/react-router@1.123.2(react-dom@19.1.0(react@19.1.0))(react@19.1.0))(vite@7.0.0(@types/node@24.0.8)(sass@1.89.2)(tsx@4.20.3)(yaml@2.8.0))
+      '@tanstack/router-plugin': 1.123.2(@tanstack/react-router@1.123.2(react-dom@19.1.0(react@19.1.0))(react@19.1.0))(vite@7.0.0(@types/node@24.9.1)(sass@1.89.2)(tsx@4.20.3)(yaml@2.8.0))
     transitivePeerDependencies:
       - '@rsbuild/core'
       - '@tanstack/react-router'
@@ -4181,6 +4187,8 @@ snapshots:
   '@tanstack/virtual-file-routes@1.121.21': {}
 
   '@tauri-apps/api@2.6.0': {}
+
+  '@tauri-apps/api@2.9.0': {}
 
   '@tauri-apps/cli-darwin-arm64@2.6.2':
     optional: true
@@ -4249,9 +4257,9 @@ snapshots:
     dependencies:
       '@tauri-apps/api': 2.6.0
 
-  '@tauri-apps/plugin-store@https://codeload.github.com/tauri-apps/tauri-plugin-store/tar.gz/d93ca742bda14ca679e19d8311ae93da9f2edc83':
+  '@tauri-apps/plugin-store@https://codeload.github.com/tauri-apps/tauri-plugin-store/tar.gz/98ab1e1e53899f78de7bc2b02d257845ebd15b5d':
     dependencies:
-      '@tauri-apps/api': 2.6.0
+      '@tauri-apps/api': 2.9.0
 
   '@tauri-apps/plugin-updater@2.9.0':
     dependencies:
@@ -4310,9 +4318,9 @@ snapshots:
 
   '@types/ms@2.1.0': {}
 
-  '@types/node@24.0.8':
+  '@types/node@24.9.1':
     dependencies:
-      undici-types: 7.8.0
+      undici-types: 7.16.0
 
   '@types/parse-json@4.0.2': {}
 
@@ -4343,7 +4351,7 @@ snapshots:
       native-promise-only: 0.8.1
       weakmap-polyfill: 2.0.4
 
-  '@vitejs/plugin-react@4.6.0(vite@7.0.0(@types/node@24.0.8)(sass@1.89.2)(tsx@4.20.3)(yaml@2.8.0))':
+  '@vitejs/plugin-react@4.6.0(vite@7.0.0(@types/node@24.9.1)(sass@1.89.2)(tsx@4.20.3)(yaml@2.8.0))':
     dependencies:
       '@babel/core': 7.27.7
       '@babel/plugin-transform-react-jsx-self': 7.27.1(@babel/core@7.27.7)
@@ -4351,7 +4359,7 @@ snapshots:
       '@rolldown/pluginutils': 1.0.0-beta.19
       '@types/babel__core': 7.20.5
       react-refresh: 0.17.0
-      vite: 7.0.0(@types/node@24.0.8)(sass@1.89.2)(tsx@4.20.3)(yaml@2.8.0)
+      vite: 7.0.0(@types/node@24.9.1)(sass@1.89.2)(tsx@4.20.3)(yaml@2.8.0)
     transitivePeerDependencies:
       - supports-color
 
@@ -4598,6 +4606,10 @@ snapshots:
     dependencies:
       ms: 2.1.3
 
+  debug@4.4.3:
+    dependencies:
+      ms: 2.1.3
+
   decode-formdata@0.9.0: {}
 
   decode-named-character-reference@1.2.0:
@@ -4727,15 +4739,15 @@ snapshots:
 
   eslint@9.30.0:
     dependencies:
-      '@eslint-community/eslint-utils': 4.7.0(eslint@9.30.0)
+      '@eslint-community/eslint-utils': 4.9.0(eslint@9.30.0)
       '@eslint-community/regexpp': 4.12.1
-      '@eslint/config-array': 0.21.0
-      '@eslint/config-helpers': 0.3.0
+      '@eslint/config-array': 0.21.1
+      '@eslint/config-helpers': 0.3.1
       '@eslint/core': 0.14.0
       '@eslint/eslintrc': 3.3.1
       '@eslint/js': 9.30.0
-      '@eslint/plugin-kit': 0.3.3
-      '@humanfs/node': 0.16.6
+      '@eslint/plugin-kit': 0.3.5
+      '@humanfs/node': 0.16.7
       '@humanwhocodes/module-importer': 1.0.1
       '@humanwhocodes/retry': 0.4.3
       '@types/estree': 1.0.8
@@ -4743,7 +4755,7 @@ snapshots:
       ajv: 6.12.6
       chalk: 4.1.2
       cross-spawn: 7.0.6
-      debug: 4.4.1
+      debug: 4.4.3
       escape-string-regexp: 4.0.0
       eslint-scope: 8.4.0
       eslint-visitor-keys: 4.2.1
@@ -5595,7 +5607,7 @@ snapshots:
     dependencies:
       dnd-core: 16.0.1
 
-  react-dnd@16.0.1(@types/node@24.0.8)(@types/react@19.1.8)(react@19.1.0):
+  react-dnd@16.0.1(@types/node@24.9.1)(@types/react@19.1.8)(react@19.1.0):
     dependencies:
       '@react-dnd/invariant': 4.0.2
       '@react-dnd/shallowequal': 4.0.2
@@ -5604,7 +5616,7 @@ snapshots:
       hoist-non-react-statics: 3.3.2
       react: 19.1.0
     optionalDependencies:
-      '@types/node': 24.0.8
+      '@types/node': 24.9.1
       '@types/react': 19.1.8
 
   react-dom@19.1.0(react@19.1.0):
@@ -5786,7 +5798,7 @@ snapshots:
 
   semver@6.3.1: {}
 
-  seroval-plugins@1.3.2(seroval@1.3.2):
+  seroval-plugins@1.3.3(seroval@1.3.2):
     dependencies:
       seroval: 1.3.2
 
@@ -5807,7 +5819,7 @@ snapshots:
     dependencies:
       csstype: 3.1.3
       seroval: 1.3.2
-      seroval-plugins: 1.3.2(seroval@1.3.2)
+      seroval-plugins: 1.3.3(seroval@1.3.2)
 
   source-map-js@1.2.1: {}
 
@@ -5890,7 +5902,7 @@ snapshots:
 
   ua-parser-js@1.0.40: {}
 
-  undici-types@7.8.0: {}
+  undici-types@7.16.0: {}
 
   unified@11.0.5:
     dependencies:
@@ -5959,22 +5971,22 @@ snapshots:
     dependencies:
       '@vimeo/player': 2.29.0
 
-  vite-plugin-svgr@4.3.0(rollup@4.44.1)(typescript@5.8.3)(vite@7.0.0(@types/node@24.0.8)(sass@1.89.2)(tsx@4.20.3)(yaml@2.8.0)):
+  vite-plugin-svgr@4.3.0(rollup@4.44.1)(typescript@5.8.3)(vite@7.0.0(@types/node@24.9.1)(sass@1.89.2)(tsx@4.20.3)(yaml@2.8.0)):
     dependencies:
       '@rollup/pluginutils': 5.2.0(rollup@4.44.1)
       '@svgr/core': 8.1.0(typescript@5.8.3)
       '@svgr/plugin-jsx': 8.1.0(@svgr/core@8.1.0(typescript@5.8.3))
-      vite: 7.0.0(@types/node@24.0.8)(sass@1.89.2)(tsx@4.20.3)(yaml@2.8.0)
+      vite: 7.0.0(@types/node@24.9.1)(sass@1.89.2)(tsx@4.20.3)(yaml@2.8.0)
     transitivePeerDependencies:
       - rollup
       - supports-color
       - typescript
 
-  vite-plugin-wasm@3.4.1(vite@7.0.0(@types/node@24.0.8)(sass@1.89.2)(tsx@4.20.3)(yaml@2.8.0)):
+  vite-plugin-wasm@3.4.1(vite@7.0.0(@types/node@24.9.1)(sass@1.89.2)(tsx@4.20.3)(yaml@2.8.0)):
     dependencies:
-      vite: 7.0.0(@types/node@24.0.8)(sass@1.89.2)(tsx@4.20.3)(yaml@2.8.0)
+      vite: 7.0.0(@types/node@24.9.1)(sass@1.89.2)(tsx@4.20.3)(yaml@2.8.0)
 
-  vite@7.0.0(@types/node@24.0.8)(sass@1.89.2)(tsx@4.20.3)(yaml@2.8.0):
+  vite@7.0.0(@types/node@24.9.1)(sass@1.89.2)(tsx@4.20.3)(yaml@2.8.0):
     dependencies:
       esbuild: 0.25.5
       fdir: 6.4.6(picomatch@4.0.2)
@@ -5983,7 +5995,7 @@ snapshots:
       rollup: 4.44.1
       tinyglobby: 0.2.14
     optionalDependencies:
-      '@types/node': 24.0.8
+      '@types/node': 24.9.1
       fsevents: 2.3.3
       sass: 1.89.2
       tsx: 4.20.3
