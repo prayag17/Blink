@@ -1,21 +1,3 @@
-import React, {
-	useState,
-	useEffect,
-	useLayoutEffect,
-	useRef,
-	type ReactNode,
-} from "react";
-
-import Box from "@mui/material/Box";
-import CircularProgress from "@mui/material/CircularProgress";
-import Divider from "@mui/material/Divider";
-import Tab from "@mui/material/Tab";
-import Tabs from "@mui/material/Tabs";
-import Typography from "@mui/material/Typography";
-
-import useParallax from "@/utils/hooks/useParallax";
-import { AnimatePresence, motion, useScroll } from "motion/react";
-
 import {
 	BaseItemKind,
 	ItemFields,
@@ -23,25 +5,38 @@ import {
 } from "@jellyfin/sdk/lib/generated-client";
 import { getItemsApi } from "@jellyfin/sdk/lib/utils/api/items-api";
 import { getUserLibraryApi } from "@jellyfin/sdk/lib/utils/api/user-library-api";
-
+import Box from "@mui/material/Box";
+import CircularProgress from "@mui/material/CircularProgress";
+import Divider from "@mui/material/Divider";
+import Tab from "@mui/material/Tab";
+import Tabs from "@mui/material/Tabs";
+import Typography from "@mui/material/Typography";
 import { useQuery } from "@tanstack/react-query";
+import { AnimatePresence, motion, useScroll } from "motion/react";
+import React, {
+	type ReactNode,
+	useEffect,
+	useLayoutEffect,
+	useRef,
+	useState,
+} from "react";
+import { Blurhash } from "react-blurhash";
 
 import LikeButton from "@/components/buttons/likeButton";
 import { Card } from "@/components/card/card";
-import { Blurhash } from "react-blurhash";
-
 import { ArtistAlbum } from "@/components/layouts/artist/artistAlbum";
 import MusicTrack from "@/components/musicTrack";
 import { ErrorNotice } from "@/components/notices/errorNotice/errorNotice";
 import ShowMoreText from "@/components/showMoreText";
+import useParallax from "@/utils/hooks/useParallax";
 import { useBackdropStore } from "@/utils/store/backdrop";
 import "./artist.scss";
 
+import { createFileRoute } from "@tanstack/react-router";
 import IconLink from "@/components/iconLink";
 import { getTypeIcon } from "@/components/utils/iconsCollection";
 import getImageUrlsApi from "@/utils/methods/getImageUrlsApi";
 import { useCentralStore } from "@/utils/store/central";
-import { createFileRoute } from "@tanstack/react-router";
 
 
 type TabPanelProp = {
@@ -182,16 +177,13 @@ function ArtistTitlePage() {
 	const { setBackdrop } = useBackdropStore();
 	useEffect(() => {
 		if (item.isSuccess && item.data) {
-			setBackdrop(
-				`${api?.basePath}/Items/${item.data.Id}/Images/Backdrop`,
-				item.data.Id,
-			);
+			setBackdrop(`${api?.basePath}/Items/${item.data.Id}/Images/Backdrop`);
 		}
 	}, [item.isSuccess]);
 
-	const pageRef = useRef(null);
+	const scrollTargetRef = useRef<HTMLDivElement | null>(null);
 	const { scrollYProgress } = useScroll({
-		target: pageRef,
+		target: scrollTargetRef,
 		offset: ["start start", "60vh start"],
 	});
 	const parallax = useParallax(scrollYProgress, 50);
@@ -226,8 +218,8 @@ function ArtistTitlePage() {
 					ease: "easeInOut",
 				}}
 				className="scrollY item item-artist"
-				ref={pageRef}
 			>
+				<div ref={scrollTargetRef} />
 				<div className="item-hero flex flex-row">
 					<div className="item-hero-backdrop-container">
 						<motion.img

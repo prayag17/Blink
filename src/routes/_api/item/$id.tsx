@@ -10,13 +10,14 @@ import Stack from "@mui/material/Stack";
 import TextField from "@mui/material/TextField";
 import Typography from "@mui/material/Typography";
 import { useQuery, useSuspenseQuery } from "@tanstack/react-query";
-import { motion, useScroll } from "motion/react";
+import { motion } from "motion/react";
 import React, { useLayoutEffect, useMemo, useRef, useState } from "react";
 import { Blurhash } from "react-blurhash";
 import heroBg from "@/assets/herobg.png";
 import { Card } from "@/components/card/card";
 import CardScroller from "@/components/cardScroller/cardScroller";
-import useParallax from "@/utils/hooks/useParallax";
+// import useParallax from "@/utils/hooks/useParallax";
+import ItemBackdrop from "@/components/itemBackdrop";
 
 import "./item.scss";
 
@@ -43,7 +44,6 @@ import MarkPlayedButton from "@/components/buttons/markPlayedButton";
 import PlayButton from "@/components/buttons/playButton";
 import TrailerButton from "@/components/buttons/trailerButton";
 import IconLink from "@/components/iconLink";
-import { ErrorNotice } from "@/components/notices/errorNotice/errorNotice";
 import ShowMoreText from "@/components/showMoreText";
 import ItemSkeleton from "@/components/skeleton/item";
 import { getTypeIcon } from "@/components/utils/iconsCollection";
@@ -292,13 +292,8 @@ function ItemDetail() {
 		}
 	}, [item.data.Id]);
 
-	const pageRef = useRef(null);
-	const { scrollYProgress } = useScroll({
-		layoutEffect: false,
-		target: pageRef,
-		offset: ["start start", "60vh start"],
-	});
-	const parallax = useParallax(scrollYProgress, 50);
+	// Provide a scroll target ref to the backdrop component.
+	const scrollTargetRef = useRef<HTMLDivElement | null>(null);
 
 		return (
 			<motion.div
@@ -314,44 +309,25 @@ function ItemDetail() {
 					ease: "easeInOut",
 				}}
 				className="scrollY padded-top flex flex-column item item-default"
-				ref={pageRef}
+				ref={scrollTargetRef}
 			>
 				<div className="item-hero">
 					<div className="item-hero-backdrop-container">
-						{item.data.BackdropImageTags?.length ? (
-							<motion.img
-								alt={item.data.Name ?? ""}
-								src={
-									api &&
-									getImageUrlsApi(api).getItemImageUrlById(
-										item.data.Id ?? "",
-										"Backdrop",
-										{
-											tag: item.data.BackdropImageTags[0],
-										},
-									)
-								}
-								className="item-hero-backdrop"
-								onLoad={(e) => {
-									e.currentTarget.style.opacity = "1";
-								}}
-								style={{
-									y: parallax,
-								}}
-							/>
-						) : (
-							<motion.img
-								alt={item.data.Name ?? ""}
-								src={heroBg}
-								className="item-hero-backdrop"
-								onLoad={(e) => {
-									e.currentTarget.style.opacity = "1";
-								}}
-								style={{
-									y: parallax,
-								}}
-							/>
-						)}
+						<ItemBackdrop
+							targetRef={scrollTargetRef}
+							alt={item.data.Name ?? ""}
+							backdropSrc={
+								item.data.BackdropImageTags?.length
+									? api &&
+										getImageUrlsApi(api).getItemImageUrlById(
+											item.data.Id ?? "",
+											"Backdrop",
+											{ tag: item.data.BackdropImageTags[0] },
+										)
+									: undefined
+							}
+							fallbackSrc={heroBg}
+						/>
 					</div>
 					<div
 						className="item-hero-image-container"

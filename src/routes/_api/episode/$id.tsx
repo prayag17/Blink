@@ -1,33 +1,27 @@
-import React, { useState, useRef, useMemo, useEffect } from "react";
-
-import Box from "@mui/material/Box";
-import Chip from "@mui/material/Chip";
-import CircularProgress from "@mui/material/CircularProgress";
-import MenuItem from "@mui/material/MenuItem";
-import Stack from "@mui/material/Stack";
-import TextField from "@mui/material/TextField";
-import Typography from "@mui/material/Typography";
-import { green, red, yellow } from "@mui/material/colors";
-
-import { Blurhash } from "react-blurhash";
-
-import useParallax from "@/utils/hooks/useParallax";
-import { motion, useScroll } from "motion/react";
-
 import {
 	BaseItemKind,
 	MediaStreamType,
 } from "@jellyfin/sdk/lib/generated-client";
 import { getUserLibraryApi } from "@jellyfin/sdk/lib/utils/api/user-library-api";
-
+import Box from "@mui/material/Box";
+import Chip from "@mui/material/Chip";
+import CircularProgress from "@mui/material/CircularProgress";
+import { green, red, yellow } from "@mui/material/colors";
+import MenuItem from "@mui/material/MenuItem";
+import Stack from "@mui/material/Stack";
+import TextField from "@mui/material/TextField";
+import Typography from "@mui/material/Typography";
 import { useQuery } from "@tanstack/react-query";
-
+import { motion } from "motion/react";
+import React, { useEffect, useMemo, useRef, useState } from "react";
+import { Blurhash } from "react-blurhash";
 import heroBg from "@/assets/herobg.png";
-
 import LikeButton from "@/components/buttons/likeButton";
 import MarkPlayedButton from "@/components/buttons/markPlayedButton";
 import PlayButton from "@/components/buttons/playButton";
 import TrailerButton from "@/components/buttons/trailerButton";
+// import useParallax from "@/utils/hooks/useParallax";
+import ItemBackdrop from "@/components/itemBackdrop";
 import { ErrorNotice } from "@/components/notices/errorNotice/errorNotice";
 import ShowMoreText from "@/components/showMoreText";
 import { getTypeIcon } from "@/components/utils/iconsCollection";
@@ -35,32 +29,30 @@ import { endsAt, getRuntime } from "@/utils/date/time";
 import { useBackdropStore } from "@/utils/store/backdrop";
 import "./episode.scss";
 
+import { getItemsApi } from "@jellyfin/sdk/lib/utils/api/items-api";
+import { createFileRoute, Link } from "@tanstack/react-router";
 import ultraHdIcon from "@/assets/icons/4k.svg";
 import dolbyAtmosIcon from "@/assets/icons/dolby-atmos.svg";
-import dolbyDigitalPlusIcon from "@/assets/icons/dolby-digital-plus.svg";
 import dolbyDigitalIcon from "@/assets/icons/dolby-digital.svg";
+import dolbyDigitalPlusIcon from "@/assets/icons/dolby-digital-plus.svg";
 import dolbyTrueHDIcon from "@/assets/icons/dolby-truehd.svg";
-import dolbyVisionAtmosIcon from "@/assets/icons/dolby-vision-atmos.png";
 import dolbyVisionIcon from "@/assets/icons/dolby-vision.svg";
-import dtsHdMaIcon from "@/assets/icons/dts-hd-ma.svg";
+import dolbyVisionAtmosIcon from "@/assets/icons/dolby-vision-atmos.png";
 import dtsIcon from "@/assets/icons/dts.svg";
+import dtsHdMaIcon from "@/assets/icons/dts-hd-ma.svg";
 import hdIcon from "@/assets/icons/hd.svg";
 import hdrIcon from "@/assets/icons/hdr.svg";
-import hdr10PlusIcon from "@/assets/icons/hdr10-plus.svg";
 import hdr10Icon from "@/assets/icons/hdr10.svg";
+import hdr10PlusIcon from "@/assets/icons/hdr10-plus.svg";
 import imaxIcon from "@/assets/icons/imax.svg";
 import sdIcon from "@/assets/icons/sd.svg";
 import sdrIcon from "@/assets/icons/sdr.svg";
-
-import type MediaQualityInfo from "@/utils/types/mediaQualityInfo";
-
 import { Card } from "@/components/card/card";
 import CardScroller from "@/components/cardScroller/cardScroller";
 import IconLink from "@/components/iconLink";
 import getImageUrlsApi from "@/utils/methods/getImageUrlsApi";
 import { useCentralStore } from "@/utils/store/central";
-import { getItemsApi } from "@jellyfin/sdk/lib/utils/api/items-api";
-import { Link, createFileRoute } from "@tanstack/react-router";
+import type MediaQualityInfo from "@/utils/types/mediaQualityInfo";
 
 export const Route = createFileRoute("/_api/episode/$id")({
 	component: EpisodeTitlePage,
@@ -103,7 +95,7 @@ function EpisodeTitlePage() {
 		networkMode: "always",
 	});
 
-	const [setAppBackdrop] = useBackdropStore((state) => [state.setBackdrop]);
+	const setBackdrop = useBackdropStore((state) => state.setBackdrop);
 
 	const [selectedVideoTrack, setSelectedVideoTrack] = useState(0);
 	const [selectedAudioTrack, setSelectedAudioTrack] = useState(0);
@@ -156,7 +148,6 @@ function EpisodeTitlePage() {
 	const producers = useMemo(() => {
 		return item.data?.People?.filter((itm) => itm.Type === "Producer") ?? [];
 	}, [item.data?.Id]);
-
 
 	const mediaQualityInfo = useMemo<MediaQualityInfo>(() => {
 		const checkAtmos = audioTracks.filter((audio) =>
@@ -254,22 +245,20 @@ function EpisodeTitlePage() {
 		};
 	}, [item.data?.Id]);
 
+	const lastBackdropRef = useRef<string | undefined>(undefined);
 	useEffect(() => {
-		if (api && item.isSuccess && item.data) {
-			setAppBackdrop(
-				`${api.basePath}/Items/${item.data.ParentBackdropItemId}/Images/Backdrop`,
-				item.data.Id,
-			);
-		}
-	}, [item.isSuccess]);
+		if (!api || !item.isSuccess || !item.data) return;
+		const tag = item.data.ParentBackdropImageTags?.[0];
+		// Prefer blurhash if available; fallback to URL
+		const hash = item.data.ImageBlurHashes?.Backdrop?.[tag ?? ""];
 
-	const pageRef = useRef(null);
-	const { scrollYProgress } = useScroll({
-		target: pageRef,
-		offset: ["start start", "60vh start"],
-		layoutEffect: false,
-	});
-	const parallax = useParallax(scrollYProgress, 50);
+		if (hash && lastBackdropRef.current !== hash) {
+			lastBackdropRef.current = hash;
+			setBackdrop(hash);
+		}
+	}, [api, item.isSuccess, item.data, setBackdrop]);
+
+	const containerRef = useRef<HTMLDivElement | null>(null);
 
 	if (item.isPending) {
 		return (
@@ -301,42 +290,31 @@ function EpisodeTitlePage() {
 					ease: "easeInOut",
 				}}
 				className="scrollY padded-top flex flex-column item item-episode"
-				ref={pageRef}
+				ref={containerRef}
 			>
 				<div className="item-hero">
 					<div className="item-hero-backdrop-container">
 						{item.data.ParentBackdropImageTags?.length ? (
-							<motion.img
+							<ItemBackdrop
+								targetRef={containerRef}
 								alt={item.data.Name ?? ""}
-								src={
+								backdropSrc={
 									api &&
 									getImageUrlsApi(api).getItemImageUrlById(
 										item.data.ParentBackdropItemId ?? "",
 										"Backdrop",
-										{
-											tag: item.data.ParentBackdropImageTags[0],
-										},
+										{ tag: item.data.ParentBackdropImageTags[0] },
 									)
 								}
+								fallbackSrc={heroBg}
 								className="item-hero-backdrop"
-								onLoad={(e) => {
-									e.currentTarget.style.opacity = "1";
-								}}
-								style={{
-									y: parallax,
-								}}
 							/>
 						) : (
-							<motion.img
+							<ItemBackdrop
+								targetRef={containerRef}
 								alt={item.data.Name ?? ""}
-								src={heroBg}
+								fallbackSrc={heroBg}
 								className="item-hero-backdrop"
-								onLoad={(e) => {
-									e.currentTarget.style.opacity = "1";
-								}}
-								style={{
-									y: parallax,
-								}}
 							/>
 						)}
 					</div>

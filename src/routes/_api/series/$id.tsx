@@ -1,57 +1,48 @@
-import React, { useState, useEffect, useRef, useMemo } from "react";
-
+import { BaseItemKind, ItemFields } from "@jellyfin/sdk/lib/generated-client";
+import { getLibraryApi } from "@jellyfin/sdk/lib/utils/api/library-api";
+import { getTvShowsApi } from "@jellyfin/sdk/lib/utils/api/tv-shows-api";
+import { getUserLibraryApi } from "@jellyfin/sdk/lib/utils/api/user-library-api";
 import Box from "@mui/material/Box";
 import Chip from "@mui/material/Chip";
 import CircularProgress from "@mui/material/CircularProgress";
+import { green, red, yellow } from "@mui/material/colors";
 import Divider from "@mui/material/Divider";
 import MenuItem from "@mui/material/MenuItem";
 import Stack from "@mui/material/Stack";
 import TextField from "@mui/material/TextField";
 import Typography from "@mui/material/Typography";
-import { green, red, yellow } from "@mui/material/colors";
-
-import useParallax from "@/utils/hooks/useParallax";
-import useDefaultSeason from "@/utils/hooks/useDefaultSeason";
-import { AnimatePresence, motion, useScroll } from "motion/react";
-
-import { Blurhash } from "react-blurhash";
-
-import { BaseItemKind, ItemFields } from "@jellyfin/sdk/lib/generated-client";
-import { getLibraryApi } from "@jellyfin/sdk/lib/utils/api/library-api";
-import { getTvShowsApi } from "@jellyfin/sdk/lib/utils/api/tv-shows-api";
-import { getUserLibraryApi } from "@jellyfin/sdk/lib/utils/api/user-library-api";
-
 import { useQuery } from "@tanstack/react-query";
-
+import { AnimatePresence, motion } from "motion/react";
+import React, { useEffect, useMemo, useRef, useState } from "react";
+import { Blurhash } from "react-blurhash";
+import { Card } from "@/components/card/card";
+import CardScroller from "@/components/cardScroller/cardScroller";
+// import useParallax from "@/utils/hooks/useParallax";
+import ItemBackdrop from "@/components/itemBackdrop";
+import { ErrorNotice } from "@/components/notices/errorNotice/errorNotice";
 import {
 	endsAt,
 	getRuntime,
 	getRuntimeCompact,
 	getRuntimeMusic,
 } from "@/utils/date/time";
-
-import { Card } from "@/components/card/card";
-import CardScroller from "@/components/cardScroller/cardScroller";
-
-import { ErrorNotice } from "@/components/notices/errorNotice/errorNotice";
+import useDefaultSeason from "@/utils/hooks/useDefaultSeason";
 import "./series.scss";
 
+import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import heroBg from "@/assets/herobg.png";
 import LikeButton from "@/components/buttons/likeButton";
 import MarkPlayedButton from "@/components/buttons/markPlayedButton";
 import PlayButton from "@/components/buttons/playButton";
 import TrailerButton from "@/components/buttons/trailerButton";
+import IconLink from "@/components/iconLink";
 import ShowMoreText from "@/components/showMoreText";
+import EpisodeSkeleton from "@/components/skeleton/episode";
 import { SeasonSelectorSkeleton } from "@/components/skeleton/seasonSelector";
 import { getTypeIcon } from "@/components/utils/iconsCollection";
-import { useBackdropStore } from "@/utils/store/backdrop";
-
-import IconLink from "@/components/iconLink";
-import EpisodeSkeleton from "@/components/skeleton/episode";
 import getImageUrlsApi from "@/utils/methods/getImageUrlsApi";
+import { useBackdropStore } from "@/utils/store/backdrop";
 import { useCentralStore } from "@/utils/store/central";
-import { createFileRoute, useNavigate } from "@tanstack/react-router";
-import { Link } from "@tanstack/react-router";
 
 const getEpisodeDateString = (date: Date) => {
 	const formatter = new Intl.DateTimeFormat(navigator.language ?? "en-US", {
@@ -117,14 +108,19 @@ function SeriesTitlePage() {
 		enabled: item.isSuccess,
 	});
 
-	const [backdropImage, setBackdropImage] = useState<SeriesBackdropImage>(() => {
-		const url = sessionStorage.getItem(`backdrop-${item.data?.Id}`);
-		const key = sessionStorage.getItem(`backdrop-${item.data?.Id}-key`);
-		return { url, key };
-	});
+	const [backdropImage, setBackdropImage] = useState<SeriesBackdropImage>(
+		() => {
+			const url = sessionStorage.getItem(`backdrop-${item.data?.Id}`);
+			const key = sessionStorage.getItem(`backdrop-${item.data?.Id}-key`);
+			return { url, key };
+		},
+	);
 	const [backdropImageLoaded, setBackdropImageLoaded] = useState(false);
 
-	const [currentSeason, setCurrentSeason] = useDefaultSeason(seasons, item.data?.Id);
+	const [currentSeason, setCurrentSeason] = useDefaultSeason(
+		seasons,
+		item.data?.Id,
+	);
 
 	const currentSeasonNumber = Number(currentSeason);
 
@@ -187,6 +183,8 @@ function SeriesTitlePage() {
 		return item.data?.People?.filter((itm) => itm.Type === "Producer") ?? [];
 	}, [item.data?.Id]);
 
+	const lastBackdropHashRef = useRef<string | undefined>(undefined);
+
 	useEffect(() => {
 		if (api && currentSeasonItem.isSuccess && item.isSuccess) {
 			if (
@@ -217,16 +215,17 @@ function SeriesTitlePage() {
 					),
 					key: currentSeasonItem.data?.BackdropImageTags?.[0],
 				});
-				setBackdrop(
-					getImageUrlsApi(api).getItemImageUrlById(
-						currentSeasonItem.data?.Id ?? "",
-						"Backdrop",
-						{
-							tag: currentSeasonItem.data?.BackdropImageTags?.[0],
-						},
-					),
-					currentSeasonItem.data?.BackdropImageTags?.[0],
-				);
+				const seasonBackdropTag =
+					currentSeasonItem.data?.BackdropImageTags?.[0];
+				const seasonBackdropHash =
+					currentSeasonItem.data?.ImageBlurHashes?.Backdrop?.[
+						seasonBackdropTag ?? ""
+					] ?? "";
+
+				if (lastBackdropHashRef.current !== seasonBackdropHash) {
+					setBackdrop(seasonBackdropHash);
+					lastBackdropHashRef.current = seasonBackdropHash;
+				}
 				setBackdropImageLoaded(false);
 			} else if (
 				item.isSuccess &&
@@ -259,26 +258,28 @@ function SeriesTitlePage() {
 					),
 					key: item.data?.BackdropImageTags?.[0],
 				});
-				setBackdrop(
-					getImageUrlsApi(api).getItemImageUrlById(
-						item.data?.Id ?? "",
-						"Backdrop",
-						{
-							tag: item.data?.BackdropImageTags?.[0],
-						},
-					),
-					item.data?.BackdropImageTags?.[0],
-				);
+				const seriesBackdropTag = item.data?.BackdropImageTags?.[0];
+				const seriesBackdropHash =
+					item.data?.ImageBlurHashes?.Backdrop?.[seriesBackdropTag ?? ""] ?? "";
+
+				if (lastBackdropHashRef.current !== seriesBackdropHash) {
+					setBackdrop(seriesBackdropHash);
+					lastBackdropHashRef.current = seriesBackdropHash;
+				}
 			}
 		}
-	}, [currentSeasonItem.dataUpdatedAt]);
+	}, [
+		api,
+		currentSeasonItem.data,
+		currentSeasonItem.isSuccess,
+		item.data,
+		item.isSuccess,
+		setBackdrop,
+		backdropImage.key,
+	]);
 
-	const pageRef = useRef(null);
-	const { scrollYProgress } = useScroll({
-		target: pageRef,
-		offset: ["start start", "60vh start"],
-	});
-	const parallax = useParallax(scrollYProgress, 50);
+	const containerRef = useRef<HTMLDivElement | null>(null);
+	// Parallax handled within ItemBackdrop to avoid hydration issues.
 
 	const navigate = useNavigate();
 
@@ -313,48 +314,36 @@ function SeriesTitlePage() {
 					ease: "easeInOut",
 				}}
 				className="scrollY padded-top flex flex-column item item-series"
-				ref={pageRef}
+				ref={containerRef}
 			>
 				<div className="item-hero">
 					<div className="item-hero-backdrop-container">
 						<AnimatePresence mode="wait">
 							{item.data.BackdropImageTags ? (
-								<motion.img
+								<ItemBackdrop
 									key={backdropImage.key}
+									targetRef={containerRef}
 									alt={item.data.Name ?? ""}
-									src={backdropImage.url ?? ""}
+									backdropSrc={backdropImage.url ?? ""}
+									fallbackSrc={heroBg}
 									className="item-hero-backdrop"
-									initial={{
-										opacity: 0,
-									}}
 									onLoad={() => {
 										console.info("Image Loaded");
 										setBackdropImageLoaded(true);
 									}}
-									animate={{
-										opacity: backdropImageLoaded ? 1 : 0,
-									}}
-									exit={{
-										opacity: 0,
-									}}
-									transition={{
-										duration: 0.2,
-									}}
-									style={{
-										y: parallax,
+									motionProps={{
+										initial: { opacity: 0 },
+										animate: { opacity: backdropImageLoaded ? 1 : 0 },
+										exit: { opacity: 0 },
+										transition: { duration: 0.2 },
 									}}
 								/>
 							) : (
-								<motion.img
+								<ItemBackdrop
+									targetRef={containerRef}
 									alt={item.data.Name ?? ""}
-									src={heroBg}
+									fallbackSrc={heroBg}
 									className="item-hero-backdrop"
-									onLoad={(e) => {
-										e.currentTarget.style.opacity = "1";
-									}}
-									style={{
-										y: parallax,
-									}}
 								/>
 							)}
 						</AnimatePresence>
@@ -899,7 +888,10 @@ function SeriesTitlePage() {
 									value={currentSeasonNumber}
 									onChange={(e) => {
 										const seasonIndex = Number(e.target.value);
-										if (!isNaN(seasonIndex) && isFinite(seasonIndex)) {
+										if (
+											!Number.isNaN(seasonIndex) &&
+											Number.isFinite(seasonIndex)
+										) {
 											setCurrentSeason(seasonIndex);
 											sessionStorage.setItem(
 												`season-${item.data?.Id}`,
@@ -982,7 +974,7 @@ function SeriesTitlePage() {
 														currentSubTrack="nosub"
 														size="medium"
 														buttonProps={{
-															//@ts-ignore
+															//@ts-expect-error
 															color: "white",
 															style: {
 																color: "black ",

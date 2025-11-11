@@ -1,14 +1,3 @@
-import React, { useLayoutEffect, useRef } from "react";
-
-import Box from "@mui/material/Box";
-import Chip from "@mui/material/Chip";
-import CircularProgress from "@mui/material/CircularProgress";
-import Stack from "@mui/material/Stack";
-import Typography from "@mui/material/Typography";
-
-import useParallax from "@/utils/hooks/useParallax";
-import { motion, useScroll } from "motion/react";
-
 import {
 	BaseItemKind,
 	ItemFields,
@@ -17,30 +6,34 @@ import {
 import { getItemsApi } from "@jellyfin/sdk/lib/utils/api/items-api";
 import { getLibraryApi } from "@jellyfin/sdk/lib/utils/api/library-api";
 import { getUserLibraryApi } from "@jellyfin/sdk/lib/utils/api/user-library-api";
+import Box from "@mui/material/Box";
+import Chip from "@mui/material/Chip";
+import CircularProgress from "@mui/material/CircularProgress";
+import Stack from "@mui/material/Stack";
+import Typography from "@mui/material/Typography";
 import { useQuery } from "@tanstack/react-query";
-
-import { Card } from "@/components/card/card";
-import CardScroller from "@/components/cardScroller/cardScroller";
-
-import { ErrorNotice } from "@/components/notices/errorNotice/errorNotice";
-import ShowMoreText from "@/components/showMoreText";
-import { endsAt, getRuntime } from "@/utils/date/time";
-import { useBackdropStore } from "@/utils/store/backdrop";
+import { motion, useScroll } from "motion/react";
+import React, { useLayoutEffect, useRef } from "react";
 import { Blurhash } from "react-blurhash";
-
+import heroBg from "@/assets/herobg.png";
 import LikeButton from "@/components/buttons/likeButton";
 import MarkPlayedButton from "@/components/buttons/markPlayedButton";
 import PlayButton from "@/components/buttons/playButton";
-
-import heroBg from "@/assets/herobg.png";
+import { Card } from "@/components/card/card";
+import CardScroller from "@/components/cardScroller/cardScroller";
+import { ErrorNotice } from "@/components/notices/errorNotice/errorNotice";
+import ShowMoreText from "@/components/showMoreText";
+import { endsAt, getRuntime } from "@/utils/date/time";
+import useParallax from "@/utils/hooks/useParallax";
+import { useBackdropStore } from "@/utils/store/backdrop";
 import "./boxset.scss";
 
+import { green, red, yellow } from "@mui/material/colors";
+import { createFileRoute } from "@tanstack/react-router";
 import IconLink from "@/components/iconLink";
 import { getTypeIcon } from "@/components/utils/iconsCollection";
 import getImageUrlsApi from "@/utils/methods/getImageUrlsApi";
 import { useCentralStore } from "@/utils/store/central";
-import { green, red, yellow } from "@mui/material/colors";
-import { createFileRoute } from "@tanstack/react-router";
 
 export const Route = createFileRoute("/_api/boxset/$id")({
 	component: BoxSetTitlePage,
@@ -113,19 +106,17 @@ function BoxSetTitlePage() {
 							tag: item.data.BackdropImageTags[0],
 						},
 					),
-					item.data.Id,
 				);
 			} else {
-				setBackdrop("", "");
+				setBackdrop("");
 			}
 		}
 	}, [item.isSuccess]);
 
-	const pageRef = useRef(null);
+	const scrollTargetRef = useRef<HTMLDivElement | null>(null);
 	const { scrollYProgress } = useScroll({
-		target: pageRef,
+		target: scrollTargetRef,
 		offset: ["start start", "60vh start"],
-		layoutEffect: false,
 	});
 	const parallax = useParallax(scrollYProgress, 50);
 
@@ -159,8 +150,8 @@ function BoxSetTitlePage() {
 					ease: "easeInOut",
 				}}
 				className="scrollY item item-boxset padded-top"
-				ref={pageRef}
 			>
+				<div ref={scrollTargetRef} />
 				<div className="item-hero flex flex-row">
 					<div className="item-hero-backdrop-container">
 						{item.data.BackdropImageTags?.length ? (

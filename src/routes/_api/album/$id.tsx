@@ -1,39 +1,31 @@
-import React, { useLayoutEffect, useMemo } from "react";
-
-import Box from "@mui/material/Box";
-import CircularProgress from "@mui/material/CircularProgress";
-import Typography from "@mui/material/Typography";
-
 import { BaseItemKind, SortOrder } from "@jellyfin/sdk/lib/generated-client";
 import { getItemsApi } from "@jellyfin/sdk/lib/utils/api/items-api";
 import { getLibraryApi } from "@jellyfin/sdk/lib/utils/api/library-api";
 import { getUserLibraryApi } from "@jellyfin/sdk/lib/utils/api/user-library-api";
-
-
+import Box from "@mui/material/Box";
+import CircularProgress from "@mui/material/CircularProgress";
+import Typography from "@mui/material/Typography";
 import { useQuery } from "@tanstack/react-query";
-
-import { getRuntimeCompact } from "@/utils/date/time";
-
-import { Card } from "@/components/card/card";
-import CardScroller from "@/components/cardScroller/cardScroller";
-
+import React, { useLayoutEffect, useMemo } from "react";
 import LikeButton from "@/components/buttons/likeButton";
 import PlayButton from "@/components/buttons/playButton";
+import { Card } from "@/components/card/card";
+import CardScroller from "@/components/cardScroller/cardScroller";
 import { ErrorNotice } from "@/components/notices/errorNotice/errorNotice";
-
 import { getTypeIcon } from "@/components/utils/iconsCollection";
+import { getRuntimeCompact } from "@/utils/date/time";
 import { useBackdropStore } from "@/utils/store/backdrop";
 import "./album.scss";
 
+import { Chip } from "@mui/material";
+import { createFileRoute, Link } from "@tanstack/react-router";
+import { createPortal } from "react-dom";
 import AlbumMusicTrack from "@/components/albumMusicTrack";
 import ShowMoreText from "@/components/showMoreText";
 import TagChip from "@/components/tagChip";
 import getImageUrlsApi from "@/utils/methods/getImageUrlsApi";
 import { useApiInContext } from "@/utils/store/api";
 import { useCentralStore } from "@/utils/store/central";
-import { Chip } from "@mui/material";
-import { Link, createFileRoute } from "@tanstack/react-router";
-import { createPortal } from "react-dom";
 
 export const Route = createFileRoute("/_api/album/$id")({
 	component: MusicAlbumTitlePage,
@@ -95,7 +87,8 @@ function MusicAlbumTitlePage() {
 		networkMode: "always",
 	});
 
-	const [setAppBackdrop] = useBackdropStore((state) => [state.setBackdrop]);
+	const setBackdrop = useBackdropStore((state) => state.setBackdrop);
+	const lastBackdropRef = React.useRef<string | undefined>(undefined);
 
 	const allDiscs = useMemo(() => {
 		const discs: number[] = [];
@@ -111,15 +104,22 @@ function MusicAlbumTitlePage() {
 		}
 		return discs;
 	}, [musicTracks.data]);
-	
+
 	useLayoutEffect(() => {
-		if (item.isSuccess) {
-			setAppBackdrop(
-				`${api?.basePath}/Items/${item.data?.ParentBackdropItemId}/Images/Backdrop`,
-				item.data?.Id,
-			);
+		if (item.isSuccess && item.data) {
+			const backdropItemId = item.data.ParentBackdropItemId;
+			if (backdropItemId && lastBackdropRef.current !== backdropItemId) {
+				const hash =
+					item.data.ImageBlurHashes?.Backdrop?.[
+						item.data.ParentBackdropImageTags?.[0] ?? ""
+					];
+				if (hash) {
+					setBackdrop(hash);
+					lastBackdropRef.current = backdropItemId;
+				}
+			}
 		}
-	}, [item.isSuccess]);
+	}, [item.isSuccess, item.data, setBackdrop]);
 
 	if (item.isPending || similarItems.isPending) {
 		return (
