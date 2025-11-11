@@ -24,6 +24,10 @@ export default function Backdrop() {
 				animate={{ opacity: 1 }}
 				key={backdropHash}
 				exit={{ opacity: 0 }}
+				transition={{
+					duration: 2,
+					ease: "easeInOut",
+				}}
 				className="app-backdrop-container"
 			>
 				<BlurhashCanvas

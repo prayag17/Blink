@@ -1,0 +1,31 @@
+// Overrides for virtualized library items layout to prevent horizontal overflow
+.library-items-container.virtualized {
+  overflow-x: hidden;
+  box-sizing: border-box;
+  width: 100%;
+  display: block !important; // override grid from route styles
+  padding: 0 !important; // override padding from route styles
+  position: relative; // required for absolutely positioned rows
+  gap: 0 !important;
+  justify-items: normal !important;
+  align-content: stretch !important;
+  > .card {
+    max-width: none !important;
+  }
+  // Ensure no unintended padding expands width
+  padding-right: 0;
+  padding-left: 0;
+  .card {
+    margin-right: 0 !important;
+    margin-bottom: 0.6em !important; // keep a consistent vertical rhythm
+  }
+  .card-image-container {
+    // Remove box shadow spread from affecting layout width calculation
+    box-sizing: border-box;
+  }
+}
+
+// When page has audio-playing class, avoid extra bottom padding causing scrollbars
+.audio-playing .library-items-container.virtualized {
+  padding-bottom: 8em; // mimic original intent without affecting width
+}

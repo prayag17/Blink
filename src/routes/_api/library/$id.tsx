@@ -1,17 +1,19 @@
 import { BaseItemKind, ItemSortBy } from "@jellyfin/sdk/lib/generated-client";
-import CircularProgress from "@mui/material/CircularProgress";
-import Typography from "@mui/material/Typography";
 import { useSuspenseQuery } from "@tanstack/react-query";
-import React, { Suspense } from "react";
+import React, { Suspense, useEffect } from "react";
 import "./library.scss";
-import { createFileRoute, redirect } from "@tanstack/react-router";
-import { z } from "zod";
+import { createFileRoute } from "@tanstack/react-router";
+import { useShallow } from "zustand/shallow";
+import { AlphaSelector } from "@/components/alphaSelector";
+import { LibraryHeader } from "@/components/libraryHeader";
 import LibraryItemsGrid from "@/components/libraryItemsGrid";
-import LibraryMenu from "@/components/libraryMenu";
 import LibraryItemsSkeleton from "@/components/skeleton/libraryItems";
+import { getDefaultSortByForCollectionType } from "@/utils/constants/library";
 import { getLibraryQueryOptions } from "@/utils/queries/library";
 import { useApiInContext } from "@/utils/store/api";
 import { useCentralStore } from "@/utils/store/central";
+import useHeaderStore from "@/utils/store/header";
+import { useLibraryStateStore } from "@/utils/store/libraryState";
 
 // type SortByObject = { title: string; value: string };
 // type ViewObject = { title: string; value: BaseItemKind | "Artist" };
@@ -19,107 +21,6 @@ import { useCentralStore } from "@/utils/store/central";
 
 export const Route = createFileRoute("/_api/library/$id")({
 	component: Library,
-	validateSearch: z.object({
-		sortBy: z.optional(z.enum(ItemSortBy)),
-		sortAscending: z.optional(z.boolean()),
-		currentViewType: z.optional(
-			z.union([z.enum(BaseItemKind), z.literal("Artist")]),
-		),
-		filters: z.optional(
-			z.object({
-				isPlayed: z.optional(z.boolean()),
-				isUnPlayed: z.optional(z.boolean()),
-				isResumable: z.optional(z.boolean()),
-				isFavorite: z.optional(z.boolean()),
-				hasSubtitles: z.optional(z.boolean()),
-				hasTrailer: z.optional(z.boolean()),
-				hasSpecialFeature: z.optional(z.boolean()),
-				hasThemeSong: z.optional(z.boolean()),
-				hasThemeVideo: z.optional(z.boolean()),
-				isSD: z.optional(z.boolean()),
-				isHD: z.optional(z.boolean()),
-				is4K: z.optional(z.boolean()),
-				is3D: z.optional(z.boolean()),
-			}),
-		),
-		videoTypesState: z.optional(
-			z.object({
-				BluRay: z.optional(z.boolean()),
-				Dvd: z.optional(z.boolean()),
-				Iso: z.optional(z.boolean()),
-				VideoFile: z.optional(z.boolean()),
-			}),
-		),
-	}),
-	loaderDeps: ({ search }) => ({
-		...search,
-	}),
-	loader: async ({
-		context: { queryClient, api, user },
-		params,
-		deps: { ...search },
-	}) => {
-		if (!api || !user?.Id) return null;
-
-		if (Object.keys(search).length > 0) {
-			console.log("Using search params:", search);
-			// If search is not empty, ensure the library data is fetched
-			return await queryClient.ensureQueryData(
-				getLibraryQueryOptions(api, user.Id, params.id),
-			);
-		}
-		const cachedSearch = sessionStorage.getItem(`library-${params.id}-config`);
-		if (cachedSearch) {
-			console.log("Using cached search params:", cachedSearch);
-			throw redirect({
-				to: "/library/$id",
-				params: { id: params.id },
-				search: JSON.parse(cachedSearch),
-				replace: true,
-			});
-		}
-
-		// Priority 3: No params anywhere, fetch the initial type to create them
-		const initialData = await queryClient.ensureQueryData(
-			getLibraryQueryOptions(api, user.Id, params.id),
-		);
-
-		// Now, redirect to the URL with the new initial params
-		throw redirect({
-			to: "/library/$id",
-			search: {
-				sortAscending: true,
-				sortBy: ItemSortBy.Name,
-				currentViewType:
-					initialData?.CollectionType === "music"
-						? BaseItemKind.MusicAlbum
-						: BaseItemKind.Movie,
-				filters: {
-					isPlayed: false,
-					isUnPlayed: false,
-					isResumable: false,
-					isFavorite: false,
-					hasSubtitles: false,
-					hasTrailer: false,
-					hasSpecialFeature: false,
-					hasThemeSong: false,
-					hasThemeVideo: false,
-					isSD: false,
-					isHD: undefined,
-					is4K: false,
-					is3D: false,
-				},
-				videoTypesState: {
-					BluRay: false,
-					Dvd: false,
-					Iso: false,
-					VideoFile: false,
-				},
-			},
-			params: { id: params.id },
-			replace: true,
-		});
-	},
 });
 
 function Library() {
@@ -132,44 +33,78 @@ function Library() {
 	const currentLib = useSuspenseQuery(
 		getLibraryQueryOptions(api, user?.Id, id),
 	);
+	const initLibrary = useLibraryStateStore((s) => s.initLibrary);
+	const updateLibrary = useLibraryStateStore((s) => s.updateLibrary);
+	const { currentViewType: storeViewType, libraryName: storeLibraryName } =
+		useLibraryStateStore(
+			useShallow((s) => {
+				const sl = s.libraries[id || ""];
+				return {
+					currentViewType: sl?.currentViewType,
+					libraryName: sl?.libraryName,
+				} as const;
+			}),
+		);
+
+	React.useEffect(() => {
+		if (!id || !currentLib.data) return;
+		// Ensure library name is available in Zustand for header consumption
+		updateLibrary(id, { libraryName: currentLib.data.Name ?? undefined });
+		const collectionType = currentLib.data.CollectionType;
+
+		const detectedViewType: BaseItemKind | "Artist" =
+			collectionType === "music"
+				? BaseItemKind.MusicAlbum
+				: collectionType === "movies"
+					? BaseItemKind.Movie
+					: collectionType === "tvshows"
+						? BaseItemKind.Series
+						: collectionType === "boxsets"
+							? BaseItemKind.BoxSet
+							: collectionType === "books"
+								? BaseItemKind.Book
+								: collectionType === "playlists"
+									? BaseItemKind.Playlist
+									: BaseItemKind.Movie;
+
+		// Initialize defaults if state not yet set
+		if (storeViewType === undefined) {
+			initLibrary(id, {
+				currentViewType: detectedViewType,
+				sortBy:
+					getDefaultSortByForCollectionType(collectionType as any) ||
+					ItemSortBy.Name,
+				sortAscending: true,
+			});
+		}
+	}, [id, storeViewType, initLibrary, updateLibrary, currentLib.data]);
+
+	const { setPageTitle } = useHeaderStore(
+		useShallow((state) => ({
+			setPageTitle: state.setPageTitle,
+		})),
+	);
+	// Derive top app title from Zustand slice (library name)
+	useEffect(() => {
+		const title = storeLibraryName ?? "Library";
+		setPageTitle(title);
+	}, [storeLibraryName, setPageTitle]);
+
+	/* if (!id) {
+		// show loading if any route param is missing
+		return <LoadingIndicator />;
+	} */
 
 	return (
 		<main className="scrollY library padded-top">
-			<div
-				style={{
-					padding: "1em 1em 1em 0.6em",
-					height: "4.4em",
-					zIndex: "10",
-					display: "flex",
-					alignItems: "center",
-					justifyContent: "flex-start",
-					position: "absolute",
-					top: "0px",
-					left: "50%",
-					transform: "translate(-50%)",
-				}}
-			>
-				<div
-					style={{
-						display: "flex",
-						alignItems: "center",
-						width: "fit-content",
-						padding: "0 1em",
-					}}
-				>
-					<Typography variant="h5" sx={{ mr: 2, flexShrink: 0 }} noWrap>
-						{currentLib.isPending ? (
-							<CircularProgress sx={{ p: 1 }} />
-						) : (
-							currentLib.data?.Name
-						)}
-					</Typography>
-				</div>
-			</div>
+			<LibraryHeader />
+
 			<Suspense fallback={<LibraryItemsSkeleton />}>
 				<div className="library-items">
-					<LibraryMenu />
 					<LibraryItemsGrid />
+				</div>
+				<div style={{ position: "fixed", right: 14, top: 80 }}>
+					<AlphaSelector />
 				</div>
 			</Suspense>
 		</main>

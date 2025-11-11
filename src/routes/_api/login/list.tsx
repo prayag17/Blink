@@ -1,18 +1,15 @@
+import { getUserApi } from "@jellyfin/sdk/lib/utils/api/user-api";
+import { Chip, Typography } from "@mui/material";
 import { useQuery } from "@tanstack/react-query";
 import React, { useEffect } from "react";
-
-import { Chip, Typography } from "@mui/material";
-
-
-import { getUserApi } from "@jellyfin/sdk/lib/utils/api/user-api";
 
 import { ErrorNotice } from "@/components/notices/errorNotice/errorNotice.jsx";
 import "./login.scss";
 
+import type { UserDto } from "@jellyfin/sdk/lib/generated-client";
+import { createFileRoute, Link } from "@tanstack/react-router";
 import { useApiInContext } from "@/utils/store/api";
 import { useBackdropStore } from "@/utils/store/backdrop.js";
-import type { UserDto } from "@jellyfin/sdk/lib/generated-client";
-import { Link, createFileRoute } from "@tanstack/react-router";
 
 import avatar from "../../../assets/icons/avatar.png";
 
@@ -44,7 +41,7 @@ const UserCard = ({ user }: { user: UserDto }) => {
 			</Typography>
 		</Link>
 	);
-}
+};
 
 function LoginPublicUsersList() {
 	const api = useApiInContext((s) => s.api);
@@ -61,7 +58,7 @@ function LoginPublicUsersList() {
 
 	const setBackdrop = useBackdropStore((state) => state.setBackdrop);
 	useEffect(() => {
-		setBackdrop("", "");
+		setBackdrop("");
 	}, []);
 
 	if (users.isSuccess) {

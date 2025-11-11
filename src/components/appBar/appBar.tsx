@@ -1,36 +1,28 @@
 import { getUserViewsApi } from "@jellyfin/sdk/lib/utils/api/user-views-api";
 import MuiAppBar from "@mui/material/AppBar";
-import Avatar from "@mui/material/Avatar";
 import IconButton from "@mui/material/IconButton";
-import ListItemIcon from "@mui/material/ListItemIcon";
-import Menu from "@mui/material/Menu";
-import MenuItem from "@mui/material/MenuItem";
 import useScrollTrigger from "@mui/material/useScrollTrigger";
-import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { useQuery } from "@tanstack/react-query";
 
-import { useLocation, useNavigate, useRouter } from "@tanstack/react-router";
-import React, {
-	type MouseEventHandler,
-	useCallback,
-	useMemo,
-	useState,
-} from "react";
+import { useLocation, useNavigate } from "@tanstack/react-router";
+import React, { useCallback, useMemo, useState } from "react";
 
-import { delUser } from "@/utils/storage/user";
 import "./appBar.scss";
 
 import { Divider, Drawer, List, ListItem, ListItemButton } from "@mui/material";
-
+import { useShallow } from "zustand/shallow";
+// removed search placeholder; library state now managed via zustand
 import { useApiInContext } from "@/utils/store/api";
 import { useCentralStore } from "@/utils/store/central";
+import useHeaderStore from "@/utils/store/header";
 import {
 	setSettingsDialogOpen,
 	setSettingsTabValue,
 } from "@/utils/store/settings";
 import BackButton from "../buttons/backButton";
 import ListItemLink from "../listItemLink";
+import { UserAvatarMenu } from "../userAvatarMenu";
 import { getTypeIcon } from "../utils/iconsCollection";
-
 
 const MemoizeBackButton = React.memo(BackButton);
 
@@ -41,25 +33,21 @@ const HIDDEN_PATHS = [
 	"/player",
 	"/error",
 	"/settings",
+	"/library",
 ];
 
 export const AppBar = () => {
 	const api = useApiInContext((s) => s.api);
-	const createApi = useApiInContext((s) => s.createApi);
 
 	const navigate = useNavigate();
 	const location = useLocation();
-	const router = useRouter();
 
 	const display = !HIDDEN_PATHS.some(
 		(path) => location.pathname.startsWith(path) || location.pathname === "/",
 	);
 
 
-	const [user, resetCurrentUser] = useCentralStore((s) => [
-		s.currentUser,
-		s.resetCurrentUser,
-	]);
+	const [user] = useCentralStore((s) => [s.currentUser]);
 	const libraries = useQuery({
 		queryKey: ["libraries"],
 		queryFn: async () => {
@@ -80,34 +68,6 @@ export const AppBar = () => {
 		threshold: 20,
 	});
 
-	const [anchorEl, setAnchorEl] = useState<HTMLButtonElement | null>(null);
-	const openMenu = Boolean(anchorEl);
-	const handleMenuOpen: MouseEventHandler<HTMLButtonElement> = useCallback(
-		(event) => {
-			setAnchorEl(event.currentTarget);
-		},
-		[],
-	);
-	const handleMenuClose = useCallback(() => {
-		setAnchorEl(null);
-	}, []);
-	const queryClient = useQueryClient();
-
-	const handleLogout = useCallback(async () => {
-		console.log("Logging out user...");
-		await api?.logout();
-		createApi(api?.basePath ?? "", undefined);
-		console.log(api);
-		resetCurrentUser();
-		delUser();
-		sessionStorage.removeItem("accessToken");
-		queryClient.clear();
-		await router.invalidate();
-		setAnchorEl(null);
-		navigate({ to: "/login", replace: true });
-	}, [api]);
-
-
 	const [showDrawer, setShowDrawer] = useState(false);
 
 	const appBarStyling = useMemo(() => {
@@ -115,9 +75,6 @@ export const AppBar = () => {
 			backgroundColor: "transparent",
 			paddingRight: "0 !important",
 		};
-	}, []);
-	const menuStyle = useMemo(() => {
-		return { mt: 2 };
 	}, []);
 
 	const drawerPaperProps = useMemo(() => {
@@ -145,7 +102,7 @@ export const AppBar = () => {
 		navigate({ to: "/favorite" });
 	}, []);
 
-	const menuButtonSx = useMemo(() => ({ p: 0 }), []);
+	useHeaderStore(useShallow((s) => ({ pageTitle: s.pageTitle })));
 
 	if (!display) {
 		return null;
@@ -188,80 +145,7 @@ export const AppBar = () => {
 						<IconButton onClick={handleNavigateToFavorite}>
 							<div className="material-symbols-rounded">favorite</div>
 						</IconButton>
-						<IconButton sx={menuButtonSx} onClick={handleMenuOpen}>
-							{!!user?.Id &&
-								(user?.PrimaryImageTag === undefined ? (
-									<Avatar className="appBar-avatar" alt={user?.Name ?? "image"}>
-										<span className="material-symbols-rounded appBar-avatar-icon">
-											account_circle
-										</span>
-									</Avatar>
-								) : (
-									<Avatar
-										className="appBar-avatar"
-										src={`${api?.basePath}/Users/${user?.Id}/Images/Primary`}
-										alt={user?.Name ?? "image"}
-									>
-										<span className="material-symbols-rounded appBar-avatar-icon">
-											account_circle
-										</span>
-									</Avatar>
-								))}
-						</IconButton>
-						<Menu
-							anchorEl={anchorEl}
-							open={openMenu}
-							onClose={handleMenuClose}
-							sx={menuStyle}
-							disableScrollLock
-						>
-							<MenuItem
-								onClick={() => {
-									handleLogout();
-									handleMenuClose();
-								}}
-							>
-								<ListItemIcon>
-									<div className="material-symbols-rounded">logout</div>
-								</ListItemIcon>
-								Logout
-							</MenuItem>
-							<Divider />
-							<MenuItem
-								onClick={() => {
-									setSettingsDialogOpen(true);
-									setSettingsTabValue(1);
-									handleMenuClose();
-								}}
-							>
-								<ListItemIcon>
-									<div className="material-symbols-rounded">settings</div>
-								</ListItemIcon>
-								Settings
-							</MenuItem>
-							<MenuItem
-								onClick={() => {
-									navigate({ to: "/settings/preferences" });
-									handleMenuClose();
-								}}
-							>
-								<ListItemIcon>
-									<div className="material-symbols-rounded">tune</div>
-								</ListItemIcon>
-								Preferences
-							</MenuItem>
-							<MenuItem
-								onClick={() => {
-									navigate({ to: "/settings/about" });
-									handleMenuClose();
-								}}
-							>
-								<ListItemIcon>
-									<div className="material-symbols-rounded">info</div>
-								</ListItemIcon>
-								About
-							</MenuItem>
-						</Menu>
+						<UserAvatarMenu />
 					</div>
 				</MuiAppBar>
 				<Drawer
@@ -298,9 +182,7 @@ export const AppBar = () => {
 									className="library-drawer-item"
 									key={library.Id}
 									to="/library/$id"
-									params={{
-										id: library.Id ?? "",
-									}}
+									params={{ id: library.Id ?? "" }}
 									icon={
 										library.CollectionType &&
 										getTypeIcon(library.CollectionType)

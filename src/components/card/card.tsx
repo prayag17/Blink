@@ -33,6 +33,7 @@ const CardComponent = ({
 	onClick,
 	disableOverlay = false,
 	overrideIcon,
+	skipInView = false,
 }: {
 	item: BaseItemDto;
 	cardTitle: string | undefined | null;
@@ -46,6 +47,7 @@ const CardComponent = ({
 	onClick?: () => void;
 	disableOverlay?: boolean;
 	overrideIcon?: any;
+	skipInView?: boolean;
 }) => {
 	const api = useApiInContext((s) => s.api);
 	const navigate = useNavigate();
@@ -82,6 +84,7 @@ const CardComponent = ({
 
 	const { ref, inView } = useInView({
 		threshold: 0.1,
+		skip: skipInView,
 	});
 
 	return (
@@ -120,7 +123,7 @@ const CardComponent = ({
 						? getTypeIcon(overrideIcon)
 						: getTypeIcon(item.Type ?? "universal")}
 				</div>
-				{inView && (
+				{(skipInView || inView) && (
 					<img
 						alt={item.Name ?? "blink"}
 						src={
@@ -148,11 +151,10 @@ const CardComponent = ({
 						onLoad={(e) => {
 							e.currentTarget.style.setProperty("opacity", "1");
 						}}
-						onLoadStart={(e) => console.log(e)}
 						className="card-image"
 					/>
 				)}
-				{inView && !disableOverlay && (
+				{(skipInView || inView) && !disableOverlay && (
 					<div className="card-overlay">
 						<PlayButton
 							item={item}
@@ -201,7 +203,7 @@ const CardComponent = ({
 			</div>
 			<div
 				className="card-text-container"
-				style={{ display: hideText ? "none" : "block" }}
+				style={{ display: hideText ? "none" : "block", marginLeft: "0.2em" }}
 			>
 				<Typography mt={1} variant="subtitle2" noWrap style={{ opacity: 0.9 }}>
 					{cardTitle}

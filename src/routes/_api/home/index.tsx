@@ -190,10 +190,7 @@ function Home() {
 								disableOverlay
 								onClick={() => {
 									if (item.Id) {
-										navigate({
-											to: "/library/$id",
-											params: { id: item.Id },
-										});
+										navigate({ to: "/library/$id", params: { id: item.Id } });
 									}
 								}}
 								overrideIcon={item.CollectionType}
@@ -209,9 +206,7 @@ function Home() {
 					</div>
 				}
 			>
-				{upNextItems.isSuccess && !upNextItems.data?.TotalRecordCount ? (
-					<></>
-				) : (
+				{upNextItems.isSuccess && !upNextItems.data?.TotalRecordCount && (
 					<CardScroller displayCards={4} title="Up Next">
 						{upNextItems.data?.Items?.map((item) => {
 							return (

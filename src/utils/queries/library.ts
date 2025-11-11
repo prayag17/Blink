@@ -23,4 +23,5 @@ export const getLibraryQueryOptions = (
 			});
 			return result.data;
 		},
+		enabled: !!api && !!userId,
 	});

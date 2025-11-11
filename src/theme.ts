@@ -5,6 +5,7 @@ import {
 	clrBackgroundDefault,
 	clrSecondaryDefault, //@ts-ignore
 } from "./palette.module.scss";
+
 const { palette } = createTheme({});
 const { augmentColor } = palette;
 export const theme = createTheme({
@@ -23,7 +24,7 @@ export const theme = createTheme({
 			default: clrBackgroundDefault,
 			paper: clrBackgroundDark,
 		},
-		//@ts-ignore
+		//@ts-expect-error
 		white: augmentColor({ color: { main: "#ffffff" } }),
 		black: augmentColor({ color: { main: "#000" } }),
 		mode: "dark",

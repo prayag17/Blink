@@ -1,0 +1,34 @@
+.library-header {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+    inset: 1em 1em auto 1em !important;
+	border-radius: 9999px;
+	margin: 0 auto;
+	width: fit-content;
+	position: sticky;
+    width: calc(100vw - 4em) !important;
+	z-index: 10;
+    padding: 0.25em !important;
+	transition: all 0.2s ease-in-out;
+
+    &::after {
+            content: "";
+            position: absolute;
+            backdrop-filter: blur(40px);
+            inset: -0.35em;
+            pointer-events: none;
+            border-radius: inherit;
+            box-shadow: 0 0 25px rgb(0 0 0 / 0.45);
+            background: rgb(0 0 0 / 0.4);
+            opacity: 0;
+            z-index: -1;
+            transition: opacity $transition-time-fast;
+        }
+
+	&.scrolling {
+        &::after {
+                opacity: 1;
+            }
+	}
+}

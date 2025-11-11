@@ -1,20 +1,48 @@
 
 .appBar {
-	transition: background-color $transition-time-fast,
-	backdrop-filter $transition-time-fast,
-	box-shadow $transition-time-default !important;
+	// Limit transitions to cheaper properties; avoid animating box-shadow directly
+	transition: background-color $transition-time-fast;
 	padding: 0.8em ($page-margin - 1.7em);
 	z-index: 999 !important;
 	.flex {
-		transition: $transition-time-fast;
+		// Avoid animating padding; it causes layout reflow on each frame.
+		transition: background-color $transition-time-fast;
+		// Avoid using will-change: scroll-position; it can degrade performance when misused
+		// will-change: opacity, transform;
 		border-radius: 1000px;
+		position: relative;
+
+		// Pseudo-element handles elevation shadow; we animate its opacity
+		&::after {
+			content: "";
+			position: absolute;
+			backdrop-filter: blur(40px);
+			inset: -0.35em;
+			pointer-events: none;
+			border-radius: inherit;
+			box-shadow: 0 0 25px rgb(0 0 0 / 0.45);
+			background: rgb(0 0 0 / 0.4);
+			opacity: 0;
+			z-index: -1;
+			transition: opacity $transition-time-fast;
+		}
+	}
+
+	// Inner content wrapper that we can scale without causing layout reflow
+	.flex-inner {
+		transform-origin: top center;
+		transition: transform $transition-time-fast;
 	}
 	&.elevated{
 		.flex {
-			padding: 0.5em;
-			background: rgb(0 0 0  / 0.4);
-			backdrop-filter: blur(40px);
-			box-shadow: 0 0 25px rgb(0 0 0 / 0.45);
+			&::after {
+				opacity: 1;
+			}
+		}
+
+		// Apply a subtle scale to simulate shrink without layout changes
+		.flex-inner {
+			transform: scaleY(0.95);
 		}
 	}
 	&-avatar {

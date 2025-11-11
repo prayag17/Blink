@@ -173,14 +173,14 @@ export const SORT_BY_OPTIONS: Array<{
 		title: "Random",
 		value: ItemSortBy.Random,
 		compatibleViewTypes: [
-			BaseItemKind.MusicAlbum,
-			BaseItemKind.Audio,
-			BaseItemKind.Playlist,
+			// BaseItemKind.MusicAlbum,
+			// BaseItemKind.Audio,
+			// BaseItemKind.Playlist,
 		],
 		compatibleCollectionTypes: [
-			CollectionType.Movies,
-			CollectionType.Tvshows,
-			CollectionType.Boxsets,
+			// CollectionType.Movies,
+			// CollectionType.Tvshows,
+			// CollectionType.Boxsets,
 		],
 	},
 	{
@@ -241,6 +241,18 @@ export const SORT_BY_OPTIONS: Array<{
 		compatibleCollectionTypes: [CollectionType.Tvshows],
 	},
 ];
+
+export const getDefaultSortByForCollectionType = (
+	collectionType: CollectionType,
+): ItemSortBy => {
+	const option = SORT_BY_OPTIONS.find((opt) =>
+		opt.compatibleCollectionTypes?.includes(collectionType),
+	);
+	return Array.isArray(option?.value)
+		? option.value[0]
+		: option?.value || ItemSortBy.SortName;
+};
+
 
 export type FILTERS =
 	| "isPlayed"
