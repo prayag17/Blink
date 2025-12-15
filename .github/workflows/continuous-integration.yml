@@ -15,7 +15,7 @@ jobs:
                - name: Checkout repository
                  uses: actions/checkout@v4
 
-               - uses: pnpm/action-setup@v3
+               - uses: pnpm/action-setup@v4
                  name: Install pnpm
                  with:
                       version: 10
@@ -78,7 +78,7 @@ jobs:
                  with:
                       workspaces: "./src-tauri -> target"
 
-               - uses: pnpm/action-setup@v3
+               - uses: pnpm/action-setup@v4
                  name: Install pnpm
                  with:
                       version: 10
