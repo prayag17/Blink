@@ -4,7 +4,6 @@ import {
 	BaseItemKind,
 	ItemFields,
 	ItemFilter,
-	ItemSortBy,
 	LocationType,
 	SortOrder,
 } from "@jellyfin/sdk/lib/generated-client";
@@ -221,7 +220,7 @@ export async function getPlaybackInfo(
 					targetItem.MediaSources?.[0].DefaultAudioStreamIndex ?? 0;
 			}
 
-			mediaSource = await getMediaInfoApi(api).getPostedPlaybackInfo({
+			const playbackInfoPromise = getMediaInfoApi(api).getPostedPlaybackInfo({
 				audioStreamIndex: Number(audioStreamIndex),
 				subtitleStreamIndex: currentSubTrack === "nosub" ? -1 : currentSubTrack,
 				itemId: targetItem.Id,
@@ -233,11 +232,17 @@ export async function getPlaybackInfo(
 				},
 			});
 
-			mediaSegments = (
-				await getMediaSegmentsApi(api).getItemSegments({
-					itemId: targetItem.Id,
-				})
-			)?.data;
+			const segmentsPromise = getMediaSegmentsApi(api).getItemSegments({
+				itemId: targetItem.Id,
+			});
+
+			const [playbackInfoResponse, segmentsResponse] = await Promise.all([
+				playbackInfoPromise,
+				segmentsPromise,
+			]);
+
+			mediaSource = playbackInfoResponse;
+			mediaSegments = segmentsResponse?.data;
 		}
 	}
 

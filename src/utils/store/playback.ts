@@ -531,6 +531,7 @@ export const usePlaybackStore = create<
 				) {
 					return true;
 				}
+				return false;
 			})[0];
 			playerActions.seekTo(ticksToSec(next?.StartPositionTicks ?? 0));
 		},
@@ -543,6 +544,7 @@ export const usePlaybackStore = create<
 				) {
 					return true;
 				}
+				return false;
 			});
 			if (!chapters?.length) {
 				playerActions.seekTo(0);
@@ -646,28 +648,22 @@ export const playItemFromQueue = async (
 		console.error("Unable to play item from from queue. No API provided");
 		return;
 	}
-	const queueItems = useQueue.getState().tracks;
-	const currentItemIndex = useQueue.getState().currentItemIndex;
+	const { tracks: queueItems, currentItemIndex } = useQueue.getState();
 	const requestedItemIndex =
 		index === "next"
 			? currentItemIndex + 1
 			: index === "previous"
 				? currentItemIndex - 1
 				: index;
-	const prevItem = queueItems?.[currentItemIndex];
-	const prevPlaySessionId = usePlaybackStore.getState().playsessionId;
-	const prevMediaSourceId = usePlaybackStore.getState().mediaSource.id;
+
 	const item = queueItems?.[requestedItemIndex];
-
-	const prevMediaSource = usePlaybackStore.getState().mediaSource;
-
-	console.log("requestedItemIndex", queueItems);
 
 	if (!item?.Id) {
 		console.error("No item found in queue");
 		return;
 	}
-	if (item?.Type === "Audio" && userId) {
+
+	if (item.Type === "Audio" && userId) {
 		const playbackUrl = generateAudioStreamUrl(
 			item.Id,
 			userId,
@@ -675,152 +671,152 @@ export const playItemFromQueue = async (
 			api.basePath,
 			api.accessToken,
 		);
-		// console.log(item);
 		playAudio(playbackUrl, item, undefined);
 		setQueue(queueItems, requestedItemIndex);
-	} else {
-		if (!userId) {
-			console.error("No user id provided");
-			return;
-		}
-		if (!item.MediaSources?.[0]?.Id) {
-			console.error("No media source id found");
-			return;
-		}
-		if (!item) {
-			throw new Error("Item is undefined in playItemFromQueue");
-		}
-		if (!item.Name) {
-			throw new Error("Item name is undefined in playItemFromQueue");
-		}
-		if (!item.RunTimeTicks) {
-			throw new Error("Item run time ticks is undefined in playItemFromQueue");
-		}
-		if (!item.Id) {
-			throw new Error("Item id is undefined in playItemFromQueue");
-		}
-
-		const mediaSource = (
-			await getMediaInfoApi(api).getPostedPlaybackInfo({
-				audioStreamIndex:
-					prevItem?.Id === item.Id
-						? prevMediaSource.audio.track
-						: (item.MediaSources?.[0]?.DefaultAudioStreamIndex ?? 0),
-				subtitleStreamIndex:
-					prevItem?.Id === item.Id
-						? prevMediaSource.subtitle.track
-						: (item?.MediaSources?.[0]?.DefaultSubtitleStreamIndex ?? -1),
-				itemId: item.Id,
-				startTimeTicks: item.UserData?.PlaybackPositionTicks,
-				userId: userId,
-				mediaSourceId: item.MediaSources?.[0].Id,
-				playbackInfoDto: {
-					DeviceProfile: playbackProfile,
-				},
-			})
-		).data;
-		if (!mediaSource.MediaSources?.[0]?.Id) {
-			throw new Error("Media source is undefined in playItemFromQueue");
-		}
-
-		let itemName = item.Name;
-		let episodeTitle = "";
-		if (item.SeriesId && item.SeriesName) {
-			itemName = item.SeriesName;
-			episodeTitle = `S${item.ParentIndexNumber ?? 0}:E${
-				item.IndexNumber ?? 0
-			} ${item.Name}`;
-		}
-
-		// Subtitle
-		const subtitle = getSubtitle(
-			mediaSource.MediaSources?.[0].DefaultSubtitleStreamIndex ?? "nosub",
-			mediaSource.MediaSources?.[0].MediaStreams,
-		);
-
-		console.log("subtitle", mediaSource);
-
-		// Audio
-		const audio = {
-			track: mediaSource.MediaSources?.[0].DefaultAudioStreamIndex ?? 0,
-			allTracks: mediaSource.MediaSources?.[0].MediaStreams?.filter(
-				(value) => value.Type === "Audio",
-			),
-		};
-
-		// URL generation
-		const urlOptions: URLSearchParams = {
-			//@ts-ignore
-			Static: true,
-			tag: mediaSource.MediaSources?.[0].ETag,
-			mediaSourceId: mediaSource.MediaSources?.[0].Id,
-			deviceId: api?.deviceInfo.id,
-			api_key: api?.accessToken,
-		};
-		const urlParams = new URLSearchParams(urlOptions).toString();
-		let playbackUrl = `${api?.basePath}/Videos/${mediaSource.MediaSources?.[0].Id}/stream.${mediaSource.MediaSources?.[0].Container}?${urlParams}`;
-		if (
-			mediaSource.MediaSources?.[0].SupportsTranscoding &&
-			mediaSource.MediaSources?.[0].TranscodingUrl
-		) {
-			playbackUrl = `${api.basePath}${mediaSource.MediaSources[0].TranscodingUrl}`;
-		}
-
-		const videoTrack = mediaSource.MediaSources?.[0].MediaStreams?.filter(
-			(value) => value.Type === "Video",
-		);
-
-		const mediaSegments = (
-			await getMediaSegmentsApi(api).getItemSegments({
-				itemId: item.Id ?? "",
-			})
-		)?.data;
-
-		// Report playback stop to jellyfin server for previous episode allowing next episode to report playback
-		await getPlaystateApi(api).reportPlaybackStopped({
-			playbackStopInfo: {
-				Failed: false,
-				ItemId: prevItem?.Id,
-				MediaSourceId: prevMediaSourceId,
-				PlaySessionId: prevPlaySessionId,
-			},
-		});
-
-		playItem({
-			metadata: {
-				itemName,
-				episodeTitle: episodeTitle,
-				isEpisode: !!item.SeriesId,
-				itemDuration: item.RunTimeTicks,
-				item: item,
-				mediaSegments: mediaSegments,
-				userDataLastPlayedPositionTicks:
-					item.UserData?.PlaybackPositionTicks ?? 0,
-			},
-			mediaSource: {
-				videoTrack: videoTrack?.[0]?.Index ?? 0,
-				audioTrack: audio.track,
-				container: mediaSource.MediaSources?.[0].Container ?? "",
-				id: mediaSource.MediaSources?.[0]?.Id,
-				subtitle: {
-					url: subtitle?.url,
-					track: subtitle?.track ?? -1,
-					format: subtitle?.format ?? "nosub",
-					allTracks: mediaSource.MediaSources?.[0].MediaStreams?.filter(
-						(value) => value.Type === "Subtitle",
-					),
-					enable: subtitle?.enable ?? false,
-				},
-				audio: audio,
-			},
-			playbackStream: playbackUrl,
-			playsessionId: mediaSource.PlaySessionId,
-			userDataPlayedPositionTicks: item.UserData?.PlaybackPositionTicks ?? 0,
-			userId,
-			queueItems: queueItems,
-			queueItemIndex: requestedItemIndex,
-		});
+		return "playing";
 	}
+
+	if (!userId) {
+		console.error("No user id provided");
+		return;
+	}
+
+	const mediaSourceId = item.MediaSources?.[0]?.Id;
+	if (!mediaSourceId) {
+		console.error("No media source id found");
+		return;
+	}
+
+	if (!item.Name || !item.RunTimeTicks) {
+		throw new Error("Item data incomplete in playItemFromQueue");
+	}
+
+	const { playsessionId: prevPlaySessionId, mediaSource: prevMediaSource } =
+		usePlaybackStore.getState();
+	const prevItem = queueItems?.[currentItemIndex];
+
+	// Prepare promises for parallel execution
+	const playbackInfoPromise = getMediaInfoApi(api).getPostedPlaybackInfo({
+		audioStreamIndex:
+			prevItem?.Id === item.Id
+				? prevMediaSource.audio.track
+				: (item.MediaSources?.[0]?.DefaultAudioStreamIndex ?? 0),
+		subtitleStreamIndex:
+			prevItem?.Id === item.Id
+				? prevMediaSource.subtitle.track
+				: (item?.MediaSources?.[0]?.DefaultSubtitleStreamIndex ?? -1),
+		itemId: item.Id,
+		startTimeTicks: item.UserData?.PlaybackPositionTicks,
+		userId: userId,
+		mediaSourceId: mediaSourceId,
+		playbackInfoDto: {
+			DeviceProfile: playbackProfile,
+		},
+	});
+
+	const segmentsPromise = getMediaSegmentsApi(api).getItemSegments({
+		itemId: item.Id,
+	});
+
+	const stopReportPromise = getPlaystateApi(api).reportPlaybackStopped({
+		playbackStopInfo: {
+			Failed: false,
+			ItemId: prevItem?.Id,
+			MediaSourceId: prevMediaSource.id,
+			PlaySessionId: prevPlaySessionId,
+		},
+	});
+
+	// Await all promises
+	const [playbackInfoResponse, segmentsResponse] = await Promise.all([
+		playbackInfoPromise,
+		segmentsPromise,
+		stopReportPromise,
+	]);
+
+	const mediaSource = playbackInfoResponse.data;
+	const mediaSegments = segmentsResponse.data;
+
+	if (!mediaSource.MediaSources?.[0]?.Id) {
+		throw new Error("Media source is undefined in playItemFromQueue");
+	}
+
+	const source = mediaSource.MediaSources[0];
+
+	let itemName = item.Name;
+	let episodeTitle = "";
+	if (item.SeriesId && item.SeriesName) {
+		itemName = item.SeriesName;
+		episodeTitle = `S${item.ParentIndexNumber ?? 0}:E${
+			item.IndexNumber ?? 0
+		} ${item.Name}`;
+	}
+
+	// Subtitle
+	const subtitle = getSubtitle(
+		source.DefaultSubtitleStreamIndex ?? "nosub",
+		source.MediaStreams,
+	);
+
+	// Audio
+	const audio = {
+		track: source.DefaultAudioStreamIndex ?? 0,
+		allTracks: source.MediaStreams?.filter((value) => value.Type === "Audio"),
+	};
+
+	// URL generation
+	const urlOptions: URLSearchParams = {
+		//@ts-expect-error
+		Static: true,
+		tag: source.ETag,
+		mediaSourceId: source.Id,
+		deviceId: api.deviceInfo.id,
+		api_key: api.accessToken,
+	};
+	const urlParams = new URLSearchParams(urlOptions).toString();
+	let playbackUrl = `${api.basePath}/Videos/${source.Id}/stream.${source.Container}?${urlParams}`;
+	if (source.SupportsTranscoding && source.TranscodingUrl) {
+		playbackUrl = `${api.basePath}${source.TranscodingUrl}`;
+	}
+
+	const videoTrack = source.MediaStreams?.filter(
+		(value) => value.Type === "Video",
+	);
+
+	playItem({
+		metadata: {
+			itemName,
+			episodeTitle: episodeTitle,
+			isEpisode: !!item.SeriesId,
+			itemDuration: item.RunTimeTicks,
+			item: item,
+			mediaSegments: mediaSegments,
+			userDataLastPlayedPositionTicks:
+				item.UserData?.PlaybackPositionTicks ?? 0,
+		},
+		mediaSource: {
+			videoTrack: videoTrack?.[0]?.Index ?? 0,
+			audioTrack: audio.track,
+			container: source.Container ?? "",
+			id: source.Id,
+			subtitle: {
+				url: subtitle?.url,
+				track: subtitle?.track ?? -1,
+				format: subtitle?.format ?? "nosub",
+				allTracks: source.MediaStreams?.filter(
+					(value) => value.Type === "Subtitle",
+				),
+				enable: subtitle?.enable ?? false,
+			},
+			audio: audio,
+		},
+		playbackStream: playbackUrl,
+		playsessionId: mediaSource.PlaySessionId,
+		userDataPlayedPositionTicks: item.UserData?.PlaybackPositionTicks ?? 0,
+		userId,
+		queueItems: queueItems,
+		queueItemIndex: requestedItemIndex,
+	});
 
 	return "playing"; // Return any value to end mutation pending status
 };
@@ -850,24 +846,23 @@ export const changeSubtitleTrack = (
 	const requiredSubtitle = allTracks.filter(
 		(track) => track.Index === trackIndex,
 	);
-	const prevState = usePlaybackStore.getState();
-	prevState.mediaSource.subtitle = {
-		url: requiredSubtitle?.[0]?.DeliveryUrl,
-		track: trackIndex,
-		format: requiredSubtitle?.[0]?.Codec,
-		allTracks,
-		enable: trackIndex !== -1,
-	};
-	usePlaybackStore.setState(prevState);
+	usePlaybackStore.setState((state) => {
+		state.mediaSource.subtitle = {
+			url: requiredSubtitle?.[0]?.DeliveryUrl,
+			track: trackIndex,
+			format: requiredSubtitle?.[0]?.Codec,
+			allTracks,
+			enable: trackIndex !== -1,
+		};
+	});
 };
 
 export const toggleSubtitleTrack = () => {
-	const prevState = usePlaybackStore.getState();
-	if (prevState.mediaSource.subtitle.track !== -1) {
-		prevState.mediaSource.subtitle.enable =
-			!prevState.mediaSource.subtitle.enable;
-		usePlaybackStore.setState(prevState);
-	}
+	usePlaybackStore.setState((state) => {
+		if (state.mediaSource.subtitle.track !== -1) {
+			state.mediaSource.subtitle.enable = !state.mediaSource.subtitle.enable;
+		}
+	});
 };
 
 /**
@@ -898,14 +893,10 @@ export const changeAudioTrack = async (trackIndex: number, api: Api) => {
 			},
 		})
 	).data;
-	prevState.mediaSource.audio.track = trackIndex;
-	prevState.mediaSource.id = mediaSource.MediaSources?.[0].Id ?? "";
-	prevState.mediaSource.container =
-		mediaSource.MediaSources?.[0].Container ?? "";
 
 	// URL generation
 	const urlOptions: URLSearchParams = {
-		//@ts-ignore
+		//@ts-expect-error
 		Static: true,
 		tag: mediaSource.MediaSources?.[0].ETag,
 		mediaSourceId: mediaSource.MediaSources?.[0].Id,
@@ -921,11 +912,13 @@ export const changeAudioTrack = async (trackIndex: number, api: Api) => {
 		playbackUrl = `${api.basePath}${mediaSource.MediaSources[0].TranscodingUrl}`;
 	}
 
-	prevState.playbackStream = playbackUrl;
-	// prevState.item = startPosition;
-	prevState.playsessionId = mediaSource.PlaySessionId;
-
-	usePlaybackStore.setState(prevState);
+	usePlaybackStore.setState((state) => {
+		state.mediaSource.audio.track = trackIndex;
+		state.mediaSource.id = mediaSource.MediaSources?.[0].Id ?? "";
+		state.mediaSource.container = mediaSource.MediaSources?.[0].Container ?? "";
+		state.playbackStream = playbackUrl;
+		state.playsessionId = mediaSource.PlaySessionId;
+	});
 	// const currentItemIndex = useQueue.getState().currentItemIndex;
 	// playItemFromQueue(currentItemIndex, prevState.userId, api);
 };

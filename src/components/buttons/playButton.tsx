@@ -3,7 +3,6 @@ import {
 	BaseItemKind,
 } from "@jellyfin/sdk/lib/generated-client";
 import { getTvShowsApi } from "@jellyfin/sdk/lib/utils/api/tv-shows-api";
-import { getUserApi } from "@jellyfin/sdk/lib/utils/api/user-api";
 import type { SxProps } from "@mui/material";
 import Button, { type ButtonProps } from "@mui/material/Button";
 import Fab from "@mui/material/Fab";
@@ -19,6 +18,7 @@ import getSubtitle from "@/utils/methods/getSubtitles";
 import { getNextEpisode, getPlaybackInfo } from "@/utils/methods/playback";
 import { useApiInContext } from "@/utils/store/api";
 import { generateAudioStreamUrl, playAudio } from "@/utils/store/audioPlayback";
+import { useCentralStore } from "@/utils/store/central";
 import { usePhotosPlayback } from "@/utils/store/photosPlayback";
 import { playItem } from "@/utils/store/playback";
 import { setQueue } from "@/utils/store/queue";
@@ -85,6 +85,7 @@ const PlayButton = ({
 	// 	(state) => state.setisPending,
 	// );
 	const playPhotos = usePhotosPlayback((s) => s.playPhotos);
+	const currentUser = useCentralStore((s) => s.currentUser);
 
 	const { enqueueSnackbar } = useSnackbar();
 
@@ -173,9 +174,8 @@ const PlayButton = ({
 				}
 
 				// Subtitle
-				const userSubtitleLanguagePreference = (
-					await getUserApi(api).getCurrentUser()
-				).data.Configuration?.SubtitleLanguagePreference;
+				const userSubtitleLanguagePreference =
+					currentUser?.Configuration?.SubtitleLanguagePreference;
 				// Get all subtitle streams
 				const allSubtitles =
 					result?.mediaSource?.MediaSources?.[0]?.MediaStreams?.filter(
@@ -195,9 +195,8 @@ const PlayButton = ({
 				);
 
 				// Audio
-				const userAudioLanguagePreference = (
-					await getUserApi(api).getCurrentUser()
-				).data.Configuration?.AudioLanguagePreference;
+				const userAudioLanguagePreference =
+					currentUser?.Configuration?.AudioLanguagePreference;
 				// Get all audio streams
 				const allAudioTracks =
 					result.mediaSource.MediaSources?.[0].MediaStreams?.filter(
@@ -321,7 +320,7 @@ const PlayButton = ({
 				userId: userId,
 				enableUserData: true,
 			});
-			
+
 			const currentSeason = seasons.data.Items?.find((season) => {
 				return season.UserData?.Played !== true;
 			});
@@ -337,7 +336,7 @@ const PlayButton = ({
 			}
 			return { Items: [] };
 		},
-		// enabled: itemType === BaseItemKind.Series,
+		enabled: itemType === BaseItemKind.Series,
 	});
 
 	if (iconOnly) {

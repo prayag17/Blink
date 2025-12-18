@@ -21,6 +21,37 @@ import { useLibraryStateStore } from "@/utils/store/libraryState";
 
 export const Route = createFileRoute("/_api/library/$id")({
 	component: Library,
+	loader: async ({ context: { queryClient, api, user }, params }) => {
+		if (!api || !user?.Id) return;
+		const library = await queryClient.ensureQueryData(
+			getLibraryQueryOptions(api, user?.Id, params.id),
+		);
+
+		const collectionType = library.CollectionType;
+		const detectedViewType: BaseItemKind | "Artist" =
+			collectionType === "music"
+				? BaseItemKind.MusicAlbum
+				: collectionType === "movies"
+					? BaseItemKind.Movie
+					: collectionType === "tvshows"
+						? BaseItemKind.Series
+						: collectionType === "boxsets"
+							? BaseItemKind.BoxSet
+							: collectionType === "books"
+								? BaseItemKind.Book
+								: collectionType === "playlists"
+									? BaseItemKind.Playlist
+									: BaseItemKind.Movie;
+
+		useLibraryStateStore.getState().initLibrary(params.id, {
+			currentViewType: detectedViewType,
+			sortBy:
+				getDefaultSortByForCollectionType(collectionType as any) ||
+				ItemSortBy.Name,
+			sortAscending: true,
+			libraryName: library.Name ?? undefined,
+		});
+	},
 });
 
 function Library() {
@@ -33,7 +64,7 @@ function Library() {
 	const currentLib = useSuspenseQuery(
 		getLibraryQueryOptions(api, user?.Id, id),
 	);
-	const initLibrary = useLibraryStateStore((s) => s.initLibrary);
+	const _initLibrary = useLibraryStateStore((s) => s.initLibrary);
 	const updateLibrary = useLibraryStateStore((s) => s.updateLibrary);
 	const { currentViewType: storeViewType, libraryName: storeLibraryName } =
 		useLibraryStateStore(
@@ -50,34 +81,7 @@ function Library() {
 		if (!id || !currentLib.data) return;
 		// Ensure library name is available in Zustand for header consumption
 		updateLibrary(id, { libraryName: currentLib.data.Name ?? undefined });
-		const collectionType = currentLib.data.CollectionType;
-
-		const detectedViewType: BaseItemKind | "Artist" =
-			collectionType === "music"
-				? BaseItemKind.MusicAlbum
-				: collectionType === "movies"
-					? BaseItemKind.Movie
-					: collectionType === "tvshows"
-						? BaseItemKind.Series
-						: collectionType === "boxsets"
-							? BaseItemKind.BoxSet
-							: collectionType === "books"
-								? BaseItemKind.Book
-								: collectionType === "playlists"
-									? BaseItemKind.Playlist
-									: BaseItemKind.Movie;
-
-		// Initialize defaults if state not yet set
-		if (storeViewType === undefined) {
-			initLibrary(id, {
-				currentViewType: detectedViewType,
-				sortBy:
-					getDefaultSortByForCollectionType(collectionType as any) ||
-					ItemSortBy.Name,
-				sortAscending: true,
-			});
-		}
-	}, [id, storeViewType, initLibrary, updateLibrary, currentLib.data]);
+	}, [id, updateLibrary, currentLib.data]);
 
 	const { setPageTitle } = useHeaderStore(
 		useShallow((state) => ({

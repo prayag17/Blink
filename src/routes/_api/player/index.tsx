@@ -12,12 +12,12 @@ import { PlayMethod, RepeatMode } from "@jellyfin/sdk/lib/generated-client";
 import { useMutation } from "@tanstack/react-query";
 import { createFileRoute, useRouter } from "@tanstack/react-router";
 import JASSUB from "jassub";
-//@ts-ignore
+//@ts-expect-error
 import workerUrl from "jassub/dist/jassub-worker.js?url";
-//@ts-ignore
+//@ts-expect-error
 import wasmUrl from "jassub/dist/jassub-worker.wasm?url";
 import { PgsRenderer } from "libpgs";
-//@ts-ignore
+//@ts-expect-error
 import pgsWorkerUrl from "libpgs/dist/libpgs.worker.js?url";
 // import type { OnProgressProps } from "react-player";
 import { useShallow } from "zustand/shallow";
@@ -32,7 +32,7 @@ import { useBackdropStore } from "@/utils/store/backdrop";
 import { useCentralStore } from "@/utils/store/central";
 import useQueue, { clearQueue } from "@/utils/store/queue";
 import type subtitlePlaybackInfo from "@/utils/types/subtitlePlaybackInfo";
-//@ts-ignore
+//@ts-expect-error
 import font from "./Noto-Sans-Indosphere.ttf?url";
 
 /**
@@ -42,16 +42,25 @@ function addSubtitleTrackToReactPlayer(
 	videoElem: HTMLMediaElement,
 	subtitleTracks: subtitlePlaybackInfo,
 	baseUrl: string,
+	apiKey?: string,
 ) {
 	if (subtitleTracks.url && subtitleTracks.allTracks) {
-		const reqSubTrack = subtitleTracks.allTracks.filter(
+		const reqSubTrack = subtitleTracks.allTracks.find(
 			(val) => val.Index === subtitleTracks.track,
 		);
+		if (!reqSubTrack) return;
+
+		// Remove existing tracks to ensure clean state
+		const existingTracks = videoElem.querySelectorAll("track");
+		existingTracks.forEach((t) => t.remove());
+
 		const track = document.createElement("track");
-		track.src = `${baseUrl}${subtitleTracks.url}`;
+		const separator = subtitleTracks.url.includes("?") ? "&" : "?";
+		const urlParams = apiKey ? `${separator}api_key=${apiKey}` : "";
+		track.src = `${baseUrl}${subtitleTracks.url}${urlParams}`;
 		track.kind = "subtitles";
-		track.srclang = reqSubTrack[0].Language ?? "en";
-		track.label = reqSubTrack[0].DisplayTitle ?? "Subtitle";
+		track.srclang = reqSubTrack.Language ?? "en";
+		track.label = reqSubTrack.DisplayTitle ?? "Subtitle";
 		track.default = true;
 		track.id = subtitleTracks.url;
 
@@ -60,24 +69,10 @@ function addSubtitleTrackToReactPlayer(
 			a.mode = "showing";
 		});
 		track.addEventListener("error", (e) => {
-			console.error(e);
+			console.error("Error loading subtitle track", e);
 		});
 
-		const trackAlreadyExists = videoElem.textTracks.getTrackById(
-			subtitleTracks.url,
-		);
-		if (!trackAlreadyExists?.id) {
-			// console.log(trackAlreadyExists.getTrackById(reqSubTrack[0].Index));
-			videoElem.appendChild(track);
-		}
-
-		for (const i of videoElem.textTracks) {
-			if (i.label === reqSubTrack[0].DisplayTitle) {
-				i.mode = "showing";
-			} else {
-				i.mode = "hidden";
-			}
-		}
+		videoElem.appendChild(track);
 	}
 }
 
@@ -169,8 +164,14 @@ export function VideoPlayer() {
 
 	const handleReady = async () => {
 		if (api && !isPlayerReady && player.current) {
-			player.current.currentTime = ticksToSec(userDataLastPlayedPositionTicks ?? 0);
-			
+			if (player.current.seekTo) {
+				player.current.seekTo(ticksToSec(userDataLastPlayedPositionTicks ?? 0));
+			} else {
+				player.current.currentTime = ticksToSec(
+					userDataLastPlayedPositionTicks ?? 0,
+				);
+			}
+
 			if (navigator.mediaSession && mediaSource) {
 				navigator.mediaSession.metadata = new MediaMetadata({
 					title: isEpisode ? episodeTitle : (itemName ?? "Blink"),
@@ -213,18 +214,33 @@ export function VideoPlayer() {
 					}
 				});
 			}
-		
+
 			registerPlayerActions({
 				seekTo: (seconds: number) => {
 					const internalPlayer = player.current;
 					if (internalPlayer) {
-						internalPlayer.currentTime = seconds;
+						// @ts-expect-error
+						const current = internalPlayer.getCurrentTime
+							? // @ts-ignore
+								internalPlayer.getCurrentTime()
+							: // @ts-ignore
+								(internalPlayer.currentTime ?? 0);
+
+						if (Math.abs(current - seconds) < 0.1) {
+							return;
+						}
+
+						// @ts-expect-error
+						if (internalPlayer.seekTo) {
+							// @ts-expect-error
+							internalPlayer.seekTo(seconds, "seconds");
+						} else {
+							internalPlayer.currentTime = seconds;
+						}
 						console.log("Seeking to", seconds, "seconds");
+					} else {
+						console.warn("ReactPlayer is not ready yet");
 					}
-					console.warn("ReactPlayer is not ready yet");
-					// If you want to report the seek action
-					// if (internalPlayer && typeof internalPlayer.seekTo === "function") {
-					// }
 				},
 				getCurrentTime: () => {
 					const internalPlayer = player.current;
@@ -257,14 +273,30 @@ export function VideoPlayer() {
 		}
 	};
 
+	const lastReportTimeRef = useRef<number>(0);
+
 	const handleTimeUpdate = useCallback(async () => {
-		const ticks = secToTicks(player.current?.currentTime ?? 0);
+		if (!player.current) return;
+
+		// @ts-expect-error
+		const currentTime = player.current.getCurrentTime
+			? player.current.getCurrentTime()
+			: (player.current.currentTime ?? 0);
+		const ticks = secToTicks(currentTime);
+		const now = Date.now();
 
 		setCurrentTime(ticks);
+
 		if (!api) {
 			console.warn("API is not available, cannot report playback progress.");
 			return;
 		}
+
+		// Report to server every 10s
+		if (now - lastReportTimeRef.current < 10000) {
+			return;
+		}
+		lastReportTimeRef.current = now;
 
 		// Report Jellyfin server: Playback progress
 		getPlaystateApi(api).reportPlaybackProgress({
@@ -272,7 +304,7 @@ export function VideoPlayer() {
 				AudioStreamIndex: mediaSource.audioTrack,
 				CanSeek: true,
 				IsMuted: isPlayerMuted,
-				IsPaused: player.current?.paused,
+				IsPaused: !isPlayerPlaying,
 				ItemId: itemId,
 				MediaSourceId: mediaSource.id,
 				PlayMethod: PlayMethod.DirectPlay,
@@ -283,7 +315,17 @@ export function VideoPlayer() {
 				VolumeLevel: Math.floor(volume * 100),
 			},
 		});
-	}, [setCurrentTime]);
+	}, [
+		setCurrentTime,
+		api,
+		mediaSource,
+		isPlayerMuted,
+		isPlayerPlaying,
+		itemId,
+		playsessionId,
+		userDataLastPlayedPositionTicks,
+		volume,
+	]);
 
 	const handleExitPlayer = useCallback(async () => {
 		appWindow.getCurrent().setFullscreen(false);
@@ -363,18 +405,31 @@ export function VideoPlayer() {
 	// Manage Subtitle playback
 	useEffect(() => {
 		if (player.current && mediaSource.subtitle.enable) {
+			// @ts-expect-error
+			let internalPlayer: HTMLMediaElement = player.current;
+			if (player.current.getInternalPlayer) {
+				// @ts-expect-error
+				// @ts-expect-error
+				internalPlayer = player.current.getInternalPlayer() as HTMLMediaElement;
+			}
+
+			if (!internalPlayer) return;
+
 			let jassubRenderer: JASSUB | undefined;
 			let pgsRenderer: PgsRenderer | undefined;
+			const apiKey = api?.accessToken;
+			const separator = mediaSource.subtitle.url?.includes("?") ? "&" : "?";
+			const urlParams = apiKey ? `${separator}api_key=${apiKey}` : "";
+
 			if (
 				mediaSource.subtitle.format === "ass" ||
 				mediaSource.subtitle.format === "ssa"
 			) {
 				jassubRenderer = new JASSUB({
-					//@ts-ignore
-					video: player.current,
+					video: internalPlayer,
 					workerUrl,
 					wasmUrl,
-					subUrl: `${api?.basePath}${mediaSource.subtitle.url}`,
+					subUrl: `${api?.basePath}${mediaSource.subtitle.url}${urlParams}`,
 					availableFonts: { "noto sans": font },
 					fallbackFont: "noto sans",
 				});
@@ -383,15 +438,16 @@ export function VideoPlayer() {
 				mediaSource.subtitle.format === "vtt"
 			) {
 				addSubtitleTrackToReactPlayer(
-					player.current as HTMLMediaElement,
+					internalPlayer,
 					mediaSource.subtitle,
 					api?.basePath ?? "",
+					apiKey,
 				);
 			} else if (mediaSource.subtitle.format === "PGSSUB") {
 				pgsRenderer = new PgsRenderer({
 					workerUrl: pgsWorkerUrl,
-					video: player.current as any,
-					subUrl: `${api?.basePath}${mediaSource.subtitle.url}`,
+					video: internalPlayer,
+					subUrl: `${api?.basePath}${mediaSource.subtitle.url}${urlParams}`,
 				});
 			}
 			return () => {
@@ -404,10 +460,18 @@ export function VideoPlayer() {
 			};
 		}
 		if (player.current && mediaSource.subtitle.enable === false) {
-			// @ts-ignore internalPlayer here provides the HTML video player element
-			const videoElem: HTMLMediaElement = player.current as HTMLMediaElement;
-			for (const i of videoElem.textTracks) {
-				i.mode = "hidden";
+			// @ts-expect-error
+			let internalPlayer: HTMLMediaElement = player.current;
+			if (player.current.getInternalPlayer) {
+				// @ts-expect-error
+				// @ts-expect-error
+				internalPlayer = player.current.getInternalPlayer() as HTMLMediaElement;
+			}
+
+			if (internalPlayer?.textTracks) {
+				for (const i of internalPlayer.textTracks) {
+					i.mode = "hidden";
+				}
 			}
 		}
 	}, [mediaSource.subtitle?.track, mediaSource.subtitle?.enable]);
@@ -533,6 +597,7 @@ export function VideoPlayer() {
 				onPlaying={handleOnBufferEnd}
 				onSeeking={(e) => handleOnSeek(e.currentTarget.currentTime)}
 				playsInline
+				crossOrigin="anonymous"
 			/>
 		</div>
 	);
