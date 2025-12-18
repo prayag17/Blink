@@ -15,14 +15,24 @@ export const AVAILABLE_VIEWS: Array<{
 		compatibleCollectionTypes: [CollectionType.Movies],
 	},
 	{
-		title: "Trailers",
-		value: BaseItemKind.Trailer,
-		compatibleCollectionTypes: [CollectionType.Movies],
+		title: "Shows",
+		value: BaseItemKind.Series,
+		compatibleCollectionTypes: [CollectionType.Tvshows],
+	},
+	{
+		title: "Albums",
+		value: BaseItemKind.MusicAlbum,
+		compatibleCollectionTypes: [CollectionType.Music],
 	},
 	{
 		title: "Collections",
 		value: BaseItemKind.CollectionFolder,
 		compatibleCollectionTypes: [CollectionType.Movies, CollectionType.Boxsets],
+	},
+	{
+		title: "Books",
+		value: BaseItemKind.Book,
+		compatibleCollectionTypes: [CollectionType.Books],
 	},
 	{
 		title: "Genres",
@@ -34,19 +44,14 @@ export const AVAILABLE_VIEWS: Array<{
 		value: BaseItemKind.Genre,
 	},
 	{
-		title: "Shows",
-		value: BaseItemKind.Series,
-		compatibleCollectionTypes: [CollectionType.Tvshows],
+		title: "Trailers",
+		value: BaseItemKind.Trailer,
+		compatibleCollectionTypes: [CollectionType.Movies],
 	},
 	{
 		title: "TV Networks",
 		value: BaseItemKind.Studio,
 		compatibleCollectionTypes: [CollectionType.Tvshows],
-	},
-	{
-		title: "Albums",
-		value: BaseItemKind.MusicAlbum,
-		compatibleCollectionTypes: [CollectionType.Music],
 	},
 	{
 		title: "Album Artist",
@@ -67,11 +72,6 @@ export const AVAILABLE_VIEWS: Array<{
 		title: "Songs",
 		value: BaseItemKind.Audio,
 		compatibleCollectionTypes: [CollectionType.Music],
-	},
-	{
-		title: "Books",
-		value: BaseItemKind.Book,
-		compatibleCollectionTypes: [CollectionType.Books],
 	},
 ];
 

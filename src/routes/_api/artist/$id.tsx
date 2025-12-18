@@ -20,10 +20,10 @@ import React, {
 	useRef,
 	useState,
 } from "react";
-import { Blurhash } from "react-blurhash";
 
 import LikeButton from "@/components/buttons/likeButton";
 import { Card } from "@/components/card/card";
+import ItemHeader from "@/components/itemHeader";
 import { ArtistAlbum } from "@/components/layouts/artist/artistAlbum";
 import MusicTrack from "@/components/musicTrack";
 import { ErrorNotice } from "@/components/notices/errorNotice/errorNotice";
@@ -34,8 +34,6 @@ import "./artist.scss";
 
 import { createFileRoute } from "@tanstack/react-router";
 import IconLink from "@/components/iconLink";
-import { getTypeIcon } from "@/components/utils/iconsCollection";
-import getImageUrlsApi from "@/utils/methods/getImageUrlsApi";
 import { useCentralStore } from "@/utils/store/central";
 
 
@@ -92,7 +90,7 @@ function ArtistTitlePage() {
 		queryFn: async () => {
 			if (!api) return null;
 			const result = await getItemsApi(api).getItems({
-				albumArtistIds: [item.data?.Id ?? ""],
+				albumArtistIds: [id],
 				sortBy: ["PremiereDate", "ProductionYear", "SortName"],
 				sortOrder: [SortOrder.Descending],
 				recursive: true,
@@ -102,7 +100,6 @@ function ArtistTitlePage() {
 			});
 			return result.data;
 		},
-		enabled: item.isSuccess && item.data?.Type === BaseItemKind.MusicArtist,
 	});
 
 	const artistSongs = useQuery({
@@ -111,7 +108,7 @@ function ArtistTitlePage() {
 			if (!api) return null;
 
 			const result = await getItemsApi(api).getItems({
-				artistIds: [item.data?.Id ?? ""],
+				artistIds: [id],
 				sortBy: ["PremiereDate", "ProductionYear", "SortName"],
 				sortOrder: [SortOrder.Ascending],
 				recursive: true,
@@ -121,7 +118,6 @@ function ArtistTitlePage() {
 			});
 			return result.data;
 		},
-		enabled: item.isSuccess && item.data?.Type === BaseItemKind.MusicArtist,
 	});
 
 	const artistAppearances = useQuery({
@@ -129,8 +125,8 @@ function ArtistTitlePage() {
 		queryFn: async () => {
 			if (!api) return null;
 			const result = await getItemsApi(api).getItems({
-				contributingArtistIds: [item.data?.Id ?? ""],
-				excludeItemIds: [item.data?.Id ?? ""],
+				contributingArtistIds: [id],
+				excludeItemIds: [id],
 				sortBy: ["PremiereDate", "ProductionYear", "SortName"],
 				sortOrder: [SortOrder.Descending],
 				recursive: true,
@@ -139,7 +135,6 @@ function ArtistTitlePage() {
 			});
 			return result.data;
 		},
-		enabled: item.isSuccess && item.data?.Type === BaseItemKind.MusicArtist,
 	});
 
 	const artistTabs = [
@@ -182,11 +177,6 @@ function ArtistTitlePage() {
 	}, [item.isSuccess]);
 
 	const scrollTargetRef = useRef<HTMLDivElement | null>(null);
-	const { scrollYProgress } = useScroll({
-		target: scrollTargetRef,
-		offset: ["start start", "60vh start"],
-	});
-	const parallax = useParallax(scrollYProgress, 50);
 
 	if (item.isPending) {
 		return (
@@ -220,97 +210,12 @@ function ArtistTitlePage() {
 				className="scrollY item item-artist"
 			>
 				<div ref={scrollTargetRef} />
-				<div className="item-hero flex flex-row">
-					<div className="item-hero-backdrop-container">
-						<motion.img
-							alt={item.data?.Name ?? ""}
-							src={
-								api &&
-								getImageUrlsApi(api).getItemImageUrlById(
-									item.data?.Id ?? "",
-									"Backdrop",
-									{
-										tag: item.data.BackdropImageTags?.[0],
-									},
-								)
-							}
-							className="item-hero-backdrop"
-							onLoad={(e) => {
-								e.currentTarget.style.opacity = "1";
-							}}
-							style={{
-								y: parallax,
-							}}
-						/>
-					</div>
-					<div
-						className="item-hero-image-container"
-						style={{
-							aspectRatio: item.data.PrimaryImageAspectRatio ?? 1,
-						}}
-					>
-						{item.data.ImageTags?.Primary ? (
-							<div>
-								<Blurhash
-									hash={
-										item.data.ImageBlurHashes?.Primary?.[
-											item.data.ImageTags.Primary
-										] ?? ""
-									}
-									className="item-hero-image-blurhash"
-								/>
-								<img
-									alt={item.data.Name ?? ""}
-									src={
-										api &&
-										getImageUrlsApi(api).getItemImageUrlById(
-											item.data.Id ?? "",
-											"Primary",
-											{
-												quality: 90,
-												tag: item.data.ImageTags.Primary,
-											},
-										)
-									}
-									onLoad={(e) => {
-										e.currentTarget.style.opacity = "1";
-									}}
-									className="item-hero-image"
-								/>
-							</div>
-						) : (
-							<div className="item-hero-image-icon">
-								{getTypeIcon(item.data.Type ?? "MusicArtist")}
-							</div>
-						)}
-					</div>
-					<div className="item-hero-detail flex flex-column">
-						{item.data.ImageTags?.Logo ? (
-							<img
-								alt={item.data.Name ?? ""}
-								src={
-									api &&
-									getImageUrlsApi(api).getItemImageUrlById(
-										item.data.Id ?? "",
-										"Logo",
-										{
-											quality: 90,
-											fillWidth: 592,
-											fillHeight: 592,
-										},
-									)
-								}
-								onLoad={(e) => {
-									e.currentTarget.style.opacity = "1";
-								}}
-								className="item-hero-logo"
-							/>
-						) : (
-							<Typography variant="h2" fontWeight={200}>
-								{item.data.Name}
-							</Typography>
-						)}
-
+				<ItemHeader
+					item={item.data}
+					api={api}
+					scrollTargetRef={scrollTargetRef}
+				>
+					<div className="item-hero-buttons-container">
 						<LikeButton
 							itemName={item.data.Name}
 							itemId={item.data.Id}
@@ -319,7 +224,7 @@ function ArtistTitlePage() {
 							userId={user?.Id}
 						/>
 					</div>
-				</div>
+				</ItemHeader>
 				<div className="item-detail">
 					<div style={{ width: "100%", overflow: "hidden" }}>
 						<ShowMoreText

@@ -1,41 +1,32 @@
-import React, {
-	useState,
-	useLayoutEffect,
-	useRef,
-	type ReactNode,
-} from "react";
-
+import { BaseItemKind, LocationType } from "@jellyfin/sdk/lib/generated-client";
+import { getItemsApi } from "@jellyfin/sdk/lib/utils/api/items-api";
+import { getUserLibraryApi } from "@jellyfin/sdk/lib/utils/api/user-library-api";
 import Box from "@mui/material/Box";
 import CircularProgress from "@mui/material/CircularProgress";
 import Divider from "@mui/material/Divider";
 import Tab from "@mui/material/Tab";
 import Tabs from "@mui/material/Tabs";
 import Typography from "@mui/material/Typography";
-
-import { AnimatePresence, motion } from "motion/react";
-
-import { BaseItemKind, LocationType } from "@jellyfin/sdk/lib/generated-client";
-import { getItemsApi } from "@jellyfin/sdk/lib/utils/api/items-api";
-import { getUserLibraryApi } from "@jellyfin/sdk/lib/utils/api/user-library-api";
-
-import { Card } from "@/components/card/card";
 import { useQuery } from "@tanstack/react-query";
-
-import { Blurhash } from "react-blurhash";
-
+import { AnimatePresence, motion } from "motion/react";
+import React, {
+	type ReactNode,
+	useLayoutEffect,
+	useRef,
+	useState,
+} from "react";
 import LikeButton from "@/components/buttons/likeButton";
+import { Card } from "@/components/card/card";
+import ItemHeader from "@/components/itemHeader";
 import { ErrorNotice } from "@/components/notices/errorNotice/errorNotice";
-import { useBackdropStore } from "@/utils/store/backdrop";
-
-import meshBg from "@/assets/herobg.png";
 import ShowMoreText from "@/components/showMoreText";
+import { useBackdropStore } from "@/utils/store/backdrop";
 import "./person.scss";
 
+import { createFileRoute } from "@tanstack/react-router";
 import IconLink from "@/components/iconLink";
-import getImageUrlsApi from "@/utils/methods/getImageUrlsApi";
 import { useApiInContext } from "@/utils/store/api";
 import { useCentralStore } from "@/utils/store/central";
-import { createFileRoute } from "@tanstack/react-router";
 
 type TabPanelProps = {
 	children: ReactNode;
@@ -100,7 +91,6 @@ function PersonTitlePage() {
 			});
 			return result.data;
 		},
-		enabled: item.isSuccess && item.data?.Type === BaseItemKind.Person,
 		networkMode: "always",
 	});
 	const personShows = useQuery({
@@ -118,7 +108,6 @@ function PersonTitlePage() {
 			});
 			return result.data;
 		},
-		enabled: item.isSuccess && item.data?.Type === BaseItemKind.Person,
 		networkMode: "always",
 	});
 	const personBooks = useQuery({
@@ -136,7 +125,6 @@ function PersonTitlePage() {
 			});
 			return result.data;
 		},
-		enabled: item.isSuccess && item.data?.Type === BaseItemKind.Person,
 		networkMode: "always",
 	});
 	const personPhotos = useQuery({
@@ -153,7 +141,6 @@ function PersonTitlePage() {
 			});
 			return result.data;
 		},
-		enabled: item.isSuccess && item.data?.Type === BaseItemKind.Person,
 		networkMode: "always",
 	});
 	const personEpisodes = useQuery({
@@ -171,7 +158,6 @@ function PersonTitlePage() {
 			});
 			return result.data;
 		},
-		enabled: item.isSuccess && item.data?.Type === BaseItemKind.Person,
 		networkMode: "always",
 	});
 
@@ -273,68 +259,20 @@ function PersonTitlePage() {
 				className="scrollY padded-top item item-person flex flex-column"
 				ref={pageRef}
 			>
-				<div className="item-hero">
-					<div className="item-hero-backdrop-container">
-						<img
-							alt={item.data.Name ?? ""}
-							src={meshBg}
-							className="item-hero-backdrop"
-							onLoad={(e) => {
-								e.currentTarget.style.opacity = "1";
-							}}
-						/>
+				<ItemHeader item={item.data} api={api}>
+					<div className="item-hero-buttons-container flex flex-row">
+						<div className="flex flex-row fullWidth" />
+						<div className="flex flex-row" style={{ gap: "1em" }}>
+							<LikeButton
+								itemName={item.data.Name}
+								itemId={item.data.Id}
+								queryKey={["item", id]}
+								isFavorite={item.data.UserData?.IsFavorite}
+								userId={user?.Id}
+							/>
+						</div>
 					</div>
-					<div
-						className="item-hero-image-container"
-						style={{
-							aspectRatio: item.data.PrimaryImageAspectRatio ?? 1,
-						}}
-					>
-						{item.data.ImageTags?.Primary && (
-							<div>
-								<Blurhash
-									hash={
-										item.data.ImageBlurHashes?.Primary?.[
-											item.data.ImageTags.Primary
-										] ?? ""
-									}
-									className="item-hero-image-blurhash"
-								/>
-								<img
-									alt={item.data.Name ?? ""}
-									src={
-										api &&
-										getImageUrlsApi(api).getItemImageUrlById(
-											item.data.Id ?? "",
-											"Primary",
-											{
-												quality: 90,
-												tag: item.data.ImageTags.Primary,
-											},
-										)
-									}
-									onLoad={(e) => {
-										e.currentTarget.style.opacity = "1";
-									}}
-									className="item-hero-image"
-								/>
-							</div>
-						)}
-					</div>
-					<div className="item-hero-detail flex flex-column">
-						<Typography variant="h2" fontWeight={200} mb={2}>
-							{item.data.Name}
-						</Typography>
-
-						<LikeButton
-							itemName={item.data.Name}
-							itemId={item.data.Id}
-							queryKey={["item", id]}
-							isFavorite={item.data.UserData?.IsFavorite}
-							userId={user?.Id}
-						/>
-					</div>
-				</div>
+				</ItemHeader>
 				<div className="item-detail">
 					<div style={{ width: "100%" }}>
 						<ShowMoreText

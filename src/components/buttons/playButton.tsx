@@ -359,11 +359,10 @@ const PlayButton = ({
 				sx={sx}
 				size={size}
 				disabled={
-					currentEpisode.isPending ||
-					(itemType === BaseItemKind.Series &&
-						(!currentEpisode.data ||
-							!currentEpisode.data.Items ||
-							currentEpisode.data.Items.length === 0))
+					itemType === BaseItemKind.Series &&
+					(!currentEpisode.data ||
+						!currentEpisode.data.Items ||
+						currentEpisode.data.Items.length === 0)
 				}
 				{...buttonProps}
 			>

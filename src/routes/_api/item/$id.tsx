@@ -3,42 +3,20 @@ import {
 	MediaStreamType,
 } from "@jellyfin/sdk/lib/generated-client";
 import { getLibraryApi } from "@jellyfin/sdk/lib/utils/api/library-api";
-import Chip from "@mui/material/Chip";
-import { green, red, yellow } from "@mui/material/colors";
 import MenuItem from "@mui/material/MenuItem";
-import Stack from "@mui/material/Stack";
 import TextField from "@mui/material/TextField";
 import Typography from "@mui/material/Typography";
 import { useQuery, useSuspenseQuery } from "@tanstack/react-query";
 import { motion } from "motion/react";
 import React, { useLayoutEffect, useMemo, useRef, useState } from "react";
-import { Blurhash } from "react-blurhash";
-import heroBg from "@/assets/herobg.png";
 import { Card } from "@/components/card/card";
 import CardScroller from "@/components/cardScroller/cardScroller";
-// import useParallax from "@/utils/hooks/useParallax";
-import ItemBackdrop from "@/components/itemBackdrop";
+import ItemHeader from "@/components/itemHeader";
 
 import "./item.scss";
 
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useShallow } from "zustand/shallow";
-import ultraHdIcon from "@/assets/icons/4k.svg";
-import dolbyAtmosIcon from "@/assets/icons/dolby-atmos.svg";
-import dolbyDigitalIcon from "@/assets/icons/dolby-digital.svg";
-import dolbyDigitalPlusIcon from "@/assets/icons/dolby-digital-plus.svg";
-import dolbyTrueHDIcon from "@/assets/icons/dolby-truehd.svg";
-import dolbyVisionIcon from "@/assets/icons/dolby-vision.svg";
-import dolbyVisionAtmosIcon from "@/assets/icons/dolby-vision-atmos.png";
-import dtsIcon from "@/assets/icons/dts.svg";
-import dtsHdMaIcon from "@/assets/icons/dts-hd-ma.svg";
-import hdIcon from "@/assets/icons/hd.svg";
-import hdrIcon from "@/assets/icons/hdr.svg";
-import hdr10Icon from "@/assets/icons/hdr10.svg";
-import hdr10PlusIcon from "@/assets/icons/hdr10-plus.svg";
-import imaxIcon from "@/assets/icons/imax.svg";
-import sdIcon from "@/assets/icons/sd.svg";
-import sdrIcon from "@/assets/icons/sdr.svg";
 import LikeButton from "@/components/buttons/likeButton";
 import MarkPlayedButton from "@/components/buttons/markPlayedButton";
 import PlayButton from "@/components/buttons/playButton";
@@ -47,7 +25,6 @@ import IconLink from "@/components/iconLink";
 import ShowMoreText from "@/components/showMoreText";
 import ItemSkeleton from "@/components/skeleton/item";
 import { getTypeIcon } from "@/components/utils/iconsCollection";
-import { endsAt, getRuntime } from "@/utils/date/time";
 import getImageUrlsApi from "@/utils/methods/getImageUrlsApi";
 import { getItemQueryOptions } from "@/utils/queries/items";
 import { useBackdropStore } from "@/utils/store/backdrop";
@@ -60,9 +37,21 @@ export const Route = createFileRoute("/_api/item/$id")({
 	// pendingMs: 5000,
 	loader: async ({ context: { queryClient, api, user }, params }) => {
 		if (!api || !user?.Id) return null;
-		await queryClient.ensureQueryData(
+		const itemPromise = queryClient.ensureQueryData(
 			getItemQueryOptions(params.id, api, user?.Id),
 		);
+		queryClient.prefetchQuery({
+			queryKey: ["item", params.id, "similarItem"],
+			queryFn: async () =>
+				(
+					await getLibraryApi(api).getSimilarItems({
+						userId: user?.Id,
+						itemId: params.id,
+						limit: 16,
+					})
+				).data,
+		});
+		await itemPromise;
 	},
 });
 
@@ -78,47 +67,12 @@ function ItemDetail() {
 	const similarItems = useQuery({
 		queryKey: ["item", id, "similarItem"],
 		queryFn: async () => {
-			if (!item.isSuccess) return null;
 			if (!api || !user?.Id) return null;
-
-			if (!item.data?.Id) return null;
-			if (item.data?.Type === "Movie") {
-				return (
-					await getLibraryApi(api).getSimilarMovies({
-						userId: user?.Id,
-						itemId: item.data.Id,
-						limit: 16,
-					})
-				).data;
-			}
-			if (item.data?.Type === "Series") {
-				return (
-					await getLibraryApi(api).getSimilarShows({
-						userId: user?.Id,
-						itemId: item.data.Id,
-					})
-				).data;
-			}
-			if (item.data?.Type === "MusicAlbum") {
-				return (
-					await getLibraryApi(api).getSimilarAlbums({
-						userId: user?.Id,
-						itemId: item.data.Id,
-					})
-				).data;
-			}
-			if (item.data?.Type === "MusicArtist") {
-				return (
-					await getLibraryApi(api).getSimilarArtists({
-						userId: user?.Id,
-						itemId: item.data.Id,
-					})
-				).data;
-			}
 			return (
 				await getLibraryApi(api).getSimilarItems({
 					userId: user?.Id,
-					itemId: item.data.Id,
+					itemId: id,
+					limit: 16,
 				})
 			).data;
 		},
@@ -311,311 +265,12 @@ function ItemDetail() {
 				className="scrollY padded-top flex flex-column item item-default"
 				ref={scrollTargetRef}
 			>
-				<div className="item-hero">
-					<div className="item-hero-backdrop-container">
-						<ItemBackdrop
-							targetRef={scrollTargetRef}
-							alt={item.data.Name ?? ""}
-							backdropSrc={
-								item.data.BackdropImageTags?.length
-									? api &&
-										getImageUrlsApi(api).getItemImageUrlById(
-											item.data.Id ?? "",
-											"Backdrop",
-											{ tag: item.data.BackdropImageTags[0] },
-										)
-									: undefined
-							}
-							fallbackSrc={heroBg}
-						/>
-					</div>
-					<div
-						className="item-hero-image-container"
-						style={{
-							aspectRatio: item.data.PrimaryImageAspectRatio ?? 1,
-						}}
-					>
-						{item.data.ImageTags?.Primary ? (
-							<div>
-								<Blurhash
-									hash={
-										item.data.ImageBlurHashes?.Primary?.[
-											item.data.ImageTags.Primary
-										] ?? ""
-									}
-									className="item-hero-image-blurhash"
-								/>
-								<img
-									alt={item.data.Name ?? ""}
-									src={
-										api &&
-										getImageUrlsApi(api).getItemImageUrlById(
-											item.data.Id ?? "",
-											"Primary",
-											{
-												quality: 90,
-												tag: item.data.ImageTags.Primary,
-											},
-										)
-									}
-									onLoad={(e) => {
-										e.currentTarget.style.opacity = "1";
-									}}
-									className="item-hero-image"
-								/>
-							</div>
-						) : (
-							<div className="item-hero-image-icon">
-								{getTypeIcon(item.data.Type ?? "Movie")}
-							</div>
-						)}
-					</div>
-					<div className="item-hero-detail flex flex-column">
-						{item.data.ImageTags?.Logo ? (
-							<img
-								alt={item.data.Name ?? ""}
-								src={
-									api &&
-									getImageUrlsApi(api).getItemImageUrlById(
-										item.data.Id ?? "",
-										"Logo",
-										{
-											quality: 90,
-											fillWidth: 592,
-											fillHeight: 592,
-											tag: item.data.ImageTags.Logo,
-										},
-									)
-								}
-								onLoad={(e) => {
-									e.currentTarget.style.opacity = "1";
-								}}
-								className="item-hero-logo"
-							/>
-						) : (
-							<Typography mb={2} fontWeight={200} variant="h2">
-								{item.data.Name}
-							</Typography>
-						)}
-						<Stack
-							direction="row"
-							gap={2}
-							justifyItems="flex-start"
-							alignItems="center"
-						>
-							{mediaQualityInfo?.isUHD && (
-								<img
-									src={ultraHdIcon}
-									alt="ultra hd"
-									className="item-hero-mediaInfo badge"
-								/>
-							)}
-							{mediaQualityInfo?.isHD && (
-								<img
-									src={hdIcon}
-									alt="hd"
-									className="item-hero-mediaInfo badge"
-								/>
-							)}
-							{mediaQualityInfo?.isSD && (
-								<img
-									src={sdIcon}
-									alt="sd"
-									className="item-hero-mediaInfo badge"
-								/>
-							)}
-							{mediaQualityInfo?.isSDR && (
-								<img
-									src={sdrIcon}
-									alt="sdr"
-									className="item-hero-mediaInfo badge"
-								/>
-							)}
-							{mediaQualityInfo?.isHDR &&
-								!mediaQualityInfo?.isHDR10 &&
-								!mediaQualityInfo?.isHDR10Plus && (
-									<img
-										src={hdrIcon}
-										alt="hdr"
-										className="item-hero-mediaInfo badge"
-									/>
-								)}
-							{mediaQualityInfo?.isHDR10 && (
-								<img
-									src={hdr10Icon}
-									alt="hdr10"
-									className="item-hero-mediaInfo badge"
-								/>
-							)}
-							{item.data.PremiereDate && (
-								<Typography style={{ opacity: "0.8" }} variant="subtitle2">
-									{item.data.ProductionYear ?? ""}
-								</Typography>
-							)}
-							{item.data.OfficialRating && (
-								<Chip
-									variant="filled"
-									size="small"
-									label={item.data.OfficialRating}
-								/>
-							)}
-
-							{item.data.CommunityRating && (
-								<div
-									style={{
-										display: "flex",
-										gap: "0.25em",
-										alignItems: "center",
-									}}
-									className="hero-carousel-info-rating"
-								>
-									<div
-										className="material-symbols-rounded fill"
-										style={{
-											// fontSize: "2.2em",
-											color: yellow[400],
-										}}
-									>
-										star
-									</div>
-									<Typography
-										style={{
-											opacity: "0.8",
-										}}
-										variant="subtitle2"
-									>
-										{Math.round(item.data.CommunityRating * 10) / 10}
-									</Typography>
-								</div>
-							)}
-							{item.data.CriticRating && (
-								<div
-									style={{
-										display: "flex",
-										gap: "0.25em",
-										alignItems: "center",
-									}}
-									className="hero-carousel-info-rating"
-								>
-									<div
-										className="material-symbols-rounded fill"
-										style={{
-											color:
-												item.data.CriticRating > 50 ? green[400] : red[400],
-										}}
-									>
-										{item.data.CriticRating > 50 ? "thumb_up" : "thumb_down"}
-									</div>
-									<Typography
-										style={{
-											opacity: "0.8",
-										}}
-										variant="subtitle2"
-									>
-										{item.data.CriticRating}
-									</Typography>
-								</div>
-							)}
-
-							{item.data.RunTimeTicks && (
-								<Typography style={{ opacity: "0.8" }} variant="subtitle2">
-									{getRuntime(item.data.RunTimeTicks)}
-								</Typography>
-							)}
-							{item.data.RunTimeTicks && (
-								<Typography style={{ opacity: "0.8" }} variant="subtitle2">
-									{endsAt(
-										item.data.RunTimeTicks -
-											(item.data.UserData?.PlaybackPositionTicks ?? 0),
-									)}
-								</Typography>
-							)}
-							<Typography variant="subtitle2" style={{ opacity: 0.8 }}>
-								{item.data.Genres?.slice(0, 4).join(" / ")}
-							</Typography>
-						</Stack>
-						{mediaQualityInfo && (
-							<Stack
-								direction="row"
-								gap={2}
-								justifyItems="flex-start"
-								alignItems="center"
-							>
-								{mediaQualityInfo?.isHDR10Plus && (
-									<img
-										src={hdr10PlusIcon}
-										alt="hdr10+"
-										className="item-hero-mediaInfo"
-									/>
-								)}
-								{mediaQualityInfo.isDts && (
-									<img
-										src={dtsIcon}
-										alt="dts"
-										className="item-hero-mediaInfo"
-									/>
-								)}
-								{mediaQualityInfo.isDtsHDMA && (
-									<img
-										src={dtsHdMaIcon}
-										alt="dts-hd ma"
-										className="item-hero-mediaInfo"
-									/>
-								)}
-								{mediaQualityInfo.isAtmos && mediaQualityInfo.isDolbyVision && (
-									<img
-										src={dolbyVisionAtmosIcon}
-										alt="dolby vision atmos"
-										className="item-hero-mediaInfo"
-									/>
-								)}
-								{mediaQualityInfo.isAtmos &&
-									!mediaQualityInfo.isDolbyVision && (
-										<img
-											src={dolbyAtmosIcon}
-											alt="dolby atmos"
-											className="item-hero-mediaInfo"
-										/>
-									)}
-								{mediaQualityInfo.isDolbyVision &&
-									!mediaQualityInfo.isAtmos && (
-										<img
-											src={dolbyVisionIcon}
-											alt="dolby vision"
-											className="item-hero-mediaInfo"
-										/>
-									)}
-								{mediaQualityInfo.isTrueHD && (
-									<img
-										src={dolbyTrueHDIcon}
-										alt="dolby truehd"
-										className="item-hero-mediaInfo"
-									/>
-								)}
-								{mediaQualityInfo.isDD && (
-									<img
-										src={dolbyDigitalIcon}
-										alt="dolby digital"
-										className="item-hero-mediaInfo"
-									/>
-								)}
-								{mediaQualityInfo.isDDP && (
-									<img
-										src={dolbyDigitalPlusIcon}
-										alt="dolby digital plus"
-										className="item-hero-mediaInfo"
-									/>
-								)}
-								{mediaQualityInfo.isIMAX && (
-									<img
-										src={imaxIcon}
-										alt="imax"
-										className="item-hero-mediaInfo"
-									/>
-								)}
-							</Stack>
-						)}
-					</div>
+				<ItemHeader
+					item={item.data}
+					api={api}
+					mediaQualityInfo={mediaQualityInfo}
+					scrollTargetRef={scrollTargetRef}
+				>
 					<div className="item-hero-buttons-container">
 						<div
 							className="flex flex-row"
@@ -659,7 +314,7 @@ function ItemDetail() {
 							/>
 						</div>
 					</div>
-				</div>
+				</ItemHeader>
 				<div className="item-detail">
 					<div style={{ width: "100%" }}>
 						{(item.data.Taglines?.length ?? 0) > 0 && (

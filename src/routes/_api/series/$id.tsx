@@ -5,32 +5,22 @@ import { getUserLibraryApi } from "@jellyfin/sdk/lib/utils/api/user-library-api"
 import Box from "@mui/material/Box";
 import Chip from "@mui/material/Chip";
 import CircularProgress from "@mui/material/CircularProgress";
-import { green, red, yellow } from "@mui/material/colors";
 import Divider from "@mui/material/Divider";
 import MenuItem from "@mui/material/MenuItem";
-import Stack from "@mui/material/Stack";
 import TextField from "@mui/material/TextField";
 import Typography from "@mui/material/Typography";
 import { useQuery } from "@tanstack/react-query";
-import { AnimatePresence, motion } from "motion/react";
+import { motion } from "motion/react";
 import React, { useEffect, useMemo, useRef, useState } from "react";
-import { Blurhash } from "react-blurhash";
 import { Card } from "@/components/card/card";
 import CardScroller from "@/components/cardScroller/cardScroller";
-// import useParallax from "@/utils/hooks/useParallax";
-import ItemBackdrop from "@/components/itemBackdrop";
+import ItemHeader from "@/components/itemHeader";
 import { ErrorNotice } from "@/components/notices/errorNotice/errorNotice";
-import {
-	endsAt,
-	getRuntime,
-	getRuntimeCompact,
-	getRuntimeMusic,
-} from "@/utils/date/time";
+import { getRuntimeCompact, getRuntimeMusic } from "@/utils/date/time";
 import useDefaultSeason from "@/utils/hooks/useDefaultSeason";
 import "./series.scss";
 
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
-import heroBg from "@/assets/herobg.png";
 import LikeButton from "@/components/buttons/likeButton";
 import MarkPlayedButton from "@/components/buttons/markPlayedButton";
 import PlayButton from "@/components/buttons/playButton";
@@ -85,27 +75,24 @@ function SeriesTitlePage() {
 			if (!api) return null;
 			const result = await getLibraryApi(api).getSimilarShows({
 				userId: user?.Id,
-				itemId: item.data?.Id ?? "",
+				itemId: id,
 				limit: 16,
 			});
 			return result.data;
 		},
-		enabled: item.isSuccess,
 	});
 
 	const seasons = useQuery({
 		queryKey: ["item", id, "seasons"],
 		queryFn: async () => {
 			if (!api) return null;
-			if (!item.data?.Id) return null;
 			const result = await getTvShowsApi(api).getSeasons({
 				userId: user?.Id,
-				seriesId: item.data.Id,
+				seriesId: id,
 				isMissing: false,
 			});
 			return result.data;
 		},
-		enabled: item.isSuccess,
 	});
 
 	const [backdropImage, setBackdropImage] = useState<SeriesBackdropImage>(
@@ -115,7 +102,7 @@ function SeriesTitlePage() {
 			return { url, key };
 		},
 	);
-	const [backdropImageLoaded, setBackdropImageLoaded] = useState(false);
+	const [_backdropImageLoaded, setBackdropImageLoaded] = useState(false);
 
 	const [currentSeason, setCurrentSeason] = useDefaultSeason(
 		seasons,
@@ -316,211 +303,7 @@ function SeriesTitlePage() {
 				className="scrollY padded-top flex flex-column item item-series"
 				ref={containerRef}
 			>
-				<div className="item-hero">
-					<div className="item-hero-backdrop-container">
-						<AnimatePresence mode="wait">
-							{item.data.BackdropImageTags ? (
-								<ItemBackdrop
-									key={backdropImage.key}
-									targetRef={containerRef}
-									alt={item.data.Name ?? ""}
-									backdropSrc={backdropImage.url ?? ""}
-									fallbackSrc={heroBg}
-									className="item-hero-backdrop"
-									onLoad={() => {
-										console.info("Image Loaded");
-										setBackdropImageLoaded(true);
-									}}
-									motionProps={{
-										initial: { opacity: 0 },
-										animate: { opacity: backdropImageLoaded ? 1 : 0 },
-										exit: { opacity: 0 },
-										transition: { duration: 0.2 },
-									}}
-								/>
-							) : (
-								<ItemBackdrop
-									targetRef={containerRef}
-									alt={item.data.Name ?? ""}
-									fallbackSrc={heroBg}
-									className="item-hero-backdrop"
-								/>
-							)}
-						</AnimatePresence>
-					</div>
-					<div
-						className="item-hero-image-container"
-						style={{
-							aspectRatio: item.data.PrimaryImageAspectRatio ?? 1,
-						}}
-					>
-						{item.data.ImageTags?.Primary ? (
-							<div>
-								<Blurhash
-									hash={
-										item.data.ImageBlurHashes?.Primary?.[
-											item.data.ImageTags.Primary
-										] ?? ""
-									}
-									className="item-hero-image-blurhash"
-								/>
-								<img
-									alt={item.data.Name ?? ""}
-									src={
-										api &&
-										getImageUrlsApi(api).getItemImageUrlById(
-											item.data.Id ?? "",
-											"Primary",
-											{
-												quality: 90,
-												tag: item.data.ImageTags.Primary,
-											},
-										)
-									}
-									onLoad={(e) => {
-										e.currentTarget.style.opacity = "1";
-									}}
-									className="item-hero-image"
-								/>
-							</div>
-						) : (
-							<div className="item-hero-image-icon">
-								{getTypeIcon(item.data.Type ?? "Series")}
-							</div>
-						)}
-					</div>
-					<div className="item-hero-detail">
-						{item.data.ImageTags?.Logo ? (
-							<img
-								alt={item.data.Name ?? ""}
-								src={
-									api &&
-									getImageUrlsApi(api).getItemImageUrlById(
-										item.data.Id ?? "",
-										"Logo",
-										{
-											quality: 90,
-											fillWidth: 592,
-											fillHeight: 592,
-										},
-									)
-								}
-								onLoad={(e) => {
-									e.currentTarget.style.opacity = "1";
-								}}
-								className="item-hero-logo"
-							/>
-						) : (
-							<Typography variant="h2" mb={2} fontWeight={200}>
-								{item.data.Name}
-							</Typography>
-						)}
-						<Stack
-							direction="row"
-							gap={2}
-							justifyItems="flex-start"
-							alignItems="center"
-						>
-							<Typography style={{ opacity: "0.8" }} variant="subtitle2">
-								{item.data.ProductionYear ?? ""}
-								{item.data.Status === "Continuing"
-									? " - Present"
-									: item.data.EndDate &&
-										` - ${new Date(item.data.EndDate).getFullYear()}`}
-							</Typography>
-
-							{seasons.data?.TotalRecordCount && (
-								<Typography style={{ opacity: "0.8" }} variant="subtitle2">
-									{seasons.data.TotalRecordCount > 1
-										? `${seasons.data.TotalRecordCount} Seasons`
-										: `${seasons.data.TotalRecordCount} Season`}
-								</Typography>
-							)}
-
-							{item.data.OfficialRating && (
-								<Chip
-									variant="filled"
-									size="small"
-									label={item.data.OfficialRating}
-								/>
-							)}
-
-							{item.data.CommunityRating && (
-								<div
-									style={{
-										display: "flex",
-										gap: "0.25em",
-										alignItems: "center",
-									}}
-									className="hero-carousel-info-rating"
-								>
-									<div
-										className="material-symbols-rounded fill"
-										style={{
-											// fontSize: "2.2em",
-											color: yellow[400],
-										}}
-									>
-										star
-									</div>
-									<Typography
-										style={{
-											opacity: "0.8",
-										}}
-										variant="subtitle2"
-									>
-										{Math.round(item.data.CommunityRating * 10) / 10}
-									</Typography>
-								</div>
-							)}
-							{item.data.CriticRating && (
-								<div
-									style={{
-										display: "flex",
-										gap: "0.25em",
-										alignItems: "center",
-									}}
-									className="hero-carousel-info-rating"
-								>
-									<div
-										className="material-symbols-rounded fill"
-										style={{
-											color:
-												item.data.CriticRating > 50 ? green[400] : red[400],
-										}}
-									>
-										{item.data.CriticRating > 50 ? "thumb_up" : "thumb_down"}
-									</div>
-									<Typography
-										style={{
-											opacity: "0.8",
-										}}
-										variant="subtitle2"
-									>
-										{item.data.CriticRating}
-									</Typography>
-								</div>
-							)}
-
-							{Boolean(item.data.RunTimeTicks) && (
-								<Typography style={{ opacity: "0.8" }} variant="subtitle2">
-									{getRuntime(item.data.RunTimeTicks ?? 0)}
-								</Typography>
-							)}
-							{Boolean(item.data.RunTimeTicks) && (
-								<Typography style={{ opacity: "0.8" }} variant="subtitle2">
-									{endsAt(
-										(item.data.RunTimeTicks ?? 0) -
-											(item.data.UserData?.PlaybackPositionTicks ?? 0),
-									)}
-								</Typography>
-							)}
-							<Typography variant="subtitle2" style={{ opacity: 0.8 }}>
-								{item.data.Genres?.slice(0, 5).join(" / ")}
-							</Typography>
-						</Stack>
-					</div>
-
+				<ItemHeader item={item.data} api={api} scrollTargetRef={containerRef}>
 					<div className="item-hero-buttons-container">
 						<div
 							className="flex flex-row"
@@ -563,7 +346,7 @@ function SeriesTitlePage() {
 							/>
 						</div>
 					</div>
-				</div>
+				</ItemHeader>
 				<div className="item-detail">
 					<div style={{ width: "100%" }}>
 						{(item.data.Taglines?.length ?? 0) > 0 && (

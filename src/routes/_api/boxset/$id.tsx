@@ -7,31 +7,23 @@ import { getItemsApi } from "@jellyfin/sdk/lib/utils/api/items-api";
 import { getLibraryApi } from "@jellyfin/sdk/lib/utils/api/library-api";
 import { getUserLibraryApi } from "@jellyfin/sdk/lib/utils/api/user-library-api";
 import Box from "@mui/material/Box";
-import Chip from "@mui/material/Chip";
 import CircularProgress from "@mui/material/CircularProgress";
-import Stack from "@mui/material/Stack";
-import Typography from "@mui/material/Typography";
 import { useQuery } from "@tanstack/react-query";
-import { motion, useScroll } from "motion/react";
+import { motion } from "motion/react";
 import React, { useLayoutEffect, useRef } from "react";
-import { Blurhash } from "react-blurhash";
-import heroBg from "@/assets/herobg.png";
 import LikeButton from "@/components/buttons/likeButton";
 import MarkPlayedButton from "@/components/buttons/markPlayedButton";
 import PlayButton from "@/components/buttons/playButton";
 import { Card } from "@/components/card/card";
 import CardScroller from "@/components/cardScroller/cardScroller";
+import ItemHeader from "@/components/itemHeader";
 import { ErrorNotice } from "@/components/notices/errorNotice/errorNotice";
 import ShowMoreText from "@/components/showMoreText";
-import { endsAt, getRuntime } from "@/utils/date/time";
-import useParallax from "@/utils/hooks/useParallax";
 import { useBackdropStore } from "@/utils/store/backdrop";
 import "./boxset.scss";
 
-import { green, red, yellow } from "@mui/material/colors";
 import { createFileRoute } from "@tanstack/react-router";
 import IconLink from "@/components/iconLink";
-import { getTypeIcon } from "@/components/utils/iconsCollection";
 import getImageUrlsApi from "@/utils/methods/getImageUrlsApi";
 import { useCentralStore } from "@/utils/store/central";
 
@@ -66,13 +58,12 @@ function BoxSetTitlePage() {
 			if (!api) return null;
 			const result = await getItemsApi(api).getItems({
 				userId: user?.Id,
-				parentId: item.data?.Id,
+				parentId: id,
 				fields: [ItemFields.SeasonUserData, ItemFields.Overview],
 				excludeLocationTypes: [LocationType.Virtual],
 			});
 			return result.data;
 		},
-		enabled: item.isSuccess,
 		networkMode: "always",
 		refetchOnWindowFocus: true,
 	});
@@ -80,15 +71,14 @@ function BoxSetTitlePage() {
 	const similarItems = useQuery({
 		queryKey: ["item", "similarItem", id],
 		queryFn: async () => {
-			if (!api || !item.data?.Id) return null;
+			if (!api) return null;
 			const result = await getLibraryApi(api).getSimilarItems({
 				userId: user?.Id,
-				itemId: item.data?.Id,
+				itemId: id,
 				limit: 16,
 			});
 			return result.data;
 		},
-		enabled: item.isSuccess,
 		networkMode: "always",
 		refetchOnWindowFocus: true,
 	});
@@ -114,11 +104,6 @@ function BoxSetTitlePage() {
 	}, [item.isSuccess]);
 
 	const scrollTargetRef = useRef<HTMLDivElement | null>(null);
-	const { scrollYProgress } = useScroll({
-		target: scrollTargetRef,
-		offset: ["start start", "60vh start"],
-	});
-	const parallax = useParallax(scrollYProgress, 50);
 
 	if (item.isPending || similarItems.isPending) {
 		return (
@@ -152,206 +137,11 @@ function BoxSetTitlePage() {
 				className="scrollY item item-boxset padded-top"
 			>
 				<div ref={scrollTargetRef} />
-				<div className="item-hero flex flex-row">
-					<div className="item-hero-backdrop-container">
-						{item.data.BackdropImageTags?.length ? (
-							<motion.img
-								alt={item.data.Name ?? ""}
-								src={
-									api &&
-									getImageUrlsApi(api).getItemImageUrlById(
-										item.data.Id ?? "",
-										"Backdrop",
-										{
-											tag: item.data.BackdropImageTags[0],
-										},
-									)
-								}
-								className="item-hero-backdrop"
-								onLoad={(e) => {
-									e.currentTarget.style.opacity = "1";
-								}}
-								style={{
-									y: parallax,
-								}}
-							/>
-						) : (
-							<motion.img
-								alt={item.data.Name ?? ""}
-								src={heroBg}
-								className="item-hero-backdrop"
-								onLoad={(e) => {
-									e.currentTarget.style.opacity = "1";
-								}}
-								style={{
-									y: parallax,
-								}}
-							/>
-						)}
-					</div>
-					<div
-						className="item-hero-image-container"
-						style={{
-							aspectRatio: item.data.PrimaryImageAspectRatio ?? 1,
-						}}
-					>
-						{item.data.ImageTags?.Primary &&
-						item.data.ImageBlurHashes?.Primary ? (
-							<div>
-								<Blurhash
-									hash={
-										item.data.ImageBlurHashes?.Primary?.[
-											item.data.ImageTags.Primary
-										]
-									}
-									className="item-hero-image-blurhash"
-								/>
-								<img
-									alt={item.data.Name ?? ""}
-									src={
-										api &&
-										getImageUrlsApi(api).getItemImageUrlById(
-											item.data.Id ?? "",
-											"Primary",
-											{
-												quality: 90,
-												tag: item.data.ImageTags.Primary,
-											},
-										)
-									}
-									onLoad={(e) => {
-										e.currentTarget.style.opacity = "1";
-									}}
-									className="item-hero-image"
-								/>
-							</div>
-						) : (
-							<div className="item-hero-image-icon">
-								{getTypeIcon(item.data.Type ?? "BoxSet")}
-							</div>
-						)}
-					</div>
-					<div className="item-hero-detail">
-						{item.data.ImageTags?.Logo ? (
-							<img
-								alt={item.data.Name ?? ""}
-								src={
-									api &&
-									getImageUrlsApi(api).getItemImageUrlById(
-										item.data.Id ?? "",
-										"Logo",
-										{
-											quality: 90,
-											fillWidth: 592,
-											fillHeight: 592,
-										},
-									)
-								}
-								onLoad={(e) => {
-									e.currentTarget.style.opacity = "1";
-								}}
-								className="item-hero-logo"
-							/>
-						) : (
-							<Typography variant="h2" fontWeight={200} mb={2}>
-								{item.data.Name}
-							</Typography>
-						)}
-
-						<Stack
-							direction="row"
-							gap={2}
-							justifyItems="flex-start"
-							alignItems="center"
-						>
-							{item.data.PremiereDate && (
-								<Typography style={{ opacity: "0.8" }} variant="subtitle2">
-									{item.data.ProductionYear ?? ""}
-								</Typography>
-							)}
-							{item.data.OfficialRating && (
-								<Chip
-									variant="filled"
-									size="small"
-									label={item.data.OfficialRating}
-								/>
-							)}
-
-							{item.data.CommunityRating && (
-								<div
-									style={{
-										display: "flex",
-										gap: "0.25em",
-										alignItems: "center",
-									}}
-									className="hero-carousel-info-rating"
-								>
-									<div
-										className="material-symbols-rounded fill"
-										style={{
-											// fontSize: "2.2em",
-											color: yellow[400],
-										}}
-									>
-										star
-									</div>
-									<Typography
-										style={{
-											opacity: "0.8",
-										}}
-										variant="subtitle2"
-									>
-										{Math.round(item.data.CommunityRating * 10) / 10}
-									</Typography>
-								</div>
-							)}
-							{item.data.CriticRating && (
-								<div
-									style={{
-										display: "flex",
-										gap: "0.25em",
-										alignItems: "center",
-									}}
-									className="hero-carousel-info-rating"
-								>
-									<div
-										className="material-symbols-rounded fill"
-										style={{
-											color:
-												item.data.CriticRating > 50 ? green[400] : red[400],
-										}}
-									>
-										{item.data.CriticRating > 50 ? "thumb_up" : "thumb_down"}
-									</div>
-									<Typography
-										style={{
-											opacity: "0.8",
-										}}
-										variant="subtitle2"
-									>
-										{item.data.CriticRating}
-									</Typography>
-								</div>
-							)}
-
-							{item.data.RunTimeTicks && (
-								<Typography style={{ opacity: "0.8" }} variant="subtitle2">
-									{getRuntime(item.data.RunTimeTicks)}
-								</Typography>
-							)}
-							{item.data.RunTimeTicks && (
-								<Typography style={{ opacity: "0.8" }} variant="subtitle2">
-									{endsAt(
-										item.data.RunTimeTicks -
-											(item.data.UserData?.PlaybackPositionTicks ?? 0),
-									)}
-								</Typography>
-							)}
-							<Typography variant="subtitle2" style={{ opacity: 0.8 }}>
-								{item.data.Genres?.slice(0, 4).join(" / ")}
-							</Typography>
-						</Stack>
-					</div>
+				<ItemHeader
+					item={item.data}
+					api={api}
+					scrollTargetRef={scrollTargetRef}
+				>
 					<div className="item-hero-buttons-container flex flex-row">
 						<div className="flex flex-row fullWidth">
 							<PlayButton
@@ -383,7 +173,7 @@ function BoxSetTitlePage() {
 							/>
 						</div>
 					</div>
-				</div>
+				</ItemHeader>
 				<div
 					className="item-detail"
 					style={{
