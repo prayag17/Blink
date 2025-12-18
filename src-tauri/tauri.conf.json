@@ -55,14 +55,13 @@
 	"identifier": "com.blink.prayag17",
 	"plugins": {
 		"updater": {
-			"pubkey": "dW50cnVzdGVkIGNvbW1lbnQ6IG1pbmlzaWduIHB1YmxpYyBrZXk6IEZEMTg0MjEzRDYzRjJDN0EKUldSNkxEL1dFMElZL1dxbHA0V2lyVDFEdGpOZXkxMG9XdHVLVnRpVVV5c1Z0OFNRUE45dkpxbFAK",
+			"pubkey": "dW50cnVzdGVkIGNvbW1lbnQ6IG1pbmlzaWduIHB1YmxpYyBrZXk6IEZBOTJGNzM3REU2Q0JEMEYKUldRUHZXemVOL2VTK2k2andMWTZYbEN6SnIwV0V0L2Z3NlA4RzFabThPaXRqSFRMc004WGhCb2kK",
 			"endpoints": [
 				"https://rawcdn.githack.com/prayag17/Blink/refs/heads/main/latest.json"
 			],
 			"windows": {
 				"installMode": "passive"
 			}
-
 		}
 	},
 	"app": {
