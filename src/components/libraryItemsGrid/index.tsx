@@ -4,7 +4,7 @@ import {
 } from "@jellyfin/sdk/lib/generated-client";
 import { useSuspenseQuery } from "@tanstack/react-query";
 import { getRouteApi } from "@tanstack/react-router";
-import { useVirtualizer } from "@tanstack/react-virtual";
+import { useWindowVirtualizer } from "@tanstack/react-virtual";
 import React, {
 	useCallback,
 	useEffect,
@@ -20,6 +20,8 @@ import { useApiInContext } from "@/utils/store/api";
 import { useBackdropStore } from "@/utils/store/backdrop";
 import { useCentralStore } from "@/utils/store/central";
 import { useLibraryStateStore } from "@/utils/store/libraryState";
+// @ts-expect-error: Vite worker import
+import BackdropWorker from "@/utils/workers/backdrop.worker?worker";
 import { Card } from "../card/card";
 
 const libraryRoute = getRouteApi("/_api/library/$id");
@@ -64,6 +66,20 @@ const LibraryItemsGrid = () => {
 	const currentLibrary = useSuspenseQuery(
 		getLibraryQueryOptions(api, user?.Id, currentLibraryId),
 	);
+
+	useEffect(() => {
+		if (currentLibraryId && !currentViewType && currentLibrary.data?.Type) {
+			updateLibrary(currentLibraryId, {
+				currentViewType: currentLibrary.data.Type as BaseItemKind,
+			});
+		}
+	}, [
+		currentLibrary.data?.Type,
+		currentLibraryId,
+		currentViewType,
+		updateLibrary,
+	]);
+
 	const items = useSuspenseQuery(
 		getLibraryItemsQueryOptions(api, user?.Id, currentLibraryId, {
 			currentViewType,
@@ -78,44 +94,39 @@ const LibraryItemsGrid = () => {
 	);
 	// --- Backdrop ---
 	const setBackdrop = useBackdropStore(useShallow((s) => s.setBackdrop));
-	const backdropIndexRef = useRef(0);
 	const backdropItems = useMemo<BaseItemDto[]>(() => {
 		if (!items.isSuccess || !items.data?.Items) return [];
 		return items.data.Items.filter(
 			(item) => Object.keys(item.ImageBlurHashes?.Backdrop ?? {}).length > 0,
 		);
 	}, [items.isSuccess, items.data?.Items]);
-	useEffect(() => {
-		if (!api || !backdropItems || backdropItems.length === 0) return;
-		// Set initial backdrop once when items change
-		const firstBackdrop = backdropItems[0];
-		const firstKey = Object.keys(
-			firstBackdrop?.ImageBlurHashes?.Backdrop ?? {},
-		)[0];
-		const initialHash = firstBackdrop?.ImageBlurHashes?.Backdrop?.[firstKey];
-		if (initialHash) setBackdrop(initialHash);
-		backdropIndexRef.current = 0;
 
-		const intervalId = setInterval(() => {
-			backdropIndexRef.current =
-				(backdropIndexRef.current + 1) % backdropItems.length;
-			const idx = backdropIndexRef.current;
-			const keys = Object.keys(
-				backdropItems[idx]?.ImageBlurHashes?.Backdrop ?? {},
-			);
-			const nextHash = backdropItems[idx]?.ImageBlurHashes?.Backdrop?.[keys[0]];
-			if (nextHash) {
-				// Defer backdrop update to idle/raf to avoid blocking UI
+	useEffect(() => {
+		const worker = new BackdropWorker();
+
+		worker.onmessage = (event: MessageEvent) => {
+			if (event.data.type === "UPDATE_BACKDROP") {
 				const schedule =
 					(window as any).requestIdleCallback || window.requestAnimationFrame;
-				schedule(() => setBackdrop(nextHash));
+				schedule(() => setBackdrop(event.data.payload));
 			}
-		}, 10_000); // Update backdrop every 10s
-		return () => clearInterval(intervalId);
-	}, [api, backdropItems, setBackdrop]);
+		};
+
+		if (backdropItems.length > 0) {
+			worker.postMessage({
+				type: "SET_BACKDROP_ITEMS",
+				payload: backdropItems,
+			});
+			worker.postMessage({ type: "START" });
+		}
+
+		return () => {
+			worker.postMessage({ type: "STOP" });
+			worker.terminate();
+		};
+	}, [backdropItems, setBackdrop]);
 	// --- Virtualization setup ---
 	const parentRef = useRef<HTMLDivElement | null>(null);
-	const scrollParentRef = useRef<HTMLElement | null>(null);
 	const [containerWidth, setContainerWidth] = useState<number>(0);
 
 	// Determine column count based on container width (simple heuristic)
@@ -132,10 +143,7 @@ const LibraryItemsGrid = () => {
 	useEffect(() => {
 		measureColumns();
 		if (!parentRef.current) return;
-		// Find the page's scroll container ('.scrollY') to avoid nested scrolling
-		scrollParentRef.current = parentRef.current.closest(
-			".scrollY",
-		) as HTMLElement | null;
+
 		const ro = new ResizeObserver(() => measureColumns());
 		ro.observe(parentRef.current);
 		return () => ro.disconnect();
@@ -166,11 +174,11 @@ const LibraryItemsGrid = () => {
 		[estimatedTallCardHeight],
 	);
 
-	const virtualizer = useVirtualizer({
+	const virtualizer = useWindowVirtualizer({
 		count: rowCount,
-		getScrollElement: () => scrollParentRef.current,
 		estimateSize: estimateRowHeight,
-		overscan: 2,
+		overscan: 6,
+		scrollMargin: parentRef.current?.offsetTop ?? 0,
 	});
 
 	const virtualItems = virtualizer.getVirtualItems();
@@ -229,7 +237,9 @@ const LibraryItemsGrid = () => {
 								key={row.key}
 								style={{
 									position: "absolute",
-									transform: `translateY(${row.start}px)`,
+									transform: `translateY(${
+										row.start - virtualizer.options.scrollMargin
+									}px)`,
 									left: 0,
 									width: "100%",
 									display: "flex",

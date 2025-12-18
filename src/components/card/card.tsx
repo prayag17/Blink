@@ -1,40 +1,24 @@
 /** @format */
 
-
 import {
 	type BaseItemDto,
 	BaseItemKind,
 	type ImageType,
 } from "@jellyfin/sdk/lib/generated-client";
-import Typography from "@mui/material/Typography";
 import { useNavigate } from "@tanstack/react-router";
-import React, { memo } from "react";
+import type React from "react";
+import { memo, useCallback, useState } from "react";
 import { ErrorBoundary } from "react-error-boundary";
+import { useInView } from "react-intersection-observer";
+import getImageUrlsApi from "@/utils/methods/getImageUrlsApi";
+import { useApiInContext } from "@/utils/store/api";
 import LikeButton from "../buttons/likeButton";
 import MarkPlayedButton from "../buttons/markPlayedButton";
 import PlayButton from "../buttons/playButton";
 import { getTypeIcon } from "../utils/iconsCollection";
 import "./card.scss";
 
-import { useInView } from "react-intersection-observer";
-import getImageUrlsApi from "@/utils/methods/getImageUrlsApi";
-import { useApiInContext } from "@/utils/store/api";
-
-const CardComponent = ({
-	item,
-	cardTitle,
-	cardCaption,
-	imageType = "Primary",
-	cardType = "square",
-	queryKey,
-	userId,
-	seriesId,
-	hideText = false,
-	onClick,
-	disableOverlay = false,
-	overrideIcon,
-	skipInView = false,
-}: {
+interface CardProps {
 	item: BaseItemDto;
 	cardTitle: string | undefined | null;
 	cardCaption?: string | null | number;
@@ -48,10 +32,32 @@ const CardComponent = ({
 	disableOverlay?: boolean;
 	overrideIcon?: any;
 	skipInView?: boolean;
+}
+
+const CardContent = ({
+	item,
+	cardTitle,
+	cardCaption,
+	imageType = "Primary",
+	cardType = "square",
+	queryKey,
+	userId,
+	seriesId,
+	hideText = false,
+	onClick,
+	disableOverlay = false,
+	overrideIcon,
+	inView,
+	forwardedRef,
+}: CardProps & {
+	inView: boolean;
+	forwardedRef?: React.Ref<HTMLDivElement>;
 }) => {
 	const api = useApiInContext((s) => s.api);
 	const navigate = useNavigate();
-	const defaultOnClick = () => {
+	const [isHovered, setIsHovered] = useState(false);
+
+	const defaultOnClick = useCallback(() => {
 		if (item?.Id) {
 			switch (item?.Type) {
 				case BaseItemKind.BoxSet:
@@ -80,21 +86,23 @@ const CardComponent = ({
 					break;
 			}
 		}
-	};
+	}, [item?.Id, item?.Type, navigate]);
 
-	const { ref, inView } = useInView({
-		threshold: 0.1,
-		skip: skipInView,
-	});
+	const handleInteractionStart = useCallback(() => setIsHovered(true), []);
+	const handleInteractionEnd = useCallback(() => setIsHovered(false), []);
 
 	return (
 		<div
 			className="card"
-			ref={ref}
-			onClick={onClick ? onClick : defaultOnClick}
+			ref={forwardedRef}
+			onClick={onClick || defaultOnClick}
+			onMouseEnter={handleInteractionStart}
+			onMouseLeave={handleInteractionEnd}
+			onFocus={handleInteractionStart}
+			onBlur={handleInteractionEnd}
 		>
 			<div className={`card-image-container ${cardType}`}>
-				<ErrorBoundary fallback>
+				<ErrorBoundary fallback={<></>}>
 					<div
 						className="card-indicator check"
 						style={{
@@ -109,13 +117,17 @@ const CardComponent = ({
 							opacity: item.UserData?.UnplayedItemCount ? 1 : 0,
 						}}
 					>
-						<Typography
-							variant="subtitle2"
-							padding="0.1em 0.4em"
-							fontWeight={400}
+						<span
+							style={{
+								padding: "0.1em 0.4em",
+								fontWeight: 400,
+								fontSize: "0.875rem",
+								lineHeight: 1.57,
+								fontFamily: "inherit",
+							}}
 						>
 							{item.UserData?.UnplayedItemCount}
-						</Typography>
+						</span>
 					</div>
 				</ErrorBoundary>
 				<div className="card-image-icon-container">
@@ -123,7 +135,7 @@ const CardComponent = ({
 						? getTypeIcon(overrideIcon)
 						: getTypeIcon(item.Type ?? "universal")}
 				</div>
-				{(skipInView || inView) && (
+				{inView && (
 					<img
 						alt={item.Name ?? "blink"}
 						src={
@@ -146,48 +158,53 @@ const CardComponent = ({
 							width: "100%",
 							opacity: 0,
 							display: "block",
+							transition: "opacity 0.3s ease-in-out",
 						}}
 						loading="lazy"
 						onLoad={(e) => {
-							e.currentTarget.style.setProperty("opacity", "1");
+							e.currentTarget.style.opacity = "1";
 						}}
 						className="card-image"
 					/>
 				)}
-				{(skipInView || inView) && !disableOverlay && (
+				{inView && !disableOverlay && (
 					<div className="card-overlay">
-						<PlayButton
-							item={item}
-							userId={userId}
-							itemType={item.Type ?? "Movie"}
-							currentAudioTrack="auto"
-							currentSubTrack={-1}
-							currentVideoTrack={0}
-							className="card-play-button"
-							iconOnly
-							audio={
-								item.Type === BaseItemKind.MusicAlbum ||
-								item.Type === BaseItemKind.Audio ||
-								item.Type === BaseItemKind.AudioBook ||
-								item.Type === BaseItemKind.Playlist
-							}
-							playlistItem={item.Type === BaseItemKind.Playlist}
-							playlistItemId={item.Id}
-						/>
-						<LikeButton
-							itemId={item.Id}
-							itemName={item.Name ?? ""}
-							isFavorite={item.UserData?.IsFavorite}
-							queryKey={queryKey}
-							userId={userId}
-						/>
-						<MarkPlayedButton
-							itemId={item.Id}
-							itemName={item.Name ?? ""}
-							isPlayed={item.UserData?.Played}
-							queryKey={queryKey}
-							userId={userId}
-						/>
+						{isHovered && (
+							<>
+								<PlayButton
+									item={item}
+									userId={userId}
+									itemType={item.Type ?? "Movie"}
+									currentAudioTrack="auto"
+									currentSubTrack={-1}
+									currentVideoTrack={0}
+									className="card-play-button"
+									iconOnly
+									audio={
+										item.Type === BaseItemKind.MusicAlbum ||
+										item.Type === BaseItemKind.Audio ||
+										item.Type === BaseItemKind.AudioBook ||
+										item.Type === BaseItemKind.Playlist
+									}
+									playlistItem={item.Type === BaseItemKind.Playlist}
+									playlistItemId={item.Id}
+								/>
+								<LikeButton
+									itemId={item.Id}
+									itemName={item.Name ?? ""}
+									isFavorite={item.UserData?.IsFavorite}
+									queryKey={queryKey}
+									userId={userId}
+								/>
+								<MarkPlayedButton
+									itemId={item.Id}
+									itemName={item.Name ?? ""}
+									isPlayed={item.UserData?.Played}
+									queryKey={queryKey}
+									userId={userId}
+								/>
+							</>
+						)}
 					</div>
 				)}
 				{(item.UserData?.PlaybackPositionTicks ?? -1) > 0 && (
@@ -205,20 +222,48 @@ const CardComponent = ({
 				className="card-text-container"
 				style={{ display: hideText ? "none" : "block", marginLeft: "0.2em" }}
 			>
-				<Typography mt={1} variant="subtitle2" noWrap style={{ opacity: 0.9 }}>
+				<div
+					style={{
+						marginTop: "8px",
+						opacity: 0.9,
+						fontSize: "0.875rem",
+						fontWeight: 500,
+						whiteSpace: "nowrap",
+						overflow: "hidden",
+						textOverflow: "ellipsis",
+					}}
+				>
 					{cardTitle}
-				</Typography>
-				<Typography
-					variant="caption"
-					noWrap
-					style={{ opacity: 0.6 }}
-					lineHeight="auto"
+				</div>
+				<div
+					style={{
+						opacity: 0.6,
+						fontSize: "0.75rem",
+						whiteSpace: "nowrap",
+						overflow: "hidden",
+						textOverflow: "ellipsis",
+					}}
 				>
 					{cardCaption}
-				</Typography>
+				</div>
 			</div>
 		</div>
 	);
+};
+
+const CardWithInView = (props: CardProps) => {
+	const { ref, inView } = useInView({
+		threshold: 0.1,
+	});
+
+	return <CardContent {...props} inView={inView} forwardedRef={ref} />;
+};
+
+const CardComponent = (props: CardProps) => {
+	if (props.skipInView) {
+		return <CardContent {...props} inView={true} />;
+	}
+	return <CardWithInView {...props} />;
 };
 
 export const Card = memo(CardComponent);

@@ -37,7 +37,7 @@ const router = createRouter({
 		fetchCurrentUser: undefined!,
 		queryClient,
 	},
-	defaultPreload: "intent",
+	defaultPreload: false,
 	defaultPreloadStaleTime: 0,
 	defaultViewTransition: true,
 	scrollRestoration: true,

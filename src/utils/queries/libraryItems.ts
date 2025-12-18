@@ -46,6 +46,7 @@ export const getLibraryItemsQueryOptions = (
 	params: LibraryItemsParams,
 ) => {
 	return queryOptions<BaseItemDtoQueryResult>({
+		enabled: !!params.currentViewType,
 		queryKey: [
 			"library",
 			"items",
@@ -64,8 +65,13 @@ export const getLibraryItemsQueryOptions = (
 		],
 		queryFn: async () => {
 			if (!api || !userId || !libraryId || !params.currentViewType) {
+				console.warn(
+					"getLibraryItemsQueryOptions: Missing required parameters",
+					{ api, userId, libraryId, currentViewType: params.currentViewType },
+				);
 				return { Items: [], TotalRecordCount: 0 } as BaseItemDtoQueryResult;
 			}
+			console.info("Fetching library items with params:", params);
 			const { currentViewType, videoTypesState, filters } = params;
 			const buildVideoTypes = (state: typeof videoTypesState) => {
 				const videoTypes: VideoType[] = [];
@@ -168,7 +174,5 @@ export const getLibraryItemsQueryOptions = (
 		},
 		staleTime: 5_000,
 		gcTime: 5 * 60_000,
-		refetchOnWindowFocus: false,
-		refetchOnReconnect: false,
 	});
 };
