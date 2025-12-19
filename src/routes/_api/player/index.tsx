@@ -52,7 +52,9 @@ function addSubtitleTrackToReactPlayer(
 
 		// Remove existing tracks to ensure clean state
 		const existingTracks = videoElem.querySelectorAll("track");
-		existingTracks.forEach((t) => t.remove());
+		existingTracks.forEach((t) => {
+			t.remove();
+		});
 
 		const track = document.createElement("track");
 		const separator = subtitleTracks.url.includes("?") ? "&" : "?";
@@ -164,13 +166,9 @@ export function VideoPlayer() {
 
 	const handleReady = async () => {
 		if (api && !isPlayerReady && player.current) {
-			if (player.current.seekTo) {
-				player.current.seekTo(ticksToSec(userDataLastPlayedPositionTicks ?? 0));
-			} else {
-				player.current.currentTime = ticksToSec(
-					userDataLastPlayedPositionTicks ?? 0,
-				);
-			}
+			player.current.currentTime = ticksToSec(
+				userDataLastPlayedPositionTicks ?? 0,
+			);
 
 			if (navigator.mediaSession && mediaSource) {
 				navigator.mediaSession.metadata = new MediaMetadata({
@@ -219,24 +217,13 @@ export function VideoPlayer() {
 				seekTo: (seconds: number) => {
 					const internalPlayer = player.current;
 					if (internalPlayer) {
-						// @ts-expect-error
-						const current = internalPlayer.getCurrentTime
-							? // @ts-ignore
-								internalPlayer.getCurrentTime()
-							: // @ts-ignore
-								(internalPlayer.currentTime ?? 0);
+						const current = internalPlayer.currentTime;
 
 						if (Math.abs(current - seconds) < 0.1) {
 							return;
 						}
 
-						// @ts-expect-error
-						if (internalPlayer.seekTo) {
-							// @ts-expect-error
-							internalPlayer.seekTo(seconds, "seconds");
-						} else {
-							internalPlayer.currentTime = seconds;
-						}
+						internalPlayer.currentTime = seconds;
 						console.log("Seeking to", seconds, "seconds");
 					} else {
 						console.warn("ReactPlayer is not ready yet");
@@ -278,10 +265,7 @@ export function VideoPlayer() {
 	const handleTimeUpdate = useCallback(async () => {
 		if (!player.current) return;
 
-		// @ts-expect-error
-		const currentTime = player.current.getCurrentTime
-			? player.current.getCurrentTime()
-			: (player.current.currentTime ?? 0);
+		const currentTime = player.current.currentTime;
 		const ticks = secToTicks(currentTime);
 		const now = Date.now();
 
@@ -353,10 +337,10 @@ export function VideoPlayer() {
 			event.preventDefault();
 			switch (event.key) {
 				case "ArrowRight":
-					player.current.currentTime = player.current.currentTime + 10;
+					player.current.currentTime += 10;
 					break;
 				case "ArrowLeft":
-					player.current.currentTime = player.current.currentTime - 10;
+					player.current.currentTime -= 10;
 					break;
 				case "F8":
 				case " ":
@@ -405,13 +389,7 @@ export function VideoPlayer() {
 	// Manage Subtitle playback
 	useEffect(() => {
 		if (player.current && mediaSource.subtitle.enable) {
-			// @ts-expect-error
-			let internalPlayer: HTMLMediaElement = player.current;
-			if (player.current.getInternalPlayer) {
-				// @ts-expect-error
-				// @ts-expect-error
-				internalPlayer = player.current.getInternalPlayer() as HTMLMediaElement;
-			}
+			const internalPlayer = player.current;
 
 			if (!internalPlayer) return;
 
@@ -460,13 +438,7 @@ export function VideoPlayer() {
 			};
 		}
 		if (player.current && mediaSource.subtitle.enable === false) {
-			// @ts-expect-error
-			let internalPlayer: HTMLMediaElement = player.current;
-			if (player.current.getInternalPlayer) {
-				// @ts-expect-error
-				// @ts-expect-error
-				internalPlayer = player.current.getInternalPlayer() as HTMLMediaElement;
-			}
+			const internalPlayer = player.current;
 
 			if (internalPlayer?.textTracks) {
 				for (const i of internalPlayer.textTracks) {
@@ -581,7 +553,7 @@ export function VideoPlayer() {
 				key={playsessionId}
 				playing={isPlayerPlaying}
 				src={playbackStream}
-				ref={player}
+				ref={player as any}
 				onReady={handleReady}
 				onTimeUpdate={handleTimeUpdate}
 				// onError={handleError}
