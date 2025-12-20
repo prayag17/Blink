@@ -17,7 +17,6 @@ import BubbleSlider from "@/components/playback/videoPlayer/bubbleSlider";
 import { secToTicks } from "@/utils/date/time";
 import { useApiInContext } from "@/utils/store/api";
 import { usePlaybackStore } from "@/utils/store/playback";
-import EndsAtDisplay from "./EndsAtDisplay";
 import CaptionsButton from "./buttons/CaptionsButton";
 import ChaptersListButton from "./buttons/ChaptersListButton";
 import ForwardButton from "./buttons/ForwardButton";
@@ -26,6 +25,7 @@ import NextChapterButton from "./buttons/NextChapterButton";
 import PlayPauseButton from "./buttons/PlayPauseButton";
 import PrevChapterButton from "./buttons/PrevChapterButton";
 import RewindButton from "./buttons/RewindButton";
+import EndsAtDisplay from "./EndsAtDisplay";
 import VideoPlayerSettingsMenu from "./settingsMenu";
 
 import "./controls.scss";
