@@ -14,9 +14,10 @@ import PlayNextButton from "@/components/buttons/playNextButton";
 import PlayPreviousButton from "@/components/buttons/playPreviousButtom";
 import QueueButton from "@/components/buttons/queueButton";
 import BubbleSlider from "@/components/playback/videoPlayer/bubbleSlider";
-import { endsAt, secToTicks } from "@/utils/date/time";
+import { secToTicks } from "@/utils/date/time";
 import { useApiInContext } from "@/utils/store/api";
 import { usePlaybackStore } from "@/utils/store/playback";
+import EndsAtDisplay from "./EndsAtDisplay";
 import CaptionsButton from "./buttons/CaptionsButton";
 import ChaptersListButton from "./buttons/ChaptersListButton";
 import ForwardButton from "./buttons/ForwardButton";
@@ -54,7 +55,6 @@ const VideoPlayerControls = ({
 	const {
 		mediaSourceId,
 		itemId,
-		itemDuration,
 		itemName,
 		episodeTitle,
 		playsessionId,
@@ -75,7 +75,6 @@ const VideoPlayerControls = ({
 			mediaSourceId: state.mediaSource.id,
 			itemChapters: state.metadata.item.Chapters,
 			itemId: state.metadata.item.Id,
-			itemDuration: state.metadata.itemDuration,
 			itemName: state.metadata.itemName,
 			episodeTitle: state.metadata.episodeTitle,
 			// mediaSegments: state.metadata.mediaSegments,
@@ -244,9 +243,7 @@ const VideoPlayerControls = ({
 							<ForwardButton />
 							<PlayNextButton />
 
-							<Typography variant="subtitle1">
-								{endsAt(itemDuration)}
-							</Typography>
+							<EndsAtDisplay />
 						</div>
 						<div className="video-player-osd-controls-buttons">
 							{/* <motion.div
