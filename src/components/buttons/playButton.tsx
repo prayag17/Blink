@@ -248,12 +248,16 @@ const PlayButton = ({
 						(value) => value.Type === "Video",
 					);
 
+				const isDirectPlay =
+					!result.mediaSource.MediaSources?.[0].SupportsTranscoding ||
+					!result.mediaSource.MediaSources?.[0].TranscodingUrl;
+
 				playItem({
 					metadata: {
 						itemName: itemName ?? "",
 						episodeTitle: episodeTitle,
 						isEpisode: !!item.SeriesId,
-						itemDuration: item.RunTimeTicks ?? 0,
+						itemDuration: playItemValue?.RunTimeTicks ?? item.RunTimeTicks ?? 0,
 						item: playItemValue ?? item,
 						mediaSegments: result.mediaSegments,
 						userDataLastPlayedPositionTicks: startPosition ?? 0,
@@ -274,6 +278,12 @@ const PlayButton = ({
 							enable: subtitle?.enable ?? false,
 						},
 						audio: audio,
+						bitrate: result.mediaSource.MediaSources?.[0].Bitrate,
+						videoCodec: videoTrack?.[0]?.Codec,
+						audioCodec: audio.allTracks?.find((t) => t.Index === audio.track)
+							?.Codec,
+						isDirectPlay: isDirectPlay,
+						transcodingUrl: result.mediaSource.MediaSources?.[0].TranscodingUrl,
 					},
 					playbackStream: playbackUrl,
 					playsessionId: result.mediaSource.PlaySessionId,

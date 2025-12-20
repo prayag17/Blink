@@ -1,7 +1,14 @@
 import type { TrickplayInfo } from "@jellyfin/sdk/lib/generated-client";
 import { Slider, Tooltip, Typography } from "@mui/material";
 import type { Instance } from "@popperjs/core";
-import React, { type MouseEvent, useMemo, useRef, useState } from "react";
+import React, {
+	type MouseEvent,
+	useCallback,
+	useEffect,
+	useMemo,
+	useRef,
+	useState,
+} from "react";
 import { useShallow } from "zustand/shallow";
 import { ticksToMs } from "@/utils/date/time";
 import { useApiInContext } from "@/utils/store/api";
@@ -69,24 +76,54 @@ const BubbleSlider = () => {
 	});
 	const popperRef = useRef<Instance>(null);
 	const areaRef = useRef<HTMLDivElement>(null);
+	const rafRef = useRef<number | null>(null);
 
 	const [hoverProgress, setHoverProgress] = useState(0);
 
-	const handleSliderHover = (event: MouseEvent) => {
-		positionRef.current = { x: event.clientX, y: event.clientY };
-		const rect = areaRef.current!.getBoundingClientRect();
-		const width = rect.width;
-		const distX = event.clientX - rect.left;
-		const percentageCovered = distX / width;
-		setHoverProgress(percentageCovered * (itemDuration ?? 0));
-		if (popperRef.current != null) {
-			popperRef.current.update();
-		}
-	};
+	useEffect(() => {
+		return () => {
+			if (rafRef.current) {
+				cancelAnimationFrame(rafRef.current);
+			}
+		};
+	}, []);
+
+	const handleSliderHover = useCallback(
+		(event: MouseEvent) => {
+			const clientX = event.clientX;
+			const clientY = event.clientY;
+
+			if (
+				positionRef.current.x === clientX &&
+				positionRef.current.y === clientY
+			) {
+				return;
+			}
+
+			positionRef.current = { x: clientX, y: clientY };
+
+			if (rafRef.current) return;
+
+			rafRef.current = requestAnimationFrame(() => {
+				if (areaRef.current) {
+					const rect = areaRef.current.getBoundingClientRect();
+					const width = rect.width;
+					const distX = clientX - rect.left;
+					const percentageCovered = distX / width;
+					setHoverProgress(percentageCovered * (itemDuration ?? 0));
+					if (popperRef.current != null) {
+						popperRef.current.update();
+					}
+				}
+				rafRef.current = null;
+			});
+		},
+		[itemDuration],
+	);
 
 	const chapterMarks = useMemo(() => {
 		const marks: { value: number }[] = [];
-		itemChapters?.map((val) => {
+		itemChapters?.forEach((val) => {
 			marks.push({ value: val.StartPositionTicks ?? 0 });
 		});
 		return marks;
@@ -95,14 +132,15 @@ const BubbleSlider = () => {
 	const sliderDisplayFormat = (value: number) => {
 		const currentChapter = itemChapters?.filter((chapter, index) => {
 			if (index + 1 === itemChapters?.length) {
-				return chapter;
+				return true;
 			}
 			if (
 				(itemChapters?.[index + 1]?.StartPositionTicks ?? value) - value >= 0 &&
 				(chapter.StartPositionTicks ?? value) - value < 0
 			) {
-				return chapter;
+				return true;
 			}
+			return false;
 		});
 
 		let trickplayResolution: TrickplayInfo | undefined;
@@ -126,6 +164,8 @@ const BubbleSlider = () => {
 				trickplayResolution = trickplayResolutions[bestWidth];
 			}
 		}
+		let trickplayStyle: React.CSSProperties | undefined;
+
 		if (
 			trickplayResolution?.TileWidth &&
 			trickplayResolution.TileHeight &&
@@ -155,101 +195,105 @@ const BubbleSlider = () => {
 			};
 			const imgUrlParams = new URLSearchParams(imgUrlParamsObject).toString();
 
-			const imageAspectRatio =
+			const _imageAspectRatio =
 				trickplayResolution.Width / trickplayResolution.Height;
 
-			if (currentChapter?.[0]?.Name) {
-				return (
-					<div className="flex flex-column video-osb-bubble">
-						<div
-							className="video-osd-trickplayBubble"
-							style={{
-								background: `url(${api?.basePath}/Videos/${itemId}/Trickplay/${trickplayResolution.Width}/${index}.jpg?${imgUrlParams})`,
-								backgroundPositionX: `${backgroundOffsetX}px`,
-								backgroundPositionY: `${backgroundOffsetY}px`,
-								width: "100%",
-								aspectRatio: imageAspectRatio,
-							}}
-						/>
-						<Typography variant="h6" px="12px" pt={1}>
-							{currentChapter?.[0]?.Name}
-						</Typography>
-						<Typography px="12px" pb={1}>
-							{ticksDisplay(value)}
-						</Typography>
-					</div>
-				);
-			}
-			return (
-				<div className="flex flex-column video-osb-bubble">
-					<div
-						className="video-osd-trickplayBubble"
-						style={{
-							background: `url(${api?.basePath}/Videos/${itemId}/Trickplay/${trickplayResolution.Width}/${index}.jpg?${imgUrlParams})`,
-							backgroundPositionX: `${backgroundOffsetX}px`,
-							backgroundPositionY: `${backgroundOffsetY}px`,
-							width: "100%",
-							aspectRatio: imageAspectRatio,
-						}}
-					/>
-					<Typography variant="h6" px="12px" py={1}>
-						{ticksDisplay(value)}
-					</Typography>
-				</div>
-			);
+			trickplayStyle = {
+				background: `url(${api?.basePath}/Videos/${itemId}/Trickplay/${trickplayResolution.Width}/${index}.jpg?${imgUrlParams})`,
+				backgroundPositionX: `${backgroundOffsetX}px`,
+				backgroundPositionY: `${backgroundOffsetY}px`,
+				width: `${trickplayResolution.Width}px`,
+				height: `${trickplayResolution.Height}px`,
+				borderBottom: "1px solid rgba(255,255,255,0.1)",
+				borderRadius: 0,
+			};
 		}
 
-		if (currentChapter?.[0]?.Name) {
-			return (
-				<div className="flex flex-column video-osb-bubble">
-					<Typography variant="h6" px="12px" pt={1}>
-						{currentChapter?.[0]?.Name}
-					</Typography>
-					<Typography px={2} pb={1}>
+		const chapterName = currentChapter?.[0]?.Name;
+
+		return (
+			<div
+				className="flex flex-column video-osb-bubble"
+				style={{
+					display: "flex",
+					flexDirection: "column",
+					alignItems: "center",
+					width: "100%",
+				}}
+			>
+				{trickplayStyle && (
+					<div className="video-osd-trickplayBubble" style={trickplayStyle} />
+				)}
+				<div
+					style={{
+						padding: "8px 12px",
+						textAlign: "center",
+						width: "100%",
+						boxSizing: "border-box",
+					}}
+				>
+					{chapterName && (
+						<Typography
+							variant="subtitle2"
+							sx={{
+								fontWeight: "bold",
+								mb: 0.5,
+								color: "white",
+								textShadow: "0 2px 4px rgba(0,0,0,0.5)",
+							}}
+						>
+							{chapterName}
+						</Typography>
+					)}
+					<Typography
+						variant="body2"
+						sx={{
+							color: "rgba(255,255,255,0.9)",
+							fontVariantNumeric: "tabular-nums",
+							fontWeight: 500,
+						}}
+					>
 						{ticksDisplay(value)}
 					</Typography>
 				</div>
-			);
-		}
-		return (
-			<div className="flex flex-column video-osb-bubble ">
-				<Typography variant="h6" px="12px" py={1}>
-					{ticksDisplay(value)}
-				</Typography>
 			</div>
 		);
 	};
+
+	const virtualAnchorEl = useMemo(() => {
+		return {
+			getBoundingClientRect: () => {
+				return new DOMRect(
+					positionRef.current.x,
+					areaRef.current?.getBoundingClientRect().y ?? 0,
+					0,
+					0,
+				);
+			},
+		};
+	}, []);
 
 	return (
 		<Tooltip
 			// title={sliderDisplayFormat(
 			// 	positionRef.current.x - areaRef.current!.getBoundingClientRect().x,
 			// )}
-			key={`${positionRef.current}`}
 			title={sliderDisplayFormat(hoverProgress)}
 			placement="top"
 			slotProps={{
 				popper: {
 					popperRef,
-					anchorEl: {
-						getBoundingClientRect: () => {
-							return new DOMRect(
-								positionRef.current.x,
-								areaRef.current!.getBoundingClientRect().y,
-								0,
-								0,
-							);
-						},
-					},
+					anchorEl: virtualAnchorEl,
 					// disablePortal: true,
 				},
 				tooltip: {
-					// className: "glass",
+					className: "glass",
 					style: {
-						width: "34em",
+						width: "auto",
+						maxWidth: "none",
 						overflow: "hidden",
-						padding: "12px",
-						borderRadius: "20px",
+						padding: "0",
+						borderRadius: "12px",
 					},
 				},
 			}}

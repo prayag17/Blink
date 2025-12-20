@@ -8,11 +8,12 @@ const EndsAtDisplay = () => {
 	const { currentTime, itemDuration } = usePlaybackStore(
 		useShallow((state) => ({
 			currentTime: state.playerState.currentTime,
-			itemDuration: state.metadata.itemDuration,
+			itemDuration:
+				state.metadata.itemDuration ?? state.metadata.item?.RunTimeTicks,
 		})),
 	);
 
-	if (!itemDuration) return null;
+	if (!itemDuration) return <Typography variant="subtitle1">--:--</Typography>;
 
 	const remaining = itemDuration - (currentTime ?? 0);
 

@@ -16,16 +16,29 @@
         flex-direction: column;
         align-self: stretch;
         justify-content: space-between;
-        padding: 1em 2em;
-        background: linear-gradient(to top, rgb(0 0 0 / 0.7) 5vh, transparent 26vh 90vh, rgb(0 0 0 / 0.7));
+        padding: 2em 3em;
+        background: linear-gradient(
+            to bottom,
+            rgba(0, 0, 0, 0.8) 0%,
+            rgba(0, 0, 0, 0) 25%,
+            rgba(0, 0, 0, 0) 75%,
+            rgba(0, 0, 0, 0.9) 100%
+        );
         &.hovering {
             cursor: default;
         }
         &-controls {
+            display: flex;
+            flex-direction: column;
+            gap: 1em;
+
             &-timeline-text {
                 display: flex;
                 align-items: stretch;
                 justify-content: space-between;
+                margin-top: 0.5em;
+                font-weight: 500;
+                opacity: 0.9;
             }
             &-progress {
                 display: flex;
@@ -45,7 +58,7 @@
             }
             &-buttons {
                 display: flex;
-                gap: 0.4em;
+                gap: 0.5em;
                 align-items: center;
             }
         }

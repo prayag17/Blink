@@ -28,6 +28,11 @@ type PlaybackStoreState = {
 		id: string | undefined;
 		subtitle: subtitlePlaybackInfo;
 		audio: audioPlaybackInfo;
+		bitrate?: number;
+		videoCodec?: string;
+		audioCodec?: string;
+		isDirectPlay?: boolean;
+		transcodingUrl?: string;
 	};
 	playbackStream: string;
 	playsessionId: string | undefined | null;
@@ -93,6 +98,10 @@ type PlaybackStoreState = {
 		 * This should be set to true when the player is buffering
 		 */
 		isLoading: boolean;
+		/**
+		 * Used to show the stats for nerds dialog
+		 */
+		showStatsForNerds: boolean;
 	};
 	/**
 	 * Index of the next segment to be played
@@ -198,6 +207,10 @@ type PlaybackStoreActions = {
 	 * This should be set to false when the player has finished loading
 	 */
 	setIsLoading: (isLoading: boolean) => void;
+	/**
+	 * Toggle the stats for nerds dialog
+	 */
+	toggleShowStatsForNerds: () => void;
 	setPlayerState: (playerState: PlaybackStoreState["playerState"]) => void;
 
 	// Playback information related actions
@@ -288,6 +301,7 @@ export const usePlaybackStore = create<
 			isUserSeeking: false,
 			seekValue: 0,
 			isLoading: true,
+			showStatsForNerds: false,
 		},
 		userId: undefined!,
 		// -- MediaSegment skip feature --
@@ -399,6 +413,11 @@ export const usePlaybackStore = create<
 			id: string | undefined,
 			subtitle: subtitlePlaybackInfo,
 			audio: audioPlaybackInfo,
+			bitrate?: number,
+			videoCodec?: string,
+			audioCodec?: string,
+			isDirectPlay?: boolean,
+			transcodingUrl?: string,
 		) =>
 			set((state) => {
 				state.mediaSource.videoTrack = videoTrack;
@@ -407,6 +426,11 @@ export const usePlaybackStore = create<
 				state.mediaSource.id = id;
 				state.mediaSource.subtitle = subtitle;
 				state.mediaSource.audio = audio;
+				state.mediaSource.bitrate = bitrate;
+				state.mediaSource.videoCodec = videoCodec;
+				state.mediaSource.audioCodec = audioCodec;
+				state.mediaSource.isDirectPlay = isDirectPlay;
+				state.mediaSource.transcodingUrl = transcodingUrl;
 			}),
 		setPlaybackStream: (playbackStream: string) =>
 			set((state) => {
@@ -444,6 +468,11 @@ export const usePlaybackStore = create<
 		setIsLoading: (isLoading) =>
 			set((state) => {
 				state.playerState.isLoading = isLoading;
+			}),
+		toggleShowStatsForNerds: () =>
+			set((state) => {
+				state.playerState.showStatsForNerds =
+					!state.playerState.showStatsForNerds;
 			}),
 		setPlayerState: (playerState) =>
 			set((state) => ({
@@ -783,6 +812,8 @@ export const playItemFromQueue = async (
 		(value) => value.Type === "Video",
 	);
 
+	const isDirectPlay = !source.SupportsTranscoding || !source.TranscodingUrl;
+
 	playItem({
 		metadata: {
 			itemName,
@@ -809,6 +840,11 @@ export const playItemFromQueue = async (
 				enable: subtitle?.enable ?? false,
 			},
 			audio: audio,
+			bitrate: source.Bitrate,
+			videoCodec: videoTrack?.[0]?.Codec,
+			audioCodec: audio.allTracks?.find((t) => t.Index === audio.track)?.Codec,
+			isDirectPlay: isDirectPlay,
+			transcodingUrl: source.TranscodingUrl,
 		},
 		playbackStream: playbackUrl,
 		playsessionId: mediaSource.PlaySessionId,

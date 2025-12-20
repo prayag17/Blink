@@ -1,4 +1,10 @@
-import { MenuItem, Popover, TextField } from "@mui/material";
+import {
+	MenuItem,
+	Popover,
+	Switch,
+	TextField,
+	Typography,
+} from "@mui/material";
 import { toNumber } from "lodash";
 import React, {
 	type ChangeEventHandler,
@@ -29,10 +35,17 @@ const VideoPlayerSettingsMenu = ({
 
 	const api = useApiInContext((state) => state.api);
 
-	const { mediaSource, setIsBuffering } = usePlaybackStore(
+	const {
+		mediaSource,
+		setIsBuffering,
+		showStatsForNerds,
+		toggleShowStatsForNerds,
+	} = usePlaybackStore(
 		useShallow((state) => ({
 			mediaSource: state.mediaSource,
 			setIsBuffering: state.setIsBuffering,
+			showStatsForNerds: state.playerState.showStatsForNerds,
+			toggleShowStatsForNerds: state.toggleShowStatsForNerds,
 		})),
 	);
 
@@ -131,6 +144,10 @@ const VideoPlayerSettingsMenu = ({
 					</MenuItem>
 				))}
 			</TextField>
+			<MenuItem onClick={toggleShowStatsForNerds}>
+				<Typography flexGrow={1}>Stats for Nerds</Typography>
+				<Switch checked={showStatsForNerds} />
+			</MenuItem>
 		</Popover>
 	);
 };

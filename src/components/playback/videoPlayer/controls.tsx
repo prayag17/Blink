@@ -1,7 +1,7 @@
 import { getPlaystateApi } from "@jellyfin/sdk/lib/utils/api/playstate-api";
-import { IconButton, Typography } from "@mui/material";
+import { IconButton, Slider, Typography } from "@mui/material";
 import { WebviewWindow as appWindow } from "@tauri-apps/api/webviewWindow";
-import { motion } from "motion/react";
+import { AnimatePresence, motion } from "motion/react";
 import React, {
 	type MouseEvent,
 	useCallback,
@@ -30,7 +30,7 @@ import VideoPlayerSettingsMenu from "./settingsMenu";
 
 import "./controls.scss";
 import { clearQueue } from "@/utils/store/queue";
-import ProgressDislay from "./ProgressDisplay";
+import ProgressDisplay from "./ProgressDisplay";
 
 /**
  * Constant for the volume change interval when using the mouse wheel.
@@ -65,6 +65,7 @@ const VideoPlayerControls = ({
 		// seekValue,
 		isPlayerMuted,
 		volume,
+		setVolume,
 		toggleIsPlayerMuted,
 		increaseVolumeByStep,
 		decreaseVolumeByStep,
@@ -86,6 +87,7 @@ const VideoPlayerControls = ({
 			seekValue: state.playerState.seekValue,
 			isPlayerMuted: state.playerState.isPlayerMuted,
 			volume: state.playerState.volume,
+			setVolume: state.setVolume,
 			toggleIsPlayerMuted: state.toggleIsPlayerMuted,
 			increaseVolumeByStep: state.increaseVolumeByStep,
 			decreaseVolumeByStep: state.decreaseVolumeByStep,
@@ -115,6 +117,7 @@ const VideoPlayerControls = ({
 	}, [increaseVolumeByStep, decreaseVolumeByStep]);
 
 	const [clickTimeout, setClickTimeout] = useState<NodeJS.Timeout | null>(null);
+	const [showVolumeControl, setShowVolumeControl] = useState(false);
 
 	const [settingsMenuRef, setSettingsMenuRef] =
 		useState<HTMLButtonElement | null>(null);
@@ -228,7 +231,7 @@ const VideoPlayerControls = ({
 				<div className="video-player-osd-controls">
 					<div className="video-player-osd-controls-timeline">
 						<BubbleSlider />
-						<ProgressDislay />
+						<ProgressDisplay />
 					</div>
 					<div className="flex flex-row flex-justify-spaced-between">
 						<div className="video-player-osd-controls-buttons">
@@ -245,68 +248,41 @@ const VideoPlayerControls = ({
 
 							<EndsAtDisplay />
 						</div>
-						<div className="video-player-osd-controls-buttons">
-							{/* <motion.div
-									style={{
-										width: "13em",
-										padding: "0.5em 1.5em",
-										paddingLeft: "0.8em",
-										gap: "0.4em",
-										background: "black",
-										borderRadius: "100px",
-										display: "grid",
-										justifyContent: "center",
-										alignItems: "center",
-										gridTemplateColumns: "2em 1fr",
-										opacity: 0,
-									}}
-									animate={{
-										opacity: showVolumeControl ? 1 : 0,
-									}}
-									whileHover={{
-										opacity: 1,
-									}}
-									onMouseLeave={() => setShowVolumeControl(false)}
-								>
-									<Typography textAlign="center">
-										{isPlayerMuted ? 0 : Math.round(playerVolume * 100)}
-									</Typography>
-									<Slider
-										step={0.01}
-										max={1}
-										size="small"
-										value={isPlayerMuted ? 0 : playerVolume}
-										onChange={async (_, newValue) => {
-											if (api && Array.isArray(newValue)) {
-												dispatch({
-													type: VideoPlayerActionKind.SET_PLAYER_VOLUME,
-													payload: newValue[0],
-												});
-											} else {
-												dispatch({
-													type: VideoPlayerActionKind.SET_PLAYER_VOLUME,
-													payload: newValue,
-												});
-											}
-											if (newValue === 0)
-												dispatch({
-													type: VideoPlayerActionKind.SET_PLAYER_MUTED,
-													payload: true,
-												});
-											else
-												dispatch({
-													type: VideoPlayerActionKind.SET_PLAYER_MUTED,
-													payload: true,
-												});
+						<div
+							className="video-player-osd-controls-buttons"
+							onMouseLeave={() => setShowVolumeControl(false)}
+						>
+							<AnimatePresence>
+								{showVolumeControl && (
+									<motion.div
+										initial={{ width: 0, opacity: 0, marginRight: 0 }}
+										animate={{ width: 100, opacity: 1, marginRight: 10 }}
+										exit={{ width: 0, opacity: 0, marginRight: 0 }}
+										style={{
+											overflow: "hidden",
+											display: "flex",
+											alignItems: "center",
 										}}
-									/>
-								</motion.div> */}
-							{/* TODO: Volume menu */}
+									>
+										<Slider
+											size="small"
+											value={isPlayerMuted ? 0 : volume}
+											max={1}
+											step={0.01}
+											onChange={(_, newValue) => {
+												const val = Array.isArray(newValue)
+													? newValue[0]
+													: newValue;
+												setVolume(val);
+											}}
+											sx={{ width: 100, color: "white" }}
+										/>
+									</motion.div>
+								)}
+							</AnimatePresence>
 							<IconButton
 								onClick={toggleIsPlayerMuted}
-								// onMouseMoveCapture={() => {
-								// 	setShowVolumeControl(true);
-								// }}
+								onMouseEnter={() => setShowVolumeControl(true)}
 							>
 								<span className="material-symbols-rounded">
 									{isPlayerMuted

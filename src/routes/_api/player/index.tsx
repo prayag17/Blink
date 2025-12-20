@@ -23,7 +23,9 @@ import pgsWorkerUrl from "libpgs/dist/libpgs.worker.js?url";
 import { useShallow } from "zustand/shallow";
 import SkipSegmentButton from "@/components/playback/videoPlayer/buttons/SkipSegmentButton";
 import VideoPlayerControls from "@/components/playback/videoPlayer/controls";
+import ErrorDisplay from "@/components/playback/videoPlayer/ErrorDisplay";
 import LoadingIndicator from "@/components/playback/videoPlayer/LoadingIndicator";
+import StatsForNerds from "@/components/playback/videoPlayer/StatsForNerds";
 import UpNextFlyout from "@/components/playback/videoPlayer/upNextFlyout";
 import VolumeChangeOverlay from "@/components/playback/videoPlayer/VolumeChangeOverlay";
 import getImageUrlsApi from "@/utils/methods/getImageUrlsApi";
@@ -150,6 +152,8 @@ export function VideoPlayer() {
 		s.tracks,
 	]);
 
+	const [error, setError] = React.useState<any>(null);
+
 	const setBackdrop = useBackdropStore(useShallow((s) => s.setBackdrop));
 	useEffect(() => setBackdrop(""), []);
 
@@ -217,12 +221,6 @@ export function VideoPlayer() {
 				seekTo: (seconds: number) => {
 					const internalPlayer = player.current;
 					if (internalPlayer) {
-						const current = internalPlayer.currentTime;
-
-						if (Math.abs(current - seconds) < 0.1) {
-							return;
-						}
-
 						internalPlayer.currentTime = seconds;
 						console.log("Seeking to", seconds, "seconds");
 					} else {
@@ -232,7 +230,7 @@ export function VideoPlayer() {
 				getCurrentTime: () => {
 					const internalPlayer = player.current;
 					if (internalPlayer) {
-						return internalPlayer.currentTime;
+						return internalPlayer.currentTime ?? 0;
 					}
 					console.warn("ReactPlayer is not ready yet");
 					return 0;
@@ -265,7 +263,8 @@ export function VideoPlayer() {
 	const handleTimeUpdate = useCallback(async () => {
 		if (!player.current) return;
 
-		const currentTime = player.current.currentTime;
+		const currentTime = player.current.currentTime ?? 0;
+
 		const ticks = secToTicks(currentTime);
 		const now = Date.now();
 
@@ -318,6 +317,11 @@ export function VideoPlayer() {
 		if (!api) {
 			throw Error("API is not available, cannot report playback stopped.");
 		}
+		let currentTime = 0;
+		if (player.current) {
+			currentTime = player.current.currentTime ?? 0;
+		}
+
 		// Report Jellyfin server: Playback has ended/stopped
 		getPlaystateApi(api).reportPlaybackStopped({
 			playbackStopInfo: {
@@ -325,7 +329,7 @@ export function VideoPlayer() {
 				ItemId: itemId,
 				MediaSourceId: mediaSource.id,
 				PlaySessionId: playsessionId,
-				PositionTicks: secToTicks(player.current?.currentTime ?? 0),
+				PositionTicks: secToTicks(currentTime),
 			},
 		});
 		usePlaybackStore.setState(usePlaybackStore.getInitialState());
@@ -335,12 +339,20 @@ export function VideoPlayer() {
 	const handleKeyPress = useCallback((event: KeyboardEvent) => {
 		if (player.current) {
 			event.preventDefault();
+			const currentTime = player.current.currentTime ?? 0;
+
+			const seekTo = (time: number) => {
+				if (player.current) {
+					player.current.currentTime = time;
+				}
+			};
+
 			switch (event.key) {
 				case "ArrowRight":
-					player.current.currentTime += 10;
+					seekTo(currentTime + 10);
 					break;
 				case "ArrowLeft":
-					player.current.currentTime -= 10;
+					seekTo(currentTime - 10);
 					break;
 				case "F8":
 				case " ":
@@ -516,6 +528,11 @@ export function VideoPlayer() {
 		setIsBuffering(false);
 	}, [setIsBuffering]);
 
+	const handleError = useCallback((e: any) => {
+		console.error("Video playback error:", e);
+		setError(e);
+	}, []);
+
 	if (!playbackStream) {
 		return (
 			<div className="video-player">
@@ -540,6 +557,20 @@ export function VideoPlayer() {
 			onMouseLeave={handleMouseLeave}
 		>
 			<LoadingIndicator />
+			<ErrorDisplay
+				error={error}
+				onExit={handleExitPlayer}
+				onRetry={() => {
+					setError(null);
+					if (player.current) {
+						// Try to reload the video
+						if (typeof player.current.load === "function") {
+							player.current.load();
+						}
+					}
+				}}
+			/>
+			<StatsForNerds playerRef={player as any} />
 			<VideoPlayerControls
 				// isVisible={areControlsVisible}
 				onHover={handleMouseMove}
@@ -553,10 +584,10 @@ export function VideoPlayer() {
 				key={playsessionId}
 				playing={isPlayerPlaying}
 				src={playbackStream}
-				ref={player as any}
+				ref={player}
 				onReady={handleReady}
 				onTimeUpdate={handleTimeUpdate}
-				// onError={handleError}
+				onError={handleError}
 				onEnded={handlePlaybackEnded}
 				width="100vw"
 				height="100vh"
