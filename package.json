@@ -84,7 +84,7 @@
 		"@tauri-apps/cli": "2.9.6",
 		"@types/lodash": "^4.17.21",
 		"@vitejs/plugin-react": "^5.1.2",
-		"babel-plugin-react-compiler": "19.1.0-rc.2",
+		"babel-plugin-react-compiler": "19.1.0-rc.3",
 		"eslint-plugin-react-hooks": "7.0.1",
 		"prop-types": "^15.8.1",
 		"sass": "^1.97.1",
