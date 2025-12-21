@@ -13,7 +13,7 @@ jobs:
           runs-on: ubuntu-latest
           steps:
                - name: Checkout repository
-                 uses: actions/checkout@v4
+                 uses: actions/checkout@v6
 
                - uses: pnpm/action-setup@v3
                  name: Install pnpm
@@ -26,7 +26,7 @@ jobs:
                  run: |
                       echo "STORE_PATH=$(pnpm store path --silent)" >> $GITHUB_ENV
 
-               - uses: actions/cache@v4
+               - uses: actions/cache@v5
                  name: Setup pnpm cache
                  with:
                       path: ${{ env.STORE_PATH }}
@@ -61,7 +61,7 @@ jobs:
           environment: TAURI
           steps:
                - name: Checkout repository
-                 uses: actions/checkout@v4
+                 uses: actions/checkout@v6
 
                - name: Install dependencies (ubuntu only)
                  if: matrix.platform == 'ubuntu-22.04'
@@ -89,7 +89,7 @@ jobs:
                  run: |
                       echo "STORE_PATH=$(pnpm store path --silent)" >> $GITHUB_ENV
 
-               - uses: actions/cache@v4
+               - uses: actions/cache@v5
                  name: Setup pnpm cache
                  with:
                       path: ${{ env.STORE_PATH }}
