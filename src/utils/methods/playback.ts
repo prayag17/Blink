@@ -232,7 +232,7 @@ export async function getPlaybackInfo(
 				},
 			});
 
-			const segmentsPromise = getMediaSegmentsApi(api).getItemSegments({
+			const segmentsPromise = await getMediaSegmentsApi(api).getItemSegments({
 				itemId: targetItem.Id,
 			});
 
