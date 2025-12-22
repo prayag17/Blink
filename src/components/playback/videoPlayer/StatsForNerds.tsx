@@ -137,7 +137,7 @@ const StatsForNerds = ({ playerRef }: StatsForNerdsProps) => {
 				<span>Media Source ID:</span> <span>{mediaSourceId}</span>
 				<span>Play Session ID:</span> <span>{playsessionId}</span>
 				<span>Playback Method:</span>{" "}
-				<span>{mediaSource.isDirectPlay ? "Direct Play" : "Transcoding"}</span>
+				<span>{mediaSource.playMethod}</span>
 				<span>Container:</span> <span>{mediaSource.container}</span>
 				<span>Video Codec:</span> <span>{mediaSource.videoCodec}</span>
 				<span>Audio Codec:</span> <span>{mediaSource.audioCodec}</span>

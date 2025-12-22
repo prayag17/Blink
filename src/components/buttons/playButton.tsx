@@ -1,6 +1,7 @@
 import {
 	type BaseItemDto,
 	BaseItemKind,
+	PlayMethod,
 } from "@jellyfin/sdk/lib/generated-client";
 import { getTvShowsApi } from "@jellyfin/sdk/lib/utils/api/tv-shows-api";
 import type { SxProps } from "@mui/material";
@@ -229,8 +230,17 @@ const PlayButton = ({
 				};
 				const urlParams = new URLSearchParams(urlOptions).toString();
 				let playbackUrl = `${api?.basePath}/Videos/${result?.mediaSource.MediaSources?.[0].Id}/stream.${result?.mediaSource.MediaSources?.[0].Container}?${urlParams}`;
+				
+				const source = result.mediaSource.MediaSources?.[0];
+				let playMethod = PlayMethod.Transcode;
+				if (source?.SupportsDirectPlay) {
+					playMethod = PlayMethod.DirectPlay;
+				} else if (source?.SupportsDirectStream) {
+					playMethod = PlayMethod.DirectStream;
+				}
+
 				if (
-					result?.mediaSource.MediaSources?.[0].SupportsTranscoding &&
+					playMethod === PlayMethod.Transcode &&
 					result?.mediaSource.MediaSources?.[0].TranscodingUrl
 				) {
 					playbackUrl = `${api.basePath}${result.mediaSource.MediaSources[0].TranscodingUrl}`;
@@ -247,10 +257,6 @@ const PlayButton = ({
 					result.mediaSource.MediaSources?.[0].MediaStreams?.filter(
 						(value) => value.Type === "Video",
 					);
-
-				const isDirectPlay =
-					!result.mediaSource.MediaSources?.[0].SupportsTranscoding ||
-					!result.mediaSource.MediaSources?.[0].TranscodingUrl;
 
 				playItem({
 					metadata: {
@@ -283,7 +289,7 @@ const PlayButton = ({
 						audioCodec:
 							audio.allTracks?.find((t) => t.Index === audio.track)?.Codec ??
 							"",
-						isDirectPlay: isDirectPlay,
+						playMethod: playMethod,
 						transcodingUrl:
 							result.mediaSource.MediaSources?.[0].TranscodingUrl ?? "",
 					},

@@ -47,7 +47,8 @@ function getDeviceProfile(videoTestElement: HTMLVideoElement): DeviceProfile {
     TranscodingProfiles: getTranscodingProfiles(videoTestElement),
     ContainerProfiles: [],
     CodecProfiles: getCodecProfiles(videoTestElement),
-    SubtitleProfiles: getSubtitleProfiles(),
+      SubtitleProfiles: getSubtitleProfiles(),
+    //@ts-expect-error
     ResponseProfiles: getResponseProfiles()
   };
 }

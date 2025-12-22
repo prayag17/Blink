@@ -247,7 +247,7 @@ export function VideoPlayer() {
 					IsPaused: false,
 					ItemId: itemId,
 					MediaSourceId: mediaSource.id,
-					PlayMethod: PlayMethod.DirectPlay,
+					PlayMethod: mediaSource.playMethod,
 					PlaySessionId: playsessionId,
 					PlaybackStartTimeTicks: userDataLastPlayedPositionTicks,
 					PositionTicks: userDataLastPlayedPositionTicks,
@@ -290,7 +290,7 @@ export function VideoPlayer() {
 				IsPaused: !isPlayerPlaying,
 				ItemId: itemId,
 				MediaSourceId: mediaSource.id,
-				PlayMethod: PlayMethod.DirectPlay,
+				PlayMethod: mediaSource.playMethod,
 				PlaySessionId: playsessionId,
 				PlaybackStartTimeTicks: userDataLastPlayedPositionTicks,
 				PositionTicks: ticks,
@@ -309,6 +309,45 @@ export function VideoPlayer() {
 		userDataLastPlayedPositionTicks,
 		volume,
 	]);
+
+	const handlePause = useCallback(async () => {
+		if (!api) {
+			console.warn("API is not available, cannot report playback paused.");
+			return;
+		}
+		let currentTime = 0;
+		if (player.current) {
+			currentTime = player.current.currentTime ?? 0;
+		}
+		// Report Jellyfin server: Playback has been paused
+
+		getPlaystateApi(api).reportPlaybackProgress({
+			playbackProgressInfo: {
+				AudioStreamIndex: mediaSource.audioTrack,
+				CanSeek: true,
+				IsMuted: isPlayerMuted,
+				IsPaused: true,
+				ItemId: itemId,
+				MediaSourceId: mediaSource.id,
+				PlayMethod: mediaSource.playMethod,
+				PlaySessionId: playsessionId,
+				PlaybackStartTimeTicks: userDataLastPlayedPositionTicks,
+				PositionTicks: secToTicks(currentTime),
+				RepeatMode: RepeatMode.RepeatNone,
+				VolumeLevel: Math.floor(volume * 100),
+
+			},
+		});
+	}, [setCurrentTime,
+		api,
+		mediaSource,
+		isPlayerMuted,
+		isPlayerPlaying,
+		itemId,
+		playsessionId,
+		userDataLastPlayedPositionTicks,
+		volume,]);
+
 
 	const handleExitPlayer = useCallback(async () => {
 		appWindow.getCurrent().setFullscreen(false);
@@ -587,6 +626,8 @@ export function VideoPlayer() {
 				ref={player}
 				onReady={handleReady}
 				onTimeUpdate={handleTimeUpdate}
+				onPause={handlePause}
+				onPlay={handleTimeUpdate}
 				onError={handleError}
 				onEnded={handlePlaybackEnded}
 				width="100vw"

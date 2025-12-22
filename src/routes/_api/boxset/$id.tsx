@@ -147,9 +147,6 @@ function BoxSetTitlePage() {
 							<PlayButton
 								item={item.data}
 								itemType={item.data.Type ?? "BoxSet"}
-								currentVideoTrack={0}
-								currentAudioTrack={0}
-								currentSubTrack={0}
 								userId={user?.Id}
 								buttonProps={{
 									fullWidth: true,

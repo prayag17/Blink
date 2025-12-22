@@ -314,9 +314,6 @@ function SeriesTitlePage() {
 							<PlayButton
 								item={item.data}
 								itemType={BaseItemKind.Series}
-								currentAudioTrack={0}
-								currentVideoTrack={0}
-								currentSubTrack="nosub"
 								userId={user?.Id}
 								buttonProps={{
 									fullWidth: true,

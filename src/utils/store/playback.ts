@@ -3,6 +3,7 @@ import type {
 	BaseItemDto,
 	MediaSegmentDtoQueryResult,
 	MediaStream,
+	PlayMethod,
 } from "@jellyfin/sdk/lib/generated-client";
 import { getMediaInfoApi } from "@jellyfin/sdk/lib/utils/api/media-info-api";
 import { getMediaSegmentsApi } from "@jellyfin/sdk/lib/utils/api/media-segments-api";
@@ -31,7 +32,7 @@ type PlaybackStoreState = {
 		bitrate?: number;
 		videoCodec?: string;
 		audioCodec?: string;
-		isDirectPlay?: boolean;
+		playMethod?: PlayMethod;
 		transcodingUrl?: string;
 	};
 	playbackStream: string;
@@ -416,7 +417,7 @@ export const usePlaybackStore = create<
 			bitrate?: number,
 			videoCodec?: string,
 			audioCodec?: string,
-			isDirectPlay?: boolean,
+			playMethod?: PlayMethod,
 			transcodingUrl?: string,
 		) =>
 			set((state) => {
@@ -429,7 +430,7 @@ export const usePlaybackStore = create<
 				state.mediaSource.bitrate = bitrate;
 				state.mediaSource.videoCodec = videoCodec;
 				state.mediaSource.audioCodec = audioCodec;
-				state.mediaSource.isDirectPlay = isDirectPlay;
+				state.mediaSource.playMethod = playMethod;
 				state.mediaSource.transcodingUrl = transcodingUrl;
 			}),
 		setPlaybackStream: (playbackStream: string) =>
@@ -802,17 +803,23 @@ export const playItemFromQueue = async (
 		deviceId: api.deviceInfo.id,
 		api_key: api.accessToken,
 	};
+
+	let playMethod = PlayMethod.Transcode;
+	if (source.SupportsDirectPlay) {
+		playMethod = PlayMethod.DirectPlay;
+	} else if (source.SupportsDirectStream) {
+		playMethod = PlayMethod.DirectStream;
+	}
+
 	const urlParams = new URLSearchParams(urlOptions).toString();
 	let playbackUrl = `${api.basePath}/Videos/${source.Id}/stream.${source.Container}?${urlParams}`;
-	if (source.SupportsTranscoding && source.TranscodingUrl) {
+	if (playMethod === PlayMethod.Transcode && source.TranscodingUrl) {
 		playbackUrl = `${api.basePath}${source.TranscodingUrl}`;
 	}
 
 	const videoTrack = source.MediaStreams?.filter(
 		(value) => value.Type === "Video",
 	);
-
-	const isDirectPlay = !source.SupportsTranscoding || !source.TranscodingUrl;
 
 	playItem({
 		metadata: {
@@ -843,7 +850,7 @@ export const playItemFromQueue = async (
 			bitrate: source.Bitrate,
 			videoCodec: videoTrack?.[0]?.Codec,
 			audioCodec: audio.allTracks?.find((t) => t.Index === audio.track)?.Codec,
-			isDirectPlay: isDirectPlay,
+			playMethod: playMethod,
 			transcodingUrl: source.TranscodingUrl,
 		},
 		playbackStream: playbackUrl,
