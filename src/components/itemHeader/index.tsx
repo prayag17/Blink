@@ -26,6 +26,7 @@ import { getTypeIcon } from "@/components/utils/iconsCollection";
 import { endsAt, getRuntime } from "@/utils/date/time";
 import getImageUrlsApi from "@/utils/methods/getImageUrlsApi";
 import type MediaQualityInfo from "@/utils/types/mediaQualityInfo";
+import { Link } from "@tanstack/react-router";
 import "./itemHeader.scss";
 
 interface ItemHeaderProps {
@@ -43,6 +44,49 @@ const ItemHeader = ({
 	scrollTargetRef,
 	children,
 }: ItemHeaderProps) => {
+	const isEpisode = item.Type === "Episode";
+	const backdropTag =
+		isEpisode && item.ParentBackdropImageTags?.length
+			? item.ParentBackdropImageTags[0]
+			: item.BackdropImageTags?.[0];
+	const backdropId =
+		isEpisode && item.ParentBackdropImageTags?.length
+			? (item.ParentBackdropItemId ?? item.Id)
+			: item.Id;
+
+	// @ts-expect-error - ParentLogoImageTag is not in the type definition
+	// eslint-disable-next-line @typescript-eslint/no-explicit-any
+	const parentLogoImageTag =
+		(item as any).ParentLogoImageTag || (item as any).ParentLogoImageTags?.[0];
+	const logoTag =
+		isEpisode && parentLogoImageTag ? parentLogoImageTag : item.ImageTags?.Logo;
+	const logoId =
+		isEpisode && parentLogoImageTag ? (item.SeriesId ?? item.Id) : item.Id;
+
+	const LogoOrTitle = () =>
+		logoTag ? (
+			<img
+				alt={item.Name ?? ""}
+				src={
+					api &&
+					getImageUrlsApi(api).getItemImageUrlById(logoId ?? "", "Logo", {
+						quality: 90,
+						fillWidth: 592,
+						fillHeight: 592,
+						tag: logoTag,
+					})
+				}
+				onLoad={(e) => {
+					e.currentTarget.style.opacity = "1";
+				}}
+				className="item-hero-logo"
+			/>
+		) : (
+			<Typography mb={2} fontWeight={200} variant="h2">
+				{isEpisode ? item.SeriesName : item.Name}
+			</Typography>
+		);
+
 	return (
 		<div className="item-hero">
 			<div className="item-hero-backdrop-container">
@@ -51,12 +95,12 @@ const ItemHeader = ({
 						targetRef={scrollTargetRef}
 						alt={item.Name ?? ""}
 						backdropSrc={
-							item.BackdropImageTags?.length
+							backdropTag
 								? api &&
 									getImageUrlsApi(api).getItemImageUrlById(
-										item.Id ?? "",
+										backdropId ?? "",
 										"Backdrop",
-										{ tag: item.BackdropImageTags[0] },
+										{ tag: backdropTag },
 									)
 								: undefined
 						}
@@ -104,25 +148,27 @@ const ItemHeader = ({
 				)}
 			</div>
 			<div className="item-hero-detail flex flex-column">
-				{item.ImageTags?.Logo ? (
-					<img
-						alt={item.Name ?? ""}
-						src={
-							api &&
-							getImageUrlsApi(api).getItemImageUrlById(item.Id ?? "", "Logo", {
-								quality: 90,
-								fillWidth: 592,
-								fillHeight: 592,
-								tag: item.ImageTags.Logo,
-							})
-						}
-						onLoad={(e) => {
-							e.currentTarget.style.opacity = "1";
+				{isEpisode && logoId ? (
+					<Link
+						to="/series/$id"
+						params={{ id: logoId }}
+						style={{
+							textDecoration: "none",
+							color: "inherit",
+							width: "fit-content",
 						}}
-						className="item-hero-logo"
-					/>
+					>
+						<LogoOrTitle />
+					</Link>
 				) : (
-					<Typography mb={2} fontWeight={200} variant="h2">
+					<LogoOrTitle />
+				)}
+				{isEpisode && (
+					<Typography mb={2} fontWeight={200} variant="h4">
+						{item.ParentIndexNumber !== undefined &&
+						item.IndexNumber !== undefined
+							? `S${item.ParentIndexNumber}:E${item.IndexNumber} - `
+							: ""}
 						{item.Name}
 					</Typography>
 				)}
