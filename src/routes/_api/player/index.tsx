@@ -8,7 +8,7 @@ import { playItemFromQueue, usePlaybackStore } from "@/utils/store/playback";
 
 import "./videoPlayer.scss";
 
-import { PlayMethod, RepeatMode } from "@jellyfin/sdk/lib/generated-client";
+import { RepeatMode } from "@jellyfin/sdk/lib/generated-client";
 import { useMutation } from "@tanstack/react-query";
 import { createFileRoute, useRouter } from "@tanstack/react-router";
 import JASSUB from "jassub";
@@ -507,25 +507,6 @@ export function VideoPlayer() {
 			handleExitPlayer(); // Exit player if playback has finished and the queue is empty
 		}
 	}, []);
-
-	// useEffect(() => {
-	// 	async function setVolumeInServer() {
-	// 		if (!api) return null;
-	// 		await getDisplayPreferencesApi(api).updateDisplayPreferences({
-	// 			userId: user?.Id,
-	// 			client: "blink",
-	// 			displayPreferencesId: api.deviceInfo.id,
-	// 			displayPreferencesDto: {
-	// 				CustomPrefs: {
-	// 					Volume: String(playerVolume),
-	// 				},
-	// 			},
-	// 		});
-	// 	}
-	// 	if (user?.Id && initVolume !== playerVolume && initVolume !== undefined) {
-	// 		setVolumeInServer();
-	// 	}
-	// }, [playerVolume]);
 
 	const idleTimerRef = useRef<NodeJS.Timeout | null>(null);
 

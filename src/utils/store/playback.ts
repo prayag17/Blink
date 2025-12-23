@@ -1,13 +1,15 @@
 import type { Api } from "@jellyfin/sdk";
-import type {
-	BaseItemDto,
-	MediaSegmentDtoQueryResult,
-	MediaStream,
+import {
+	type BaseItemDto,
+	type MediaSegmentDtoQueryResult,
+	type MediaStream,
+	type PlaybackInfoResponse,
 	PlayMethod,
 } from "@jellyfin/sdk/lib/generated-client";
 import { getMediaInfoApi } from "@jellyfin/sdk/lib/utils/api/media-info-api";
 import { getMediaSegmentsApi } from "@jellyfin/sdk/lib/utils/api/media-segments-api";
 import { getPlaystateApi } from "@jellyfin/sdk/lib/utils/api/playstate-api";
+import { getUserApi } from "@jellyfin/sdk/lib/utils/api/user-api";
 import { WebviewWindow as appWindow } from "@tauri-apps/api/webviewWindow";
 import { create } from "zustand";
 import { immer } from "zustand/middleware/immer";
@@ -371,7 +373,6 @@ export const usePlaybackStore = create<
 
 			if (nextSegmentIndex !== -1) {
 				const nextSegment = metadata.mediaSegments?.Items?.[nextSegmentIndex];
-				console.info("Next segment:", nextSegment);
 				if (nextSegment && ticks >= (nextSegment.StartTicks ?? ticks + 1)) {
 					// If the current time is past the next segment's start time, set it as active.
 					// clearActiveSegment();
@@ -669,6 +670,145 @@ export const playItem = (args: {
 	setQueue(args.queueItems, args.queueItemIndex ?? 0);
 };
 
+export const initializePlayback = async (args: {
+	api: Api;
+	userId: string;
+	item: BaseItemDto;
+	mediaSource: PlaybackInfoResponse;
+	mediaSegments?: MediaSegmentDtoQueryResult;
+	queueItems: BaseItemDto[];
+	queueIndex: number;
+	startPositionTicks?: number;
+}) => {
+	const {
+		api,
+		userId,
+		item,
+		mediaSource,
+		mediaSegments,
+		queueItems,
+		queueIndex,
+		startPositionTicks,
+	} = args;
+
+	if (!mediaSource.MediaSources?.[0]?.Id) {
+		throw new Error("Media source is undefined in initializePlayback");
+	}
+
+	const source = mediaSource.MediaSources[0];
+	const currentUser = (await getUserApi(api).getCurrentUser()).data;
+
+	let itemName = item.Name;
+	let episodeTitle = "";
+	if (item.SeriesId && item.SeriesName) {
+		itemName = item.SeriesName;
+		episodeTitle = `S${item.ParentIndexNumber ?? 0}:E${
+			item.IndexNumber ?? 0
+		} ${item.Name}`;
+	}
+
+	// Subtitle
+	const userSubtitleLanguagePreference =
+		currentUser?.Configuration?.SubtitleLanguagePreference;
+	const allSubtitles = source.MediaStreams?.filter(
+		(stream) => stream.Type === "Subtitle",
+	);
+	const preferredSubtitle =
+		allSubtitles?.find(
+			(sub) => sub.Language === userSubtitleLanguagePreference,
+		) || null;
+
+	const subtitle = getSubtitle(
+		preferredSubtitle?.Index ?? source.DefaultSubtitleStreamIndex ?? -1,
+		source.MediaStreams,
+	);
+
+	// Audio
+	const userAudioLanguagePreference =
+		currentUser?.Configuration?.AudioLanguagePreference;
+	const allAudioTracks = source.MediaStreams?.filter(
+		(value) => value.Type === "Audio",
+	);
+	const preferredAudioTrack =
+		allAudioTracks?.find(
+			(track) => track.Language === userAudioLanguagePreference,
+		) ||
+		allAudioTracks?.find((track) => track.IsDefault) ||
+		allAudioTracks?.[0];
+
+	const audio = {
+		track: preferredAudioTrack?.Index ?? source.DefaultAudioStreamIndex ?? 0,
+		allTracks: allAudioTracks,
+	};
+
+	// URL generation
+	const urlOptions: URLSearchParams = {
+		//@ts-expect-error
+		Static: true,
+		tag: source.ETag,
+		mediaSourceId: source.Id,
+		deviceId: api.deviceInfo.id,
+		api_key: api.accessToken,
+	};
+
+	let playMethod: PlayMethod = PlayMethod.Transcode;
+	if (source.SupportsDirectPlay) {
+		playMethod = PlayMethod.DirectPlay;
+	} else if (source.SupportsDirectStream) {
+		playMethod = PlayMethod.DirectStream;
+	}
+
+	const urlParams = new URLSearchParams(urlOptions).toString();
+	let playbackUrl = `${api.basePath}/Videos/${source.Id}/stream.${source.Container}?${urlParams}`;
+	if (playMethod === PlayMethod.Transcode && source.TranscodingUrl) {
+		playbackUrl = `${api.basePath}${source.TranscodingUrl}`;
+	}
+
+	const videoTrack = source.MediaStreams?.filter(
+		(value) => value.Type === "Video",
+	);
+
+	playItem({
+		metadata: {
+			itemName: itemName ?? "",
+			episodeTitle: episodeTitle,
+			isEpisode: !!item.SeriesId,
+			itemDuration: item.RunTimeTicks ?? 0,
+			item: item,
+			mediaSegments: mediaSegments,
+			userDataLastPlayedPositionTicks:
+				startPositionTicks ?? item.UserData?.PlaybackPositionTicks ?? 0,
+		},
+		mediaSource: {
+			videoTrack: videoTrack?.[0]?.Index ?? 0,
+			audioTrack: audio.track,
+			container: source.Container ?? "",
+			id: source.Id ?? undefined,
+			subtitle: {
+				url: subtitle?.url,
+				track: subtitle?.track ?? -1,
+				format: subtitle?.format ?? "nosub",
+				allTracks: allSubtitles,
+				enable: subtitle?.enable ?? false,
+			},
+			audio: audio,
+			bitrate: source.Bitrate ?? undefined,
+			videoCodec: videoTrack?.[0]?.Codec ?? undefined,
+			audioCodec:
+				audio.allTracks?.find((t) => t.Index === audio.track)?.Codec ??
+				undefined,
+			playMethod: playMethod,
+			transcodingUrl: source.TranscodingUrl ?? undefined,
+		},
+		playbackStream: playbackUrl,
+		playsessionId: mediaSource.PlaySessionId,
+		userDataPlayedPositionTicks: item.UserData?.PlaybackPositionTicks ?? 0,
+		userId,
+		queueItems: queueItems ?? [],
+		queueItemIndex: queueIndex,
+	});
+};
+
 export const playItemFromQueue = async (
 	index: "next" | "previous" | number,
 	userId: string | undefined,
@@ -767,98 +907,14 @@ export const playItemFromQueue = async (
 	const mediaSource = playbackInfoResponse.data;
 	const mediaSegments = segmentsResponse.data;
 
-	if (!mediaSource.MediaSources?.[0]?.Id) {
-		throw new Error("Media source is undefined in playItemFromQueue");
-	}
-
-	const source = mediaSource.MediaSources[0];
-
-	let itemName = item.Name;
-	let episodeTitle = "";
-	if (item.SeriesId && item.SeriesName) {
-		itemName = item.SeriesName;
-		episodeTitle = `S${item.ParentIndexNumber ?? 0}:E${
-			item.IndexNumber ?? 0
-		} ${item.Name}`;
-	}
-
-	// Subtitle
-	const subtitle = getSubtitle(
-		source.DefaultSubtitleStreamIndex ?? "nosub",
-		source.MediaStreams,
-	);
-
-	// Audio
-	const audio = {
-		track: source.DefaultAudioStreamIndex ?? 0,
-		allTracks: source.MediaStreams?.filter((value) => value.Type === "Audio"),
-	};
-
-	// URL generation
-	const urlOptions: URLSearchParams = {
-		//@ts-expect-error
-		Static: true,
-		tag: source.ETag,
-		mediaSourceId: source.Id,
-		deviceId: api.deviceInfo.id,
-		api_key: api.accessToken,
-	};
-
-	let playMethod = PlayMethod.Transcode;
-	if (source.SupportsDirectPlay) {
-		playMethod = PlayMethod.DirectPlay;
-	} else if (source.SupportsDirectStream) {
-		playMethod = PlayMethod.DirectStream;
-	}
-
-	const urlParams = new URLSearchParams(urlOptions).toString();
-	let playbackUrl = `${api.basePath}/Videos/${source.Id}/stream.${source.Container}?${urlParams}`;
-	if (playMethod === PlayMethod.Transcode && source.TranscodingUrl) {
-		playbackUrl = `${api.basePath}${source.TranscodingUrl}`;
-	}
-
-	const videoTrack = source.MediaStreams?.filter(
-		(value) => value.Type === "Video",
-	);
-
-	playItem({
-		metadata: {
-			itemName,
-			episodeTitle: episodeTitle,
-			isEpisode: !!item.SeriesId,
-			itemDuration: item.RunTimeTicks,
-			item: item,
-			mediaSegments: mediaSegments,
-			userDataLastPlayedPositionTicks:
-				item.UserData?.PlaybackPositionTicks ?? 0,
-		},
-		mediaSource: {
-			videoTrack: videoTrack?.[0]?.Index ?? 0,
-			audioTrack: audio.track,
-			container: source.Container ?? "",
-			id: source.Id,
-			subtitle: {
-				url: subtitle?.url,
-				track: subtitle?.track ?? -1,
-				format: subtitle?.format ?? "nosub",
-				allTracks: source.MediaStreams?.filter(
-					(value) => value.Type === "Subtitle",
-				),
-				enable: subtitle?.enable ?? false,
-			},
-			audio: audio,
-			bitrate: source.Bitrate,
-			videoCodec: videoTrack?.[0]?.Codec,
-			audioCodec: audio.allTracks?.find((t) => t.Index === audio.track)?.Codec,
-			playMethod: playMethod,
-			transcodingUrl: source.TranscodingUrl,
-		},
-		playbackStream: playbackUrl,
-		playsessionId: mediaSource.PlaySessionId,
-		userDataPlayedPositionTicks: item.UserData?.PlaybackPositionTicks ?? 0,
+	initializePlayback({
+		api,
 		userId,
-		queueItems: queueItems,
-		queueItemIndex: requestedItemIndex,
+		item,
+		mediaSource,
+		mediaSegments,
+		queueItems: queueItems ?? [],
+		queueIndex: requestedItemIndex,
 	});
 
 	return "playing"; // Return any value to end mutation pending status

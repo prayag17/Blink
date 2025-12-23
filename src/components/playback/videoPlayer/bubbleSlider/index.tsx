@@ -199,7 +199,7 @@ const BubbleSlider = () => {
 				trickplayResolution.Width / trickplayResolution.Height;
 
 			trickplayStyle = {
-				background: `url(${api?.basePath}/Videos/${itemId}/Trickplay/${trickplayResolution.Width}/${index}.jpg?${imgUrlParams})`,
+				backgroundImage: `url(${api?.basePath}/Videos/${itemId}/Trickplay/${trickplayResolution.Width}/${index}.jpg?${imgUrlParams})`,
 				backgroundPositionX: `${backgroundOffsetX}px`,
 				backgroundPositionY: `${backgroundOffsetY}px`,
 				width: `${trickplayResolution.Width}px`,

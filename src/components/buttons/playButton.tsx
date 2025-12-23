@@ -1,7 +1,6 @@
 import {
 	type BaseItemDto,
 	BaseItemKind,
-	PlayMethod,
 } from "@jellyfin/sdk/lib/generated-client";
 import { getTvShowsApi } from "@jellyfin/sdk/lib/utils/api/tv-shows-api";
 import type { SxProps } from "@mui/material";
@@ -15,13 +14,11 @@ import { useSnackbar } from "notistack";
 import React, { type MouseEvent, memo } from "react"; // Import memo
 import type PlayResult from "@//utils/types/playResult";
 import { getRuntimeCompact } from "@/utils/date/time";
-import getSubtitle from "@/utils/methods/getSubtitles";
 import { getNextEpisode, getPlaybackInfo } from "@/utils/methods/playback";
 import { useApiInContext } from "@/utils/store/api";
 import { generateAudioStreamUrl, playAudio } from "@/utils/store/audioPlayback";
-import { useCentralStore } from "@/utils/store/central";
 import { usePhotosPlayback } from "@/utils/store/photosPlayback";
-import { playItem } from "@/utils/store/playback";
+import { initializePlayback } from "@/utils/store/playback";
 import { setQueue } from "@/utils/store/queue";
 
 type PlayButtonProps = {
@@ -86,7 +83,6 @@ const PlayButton = ({
 	// 	(state) => state.setisPending,
 	// );
 	const playPhotos = usePhotosPlayback((s) => s.playPhotos);
-	const currentUser = useCentralStore((s) => s.currentUser);
 
 	const { enqueueSnackbar } = useSnackbar();
 
@@ -157,149 +153,29 @@ const PlayButton = ({
 					return;
 				}
 				const episodeIndex = result.episodeIndex;
+				const queue = result?.item?.Items ?? [];
 
-				// Creates a queue containing all Episodes for a particular season(series) or collection of movies
-				const queue = result?.item?.Items;
-
-				let itemName = item.Name;
-				let episodeTitle = "";
-				if (result?.item?.Items?.[episodeIndex].SeriesId) {
-					itemName = result?.item.Items[episodeIndex].SeriesName;
-					episodeTitle = `S${result?.item.Items[episodeIndex].ParentIndexNumber ?? 0}:E${
-						result?.item.Items[episodeIndex].IndexNumber ?? 0
-					} ${result?.item.Items[episodeIndex].Name}`;
-				}
-
-				if (itemType === "BoxSet") {
-					itemName = result.item.Items[0].Name;
-				}
-
-				// Subtitle
-				const userSubtitleLanguagePreference =
-					currentUser?.Configuration?.SubtitleLanguagePreference;
-				// Get all subtitle streams
-				const allSubtitles =
-					result?.mediaSource?.MediaSources?.[0]?.MediaStreams?.filter(
-						(stream) => stream.Type === "Subtitle",
-					);
-				// Find preferred subtitle based on user's language preference
-				const preferredSubtitle =
-					allSubtitles?.find(
-						(sub) => sub.Language === userSubtitleLanguagePreference,
-					) || null;
-
-				const subtitle = getSubtitle(
-					preferredSubtitle?.Index ??
-						result.mediaSource.MediaSources?.[0].DefaultSubtitleStreamIndex ??
-						-1,
-					result?.mediaSource?.MediaSources?.[0]?.MediaStreams,
-				);
-
-				// Audio
-				const userAudioLanguagePreference =
-					currentUser?.Configuration?.AudioLanguagePreference;
-				// Get all audio streams
-				const allAudioTracks =
-					result.mediaSource.MediaSources?.[0].MediaStreams?.filter(
-						(value) => value.Type === "Audio",
-					);
-				// Find preferred audio track based on user's language preference
-				const preferredAudioTrack =
-					allAudioTracks?.find(
-						(track) => track.Language === userAudioLanguagePreference,
-					) ||
-					allAudioTracks?.find((track) => track.IsDefault) ||
-					allAudioTracks?.[0];
-
-				const audio = {
-					track:
-						preferredAudioTrack?.Index ??
-						result.mediaSource.MediaSources?.[0].DefaultAudioStreamIndex ??
-						0,
-					allTracks: allAudioTracks,
-				};
-
-				// URL generation
-				const urlOptions: URLSearchParams = {
-					//@ts-expect-error
-					Static: true,
-					tag: result?.mediaSource.MediaSources?.[0].ETag,
-					mediaSourceId: result?.mediaSource.MediaSources?.[0].Id,
-					deviceId: api?.deviceInfo.id,
-					api_key: api?.accessToken,
-				};
-				const urlParams = new URLSearchParams(urlOptions).toString();
-				let playbackUrl = `${api?.basePath}/Videos/${result?.mediaSource.MediaSources?.[0].Id}/stream.${result?.mediaSource.MediaSources?.[0].Container}?${urlParams}`;
-				
-				const source = result.mediaSource.MediaSources?.[0];
-				let playMethod = PlayMethod.Transcode;
-				if (source?.SupportsDirectPlay) {
-					playMethod = PlayMethod.DirectPlay;
-				} else if (source?.SupportsDirectStream) {
-					playMethod = PlayMethod.DirectStream;
-				}
-
-				if (
-					playMethod === PlayMethod.Transcode &&
-					result?.mediaSource.MediaSources?.[0].TranscodingUrl
-				) {
-					playbackUrl = `${api.basePath}${result.mediaSource.MediaSources[0].TranscodingUrl}`;
-				}
-				let playItemValue = result?.item?.Items?.[episodeIndex];
+				let playItemValue = queue[episodeIndex];
 				if (itemType === BaseItemKind.Movie) {
-					playItemValue = result?.item?.Items?.[0];
+					playItemValue = queue[0];
 				}
 
-				const startPosition =
-					result?.item?.Items?.[episodeIndex].UserData?.PlaybackPositionTicks;
+				if (!playItemValue) {
+					console.error("No item to play found");
+					return;
+				}
 
-				const videoTrack =
-					result.mediaSource.MediaSources?.[0].MediaStreams?.filter(
-						(value) => value.Type === "Video",
-					);
+				const startPosition = playItemValue.UserData?.PlaybackPositionTicks;
 
-				playItem({
-					metadata: {
-						itemName: itemName ?? "",
-						episodeTitle: episodeTitle,
-						isEpisode: !!item.SeriesId,
-						itemDuration: playItemValue?.RunTimeTicks ?? item.RunTimeTicks ?? 0,
-						item: playItemValue ?? item,
-						mediaSegments: result.mediaSegments,
-						userDataLastPlayedPositionTicks: startPosition ?? 0,
-					},
-					mediaSource: {
-						videoTrack: videoTrack?.[0]?.Index ?? 0,
-						audioTrack: audio.track,
-						container: result.mediaSource.MediaSources?.[0].Container ?? "",
-						id: result.mediaSource.MediaSources?.[0]?.Id,
-						subtitle: {
-							url: subtitle?.url,
-							track: subtitle?.track ?? -1,
-							format: subtitle?.format ?? "nosub",
-							allTracks:
-								result.mediaSource.MediaSources?.[0].MediaStreams?.filter(
-									(value) => value.Type === "Subtitle",
-								),
-							enable: subtitle?.enable ?? false,
-						},
-						audio: audio,
-						bitrate: result.mediaSource.MediaSources?.[0].Bitrate ?? 0,
-						videoCodec: videoTrack?.[0]?.Codec ?? "",
-						audioCodec:
-							audio.allTracks?.find((t) => t.Index === audio.track)?.Codec ??
-							"",
-						playMethod: playMethod,
-						transcodingUrl:
-							result.mediaSource.MediaSources?.[0].TranscodingUrl ?? "",
-					},
-					playbackStream: playbackUrl,
-					playsessionId: result.mediaSource.PlaySessionId,
-					userDataPlayedPositionTicks:
-						item.UserData?.PlaybackPositionTicks ?? 0,
+				initializePlayback({
+					api,
 					userId,
-					queueItems: queue ?? [],
-					queueItemIndex: episodeIndex,
+					item: playItemValue,
+					mediaSource: result.mediaSource,
+					mediaSegments: result.mediaSegments,
+					queueItems: queue,
+					queueIndex: episodeIndex,
+					startPositionTicks: startPosition,
 				});
 				navigate({ to: "/player" });
 			}

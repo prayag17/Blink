@@ -1,14 +1,16 @@
-$image-size: 5em;
-
 .queue{
     &-item{
+        --image-size: 5em;
+        &.episode {
+                --image-size: 8em !important;
+            }
         width: 32em;
         padding: 1em;
         display: grid !important;
         opacity: 1 !important;
         gap: 1em;
         height: 5em;
-        grid-template-columns: 3em $image-size 1fr;
+        grid-template-columns: 3em var(--image-size) 1fr;
         justify-items: center;
         align-items: center;
         &-image{
@@ -25,6 +27,7 @@ $image-size: 5em;
                 justify-content: center;
                 align-items: center;    
                 position: relative;
+                width: var(--image-size);
             }
             &-icon {
                 width: 100%;
@@ -51,5 +54,6 @@ $image-size: 5em;
         .queue-item-image,.queue-item-image-icon{
             opacity: 0.5 !important;
         }
-    } 
+    }
+    
 }
