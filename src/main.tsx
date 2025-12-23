@@ -4,7 +4,11 @@ import React, { useEffect } from "react";
 import ReactDOM from "react-dom/client";
 // Import the generated route tree
 import { routeTree } from "./routeTree.gen";
-import { ApiProvider, useApiInContext } from "./utils/store/api";
+import {
+	ApiProvider,
+	initializeApi,
+	useApiInContext,
+} from "./utils/store/api";
 import { CentralProvider, useCentralStore } from "./utils/store/central";
 
 export const queryClient = new QueryClient({
@@ -61,9 +65,11 @@ function ProviderWrapper() {
 		s.currentUser,
 		s.fetchCurrentUser,
 	]);
-	if (api?.accessToken && !user?.Id) {
-		fetchCurrentUser(api);
-	}
+	useEffect(() => {
+		if (api?.accessToken && !user?.Id) {
+			fetchCurrentUser(api);
+		}
+	}, [api, user, fetchCurrentUser]);
 	useEffect(() => {
 		if (api) {
 			console.log(`API is set - Route ${window.location.pathname}`);
@@ -72,7 +78,7 @@ function ProviderWrapper() {
 			console.log(`API is not set - Route ${window.location.pathname}`);
 		}
 		router.invalidate(); // This is a hack to force the router to re-evaluate the routes and re-run the beforeLoad functions
-	}, [api]);
+	}, [api?.accessToken]);
 	return (
 		<RouterProvider
 			router={router}
@@ -88,16 +94,22 @@ function ProviderWrapper() {
 	);
 }
 
-ReactDOM.createRoot(document.getElementById("root")!).render(
-	<React.StrictMode>
-		<QueryClientProvider client={queryClient}>
-			<CentralProvider>
-				<ApiProvider>
-					<ProviderWrapper />
-				</ApiProvider>
-			</CentralProvider>
-		</QueryClientProvider>
-	</React.StrictMode>,
-);
+const init = async () => {
+	const initialApi = await initializeApi();
+
+	ReactDOM.createRoot(document.getElementById("root")!).render(
+		<React.StrictMode>
+			<QueryClientProvider client={queryClient}>
+				<CentralProvider>
+					<ApiProvider initialApi={initialApi}>
+						<ProviderWrapper />
+					</ApiProvider>
+				</CentralProvider>
+			</QueryClientProvider>
+		</React.StrictMode>,
+	);
+};
+
+init();
 
 document.querySelector(".app-loading")!.classList.toggle("hidden");

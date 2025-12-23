@@ -5,6 +5,8 @@ import { type StoreApi, createStore } from "zustand";
 import { shallow } from "zustand/shallow";
 import { useStoreWithEqualityFn } from "zustand/traditional";
 import { version as appVer } from "../../../package.json";
+import { getDefaultServer, getServer } from "../storage/servers";
+import { getUser } from "../storage/user";
 
 // Initial custom axios client to use tauri's http module
 import axios from "axios";
@@ -44,12 +46,33 @@ export const jellyfin = new Jellyfin({
 	},
 });
 
+export const initializeApi = async () => {
+	const currentServerId = await getDefaultServer();
+	if (currentServerId) {
+		const currentServer = await getServer(currentServerId);
+		if (currentServer?.address) {
+			const userOnDisk = await getUser();
+			if (userOnDisk) {
+				return jellyfin.createApi(
+					currentServer.address,
+					userOnDisk.AccessToken,
+				);
+			}
+			return jellyfin.createApi(currentServer.address);
+		}
+	}
+	return undefined;
+};
+
 export const ApiContext = createContext<StoreApi<ApiStore>>(undefined!);
 
-export const ApiProvider = ({ children }: { children: ReactNode }) => {
+export const ApiProvider = ({
+	children,
+	initialApi,
+}: { children: ReactNode; initialApi?: Api }) => {
 	const [store] = useState(() =>
 		createStore<ApiStore>()((set) => ({
-			api: undefined!,
+			api: initialApi,
 			deviceId: deviceId,
 			jellyfin: jellyfin,
 			createApi: (serverAddress, accessToken?) =>
