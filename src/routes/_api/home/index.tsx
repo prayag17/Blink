@@ -96,6 +96,9 @@ function Home() {
 					ItemFields.MediaSources,
 					ItemFields.ParentId,
 				],
+				enableResumable: false,
+				enableRewatching: false,
+				disableFirstEpisode: false,
 				limit: 10,
 			});
 			return upNext.data;
@@ -206,7 +209,7 @@ function Home() {
 					</div>
 				}
 			>
-				{upNextItems.isSuccess && !upNextItems.data?.TotalRecordCount && (
+				{upNextItems.isSuccess && upNextItems.data?.TotalRecordCount && (
 					<CardScroller displayCards={4} title="Up Next">
 						{upNextItems.data?.Items?.map((item) => {
 							return (
