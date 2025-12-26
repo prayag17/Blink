@@ -749,9 +749,6 @@ function SeriesTitlePage() {
 														item={episode}
 														itemType={BaseItemKind.Episode}
 														userId={user?.Id}
-														currentAudioTrack={0}
-														currentVideoTrack={0}
-														currentSubTrack="nosub"
 														size="medium"
 														buttonProps={{
 															//@ts-expect-error

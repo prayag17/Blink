@@ -32,6 +32,10 @@ div::-webkit-scrollbar {
 	background: $clr-secondary-default;
 }
 
+html {
+	overscroll-behavior: none;
+}
+
 body {
 	font-family: "Plus Jakarta Sans Variable",system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
 	background: $clr-background-default;

@@ -176,6 +176,10 @@ const PlayButton = ({
 					queueItems: queue,
 					queueIndex: episodeIndex,
 					startPositionTicks: startPosition,
+					audioStreamIndex:
+						currentAudioTrack === "auto" ? undefined : currentAudioTrack,
+					subtitleStreamIndex:
+						currentSubTrack === "nosub" ? -1 : currentSubTrack,
 				});
 				navigate({ to: "/player" });
 			}

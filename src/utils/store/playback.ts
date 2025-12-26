@@ -679,6 +679,8 @@ export const initializePlayback = async (args: {
 	queueItems: BaseItemDto[];
 	queueIndex: number;
 	startPositionTicks?: number;
+	audioStreamIndex?: number;
+	subtitleStreamIndex?: number;
 }) => {
 	const {
 		api,
@@ -689,6 +691,8 @@ export const initializePlayback = async (args: {
 		queueItems,
 		queueIndex,
 		startPositionTicks,
+		audioStreamIndex,
+		subtitleStreamIndex,
 	} = args;
 
 	if (!mediaSource.MediaSources?.[0]?.Id) {
@@ -719,7 +723,10 @@ export const initializePlayback = async (args: {
 		) || null;
 
 	const subtitle = getSubtitle(
-		preferredSubtitle?.Index ?? source.DefaultSubtitleStreamIndex ?? -1,
+		subtitleStreamIndex ??
+			preferredSubtitle?.Index ??
+			source.DefaultSubtitleStreamIndex ??
+			-1,
 		source.MediaStreams,
 	);
 
@@ -737,7 +744,11 @@ export const initializePlayback = async (args: {
 		allAudioTracks?.[0];
 
 	const audio = {
-		track: preferredAudioTrack?.Index ?? source.DefaultAudioStreamIndex ?? 0,
+		track:
+			audioStreamIndex ??
+			preferredAudioTrack?.Index ??
+			source.DefaultAudioStreamIndex ??
+			0,
 		allTracks: allAudioTracks,
 	};
 
@@ -865,16 +876,19 @@ export const playItemFromQueue = async (
 		usePlaybackStore.getState();
 	const prevItem = queueItems?.[currentItemIndex];
 
+	const audioStreamIndex =
+		prevItem?.Id === item.Id
+			? prevMediaSource.audio.track
+			: (item.MediaSources?.[0]?.DefaultAudioStreamIndex ?? 0);
+	const subtitleStreamIndex =
+		prevItem?.Id === item.Id
+			? prevMediaSource.subtitle.track
+			: (item?.MediaSources?.[0]?.DefaultSubtitleStreamIndex ?? -1);
+
 	// Prepare promises for parallel execution
 	const playbackInfoPromise = getMediaInfoApi(api).getPostedPlaybackInfo({
-		audioStreamIndex:
-			prevItem?.Id === item.Id
-				? prevMediaSource.audio.track
-				: (item.MediaSources?.[0]?.DefaultAudioStreamIndex ?? 0),
-		subtitleStreamIndex:
-			prevItem?.Id === item.Id
-				? prevMediaSource.subtitle.track
-				: (item?.MediaSources?.[0]?.DefaultSubtitleStreamIndex ?? -1),
+		audioStreamIndex,
+		subtitleStreamIndex,
 		itemId: item.Id,
 		startTimeTicks: item.UserData?.PlaybackPositionTicks,
 		userId: userId,
@@ -915,6 +929,8 @@ export const playItemFromQueue = async (
 		mediaSegments,
 		queueItems: queueItems ?? [],
 		queueIndex: requestedItemIndex,
+		audioStreamIndex,
+		subtitleStreamIndex,
 	});
 
 	return "playing"; // Return any value to end mutation pending status

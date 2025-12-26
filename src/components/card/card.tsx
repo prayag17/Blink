@@ -6,8 +6,7 @@ import {
 	type ImageType,
 } from "@jellyfin/sdk/lib/generated-client";
 import { useNavigate } from "@tanstack/react-router";
-import type React from "react";
-import { memo, useCallback, useState } from "react";
+import React, { memo, type Ref, useCallback, useState } from "react";
 import { ErrorBoundary } from "react-error-boundary";
 import { useInView } from "react-intersection-observer";
 import getImageUrlsApi from "@/utils/methods/getImageUrlsApi";
@@ -51,7 +50,7 @@ const CardContent = ({
 	forwardedRef,
 }: CardProps & {
 	inView: boolean;
-	forwardedRef?: React.Ref<HTMLDivElement>;
+	forwardedRef?: Ref<HTMLDivElement>;
 }) => {
 	const api = useApiInContext((s) => s.api);
 	const navigate = useNavigate();
@@ -175,9 +174,6 @@ const CardContent = ({
 									item={item}
 									userId={userId}
 									itemType={item.Type ?? "Movie"}
-									currentAudioTrack="auto"
-									currentSubTrack={-1}
-									currentVideoTrack={0}
 									className="card-play-button"
 									iconOnly
 									audio={

@@ -77,6 +77,9 @@ function addSubtitleTrackToReactPlayer(
 		});
 
 		videoElem.appendChild(track);
+		if (track.track) {
+			track.track.mode = "showing";
+		}
 	}
 }
 
@@ -176,7 +179,9 @@ export function VideoPlayer() {
 
 			if (navigator.mediaSession && mediaSource) {
 				navigator.mediaSession.metadata = new MediaMetadata({
-					title: isEpisode ? episodeTitle : (itemName ?? "Blink"),
+					title: isEpisode
+						? `${itemName} - ${episodeTitle}`
+						: (itemName ?? "Blink"),
 					album: isEpisode ? (itemName ?? "Blink") : undefined,
 					artwork: [
 						{
@@ -216,6 +221,8 @@ export function VideoPlayer() {
 					}
 				});
 			}
+
+			console.log(mediaSource.subtitle);
 
 			registerPlayerActions({
 				seekTo: (seconds: number) => {
@@ -497,7 +504,12 @@ export function VideoPlayer() {
 				}
 			}
 		}
-	}, [mediaSource.subtitle?.track, mediaSource.subtitle?.enable]);
+	}, [
+		mediaSource.subtitle?.track,
+		mediaSource.subtitle?.enable,
+		isPlayerReady,
+		api,
+	]);
 
 	const handlePlaybackEnded = useCallback(() => {
 		if (queue?.length !== currentQueueItemIndex + 1) {
