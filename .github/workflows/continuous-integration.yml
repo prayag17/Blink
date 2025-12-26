@@ -144,7 +144,7 @@ jobs:
                - name: Prepare assets
                  run: |
                    mkdir -p release_assets
-                   find artifacts -type f | while read -r file; do
+                   find artifacts -type f \( -name "*.exe" -o -name "*.msi" -o -name "*.dmg" -o -name "*.deb" -o -name "*.AppImage" -o -name "*.rpm" -o -name "*.tar.gz" \) | while read -r file; do
                      # Extract platform from artifact name (e.g. Blink-ubuntu-22.04-devSHA)
                      artifact_name=$(echo "$file" | cut -d'/' -f2)
                      platform=$(echo "$artifact_name" | sed -E 's/Blink-(.*)-dev.*/\1/' | sed 's/-/_/g')
