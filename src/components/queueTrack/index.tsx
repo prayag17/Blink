@@ -1,21 +1,18 @@
-import { getRuntimeMusic } from "@/utils/date/time";
-import useQueue from "@/utils/store/queue";
-
 import { useSortable } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
-
 import type { BaseItemDto } from "@jellyfin/sdk/lib/generated-client";
-import { Typography } from "@mui/material";
+import { IconButton, Typography } from "@mui/material";
 import React from "react";
-
-
+import { getRuntimeMusic } from "@/utils/date/time";
+import useQueue from "@/utils/store/queue";
 
 type Props = {
 	track: BaseItemDto;
 	index: number;
+	onRemove?: () => void;
 };
 const QueueTrack = (props: Props) => {
-	const { track, index } = props;
+	const { track, index, onRemove } = props;
 	const [currentItemIndex] = useQueue((s) => [s.currentItemIndex]);
 
 	const { attributes, listeners, setNodeRef, transform, transition } =
@@ -50,9 +47,21 @@ const QueueTrack = (props: Props) => {
 					{track.Artists?.join(", ")}
 				</Typography>
 			</div>
-			<Typography className="opacity-07">
-				{getRuntimeMusic(track.RunTimeTicks ?? 0)}
-			</Typography>
+			<div style={{ display: "flex", alignItems: "center", gap: "0.5em" }}>
+				<Typography className="opacity-07">
+					{getRuntimeMusic(track.RunTimeTicks ?? 0)}
+				</Typography>
+				{onRemove && (
+					<IconButton size="small" onClick={onRemove}>
+						<span
+							className="material-symbols-rounded"
+							style={{ fontSize: "1.2em" }}
+						>
+							close
+						</span>
+					</IconButton>
+				)}
+			</div>
 		</div>
 	);
 };

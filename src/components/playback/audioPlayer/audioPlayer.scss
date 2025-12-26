@@ -2,15 +2,39 @@ $image-size: 4em;
 
 .audio-player {
 	position: fixed;
-	bottom: 0;
-	right: 0;
-	z-index: 10;
+	bottom: 1rem;
+	left: 50%;
+	transform: translateX(-50%);
+	width: 95%;
+	max-width: 1200px;
+	z-index: 100;
 	display: grid;
-	padding: 0.5em 1.5em;
-	gap: 1em;
-	box-shadow: 0 0 20px rgb(0 0 0 / 0.25);
-	grid-template-columns: 30% 1fr 30%;
-	background: rgb(0 0 0 / 0.8) !important;
+	padding: 0.75em 1.5em;
+	gap: 1.5em;
+	box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+	grid-template-columns: 25% 1fr 25%;
+	background: rgba(18, 18, 18, 0.85) !important;
+	backdrop-filter: blur(12px);
+	-webkit-backdrop-filter: blur(12px);
+	border: 1px solid rgba(255, 255, 255, 0.1);
+	border-radius: 1rem;
+	align-items: center;
+
+	@media (max-width: 900px) {
+		grid-template-columns: 1fr auto;
+		padding: 0.5em 1em;
+		bottom: 0;
+		width: 100%;
+		border-radius: 0;
+		border-bottom: none;
+		border-left: none;
+		border-right: none;
+		
+		.audio-player-controls {
+			display: none; // Hide controls on mobile for now or adjust
+		}
+	}
+
 	#waveform {
 		width: 100%;
 		transform: scaleY(0);
@@ -36,6 +60,13 @@ $image-size: 4em;
 		flex-grow: 1;
 		width: 100%;
 		overflow: hidden;
+
+		&-text {
+			display: flex;
+			flex-direction: column;
+			overflow: hidden;
+			min-width: 0;
+		}
 	}
 	&-image {
 		width: $image-size;

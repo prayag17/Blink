@@ -43,7 +43,10 @@ export const AppBar = () => {
 	const location = useLocation();
 
 	const display = !HIDDEN_PATHS.some(
-		(path) => location.pathname.startsWith(path) || location.pathname === "/",
+		(path) =>
+			(location.pathname.startsWith(path) &&
+				location.pathname !== "/player/audio") ||
+			location.pathname === "/",
 	);
 
 

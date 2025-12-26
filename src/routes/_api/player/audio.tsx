@@ -1,249 +1,200 @@
-import { useApiInContext } from "@/utils/store/api";
-import { useAudioPlayback } from "@/utils/store/audioPlayback";
-import useQueue, { setQueue } from "@/utils/store/queue";
-import { Fab, IconButton, Slider, Typography } from "@mui/material";
+import { Box, Tab, Tabs, Typography } from "@mui/material";
 import { createFileRoute } from "@tanstack/react-router";
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
+import { useApiInContext } from "@/utils/store/api";
+import {
+	setIsMuted,
+	setVolume,
+	useAudioPlayback,
+} from "@/utils/store/audioPlayback";
+import useQueue from "@/utils/store/queue";
 
 import "./audio.scss";
-import PlayNextButton from "@/components/buttons/playNextButton";
-import PlayPreviousButton from "@/components/buttons/playPreviousButtom";
-import QueueTrack from "@/components/queueTrack";
-import { getRuntimeMusic, secToTicks, ticksToSec } from "@/utils/date/time";
-import getImageUrlsApi from "@/utils/methods/getImageUrlsApi";
-import { getLyricsApi } from "@jellyfin/sdk/lib/utils/api/lyrics-api";
-import { useQuery } from "@tanstack/react-query";
 
-import {
-	DndContext,
-	type DragEndEvent,
-	DragOverlay,
-	KeyboardSensor,
-	PointerSensor,
-	closestCenter,
-	useSensor,
-	useSensors,
-} from "@dnd-kit/core";
-import {
-	restrictToVerticalAxis,
-	restrictToWindowEdges,
-} from "@dnd-kit/modifiers";
-import {
-	SortableContext,
-	arrayMove,
-	sortableKeyboardCoordinates,
-	verticalListSortingStrategy,
-} from "@dnd-kit/sortable";
+import type { BaseItemDto } from "@jellyfin/sdk/lib/generated-client";
+import LyricsPanel from "@/components/playback/audioPlayer/components/LyricsPanel";
+import PlayerControls from "@/components/playback/audioPlayer/components/PlayerControls";
+import PlayerProgress from "@/components/playback/audioPlayer/components/PlayerProgress";
+import PlayerVolume from "@/components/playback/audioPlayer/components/PlayerVolume";
+import QueuePanel from "@/components/playback/audioPlayer/components/QueuePanel";
+import StatsPanel from "@/components/playback/audioPlayer/components/StatsPanel";
+import { secToTicks, ticksToSec } from "@/utils/date/time";
+import getImageUrlsApi from "@/utils/methods/getImageUrlsApi";
 
 export const Route = createFileRoute("/_api/player/audio")({
 	component: AudioPlayerRoute,
 });
 
-const SEEK_AMOUNT = 10; // seconds to skip on fast_rewind or fast_forward button click
+const SEEK_AMOUNT = 10;
+
+const AudioInfo = React.memo(
+	({
+		item,
+		imageUrl,
+	}: {
+		item: BaseItemDto | undefined | null;
+		imageUrl: string | undefined;
+	}) => (
+		<>
+			<div className="audio-info-image-container">
+				{imageUrl ? (
+					<img
+						alt={item?.Name ?? "Music"}
+						src={imageUrl}
+						className="audio-info-image"
+					/>
+				) : (
+					<div className="audio-info-image-icon">
+						<span
+							className="material-symbols-rounded"
+							style={{ fontSize: "inherit" }}
+						>
+							music_note
+						</span>
+					</div>
+				)}
+			</div>
+
+			<div className="audio-info">
+				<Typography
+					variant="h4"
+					fontWeight={700}
+					noWrap
+					style={{ width: "100%", marginBottom: "0.2em" }}
+				>
+					{item?.Name}
+				</Typography>
+				<Typography
+					variant="h6"
+					fontWeight={400}
+					className="opacity-07"
+					noWrap
+					style={{ width: "100%" }}
+				>
+					{item?.Artists?.join(", ")}
+				</Typography>
+			</div>
+		</>
+	),
+);
 
 function AudioPlayerRoute() {
 	const api = useApiInContext((s) => s.api);
 	const [queue, currentTrack] = useQueue((s) => [s.tracks, s.currentItemIndex]);
-	const [item, audioPlayerRef] = useAudioPlayback((s) => [
+	const [item, audioPlayerRef, volume, isMuted] = useAudioPlayback((s) => [
 		s.item,
 		s.player.ref,
+		s.player.volume,
+		s.player.isMuted,
 	]);
-	const [audioPlayer, setAudioPlayer] = useState<HTMLAudioElement | null>(
-		audioPlayerRef?.current ? audioPlayerRef?.current : null,
-	);
-	useEffect(() => {
-		if (audioPlayerRef?.current) {
-			setAudioPlayer(audioPlayerRef?.current);
-		}
-	}, [audioPlayerRef?.current]);
 
-	console.log(audioPlayer?.paused);
-
-	const [isScrubbing, setIsScrubbing] = useState(false);
-	const [sliderProgress, setSliderProgress] = useState<number | number[]>(0); // this state hold the slider scrubbing value allowing user to scrub track without changing current time
-	const [progress, setProgress] = useState<number | number[]>(
-		audioPlayer?.currentTime ?? 0,
-	);
-
-	const [showLyrics, setShowLyrics] = useState(false);
-
-	const lyrics = useQuery({
-		queryKey: ["player", "audio", item?.Id, "lyrics"],
-		queryFn: async () => {
-			if (!item?.Id || !api) {
-				return null;
-			}
-			return (
-				await getLyricsApi(api).getLyrics({
-					itemId: item?.Id,
-				})
-			).data;
-		},
-		enabled: Boolean(item?.Id),
-	});
+	const [progress, setProgress] = useState(0);
+	const [playing, setPlaying] = useState(false);
+	const [tabValue, setTabValue] = useState(0);
 
 	useEffect(() => {
-		audioPlayerRef?.current?.addEventListener("timeupdate", () => {
-			setProgress(audioPlayerRef?.current?.currentTime ?? 0);
-		});
+		const player = audioPlayerRef?.current;
+		if (!player) return;
+
+		const updateProgress = () => setProgress(player.currentTime);
+		const updatePlaying = () => setPlaying(!player.paused);
+
+		player.addEventListener("timeupdate", updateProgress);
+		player.addEventListener("play", updatePlaying);
+		player.addEventListener("pause", updatePlaying);
+
+		// Initial state
+		setProgress(player.currentTime);
+		setPlaying(!player.paused);
+
 		return () => {
-			audioPlayerRef?.current?.removeEventListener("timeupdate", () => {
-				setProgress(audioPlayerRef?.current?.currentTime ?? 0);
-			});
+			player.removeEventListener("timeupdate", updateProgress);
+			player.removeEventListener("play", updatePlaying);
+			player.removeEventListener("pause", updatePlaying);
 		};
-	}, [item?.Id, currentTrack]);
+	}, [audioPlayerRef?.current, item?.Id]);
 
-	const lyricsContainer = useRef<HTMLDivElement | null>(null);
-	useEffect(() => {
-		if (showLyrics) {
-			const currentLyric = document.querySelector("[data-active-lyric='true']");
-			currentLyric?.scrollIntoView({
-				block: "nearest",
-				inline: "nearest",
-				behavior: "smooth",
-			});
-		}
-	}, [showLyrics, audioPlayer?.currentTime]);
-
-	const sensors = useSensors(
-		useSensor(PointerSensor),
-		useSensor(KeyboardSensor, {
-			coordinateGetter: sortableKeyboardCoordinates,
-		}),
-	);
-	const handleDragEnd = (event: DragEndEvent) => {
-		const { active, over } = event;
-		if (active.id !== over?.id) {
-			const prevState = queue;
-			const oldIndex = prevState
-				?.map((item) => item.Id)
-				.indexOf(String(active.id));
-			const newIndex = prevState
-				?.map((item) => item.Id)
-				.indexOf(String(over?.id));
-
-			if (oldIndex === newIndex) {
-				return;
+	const handlePlayPause = () => {
+		const player = audioPlayerRef?.current;
+		if (player) {
+			if (player.paused) {
+				player.play();
+			} else {
+				player.pause();
 			}
-			if (!oldIndex || !newIndex) {
-				return;
-			}
-			if (oldIndex === -1 || newIndex === -1) {
-				return;
-			}
-			const newState = prevState
-				? arrayMove(prevState, oldIndex, newIndex)
-				: prevState;
-
-			const currentTrack = newState?.map((item) => item.Id).indexOf(item?.Id);
-
-			if (!currentTrack) {
-				return;
-			}
-			setQueue(newState, currentTrack);
-			// setQueue(newState);
 		}
 	};
 
-	const [currentDraggingIndex, setCurrentDraggingIndex] = useState<
-		number | null
-	>(null);
+	const handleSeek = (value: number) => {
+		setProgress(ticksToSec(value));
+	};
+
+	const handleSeekCommit = (value: number) => {
+		const player = audioPlayerRef?.current;
+		if (player) {
+			player.currentTime = ticksToSec(value);
+			setProgress(ticksToSec(value));
+		}
+	};
+
+	const handleRewind = () => {
+		const player = audioPlayerRef?.current;
+		if (player) {
+			player.currentTime -= SEEK_AMOUNT;
+		}
+	};
+
+	const handleForward = () => {
+		const player = audioPlayerRef?.current;
+		if (player) {
+			player.currentTime += SEEK_AMOUNT;
+		}
+	};
+	const handleTabChange = (_: React.SyntheticEvent, newValue: number) => {
+		setTabValue(newValue);
+	};
+
+	const imageUrl = useMemo(
+		() =>
+			item?.ImageTags?.Primary
+				? api &&
+					getImageUrlsApi(api).getItemImageUrlById(item.Id ?? "", "Primary", {
+						tag: item.ImageTags.Primary,
+					})
+				: undefined,
+		[item?.Id, item?.ImageTags?.Primary, api],
+	);
 
 	return (
-		<div
-			className="scrollY padded-top flex flex-column"
-			style={{ gap: "1em" }}
-			key={item?.Id}
-		>
-			<div className="audio-info-container">
-				<div className="audio-info-image-container">
-					{item?.ImageTags?.Primary ? (
-						<img
-							alt={item.Name ?? "Music"}
-							src={
-								api &&
-								getImageUrlsApi(api).getItemImageUrlById(
-									item.Id ?? "",
-									"Primary",
-									{
-										tag: item.ImageTags.Primary,
-									},
-								)
-							}
-							className="audio-info-image"
+		<>
+			<div className="audio-background">
+				{imageUrl && (
+					<img src={imageUrl} alt="" className="audio-background-image" />
+				)}
+			</div>
+			<div className="audio-container" key={item?.Id}>
+				<div className="audio-left-column">
+					<AudioInfo item={item} imageUrl={imageUrl} />
+
+					<PlayerProgress
+						progress={secToTicks(progress)}
+						duration={item?.RunTimeTicks ?? 1}
+						onSeek={handleSeek}
+						onSeekCommit={handleSeekCommit}
+					/>
+
+					<div className="audio-info-controls">
+						<PlayerControls
+							playing={playing}
+							onPlayPause={handlePlayPause}
+							size="large"
+							onRewind={handleRewind}
+							onForward={handleForward}
 						/>
-					) : (
-						<span className="material-symbols-rounded fill audio-info-image-icon">
-							music_note
-						</span>
-					)}
-				</div>
-				<div className="audio-info">
-					<Typography variant="h4" fontWeight={400}>
-						{item?.Name}
-					</Typography>
-					<Typography
-						variant="subtitle1"
-						fontWeight={300}
-						className="opacity-07"
-					>
-						by {item?.Artists?.join(", ")}
-					</Typography>
-					<div
-						className="flex flex-row"
-						style={{ gap: "1em", alignItems: "center" }}
-					>
-						<Typography variant="subtitle2" className="opacity-07">
-							{getRuntimeMusic(secToTicks(audioPlayer?.currentTime ?? 0) ?? 0)}
-						</Typography>
-						<Slider
-							value={
-								isScrubbing ? sliderProgress : secToTicks(Number(progress))
-							}
-							max={item?.RunTimeTicks ?? 1}
-							step={1}
-							key={item?.Id}
-							onChange={(_, newVal) => {
-								setIsScrubbing(true);
-								setSliderProgress(newVal);
-							}}
-							onChangeCommitted={(_, newVal) => {
-								setIsScrubbing(false);
-								Array.isArray(newVal)
-									? setProgress(ticksToSec(newVal[0]))
-									: setProgress(ticksToSec(newVal));
-								if (audioPlayerRef?.current) {
-									audioPlayerRef.current.currentTime = Array.isArray(newVal)
-										? ticksToSec(newVal[0])
-										: ticksToSec(newVal);
-								}
-							}}
-							sx={{
-								"& .MuiSlider-thumb": {
-									width: 14,
-									height: 14,
-									transition: "0.1s ease-in-out",
-									opacity: 0,
-									"&.Mui-active": {
-										width: 20,
-										height: 20,
-										opacity: 1,
-									},
-								},
-								"&:hover .MuiSlider-thumb": {
-									opacity: 1,
-								},
-								"& .MuiSlider-rail": {
-									opacity: 0.28,
-									background: "white",
-								},
-							}}
-						/>
-						<Typography variant="subtitle2" className="opacity-07">
-							{getRuntimeMusic(item?.RunTimeTicks ?? 0)}
-						</Typography>
 					</div>
+
 					<div
+						className="audio-info-volume"
 						style={{
 							display: "flex",
 							alignItems: "center",
@@ -251,154 +202,53 @@ function AudioPlayerRoute() {
 							width: "100%",
 						}}
 					>
-						<div className="audio-info-controls">
-							<PlayPreviousButton />
-							<IconButton
-								onClick={() => {
-									if (audioPlayer) {
-										audioPlayer.currentTime -= SEEK_AMOUNT;
-									}
-								}}
-							>
-								<span className="material-symbols-rounded">fast_rewind</span>
-							</IconButton>
-							<Fab
-								disabled={!audioPlayerRef?.current?.readyState}
-								//@ts-ignore
-								color="white"
-								size="large"
-								onClick={() =>
-									audioPlayerRef?.current?.paused
-										? audioPlayerRef?.current?.play()
-										: audioPlayerRef?.current?.pause()
-								}
-							>
-								<span
-									className="fill material-symbols-rounded"
-									style={{
-										fontSize: "2.4em",
-									}}
-								>
-									{audioPlayerRef?.current?.paused ? "play_arrow" : "pause"}
-								</span>
-							</Fab>
-							<IconButton
-								onClick={() => {
-									if (audioPlayer) {
-										audioPlayer.currentTime += SEEK_AMOUNT;
-									}
-								}}
-							>
-								<span className="material-symbols-rounded">fast_forward</span>
-							</IconButton>
-							<PlayNextButton />
-						</div>
-						<IconButton onClick={() => setShowLyrics((s) => !s)}>
-							<span
-								className={
-									showLyrics
-										? "material-symbols-rounded fill"
-										: "material-symbols-rounded"
-								}
-							>
-								lyrics
-							</span>
-						</IconButton>
+						<PlayerVolume
+							volume={volume}
+							isMuted={isMuted}
+							onVolumeChange={setVolume}
+							onMuteToggle={() => setIsMuted(!isMuted)}
+						/>
+					</div>
+				</div>
+
+				<div className="audio-right-column">
+					<Box sx={{ borderBottom: 1, borderColor: "rgba(255,255,255,0.1)" }}>
+						<Tabs
+							value={tabValue}
+							onChange={handleTabChange}
+							aria-label="audio player tabs"
+							variant="fullWidth"
+							scrollButtons="auto"
+							allowScrollButtonsMobile
+							textColor="inherit"
+							indicatorColor="primary"
+							sx={{
+								"& .MuiTab-root": {
+									color: "rgba(255,255,255,0.5)",
+									"&.Mui-selected": { color: "white" },
+								},
+							}}
+						>
+							<Tab label="Queue" />
+							<Tab label="Lyrics" />
+							<Tab label="Stats" />
+						</Tabs>
+					</Box>
+
+					<div className="audio-right-content">
+						{tabValue === 0 && queue && (
+							<QueuePanel queue={queue} currentTrackIndex={currentTrack} />
+						)}
+						{tabValue === 1 && (
+							<LyricsPanel item={item} api={api} currentTime={progress} />
+						)}
+						{tabValue === 2 && (
+							<StatsPanel item={item} audioRef={audioPlayerRef} />
+						)}
 					</div>
 				</div>
 			</div>
-			{showLyrics && (
-				<div
-					className="audio-lyrics"
-					data-has-synced-lyrics={Boolean(
-						(lyrics.data?.Lyrics?.[0].Start ?? -1) >= 0,
-					)}
-				>
-					<div className="audio-lyrics-container" ref={lyricsContainer}>
-						{lyrics.data?.Lyrics?.map((lyric, index) => (
-							<div
-								className="audio-lyrics-line"
-								key={`${lyric.Text}${index}`}
-								data-active-lyric={
-									secToTicks(audioPlayer?.currentTime ?? 0) >=
-										(lyric.Start ?? 0) &&
-									secToTicks(audioPlayer?.currentTime ?? 0) <
-										(lyrics.data?.Lyrics?.[index + 1]?.Start ?? 0)
-								}
-							>
-								{lyric.Text}
-							</div>
-						))}
-					</div>
-					{!((lyrics.data?.Lyrics?.[0].Start ?? -1) >= 0) && (
-						<Typography
-							className="flex flex-align-center"
-							style={{
-								position: "absolute",
-								bottom: "-2em",
-								opacity: 0.7,
-								gap: "0.4em",
-							}}
-						>
-							<span className="material-symbols-rounded">info</span>
-							Synced subtitles no available
-						</Typography>
-					)}
-				</div>
-			)}
-			<DndContext
-				sensors={sensors}
-				collisionDetection={closestCenter}
-				onDragEnd={handleDragEnd}
-				onDragStart={(event) => {
-					const { active } = event;
-					setCurrentDraggingIndex(
-						queue?.map((item) => item.Id).indexOf(String(active.id) ?? "") ?? 0,
-					);
-				}}
-				modifiers={[restrictToVerticalAxis]}
-			>
-				{queue && (
-					<div className="audio-queue-container">
-						<Typography variant="h5">Queue:</Typography>
-						<SortableContext
-							//@ts-ignore
-							items={queue?.map((track) => track.Id)}
-							strategy={verticalListSortingStrategy}
-						>
-							<div className="audio-queue">
-								{queue?.map((track, index) => (
-									<QueueTrack key={track.Id} track={track} index={index} />
-								))}
-							</div>
-						</SortableContext>
-						<DragOverlay modifiers={[restrictToWindowEdges]}>
-							{(currentDraggingIndex ?? -1) >= 0 && (
-								<div className="audio-queue-track dragging">
-									<span className="material-symbols-rounded">drag_handle</span>
-									<div className="audio-queue-track-info">
-										<Typography className="audio-queue-track-info-name">
-											{queue[currentDraggingIndex ?? 0].Name}
-										</Typography>
-										<Typography
-											fontWeight={300}
-											className="opacity-07"
-											variant="subtitle2"
-										>
-											{queue[currentDraggingIndex ?? 0].Artists?.join(", ")}
-										</Typography>
-									</div>
-									<Typography className="opacity-07">
-										{getRuntimeMusic(
-											queue[currentDraggingIndex ?? 0].RunTimeTicks ?? 0,
-										)}
-									</Typography>
-								</div>
-							)}
-						</DragOverlay>
-					</div>
-				)}
-			</DndContext>
-		</div>
+		</>
 	);
 }
+

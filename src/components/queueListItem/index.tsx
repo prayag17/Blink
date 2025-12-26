@@ -20,6 +20,8 @@ type QueueListItemProps = {
 	dragHandleProps?: any;
 	isEpisode?: boolean;
 	index?: number;
+	className?: string;
+	sx?: any;
 };
 
 const QueueListItem = ({
@@ -30,6 +32,8 @@ const QueueListItem = ({
 	dragHandleProps,
 	isEpisode,
 	index,
+	className,
+	sx,
 }: QueueListItemProps) => {
 	const api = useApiInContext((s) => s.api);
 
@@ -66,6 +70,8 @@ const QueueListItem = ({
 
 	return (
 		<ListItem
+			component="div"
+			className={className}
 			secondaryAction={
 				onDelete && (
 					<IconButton
@@ -100,6 +106,7 @@ const QueueListItem = ({
 					boxShadow: active ? "none" : 2,
 				},
 				pr: onDelete ? 6 : 2,
+				...sx,
 			}}
 		>
 			{dragHandleProps && (

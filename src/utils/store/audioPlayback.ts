@@ -14,6 +14,8 @@ type AudioPlaybackStore = {
 		currentTick: number;
 		playing: boolean;
 		ref: React.RefObject<HTMLAudioElement> | null;
+		volume: number;
+		isMuted: boolean;
 	};
 };
 export const useAudioPlayback = createWithEqualityFn<AudioPlaybackStore>(
@@ -26,6 +28,8 @@ export const useAudioPlayback = createWithEqualityFn<AudioPlaybackStore>(
 			currentTick: 0,
 			playing: false,
 			ref: null,
+			volume: 0.8,
+			isMuted: false,
 		},
 	}),
 	shallow,
@@ -80,7 +84,7 @@ export const generateAudioStreamUrl = (
 		transcodingContainer: transcodingProfile?.Container,
 		transcodingProtocol: transcodingProfile?.Protocol,
 		audioCodec: transcodingProfile?.AudioCodec,
-		playSessionId: new Date().getTime(),
+		playSessionId: Date.now(),
 		startTimeTicks: 0,
 		enableRemoteMedia: false,
 		enableAudioVbrEncoding: true,
@@ -99,4 +103,33 @@ export const setProgress = (ticks: number) => {
 	const state = useAudioPlayback.getState();
 	state.player.currentTick = ticks;
 	useAudioPlayback.setState(state);
+};
+
+export const setVolume = (volume: number) => {
+	const state = useAudioPlayback.getState();
+	state.player.volume = volume;
+	useAudioPlayback.setState(state);
+};
+
+export const setIsMuted = (isMuted: boolean) => {
+	const state = useAudioPlayback.getState();
+	state.player.isMuted = isMuted;
+	useAudioPlayback.setState(state);
+};
+
+export const stopPlayback = () => {
+	const current = useAudioPlayback.getState();
+	useAudioPlayback.setState({
+		display: false,
+		url: "",
+		item: undefined,
+		playlistItemId: undefined,
+		player: {
+			currentTick: 0,
+			playing: false,
+			ref: null,
+			volume: current.player.volume,
+			isMuted: current.player.isMuted,
+		},
+	});
 };
