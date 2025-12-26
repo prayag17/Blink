@@ -117,6 +117,7 @@ export function VideoPlayer() {
 		itemName,
 		isEpisode,
 		episodeTitle,
+		initializeVolume,
 	} = usePlaybackStore(
 		useShallow((state) => ({
 			itemId: state.metadata.item?.Id,
@@ -147,8 +148,13 @@ export function VideoPlayer() {
 			registerPlayerActions: state.registerPlayerActions,
 			setIsUserHovering: state.setIsUserHovering,
 			handleOnSeek: state.handleOnSeek,
+			initializeVolume: state.initializeVolume,
 		})),
 	);
+
+	useEffect(() => {
+		initializeVolume();
+	}, [initializeVolume]);
 
 	const [currentQueueItemIndex, queue] = useQueue((s) => [
 		s.currentItemIndex,

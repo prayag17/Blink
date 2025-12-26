@@ -4,6 +4,12 @@ import type React from "react";
 import { shallow } from "zustand/shallow";
 import { createWithEqualityFn } from "zustand/traditional";
 import playbackProfile from "../playback-profiles";
+import {
+	getPlayerMuted,
+	getPlayerVolume,
+	setPlayerMuted,
+	setPlayerVolume,
+} from "../storage/player";
 
 type AudioPlaybackStore = {
 	display: boolean;
@@ -34,6 +40,15 @@ export const useAudioPlayback = createWithEqualityFn<AudioPlaybackStore>(
 	}),
 	shallow,
 );
+
+// Initialize volume from storage
+(async () => {
+	const volume = await getPlayerVolume("audio");
+	const isMuted = await getPlayerMuted("audio");
+	useAudioPlayback.setState((state) => ({
+		player: { ...state.player, volume, isMuted },
+	}));
+})();
 
 export const playAudio = (
 	url: string,
@@ -109,12 +124,14 @@ export const setVolume = (volume: number) => {
 	const state = useAudioPlayback.getState();
 	state.player.volume = volume;
 	useAudioPlayback.setState(state);
+	setPlayerVolume("audio", volume);
 };
 
 export const setIsMuted = (isMuted: boolean) => {
 	const state = useAudioPlayback.getState();
 	state.player.isMuted = isMuted;
 	useAudioPlayback.setState(state);
+	setPlayerMuted("audio", isMuted);
 };
 
 export const stopPlayback = () => {

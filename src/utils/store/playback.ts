@@ -18,6 +18,12 @@ import { createWithEqualityFn } from "zustand/traditional";
 import { secToTicks, ticksToSec } from "../date/time";
 import getSubtitle from "../methods/getSubtitles";
 import playbackProfile from "../playback-profiles";
+import {
+	getPlayerMuted,
+	getPlayerVolume,
+	setPlayerMuted,
+	setPlayerVolume,
+} from "../storage/player";
 import type audioPlaybackInfo from "../types/audioPlaybackInfo";
 import type subtitlePlaybackInfo from "../types/subtitlePlaybackInfo";
 import { generateAudioStreamUrl, playAudio } from "./audioPlayback";
@@ -246,6 +252,8 @@ type PlaybackStoreActions = {
 	 */
 	tiggerVolumeIndicator: () => void;
 
+	initializeVolume: () => Promise<void>;
+
 	// ReactPlayer related actions
 	_playerActions: {
 		seekTo: (seconds: number) => void;
@@ -324,23 +332,29 @@ export const usePlaybackStore = create<
 				state.playerState.volume = volume;
 				state.playerState.isPlayerMuted = volume === 0; // Mute if volume is 0
 			});
+			setPlayerVolume("video", volume);
+			setPlayerMuted("video", volume === 0);
 			get().tiggerVolumeIndicator(); // Trigger volume change indicator
 		},
 		increaseVolumeByStep: (step) => {
 			set((state) => {
-				state.playerState.volume = Math.min(
+				const newVolume = Math.min(
 					1,
 					Math.max(0, state.playerState.volume + step),
 				);
+				state.playerState.volume = newVolume;
+				setPlayerVolume("video", newVolume);
 			});
 			get().tiggerVolumeIndicator(); // Trigger volume change indicator
 		},
 		decreaseVolumeByStep: (step) => {
 			set((state) => {
-				state.playerState.volume = Math.min(
+				const newVolume = Math.min(
 					1,
 					Math.max(0, state.playerState.volume - step),
 				);
+				state.playerState.volume = newVolume;
+				setPlayerVolume("video", newVolume);
 			});
 			get().tiggerVolumeIndicator(); // Trigger volume change indicator
 		},
@@ -463,10 +477,13 @@ export const usePlaybackStore = create<
 			set((state) => {
 				state.playerState.seekValue = seekValue;
 			}),
-		toggleIsPlayerMuted: () =>
+		toggleIsPlayerMuted: () => {
+			const isMuted = !get().playerState.isPlayerMuted;
 			set((state) => {
-				state.playerState.isPlayerMuted = !state.playerState.isPlayerMuted;
-			}),
+				state.playerState.isPlayerMuted = isMuted;
+			});
+			setPlayerMuted("video", isMuted);
+		},
 		setIsLoading: (isLoading) =>
 			set((state) => {
 				state.playerState.isLoading = isLoading;
@@ -514,6 +531,15 @@ export const usePlaybackStore = create<
 						state.isVolumeInidcatorVisible = false;
 					});
 				}, 1000);
+			});
+		},
+
+		initializeVolume: async () => {
+			const volume = await getPlayerVolume("video");
+			const isMuted = await getPlayerMuted("video");
+			set((state) => {
+				state.playerState.volume = volume;
+				state.playerState.isPlayerMuted = isMuted;
 			});
 		},
 
@@ -645,6 +671,9 @@ export const usePlaybackStore = create<
 		},
 	})),
 );
+
+// Initialize volume from storage
+// usePlaybackStore.getState().initializeVolume();
 
 export const playItem = (args: {
 	mediaSource: PlaybackStoreState["mediaSource"];
