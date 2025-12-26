@@ -127,7 +127,7 @@ importers:
         version: 11.1.0
       jassub:
         specifier: ^1.8.6
-        version: 1.8.6
+        version: 1.8.8
       libpgs:
         specifier: ^0.8.1
         version: 0.8.1
@@ -2178,8 +2178,8 @@ packages:
   isexe@2.0.0:
     resolution: {integrity: sha512-RHxMLp9lnKHGHRng9QFhRCMbYAcVpn69smSGcq3f36xjgVVWThj4qqLbTLlq7Ssj8B+fIQ1EuCEGI2lKsyQeIw==}
 
-  jassub@1.8.6:
-    resolution: {integrity: sha512-56ZTtjM7LfdKsi7boUN/seNOQSOclLuDWEXxnHO55xNakj95SlBrv36hLyNDw0NmoOtLVeqzbpBU1VxT+ubFpg==}
+  jassub@1.8.8:
+    resolution: {integrity: sha512-Vtw27Z0/hN2Tm2Qs4HAR+eONwwSD5ULo/hisPvmiaW9Ya6aFCt7esvWQSZy6nvBASbRyKmpghgeioIPqXGHA0Q==}
 
   js-tokens@4.0.0:
     resolution: {integrity: sha512-RdJUflcE3cUzKiMqQgsCu06FPu9UdIJO0beYbPhHN4k6apgJtifcoCtT9bcxOpYBtpD2kCM6Sbzg4CausW/PKQ==}
@@ -5048,7 +5048,7 @@ snapshots:
 
   isexe@2.0.0: {}
 
-  jassub@1.8.6:
+  jassub@1.8.8:
     dependencies:
       rvfc-polyfill: 1.0.7
 
