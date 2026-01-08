@@ -52,7 +52,7 @@
 		"blurhash": "^2.0.5",
 		"blurhash-wasm": "^0.2.0",
 		"immer": "^11.1.0",
-		"jassub": "^1.8.6",
+		"jassub": "^2.0.0",
 		"libpgs": "^0.8.1",
 		"lodash": "^4.17.21",
 		"material-symbols": "^0.40.2",

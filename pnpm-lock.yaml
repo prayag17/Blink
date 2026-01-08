@@ -91,7 +91,7 @@ importers:
         version: 2.3.1
       '@tauri-apps/plugin-store':
         specifier: github:tauri-apps/tauri-plugin-store#v2
-        version: https://codeload.github.com/tauri-apps/tauri-plugin-store/tar.gz/09ec2824d5ba6263f403662ef4f9bafd2982aebe
+        version: https://codeload.github.com/tauri-apps/tauri-plugin-store/tar.gz/6fd5d0d17e2d6b1b8dc350900164092e2886f212
       '@tauri-apps/plugin-updater':
         specifier: 2.9.0
         version: 2.9.0
@@ -126,8 +126,8 @@ importers:
         specifier: ^11.1.0
         version: 11.1.0
       jassub:
-        specifier: ^1.8.6
-        version: 1.8.6
+        specifier: ^2.0.0
+        version: 2.0.20
       libpgs:
         specifier: ^0.8.1
         version: 0.8.1
@@ -1468,9 +1468,9 @@ packages:
   '@tauri-apps/plugin-process@2.3.1':
     resolution: {integrity: sha512-nCa4fGVaDL/B9ai03VyPOjfAHRHSBz5v6F/ObsB73r/dA3MHHhZtldaDMIc0V/pnUw9ehzr2iEG+XkSEyC0JJA==}
 
-  '@tauri-apps/plugin-store@https://codeload.github.com/tauri-apps/tauri-plugin-store/tar.gz/09ec2824d5ba6263f403662ef4f9bafd2982aebe':
-    resolution: {tarball: https://codeload.github.com/tauri-apps/tauri-plugin-store/tar.gz/09ec2824d5ba6263f403662ef4f9bafd2982aebe}
-    version: 2.4.1
+  '@tauri-apps/plugin-store@https://codeload.github.com/tauri-apps/tauri-plugin-store/tar.gz/6fd5d0d17e2d6b1b8dc350900164092e2886f212':
+    resolution: {tarball: https://codeload.github.com/tauri-apps/tauri-plugin-store/tar.gz/6fd5d0d17e2d6b1b8dc350900164092e2886f212}
+    version: 2.4.2
 
   '@tauri-apps/plugin-updater@2.9.0':
     resolution: {integrity: sha512-j++sgY8XpeDvzImTrzWA08OqqGqgkNyxczLD7FjNJJx/uXxMZFz5nDcfkyoI/rCjYuj2101Tci/r/HFmOmoxCg==}
@@ -1556,6 +1556,9 @@ packages:
     engines: {node: ^20.19.0 || >=22.12.0}
     peerDependencies:
       vite: ^4.2.0 || ^5.0.0 || ^6.0.0 || ^7.0.0
+
+  abslink@1.1.6:
+    resolution: {integrity: sha512-8fQgnUoVSgc1IhOrYzdDY+wTDPktbuYjds2LKf9kWYWKwDnHgXU168gdV3sPei7vevFf5m2fPZ6IQSKZkSjHVg==}
 
   acorn-jsx@5.3.2:
     resolution: {integrity: sha512-rq9s+JNhf0IChjtDXxllJ7g41oZk5SlXtp0LHwyA5cejwn7vKmKp4pPri6YEePv2PU65sAsegbXtIinmDFDXgQ==}
@@ -2178,8 +2181,8 @@ packages:
   isexe@2.0.0:
     resolution: {integrity: sha512-RHxMLp9lnKHGHRng9QFhRCMbYAcVpn69smSGcq3f36xjgVVWThj4qqLbTLlq7Ssj8B+fIQ1EuCEGI2lKsyQeIw==}
 
-  jassub@1.8.6:
-    resolution: {integrity: sha512-56ZTtjM7LfdKsi7boUN/seNOQSOclLuDWEXxnHO55xNakj95SlBrv36hLyNDw0NmoOtLVeqzbpBU1VxT+ubFpg==}
+  jassub@2.0.20:
+    resolution: {integrity: sha512-uPOuIgbh9mSzR+jyGdcZhwT4Nsxl1wycApBow98QJ2PPWpfy49voE+pDFlqsZQYrmyESQMlXBQA0fmVKw7thMA==}
 
   js-tokens@4.0.0:
     resolution: {integrity: sha512-RdJUflcE3cUzKiMqQgsCu06FPu9UdIJO0beYbPhHN4k6apgJtifcoCtT9bcxOpYBtpD2kCM6Sbzg4CausW/PKQ==}
@@ -2876,6 +2879,9 @@ packages:
 
   svg-parser@2.0.4:
     resolution: {integrity: sha512-e4hG1hRwoOdRb37cIMSgzNsxyzKfayW6VOflrwvR+/bzrkyxY/31WkbgnQpgtrNp1SdpJvpUAGTa/ZoiPNDuRQ==}
+
+  throughput@1.0.2:
+    resolution: {integrity: sha512-jvK1ZXuhsggjb3qYQjMiU/AVYYiTeqT5thWvYR2yuy2LGM84P5MSSyAinwHahGsdBYKR9m9HncVR/3f3nFKkxg==}
 
   tiktok-video-element@0.1.2:
     resolution: {integrity: sha512-w6TboLm236XJKKiIXIhCbYCnUxbixBbaAoty0etaEAZ/2kHkVIdfZdv2oouMU/HGMsWCHI/VjQ3wU3MJ+s192Q==}
@@ -4291,7 +4297,7 @@ snapshots:
     dependencies:
       '@tauri-apps/api': 2.9.1
 
-  '@tauri-apps/plugin-store@https://codeload.github.com/tauri-apps/tauri-plugin-store/tar.gz/09ec2824d5ba6263f403662ef4f9bafd2982aebe':
+  '@tauri-apps/plugin-store@https://codeload.github.com/tauri-apps/tauri-plugin-store/tar.gz/6fd5d0d17e2d6b1b8dc350900164092e2886f212':
     dependencies:
       '@tauri-apps/api': 2.9.1
 
@@ -4394,6 +4400,8 @@ snapshots:
       vite: 7.3.0(@types/node@25.0.3)(sass@1.97.1)(tsx@4.21.0)(yaml@2.8.0)
     transitivePeerDependencies:
       - supports-color
+
+  abslink@1.1.6: {}
 
   acorn-jsx@5.3.2(acorn@8.15.0):
     dependencies:
@@ -5048,9 +5056,11 @@ snapshots:
 
   isexe@2.0.0: {}
 
-  jassub@1.8.6:
+  jassub@2.0.20:
     dependencies:
+      abslink: 1.1.6
       rvfc-polyfill: 1.0.7
+      throughput: 1.0.2
 
   js-tokens@4.0.0: {}
 
@@ -5910,6 +5920,8 @@ snapshots:
   supports-preserve-symlinks-flag@1.0.0: {}
 
   svg-parser@2.0.4: {}
+
+  throughput@1.0.2: {}
 
   tiktok-video-element@0.1.2: {}
 
