@@ -12,10 +12,12 @@ import { RepeatMode } from "@jellyfin/sdk/lib/generated-client";
 import { useMutation } from "@tanstack/react-query";
 import { createFileRoute, useRouter } from "@tanstack/react-router";
 import JASSUB from "jassub";
-//@ts-expect-error
-import workerUrl from "jassub/dist/jassub-worker.js?url";
-//@ts-expect-error
-import wasmUrl from "jassub/dist/jassub-worker.wasm?url";
+// @ts-expect-error
+import wasmUrl from "jassub/dist/wasm/jassub-worker.wasm?url"; // non-SIMD fallback
+// @ts-expect-error
+import modernWasmUrl from "jassub/dist/wasm/jassub-worker-modern.wasm?url"; // SIMD
+// @ts-expect-error
+import workerUrl from "jassub/dist/worker/worker.js?url"; // Web Worker
 import { PgsRenderer } from "libpgs";
 //@ts-expect-error
 import pgsWorkerUrl from "libpgs/dist/libpgs.worker.js?url";
@@ -469,11 +471,15 @@ export function VideoPlayer() {
 			) {
 				jassubRenderer = new JASSUB({
 					video: internalPlayer,
-					workerUrl,
-					wasmUrl,
-					subUrl: `${api?.basePath}${mediaSource.subtitle.url}${urlParams}`,
+					subUrl: `${api?.basePath}${mediaSource.subtitle.url}`,
 					availableFonts: { "noto sans": font },
 					fallbackFont: "noto sans",
+					workerUrl,
+					wasmUrl,
+					modernWasmUrl,
+				});
+				jassubRenderer.ready.then(() => {
+					console.log("JASSUB subtitle renderer is ready");
 				});
 			} else if (
 				mediaSource.subtitle.format === "subrip" ||
@@ -633,7 +639,7 @@ export function VideoPlayer() {
 				height="100vh"
 				style={{
 					position: "fixed",
-					zIndex: 1,
+					zIndex: 0,
 				}}
 				volume={isPlayerMuted ? 0 : volume}
 				onWaiting={handleOnBuffer}
