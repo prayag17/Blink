@@ -35,6 +35,7 @@ interface ItemHeaderProps {
 	mediaQualityInfo?: MediaQualityInfo;
 	scrollTargetRef?: RefObject<HTMLDivElement | null>;
 	children?: ReactNode;
+	backdropSrc?: string | null;
 }
 
 const ItemHeader = ({
@@ -43,6 +44,7 @@ const ItemHeader = ({
 	mediaQualityInfo,
 	scrollTargetRef,
 	children,
+	backdropSrc,
 }: ItemHeaderProps) => {
 	const isEpisode = item.Type === "Episode";
 	const backdropTag =
@@ -61,7 +63,7 @@ const ItemHeader = ({
 	const logoId =
 		isEpisode && parentLogoImageTag ? (item.SeriesId ?? item.Id) : item.Id;
 
-	const LogoOrTitle = () =>
+	const logo =
 		logoTag ? (
 			<img
 				alt={item.Name ?? ""}
@@ -93,14 +95,15 @@ const ItemHeader = ({
 						targetRef={scrollTargetRef}
 						alt={item.Name ?? ""}
 						backdropSrc={
-							backdropTag
+							backdropSrc ??
+							(backdropTag
 								? api &&
 									getImageUrlsApi(api).getItemImageUrlById(
 										backdropId ?? "",
 										"Backdrop",
 										{ tag: backdropTag },
 									)
-								: undefined
+								: undefined)
 						}
 						fallbackSrc={heroBg}
 					/>
@@ -156,10 +159,10 @@ const ItemHeader = ({
 							width: "fit-content",
 						}}
 					>
-						<LogoOrTitle />
+						{logo}
 					</Link>
 				) : (
-					<LogoOrTitle />
+					logo
 				)}
 				{isEpisode && (
 					<Typography mb={2} fontWeight={200} variant="h4">

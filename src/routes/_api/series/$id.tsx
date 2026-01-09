@@ -303,7 +303,12 @@ function SeriesTitlePage() {
 				className="scrollY padded-top flex flex-column item item-series"
 				ref={containerRef}
 			>
-				<ItemHeader item={item.data} api={api} scrollTargetRef={containerRef}>
+				<ItemHeader
+					item={item.data}
+					api={api}
+					scrollTargetRef={containerRef}
+					backdropSrc={backdropImage.url}
+				>
 					<div className="item-hero-buttons-container">
 						<div
 							className="flex flex-row"

@@ -1,4 +1,5 @@
 import {
+	AnimatePresence,
 	type HTMLMotionProps,
 	motion,
 	useScroll,
@@ -17,6 +18,15 @@ interface ItemBackdropProps {
 	motionProps?: HTMLMotionProps<"img">;
 }
 
+const MotionImg = motion.img;
+
+const animationProps = {
+	initial: { opacity: 0 },
+	animate: { opacity: 1 },
+	exit: { opacity: 0 },
+	transition: { duration: 0.5 },
+};
+
 /**
  * ItemBackdrop delays applying motion-driven parallax until after mount
  * to avoid hydration timing errors ("Target ref is defined but not hydrated").
@@ -24,7 +34,7 @@ interface ItemBackdropProps {
  * attached, it renders a static img to prevent motion from touching an
  * unhydrated DOM node.
  */
-function ItemBackdropContent({
+const ItemBackdropContent = React.memo(function ItemBackdropContent({
 	targetRef,
 	src,
 	alt,
@@ -47,19 +57,18 @@ function ItemBackdropContent({
 	});
 	const y = useTransform(scrollYProgress, [0, 1], [-distance, distance]);
 	return (
-		<motion.img
+		<MotionImg
 			alt={alt}
 			src={src}
 			className={className ?? "item-hero-backdrop"}
 			onLoad={(e) => {
-				e.currentTarget.style.opacity = "1";
 				onLoad?.(e);
 			}}
 			style={{ y }}
 			{...motionProps}
 		/>
 	);
-}
+});
 
 export function ItemBackdrop({
 	targetRef,
@@ -90,6 +99,14 @@ export function ItemBackdrop({
 		return () => cancelAnimationFrame(raf);
 	}, [targetRef, ready]);
 
+	const finalMotionProps = React.useMemo(
+		() => ({
+			...animationProps,
+			...motionProps,
+		}),
+		[motionProps],
+	);
+
 	if (!ready) {
 		return (
 			<img
@@ -105,15 +122,18 @@ export function ItemBackdrop({
 	}
 
 	return (
-		<ItemBackdropContent
-			targetRef={targetRef}
-			src={src}
-			alt={alt}
-			distance={distance}
-			className={className}
-			onLoad={onLoad}
-			motionProps={motionProps}
-		/>
+		<AnimatePresence>
+			<ItemBackdropContent
+				key={src}
+				targetRef={targetRef}
+				src={src}
+				alt={alt}
+				distance={distance}
+				className={className}
+				onLoad={onLoad}
+				motionProps={finalMotionProps}
+			/>
+		</AnimatePresence>
 	);
 }
 

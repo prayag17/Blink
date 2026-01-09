@@ -75,6 +75,9 @@ $cardWidth: 18%;
         object-fit: cover;
         object-position: top;
         opacity: 0;
+        position: absolute;
+        top: 0;
+        left: 0;
         transition: opacity $transition-time-default;
         &-container {
             filter: brightness(0.8);
