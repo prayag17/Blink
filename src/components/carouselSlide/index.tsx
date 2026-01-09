@@ -1,29 +1,47 @@
-import React from "react";
-
-import { motion } from "motion/react";
-
-import Button from "@mui/material/Button";
-import Chip from "@mui/material/Chip";
-import Stack from "@mui/material/Stack";
-import Typography from "@mui/material/Typography";
-
-import { yellow } from "@mui/material/colors";
-
-import { endsAt, getRuntime } from "@/utils/date/time";
-import { green, red } from "@mui/material/colors";
-import { useNavigate } from "@tanstack/react-router";
-import { getTypeIcon } from "../utils/iconsCollection";
-
-import { useApiInContext } from "@/utils/store/api";
-import { useCarouselStore } from "@/utils/store/carousel";
-import { useCentralStore } from "@/utils/store/central";
 import {
 	type BaseItemDto,
 	BaseItemKind,
 } from "@jellyfin/sdk/lib/generated-client";
+import Button from "@mui/material/Button";
+import Chip from "@mui/material/Chip";
+import { green, red, yellow } from "@mui/material/colors";
+import Stack from "@mui/material/Stack";
+import Typography from "@mui/material/Typography";
+import { useNavigate } from "@tanstack/react-router";
+import { motion } from "motion/react";
+import React from "react";
+import { endsAt, getRuntime } from "@/utils/date/time";
+
+import { useApiInContext } from "@/utils/store/api";
+import { useCarouselStore } from "@/utils/store/carousel";
+import { useCentralStore } from "@/utils/store/central";
 import LikeButton from "../buttons/likeButton";
 import MarkPlayedButton from "../buttons/markPlayedButton";
 import PlayButton from "../buttons/playButton";
+import { getTypeIcon } from "../utils/iconsCollection";
+
+const textVariants = {
+	initial: (direction: string) => ({
+		x: direction === "right" ? 40 : -40,
+		opacity: 0,
+	}),
+	animate: {
+		x: 0,
+		opacity: 1,
+		transition: {
+			duration: 0.35,
+			ease: [0.2, 0, 0, 1],
+		},
+	},
+	exit: (direction: string) => ({
+		x: direction === "right" ? -40 : 40,
+		opacity: 0,
+		transition: {
+			duration: 0.2,
+			ease: "easeInOut",
+		},
+	}),
+};
 
 const CarouselSlide = ({ item }: { item: BaseItemDto }) => {
 	const api = useApiInContext((s) => s.api);
@@ -66,7 +84,13 @@ const CarouselSlide = ({ item }: { item: BaseItemDto }) => {
 
 	return (
 		<div className="hero-carousel-slide">
-			<div className="hero-carousel-background-container">
+			<motion.div
+				className="hero-carousel-background-container"
+				initial={{ opacity: 0 }}
+				animate={{ opacity: 1 }}
+				exit={{ opacity: 0 }}
+				transition={{ duration: 0.4, ease: "easeInOut" }}
+			>
 				{item.BackdropImageTags?.length ? (
 					<img
 						alt={item.Name ?? "item"}
@@ -89,39 +113,39 @@ const CarouselSlide = ({ item }: { item: BaseItemDto }) => {
 						{getTypeIcon(item.Type ?? "Movie")}
 					</div>
 				)}
-			</div>
-			<div className="hero-carousel-detail">
+			</motion.div>
+			<motion.div
+				className="hero-carousel-detail"
+				initial="initial"
+				animate="animate"
+				exit="exit"
+				variants={{
+					animate: {
+						transition: {
+							staggerChildren: 0.05,
+							delayChildren: 0.05,
+						},
+					},
+					exit: {
+						transition: {
+							staggerChildren: 0.02,
+							staggerDirection: -1,
+						},
+					},
+				}}
+			>
+				{/* @ts-ignore */}
 				<Typography
 					component={motion.div}
-					initial={{
-						transform:
-							animationDirection === "right"
-								? "translateX(60px)"
-								: "translateX(-60px)",
-						opacity: 0,
-					}}
-					animate={{
-						transform: "translateX(0px)",
-						opacity: 1,
-					}}
-					exit={{
-						transform:
-							animationDirection === "right"
-								? "translateX(-60px)"
-								: "translateX(60px)",
-						opacity: 0,
-					}}
-					transition={{
-						duration: 0.25,
-						ease: "easeInOut",
-					}}
+					custom={animationDirection}
+					variants={textVariants}
 					key={item.Id}
 					variant="h2"
 					className="hero-carousel-text"
 					sx={{
 						mb: "5px",
 					}}
-					fontWeight={200}
+					fontWeight={600}
 					overflow="visible"
 				>
 					{!item.ImageTags?.Logo ? (
@@ -142,31 +166,11 @@ const CarouselSlide = ({ item }: { item: BaseItemDto }) => {
 						/>
 					)}
 				</Typography>
+				{/* @ts-ignore */}
 				<Stack
 					component={motion.div}
-					initial={{
-						transform:
-							animationDirection === "right"
-								? "translateX(20px)"
-								: "translateX(-20px)",
-						opacity: 0,
-					}}
-					animate={{
-						transform: "translateX(0px)",
-						opacity: 1,
-					}}
-					exit={{
-						transform:
-							animationDirection === "right"
-								? "translateX(-20px)"
-								: "translateX(20px)",
-
-						opacity: 0,
-					}}
-					transition={{
-						duration: 0.25,
-						ease: "easeInOut",
-					}}
+					custom={animationDirection}
+					variants={textVariants}
 					direction="row"
 					gap={2}
 					className="hero-carousel-info"
@@ -176,7 +180,7 @@ const CarouselSlide = ({ item }: { item: BaseItemDto }) => {
 				>
 					{item.PremiereDate && (
 						<Typography style={{ opacity: "0.8" }} variant="subtitle2">
-							{item.ProductionYear}
+							{item.ProductionYear ?? ""}
 						</Typography>
 					)}
 					{item.OfficialRating && (
@@ -239,82 +243,49 @@ const CarouselSlide = ({ item }: { item: BaseItemDto }) => {
 						</div>
 					)}
 
-					{item.RunTimeTicks ? (
+					{item.RunTimeTicks && (
 						<Typography style={{ opacity: "0.8" }} variant="subtitle2">
 							{getRuntime(item.RunTimeTicks)}
 						</Typography>
-					) : (
-						<></>
 					)}
-					{item.RunTimeTicks ? (
+					{item.RunTimeTicks && (
 						<Typography style={{ opacity: "0.8" }} variant="subtitle2">
 							{endsAt(
 								item.RunTimeTicks - (item.UserData?.PlaybackPositionTicks ?? 0),
 							)}
 						</Typography>
-					) : (
-						<></>
 					)}
 					<Typography variant="subtitle2" style={{ opacity: 0.8 }}>
 						{item.Genres?.slice(0, 4).join(" / ")}
 					</Typography>
 				</Stack>
+				{/* @ts-ignore */}
 				<Typography
 					component={motion.div}
-					initial={{
-						transform:
-							animationDirection === "right"
-								? "translateX(20px)"
-								: "translateX(-20px)",
-						opacity: 0,
-					}}
-					animate={{
-						transform: "translateX(0px)",
-						opacity: 1,
-					}}
-					exit={{
-						transform:
-							animationDirection === "right"
-								? "translateX(-20px)"
-								: "translateX(20px)",
-
-						opacity: 0,
-					}}
-					transition={{
-						duration: 0.25,
-						ease: "easeInOut",
-					}}
-					className="hero-carousel-text"
-					sx={{
-						display: "-webkit-box",
-						maxWidth: "70%",
-						maxHeight: "50%",
-						textOverflow: "ellipsis",
-						overflow: "hidden",
-						WebkitLineClamp: "4",
-						WebkitBoxOrient: "vertical",
-					}}
-					variant="subtitle2"
-					fontWeight={300}
+					custom={animationDirection}
+					variants={textVariants}
+					className="hero-carousel-overview"
+					variant="body1"
+					fontWeight={400}
 				>
 					{item.Overview}
 				</Typography>
 
+				{/* @ts-ignore */}
 				<Stack
-					mt={3}
 					direction="row"
-					gap={3}
+					gap={2}
 					width="100%"
 					className="hero-carousel-button-container"
 					alignItems="center"
+					component={motion.div}
+					custom={animationDirection}
+					variants={textVariants}
 				>
 					<PlayButton
 						item={item}
 						userId={user?.Id}
 						itemType={item.Type ?? "Movie"}
-						currentAudioTrack={0}
-						currentSubTrack={0}
-						currentVideoTrack={0}
 						buttonProps={{
 							size: "large",
 						}}
@@ -330,7 +301,7 @@ const CarouselSlide = ({ item }: { item: BaseItemDto }) => {
 
 					<Button
 						size="large"
-						//@ts-ignore
+						//@ts-expect-error
 						color="white"
 						variant="outlined"
 						endIcon={
@@ -364,7 +335,7 @@ const CarouselSlide = ({ item }: { item: BaseItemDto }) => {
 						/>
 					</Stack>
 				</Stack>
-			</div>
+			</motion.div>
 		</div>
 	);
 };

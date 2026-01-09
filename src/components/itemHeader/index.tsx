@@ -4,6 +4,7 @@ import Chip from "@mui/material/Chip";
 import { green, red, yellow } from "@mui/material/colors";
 import Stack from "@mui/material/Stack";
 import Typography from "@mui/material/Typography";
+import { Link } from "@tanstack/react-router";
 import React, { type ReactNode, type RefObject } from "react";
 import { Blurhash } from "react-blurhash";
 import heroBg from "@/assets/herobg.png";
@@ -26,7 +27,6 @@ import { getTypeIcon } from "@/components/utils/iconsCollection";
 import { endsAt, getRuntime } from "@/utils/date/time";
 import getImageUrlsApi from "@/utils/methods/getImageUrlsApi";
 import type MediaQualityInfo from "@/utils/types/mediaQualityInfo";
-import { Link } from "@tanstack/react-router";
 import "./itemHeader.scss";
 
 interface ItemHeaderProps {
@@ -54,8 +54,6 @@ const ItemHeader = ({
 			? (item.ParentBackdropItemId ?? item.Id)
 			: item.Id;
 
-	// @ts-expect-error - ParentLogoImageTag is not in the type definition
-	// eslint-disable-next-line @typescript-eslint/no-explicit-any
 	const parentLogoImageTag =
 		(item as any).ParentLogoImageTag || (item as any).ParentLogoImageTags?.[0];
 	const logoTag =

@@ -6,7 +6,7 @@ import { getRuntimeMusic } from "@/utils/date/time";
 interface PlayerProgressProps {
 	progress: number;
 	duration: number;
-	onSeek: (value: number) => void;
+	onSeek?: (value: number) => void;
 	onSeekCommit: (value: number) => void;
 }
 
@@ -29,7 +29,7 @@ const PlayerProgress = ({
 		setIsScrubbing(true);
 		const newValue = Array.isArray(value) ? value[0] : value;
 		setSliderValue(newValue);
-		onSeek(newValue);
+		onSeek?.(newValue);
 	};
 
 	const handleChangeCommitted = (_: unknown, value: number | number[]) => {

@@ -26,7 +26,7 @@ const AudioPlayer = () => {
 	const user = useCentralStore((s) => s.currentUser);
 	const navigate = useNavigate();
 	const location = useLocation();
-
+	
 	const audioRef = useRef<HTMLAudioElement | null>(null);
 	const [url, display, item, volume, isMuted] = useAudioPlayback((state) => [
 		state.url,
@@ -35,32 +35,33 @@ const AudioPlayer = () => {
 		state.player.volume,
 		state.player.isMuted,
 	]);
-
+	
 	const [tracks, currentTrack] = useQueue((state) => [
 		state.tracks,
 		state.currentItemIndex,
 	]);
-
+	
 	const [playing, setPlaying] = useState(false);
 	const [progress, setProgress] = useState(0);
-
+	
 	// Sync volume and ref
 	useEffect(() => {
 		if (display) {
 			setAudioRef(audioRef);
+
 			if (audioRef.current) {
 				audioRef.current.volume = isMuted ? 0 : volume;
 			}
 		}
 	}, [display, url, tracks?.[currentTrack]?.Id]);
-
+	
 	// Update volume when state changes
 	useEffect(() => {
 		if (audioRef.current) {
 			audioRef.current.volume = isMuted ? 0 : volume;
 		}
 	}, [volume, isMuted]);
-
+	
 	// Media Session Metadata
 	useEffect(() => {
 		if ("mediaSession" in navigator && item) {
@@ -87,7 +88,7 @@ const AudioPlayer = () => {
 			});
 		}
 	}, [item, api]);
-
+	
 	// Media Session Action Handlers
 	useEffect(() => {
 		if ("mediaSession" in navigator) {
@@ -114,7 +115,7 @@ const AudioPlayer = () => {
 			});
 		}
 	}, [api, user?.Id]);
-
+	
 	const updatePositionState = () => {
 		if (
 			"mediaSession" in navigator &&
@@ -132,7 +133,7 @@ const AudioPlayer = () => {
 			}
 		}
 	};
-
+	
 	const handlePlayPause = () => {
 		if (audioRef.current) {
 			if (audioRef.current.paused) {
@@ -144,41 +145,41 @@ const AudioPlayer = () => {
 			}
 		}
 	};
-
+	
 	const handleTimeUpdate = (e: SyntheticEvent<HTMLAudioElement>) => {
 		setProgress(secToTicks(e.currentTarget.currentTime));
 	};
-
+	
 	const handleEnded = () => {
 		setPlaying(false);
 		if (tracks?.[currentTrack + 1]?.Id && api && user?.Id) {
 			playItemFromQueue("next", user.Id, api);
 		}
 	};
-
+	
 	const handleSeekCommit = (value: number) => {
 		if (audioRef.current) {
 			audioRef.current.currentTime = ticksToSec(value);
 			setProgress(value);
 		}
 	};
-
+	
 	const handleVolumeChange = (newVolume: number) => {
 		setVolume(newVolume);
 	};
-
+	
 	const handleMuteToggle = () => {
 		setIsMuted(!isMuted);
 	};
-
+	
 	const handleClose = () => {
 		useAudioPlayback.setState(useAudioPlayback.getInitialState());
 	};
-
+	
 	const handleNavigate = () => {
 		navigate({ to: "/player/audio" });
 	};
-
+	
 	// Listen to play/pause events directly from audio element to keep state in sync
 	// (e.g. if paused by media keys)
 	const onPlay = () => {
@@ -195,7 +196,7 @@ const AudioPlayer = () => {
 			navigator.mediaSession.playbackState = "paused";
 		}
 	};
-
+	
 	return (
 		<AnimatePresence mode="sync">
 			{display && (
@@ -214,7 +215,7 @@ const AudioPlayer = () => {
 					<PlayerInfo
 						item={item}
 						api={api}
-						trackName={tracks?.[currentTrack]?.Name}
+						trackName={tracks?.[currentTrack]?.Name ?? "Unknown Track"}
 					/>
 
 					<audio

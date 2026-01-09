@@ -1,15 +1,42 @@
 .carousel {
 	position: relative;
-	height: 64vh;
-		width: calc(100% + 2*$page-margin);
-		left: -$page-margin;
-	margin-bottom: 3.2em;
-	.slider {
-			position: absolute;
-			bottom: 0;
-			max-width: 35%;
-			right: $page-margin;
+	overflow: hidden;
+	height: 62vh;
+	margin-bottom: 2em;
+	display: grid;
+	grid-template-areas: "main sidebar";
+	grid-template-columns: 1fr 25vw;
+	gap: 1em;
+	
+	&-sidebar {
+		overflow-y: auto;
+		height: inherit;
+		background: rgb(0 0 0 / 0.2);
+		border-radius: 20px;
+		border: 1.2px solid rgb(255 255 255 / 0.1);
+		grid-area: sidebar;
+
+		&::-webkit-scrollbar {
+			width: 14px;
 		}
+
+		&::-webkit-scrollbar-track {
+			background: transparent;
+			margin-block: 1em;
+		}
+
+		&::-webkit-scrollbar-thumb {
+			background-color: rgba(255, 255, 255, 0.2);
+			border-radius: 10px;
+			border: 4px solid transparent;
+			background-clip: content-box;
+
+			&:hover {
+				background-color: rgba(255, 255, 255, 0.4);
+			}
+		}
+	}
+	
 	&-button {
 		position: absolute !important;
 		top: 50%;
@@ -25,14 +52,46 @@
 		}
 	}
 	
+	&-ticker{
+		overflow: hidden;
+		height: 8em;
+		display: flex;
+		// margin-bottom: 1em;
+		padding: 1em;
+		align-items: center;
+		gap: 1em;
+		border-bottom: 1px solid rgb(255 255 255 / 0.1);
+		transition: background $transition-time-fast;
+
+		&:last-child {
+			margin-bottom: 0;
+			border: none;
+		}
+
+		&:hover {
+			background: rgb(0 0 0 / .25);
+			cursor: pointer;
+		}
+
+		&.active {
+			background: rgb(255 255 255 / 0.05);
+		}
+
+		&-image {
+			height: 100%;
+			border-radius: 4px;
+			object-fit: cover;
+		}
+	}
+	
 	&-indicator {
 		aspect-ratio: 1.77777;
-			overflow: hidden;
-			border-radius: 2px;
-			padding: 2px;
-			transition: opacity $transition-time-fast;
-			opacity: 0.5;
-			width: auto;
+		overflow: hidden;
+		border-radius: 2px;
+		padding: 2px;
+		transition: opacity $transition-time-fast;
+		opacity: 0.5;
+		width: auto;
 		&:hover {
 			cursor: pointer;
 			opacity: 0.8;
@@ -44,29 +103,29 @@
 			align-items: center;
 			justify-content: center;
 		}
-&-image {
-	width: 100%;
-	height: 100%;
-	object-fit: cover;
-	border-radius: 4px;
-}
-
-&-icon {
-	display: flex;
-	align-items: center;
-	justify-content: center;
-	width: 100%;
-	height: 100%;
-	background: rgb(155 155 155 / 0.4);
-	border-radius: 4px;
-}
+		&-image {
+			width: 100%;
+			height: 100%;
+			object-fit: cover;
+			border-radius: 4px;
+		}
+		
+		&-icon {
+			display: flex;
+			align-items: center;
+			justify-content: center;
+			width: 100%;
+			height: 100%;
+			background: rgb(155 155 155 / 0.4);
+			border-radius: 4px;
+		}
 		&.active {
 			opacity: 1;
 			
-				.material-symbols-rounded {
-			
-					--fill: 1;
-				}
+			.material-symbols-rounded {
+				
+				--fill: 1;
 			}
-			}
+		}
+	}
 }

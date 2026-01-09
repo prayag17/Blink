@@ -1,28 +1,19 @@
-import { AnimatePresence, motion } from "motion/react";
-import type { PanInfo } from "motion/react";
-import React, { useEffect, useState, useMemo, useCallback } from "react";
-import type { MouseEvent, PointerEvent } from "react";
+import { AnimatePresence } from "motion/react";
+import React, { useCallback, useEffect, useState } from "react";
 
 import { useCarouselStore } from "../../utils/store/carousel";
 import "./carousel.scss";
-import { useApiInContext } from "@/utils/store/api";
-import type { BaseItemDto } from "@jellyfin/sdk/lib/generated-client";
-import CarouselSlide from "../carouselSlide";
-
+import {
+	type BaseItemDto,
+	BaseItemKind,
+} from "@jellyfin/sdk/lib/generated-client";
 import getImageUrlsApi from "@/utils/methods/getImageUrlsApi";
-import Slider from "../Slider";
-import { getTypeIcon } from "../utils/iconsCollection";
-
-const swipeConfidenceThreshold = 8000;
-const swipePower = (offset: number, velocity: number) => {
-	return Math.abs(offset) * velocity;
-};
+import { useApiInContext } from "@/utils/store/api";
+import CarouselSlide from "../carouselSlide";
+import CarouselTickers from "./tickers";
 
 // Memoize CarouselSlide to prevent unnecessary re-renders
 const MemoizedCarouselSlide = React.memo(CarouselSlide);
-
-// Memoize Slider to prevent unnecessary re-renders
-const MemoizedSlider = React.memo(Slider);
 
 const Carousel = ({
 	content,
@@ -41,112 +32,50 @@ const Carousel = ({
 
 	const api = useApiInContext((s) => s.api);
 
-	// Memoize the content mapping
-	const sliderContent = useMemo(() => {
-		return content.map((item, index) => {
-			return (
-				<motion.div
-					className={
-						currentSlide === index
-							? "carousel-indicator active"
-							: "carousel-indicator"
-					}
-					layout
-					initial={{
-						height: "4.6em",
-					}}
-					whileHover={{
-						height: "5.5em",
-					}}
-					transition={{
-						duration: 0.05,
-					}}
-					key={item.Id}
-					onClick={() => {
-						if (currentSlide > index) {
-							setDirection("left");
-						} else if (currentSlide <= index) {
-							setDirection("right");
-						}
-						setCurrentSlide(index);
-					}}
-				>
-					{item.ImageTags?.Thumb ? (
-						<img
-							src={
-								api &&
-								getImageUrlsApi(api).getItemImageUrlById(
-									item.Id ?? "",
-									"Thumb",
-									{
-										tag: item.ImageTags.Primary,
-										fillWidth: 300,
-									},
-								)
-							}
-							alt={item.Name ?? "item-image"}
-							className="carousel-indicator-image"
-						/>
-					) : (
-						<div className="carousel-indicator-icon">
-							{getTypeIcon(item.Type ?? "Movie")}
-						</div>
-					)}
-				</motion.div>
-			);
-		});
-	}, [content, currentSlide, api, setDirection]);
-
-	const handleDragEnd = useCallback(
-		(
-			_: MouseEvent | TouchEvent | PointerEvent,
-			{ offset, velocity }: PanInfo,
-		) => {
-			const swipe = swipePower(offset.x, velocity.x);
-			if (
-				currentSlide !== content.length - 1 &&
-				swipe < -swipeConfidenceThreshold
-			) {
-				setDirection("right");
-				setCurrentSlide((init) => init + 1);
-			} else if (currentSlide !== 0 && swipe > swipeConfidenceThreshold) {
-				setDirection("left");
-				setCurrentSlide((init) => init - 1);
-			}
+	const handleTickerClick = useCallback(
+		(index: number) => {
+			if (index === currentSlide) return;
+			setDirection(index > currentSlide ? "right" : "left");
+			setCurrentSlide(index);
 		},
-		[currentSlide, content.length, setDirection],
+		[currentSlide, setDirection],
 	);
+
+	if (!api) return null;
 
 	return (
 		<div className="carousel">
 			<AnimatePresence mode="sync">
-				<motion.div
-					key={currentSlide}
-					initial={{ opacity: 0 }}
-					animate={{ opacity: 1 }}
-					exit={{ opacity: 0 }}
-					transition={{
-						duration: 0.25,
-						ease: "linear",
-					}}
-					drag={"x"}
-					dragConstraints={{ left: 0, right: 0 }}
-					dragElastic={1}
-					//@ts-ignore
-					onDragEnd={handleDragEnd}
-					style={{
-						height: "100%",
-						width: "100%",
-						position: "absolute",
-					}}
-				>
-					<MemoizedCarouselSlide
-						item={content[currentSlide]}
-						key={content[currentSlide].Id}
-					/>
-				</motion.div>
+				<MemoizedCarouselSlide
+					item={content[currentSlide]}
+					key={content[currentSlide].Id}
+				/>
 			</AnimatePresence>
-			<MemoizedSlider currentSlide={currentSlide} content={sliderContent} />
+			<div className="carousel-sidebar">
+				{content.map((item, index) => (
+					<CarouselTickers
+						key={item.Id}
+						imageUrl={
+							getImageUrlsApi(api).getItemImageUrlById(
+								item.Id ?? "",
+								"Primary",
+								{
+									quality: 90,
+									fillWidth: 360,
+								},
+							) ?? undefined
+						}
+						isActive={index === currentSlide}
+						itemName={item.Name ?? "Unknown"}
+						itemYear={
+							item.Type === BaseItemKind.Series && item.EndDate
+								? `${item.ProductionYear ?? ""} - ${new Date(item.EndDate).getFullYear().toString()}`
+								: (item.ProductionYear?.toString() ?? "")
+						}
+						onClick={() => handleTickerClick(index)}
+					/>
+				))}
+			</div>
 		</div>
 	);
 };

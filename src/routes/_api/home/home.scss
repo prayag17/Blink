@@ -3,37 +3,47 @@
 	position: relative;
 	overflow: hidden;
 	isolation: isolate;
+	height: 100%;
+	width: 100%;
+
 	&-slide {
 		position: relative;
 		height: 100%;
 		width: 100%;
-		overflow: visible;
-		margin: 0 auto;
+		overflow: hidden;
+		margin: 0;
 		border: none;
-		// box-shadow: 0 0 30px black !important;
+		border-radius: 20px;
+		grid-area: main;
+		border: 1.2px solid rgb(255 255 255 / 0.1);
 	}
+
 	&-background {
-		&-blurhash {
-			width: 100%;
-			height: 100%;
-			position: absolute;
-			z-index: 1;
-			filter: brightness(0.4);
-		}
 		&-container {
 			position: absolute;
 			z-index: 0;
-			top: -4.4em;
+			top: 0;
 			left: 0;
 			right: 0;
-			height: 90vh;
-			filter: brightness(0.8);
-			mask-image: linear-gradient(to left, black 50%, transparent), linear-gradient(to bottom, black 60%, transparent);
-				-webkit-mask-image: linear-gradient(to left,
-						black 50%,
-						transparent), linear-gradient(to bottom, black 40%, transparent);
-				mask-composite: intersect;
+			bottom: 0;
+			height: 100%;
+			
+			// Gradient overlay to make text readable
+			&::after {
+				content: "";
+				position: absolute;
+				inset: 0;
+				background: linear-gradient(
+					to top right,
+					rgba(0, 0, 0, 0.9) 0%,
+					rgba(0, 0, 0, 0.4) 50%,
+					transparent 100%
+				);
+				z-index: 2;
+			}
+			
 		}
+
 		&-image {
 			position: absolute;
 			background-size: cover;
@@ -41,16 +51,16 @@
 			right: 0;
 			top: 0;
 			bottom: 0;
+			left: 0;
 			background-position: center;
 			object-fit: cover;
 			width: 100%;
-				height: 90vh;
+			height: 100%;
 			transition: opacity 0.5s;
 		}
-		
+
 		&-icon-container {
 			position: absolute;
-			// background: $clr-gradient-dark;
 			background: url("/src/assets/herobg.png"), rgb(0 0 0 /0.3);
 			z-index: 0;
 			top: 0;
@@ -58,41 +68,67 @@
 			right: 0;
 			bottom: 0;
 			background-blend-mode: overlay;
-			height: 90vh;
+			height: 100%;
+
 			.material-symbols-rounded {
 				position: absolute;
 				font-size: 15em !important;
-				left: 80%;
+				left: 50%;
 				top: 50%;
 				transform: translate(-50%, -50%);
-				font-variation-settings: "FILL" 0, "wght" 300, "GRAD" 50,
-				"opsz" 60;
+				font-variation-settings: "FILL" 0, "wght" 300, "GRAD" 50, "opsz" 60;
+				opacity: 0.5;
 			}
 		}
 	}
+
 	&-text {
 		display: -webkit-box;
 		overflow: hidden;
-		-webkit-line-clamp: 2;
 		margin-bottom: 0.5em;
+		text-shadow: 0 0 10px rgba(0,0,0,0.5), 0 0 20px rgba(0,0,0,0.3);
+
 		&-logo {
-			max-width: 34vw;
-			max-height: 2.4em;
+			max-width: 25vw;
+			max-height: 20vh;
 			object-fit: contain;
-			object-position: bottom;
+			object-position: left bottom;
+			filter: drop-shadow(0 2px 4px rgba(0,0,0,0.5));
 		}
 	}
+
+	&-overview {
+		overflow: hidden;
+		margin-bottom: 0.5em;
+		text-shadow: 0 1px 2px rgba(0,0,0,0.8);
+		white-space: nowrap;
+		text-overflow: ellipsis;
+		display: block;
+		font-size: 1.1rem;
+		opacity: 0.9;
+		max-width: 800px;
+	}
+
 	&-detail {
-		position: relative;
-		z-index: 0;
+		position: absolute;
+		z-index: 3;
 		display: flex;
+		gap: 1.5em;
 		height: 100%;
-		width: 80%;
-		padding: $page-margin;
-			padding-bottom: 0;
+		width: 100%;
+		max-width: 1400px;
+		padding: 4rem;
+		padding-bottom: 5rem;
+		padding-left: 5rem;
 		flex-direction: column;
 		justify-content: flex-end;
 		align-items: flex-start;
+		left: 0;
+		bottom: 0;
+	}
+	
+	&-info {
+		text-shadow: 0 1px 2px rgba(0,0,0,0.8);
 	}
 }
 
@@ -105,22 +141,24 @@
 }
 
 @media (max-width: 1140px) {
-	.carousel{
+	.carousel {
 		height: 60vh !important;
 	}
-	.hero-carousel{
-		&-background-image{
+	.hero-carousel {
+		&-detail {
 			width: 100%;
+			background: linear-gradient(to top, rgba(0,0,0,0.9), transparent);
 		}
+		
+		&-background-container::after {
+			background: linear-gradient(to top, rgba(0,0,0,0.8), transparent);
+		}
+
 		&-text {
-			-webkit-line-clamp: 2 !important;
-			
-				&-logo {
-						max-width: 7em;
-						max-height: 2em;
-						object-fit: contain;
-						object-position: bottom;
-					}
-				}
+			&-logo {
+				max-width: 60vw;
+				max-height: 10vh;
+			}
+		}
 	}
 }
