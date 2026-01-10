@@ -274,7 +274,7 @@ const Settings = () => {
 					icon={<span className="material-symbols-rounded">tune</span>}
 					iconPosition="start"
 					value={3}
-					label="Perferences"
+					label="Preferences"
 					className="settings-tab"
 					sx={{
 						minHeight: "48px",
