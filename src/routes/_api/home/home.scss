@@ -1,7 +1,7 @@
 
 .hero-carousel {
 	position: relative;
-	overflow: hidden;
+	overflow: visible;
 	isolation: isolate;
 	height: 100%;
 	width: 100%;
@@ -16,6 +16,7 @@
 		border-radius: 20px;
 		grid-area: main;
 		border: 1.2px solid rgb(255 255 255 / 0.1);
+		box-shadow: 0 0 20px rgba(0,0,0,0.2);
 	}
 
 	&-background {

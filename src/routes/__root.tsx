@@ -29,6 +29,7 @@ import { HTML5Backend } from "react-dnd-html5-backend";
 import Backdrop from "@/components/backdrop";
 import { ErrorNotice } from "@/components/notices/errorNotice/errorNotice";
 import RouterLoading from "@/components/routerLoading";
+import Search from "@/components/search";
 import Updater from "@/components/updater";
 import { EasterEgg } from "@/components/utils/easterEgg";
 
@@ -56,6 +57,7 @@ export const Route = createRootRouteWithContext<ApiContext>()({
 
 						<Updater />
 						<Backdrop />
+						<Search />
 						<AppBar />
 						<AudioPlayer />
 						<Outlet />

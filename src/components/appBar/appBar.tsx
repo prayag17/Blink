@@ -15,6 +15,7 @@ import { useShallow } from "zustand/shallow";
 import { useApiInContext } from "@/utils/store/api";
 import { useCentralStore } from "@/utils/store/central";
 import useHeaderStore from "@/utils/store/header";
+import useSearchStore from "@/utils/store/search";
 import {
 	setSettingsDialogOpen,
 	setSettingsTabValue,
@@ -41,6 +42,10 @@ export const AppBar = () => {
 
 	const navigate = useNavigate();
 	const location = useLocation();
+
+	const toggleSearchDialog = useSearchStore(
+		useShallow((s) => s.toggleSearchDialog),
+	);
 
 	const display = !HIDDEN_PATHS.some(
 		(path) =>
@@ -87,7 +92,7 @@ export const AppBar = () => {
 		};
 	}, []);
 
-	const handleNavigateToSearch = useCallback(
+	const _handleNavigateToSearch = useCallback(
 		() => navigate({ to: "/search", search: { query: "" } }),
 		[navigate],
 	);
@@ -142,7 +147,7 @@ export const AppBar = () => {
 					</div>
 
 					<div className="flex flex-row" style={{ gap: "0.6em" }}>
-						<IconButton onClick={handleNavigateToSearch}>
+						<IconButton onClick={toggleSearchDialog}>
 							<div className="material-symbols-rounded">search</div>
 						</IconButton>
 						<IconButton onClick={handleNavigateToFavorite}>
