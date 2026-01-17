@@ -160,13 +160,21 @@ const QueueButton = () => {
 							open={open}
 							onClose={() => setOpen(false)}
 							PaperProps={{
+								className: "glass",
 								sx: {
 									width: 450,
 									maxWidth: "100%",
 									display: "flex",
 									flexDirection: "column",
-									bgcolor: "background.default",
-									backgroundImage: "none",
+									borderLeft: "1px solid rgba(255, 255, 255, 0.08)",
+								},
+							}}
+							ModalProps={{
+								BackdropProps: {
+									sx: {
+										backgroundColor: "rgba(0, 0, 0, 0.2)",
+										backdropFilter: "blur(4px)",
+									},
 								},
 							}}
 						>
@@ -179,9 +187,10 @@ const QueueButton = () => {
 									position: "sticky",
 									top: 0,
 									zIndex: 20,
-									bgcolor: "background.default",
 									borderBottom: "1px solid",
-									borderColor: "divider",
+									borderColor: "rgba(255, 255, 255, 0.08)",
+									backgroundColor: "rgba(20, 20, 30, 0.4)",
+									backdropFilter: "blur(12px)",
 								}}
 							>
 								<Box display="flex" alignItems="center" gap={1}>
@@ -194,7 +203,7 @@ const QueueButton = () => {
 										sx={{
 											ml: 1,
 											fontWeight: 600,
-											bgcolor: "action.hover",
+											bgcolor: "rgba(255, 255, 255, 0.08)",
 											px: 1,
 											py: 0.5,
 											borderRadius: 2,

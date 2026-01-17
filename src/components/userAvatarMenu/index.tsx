@@ -91,6 +91,7 @@ export const UserAvatarMenu = () => {
 				onClose={handleMenuClose}
 				sx={menuStyle}
 				disableScrollLock
+				PaperProps={{ className: "glass" }}
 			>
 				<MenuItem
 					onClick={() => {
@@ -99,7 +100,7 @@ export const UserAvatarMenu = () => {
 					}}
 				>
 					<ListItemIcon>
-						<div className="material-symbols-rounded">logout</div>
+						<span className="material-symbols-rounded">logout</span>
 					</ListItemIcon>
 					Logout
 				</MenuItem>
@@ -112,7 +113,7 @@ export const UserAvatarMenu = () => {
 					}}
 				>
 					<ListItemIcon>
-						<div className="material-symbols-rounded">settings</div>
+						<span className="material-symbols-rounded">settings</span>
 					</ListItemIcon>
 					Settings
 				</MenuItem>
@@ -123,7 +124,7 @@ export const UserAvatarMenu = () => {
 					}}
 				>
 					<ListItemIcon>
-						<div className="material-symbols-rounded">tune</div>
+						<span className="material-symbols-rounded">tune</span>
 					</ListItemIcon>
 					Preferences
 				</MenuItem>
@@ -134,7 +135,7 @@ export const UserAvatarMenu = () => {
 					}}
 				>
 					<ListItemIcon>
-						<div className="material-symbols-rounded">info</div>
+						<span className="material-symbols-rounded">info</span>
 					</ListItemIcon>
 					About
 				</MenuItem>

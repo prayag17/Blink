@@ -164,9 +164,19 @@ export const FiltersDialog: React.FC<FiltersDialogProps> = React.memo(
 		const restoreGenres = () => setLocalGenreIds(initialGenres);
 
 		return (
-			<Dialog open={open} onClose={onClose} fullWidth maxWidth="sm" keepMounted>
+			<Dialog
+				open={open}
+				onClose={onClose}
+				fullWidth
+				maxWidth="sm"
+				keepMounted
+				PaperProps={{ className: "glass", sx: { borderRadius: "24px" } }}
+			>
 				<DialogTitle>Filters</DialogTitle>
-				<DialogContent dividers>
+				<DialogContent
+					dividers
+					sx={{ borderColor: "rgba(255, 255, 255, 0.1)" }}
+				>
 					<Stack spacing={1.25}>
 						<Accordion
 							disableGutters
@@ -186,7 +196,7 @@ export const FiltersDialog: React.FC<FiltersDialogProps> = React.memo(
 									"& .MuiAccordionSummary-content": { my: 0 },
 								}}
 								expandIcon={
-									<div className="material-symbols-rounded">expand_more</div>
+									<span className="material-symbols-rounded">expand_more</span>
 								}
 							>
 								<Typography variant="subtitle2">General</Typography>
@@ -236,7 +246,9 @@ export const FiltersDialog: React.FC<FiltersDialogProps> = React.memo(
 										"& .MuiAccordionSummary-content": { my: 0 },
 									}}
 									expandIcon={
-										<div className="material-symbols-rounded">expand_more</div>
+										<span className="material-symbols-rounded">
+											expand_more
+										</span>
 									}
 								>
 									<Typography variant="subtitle2">Video features</Typography>
@@ -288,7 +300,9 @@ export const FiltersDialog: React.FC<FiltersDialogProps> = React.memo(
 										"& .MuiAccordionSummary-content": { my: 0 },
 									}}
 									expandIcon={
-										<div className="material-symbols-rounded">expand_more</div>
+										<span className="material-symbols-rounded">
+											expand_more
+										</span>
 									}
 								>
 									<Typography variant="subtitle2">Resolution</Typography>
@@ -334,7 +348,9 @@ export const FiltersDialog: React.FC<FiltersDialogProps> = React.memo(
 										"& .MuiAccordionSummary-content": { my: 0 },
 									}}
 									expandIcon={
-										<div className="material-symbols-rounded">expand_more</div>
+										<span className="material-symbols-rounded">
+											expand_more
+										</span>
 									}
 								>
 									<Typography variant="subtitle2">Media type</Typography>
@@ -383,7 +399,9 @@ export const FiltersDialog: React.FC<FiltersDialogProps> = React.memo(
 										"& .MuiAccordionSummary-content": { my: 0 },
 									}}
 									expandIcon={
-										<div className="material-symbols-rounded">expand_more</div>
+										<span className="material-symbols-rounded">
+											expand_more
+										</span>
 									}
 								>
 									<Typography variant="subtitle2">Genres</Typography>
@@ -475,7 +493,7 @@ export const FiltersDialogTrigger: React.FC = () => {
 					onClick={() => setOpen(true)}
 					aria-label="Open filters dialog"
 				>
-					<div
+					<span
 						className="material-symbols-rounded"
 						style={{ position: "relative" }}
 					>
@@ -498,7 +516,7 @@ export const FiltersDialogTrigger: React.FC = () => {
 								{activeCount}
 							</span>
 						)}
-					</div>
+					</span>
 				</IconButton>
 			</Tooltip>
 			<FiltersDialog open={open} onClose={() => setOpen(false)} />

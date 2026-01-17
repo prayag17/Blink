@@ -130,11 +130,11 @@ export const AppBar = () => {
 				>
 					<div className="flex flex-row" style={{ gap: "0.6em" }}>
 						<IconButton onClick={handleDrawerOpen}>
-							<div className="material-symbols-rounded">menu</div>
+							<span className="material-symbols-rounded">menu</span>
 						</IconButton>
 						<MemoizeBackButton />
 						<IconButton onClick={handleNavigateToHome}>
-							<div
+							<span
 								className={
 									location.pathname === "/home"
 										? "material-symbols-rounded fill"
@@ -142,16 +142,16 @@ export const AppBar = () => {
 								}
 							>
 								home
-							</div>
+							</span>
 						</IconButton>
 					</div>
 
 					<div className="flex flex-row" style={{ gap: "0.6em" }}>
 						<IconButton onClick={toggleSearchDialog}>
-							<div className="material-symbols-rounded">search</div>
+							<span className="material-symbols-rounded">search</span>
 						</IconButton>
 						<IconButton onClick={handleNavigateToFavorite}>
-							<div className="material-symbols-rounded">favorite</div>
+							<span className="material-symbols-rounded">favorite</span>
 						</IconButton>
 						<UserAvatarMenu />
 					</div>

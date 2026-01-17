@@ -23,6 +23,7 @@ const TrailerButton = (props: TrailerButtonType) => {
 				fullWidth
 				open={dialog}
 				PaperProps={{
+					className: "glass",
 					style: {
 						overflow: "hidden",
 					},

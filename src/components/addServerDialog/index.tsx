@@ -1,17 +1,17 @@
-import { setServer } from "@/utils/storage/servers";
-import { jellyfin } from "@/utils/store/api";
 import { LoadingButton } from "@mui/lab";
 import {
+	Box,
 	Button,
 	Dialog,
-	DialogActions,
-	DialogContent,
-	DialogTitle,
-	TextField,
+	InputBase,
+	Stack,
+	Typography,
 } from "@mui/material";
 import { useMutation } from "@tanstack/react-query";
 import { enqueueSnackbar } from "notistack";
 import React, { useState } from "react";
+import { setServer } from "@/utils/storage/servers";
+import { jellyfin } from "@/utils/store/api";
 
 type AddServerDialogProps = {
 	open: boolean;
@@ -64,72 +64,98 @@ export default function AddServerDialog(props: AddServerDialogProps) {
 	return (
 		<Dialog
 			open={open}
+			onClose={() => setAddServerDialog(false)}
 			hideBackdrop={Boolean(hideBackdrop)}
 			fullWidth
 			maxWidth="sm"
 			disableScrollLock={true}
+			PaperProps={{
+				sx: {
+					backgroundColor: "rgba(20, 20, 30, 0.7)",
+					backdropFilter: "blur(24px) saturate(180%)",
+					backgroundImage:
+						"linear-gradient(rgba(255, 255, 255, 0.05), rgba(255, 255, 255, 0))",
+					border: "1px solid rgba(255, 255, 255, 0.08)",
+					boxShadow: "0 20px 50px rgba(0,0,0,0.5)",
+					borderRadius: 4,
+					overflow: "hidden",
+				},
+			}}
 		>
-			<DialogTitle variant="h4" align="center" mb={1}>
-				Add Server
-			</DialogTitle>
-			<DialogContent className="settings-server-add">
-				<TextField
-					variant="filled"
-					label="Address"
-					fullWidth
-					onChange={(e) => setServerIp(e.target.value)}
-				/>
-			</DialogContent>
-			<DialogActions
-				style={{
-					alignItems: "center",
-					justifyContent: "center",
-					padding: "1em",
-					gap: "1em",
-				}}
-			>
-				<Button
-					variant="contained"
-					startIcon={
-						<span
-							className="material-symbols-rounded"
-							style={{
-								marginRight: "0.25em",
-								fontVariationSettings:
-									'"FILL" 1, "wght" 300, "GRAD" 25, "opsz" 40',
-							}}
-						>
-							cancel
-						</span>
-					}
-					color="error"
-					onClick={() => setAddServerDialog(false)}
+			<Stack p={4} spacing={3}>
+				<Stack spacing={1} alignItems="center">
+					<span
+						className="material-symbols-rounded"
+						style={{
+							fontSize: "48px",
+							color: "var(--mui-palette-primary-main)",
+						}}
+					>
+						add_to_queue
+					</span>
+					<Typography variant="h5" fontWeight="bold" textAlign="center">
+						Connect to Server
+					</Typography>
+					<Typography variant="body2" color="text.secondary" textAlign="center">
+						Enter your Jellyfin server address to continue
+					</Typography>
+				</Stack>
+
+				<Box
+					sx={{
+						p: "2px 16px",
+						bgcolor: "rgba(0,0,0,0.2)",
+						borderRadius: 2,
+						border: "1px solid rgba(255,255,255,0.05)",
+						display: "flex",
+						alignItems: "center",
+						gap: 2,
+						"&:focus-within": {
+							border: "1px solid var(--mui-palette-primary-main)",
+							bgcolor: "rgba(0,0,0,0.3)",
+						},
+						transition: "all 0.2s",
+					}}
 				>
-					Close
-				</Button>
-				{/* @ts-ignore */}
-				<LoadingButton
-					startIcon={
-						<span
-							className="material-symbols-rounded"
-							style={{
-								marginRight: "0.25em",
-								fontVariationSettings:
-									'"FILL" 1, "wght" 300, "GRAD" 25, "opsz" 40',
-							}}
-						>
-							add_circle
-						</span>
-					}
-					variant="contained"
-					loading={addServer.isPending}
-					loadingPosition="start"
-					onClick={addServer.mutate}
-					color="success"
-				>
-					Add
-				</LoadingButton>
-			</DialogActions>
+					<span className="material-symbols-rounded" style={{ opacity: 0.5 }}>
+						dns
+					</span>
+					<InputBase
+						placeholder="https://jellyfin.example.com"
+						fullWidth
+						value={serverIp}
+						onChange={(e) => setServerIp(e.target.value)}
+						sx={{ py: 1.5 }}
+						autoFocus
+						onKeyDown={(e) => {
+							if (e.key === "Enter") {
+								addServer.mutate();
+							}
+						}}
+					/>
+				</Box>
+
+				<Stack direction="row" spacing={2} justifyContent="flex-end" pt={1}>
+					<Button
+						onClick={() => setAddServerDialog(false)}
+						color="inherit"
+						variant="text"
+						sx={{ borderRadius: 2 }}
+					>
+						Cancel
+					</Button>
+					<LoadingButton
+						loading={addServer.isPending}
+						onClick={() => addServer.mutate()}
+						variant="contained"
+						color="primary"
+						sx={{ borderRadius: 2, px: 3 }}
+						disabled={!serverIp}
+					>
+						Connect
+					</LoadingButton>
+				</Stack>
+			</Stack>
 		</Dialog>
 	);
 }

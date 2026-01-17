@@ -263,14 +263,14 @@ const PlayButton = ({
 				}
 				{...buttonProps}
 			>
-				<div
+				<span
 					className="material-symbols-rounded em-4 fill"
 					style={{
 						fontSize: "3em",
 					}}
 				>
 					play_arrow
-				</div>
+				</span>
 			</Fab>
 		);
 	}
@@ -295,7 +295,7 @@ const PlayButton = ({
 						}
 					}}
 					startIcon={
-						<div
+						<span
 							className="material-symbols-rounded fill"
 							style={{
 								zIndex: 1,
@@ -303,7 +303,7 @@ const PlayButton = ({
 							}}
 						>
 							play_arrow
-						</div>
+						</span>
 					}
 					{...buttonProps}
 					sx={{
@@ -384,7 +384,7 @@ const PlayButton = ({
 					item.Type === "Episode" ? handleClick(e, item.Id) : handleClick(e)
 				}
 				startIcon={
-					<div
+					<span
 						className="material-symbols-rounded fill"
 						style={{
 							zIndex: 1,
@@ -392,7 +392,7 @@ const PlayButton = ({
 						}}
 					>
 						play_arrow
-					</div>
+					</span>
 				}
 				{...buttonProps}
 				sx={{

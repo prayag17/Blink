@@ -82,12 +82,13 @@
 		top: 0;
 		z-index: 10;
 		opacity: 0;
-		transition: opacity $transition-time-default;
+		transition: all $transition-time-default;
 		display: flex;
 		align-items: flex-end;
 		justify-content: flex-end;
 		padding: 0.5em;
-		background: rgb(0 0 0 / 0.6);
+		background: rgba(20, 20, 30, 0.6);
+		backdrop-filter: blur(12px);
 	}
 	&:hover,
 	&:focus,

@@ -1,6 +1,3 @@
-import useInterval from "@/utils/hooks/useInterval";
-import { saveUser } from "@/utils/storage/user";
-import { useApiInContext } from "@/utils/store/api";
 import { getQuickConnectApi } from "@jellyfin/sdk/lib/utils/api/quick-connect-api";
 import { getUserApi } from "@jellyfin/sdk/lib/utils/api/user-api";
 import { LoadingButton, type LoadingButtonProps } from "@mui/lab";
@@ -22,6 +19,9 @@ import { useNavigate } from "@tanstack/react-router";
 import { writeText } from "@tauri-apps/plugin-clipboard-manager";
 import { useSnackbar } from "notistack";
 import React, { useCallback, useState } from "react";
+import useInterval from "@/utils/hooks/useInterval";
+import { saveUser } from "@/utils/storage/user";
+import { useApiInContext } from "@/utils/store/api";
 
 const Transition = React.forwardRef(function Transition(
 	props: TransitionProps & {
@@ -185,6 +185,7 @@ const QuickConnectButton = (props: LoadingButtonProps) => {
 				fullWidth
 				maxWidth="xs"
 				TransitionComponent={Transition}
+				PaperProps={{ className: "glass", sx: { borderRadius: "24px" } }}
 			>
 				<DialogContent
 					style={{

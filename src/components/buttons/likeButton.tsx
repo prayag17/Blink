@@ -1,13 +1,11 @@
-import React from "react";
-
-import IconButton from "@mui/material/IconButton";
-
-import { useApiInContext } from "@/utils/store/api";
 import type { UserItemDataDto } from "@jellyfin/sdk/lib/generated-client";
 import { getUserLibraryApi } from "@jellyfin/sdk/lib/utils/api/user-library-api";
 import { pink } from "@mui/material/colors";
+import IconButton from "@mui/material/IconButton";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useSnackbar } from "notistack";
+import React from "react";
+import { useApiInContext } from "@/utils/store/api";
 
 export default function LikeButton({
 	itemId,
@@ -78,24 +76,24 @@ export default function LikeButton({
 				transition: "opacity 250ms",
 			}}
 		>
-			<div
+			<span
 				className="material-symbols-rounded"
 				style={
 					isFavorite
 						? {
-								//@ts-ignore
+								//@ts-expect-error
 								"--fill": mutation.isPending ? 0 : 1,
 								color: mutation.isPending ? "white" : pink.A700,
 							}
 						: {
-								//@ts-ignore
+								//@ts-expect-error
 								"--fill": mutation.isPending ? 1 : 0,
 								color: mutation.isPending ? pink.A700 : "white",
 							}
 				}
 			>
 				favorite
-			</div>
+			</span>
 		</IconButton>
 	);
 }

@@ -1,5 +1,6 @@
 import type { BaseItemDto } from "@jellyfin/sdk/lib/generated-client";
 import {
+	alpha,
 	Box,
 	IconButton,
 	ListItem,
@@ -94,16 +95,23 @@ const QueueListItem = ({
 			}
 			sx={{
 				opacity: active ? 1 : 1,
-				bgcolor: active ? "transparent" : "background.paper",
+				bgcolor: active ? "rgba(255, 255, 255, 0.1)" : "rgba(0,0,0,0.2)",
 				borderRadius: 3,
 				mb: 0,
 				transition: "all 0.2s ease",
-				border: active ? "none" : "1px solid",
-				borderColor: "divider",
+				border: "1px solid",
+				borderColor: active
+					? "rgba(255, 255, 255, 0.2)"
+					: "rgba(255,255,255,0.05)",
 				"&:hover": {
-					bgcolor: active ? "transparent" : "action.hover",
+					bgcolor: active
+						? "rgba(255, 255, 255, 0.15)"
+						: "rgba(255,255,255,0.05)",
 					transform: active ? "none" : "translateY(-2px)",
-					boxShadow: active ? "none" : 2,
+					borderColor: active
+						? "rgba(255, 255, 255, 0.3)"
+						: "rgba(255,255,255,0.2)",
+					boxShadow: active ? "none" : "0 4px 12px rgba(0,0,0,0.2)",
 				},
 				pr: onDelete ? 6 : 2,
 				...sx,
@@ -117,7 +125,7 @@ const QueueListItem = ({
 						marginRight: 12,
 						display: "flex",
 						alignItems: "center",
-						opacity: 0.3,
+						opacity: 0.5,
 						transition: "opacity 0.2s",
 					}}
 					className="drag-handle"
