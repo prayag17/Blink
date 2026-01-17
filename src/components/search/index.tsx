@@ -21,6 +21,7 @@ import React, {
 	useCallback,
 	useEffect,
 	useMemo,
+	useRef,
 	useState,
 } from "react";
 import { useShallow } from "zustand/shallow";
@@ -60,6 +61,15 @@ const Search = () => {
 
 	const [searchTerm, setSearchTerm] = useState("");
 	const debouncedSearchTerm = useDebounce(searchTerm, 300);
+	const inputRef = useRef<HTMLInputElement>(null);
+
+	useEffect(() => {
+		if (isOpen) {
+			setTimeout(() => {
+				inputRef.current?.focus();
+			}, 100);
+		}
+	}, [isOpen]);
 
 	const handleSearchChange = (e: ChangeEvent<HTMLInputElement>) => {
 		setSearchTerm(e.target.value);
@@ -164,6 +174,7 @@ const Search = () => {
 						search
 					</span>
 					<InputBase
+						inputRef={inputRef}
 						placeholder="Search movies, shows, and more..."
 						onChange={handleSearchChange}
 						value={searchTerm}
