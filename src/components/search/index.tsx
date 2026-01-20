@@ -2,10 +2,10 @@ import { ItemSortBy } from "@jellyfin/sdk/lib/generated-client";
 import { getItemsApi } from "@jellyfin/sdk/lib/utils/api/items-api";
 import { getSearchApi } from "@jellyfin/sdk/lib/utils/api/search-api";
 import {
-	alpha,
 	Box,
 	Button,
 	Dialog,
+	Grow,
 	IconButton,
 	InputBase,
 	LinearProgress,
@@ -13,6 +13,7 @@ import {
 	Typography,
 	useTheme,
 } from "@mui/material";
+import type { TransitionProps } from "@mui/material/transitions";
 import { useQuery } from "@tanstack/react-query";
 import { useNavigate } from "@tanstack/react-router";
 import { register } from "@tauri-apps/plugin-global-shortcut";
@@ -31,6 +32,15 @@ import { useApiInContext } from "@/utils/store/api";
 import { useCentralStore } from "@/utils/store/central";
 import useSearchStore from "@/utils/store/search";
 import SearchItem from "./item";
+
+const Transition = React.forwardRef(function Transition(
+	props: TransitionProps & {
+		children: React.ReactElement<any, any>;
+	},
+	ref: React.Ref<unknown>,
+) {
+	return <Grow ref={ref} {...props} />;
+});
 
 const Search = () => {
 	const theme = useTheme();
@@ -138,21 +148,25 @@ const Search = () => {
 	return (
 		<Dialog
 			open={isOpen}
+			slotProps={{
+				transition: Transition,
+				paper: {
+					sx: {
+						backgroundColor: "rgba(20, 20, 30, 0.7)",
+						backdropFilter: "blur(24px) saturate(180%)",
+						willChange: "opacity, transform, backdrop-filter",
+						backgroundImage:
+							"linear-gradient(rgba(255, 255, 255, 0.05), rgba(255, 255, 255, 0))",
+						border: "1px solid rgba(255, 255, 255, 0.08)",
+						boxShadow: "0 20px 50px rgba(0,0,0,0.5)",
+						borderRadius: 4,
+						overflow: "hidden",
+					},
+				},
+			}}
 			onClose={handleClose}
 			fullWidth
 			maxWidth="sm"
-			PaperProps={{
-				sx: {
-					backgroundColor: "rgba(20, 20, 30, 0.7)",
-					backdropFilter: "blur(24px) saturate(180%)",
-					backgroundImage:
-						"linear-gradient(rgba(255, 255, 255, 0.05), rgba(255, 255, 255, 0))",
-					border: "1px solid rgba(255, 255, 255, 0.08)",
-					boxShadow: "0 20px 50px rgba(0,0,0,0.5)",
-					borderRadius: 4,
-					overflow: "hidden",
-				},
-			}}
 		>
 			<Box sx={{ position: "relative" }}>
 				<Stack

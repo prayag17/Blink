@@ -1,12 +1,10 @@
 import type { BaseItemDto } from "@jellyfin/sdk/lib/generated-client";
 import {
-	alpha,
 	Box,
 	IconButton,
 	ListItem,
 	ListItemAvatar,
 	ListItemText,
-	Typography,
 } from "@mui/material";
 import React from "react";
 import getImageUrlsApi from "@/utils/methods/getImageUrlsApi";
@@ -32,7 +30,6 @@ const QueueListItem = ({
 	onPlay,
 	dragHandleProps,
 	isEpisode,
-	index,
 	className,
 	sx,
 }: QueueListItemProps) => {
@@ -219,16 +216,18 @@ const QueueListItem = ({
 			<ListItemText
 				primary={primaryText}
 				secondary={secondaryText}
-				primaryTypographyProps={{
-					noWrap: true,
-					variant: "body2",
-					fontWeight: active ? 700 : 500,
-					sx: { mb: 0.5 },
-				}}
-				secondaryTypographyProps={{
-					noWrap: true,
-					variant: "caption",
-					sx: { opacity: 0.7 },
+				slotProps={{
+					primary: {
+						noWrap: true,
+						variant: "body2",
+						fontWeight: active ? 700 : 500,
+						sx: { mb: 0.5 },
+					},
+					secondary: {
+						noWrap: true,
+						variant: "caption",
+						sx: { opacity: 0.7 },
+					},
 				}}
 			/>
 		</ListItem>
