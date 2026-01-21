@@ -23,12 +23,35 @@ const Carousel = ({
 	onChange: (currentSlide: number) => void;
 }) => {
 	const [currentSlide, setCurrentSlide] = useState(0);
+	const [isPaused, setIsPaused] = useState(false);
+	const sidebarRef = React.useRef<HTMLDivElement>(null);
+	const tickerRefs = React.useRef<(HTMLDivElement | null)[]>([]);
 
 	const [setDirection] = useCarouselStore((state) => [state.setDirection]);
 
 	useEffect(() => {
 		onChange(currentSlide);
-	}, [content[currentSlide]?.Id]);
+
+		// Auto-scroll sidebar to keep active item in view
+		if (tickerRefs.current[currentSlide]) {
+			tickerRefs.current[currentSlide]?.scrollIntoView({
+				behavior: "smooth",
+				block: "nearest",
+			});
+		}
+	}, [currentSlide, content, onChange]);
+
+	// Autoplay functionality
+	useEffect(() => {
+		if (isPaused || content.length === 0) return;
+
+		const timer = setInterval(() => {
+			setDirection("right");
+			setCurrentSlide((prev) => (prev + 1) % content.length);
+		}, 8000);
+
+		return () => clearInterval(timer);
+	}, [isPaused, content.length, setDirection, currentSlide]);
 
 	const api = useApiInContext((s) => s.api);
 
@@ -44,36 +67,47 @@ const Carousel = ({
 	if (!api) return null;
 
 	return (
-		<div className="carousel">
+		<div
+			className={`carousel ${isPaused ? "paused" : ""}`}
+			onMouseEnter={() => setIsPaused(true)}
+			onMouseLeave={() => setIsPaused(false)}
+		>
 			<AnimatePresence mode="sync">
 				<MemoizedCarouselSlide
 					item={content[currentSlide]}
 					key={content[currentSlide].Id}
 				/>
 			</AnimatePresence>
-			<div className="carousel-sidebar">
+			<div className="carousel-sidebar" ref={sidebarRef}>
 				{content.map((item, index) => (
-					<CarouselTickers
+					<div
 						key={item.Id}
-						imageUrl={
-							getImageUrlsApi(api).getItemImageUrlById(
-								item.Id ?? "",
-								"Primary",
-								{
-									quality: 90,
-									fillWidth: 360,
-								},
-							) ?? undefined
-						}
-						isActive={index === currentSlide}
-						itemName={item.Name ?? "Unknown"}
-						itemYear={
-							item.Type === BaseItemKind.Series && item.EndDate
-								? `${item.ProductionYear ?? ""} - ${new Date(item.EndDate).getFullYear().toString()}`
-								: (item.ProductionYear?.toString() ?? "")
-						}
-						onClick={() => handleTickerClick(index)}
-					/>
+						ref={(el) => {
+							tickerRefs.current[index] = el;
+						}}
+						style={{ scrollMarginBlock: "24px" }}
+					>
+						<CarouselTickers
+							imageUrl={
+								getImageUrlsApi(api).getItemImageUrlById(
+									item.Id ?? "",
+									"Thumb",
+									{
+										quality: 90,
+										fillHeight: 360,
+									},
+								) ?? undefined
+							}
+							isActive={index === currentSlide}
+							itemName={item.Name ?? "Unknown"}
+							itemYear={
+								item.Type === BaseItemKind.Series && item.EndDate
+									? `${item.ProductionYear ?? ""} - ${new Date(item.EndDate).getFullYear().toString()}`
+									: (item.ProductionYear?.toString() ?? "")
+							}
+							onClick={() => handleTickerClick(index)}
+						/>
+					</div>
 				))}
 			</div>
 		</div>

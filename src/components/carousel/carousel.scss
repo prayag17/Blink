@@ -1,40 +1,37 @@
 .carousel {
 	position: relative;
 	overflow: visible;
-	height: 62vh;
-	margin-bottom: 2em;
+	height: 65vh;
+	margin-bottom: 3em;
 	display: grid;
 	grid-template-areas: "main sidebar";
-	grid-template-columns: 1fr 25vw;
-	gap: 1em;
-	
+	grid-template-columns: 1fr 340px;
+	gap: 1.5em;
+
 	&-sidebar {
 		overflow-y: auto;
-		height: inherit;
-		background: rgb(0 0 0 / 0.2);
-		border-radius: 20px;
-		border: 1.2px solid rgb(255 255 255 / 0.1);
+		height: 100%;
+		background: rgba(10, 10, 14, 0.4); // Darker, more distinct
+		border-radius: 24px;
+		backdrop-filter: blur(24px) saturate(180%);
+		border: 1px solid rgba(255, 255, 255, 0.08);
 		grid-area: sidebar;
+		display: flex;
+		flex-direction: column;
+		padding: 12px;
+		gap: 8px;
+		box-shadow: 0 4px 24px rgba(0,0,0,0.2);
+		
+		// Ensure programmatic scroll respects padding
+		scroll-padding-block: 24px;
 
+		// Hide scrollbar but keep functionality
+		scrollbar-width: none; 
+		-ms-overflow-style: none; 
 		&::-webkit-scrollbar {
-			width: 14px;
-			border-left: 1px solid rgb(255 255 255 / 0.1);
-		}
-
-		&::-webkit-scrollbar-track {
-			background: transparent;
-			margin-block: 1em;
-		}
-
-		&::-webkit-scrollbar-thumb {
-			background-color: rgba(255, 255, 255, 0.2);
-			border-radius: 10px;
-			border: 4px solid transparent;
-			background-clip: content-box;
-
-			&:hover {
-				background-color: rgba(255, 255, 255, 0.4);
-			}
+			width: 0;
+			height: 0;
+			display: none; 
 		}
 	}
 	
@@ -55,34 +52,81 @@
 	
 	&-ticker{
 		overflow: hidden;
-		height: 8em;
+		height: 72px;
 		display: flex;
-		// margin-bottom: 1em;
-		padding: 1em;
+		padding: 8px;
 		align-items: center;
-		gap: 1em;
-		border-bottom: 1px solid rgb(255 255 255 / 0.1);
-		transition: background $transition-time-fast;
-
-		&:last-child {
-			margin-bottom: 0;
-			border: none;
-		}
+		gap: 12px;
+		transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+		position: relative;
+		border-radius: 12px; // Slightly smaller radius to work with the bar
+		background: transparent;
+		border: 1px solid transparent;
 
 		&:hover {
-			background: rgb(0 0 0 / .25);
+			background: rgba(255, 255, 255, 0.05);
 			cursor: pointer;
 		}
 
 		&.active {
-			background: rgb(255 255 255 / 0.05);
+			background: rgba(255, 255, 255, 0.08); // Subtle background
+			
+			// Vertical Progress Bar
+			&::after {
+				content: '';
+				position: absolute;
+				left: 0;
+				bottom: 0;
+				width: 4px;
+				background-color: var(--mui-palette-primary-main, #fff);
+				height: 0%;
+				animation: ticker-v-progress 8s linear;
+			}
 		}
 
 		&-image {
-			height: 100%;
-			border-radius: 4px;
+			height: 56px;
+			width: 100px;
+			flex-shrink: 0;
+			border-radius: 8px;
 			object-fit: cover;
+			box-shadow: 0 2px 8px rgba(0,0,0,0.2);
 		}
+		
+		& > div {
+			display: flex;
+			flex-direction: column;
+			justify-content: center;
+			min-width: 0; // flexible text truncation
+			padding-left: 4px; // compensate for visual weight of potential bar
+			
+			.carousel-ticker-title {
+				white-space: nowrap;
+				overflow: hidden;
+				text-overflow: ellipsis;
+				font-weight: 500; // Slightly lighter
+				font-size: 0.95rem;
+				line-height: 1.2;
+				margin-bottom: 2px;
+				opacity: 0.9;
+			}
+			.carousel-ticker-year {
+				font-size: 0.8rem;
+				opacity: 0.6;
+			}
+		}
+	}
+	
+	// Pause progress when carousel is paused
+	&.paused {
+		.carousel-ticker.active::after {
+			animation-play-state: paused;
+		}
+	}
+
+	@keyframes ticker-v-progress {
+		from { height: 0%; }
+		to { height: 100%; }
 	}
 	
 	&-indicator {
