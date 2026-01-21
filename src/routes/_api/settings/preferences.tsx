@@ -10,16 +10,15 @@ import { createFileRoute } from "@tanstack/react-router";
 import React from "react";
 
 import "../settings.scss";
-import { useApiInContext } from "@/utils/store/api";
-import { useCentralStore } from "@/utils/store/central";
 import { getLocalizationApi } from "@jellyfin/sdk/lib/utils/api/localization-api";
-import { useQuery, useSuspenseQuery } from "@tanstack/react-query";
-
-import CircularPageLoadingAnimation from "@/components/circularPageLoadingAnimation";
 // import { getDisplayPreferencesApi } from "@jellyfin/sdk/lib/utils/api/display-preferences-api";
 import { getUserApi } from "@jellyfin/sdk/lib/utils/api/user-api";
 import { useForm } from "@tanstack/react-form";
+import { useSuspenseQuery } from "@tanstack/react-query";
 import { useSnackbar } from "notistack";
+import CircularPageLoadingAnimation from "@/components/circularPageLoadingAnimation";
+import { useApiInContext } from "@/utils/store/api";
+import { useCentralStore } from "@/utils/store/central";
 
 export const Route = createFileRoute("/_api/settings/preferences")({
 	component: RouteComponent,
@@ -268,39 +267,6 @@ function RouteComponent() {
 					Save
 				</Button>
 			</form>
-			{/* <FormControlLabel
-				value={currentCulture}
-				control={
-					<TextField select onChange={(e) => setCurrentCulture(e.target.value)}>
-						<MenuItem key={"anyLanguage"} value={"anyLanguage"}>
-							Any Language
-						</MenuItem>
-						{cultures.data?.map((option) => (
-							<MenuItem
-								key={option.ThreeLetterISOLanguageName}
-								value={option.ThreeLetterISOLanguageName ?? "none"}
-							>
-								{option.DisplayName}
-							</MenuItem>
-						))}
-					</TextField>
-				}
-				label={
-					<div className="settings-option-info">
-						<Typography variant="subtitle1" fontWeight={400}>
-							{setting.name}
-						</Typography>
-						<Typography
-							variant="caption"
-							className="settings-option-info-caption"
-						>
-							{setting.description}
-						</Typography>
-					</div>
-				}
-				labelPlacement="start"
-				className="settings-option"
-			/> */}
 		</div>
 	);
 }

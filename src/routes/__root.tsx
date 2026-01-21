@@ -7,7 +7,6 @@ import React from "react";
 import { AppBar } from "@/components/appBar/appBar";
 // import NProgress from "@/components/nProgress";
 import AudioPlayer from "@/components/playback/audioPlayer";
-import Settings from "@/components/settings";
 
 import "../styles/global.scss";
 import { theme } from "@/theme";
@@ -49,7 +48,6 @@ export const Route = createRootRouteWithContext<ApiContext>()({
 				<ThemeProvider theme={theme}>
 					<SnackbarProvider maxSnack={5}>
 						<CssBaseline />
-						<Settings />
 						<EasterEgg />
 						{/* <NProgress /> */}
 

@@ -1,23 +1,221 @@
 
-.search {
-	&-header {
-		width: 100%;
-		display: flex;
-		align-items: center;
-		justify-content: center;
-		gap: 1em;
-		height: 4em;
-	}
-	&-searchbar {
-		border-radius: 100px !important;
-		background: rgb(255 255 255 / 0.09);
-		border: none !important;
-		.MuiInputBase-root {
-			border-radius: 100px !important;
-		}
-		&-input {
-			text-align: center;
-			padding: 0.8em 1.5em !important;
-		}
-	}
+.search-page {
+    position: relative;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    
+    // Glossy subtle background animation - fixed to viewport so it stays while scrolling
+    &-bg {
+        position: fixed;
+        top: -50%;
+        left: -50%;
+        right: -50%;
+        bottom: -50%;
+        background: radial-gradient(circle at center, rgba(var(--mui-palette-primary-mainChannel), 0.15) 0%, transparent 60%);
+        opacity: 0;
+        transition: opacity 0.8s ease;
+        pointer-events: none;
+        z-index: 0;
+        
+        &.active {
+            opacity: 1;
+        }
+    }
+    
+    // New Sticky AppBar styles mirroring LibraryHeader exactly
+    .search-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        inset: 1em 1em auto 1em !important;
+        border-radius: 9999px;
+        margin: 0 auto;
+        position: fixed;
+        width: calc(100vw - 4em) !important;
+        z-index: 100;
+        padding: 0.25em !important;
+        transition: all 0.2s ease-in-out;
+        
+        &::after {
+            content: "";
+            position: absolute;
+            inset: 0 -0.35em;
+            pointer-events: none;
+            border-radius: inherit;
+            // Glass styling matching Search Dialog
+            background-color: rgba(20, 20, 30, 0.7);
+            backdrop-filter: blur(24px) saturate(180%);
+            background-image: linear-gradient(rgba(255, 255, 255, 0.05), rgba(255, 255, 255, 0));
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
+            opacity: 0;
+            z-index: -1;
+            transition: all $transition-time-fast;
+        }
+        
+        &.scrolling {
+            &::after {
+                opacity: 1;
+            }
+        }
+    }
+    
+    &-content {
+        flex-grow: 1;
+        width: 100%;
+        align-self: center;
+        z-index: 1;
+    }
+    
+    // Input Container adapted for the pill header
+    .search-input-container {
+        display: flex;
+        align-items: center;
+        background: rgba(255, 255, 255, 0.05);
+        border: 1px solid rgba(255, 255, 255, 0.08);
+        border-radius: 9999px; // Match pill
+        padding: 2px 4px 2px 16px;
+        flex-grow: 1;
+        width: 100%;
+        max-width: 800px;
+        transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+        height: 48px; // Match library header elements roughly
+        
+        &:hover, &:focus-within {
+            background: rgba(255, 255, 255, 0.1);
+            border-color: rgba(255, 255, 255, 0.15);
+        }
+
+        .search-category-select {
+            flex-shrink: 0;
+            max-width: 40%;
+            
+            .MuiSelect-select {
+               padding-right: 24px !important; // Make room for clear icon inside select if needed, though we put it in EndAdornment
+            }
+        }
+    }
+    
+    .search-input {
+        flex-grow: 1;
+        
+        .MuiInputBase-input {
+            font-size: 1rem;
+            padding: 4px 8px;
+            color: white;
+            
+            &::placeholder {
+                opacity: 0.6;
+            }
+        }
+        
+        .search-icon {
+            font-size: 1.2rem;
+            opacity: 0.7;
+            margin-right: 8px;
+        }
+    }
+    
+    .search-category-select {
+        flex-shrink: 0;
+        min-width: 120px;
+        margin-left: 8px;
+        
+        .MuiOutlinedInput-root {
+            border-radius: 20px;
+            background-color: transparent ;
+            color: rgba(255, 255, 255, 0.9);
+            height: 36px;
+            font-size: 0.85rem;
+            transition: all 0.2s ease;
+            
+            fieldset { border: none; }
+            
+            &:hover {
+                background-color: rgba(255, 255, 255, 0.05);
+            }
+        }
+    }
+    
+    &-empty-state {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        height: 60vh; // Take up vertical space to look nice
+        text-align: center;
+        width: 100%;
+        
+        .icon-stack {
+            position: relative;
+            height: 120px;
+            width: 200px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 24px;
+            
+            .icon-lg { 
+                font-size: 5rem; 
+                z-index: 2; 
+                color: var(--mui-palette-primary-main); 
+                filter: drop-shadow(0 0 20px rgba(var(--mui-palette-primary-mainChannel), 0.4));
+            }
+            .icon-md { 
+                font-size: 3.5rem; 
+                position: absolute; 
+                right: 30px; 
+                top: 10px; 
+                opacity: 0.4; 
+                transform: rotate(15deg); 
+            }
+            .icon-sm { 
+                font-size: 3rem; 
+                position: absolute; 
+                left: 40px; 
+                bottom: 10px; 
+                opacity: 0.3; 
+                transform: rotate(-10deg); 
+            }
+        }
+    }
+    
+    &-no-results {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        padding: 4em;
+        opacity: 0.7;
+    }
 }
+
+// Global override for the dropdown menu to match glassmorphism
+.glass-menu {
+    background-color: rgba(30, 30, 40, 0.9) !important;
+    backdrop-filter: blur(20px) !important;
+    border: 1px solid rgba(255, 255, 255, 0.1) !important;
+    border-radius: 16px !important;
+    box-shadow: 0 10px 40px rgba(0,0,0,0.5) !important;
+    
+    .MuiMenuItem-root {
+        border-radius: 8px;
+        margin: 4px;
+        font-size: 0.9rem;
+        transition: background-color 0.2s;
+        
+        &:hover {
+            background-color: rgba(255, 255, 255, 0.1);
+        }
+        &.Mui-selected {
+            background-color: rgba(255, 255, 255, 0.2) !important;
+            color: #fff;
+            
+            &:hover {
+                background-color: rgba(255, 255, 255, 0.25) !important;
+            }
+        }
+    }
+}
+

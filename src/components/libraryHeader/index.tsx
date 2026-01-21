@@ -20,6 +20,7 @@ import { getLibraryQueryOptions } from "@/utils/queries/library";
 // import removed: header reads name/count from Zustand slice
 import { useLibraryStateStore } from "@/utils/store/libraryState";
 import "./libraryHeader.scss";
+import useSearchStore from "@/utils/store/search";
 import BackButton from "../buttons/backButton";
 import { FiltersDialogTrigger } from "../filtersDialog";
 import { UserAvatarMenu } from "../userAvatarMenu";
@@ -231,9 +232,8 @@ export const LibraryHeader = () => {
 	const libraryName = libraryNameFromStore ?? currentLibrary.data.Name;
 	const totalCount = itemsTotalCount;
 
-	const handleNavigateToSearch = useCallback(
-		() => navigate({ to: "/search", search: { query: "" } }),
-		[navigate],
+	const toggleSearchDialog = useSearchStore(
+		useShallow((s) => s.toggleSearchDialog),
 	);
 	const handleNavigateToHome = useCallback(
 		() => navigate({ to: "/home" }),
@@ -292,7 +292,19 @@ export const LibraryHeader = () => {
 					size="small"
 					value={String(normalizedViewType)}
 					onChange={handleChangeViewType}
+					SelectProps={{
+						MenuProps: {
+							PaperProps: {
+								className: "glass-menu-paper",
+							},
+						},
+					}}
 				>
+					<MenuItem disabled value="">
+						<Typography variant="overline" color="textSecondary">
+							View
+						</Typography>
+					</MenuItem>
 					{compatibleViews.map((v) => (
 						<MenuItem key={String(v.value)} value={String(v.value)}>
 							{v.title}
@@ -318,7 +330,19 @@ export const LibraryHeader = () => {
 					value={normalizedSortBy}
 					onChange={handleChangeSortBy}
 					disabled={disableSortOption}
+					SelectProps={{
+						MenuProps: {
+							PaperProps: {
+								className: "glass-menu-paper",
+							},
+						},
+					}}
 				>
+					<MenuItem disabled value="">
+						<Typography variant="overline" color="textSecondary">
+							Sort By
+						</Typography>
+					</MenuItem>
 					{SORT_BY_OPTIONS.map((option) => {
 						const isCompatible =
 							option.compatibleViewTypes?.includes(currentViewType as any) ||
@@ -349,7 +373,7 @@ export const LibraryHeader = () => {
 				<FiltersDialogTrigger />
 			</div>
 			<div className="flex flex-row" style={{ gap: "0.6em" }}>
-				<IconButton onClick={handleNavigateToSearch}>
+				<IconButton onClick={toggleSearchDialog}>
 					<div className="material-symbols-rounded">search</div>
 				</IconButton>
 				<IconButton onClick={handleNavigateToFavorite}>

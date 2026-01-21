@@ -35,6 +35,7 @@ const HIDDEN_PATHS = [
 	"/error",
 	"/settings",
 	"/library",
+	"/search",
 ];
 
 export const AppBar = () => {

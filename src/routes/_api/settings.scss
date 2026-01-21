@@ -16,11 +16,39 @@
     &-form{
         display: flex;
         flex-direction: column;
-        align-items: flex-end;
+        align-items: stretch;
         justify-content: flex-start;
-        gap: 1em;
+        gap: 1.5em;
         width: 100%;
         margin-top: 2em;
+
+        button[type="submit"] {
+            align-self: flex-end;
+            min-width: 10em;
+        }
+    }
+    &-option {
+        width: 100%;
+        margin: 0 !important;
+        justify-content: space-between;
+        padding: 1em 0;
+        
+        /* Ensure the label text takes available space */
+        .MuiFormControlLabel-label {
+            flex-grow: 1;
+        }
+
+        &-info {
+            display: flex;
+            flex-direction: column;
+            gap: 0.25em;
+            padding-right: 1em;
+            
+            &-caption {
+                opacity: 0.7;
+            }
+        }
+        
     }
     &-sidebar {
         // padding-top: 4.4em !important;

@@ -170,7 +170,7 @@ export const FiltersDialog: React.FC<FiltersDialogProps> = React.memo(
 				fullWidth
 				maxWidth="sm"
 				keepMounted
-				PaperProps={{ className: "glass", sx: { borderRadius: "24px" } }}
+				PaperProps={{ className: "glass-dialog-paper" }}
 			>
 				<DialogTitle>Filters</DialogTitle>
 				<DialogContent

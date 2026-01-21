@@ -67,11 +67,27 @@
 			transform: translate(-50%);
 			border-radius: 100px;
 			overflow: hidden;
-			transition: background $transition-time-default, box-shadow $transition-time-default;
 			z-index: 1000;
+			&::after {
+				content: "";
+				position: absolute;
+				inset: 0 -0.35em;
+				pointer-events: none;
+				border-radius: inherit;
+				// Glass styling matching Search Dialog
+				background-color: rgba(20, 20, 30, 0.7);
+				backdrop-filter: blur(24px) saturate(180%);
+				background-image: linear-gradient(rgba(255, 255, 255, 0.05), rgba(255, 255, 255, 0));
+				border: 1px solid rgba(255, 255, 255, 0.08);
+				box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
+				opacity: 0;
+				z-index: -1;
+				transition: all $transition-time-fast;
+			}
 			&.scrolling {
-				background: rgb(0 0 0 / 0.4) !important;
-				box-shadow: 0 0 25px rgb(0 0 0 / 0.45);
+				&::after {
+					opacity: 1;
+				}
 			}
 		}
 		&-options {
