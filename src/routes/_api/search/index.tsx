@@ -320,7 +320,7 @@ function SearchAppBar({
 							}}
 							MenuProps={{
 								PaperProps: {
-									className: "glass-menu",
+									className: "glass-menu-paper",
 								},
 								disableScrollLock: true,
 							}}

@@ -77,13 +77,9 @@
         width: 100%;
         max-width: 600px;
         overflow: hidden;
-        background: rgba(255, 255, 255, 0.05);
+        @include glass-effect($blur: 20px, $bg-color: rgba(255, 255, 255, 0.05));
         border-radius: 1.5rem;
         padding: 0;
-        border: 1px solid rgba(255, 255, 255, 0.1);
-        backdrop-filter: blur(20px);
-        -webkit-backdrop-filter: blur(20px);
-        box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
         min-height: 0; // Allow shrinking
     }
     

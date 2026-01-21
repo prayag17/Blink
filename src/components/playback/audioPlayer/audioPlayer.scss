@@ -13,10 +13,11 @@ $image-size: 4em;
 	gap: 1.5em;
 	box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
 	grid-template-columns: 25% 1fr 25%;
-	background: rgba(18, 18, 18, 0.85) !important;
-	backdrop-filter: blur(12px);
-	-webkit-backdrop-filter: blur(12px);
-	border: 1px solid rgba(255, 255, 255, 0.1);
+    @include glass-effect($blur: 12px, $bg-color: rgba(18, 18, 18, 0.85));
+	// background: rgba(18, 18, 18, 0.85) !important;
+	// backdrop-filter: blur(12px);
+	// -webkit-backdrop-filter: blur(12px);
+	// border: 1px solid rgba(255, 255, 255, 0.1);
 	border-radius: 1rem;
 	align-items: center;
 

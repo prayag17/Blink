@@ -11,16 +11,13 @@
 	&-sidebar {
 		overflow-y: auto;
 		height: 100%;
-		background: rgba(10, 10, 14, 0.4); // Darker, more distinct
+		@include glass-effect($bg-color: rgba(10, 10, 14, 0.4));
 		border-radius: 24px;
-		backdrop-filter: blur(24px) saturate(180%);
-		border: 1px solid rgba(255, 255, 255, 0.08);
 		grid-area: sidebar;
 		display: flex;
 		flex-direction: column;
 		padding: 12px;
 		gap: 8px;
-		box-shadow: 0 4px 24px rgba(0,0,0,0.2);
 		
 		// Ensure programmatic scroll respects padding
 		scroll-padding-block: 24px;

@@ -43,12 +43,7 @@
             inset: 0 -0.35em;
             pointer-events: none;
             border-radius: inherit;
-            // Glass styling matching Search Dialog
-            background-color: rgba(20, 20, 30, 0.7);
-            backdrop-filter: blur(24px) saturate(180%);
-            background-image: linear-gradient(rgba(255, 255, 255, 0.05), rgba(255, 255, 255, 0));
-            border: 1px solid rgba(255, 255, 255, 0.08);
-            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
+            @include glass-effect;
             opacity: 0;
             z-index: -1;
             transition: all $transition-time-fast;
@@ -191,31 +186,4 @@
     }
 }
 
-// Global override for the dropdown menu to match glassmorphism
-.glass-menu {
-    background-color: rgba(30, 30, 40, 0.9) !important;
-    backdrop-filter: blur(20px) !important;
-    border: 1px solid rgba(255, 255, 255, 0.1) !important;
-    border-radius: 16px !important;
-    box-shadow: 0 10px 40px rgba(0,0,0,0.5) !important;
-    
-    .MuiMenuItem-root {
-        border-radius: 8px;
-        margin: 4px;
-        font-size: 0.9rem;
-        transition: background-color 0.2s;
-        
-        &:hover {
-            background-color: rgba(255, 255, 255, 0.1);
-        }
-        &.Mui-selected {
-            background-color: rgba(255, 255, 255, 0.2) !important;
-            color: #fff;
-            
-            &:hover {
-                background-color: rgba(255, 255, 255, 0.25) !important;
-            }
-        }
-    }
-}
 

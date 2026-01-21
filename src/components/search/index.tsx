@@ -151,14 +151,9 @@ const Search = () => {
 			slotProps={{
 				transition: Transition,
 				paper: {
+					className: "glass-panel",
 					sx: {
-						backgroundColor: "rgba(20, 20, 30, 0.7)",
-						backdropFilter: "blur(24px) saturate(180%)",
 						willChange: "opacity, transform, backdrop-filter",
-						backgroundImage:
-							"linear-gradient(rgba(255, 255, 255, 0.05), rgba(255, 255, 255, 0))",
-						border: "1px solid rgba(255, 255, 255, 0.08)",
-						boxShadow: "0 20px 50px rgba(0,0,0,0.5)",
 						borderRadius: 4,
 						overflow: "hidden",
 					},

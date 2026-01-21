@@ -98,6 +98,37 @@ body {
 	animation: 0.5s fadeOutPage forwards;
 }
 
+.glass-panel {
+	@include glass-effect;
+}
+
+.glass-menu-paper, .glass-dialog-paper {
+    @include glass-effect;
+    border-radius: 16px !important;
+}
+
+.glass-menu-paper {
+    .MuiMenuItem-root {
+        font-family: inherit;
+        transition: background-color 0.2s;
+        border-radius: 8px;
+        margin: 4px;
+
+        &:hover {
+           background-color: rgba(255, 255, 255, 0.1); 
+        }
+        &.Mui-selected {
+            background-color: rgba(255, 255, 255, 0.2) !important;
+            color: white;
+            &:hover {
+                background-color: rgba(255, 255, 255, 0.25) !important; 
+            }
+        }
+    }
+}
+
+
+
 @keyframes fadeInPage {
 	from {
 		opacity: 0;
