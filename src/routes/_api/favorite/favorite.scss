@@ -1,0 +1,140 @@
+@use "@/styles/variables.scss" as *;
+
+.favorite-page {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    width: 100%;
+    overflow-y: auto;
+    padding-bottom: 2em;
+
+    .favorite-header {
+        padding: 2em 2em 0 2em;
+        display: flex;
+        flex-direction: column;
+        gap: 0.5em;
+        position: relative;
+        z-index: 2;
+
+        .header-content {
+            display: flex;
+            align-items: flex-end;
+            justify-content: space-between;
+            
+            h1 {
+                font-size: 2.2rem;
+                font-weight: 600;
+                margin: 0;
+                color: rgba(255, 255, 255, 0.95);
+                letter-spacing: -0.02em;
+            }
+        }
+
+        .MuiTabs-root {
+            min-height: 40px;
+            margin-left: -12px;
+            margin-top: 1em;
+            
+            .MuiTabs-indicator {
+                display: none; // Hide default indicator
+            }
+
+            .MuiTabs-scroller {
+                overflow: visible !important; // Allow shadows/glows to show
+            }
+
+            .MuiTab-root {
+                text-transform: none;
+                font-size: 0.9rem;
+                font-weight: 500;
+                color: rgba(255, 255, 255, 0.6);
+                padding: 8px 20px;
+                min-height: 36px;
+                min-width: fit-content;
+                border-radius: 100px;
+                margin-right: 8px;
+                transition: all $transition-time-fast ease;
+                background-color: transparent;
+                border: 1px solid rgba(255, 255, 255, 0.1);
+
+                &:first-of-type {
+                    margin-left: 12px;
+                }
+
+                &:hover {
+                    color: rgba(255, 255, 255, 0.9);
+                    background-color: rgba(255, 255, 255, 0.05);
+                    border-color: rgba(255, 255, 255, 0.2);
+                }
+
+                &.Mui-selected {
+                    color: #fff;
+                    font-weight: 600;
+                    background-color: $clr-accent-default;
+                    border-color: $clr-accent-default;
+                    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+                }
+            }
+        }
+    }
+
+    .favorite-content {
+        padding: 0.5em 0;
+        flex: 1;
+
+        // For Overview (Scrollers)
+        .overview-section {
+            padding: 0 2em; // Align with header
+            display: flex;
+            flex-direction: column;
+            gap: 1.5em;
+
+            // Override card scroller buttons to fit the new padding
+            .card-scroller-button {
+                width: 2em !important;
+                
+                &.left {
+                    left: -2em !important;
+                    border-radius: 4px !important;
+                }
+                
+                &.right {
+                    right: -2em !important;
+                    border-radius: 4px !important;
+                }
+                
+                .material-symbols-rounded {
+                    font-size: 2em;
+                }
+            }
+        }
+
+
+        // For Grid Views
+        .grid-section {
+            padding: 1em 2em;
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
+            gap: 1em;
+            
+            // Adjust for different card types if needed
+            &.grid-landscape {
+                grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+            }
+        }
+
+        .empty-state {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 300px;
+            color: rgba(255, 255, 255, 0.4);
+            
+            h3 {
+                margin-top: 1em;
+                font-weight: 400;
+            }
+        }
+    }
+}
