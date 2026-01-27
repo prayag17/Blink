@@ -1,51 +1,82 @@
+@use "@/styles/variables.scss" as *;
+
+.card-scroller-container {
+    margin-bottom: 2.5em;
+    position: relative;
+    
+    // Ensure the container handles overflow if needed, but usually Carousel handles it
+}
 
 .card-scroller {
-	// height: 20em;
+    // Override carousel default outline
+    &:focus {
+        outline: none;
+    }
+
 	&-slide {
-		overflow: visible;
-		display: flex;
+		padding-right: 0.5em; // Gap between cards (handled by slide padding instead of gap for carousel)
+        // With react-multi-carousel, better to rely on their gap logic or item class
 	}
-	&-button {
-		position: absolute !important;
-		height: 100%;
-		font-size: 1em !important;
-		width: $page-margin;
-		&.right{
-			border-radius: $border-radius-default 0 0 $border-radius-default !important;
-			right: -$page-margin;
-		}
-		&.left{
-			border-radius: 0 $border-radius-default $border-radius-default 0 !important;
-			left: -$page-margin;
-		}
-		.material-symbols-rounded{
-			font-size: 3.2em;
-			--wght: 200;
-			--opsz: 48;
-		}
-	}
+    
+    &-item {
+        padding-right: 0.6em; // Consistent gap
+    }
+
 	&-header-container {
 		display: flex;
 		width: 100%;
 		justify-content: space-between;
 		align-items: center;
+        margin-bottom: 1em;
+        min-height: 40px;
 	}
+
 	&-heading {
 		display: flex;
 		align-items: center;
 		justify-content: flex-start;
-		gap: 0.35em;
+		gap: 0.5em;
 		position: relative;
-		margin-bottom: 0.25em !important;
+        font-weight: 600 !important;
+        
 		&-decoration {
-			width: 0.75em;
-			height: 2px;
-			background: white;
+			width: 4px;
+			height: 24px;
+			background: $clr-accent-default;
+            border-radius: 4px;
 		}
 	}
-	&-container .MuiButtonGroup-outlined{
-		gap: 1em;
-	}
+
+    &-controls {
+        display: flex;
+        gap: 0.5em;
+
+        .scroller-nav-btn {
+            background-color: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            color: rgba(255, 255, 255, 0.7);
+            transition: all 0.2s ease;
+            width: 36px;
+            height: 36px;
+
+            &:hover {
+                background-color: rgba(255, 255, 255, 0.1);
+                color: #fff;
+                border-color: rgba(255, 255, 255, 0.2);
+            }
+
+            // Disabled state
+            &.Mui-disabled {
+                background-color: transparent;
+                border-color: transparent;
+                color: rgba(255, 255, 255, 0.1);
+            }
+
+            .material-symbols-rounded {
+                font-size: 1.5em;
+            }
+        }
+    }
 }
 
 .hidden-decoration {
