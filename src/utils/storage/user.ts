@@ -1,21 +1,27 @@
 import { load } from "@tauri-apps/plugin-store";
 
 export interface UserStore {
-	user: {
-		Name: string;
-		AccessToken: string;
-	};
-}
+		user: {
+			Name: string;
+			AccessToken: string;
+			Id: string;
+		};
+	}
 
 const user = await load(".user.dat", { autoSave: true });
 
 /**
  * Set User details to .user.dat
  */
-const saveUser = async (userName: string, accessToken: string) => {
+const saveUser = async (
+	userName: string,
+	accessToken: string,
+	userId: string,
+) => {
 	user.set("user", {
 		Name: userName,
 		AccessToken: accessToken,
+		Id: userId,
 	});
 
 	await user.save();

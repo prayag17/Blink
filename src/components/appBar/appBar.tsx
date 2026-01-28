@@ -203,30 +203,23 @@ export const AppBar = () => {
 					<Divider variant="middle" />
 					<List>
 						<ListItem>
-							<ListItemButton
-								onClick={() => {
-									setSettingsDialogOpen(true);
-									setSettingsTabValue(1);
-								}}
+							<ListItemLink
+								to="/settings"
+								icon="settings"
+								primary="Settings"
 								style={{
 									borderRadius: "100px",
 									gap: "0.85em",
 								}}
-							>
-								<span className="material-symbols-rounded">settings</span>
-								Settings
-							</ListItemButton>
+							/>
 						</ListItem>
 						<ListItem>
 							<ListItemButton
-								onClick={() => {
-									setSettingsDialogOpen(true);
-									setSettingsTabValue(2);
-								}}
 								style={{
 									borderRadius: "100px",
 									gap: "0.85em",
 								}}
+								disabled
 							>
 								<span className="material-symbols-rounded">dns</span>
 								Change Server

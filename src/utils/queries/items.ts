@@ -18,8 +18,11 @@ export const getItemQueryOptions = (
 	queryOptions({
 		queryKey: ["item", id],
 		queryFn: async () => {
-			if (!api || !userId) {
-				throw Error("API or User ID is not defined");
+			if (!api) {
+				throw Error("API is not defined");
+			}
+			if (!userId) {
+				throw Error("User ID is not defined");
 			}
 			const result = await getUserLibraryApi(api).getItem({
 				userId: userId,
@@ -42,8 +45,11 @@ export const getLatestItemsQueryOptions = (
 	queryOptions({
 		queryKey: ["home", "latestMedia"],
 		queryFn: async () => {
-			if (!api || !userId) {
-				throw Error("API or User ID is not defined");
+			if (!api) {
+				throw Error("API is not defined");
+			}
+			if (!userId) {
+				throw Error("User ID is not defined");
 			}
 			const media = await getUserLibraryApi(api).getLatestMedia({
 				userId: userId,

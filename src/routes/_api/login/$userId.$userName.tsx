@@ -12,9 +12,6 @@ import { useSnackbar } from "notistack";
 import { AvatarImage } from "@/components/avatar/avatar.jsx";
 import "./login.scss";
 
-import { saveUser } from "@/utils/storage/user";
-import { useApiInContext } from "@/utils/store/api";
-import { useBackdropStore } from "@/utils/store/backdrop.js";
 import { useMutation } from "@tanstack/react-query";
 import {
 	createFileRoute,
@@ -27,6 +24,9 @@ import React, {
 	useEffect,
 	useState,
 } from "react";
+import { saveUser } from "@/utils/storage/user";
+import { useApiInContext } from "@/utils/store/api";
+import { useBackdropStore } from "@/utils/store/backdrop.js";
 
 export const Route = createFileRoute("/_api/login/$userId/$userName")({
 	component: LoginUser,
@@ -102,7 +102,13 @@ function LoginUser() {
 			}
 			createApi(api.basePath, authenticate.data?.AccessToken);
 
-			if (rememberMe) await saveUser(userName, authenticate.data.AccessToken);
+			if (authenticate.data.SessionInfo?.UserId && rememberMe) {
+				await saveUser(
+					userName,
+					authenticate.data.AccessToken,
+					authenticate.data.SessionInfo.UserId,
+				);
+			}
 
 			router.invalidate().finally(() => {
 				navigate({ to: "/home", replace: true });

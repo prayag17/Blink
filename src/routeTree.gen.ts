@@ -36,6 +36,7 @@ import { Route as ApiEpisodeIdRouteImport } from './routes/_api/episode/$id'
 import { Route as ApiBoxsetIdRouteImport } from './routes/_api/boxset/$id'
 import { Route as ApiArtistIdRouteImport } from './routes/_api/artist/$id'
 import { Route as ApiAlbumIdRouteImport } from './routes/_api/album/$id'
+import { Route as ApiSettingsChangeServerIndexRouteImport } from './routes/_api/settings/changeServer/index'
 import { Route as ApiLoginUserIdUserNameRouteImport } from './routes/_api/login/$userId.$userName'
 
 const ApiRoute = ApiRouteImport.update({
@@ -172,6 +173,12 @@ const ApiAlbumIdRoute = ApiAlbumIdRouteImport.update({
   path: '/album/$id',
   getParentRoute: () => ApiRoute,
 } as any)
+const ApiSettingsChangeServerIndexRoute =
+  ApiSettingsChangeServerIndexRouteImport.update({
+    id: '/changeServer/',
+    path: '/changeServer/',
+    getParentRoute: () => ApiSettingsRoute,
+  } as any)
 const ApiLoginUserIdUserNameRoute = ApiLoginUserIdUserNameRouteImport.update({
   id: '/$userId/$userName',
   path: '/$userId/$userName',
@@ -206,6 +213,7 @@ export interface FileRoutesByFullPath {
   '/player/': typeof ApiPlayerIndexRoute
   '/search/': typeof ApiSearchIndexRoute
   '/login/$userId/$userName': typeof ApiLoginUserIdUserNameRoute
+  '/settings/changeServer/': typeof ApiSettingsChangeServerIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -235,6 +243,7 @@ export interface FileRoutesByTo {
   '/player': typeof ApiPlayerIndexRoute
   '/search': typeof ApiSearchIndexRoute
   '/login/$userId/$userName': typeof ApiLoginUserIdUserNameRoute
+  '/settings/changeServer': typeof ApiSettingsChangeServerIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -266,6 +275,7 @@ export interface FileRoutesById {
   '/_api/player/': typeof ApiPlayerIndexRoute
   '/_api/search/': typeof ApiSearchIndexRoute
   '/_api/login/$userId/$userName': typeof ApiLoginUserIdUserNameRoute
+  '/_api/settings/changeServer/': typeof ApiSettingsChangeServerIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -297,6 +307,7 @@ export interface FileRouteTypes {
     | '/player/'
     | '/search/'
     | '/login/$userId/$userName'
+    | '/settings/changeServer/'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -326,6 +337,7 @@ export interface FileRouteTypes {
     | '/player'
     | '/search'
     | '/login/$userId/$userName'
+    | '/settings/changeServer'
   id:
     | '__root__'
     | '/'
@@ -356,6 +368,7 @@ export interface FileRouteTypes {
     | '/_api/player/'
     | '/_api/search/'
     | '/_api/login/$userId/$userName'
+    | '/_api/settings/changeServer/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -558,6 +571,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiAlbumIdRouteImport
       parentRoute: typeof ApiRoute
     }
+    '/_api/settings/changeServer/': {
+      id: '/_api/settings/changeServer/'
+      path: '/changeServer'
+      fullPath: '/settings/changeServer/'
+      preLoaderRoute: typeof ApiSettingsChangeServerIndexRouteImport
+      parentRoute: typeof ApiSettingsRoute
+    }
     '/_api/login/$userId/$userName': {
       id: '/_api/login/$userId/$userName'
       path: '/$userId/$userName'
@@ -587,11 +607,13 @@ const ApiLoginRouteWithChildren = ApiLoginRoute._addFileChildren(
 interface ApiSettingsRouteChildren {
   ApiSettingsAboutRoute: typeof ApiSettingsAboutRoute
   ApiSettingsPreferencesRoute: typeof ApiSettingsPreferencesRoute
+  ApiSettingsChangeServerIndexRoute: typeof ApiSettingsChangeServerIndexRoute
 }
 
 const ApiSettingsRouteChildren: ApiSettingsRouteChildren = {
   ApiSettingsAboutRoute: ApiSettingsAboutRoute,
   ApiSettingsPreferencesRoute: ApiSettingsPreferencesRoute,
+  ApiSettingsChangeServerIndexRoute: ApiSettingsChangeServerIndexRoute,
 }
 
 const ApiSettingsRouteWithChildren = ApiSettingsRoute._addFileChildren(

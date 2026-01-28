@@ -1,13 +1,16 @@
+import type { BaseItemKind } from "@jellyfin/sdk/lib/generated-client";
 import { Typography } from "@mui/material";
 import React from "react";
+import { getTypeIcon } from "../utils/iconsCollection";
 
 type CarouselTickersProps = {
-	imageUrl?: string;
+	imageUrl?: string | undefined | null;
 	itemName: string;
 	itemYear: string;
 	onTickerClick: (index: number) => void;
 	index: number;
 	isActive: boolean;
+	itemType: BaseItemKind;
 };
 
 const CarouselTickers = React.memo(
@@ -18,6 +21,7 @@ const CarouselTickers = React.memo(
 		onTickerClick,
 		index,
 		isActive,
+		itemType,
 	}: CarouselTickersProps) => {
 		const handleClick = React.useCallback(() => {
 			onTickerClick(index);
@@ -28,12 +32,18 @@ const CarouselTickers = React.memo(
 				className={`carousel-ticker${isActive ? " active" : ""}`}
 				onClick={handleClick}
 			>
-				<img
-					src={imageUrl}
-					alt={itemName}
-					className="carousel-ticker-image"
-					// style={{ width: "5em", height: "100%", objectFit: "cover" }}
-				/>
+				{imageUrl ? (
+					<img
+						src={imageUrl}
+						alt={itemName}
+						className="carousel-ticker-image"
+					/>
+				) : (
+					<div className="carousel-ticker-image placeholder material-symbols-rounded">
+						{" "}
+						{getTypeIcon(itemType)}
+					</div>
+				)}
 				<div>
 					<Typography variant="subtitle1" className="carousel-ticker-title">
 						{itemName}

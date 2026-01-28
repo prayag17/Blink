@@ -113,14 +113,16 @@ const Carousel = ({
 					>
 						<CarouselTickers
 							imageUrl={
-								getImageUrlsApi(api).getItemImageUrlById(
-									item.Id ?? "",
-									"Thumb",
-									{
-										quality: 90,
-										fillHeight: 360,
-									},
-								) ?? undefined
+								item.ImageTags?.Thumb
+									? getImageUrlsApi(api).getItemImageUrlById(
+											item.Id ?? "",
+											"Thumb",
+											{
+												quality: 90,
+												fillHeight: 360,
+											},
+										)
+									: undefined
 							}
 							isActive={index === currentSlide}
 							itemName={item.Name ?? "Unknown"}
@@ -131,6 +133,7 @@ const Carousel = ({
 							}
 							onTickerClick={handleTickerClick}
 							index={index}
+							itemType={item.Type as BaseItemKind}
 						/>
 					</div>
 				))}

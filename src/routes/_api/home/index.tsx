@@ -3,10 +3,12 @@ import React, { useCallback, useMemo } from "react";
 
 import "./home.scss";
 
+import type { Api } from "@jellyfin/sdk";
 import {
 	type BaseItemDto,
 	BaseItemKind,
 	ItemFields,
+	type UserDto,
 } from "@jellyfin/sdk/lib/generated-client";
 import { getItemsApi } from "@jellyfin/sdk/lib/utils/api/items-api";
 import { getTvShowsApi } from "@jellyfin/sdk/lib/utils/api/tv-shows-api";
@@ -40,10 +42,17 @@ function Home() {
 	const api = useApiInContext((s) => s.api);
 	const user = useCentralStore((s) => s.currentUser);
 
+	if (!api || !user?.Id) {
+		return <CircularPageLoadingAnimation />;
+	}
+
+	return <HomeContent api={api} user={user} />;
+}
+
+function HomeContent({ api, user }: { api: Api; user: UserDto }) {
 	const libraries = useSuspenseQuery({
 		queryKey: ["libraries"],
 		queryFn: async () => {
-			if (!api || !user?.Id) return null;
 			const libs = await getUserViewsApi(api).getUserViews({
 				userId: user.Id,
 			});
@@ -52,12 +61,13 @@ function Home() {
 		networkMode: "always",
 	});
 
-	const latestMedia = useSuspenseQuery(getLatestItemsQueryOptions(api, user?.Id));
+	const latestMedia = useSuspenseQuery(
+		getLatestItemsQueryOptions(api, user.Id),
+	);
 
 	const resumeItemsVideo = useSuspenseQuery({
 		queryKey: ["home", "resume", "video"],
 		queryFn: async () => {
-			if (!api || !user?.Id) return null;
 			const resumeItems = await getItemsApi(api).getResumeItems({
 				userId: user.Id,
 				limit: 10,
@@ -72,9 +82,8 @@ function Home() {
 	const resumeItemsAudio = useSuspenseQuery({
 		queryKey: ["home", "resume", "audio"],
 		queryFn: async () => {
-			if (!api || !user?.Id) return null;
 			const resumeItems = await getItemsApi(api).getResumeItems({
-				userId: user?.Id,
+				userId: user.Id,
 				limit: 10,
 				mediaTypes: ["Audio"],
 				enableUserData: true,
@@ -87,9 +96,8 @@ function Home() {
 	const upNextItems = useSuspenseQuery({
 		queryKey: ["home", "upNext"],
 		queryFn: async () => {
-			if (!api || !user?.Id) return null;
 			const upNext = await getTvShowsApi(api).getNextUp({
-				userId: user?.Id,
+				userId: user.Id,
 				fields: [
 					ItemFields.PrimaryImageAspectRatio,
 					ItemFields.MediaStreams,

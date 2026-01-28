@@ -1,17 +1,21 @@
 import type { Api } from "@jellyfin/sdk";
 import type { UserDto } from "@jellyfin/sdk/lib/generated-client";
 import { getUserApi } from "@jellyfin/sdk/lib/utils/api/user-api";
-import React, { type ReactNode } from "react";
-import { createContext, useContext, useState } from "react";
-import { type StoreApi, createStore } from "zustand";
+import React, {
+	createContext,
+	type ReactNode,
+	useContext,
+	useState,
+} from "react";
+import { createStore, type StoreApi } from "zustand";
 import { shallow } from "zustand/shallow";
 import { useStoreWithEqualityFn } from "zustand/traditional";
 import { version } from "../../../package.json";
 import {
-	type ServerInfo,
 	getAllServers,
 	getDefaultServer,
 	getServer,
+	type ServerInfo,
 } from "../storage/servers";
 import { getUser } from "../storage/user";
 
@@ -22,6 +26,7 @@ type CentralStore = {
 	userOnDisk: () => Promise<{
 		Name: string;
 		AccessToken: string;
+		Id: string;
 	} | null>;
 	clientVersion: string;
 	currentUser: null | UserDto;

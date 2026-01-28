@@ -17,10 +17,6 @@ import React, {
 import { delUser } from "@/utils/storage/user";
 import { useApiInContext } from "@/utils/store/api";
 import { useCentralStore } from "@/utils/store/central";
-import {
-	setSettingsDialogOpen,
-	setSettingsTabValue,
-} from "@/utils/store/settings";
 
 export const UserAvatarMenu = () => {
 	const api = useApiInContext((s) => s.api);
@@ -105,18 +101,6 @@ export const UserAvatarMenu = () => {
 					Logout
 				</MenuItem>
 				<Divider />
-				<MenuItem
-					onClick={() => {
-						setSettingsDialogOpen(true);
-						setSettingsTabValue(1);
-						handleMenuClose();
-					}}
-				>
-					<ListItemIcon>
-						<span className="material-symbols-rounded">settings</span>
-					</ListItemIcon>
-					Settings
-				</MenuItem>
 				<MenuItem
 					onClick={() => {
 						navigate({ to: "/settings/preferences" });

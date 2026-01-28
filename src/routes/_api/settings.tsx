@@ -64,6 +64,12 @@ function SettingsRoute() {
 						className="settings-sidebar-list-item"
 					/>
 					<ListItemLink
+						to="/settings/changeServer"
+						icon="dns"
+						primary="Servers"
+						className="settings-sidebar-list-item"
+					/>
+					<ListItemLink
 						to="/settings/about"
 						icon="info"
 						primary="About"
