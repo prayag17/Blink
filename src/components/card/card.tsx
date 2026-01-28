@@ -54,7 +54,6 @@ const CardContent = ({
 }) => {
 	const api = useApiInContext((s) => s.api);
 	const navigate = useNavigate();
-	const [isHovered, setIsHovered] = useState(false);
 
 	const defaultOnClick = useCallback(() => {
 		if (item?.Id) {
@@ -87,18 +86,11 @@ const CardContent = ({
 		}
 	}, [item?.Id, item?.Type, navigate]);
 
-	const handleInteractionStart = useCallback(() => setIsHovered(true), []);
-	const handleInteractionEnd = useCallback(() => setIsHovered(false), []);
-
 	return (
 		<div
 			className="card"
 			ref={forwardedRef}
 			onClick={onClick || defaultOnClick}
-			onMouseEnter={handleInteractionStart}
-			onMouseLeave={handleInteractionEnd}
-			onFocus={handleInteractionStart}
-			onBlur={handleInteractionEnd}
 		>
 			<div className={`card-image-container ${cardType}`}>
 				<ErrorBoundary fallback={<></>}>
@@ -168,39 +160,35 @@ const CardContent = ({
 				)}
 				{inView && !disableOverlay && (
 					<div className="card-overlay">
-						{isHovered && (
-							<>
-								<PlayButton
-									item={item}
-									userId={userId}
-									itemType={item.Type ?? "Movie"}
-									className="card-play-button"
-									iconOnly
-									audio={
-										item.Type === BaseItemKind.MusicAlbum ||
-										item.Type === BaseItemKind.Audio ||
-										item.Type === BaseItemKind.AudioBook ||
-										item.Type === BaseItemKind.Playlist
-									}
-									playlistItem={item.Type === BaseItemKind.Playlist}
-									playlistItemId={item.Id}
-								/>
-								<LikeButton
-									itemId={item.Id}
-									itemName={item.Name ?? ""}
-									isFavorite={item.UserData?.IsFavorite}
-									queryKey={queryKey}
-									userId={userId}
-								/>
-								<MarkPlayedButton
-									itemId={item.Id}
-									itemName={item.Name ?? ""}
-									isPlayed={item.UserData?.Played}
-									queryKey={queryKey}
-									userId={userId}
-								/>
-							</>
-						)}
+						<PlayButton
+							item={item}
+							userId={userId}
+							itemType={item.Type ?? "Movie"}
+							className="card-play-button"
+							iconOnly
+							audio={
+								item.Type === BaseItemKind.MusicAlbum ||
+								item.Type === BaseItemKind.Audio ||
+								item.Type === BaseItemKind.AudioBook ||
+								item.Type === BaseItemKind.Playlist
+							}
+							playlistItem={item.Type === BaseItemKind.Playlist}
+							playlistItemId={item.Id}
+						/>
+						<LikeButton
+							itemId={item.Id}
+							itemName={item.Name ?? ""}
+							isFavorite={item.UserData?.IsFavorite}
+							queryKey={queryKey}
+							userId={userId}
+						/>
+						<MarkPlayedButton
+							itemId={item.Id}
+							itemName={item.Name ?? ""}
+							isPlayed={item.UserData?.Played}
+							queryKey={queryKey}
+							userId={userId}
+						/>
 					</div>
 				)}
 				{(item.UserData?.PlaybackPositionTicks ?? -1) > 0 && (

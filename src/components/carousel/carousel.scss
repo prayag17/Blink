@@ -11,6 +11,7 @@
 	&-sidebar {
 		overflow-y: auto;
 		height: 100%;
+		position: relative;
 		@include glass-effect($bg-color: rgba(10, 10, 14, 0.4));
 		border-radius: 24px;
 		grid-area: sidebar;
@@ -171,3 +172,7 @@
 		}
 	}
 }
+.carousel-ticker-wrapper {
+scroll-margin-block: 24px;
+}
+

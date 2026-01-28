@@ -26,18 +26,42 @@ const Carousel = ({
 	const [isPaused, setIsPaused] = useState(false);
 	const sidebarRef = React.useRef<HTMLDivElement>(null);
 	const tickerRefs = React.useRef<(HTMLDivElement | null)[]>([]);
+	const currentSlideRef = React.useRef(currentSlide);
 
 	const [setDirection] = useCarouselStore((state) => [state.setDirection]);
+
+	useEffect(() => {
+		currentSlideRef.current = currentSlide;
+	}, [currentSlide]);
 
 	useEffect(() => {
 		onChange(currentSlide);
 
 		// Auto-scroll sidebar to keep active item in view
-		if (tickerRefs.current[currentSlide]) {
-			tickerRefs.current[currentSlide]?.scrollIntoView({
-				behavior: "smooth",
-				block: "nearest",
-			});
+		const activeTicker = tickerRefs.current[currentSlide];
+		const sidebar = sidebarRef.current;
+
+		if (activeTicker && sidebar) {
+			const sidebarTop = sidebar.scrollTop;
+			const sidebarBottom = sidebarTop + sidebar.clientHeight;
+			const activeTickerTop = activeTicker.offsetTop;
+			const activeTickerBottom =
+				activeTicker.offsetTop + activeTicker.offsetHeight;
+
+			// If element is below the visible area
+			if (activeTickerBottom > sidebarBottom) {
+				sidebar.scrollTo({
+					top: activeTickerBottom - sidebar.clientHeight + 24, // 24px padding
+					behavior: "smooth",
+				});
+			}
+			// If element is above the visible area
+			else if (activeTickerTop < sidebarTop) {
+				sidebar.scrollTo({
+					top: activeTickerTop - 24, // 24px padding
+					behavior: "smooth",
+				});
+			}
 		}
 	}, [currentSlide, content, onChange]);
 
@@ -57,11 +81,11 @@ const Carousel = ({
 
 	const handleTickerClick = useCallback(
 		(index: number) => {
-			if (index === currentSlide) return;
-			setDirection(index > currentSlide ? "right" : "left");
+			if (index === currentSlideRef.current) return;
+			setDirection(index > currentSlideRef.current ? "right" : "left");
 			setCurrentSlide(index);
 		},
-		[currentSlide, setDirection],
+		[setDirection],
 	);
 
 	if (!api) return null;
@@ -85,7 +109,7 @@ const Carousel = ({
 						ref={(el) => {
 							tickerRefs.current[index] = el;
 						}}
-						style={{ scrollMarginBlock: "24px" }}
+						className="carousel-ticker-wrapper"
 					>
 						<CarouselTickers
 							imageUrl={
@@ -105,7 +129,8 @@ const Carousel = ({
 									? `${item.ProductionYear ?? ""} - ${new Date(item.EndDate).getFullYear().toString()}`
 									: (item.ProductionYear?.toString() ?? "")
 							}
-							onClick={() => handleTickerClick(index)}
+							onTickerClick={handleTickerClick}
+							index={index}
 						/>
 					</div>
 				))}

@@ -201,10 +201,10 @@ export interface FileRoutesByFullPath {
   '/setup/server/add': typeof SetupServerAddRoute
   '/setup/server/error': typeof SetupServerErrorRoute
   '/setup/server/list': typeof SetupServerListRoute
-  '/favorite': typeof ApiFavoriteIndexRoute
-  '/home': typeof ApiHomeIndexRoute
-  '/player': typeof ApiPlayerIndexRoute
-  '/search': typeof ApiSearchIndexRoute
+  '/favorite/': typeof ApiFavoriteIndexRoute
+  '/home/': typeof ApiHomeIndexRoute
+  '/player/': typeof ApiPlayerIndexRoute
+  '/search/': typeof ApiSearchIndexRoute
   '/login/$userId/$userName': typeof ApiLoginUserIdUserNameRoute
 }
 export interface FileRoutesByTo {
@@ -292,10 +292,10 @@ export interface FileRouteTypes {
     | '/setup/server/add'
     | '/setup/server/error'
     | '/setup/server/list'
-    | '/favorite'
-    | '/home'
-    | '/player'
-    | '/search'
+    | '/favorite/'
+    | '/home/'
+    | '/player/'
+    | '/search/'
     | '/login/$userId/$userName'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -372,7 +372,7 @@ declare module '@tanstack/react-router' {
     '/_api': {
       id: '/_api'
       path: ''
-      fullPath: ''
+      fullPath: '/'
       preLoaderRoute: typeof ApiRouteImport
       parentRoute: typeof rootRouteImport
     }
@@ -407,28 +407,28 @@ declare module '@tanstack/react-router' {
     '/_api/search/': {
       id: '/_api/search/'
       path: '/search'
-      fullPath: '/search'
+      fullPath: '/search/'
       preLoaderRoute: typeof ApiSearchIndexRouteImport
       parentRoute: typeof ApiRoute
     }
     '/_api/player/': {
       id: '/_api/player/'
       path: '/player'
-      fullPath: '/player'
+      fullPath: '/player/'
       preLoaderRoute: typeof ApiPlayerIndexRouteImport
       parentRoute: typeof ApiRoute
     }
     '/_api/home/': {
       id: '/_api/home/'
       path: '/home'
-      fullPath: '/home'
+      fullPath: '/home/'
       preLoaderRoute: typeof ApiHomeIndexRouteImport
       parentRoute: typeof ApiRoute
     }
     '/_api/favorite/': {
       id: '/_api/favorite/'
       path: '/favorite'
-      fullPath: '/favorite'
+      fullPath: '/favorite/'
       preLoaderRoute: typeof ApiFavoriteIndexRouteImport
       parentRoute: typeof ApiRoute
     }
