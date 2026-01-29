@@ -90,48 +90,98 @@
 	}
 }
 
-.library-drawer{
-	width: 20em;
-	margin: 1.4em;
-	height: calc(100vh - 2.8em) !important;
-	border-radius: 20px;
-	overflow-x: hidden;
-	overflow-y: auto;
-	.library-drawer-item{
-		position: relative;
-		overflow: hidden;
-		border-radius: 1000px;
-		> div::before{
-			content: "";
-			position: absolute;
-			top: 0;
-			left: 0;
-			right: 0;
-			bottom: 0;
-			background: transparent;
-			transition: $transition-time-default;
-			z-index: -1;
-			border-radius: 100px;
+.library-drawer {
+	// Ensure the drawer paper itself gets the styling
+	&.MuiDrawer-paper {
+		width: 280px;
+		margin: 16px;
+		height: calc(100% - 32px) !important; // float in the middle
+		border-radius: 24px;
+		background: rgba(20, 20, 25, 0.75); // Darker, substantial base
+		backdrop-filter: blur(24px) saturate(180%);
+		border: 1px solid rgba(255, 255, 255, 0.06);
+		box-shadow: 
+			0 24px 48px rgba(0, 0, 0, 0.4),
+			0 4px 8px rgba(0, 0, 0, 0.2);
+		overflow: hidden; // Contain scrollbars
+	}
+
+	.MuiList-root {
+		padding: 8px; // Reduced from 16px
+		gap: 2px; // Reduced gap
+	}
+
+	.MuiDivider-root {
+		border-color: rgba(255, 255, 255, 0.1);
+		margin: 4px 12px; // Reduced margins
+	}
+
+	// Navigation Items
+	.MuiListItemButton-root {
+		border-radius: 12px !important; // Slightly smaller radius
+		padding: 8px 12px; // Reduced padding (was 12px 16px)
+		margin-bottom: 2px;
+		transition: all 0.2s cubic-bezier(0.2, 0.8, 0.2, 1);
+		color: rgba(255, 255, 255, 0.6);
+		
+		&:hover {
+			background: rgba(255, 255, 255, 0.08);
+			color: #fff;
+			transform: scale(1.02);
+		}
+
+		.material-symbols-rounded {
+			margin-right: 12px; // Reduced spacing
+			font-size: 22px; // Slightly smaller icons usually look better with less padding
+			transition: all 0.2s ease;
+			color: inherit;
+		}
+
+		.MuiListItemText-primary {
+			font-weight: 600;
+			font-size: 0.9rem; // Slightly smaller text
+			letter-spacing: 0.02em;
 		}
 	}
-	.active.library-drawer-item {
-		.material-symbols-rounded{
-			--fill: 1;
-		}
-		&> div::before {
-			background: $clr-accent-default;
+
+	// Active State
+	.library-drawer-item.active {
+		.MuiListItemButton-root {
+			background: linear-gradient(90deg, rgba($clr-accent-default, 0.2), rgba($clr-accent-default, 0.05));
+			color: $clr-accent-default;
+			
+			.material-symbols-rounded {
+				font-variation-settings: 'FILL' 1;
+				color: $clr-accent-default;
+			}
+
+			// Active Indicator Bar
+			&::before {
+				content: '';
+				position: absolute;
+				left: 0;
+				top: 50%;
+				transform: translateY(-50%);
+				height: 24px;
+				width: 4px;
+				background: $clr-accent-default;
+				border-radius: 0 4px 4px 0;
+			}
 		}
 	}
-	// Magic scrollbar
+
+	// Custom Scrollbar for the drawer content
 	&::-webkit-scrollbar {
-		&-thumb {
-			height: 150px;
-			max-height: 33%;
-		}
-		&-track {
-			margin-top: 15px;
-			margin-bottom: 15px;
-			background: transparent !important;
+		width: 4px;
+	}
+	&::-webkit-scrollbar-track {
+		background: transparent;
+	}
+	&::-webkit-scrollbar-thumb {
+		background: rgba(255, 255, 255, 0.1);
+		border-radius: 4px;
+		&:hover {
+			background: rgba(255, 255, 255, 0.2);
 		}
 	}
 }

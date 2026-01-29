@@ -106,15 +106,16 @@ export default function AddServerDialog(props: AddServerDialogProps) {
 						p: "2px 16px",
 						bgcolor: "rgba(0,0,0,0.2)",
 						borderRadius: 2,
-						border: "1px solid rgba(255,255,255,0.05)",
+						border: "1px solid",
+						borderColor: "rgba(255,255,255,0.05)",
 						display: "flex",
 						alignItems: "center",
 						gap: 2,
 						"&:focus-within": {
-							border: "1px solid var(--mui-palette-primary-main)",
+							borderColor: "var(--mui-palette-primary-main)",
 							bgcolor: "rgba(0,0,0,0.3)",
 						},
-						transition: "all 0.2s",
+						transition: "border-color 0.2s, background-color 0.2s",
 					}}
 				>
 					<span className="material-symbols-rounded" style={{ opacity: 0.5 }}>

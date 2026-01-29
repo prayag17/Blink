@@ -30,11 +30,17 @@ function SettingsRoute() {
 			<div className="settings-sidebar">
 				<div className="settings-sidebar-controls">
 					<BackButton />
-					<IconButton onClick={handleNavigateHome}>
+					<IconButton
+						onClick={handleNavigateHome}
+						sx={{
+							background: "rgba(255, 255, 255, 0.05)",
+							"&:hover": { background: "rgba(255, 255, 255, 0.1)" },
+						}}
+					>
 						<span className="material-symbols-rounded">home</span>
 					</IconButton>
 				</div>
-				<Divider flexItem />
+
 				<div className="settings-sidebar-header">
 					<img
 						className="settings-sidebar-header-image"
@@ -42,21 +48,36 @@ function SettingsRoute() {
 						alt="user"
 					/>
 					<div className="flex flex-column">
-						<Typography variant="h6">{user?.Name}</Typography>
-						<Typography variant="caption" style={{ opacity: 0.5 }}>
-							{user?.Policy?.IsAdministrator ? "administrator" : "user"}
+						<Typography variant="h6" fontWeight="bold">
+							{user?.Name}
+						</Typography>
+						<Typography variant="body2" sx={{ opacity: 0.5 }}>
+							{user?.Policy?.IsAdministrator ? "Administrator" : "User"}
 						</Typography>
 					</div>
 				</div>
-				<Divider flexItem variant="middle" />
+
 				<List
 					component="nav"
-					aria-label="main mailbox folders"
+					aria-label="settings navigation"
 					className="settings-sidebar-list"
-					style={{
+					sx={{
 						width: "100%",
+						padding: 0,
 					}}
 				>
+					<Typography
+						variant="overline"
+						sx={{
+							px: 2,
+							py: 1,
+							opacity: 0.5,
+							fontWeight: "bold",
+							letterSpacing: "0.1em",
+						}}
+					>
+						General
+					</Typography>
 					<ListItemLink
 						to="/settings/preferences"
 						icon="tune"
@@ -69,6 +90,20 @@ function SettingsRoute() {
 						primary="Servers"
 						className="settings-sidebar-list-item"
 					/>
+
+					<Typography
+						variant="overline"
+						sx={{
+							px: 2,
+							py: 1,
+							mt: 2,
+							opacity: 0.5,
+							fontWeight: "bold",
+							letterSpacing: "0.1em",
+						}}
+					>
+						System
+					</Typography>
 					<ListItemLink
 						to="/settings/about"
 						icon="info"

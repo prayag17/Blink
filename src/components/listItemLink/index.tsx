@@ -17,10 +17,8 @@ const CreatedListItemLink = forwardRef<HTMLAnchorElement, MUIListItemLinkProps>(
 	(props, ref) => (
 		<ListItem component="a" ref={ref} {...props}>
 			<ListItemButton
-				style={{
-					borderRadius: "100px",
-					gap: "0.85em",
-					color: "white",
+				sx={{
+					color: "inherit",
 					textDecoration: "none",
 				}}
 			>
@@ -40,7 +38,7 @@ export default ListItemLink;
 
 	return (
 		<li>
-			{/* @ts-ignore /*}
+			{/* @ts-expect-error /*}
 			<ListItem
 				component={Link}
 				activeClassName="active"

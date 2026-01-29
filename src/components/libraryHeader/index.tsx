@@ -13,17 +13,18 @@ import {
 import { useQueryClient, useSuspenseQuery } from "@tanstack/react-query";
 import { getRouteApi, useNavigate } from "@tanstack/react-router";
 import type { ChangeEvent } from "react";
-import React, { useCallback, useEffect, useMemo } from "react";
+import React, { useCallback, useEffect, useMemo, useState } from "react";
 import { useShallow } from "zustand/shallow";
 import { AVAILABLE_VIEWS, SORT_BY_OPTIONS } from "@/utils/constants/library";
 import { getLibraryQueryOptions } from "@/utils/queries/library";
 // import removed: header reads name/count from Zustand slice
 import { useLibraryStateStore } from "@/utils/store/libraryState";
-import "./libraryHeader.scss";
 import useSearchStore from "@/utils/store/search";
+import { NavigationDrawer } from "../appBar/navigationDrawer";
 import BackButton from "../buttons/backButton";
 import { FiltersDialogTrigger } from "../filtersDialog";
 import { UserAvatarMenu } from "../userAvatarMenu";
+import "./libraryHeader.scss";
 
 const route = getRouteApi("/_api/library/$id");
 
@@ -244,143 +245,156 @@ export const LibraryHeader = () => {
 		[navigate],
 	);
 
+	const [showDrawer, setShowDrawer] = useState(false);
+
+	const handleDrawerClose = useCallback(() => {
+		setShowDrawer(false);
+	}, []);
+
+	const handleDrawerOpen = useCallback(() => {
+		setShowDrawer(true);
+	}, []);
+
 	return (
-		<AppBar
-			className={
-				scrollTrigger
-					? "library-header scrolling flex flex-row"
-					: "library-header flex flex-row"
-			}
-			style={appBarStyling}
-			elevation={0}
-			color="transparent"
-		>
-			<div className="flex flex-row" style={{ gap: "0.6em" }}>
-				<IconButton disabled>
-					<div className="material-symbols-rounded">menu</div>
-				</IconButton>
-				<MemoizeBackButton />
-				<IconButton onClick={handleNavigateToHome}>
-					<div
-						className={
-							location.pathname === "/home"
-								? "material-symbols-rounded fill"
-								: "material-symbols-rounded"
-						}
-					>
-						home
-					</div>
-				</IconButton>
-			</div>
-			<div
-				className="flex flex-row library-header-center"
-				style={{ gap: "0.6em" }}
+		<>
+			<AppBar
+				className={
+					scrollTrigger
+						? "library-header scrolling flex flex-row"
+						: "library-header flex flex-row"
+				}
+				style={appBarStyling}
+				elevation={0}
+				color="transparent"
 			>
-				<div
-					className="library-title-count flex flex-row flex-align-center"
-					title={`${libraryName}${typeof totalCount === "number" ? ` · ${totalCount.toLocaleString()} items` : ""}`}
-				>
-					<Typography variant="subtitle1" noWrap align="center">
-						{libraryName}
-					</Typography>
-					{typeof totalCount === "number" && (
-						<Chip label={totalCount} sx={{ px: 0.5, ml: 1 }} />
-					)}
+				<div className="flex flex-row" style={{ gap: "0.6em" }}>
+					<IconButton onClick={handleDrawerOpen}>
+						<div className="material-symbols-rounded">menu</div>
+					</IconButton>
+					<MemoizeBackButton />
+					<IconButton onClick={handleNavigateToHome}>
+						<div
+							className={
+								location.pathname === "/home"
+									? "material-symbols-rounded fill"
+									: "material-symbols-rounded"
+							}
+						>
+							home
+						</div>
+					</IconButton>
 				</div>
-				<TextField
-					select
-					size="small"
-					value={String(normalizedViewType)}
-					onChange={handleChangeViewType}
-					SelectProps={{
-						MenuProps: {
-							PaperProps: {
-								className: "glass-menu-paper",
-							},
-						},
-					}}
-				>
-					<MenuItem disabled value="">
-						<Typography variant="overline" color="textSecondary">
-							View
-						</Typography>
-					</MenuItem>
-					{compatibleViews.map((v) => (
-						<MenuItem key={String(v.value)} value={String(v.value)}>
-							{v.title}
-						</MenuItem>
-					))}
-				</TextField>
-				<IconButton
-					onClick={handleSortAscendingToggle}
-					aria-label="Toggle sort order"
+				<div
+					className="flex flex-row library-header-center"
+					style={{ gap: "0.6em" }}
 				>
 					<div
-						className="material-symbols-rounded"
-						style={{
-							transform: sortAscending ? "rotateX(0deg)" : "rotateX(180deg)",
+						className="library-title-count flex flex-row flex-align-center"
+						title={`${libraryName}${typeof totalCount === "number" ? ` · ${totalCount.toLocaleString()} items` : ""}`}
+					>
+						<Typography variant="subtitle1" noWrap align="center">
+							{libraryName}
+						</Typography>
+						{typeof totalCount === "number" && (
+							<Chip label={totalCount} sx={{ px: 0.5, ml: 1 }} />
+						)}
+					</div>
+					<TextField
+						select
+						size="small"
+						value={String(normalizedViewType)}
+						onChange={handleChangeViewType}
+						SelectProps={{
+							MenuProps: {
+								PaperProps: {
+									className: "glass-menu-paper",
+								},
+							},
 						}}
 					>
-						sort
-					</div>
-				</IconButton>
-				<TextField
-					select
-					size="small"
-					value={normalizedSortBy}
-					onChange={handleChangeSortBy}
-					disabled={disableSortOption}
-					SelectProps={{
-						MenuProps: {
-							PaperProps: {
-								className: "glass-menu-paper",
-							},
-						},
-					}}
-				>
-					<MenuItem disabled value="">
-						<Typography variant="overline" color="textSecondary">
-							Sort By
-						</Typography>
-					</MenuItem>
-					{SORT_BY_OPTIONS.map((option) => {
-						const isCompatible =
-							option.compatibleViewTypes?.includes(currentViewType as any) ||
-							option.compatibleCollectionTypes?.includes(
-								currentLibrary.data.CollectionType as any,
-							);
-						if (!isCompatible) return null;
-						const valueStr = Array.isArray(option.value)
-							? option.value.join(",")
-							: option.value;
-						return (
-							<MenuItem
-								key={
-									Array.isArray(option.value)
-										? option.value.join(",")
-										: option.value
-								}
-								value={valueStr}
-								onMouseEnter={() =>
-									prefetchItems(String(valueStr), sortAscending)
-								}
-							>
-								{option.title}
+						<MenuItem disabled value="">
+							<Typography variant="overline" color="textSecondary">
+								View
+							</Typography>
+						</MenuItem>
+						{compatibleViews.map((v) => (
+							<MenuItem key={String(v.value)} value={String(v.value)}>
+								{v.title}
 							</MenuItem>
-						);
-					})}
-				</TextField>
-				<FiltersDialogTrigger />
-			</div>
-			<div className="flex flex-row" style={{ gap: "0.6em" }}>
-				<IconButton onClick={toggleSearchDialog}>
-					<div className="material-symbols-rounded">search</div>
-				</IconButton>
-				<IconButton onClick={handleNavigateToFavorite}>
-					<div className="material-symbols-rounded">favorite</div>
-				</IconButton>
-				<UserAvatarMenu />
-			</div>
-		</AppBar>
+						))}
+					</TextField>
+					<IconButton
+						onClick={handleSortAscendingToggle}
+						aria-label="Toggle sort order"
+					>
+						<div
+							className="material-symbols-rounded"
+							style={{
+								transform: sortAscending ? "rotateX(0deg)" : "rotateX(180deg)",
+							}}
+						>
+							sort
+						</div>
+					</IconButton>
+					<TextField
+						select
+						size="small"
+						value={normalizedSortBy}
+						onChange={handleChangeSortBy}
+						disabled={disableSortOption}
+						SelectProps={{
+							MenuProps: {
+								PaperProps: {
+									className: "glass-menu-paper",
+								},
+							},
+						}}
+					>
+						<MenuItem disabled value="">
+							<Typography variant="overline" color="textSecondary">
+								Sort By
+							</Typography>
+						</MenuItem>
+						{SORT_BY_OPTIONS.map((option) => {
+							const isCompatible =
+								option.compatibleViewTypes?.includes(currentViewType as any) ||
+								option.compatibleCollectionTypes?.includes(
+									currentLibrary.data.CollectionType as any,
+								);
+							if (!isCompatible) return null;
+							const valueStr = Array.isArray(option.value)
+								? option.value.join(",")
+								: option.value;
+							return (
+								<MenuItem
+									key={
+										Array.isArray(option.value)
+											? option.value.join(",")
+											: option.value
+									}
+									value={valueStr}
+									onMouseEnter={() =>
+										prefetchItems(String(valueStr), sortAscending)
+									}
+								>
+									{option.title}
+								</MenuItem>
+							);
+						})}
+					</TextField>
+					<FiltersDialogTrigger />
+				</div>
+				<div className="flex flex-row" style={{ gap: "0.6em" }}>
+					<IconButton onClick={toggleSearchDialog}>
+						<div className="material-symbols-rounded">search</div>
+					</IconButton>
+					<IconButton onClick={handleNavigateToFavorite}>
+						<div className="material-symbols-rounded">favorite</div>
+					</IconButton>
+					<UserAvatarMenu />
+				</div>
+			</AppBar>
+			<NavigationDrawer open={showDrawer} onClose={handleDrawerClose} />
+		</>
 	);
 };

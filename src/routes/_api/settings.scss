@@ -1,3 +1,5 @@
+@use "../../styles/variables.scss" as *;
+
 .settings {
     &-page {
         &-container {
@@ -51,46 +53,114 @@
         
     }
     &-sidebar {
-        // padding-top: 4.4em !important;
         display: flex;
         flex-direction: column;
-        align-items: center;
+        align-items: stretch;
         justify-content: flex-start;
-        background: rgb(0 0 0 / 0.4);
-        border-right: 1px solid rgba(255, 255, 255, 0.12);
-        // padding-top: 1em;s
+        background: $clr-background-dark;
+        border-right: 1px solid rgba(255, 255, 255, 0.05);
+        padding: 1.5em 1em; // Reduced padding
+        gap: 1em; // Reduced gap
+
         &-controls {
             display: flex;
-            flex-direction: row;
             align-items: center;
-            justify-content: flex-start;
-            gap: 0.5em;
-            width: 100%;
-            padding: 1em;
+            justify-content: space-between;
+            padding-bottom: 0.5em; // Reduced
+            
+            // Adjust back button for this context
+            .MuiIconButton-root {
+                color: rgba(255,255,255,0.7);
+                &:hover {
+                    color: white;
+                    background: rgba(255,255,255,0.05);
+                }
+            }
         }
+
         &-header {
             display: flex;
+            flex-direction: column;
             align-items: center;
-            justify-content: flex-start;
-            width: 100%;
-            padding: 1em;
-            flex-direction: row;
-            gap: 1em;
+            text-align: center;
+            gap: 0.75em;
+            padding: 1em; // Reduced padding
+            background: rgba(255, 255, 255, 0.03);
+            border-radius: 16px; // Slightly tighter radius
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            transition: all 0.3s ease;
+
+            &:hover {
+                background: rgba(255, 255, 255, 0.05);
+                border-color: rgba(255, 255, 255, 0.1);
+                transform: translateY(-2px);
+            }
+
             &-image {
-                $size: 3em;
+                $size: 3.5em; // Reduced size slightly (was 4.5em)
                 width: $size;
                 height: $size;
                 border-radius: 50%;
+                object-fit: cover;
+                border: 3px solid rgba(0,0,0,0.2);
+                box-shadow: 0 8px 16px rgba(0,0,0,0.3);
             }
         }
-        &-list-item {
-            width: 100%;
-            .MuiButtonBase-root {
-                border-radius: 5px !important;
+
+        &-list {
+            display: flex;
+            flex-direction: column;
+            gap: 0.25em;
+
+            // Section headers
+            .MuiTypography-overline {
+                color: rgba(255,255,255,0.4);
+                font-size: 0.7rem;
+                margin-top: 1em; // Reduced
+                margin-bottom: 0.25em; // Reduced
+                padding-left: 12px;
             }
-            &.active .MuiButtonBase-root {
-                --fill: 1;
-                background: $clr-gradient-default;
+
+            &-item {
+                .MuiButtonBase-root {
+                    border-radius: 12px !important;
+                    padding: 8px 12px !important; // Reduced padding
+                    transition: all 0.2s ease;
+                    color: rgba(255,255,255,0.6);
+                    font-weight: 500;
+                    
+                    &:hover {
+                        background: rgba(255, 255, 255, 0.05);
+                        color: rgba(255,255,255,0.9);
+                    }
+
+                    .material-symbols-rounded {
+                         margin-right: 12px;
+                         opacity: 0.7;
+                         font-size: 20px; // Slightly smaller icons
+                    }
+                }
+
+                &.active .MuiButtonBase-root {
+                    background: rgba($clr-accent-default, 0.1) !important;
+                    color: $clr-accent-default;
+                    font-weight: 600;
+                    
+                    .material-symbols-rounded {
+                        opacity: 1;
+                        font-variation-settings: 'FILL' 1;
+                    }
+
+                     &::after {
+                        content: '';
+                        position: absolute;
+                        right: 12px;
+                        width: 6px;
+                        height: 6px;
+                        border-radius: 50%;
+                        background: currentColor;
+                     }
+                }
             }
         }
     }
