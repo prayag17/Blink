@@ -1,21 +1,7 @@
-import React, { useLayoutEffect, useState } from "react";
-
 import Chip from "@mui/material/Chip";
 import IconButton from "@mui/material/IconButton";
 import Paper from "@mui/material/Paper";
 import Typography from "@mui/material/Typography";
-import { red } from "@mui/material/colors";
-
-import AppBarBackOnly from "@/components/appBar/backOnly";
-import {
-	type ServerInfo,
-	delServer,
-	getAllServers,
-	getDefaultServer,
-	setDefaultServer,
-} from "@/utils/storage/servers";
-import { delUser } from "@/utils/storage/user";
-import { useBackdropStore } from "@/utils/store/backdrop";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import {
 	createFileRoute,
@@ -23,7 +9,19 @@ import {
 	useRouter,
 } from "@tanstack/react-router";
 import { useSnackbar } from "notistack";
+import React, { useLayoutEffect, useState } from "react";
+import AppBarBackOnly from "@/components/appBar/backOnly";
+import {
+	delServer,
+	getAllServers,
+	getDefaultServer,
+	type ServerInfo,
+	setDefaultServer,
+} from "@/utils/storage/servers";
+import { delUser } from "@/utils/storage/user";
+import { useBackdropStore } from "@/utils/store/backdrop";
 import "./serverList.scss";
+import { useShallow } from "zustand/shallow";
 import AddServerDialog from "@/components/addServerDialog";
 import { useApiInContext } from "@/utils/store/api";
 
@@ -95,124 +93,138 @@ function ServerList() {
 		await defaultServer.refetch();
 	};
 
-	const setBackdrop = useBackdropStore((state) => state.setBackdrop);
+	const setBackdrop = useBackdropStore(
+		useShallow((state) => state.setBackdrop),
+	);
 
 	useLayoutEffect(() => {
-		setBackdrop("", "");
+		setBackdrop("");
 	}, []);
 
 	const [addServerDialog, setAddServerDialog] = useState(false);
 
 	return (
-		<div className="server-list">
+		<div className="server-list flex flex-column flex-center centered">
 			<AppBarBackOnly />
-			<div
-				style={{
+			<Paper
+				sx={{
+					p: 4,
+					width: "100%",
+					maxWidth: "600px",
+					backgroundColor: "rgba(20, 20, 30, 0.7)",
+					backdropFilter: "blur(24px) saturate(180%)",
+					backgroundImage:
+						"linear-gradient(rgba(255, 255, 255, 0.05), rgba(255, 255, 255, 0))",
+					border: "1px solid rgba(255, 255, 255, 0.08)",
+					boxShadow: "0 20px 50px rgba(0,0,0,0.5)",
+					borderRadius: 4,
+					overflow: "hidden",
 					display: "flex",
-					justifyContent: "space-between",
-					width: "40vw",
-					alignItems: "center",
-					marginBottom: "2em",
+					flexDirection: "column",
+					gap: 3,
 				}}
 			>
-				<Typography variant="h3" fontWeight={200}>
-					Servers
-				</Typography>
-				<IconButton
+				<div
 					style={{
-						fontSize: "1.64em",
+						display: "flex",
+						justifyContent: "space-between",
+						alignItems: "center",
 					}}
-					onClick={() => setAddServerDialog(true)}
 				>
-					<div className="material-symbols-rounded">add</div>
-				</IconButton>
-				<AddServerDialog
-					open={addServerDialog}
-					sideEffect={() => servers.refetch()}
-					setAddServerDialog={setAddServerDialog}
-				/>
-			</div>
-			<Paper className="server-list-container">
-				{servers.isSuccess &&
-					servers.data.map((server) => (
-						<div key={server.id} className="server-list-item">
-							<div className="material-symbols-rounded server-list-item-icon">
-								dns
-							</div>
-							<div className="server-list-item-info">
-								<Typography
-									variant="h6"
-									fontWeight={400}
-									sx={{
-										display: "flex",
-										alignItems: "center",
-									}}
-								>
-									{server.systemInfo?.ServerName}
-									{server.id === defaultServer.data && (
-										<Chip
-											label={
-												<Typography variant="caption" fontWeight={700}>
-													Current
-												</Typography>
-											}
-											color="info"
-											sx={{
-												ml: 2,
-												width: "5.4em",
-											}}
-											size="small"
-										/>
-									)}
-								</Typography>
-								<Typography
-									variant="subtitle1"
-									style={{
-										opacity: 0.7,
-									}}
-									fontWeight={300}
-								>
-									{server.address}
-								</Typography>
-								<Typography
-									variant="subtitle2"
-									style={{
-										opacity: 0.5,
-									}}
-									fontWeight={300}
-								>
-									Version: {server.systemInfo?.Version}
-								</Typography>
-							</div>
-							<div className="server-list-item-buttons">
-								<IconButton
-									style={{
-										fontSize: "1.64em",
-									}}
-									onClick={() => {
-										handleServerChange.mutate(server);
-									}}
-									disabled={handleServerChange.isPending}
-								>
-									<div className="material-symbols-rounded">start</div>
-								</IconButton>
-								<IconButton
-									style={{
-										fontSize: "1.64em",
+					<Typography variant="h4" fontWeight="bold">
+						Servers
+					</Typography>
+					<IconButton
+						onClick={() => setAddServerDialog(true)}
+						sx={{
+							bgcolor: "rgba(255,255,255,0.05)",
+							"&:hover": { bgcolor: "rgba(255,255,255,0.1)" },
+						}}
+					>
+						<span className="material-symbols-rounded">add</span>
+					</IconButton>
+				</div>
 
-										color: red[400],
-									}}
-									disabled={handleServerChange.isPending}
-									onClick={() => {
-										handleDelete(server);
-									}}
+				<div className="flex flex-column" style={{ gap: "1em" }}>
+					{servers.isSuccess &&
+						servers.data.map((server) => (
+							<div
+								key={server.id}
+								className="server-list-item"
+								style={{
+									display: "flex",
+									alignItems: "center",
+									padding: "16px",
+									borderRadius: "16px",
+									backgroundColor: "rgba(0,0,0,0.2)",
+									border: "1px solid rgba(255,255,255,0.05)",
+									gap: "16px",
+								}}
+							>
+								<div
+									className="material-symbols-rounded"
+									style={{ fontSize: "24px", opacity: 0.7 }}
 								>
-									<div className="material-symbols-rounded">delete_forever</div>
-								</IconButton>
+									dns
+								</div>
+								<div style={{ flex: 1 }}>
+									<Typography
+										variant="h6"
+										fontWeight={600}
+										sx={{
+											display: "flex",
+											alignItems: "center",
+											gap: 1,
+										}}
+									>
+										{server.systemInfo?.ServerName}
+										{server.id === defaultServer.data && (
+											<Chip
+												label="Current"
+												color="primary"
+												size="small"
+												sx={{ height: 20, fontSize: "0.7rem", fontWeight: 700 }}
+											/>
+										)}
+									</Typography>
+									<Typography variant="body2" style={{ opacity: 0.7 }} noWrap>
+										{server.address}
+									</Typography>
+								</div>
+								<div style={{ display: "flex", gap: "8px" }}>
+									<IconButton
+										onClick={() => {
+											handleServerChange.mutate(server);
+										}}
+										disabled={handleServerChange.isPending}
+										size="small"
+										sx={{
+											bgcolor: "rgba(255,255,255,0.05)",
+											"&:hover": { bgcolor: "var(--mui-palette-primary-main)" },
+										}}
+									>
+										<span className="material-symbols-rounded">login</span>
+									</IconButton>
+									<IconButton
+										onClick={() => handleDelete(server)}
+										size="small"
+										sx={{
+											bgcolor: "rgba(255,255,255,0.05)",
+											"&:hover": { bgcolor: "var(--mui-palette-error-main)" },
+										}}
+									>
+										<span className="material-symbols-rounded">delete</span>
+									</IconButton>
+								</div>
 							</div>
-						</div>
-					))}
+						))}
+				</div>
 			</Paper>
+			<AddServerDialog
+				open={addServerDialog}
+				sideEffect={() => servers.refetch()}
+				setAddServerDialog={setAddServerDialog}
+			/>
 		</div>
 	);
 }

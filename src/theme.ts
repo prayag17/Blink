@@ -91,5 +91,43 @@ export const theme = createTheme({
 				},
 			},
 		},
+		MuiInputLabel: {
+			styleOverrides: {
+				root: {
+					marginLeft: "6px",
+					color: "rgba(255, 255, 255, 0.5)",
+					"&.Mui-focused": {
+						color: clrAccentDefault,
+					},
+				},
+			},
+		},
+		MuiOutlinedInput: {
+			styleOverrides: {
+				notchedOutline: {
+					paddingLeft: "15px",
+				},
+				root: {
+					backgroundColor: "rgba(0,0,0,0.2)",
+					borderRadius: "16px",
+					transition: "border-color 0.2s, background-color 0.2s",
+					"&.Mui-focused": {
+						backgroundColor: "rgba(0,0,0,0.3)",
+					},
+					"&:hover": {
+						backgroundColor: "rgba(0,0,0,0.25)",
+					},
+					"& .MuiOutlinedInput-notchedOutline": {
+						borderColor: "rgba(255,255,255,0.1)",
+					},
+					"&:hover .MuiOutlinedInput-notchedOutline": {
+						borderColor: "rgba(255,255,255,0.3)",
+					},
+					"&.Mui-focused .MuiOutlinedInput-notchedOutline": {
+						borderColor: clrAccentDefault,
+					},
+				},
+			},
+		},
 	},
 });

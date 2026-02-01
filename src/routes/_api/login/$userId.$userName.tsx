@@ -1,11 +1,9 @@
 import LoadingButton from "@mui/lab/LoadingButton";
-import { OutlinedInput, Typography } from "@mui/material";
+import { Paper, TextField, Typography } from "@mui/material";
 import Checkbox from "@mui/material/Checkbox";
-import FormControl from "@mui/material/FormControl";
 import FormControlLabel from "@mui/material/FormControlLabel";
 import IconButton from "@mui/material/IconButton";
 import InputAdornment from "@mui/material/InputAdornment";
-import InputLabel from "@mui/material/InputLabel";
 
 import { useSnackbar } from "notistack";
 
@@ -24,6 +22,7 @@ import React, {
 	useEffect,
 	useState,
 } from "react";
+import { useShallow } from "zustand/shallow";
 import { saveUser } from "@/utils/storage/user";
 import { useApiInContext } from "@/utils/store/api";
 import { useBackdropStore } from "@/utils/store/backdrop.js";
@@ -71,13 +70,15 @@ function LoginUser() {
 		});
 	};
 
-	const setBackdrop = useBackdropStore((state) => state.setBackdrop);
+	const setBackdrop = useBackdropStore(
+		useShallow((state) => state.setBackdrop),
+	);
 
 	useEffect(() => {
 		if (!api) {
 			return;
 		}
-		setBackdrop("", "");
+		setBackdrop("");
 	}, []);
 
 	const handleCheckRememberMe = (
@@ -129,82 +130,130 @@ function LoginUser() {
 
 	return (
 		<div
-			style={{
-				height: "100vh",
-				display: "flex",
-				justifyContent: "center",
-				alignItems: "center",
-				flexDirection: "column",
-				width: "30vw",
-				margin: "auto",
-			}}
+			className="login flex flex-center flex-column centered"
+			style={{ marginTop: 0 }}
 		>
-			<AvatarImage userId={userId} />
-			<div style={{ display: "inline-flex", margin: "1em 0" }}>
-				<Typography variant="h5">Login as</Typography>
-				<Typography
-					variant="h5"
+			<Paper
+				sx={{
+					p: 4,
+					width: "100%",
+					maxWidth: "600px",
+					backgroundColor: "rgba(20, 20, 30, 0.7)",
+					backdropFilter: "blur(24px) saturate(180%)",
+					backgroundImage:
+						"linear-gradient(rgba(255, 255, 255, 0.05), rgba(255, 255, 255, 0))",
+					border: "1px solid rgba(255, 255, 255, 0.08)",
+					boxShadow: "0 20px 50px rgba(0,0,0,0.5)",
+					borderRadius: 4,
+					display: "flex",
+					flexDirection: "column",
+					alignItems: "center",
+				}}
+			>
+				<div
 					style={{
-						display: "inline",
+						marginBottom: "2em",
+						display: "flex",
+						flexDirection: "column",
+						alignItems: "center",
+						gap: "1em",
 					}}
-					ml={0.5}
-					fontWeight={700}
-					className="gradient-text"
 				>
-					{userName}
-				</Typography>
-			</div>
-			<form onSubmit={(e) => handleLogin.mutate(e)}>
-				<FormControl
-					variant="outlined"
+					<AvatarImage userId={userId} />
+					<div
+						style={{
+							display: "flex",
+							flexDirection: "column",
+							alignItems: "center",
+						}}
+					>
+						<Typography variant="body1" sx={{ opacity: 0.7 }}>
+							Login as
+						</Typography>
+						<Typography variant="h5" fontWeight={700} className="gradient-text">
+							{userName}
+						</Typography>
+					</div>
+				</div>
+
+				<form
+					onSubmit={(e) => handleLogin.mutate(e)}
 					style={{
 						width: "100%",
+						display: "flex",
+						flexDirection: "column",
+						gap: "1.5rem",
 					}}
 				>
-					<InputLabel htmlFor="user-password">Password</InputLabel>
-					<OutlinedInput
-						id="user-password"
+					<TextField
+						fullWidth
 						type={password.showpass ? "text" : "password"}
 						onChange={handlePassword("password")}
 						label="Password"
-						endAdornment={
-							<InputAdornment position="end">
-								<IconButton
-									onClick={handleShowPassword}
-									aria-label="toggle password visibility"
-								>
-									{password.showpass ? (
-										<span className="material-symbols-rounded">visibility</span>
-									) : (
-										<span className="material-symbols-rounded">
-											visibility_off
-										</span>
-									)}
-								</IconButton>
-							</InputAdornment>
-						}
+						variant="outlined"
+						autoFocus
+						InputProps={{
+							startAdornment: (
+								<InputAdornment position="start">
+									<span
+										className="material-symbols-rounded"
+										style={{ opacity: 0.5 }}
+									>
+										key
+									</span>
+								</InputAdornment>
+							),
+							endAdornment: (
+								<InputAdornment position="end">
+									<IconButton onClick={handleShowPassword} edge="end">
+										{password.showpass ? (
+											<span className="material-symbols-rounded">
+												visibility
+											</span>
+										) : (
+											<span className="material-symbols-rounded">
+												visibility_off
+											</span>
+										)}
+									</IconButton>
+								</InputAdornment>
+							),
+						}}
 					/>
-				</FormControl>
-				<FormControlLabel
-					control={
-						<Checkbox checked={rememberMe} onChange={handleCheckRememberMe} />
-					}
-					label="Remember me"
-				/>
-				<LoadingButton
-					variant="contained"
-					endIcon={
-						<span className="material-symbols-rounded">chevron_right</span>
-					}
-					type="submit"
-					loading={handleLogin.isPending}
-					loadingPosition="end"
-					size="large"
-					fullWidth
-				>
-					Login
-				</LoadingButton>
-			</form>
+
+					<div
+						style={{
+							display: "flex",
+							justifyContent: "space-between",
+							alignItems: "center",
+						}}
+					>
+						<FormControlLabel
+							control={
+								<Checkbox
+									checked={rememberMe}
+									onChange={handleCheckRememberMe}
+								/>
+							}
+							label="Remember me"
+							sx={{ m: 0 }}
+						/>
+					</div>
+
+					<LoadingButton
+						variant="contained"
+						endIcon={<span className="material-symbols-rounded">login</span>}
+						type="submit"
+						loading={handleLogin.isPending}
+						loadingPosition="end"
+						size="large"
+						fullWidth
+						sx={{ borderRadius: 2, height: 48 }}
+					>
+						Login
+					</LoadingButton>
+				</form>
+			</Paper>
 		</div>
 	);
 }

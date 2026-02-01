@@ -11,7 +11,7 @@ import {
 } from "./utils/store/api";
 import { CentralProvider, useCentralStore } from "./utils/store/central";
 
-export const queryClient = new QueryClient({
+const queryClient = new QueryClient({
 	defaultOptions: {
 		queries: {
 			networkMode: "always",

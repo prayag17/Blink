@@ -2,7 +2,6 @@ import React, { type ReactNode, useRef, useState } from "react";
 import Carousel from "react-multi-carousel";
 import "react-multi-carousel/lib/styles.css";
 
-import { Box } from "@mui/material";
 import IconButton from "@mui/material/IconButton";
 import Typography from "@mui/material/Typography";
 

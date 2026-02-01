@@ -1,36 +1,31 @@
+import { getBrandingApi } from "@jellyfin/sdk/lib/utils/api/branding-api";
+import LoadingButton from "@mui/lab/LoadingButton";
+import { Paper, TextField, Typography } from "@mui/material";
+import Button from "@mui/material/Button";
+import Checkbox from "@mui/material/Checkbox";
+import FormControlLabel from "@mui/material/FormControlLabel";
+import IconButton from "@mui/material/IconButton";
+import InputAdornment from "@mui/material/InputAdornment";
 import { useMutation, useQuery } from "@tanstack/react-query";
+import { useSnackbar } from "notistack";
 import React, {
 	type ChangeEvent,
 	type FormEvent,
 	useEffect,
 	useState,
 } from "react";
-
 import { saveUser } from "@/utils/storage/user.js";
-
-import LoadingButton from "@mui/lab/LoadingButton";
-import { OutlinedInput, Paper, TextField, Typography } from "@mui/material";
-import Button from "@mui/material/Button";
-import Checkbox from "@mui/material/Checkbox";
-import FormControl from "@mui/material/FormControl";
-import FormControlLabel from "@mui/material/FormControlLabel";
-import IconButton from "@mui/material/IconButton";
-import InputAdornment from "@mui/material/InputAdornment";
-import InputLabel from "@mui/material/InputLabel";
-
-import { useSnackbar } from "notistack";
-
 import { useApiInContext } from "@/utils/store/api.js";
-import { getBrandingApi } from "@jellyfin/sdk/lib/utils/api/branding-api";
 import "./login.scss";
 
-import { useBackdropStore } from "@/utils/store/backdrop.js";
 import { blue } from "@mui/material/colors";
 import {
 	createFileRoute,
 	useNavigate,
 	useRouter,
 } from "@tanstack/react-router";
+import { useShallow } from "zustand/shallow";
+import { useBackdropStore } from "@/utils/store/backdrop.js";
 
 export const Route = createFileRoute("/_api/login/manual")({
 	component: UserLoginManual,
@@ -96,7 +91,12 @@ function UserLoginManual() {
 			}
 			createApi(api.basePath, authenticate.data?.AccessToken);
 
-			if (rememberMe) await saveUser(username, authenticate.data.AccessToken);
+			if (rememberMe)
+				await saveUser(
+					username,
+					authenticate.data.AccessToken,
+					authenticate.data.User?.Id ?? "",
+				);
 			router.invalidate().finally(() => {
 				navigate({ to: searchParams.redirect || "/home", replace: true });
 			});
@@ -122,40 +122,85 @@ function UserLoginManual() {
 		setRememberMe(checked);
 	};
 
-	const setBackdrop = useBackdropStore((state) => state.setBackdrop);
+	const setBackdrop = useBackdropStore(
+		useShallow((state) => state.setBackdrop),
+	);
 	useEffect(() => {
-		setBackdrop("", "");
+		setBackdrop("");
 	}, []);
 
 	return (
-		<div className="login scrollY">
-			<div
-				className={`login-form-container ${
-					server.data?.LoginDisclaimer && "padded-top"
-				}`}
+		<div className="login scrollY flex flex-center flex-column">
+			<Paper
+				sx={{
+					p: 4,
+					width: "100%",
+					maxWidth: "600px",
+					backgroundColor: "rgba(20, 20, 30, 0.7)",
+					backdropFilter: "blur(24px) saturate(180%)",
+					backgroundImage:
+						"linear-gradient(rgba(255, 255, 255, 0.05), rgba(255, 255, 255, 0))",
+					border: "1px solid rgba(255, 255, 255, 0.08)",
+					boxShadow: "0 20px 50px rgba(0,0,0,0.5)",
+					borderRadius: 4,
+					display: "flex",
+					flexDirection: "column",
+					gap: 3,
+					mb: 3,
+				}}
 			>
-				<Typography variant="h4" color="textPrimary">
+				<Typography variant="h4" fontWeight="bold" align="center">
 					Login
 				</Typography>
-				<form className="login-form" onSubmit={(e) => handleLogin.mutate(e)}>
+				<form
+					className="flex flex-column"
+					style={{ gap: "1.5em", width: "100%" }}
+					onSubmit={(e) => handleLogin.mutate(e)}
+				>
 					<TextField
 						variant="outlined"
-						label="Username"
+						label="Username" // Label helps accessibility, theme handles style
+						fullWidth
 						onChange={(e) => setUsername(e.currentTarget.value)}
+						InputProps={{
+							startAdornment: (
+								<InputAdornment position="start">
+									<span
+										className="material-symbols-rounded"
+										style={{ opacity: 0.5 }}
+									>
+										person
+									</span>
+								</InputAdornment>
+							),
+						}}
 					/>
-					<FormControl sx={{ width: "100%" }} variant="outlined">
-						<InputLabel htmlFor="user-password">Password</InputLabel>
-						<OutlinedInput
-							fullWidth
-							id="user-password"
-							type={password.showpass ? "text" : "password"}
-							onChange={handlePassword("password")}
-							label="Password"
-							endAdornment={
+					<TextField
+						fullWidth
+						type={password.showpass ? "text" : "password"}
+						onChange={handlePassword("password")}
+						label="Password"
+						variant="outlined"
+						InputProps={{
+							startAdornment: (
+								<InputAdornment position="start">
+									<span
+										className="material-symbols-rounded"
+										style={{ opacity: 0.5 }}
+									>
+										key
+									</span>
+								</InputAdornment>
+							),
+							endAdornment: (
 								<InputAdornment position="end">
 									<IconButton
 										onClick={handleShowPassword}
-										aria-label="toggle password visibility"
+										edge="end"
+										sx={{
+											color: "rgba(255,255,255,0.7)",
+											"&:hover": { color: "#fff" },
+										}}
 									>
 										{password.showpass ? (
 											<span className="material-symbols-rounded">
@@ -168,48 +213,68 @@ function UserLoginManual() {
 										)}
 									</IconButton>
 								</InputAdornment>
-							}
-						/>
-					</FormControl>
+							),
+						}}
+					/>
+
 					<FormControlLabel
 						control={
-							<Checkbox checked={rememberMe} onChange={handleCheckRememberMe} />
+							<Checkbox
+								checked={rememberMe}
+								onChange={handleCheckRememberMe}
+								sx={{
+									color: "rgba(255,255,255,0.5)",
+									"&.Mui-checked": {
+										color: "primary.main",
+									},
+								}}
+							/>
 						}
-						label="Remember me"
+						label={
+							<Typography variant="body2" sx={{ opacity: 0.7 }}>
+								Remember me
+							</Typography>
+						}
 					/>
-					<div
-						className="flex flex-row"
-						style={{ width: "100%", gap: "0.8em", flexWrap: "wrap" }}
-					>
+
+					<div className="flex flex-column" style={{ gap: "1em" }}>
 						<LoadingButton
 							variant="contained"
 							type="submit"
 							loading={handleLogin.isPending}
-							sx={{ width: "100%" }}
+							sx={{ width: "100%", height: 48, borderRadius: 2 }}
+							size="large"
 						>
 							Login
 						</LoadingButton>
 						<Button
-							color="secondary"
-							variant="contained"
-							className="userEventButton"
-							// size="large"
-							style={{ flex: 1 }}
+							color="inherit"
+							variant="text"
+							sx={{
+								width: "100%",
+								color: "rgba(255,255,255,0.5)",
+								"&:hover": {
+									color: "white",
+									bgcolor: "rgba(255,255,255,0.05)",
+								},
+							}}
 							onClick={() => navigate({ to: "/setup/server/list" })}
 						>
 							Change Server
 						</Button>
 					</div>
 				</form>
-			</div>
+			</Paper>
 			{server.isSuccess && server.data?.LoginDisclaimer && (
 				<Paper
 					elevation={0}
-					style={{
-						marginTop: "1em",
-						padding: "1em",
-						borderRadius: "15px",
-						width: "28em",
+					sx={{
+						padding: "1.5em",
+						borderRadius: "16px",
+						width: "100%",
+						maxWidth: "450px",
+						backgroundColor: "rgba(33, 150, 243, 0.1)",
+						border: "1px solid rgba(33, 150, 243, 0.2)",
 					}}
 				>
 					<div
@@ -219,16 +284,16 @@ function UserLoginManual() {
 						<span
 							className="material-symbols-rounded"
 							style={{
-								color: blue[700],
-								//@ts-ignore
-								"--fill": 1,
+								color: blue[400],
 							}}
 						>
 							info
 						</span>
-						Notice
+						<Typography variant="subtitle1" fontWeight="bold">
+							Notice
+						</Typography>
 					</div>
-					<Typography variant="subtitle2" style={{ opacity: 0.8 }}>
+					<Typography variant="body2" style={{ opacity: 0.8, lineHeight: 1.6 }}>
 						{server.data.LoginDisclaimer}
 					</Typography>
 				</Paper>

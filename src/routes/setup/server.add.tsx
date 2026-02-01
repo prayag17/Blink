@@ -1,20 +1,19 @@
-import React, { type FormEvent, useState } from "react";
-
-import { setDefaultServer, setServer } from "@/utils/storage/servers";
-
 import LoadingButton from "@mui/lab/LoadingButton";
+import { yellow } from "@mui/material/colors";
 import Grid from "@mui/material/Grid";
 import TextField from "@mui/material/TextField";
 import Typography from "@mui/material/Typography";
+import { useMutation } from "@tanstack/react-query";
 
 import { useSnackbar } from "notistack";
-
+import React, { type FormEvent, useState } from "react";
+import { setDefaultServer, setServer } from "@/utils/storage/servers";
 import { jellyfin, useApiInContext } from "@/utils/store/api";
-import { yellow } from "@mui/material/colors";
-import { useMutation } from "@tanstack/react-query";
 // SCSS
 import "./server.scss";
+import { Paper, Stack } from "@mui/material";
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
+import logo from "../../assets/logoBlackTransparent.png";
 
 export const Route = createFileRoute("/setup/server/add")({
 	component: ServerSetup,
@@ -66,56 +65,85 @@ function ServerSetup() {
 	});
 
 	return (
-		<div
-			className={"centered serverContainer flex flex-column flex-center"}
-			style={{
-				opacity: checkServer.isPending ? "0.5" : "1",
-				transition: "opacity 350ms",
-				width: "40vw",
-			}}
-		>
-			<div style={{ marginBottom: "1em" }}>
-				<Typography variant="h3">Add Server</Typography>
-			</div>
-			<form
-				onSubmit={(e) => checkServer.mutate(e)}
-				className="flex flex-column"
-				style={{ gap: "1em", width: "100%" }}
-			>
-				<TextField
-					className="textbox"
-					label="Server Address:"
-					variant="outlined"
-					// inputRef={serverIp}
-					onChange={(event) => {
-						setServerIp(event.target.value);
-					}}
-				/>
-				<LoadingButton
-					variant="contained"
-					sx={{ width: "100%" }}
-					size="large"
-					loading={checkServer.isPending}
-					endIcon={
-						<span className="material-symbols-rounded">chevron_right</span>
-					}
-					loadingPosition="end"
-					type="submit"
-				>
-					Add Server
-				</LoadingButton>
-			</form>
-			<Grid
-				item
-				xl={5}
-				md={6}
+		<div className="centered serverContainer flex flex-column flex-center">
+			<Paper
 				sx={{
+					p: 4,
 					width: "100%",
-					display: "flex",
-					alignItems: "center",
-					gap: 1,
-					opacity: 0.6,
+					maxWidth: "40em",
+					backgroundColor: "rgba(20, 20, 30, 0.7)",
+					backdropFilter: "blur(24px) saturate(180%)",
+					backgroundImage:
+						"linear-gradient(rgba(255, 255, 255, 0.05), rgba(255, 255, 255, 0))",
+					border: "1px solid rgba(255, 255, 255, 0.08)",
+					boxShadow: "0 20px 50px rgba(0,0,0,0.5)",
+					borderRadius: 4,
+					overflow: "hidden",
 				}}
+			>
+				<Stack spacing={2} width="30em" alignItems="center">
+					<img
+						src={logo}
+						alt="Blink"
+						style={{
+							width: "200px",
+							height: "auto",
+							objectFit: "contain",
+						}}
+					/>
+
+					<Typography
+						variant="body1"
+						color="text.secondary"
+						textAlign="center"
+						maxWidth="80%"
+						sx={{ lineHeight: 1.5 }}
+					>
+						Enter your Jellyfin server address to get started
+					</Typography>
+
+					<form
+						onSubmit={(e) => checkServer.mutate(e)}
+						className="flex flex-column"
+						style={{ gap: "1em", width: "100%" }}
+					>
+						<TextField
+							className="textbox"
+							placeholder="https://jellyfin.example.com"
+							fullWidth
+							variant="outlined"
+							// inputRef={serverIp}
+							onChange={(event) => {
+								setServerIp(event.target.value);
+							}}
+							InputProps={{
+								startAdornment: (
+									<span
+										className="material-symbols-rounded"
+										style={{ opacity: 0.5, marginRight: "12px" }}
+									>
+										dns
+									</span>
+								),
+							}}
+						/>
+						<LoadingButton
+							variant="contained"
+							sx={{ width: "100%", borderRadius: 2, height: 48 }}
+							size="large"
+							loading={checkServer.isPending}
+							type="submit"
+						>
+							Connect
+						</LoadingButton>
+					</form>
+				</Stack>
+			</Paper>
+			<Stack
+				direction="row"
+				spacing={1}
+				alignItems="center"
+				sx={{ mt: 3, opacity: 0.6 }}
 			>
 				<span
 					className="material-symbols-rounded"
@@ -128,7 +156,7 @@ function ServerSetup() {
 				<Typography variant="subtitle1">
 					Example: https://demo.jellyfin.org/stable
 				</Typography>
-			</Grid>
+			</Stack>
 		</div>
 	);
 }
