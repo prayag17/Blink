@@ -92,6 +92,9 @@ importers:
       '@tauri-apps/plugin-process':
         specifier: 2.3.1
         version: 2.3.1
+      '@tauri-apps/plugin-shell':
+        specifier: ~2.3.4
+        version: 2.3.4
       '@tauri-apps/plugin-store':
         specifier: github:tauri-apps/tauri-plugin-store#v2
         version: https://codeload.github.com/tauri-apps/tauri-plugin-store/tar.gz/27d88bc9f53f542fe1751ac32e0c57bf9ec8373e
@@ -1503,6 +1506,9 @@ packages:
 
   '@tauri-apps/plugin-process@2.3.1':
     resolution: {integrity: sha512-nCa4fGVaDL/B9ai03VyPOjfAHRHSBz5v6F/ObsB73r/dA3MHHhZtldaDMIc0V/pnUw9ehzr2iEG+XkSEyC0JJA==}
+
+  '@tauri-apps/plugin-shell@2.3.4':
+    resolution: {integrity: sha512-ktsRWf8wHLD17aZEyqE8c5x98eNAuTizR1FSX475zQ4TxaiJnhwksLygQz+AGwckJL5bfEP13nWrlTNQJUpKpA==}
 
   '@tauri-apps/plugin-store@https://codeload.github.com/tauri-apps/tauri-plugin-store/tar.gz/27d88bc9f53f542fe1751ac32e0c57bf9ec8373e':
     resolution: {tarball: https://codeload.github.com/tauri-apps/tauri-plugin-store/tar.gz/27d88bc9f53f542fe1751ac32e0c57bf9ec8373e}
@@ -4297,6 +4303,10 @@ snapshots:
       '@tauri-apps/api': 2.9.1
 
   '@tauri-apps/plugin-process@2.3.1':
+    dependencies:
+      '@tauri-apps/api': 2.9.1
+
+  '@tauri-apps/plugin-shell@2.3.4':
     dependencies:
       '@tauri-apps/api': 2.9.1
 

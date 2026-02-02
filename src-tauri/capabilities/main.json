@@ -13,10 +13,14 @@
 		"store:allow-load",
 		"updater:allow-check",
 		"updater:allow-download-and-install",
+		"updater:allow-download",
+		"updater:allow-install",
 		"notification:default",
 		"core:webview:allow-internal-toggle-devtools",
 		"dialog:default",
 		"upload:allow-download",
-		"clipboard-manager:allow-write-text"
+		"clipboard-manager:allow-write-text",
+		"shell:default",
+		"shell:allow-open"
 	]
 }

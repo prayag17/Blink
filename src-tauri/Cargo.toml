@@ -1,6 +1,6 @@
 [package]
 name = "blink"
-version = "1.0.0-alpha.3"
+version = "0.0.6-dev"
 description = "A Modern Jellyfin Client"
 authors = ["prayag17", "Blink contributors (https://github.com/prayag17/Blink/graphs/contributors)"]
 license = "GPL-3.0-only"
@@ -29,6 +29,7 @@ tauri-plugin-clipboard-manager = "2.1.0-beta.6"
 tauri-plugin-notification = "2.0.0-rc.1"
 tauri-plugin-upload = "2.0.0"
 tauri-plugin-dialog = "2.0.0"
+tauri-plugin-shell = "2"
 
 [features]
 # by default Tauri runs in production mode
