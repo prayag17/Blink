@@ -134,7 +134,7 @@ jobs:
                contents: write     # Required for creating/updating releases
           steps:
                - name: Checkout repository
-                 uses: actions/checkout@v6.0.1
+                 uses: actions/checkout@v6.0.2
 
                - name: Download all artifacts
                  uses: actions/download-artifact@v7.0.0
