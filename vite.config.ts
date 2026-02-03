@@ -3,25 +3,10 @@ import react from "@vitejs/plugin-react";
 import svgr from "vite-plugin-svgr";
 import wasm from "vite-plugin-wasm";
 import { tanstackRouter } from '@tanstack/router-vite-plugin'
-// import MillionLint from "@million/lint";
 import path from "path";
 
-// const ReactCompilerConfig = {compilationMode: "annotation"}
+const plugins = [react(), svgr(), tanstackRouter(), wasm()];
 
-const plugins = [react({
-  babel: {
-    babelrc: true,
-    plugins: [
-      ["@babel/plugin-proposal-optional-chaining-assign",
-      {
-        version: "2023-07"
-      }],
-      ["babel-plugin-react-compiler", {
-        compilationMode: "annotation",
-      }],
-    ],
-  }
-}), svgr(), tanstackRouter(), wasm()];
 export default defineConfig({
   plugins: plugins,
   css: {
@@ -57,5 +42,8 @@ export default defineConfig({
     // produce sourcemaps for debug builds
     sourcemap: !!process.env.TAURI_DEBUG,
     cssCodeSplit: process.env.TAURI_DEBUG ? false : undefined
+  },
+  worker: {
+    format: "es"
   }
 });

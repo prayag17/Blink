@@ -473,7 +473,7 @@ export function VideoPlayer() {
 					video: internalPlayer,
 					subUrl: `${api?.basePath}${mediaSource.subtitle.url}`,
 					availableFonts: { "noto sans": font },
-					fallbackFont: "noto sans",
+					defaultFont: "noto sans",
 					workerUrl,
 					wasmUrl,
 					modernWasmUrl,
