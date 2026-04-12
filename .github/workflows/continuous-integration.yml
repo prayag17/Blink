@@ -56,7 +56,7 @@ jobs:
           strategy:
                fail-fast: false
                matrix:
-                    platform: [macos-latest, ubuntu-22.04, windows-latest]
+                    platform: [macos-latest, ubuntu-22.04, windows-latest, windows-11-arm]
           runs-on: ${{ matrix.platform }}
           environment: TAURI
           steps:
