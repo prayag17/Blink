@@ -42,3 +42,6 @@ target/
 generateBanner
 # Million Lint
 .million
+
+# TypeScript incremental build cache
+*.tsbuildinfo

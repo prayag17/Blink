@@ -14,7 +14,7 @@ import {
 } from "@mui/material";
 import type { TransitionProps } from "@mui/material/transitions";
 import { skipToken, useMutation, useQuery } from "@tanstack/react-query";
-import { useNavigate } from "@tanstack/react-router";
+import { useNavigate, useRouter } from "@tanstack/react-router";
 import { writeText } from "@tauri-apps/plugin-clipboard-manager";
 import { useSnackbar } from "notistack";
 import React, { useCallback, useState } from "react";
@@ -55,6 +55,7 @@ const QuickConnectButton = (props: LoadingButtonProps) => {
 	};
 
 	const navigate = useNavigate();
+	const router = useRouter();
 
 	const quickConnectEnabled = useQuery({
 		queryKey: ["quick-connect-button", "check-quick-connect-enabled"],
@@ -79,18 +80,20 @@ const QuickConnectButton = (props: LoadingButtonProps) => {
 				);
 			}
 		},
-		onSuccess: (result) => {
-			if (api && result?.data?.AccessToken && result.data.User?.Name) {
+		onSuccess: async (result) => {
+			const { AccessToken, User } = result?.data ?? {};
+			if (api && AccessToken && User?.Name && User.Id) {
 				setCheckForQuickConnect(false);
-				// saveUser({ username, password, rememberMe: rememberUser });
-				enqueueSnackbar(`Logged in as ${result.data.User?.Name}!`, {
+				enqueueSnackbar(`Logged in as ${User.Name}!`, {
 					variant: "success",
 				});
-				createApi(api.basePath, result.data.AccessToken);
+				createApi(api.basePath, AccessToken);
 				if (rememberUser) {
-					saveUser(result.data.User?.Name, result.data.AccessToken);
+					await saveUser(User.Name, AccessToken, User.Id);
 				}
-				navigate({ to: "/home", replace: true });
+				router.invalidate().finally(() => {
+					navigate({ to: "/home", replace: true });
+				});
 			}
 		},
 		onError: (error) => {
