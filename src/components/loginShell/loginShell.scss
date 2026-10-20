@@ -1,0 +1,278 @@
+.login-shell {
+	// In normal flow (not fixed) so the app bar above stays clickable
+	position: relative;
+	min-height: 100vh;
+	width: 100%;
+	display: flex;
+	justify-content: center;
+	padding: 5rem 1.5rem 3rem;
+	box-sizing: border-box;
+	color: white;
+	// Soft accent glow instead of a boxed card
+	background:
+		radial-gradient(ellipse 60% 45% at 50% 0%, rgb(255 41 128 / 0.14), transparent 70%),
+		radial-gradient(ellipse 50% 40% at 50% 100%, rgb(110 0 184 / 0.18), transparent 70%);
+
+	&-content {
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+		width: 100%;
+		margin: auto 0;
+		gap: 1.5rem;
+	}
+	&-narrow {
+		max-width: 380px;
+	}
+	&-wide {
+		max-width: 880px;
+	}
+
+	&-server {
+		display: inline-flex;
+		align-items: center;
+		gap: 0.5rem;
+		max-width: 100%;
+		padding: 0.35rem 0.5rem 0.35rem 0.75rem;
+		border-radius: 999px;
+		background: rgb(255 255 255 / 0.06);
+		border: 1px solid rgb(255 255 255 / 0.08);
+		font-size: 0.85rem;
+
+		.material-symbols-rounded {
+			font-size: 1.1rem;
+			opacity: 0.6;
+		}
+		&-name {
+			opacity: 0.85;
+			overflow: hidden;
+			text-overflow: ellipsis;
+			white-space: nowrap;
+		}
+		&-change {
+			flex-shrink: 0;
+			padding: 0.15rem 0.6rem;
+			border-radius: 999px;
+			color: white;
+			font-weight: 600;
+			text-decoration: none;
+			background: rgb(255 255 255 / 0.08);
+			transition: background 0.15s ease;
+
+			&:hover,
+			&:focus-visible {
+				background: rgb(255 255 255 / 0.16);
+				outline: none;
+			}
+		}
+	}
+
+	&-header {
+		text-align: center;
+		margin-top: 0.5rem;
+	}
+	&-title {
+		margin: 0;
+		font-size: clamp(1.75rem, 4vw, 2.5rem);
+		font-weight: 700;
+		letter-spacing: -0.02em;
+		line-height: 1.15;
+	}
+	&-subtitle {
+		margin: 0.5rem 0 0;
+		opacity: 0.65;
+	}
+
+	&-body {
+		width: 100%;
+	}
+
+	&-footer {
+		display: flex;
+		flex-wrap: wrap;
+		justify-content: center;
+		gap: 0.5rem 1rem;
+		opacity: 0.85;
+	}
+
+	&-disclaimer {
+		display: flex;
+		gap: 0.6rem;
+		max-width: 480px;
+		padding: 0.9rem 1rem;
+		border-radius: 0.75rem;
+		background: rgb(255 255 255 / 0.04);
+		border: 1px solid rgb(255 255 255 / 0.08);
+		font-size: 0.85rem;
+		line-height: 1.5;
+
+		.material-symbols-rounded {
+			font-size: 1.2rem;
+			opacity: 0.6;
+		}
+		p {
+			margin: 0;
+			opacity: 0.75;
+		}
+	}
+}
+
+// Text-style secondary action used in login footers
+.login-link {
+	all: unset;
+	cursor: pointer;
+	display: inline-flex;
+	align-items: center;
+	gap: 0.35rem;
+	padding: 0.4rem 0.75rem;
+	border-radius: 999px;
+	font-size: 0.9rem;
+	color: rgb(255 255 255 / 0.75);
+	text-decoration: none;
+	transition: background 0.15s ease, color 0.15s ease;
+
+	.material-symbols-rounded {
+		font-size: 1.15rem;
+	}
+	&:hover,
+	&:focus-visible {
+		color: white;
+		background: rgb(255 255 255 / 0.08);
+	}
+}
+
+// Profile picker
+.profile-grid {
+	display: grid;
+	grid-template-columns: repeat(auto-fit, minmax(128px, 148px));
+	justify-content: center;
+	gap: 1.5rem 1rem;
+}
+
+.profile {
+	all: unset;
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	gap: 0.75rem;
+	padding: 0.75rem 0.5rem;
+	border-radius: 1rem;
+	cursor: pointer;
+	color: white;
+	text-decoration: none;
+	text-align: center;
+
+	&-avatar {
+		position: relative;
+		width: 112px;
+		height: 112px;
+		border-radius: 50%;
+		// Ring that lights up on hover / focus
+		box-shadow: 0 0 0 3px transparent, 0 10px 24px rgb(0 0 0 / 0.4);
+		transition: box-shadow 0.2s ease, transform 0.2s ease;
+
+		img,
+		.profile-avatar-fallback {
+			width: 100%;
+			height: 100%;
+			border-radius: 50%;
+			object-fit: cover;
+		}
+		&-fallback {
+			display: flex;
+			align-items: center;
+			justify-content: center;
+			font-size: 2.75rem;
+			font-weight: 700;
+			background: linear-gradient(135deg, $clr-accent-default, $clr-secondary-default);
+		}
+		&-add {
+			display: flex;
+			align-items: center;
+			justify-content: center;
+			background: rgb(255 255 255 / 0.06);
+			border: 2px dashed rgb(255 255 255 / 0.25);
+			box-sizing: border-box;
+
+			.material-symbols-rounded {
+				font-size: 2.5rem;
+				opacity: 0.7;
+			}
+		}
+	}
+
+	&-lock {
+		position: absolute;
+		right: 2px;
+		bottom: 2px;
+		width: 28px;
+		height: 28px;
+		border-radius: 50%;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		background: rgb(18 18 24);
+		border: 2px solid rgb(18 18 24);
+		box-sizing: border-box;
+
+		.material-symbols-rounded {
+			font-size: 1rem;
+			opacity: 0.8;
+		}
+	}
+
+	&-name {
+		max-width: 100%;
+		font-weight: 600;
+		opacity: 0.8;
+		overflow: hidden;
+		text-overflow: ellipsis;
+		white-space: nowrap;
+		transition: opacity 0.2s ease;
+	}
+
+	&:hover,
+	&:focus-visible {
+		.profile-avatar {
+			transform: translateY(-3px);
+			box-shadow: 0 0 0 3px $clr-accent-default, 0 14px 30px rgb(0 0 0 / 0.5);
+		}
+		.profile-name {
+			opacity: 1;
+		}
+	}
+}
+
+// Password / manual sign-in form
+.login-form {
+	display: flex;
+	flex-direction: column;
+	gap: 1rem;
+	width: 100%;
+
+	&-avatar {
+		display: flex;
+		justify-content: center;
+		margin-bottom: 0.25rem;
+
+		.profile-avatar {
+			width: 96px;
+			height: 96px;
+		}
+	}
+
+	&-options {
+		display: flex;
+		align-items: center;
+		justify-content: space-between;
+		margin: -0.25rem 0;
+	}
+
+	&-submit.MuiButton-root {
+		height: 48px;
+		border-radius: 12px;
+		font-weight: 700;
+		text-transform: none;
+		font-size: 1rem;
+	}
+}

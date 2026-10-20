@@ -1,108 +1,57 @@
-import LoadingButton from "@mui/lab/LoadingButton";
-import { Paper, TextField, Typography } from "@mui/material";
+import Button from "@mui/material/Button";
 import Checkbox from "@mui/material/Checkbox";
 import FormControlLabel from "@mui/material/FormControlLabel";
 import IconButton from "@mui/material/IconButton";
 import InputAdornment from "@mui/material/InputAdornment";
-
-import { useSnackbar } from "notistack";
-
-import { AvatarImage } from "@/components/avatar/avatar.jsx";
-import "./login.scss";
-
-import { useMutation } from "@tanstack/react-query";
+import TextField from "@mui/material/TextField";
+import { useMutation, useQuery } from "@tanstack/react-query";
 import {
 	createFileRoute,
+	Link,
 	useNavigate,
 	useRouter,
 } from "@tanstack/react-router";
-import React, {
-	type ChangeEvent,
-	type FormEvent,
-	useEffect,
-	useState,
-} from "react";
-import { useShallow } from "zustand/shallow";
+import React, { type FormEvent, useState } from "react";
+import LoginShell from "@/components/loginShell";
+import {
+	getPublicUsersQueryOptions,
+	isPasswordProtected,
+	ProfileAvatar,
+} from "@/components/loginShell/profileAvatar";
 import { saveUser } from "@/utils/storage/user";
 import { useApiInContext } from "@/utils/store/api";
-import { useBackdropStore } from "@/utils/store/backdrop.js";
 
 export const Route = createFileRoute("/_api/login/$userId/$userName")({
 	component: LoginUser,
 });
 
-type PasswordState = {
-	showpass: boolean;
-	password: string | undefined;
-};
-
 function LoginUser() {
 	const { userName, userId } = Route.useParams();
-
 	const router = useRouter();
+	const navigate = useNavigate({ from: "/login/$userId/$userName" });
 
 	const api = useApiInContext((s) => s.api);
 	const createApi = useApiInContext((s) => s.createApi);
 
-	const [password, setPassword] = useState<PasswordState>({
-		showpass: false,
-		password: undefined,
-	});
+	const [password, setPassword] = useState("");
+	const [showPassword, setShowPassword] = useState(false);
 	const [rememberMe, setRememberMe] = useState(true);
+	const [error, setError] = useState<string | null>(null);
 
-	const navigate = useNavigate({ from: "/login/$userId/$userName" });
+	// Profile details (image, whether a password is needed) from the public user list
+	const users = useQuery(getPublicUsersQueryOptions(api));
+	const user = users.data?.find((u) => u.Id === userId);
+	const needsPassword = isPasswordProtected(user);
 
-	const { enqueueSnackbar } = useSnackbar();
-
-	const handlePassword =
-		(prop: "password" | "showPassord") =>
-		(event: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-			setPassword({
-				...password,
-				[prop]: event.target.value,
-			});
-		};
-
-	const handleShowPassword = () => {
-		setPassword({
-			...password,
-			showpass: !password.showpass,
-		});
-	};
-
-	const setBackdrop = useBackdropStore(
-		useShallow((state) => state.setBackdrop),
-	);
-
-	useEffect(() => {
-		if (!api) {
-			return;
-		}
-		setBackdrop("");
-	}, []);
-
-	const handleCheckRememberMe = (
-		_: ChangeEvent<HTMLInputElement>,
-		checked: boolean,
-	) => {
-		setRememberMe(checked);
-	};
-
-	const handleLoginFn = async (event: FormEvent<HTMLFormElement>) => {
-		event.preventDefault();
-		try {
-			if (!api) {
-				throw new Error("API not initialized");
-			}
-			const authenticate = await api.authenticateUserByName(
-				userName,
-				password.password,
-			);
+	const handleLogin = useMutation({
+		mutationKey: ["login", "authenticate"],
+		mutationFn: async () => {
+			if (!api) throw new Error("API not initialized");
+			const authenticate = await api.authenticateUserByName(userName, password);
 			if (!authenticate.data.AccessToken) {
 				throw new Error("No access token received");
 			}
-			createApi(api.basePath, authenticate.data?.AccessToken);
-
+			createApi(api.basePath, authenticate.data.AccessToken);
 			if (authenticate.data.SessionInfo?.UserId && rememberMe) {
 				await saveUser(
 					userName,
@@ -110,158 +59,118 @@ function LoginUser() {
 					authenticate.data.SessionInfo.UserId,
 				);
 			}
-
+		},
+		onSuccess: () => {
 			router.invalidate().finally(() => {
 				navigate({ to: "/home", replace: true });
 			});
-		} catch (err) {
+		},
+		onError: (err) => {
 			console.error(err);
-			enqueueSnackbar("Unable to authenticate! Please check your password", {
-				variant: "error",
-			});
-		}
-		return;
-	};
-
-	const handleLogin = useMutation({
-		mutationKey: ["login", "authenticate"],
-		mutationFn: handleLoginFn,
+			setError(
+				needsPassword
+					? "Incorrect password. Please try again."
+					: "Couldn't sign in. Please try again.",
+			);
+			setPassword("");
+		},
 	});
 
+	const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
+		event.preventDefault();
+		setError(null);
+		handleLogin.mutate();
+	};
+
 	return (
-		<div
-			className="login flex flex-center flex-column centered"
-			style={{ marginTop: 0 }}
+		<LoginShell
+			title={`Welcome back, ${userName}`}
+			subtitle={
+				needsPassword
+					? "Enter your password to continue"
+					: "This profile doesn't need a password"
+			}
+			footer={
+				<Link to="/login/list" className="login-link">
+					<span className="material-symbols-rounded">switch_account</span>
+					Not you? Switch user
+				</Link>
+			}
 		>
-			<Paper
-				sx={{
-					p: 4,
-					width: "100%",
-					maxWidth: "600px",
-					backgroundColor: "rgba(20, 20, 30, 0.7)",
-					backdropFilter: "blur(24px) saturate(180%)",
-					backgroundImage:
-						"linear-gradient(rgba(255, 255, 255, 0.05), rgba(255, 255, 255, 0))",
-					border: "1px solid rgba(255, 255, 255, 0.08)",
-					boxShadow: "0 20px 50px rgba(0,0,0,0.5)",
-					borderRadius: 4,
-					display: "flex",
-					flexDirection: "column",
-					alignItems: "center",
-				}}
-			>
-				<div
-					style={{
-						marginBottom: "2em",
-						display: "flex",
-						flexDirection: "column",
-						alignItems: "center",
-						gap: "1em",
-					}}
-				>
-					<AvatarImage userId={userId} />
-					<div
-						style={{
-							display: "flex",
-							flexDirection: "column",
-							alignItems: "center",
-						}}
-					>
-						<Typography variant="body1" sx={{ opacity: 0.7 }}>
-							Login as
-						</Typography>
-						<Typography
-							variant="h5"
-							className="gradient-text"
-							sx={{
-								fontWeight: 700,
-							}}
-						>
-							{userName}
-						</Typography>
-					</div>
+			<form className="login-form" onSubmit={handleSubmit}>
+				<div className="login-form-avatar">
+					<ProfileAvatar
+						userId={userId}
+						name={userName}
+						imageTag={user?.PrimaryImageTag}
+					/>
 				</div>
 
-				<form
-					onSubmit={(e) => handleLogin.mutate(e)}
-					style={{
-						width: "100%",
-						display: "flex",
-						flexDirection: "column",
-						gap: "1.5rem",
-					}}
-				>
+				{needsPassword && (
 					<TextField
 						fullWidth
-						type={password.showpass ? "text" : "password"}
-						onChange={handlePassword("password")}
+						autoFocus
 						label="Password"
 						variant="outlined"
-						autoFocus
+						type={showPassword ? "text" : "password"}
+						autoComplete="current-password"
+						value={password}
+						onChange={(e) => {
+							setPassword(e.target.value);
+							setError(null);
+						}}
+						error={Boolean(error)}
+						helperText={error}
 						slotProps={{
 							input: {
-								startAdornment: (
-									<InputAdornment position="start">
-										<span
-											className="material-symbols-rounded"
-											style={{ opacity: 0.5 }}
-										>
-											key
-										</span>
-									</InputAdornment>
-								),
 								endAdornment: (
 									<InputAdornment position="end">
-										<IconButton onClick={handleShowPassword} edge="end">
-											{password.showpass ? (
-												<span className="material-symbols-rounded">
-													visibility
-												</span>
-											) : (
-												<span className="material-symbols-rounded">
-													visibility_off
-												</span>
-											)}
+										<IconButton
+											onClick={() => setShowPassword((show) => !show)}
+											edge="end"
+											aria-label={
+												showPassword ? "Hide password" : "Show password"
+											}
+										>
+											<span className="material-symbols-rounded">
+												{showPassword ? "visibility_off" : "visibility"}
+											</span>
 										</IconButton>
 									</InputAdornment>
 								),
 							},
 						}}
 					/>
+				)}
+				{!needsPassword && error && (
+					<p className="login-shell-subtitle" role="alert">
+						{error}
+					</p>
+				)}
 
-					<div
-						style={{
-							display: "flex",
-							justifyContent: "space-between",
-							alignItems: "center",
-						}}
-					>
-						<FormControlLabel
-							control={
-								<Checkbox
-									checked={rememberMe}
-									onChange={handleCheckRememberMe}
-								/>
-							}
-							label="Remember me"
-							sx={{ m: 0 }}
-						/>
-					</div>
+				<div className="login-form-options">
+					<FormControlLabel
+						control={
+							<Checkbox
+								checked={rememberMe}
+								onChange={(_, checked) => setRememberMe(checked)}
+							/>
+						}
+						label="Keep me signed in"
+					/>
+				</div>
 
-					<LoadingButton
-						variant="contained"
-						endIcon={<span className="material-symbols-rounded">login</span>}
-						type="submit"
-						loading={handleLogin.isPending}
-						loadingPosition="end"
-						size="large"
-						fullWidth
-						sx={{ borderRadius: 2, height: 48 }}
-					>
-						Login
-					</LoadingButton>
-				</form>
-			</Paper>
-		</div>
+				<Button
+					className="login-form-submit"
+					variant="contained"
+					type="submit"
+					size="large"
+					fullWidth
+					loading={handleLogin.isPending || handleLogin.isSuccess}
+				>
+					Sign in
+				</Button>
+			</form>
+		</LoginShell>
 	);
 }

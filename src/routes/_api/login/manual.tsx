@@ -1,31 +1,20 @@
-import { getBrandingApi } from "@jellyfin/sdk/lib/utils/api/branding-api";
-import LoadingButton from "@mui/lab/LoadingButton";
-import { Paper, TextField, Typography } from "@mui/material";
 import Button from "@mui/material/Button";
 import Checkbox from "@mui/material/Checkbox";
 import FormControlLabel from "@mui/material/FormControlLabel";
 import IconButton from "@mui/material/IconButton";
 import InputAdornment from "@mui/material/InputAdornment";
-import { useMutation, useQuery } from "@tanstack/react-query";
-import { useSnackbar } from "notistack";
-import React, {
-	type ChangeEvent,
-	type FormEvent,
-	useEffect,
-	useState,
-} from "react";
-import { saveUser } from "@/utils/storage/user.js";
-import { useApiInContext } from "@/utils/store/api.js";
-import "./login.scss";
-
-import { blue } from "@mui/material/colors";
+import TextField from "@mui/material/TextField";
+import { useMutation } from "@tanstack/react-query";
 import {
 	createFileRoute,
+	Link,
 	useNavigate,
 	useRouter,
 } from "@tanstack/react-router";
-import { useShallow } from "zustand/shallow";
-import { useBackdropStore } from "@/utils/store/backdrop.js";
+import React, { type FormEvent, useState } from "react";
+import LoginShell from "@/components/loginShell";
+import { saveUser } from "@/utils/storage/user";
+import { useApiInContext } from "@/utils/store/api";
 
 export const Route = createFileRoute("/_api/login/manual")({
 	component: UserLoginManual,
@@ -35,284 +24,142 @@ export const Route = createFileRoute("/_api/login/manual")({
 });
 
 function UserLoginManual() {
-	const [rememberMe, setRememberMe] = useState(true);
-	// console.log(Route.useRouteContext());
 	const api = useApiInContext((s) => s.api);
 	const createApi = useApiInContext((s) => s.createApi);
 	const router = useRouter();
+	const navigate = useNavigate();
 	const searchParams = Route.useSearch();
 
-	const server = useQuery({
-		queryKey: ["login", "manual", "serverInfo"],
-		queryFn: async () =>
-			api ? (await getBrandingApi(api).getBrandingOptions()).data : null,
-	});
-
-	const navigate = useNavigate();
-	const { enqueueSnackbar } = useSnackbar();
-
 	const [username, setUsername] = useState("");
-	const [password, setPassword] = useState<{
-		password: string | undefined;
-		showpass: boolean;
-	}>({
-		showpass: false,
-		password: "",
-	});
+	const [password, setPassword] = useState("");
+	const [showPassword, setShowPassword] = useState(false);
+	const [rememberMe, setRememberMe] = useState(true);
+	const [error, setError] = useState<string | null>(null);
 
-	const handlePassword =
-		(prop: "password" | "showpass") =>
-		(event: ChangeEvent<HTMLInputElement>) => {
-			setPassword({
-				...password,
-				[prop]: event.target.value,
-			});
-		};
-
-	const handleShowPassword = () => {
-		setPassword({
-			...password,
-			showpass: !password.showpass,
-		});
-	};
-
-	const handleLoginFn = async (event: FormEvent<HTMLFormElement>) => {
-		event.preventDefault();
-		try {
-			if (!api) {
-				throw new Error("Api is not available");
-			}
+	const handleLogin = useMutation({
+		mutationKey: ["login", "authenticate"],
+		mutationFn: async () => {
+			if (!api) throw new Error("Api is not available");
 			const authenticate = await api.authenticateUserByName(
-				username,
-				password.password,
+				username.trim(),
+				password,
 			);
 			if (!authenticate.data?.AccessToken) {
 				throw new Error("Access token not available");
 			}
-			createApi(api.basePath, authenticate.data?.AccessToken);
-
-			if (rememberMe)
+			createApi(api.basePath, authenticate.data.AccessToken);
+			if (rememberMe) {
 				await saveUser(
-					username,
+					username.trim(),
 					authenticate.data.AccessToken,
 					authenticate.data.User?.Id ?? "",
 				);
+			}
+		},
+		onSuccess: () => {
 			router.invalidate().finally(() => {
 				navigate({ to: searchParams.redirect || "/home", replace: true });
 			});
-		} catch (err) {
+		},
+		onError: (err) => {
 			console.error(err);
-			enqueueSnackbar(
-				"Unable to authenticate. Please check your username and password",
-				{ variant: "error" },
-			);
-		}
-		return;
-	};
-
-	const handleLogin = useMutation({
-		mutationKey: ["login", "authenticate"],
-		mutationFn: handleLoginFn,
+			setError("Incorrect username or password.");
+			setPassword("");
+		},
 	});
 
-	const handleCheckRememberMe = (
-		_: ChangeEvent<HTMLInputElement>,
-		checked: boolean,
-	) => {
-		setRememberMe(checked);
+	const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
+		event.preventDefault();
+		if (!username.trim()) {
+			setError("Enter your username.");
+			return;
+		}
+		setError(null);
+		handleLogin.mutate();
 	};
 
-	const setBackdrop = useBackdropStore(
-		useShallow((state) => state.setBackdrop),
-	);
-	useEffect(() => {
-		setBackdrop("");
-	}, []);
-
 	return (
-		<div className="login scrollY flex flex-center flex-column">
-			<Paper
-				sx={{
-					p: 4,
-					width: "100%",
-					maxWidth: "600px",
-					backgroundColor: "rgba(20, 20, 30, 0.7)",
-					backdropFilter: "blur(24px) saturate(180%)",
-					backgroundImage:
-						"linear-gradient(rgba(255, 255, 255, 0.05), rgba(255, 255, 255, 0))",
-					border: "1px solid rgba(255, 255, 255, 0.08)",
-					boxShadow: "0 20px 50px rgba(0,0,0,0.5)",
-					borderRadius: 4,
-					display: "flex",
-					flexDirection: "column",
-					gap: 3,
-					mb: 3,
-				}}
-			>
-				<Typography
-					variant="h4"
-					align="center"
-					sx={{
-						fontWeight: "bold",
+		<LoginShell
+			title="Sign in"
+			subtitle="Use your username and password"
+			footer={
+				<Link to="/login/list" className="login-link">
+					<span className="material-symbols-rounded">group</span>
+					Choose a profile instead
+				</Link>
+			}
+		>
+			<form className="login-form" onSubmit={handleSubmit} noValidate>
+				<TextField
+					fullWidth
+					autoFocus
+					label="Username"
+					variant="outlined"
+					autoComplete="username"
+					value={username}
+					onChange={(e) => {
+						setUsername(e.target.value);
+						setError(null);
 					}}
-				>
-					Login
-				</Typography>
-				<form
-					className="flex flex-column"
-					style={{ gap: "1.5em", width: "100%" }}
-					onSubmit={(e) => handleLogin.mutate(e)}
-				>
-					<TextField
-						variant="outlined"
-						label="Username" // Label helps accessibility, theme handles style
-						fullWidth
-						onChange={(e) => setUsername(e.currentTarget.value)}
-						slotProps={{
-							input: {
-								startAdornment: (
-									<InputAdornment position="start">
-										<span
-											className="material-symbols-rounded"
-											style={{ opacity: 0.5 }}
-										>
-											person
+					error={Boolean(error) && !username.trim()}
+				/>
+				<TextField
+					fullWidth
+					label="Password"
+					variant="outlined"
+					type={showPassword ? "text" : "password"}
+					autoComplete="current-password"
+					value={password}
+					onChange={(e) => {
+						setPassword(e.target.value);
+						setError(null);
+					}}
+					error={Boolean(error) && Boolean(username.trim())}
+					helperText={error ?? "Leave blank if your account has no password"}
+					slotProps={{
+						input: {
+							endAdornment: (
+								<InputAdornment position="end">
+									<IconButton
+										onClick={() => setShowPassword((show) => !show)}
+										edge="end"
+										aria-label={
+											showPassword ? "Hide password" : "Show password"
+										}
+									>
+										<span className="material-symbols-rounded">
+											{showPassword ? "visibility_off" : "visibility"}
 										</span>
-									</InputAdornment>
-								),
-							},
-						}}
-					/>
-					<TextField
-						fullWidth
-						type={password.showpass ? "text" : "password"}
-						onChange={handlePassword("password")}
-						label="Password"
-						variant="outlined"
-						slotProps={{
-							input: {
-								startAdornment: (
-									<InputAdornment position="start">
-										<span
-											className="material-symbols-rounded"
-											style={{ opacity: 0.5 }}
-										>
-											key
-										</span>
-									</InputAdornment>
-								),
-								endAdornment: (
-									<InputAdornment position="end">
-										<IconButton
-											onClick={handleShowPassword}
-											edge="end"
-											sx={{
-												color: "rgba(255,255,255,0.7)",
-												"&:hover": { color: "#fff" },
-											}}
-										>
-											{password.showpass ? (
-												<span className="material-symbols-rounded">
-													visibility
-												</span>
-											) : (
-												<span className="material-symbols-rounded">
-													visibility_off
-												</span>
-											)}
-										</IconButton>
-									</InputAdornment>
-								),
-							},
-						}}
-					/>
+									</IconButton>
+								</InputAdornment>
+							),
+						},
+					}}
+				/>
 
+				<div className="login-form-options">
 					<FormControlLabel
 						control={
 							<Checkbox
 								checked={rememberMe}
-								onChange={handleCheckRememberMe}
-								sx={{
-									color: "rgba(255,255,255,0.5)",
-									"&.Mui-checked": {
-										color: "primary.main",
-									},
-								}}
+								onChange={(_, checked) => setRememberMe(checked)}
 							/>
 						}
-						label={
-							<Typography variant="body2" sx={{ opacity: 0.7 }}>
-								Remember me
-							</Typography>
-						}
+						label="Keep me signed in"
 					/>
+				</div>
 
-					<div className="flex flex-column" style={{ gap: "1em" }}>
-						<LoadingButton
-							variant="contained"
-							type="submit"
-							loading={handleLogin.isPending}
-							sx={{ width: "100%", height: 48, borderRadius: 2 }}
-							size="large"
-						>
-							Login
-						</LoadingButton>
-						<Button
-							color="inherit"
-							variant="text"
-							sx={{
-								width: "100%",
-								color: "rgba(255,255,255,0.5)",
-								"&:hover": {
-									color: "white",
-									bgcolor: "rgba(255,255,255,0.05)",
-								},
-							}}
-							onClick={() => navigate({ to: "/setup/server/list" })}
-						>
-							Change Server
-						</Button>
-					</div>
-				</form>
-			</Paper>
-			{server.isSuccess && server.data?.LoginDisclaimer && (
-				<Paper
-					elevation={0}
-					sx={{
-						padding: "1.5em",
-						borderRadius: "16px",
-						width: "100%",
-						maxWidth: "450px",
-						backgroundColor: "rgba(33, 150, 243, 0.1)",
-						border: "1px solid rgba(33, 150, 243, 0.2)",
-					}}
+				<Button
+					className="login-form-submit"
+					variant="contained"
+					type="submit"
+					size="large"
+					fullWidth
+					loading={handleLogin.isPending || handleLogin.isSuccess}
 				>
-					<div
-						className="flex flex-row flex-align-center"
-						style={{ gap: "0.5em", marginBottom: "0.5em" }}
-					>
-						<span
-							className="material-symbols-rounded"
-							style={{
-								color: blue[400],
-							}}
-						>
-							info
-						</span>
-						<Typography
-							variant="subtitle1"
-							sx={{
-								fontWeight: "bold",
-							}}
-						>
-							Notice
-						</Typography>
-					</div>
-					<Typography variant="body2" style={{ opacity: 0.8, lineHeight: 1.6 }}>
-						{server.data.LoginDisclaimer}
-					</Typography>
-				</Paper>
-			)}
-		</div>
+					Sign in
+				</Button>
+			</form>
+		</LoginShell>
 	);
 }
