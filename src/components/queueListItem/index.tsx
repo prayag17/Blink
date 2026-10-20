@@ -220,8 +220,7 @@ const QueueListItem = ({
 					primary: {
 						noWrap: true,
 						variant: "body2",
-						fontWeight: active ? 700 : 500,
-						sx: { mb: 0.5 },
+						sx: { mb: 0.5, fontWeight: active ? 700 : 500 },
 					},
 					secondary: {
 						noWrap: true,

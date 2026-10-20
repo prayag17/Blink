@@ -8,7 +8,7 @@ import { green, red, yellow } from "@mui/material/colors";
 import Stack from "@mui/material/Stack";
 import Typography from "@mui/material/Typography";
 import { useNavigate } from "@tanstack/react-router";
-import { motion } from "motion/react";
+import { motion, type Variants } from "motion/react";
 import React from "react";
 import { endsAt, getRuntime } from "@/utils/date/time";
 
@@ -19,8 +19,12 @@ import LikeButton from "../buttons/likeButton";
 import MarkPlayedButton from "../buttons/markPlayedButton";
 import PlayButton from "../buttons/playButton";
 import { getTypeIcon } from "../utils/iconsCollection";
+import { getItemLinkOptions } from "@/utils/navigation/itemLink";
 
-const textVariants = {
+const MotionTypography = motion.create(Typography);
+const MotionStack = motion.create(Stack);
+
+const textVariants: Variants = {
 	initial: (direction: string) => ({
 		x: direction === "right" ? 40 : -40,
 		opacity: 0,
@@ -30,7 +34,7 @@ const textVariants = {
 		opacity: 1,
 		transition: {
 			duration: 0.35,
-			ease: [0.2, 0, 0, 1],
+			ease: [0.2, 0, 0, 1] as const,
 		},
 	},
 	exit: (direction: string) => ({
@@ -51,32 +55,7 @@ const CarouselSlide = ({ item }: { item: BaseItemDto }) => {
 
 	const handleMoreInfo = () => {
 		if (item.Id) {
-			switch (item.Type) {
-				case BaseItemKind.BoxSet:
-					navigate({ to: "/boxset/$id", params: { id: item.Id } });
-					break;
-				case BaseItemKind.Episode:
-					navigate({ to: "/episode/$id", params: { id: item.Id } });
-					break;
-				case BaseItemKind.MusicAlbum:
-					navigate({ to: "/album/$id", params: { id: item.Id } });
-					break;
-				case BaseItemKind.MusicArtist:
-					navigate({ to: "/artist/$id", params: { id: item.Id } });
-					break;
-				case BaseItemKind.Person:
-					navigate({ to: "/person/$id", params: { id: item.Id } });
-					break;
-				case BaseItemKind.Series:
-					navigate({ to: "/series/$id", params: { id: item.Id } });
-					break;
-				case BaseItemKind.Playlist:
-					navigate({ to: "/playlist/$id", params: { id: item.Id } });
-					break;
-				default:
-					navigate({ to: "/item/$id", params: { id: item.Id } });
-					break;
-			}
+			navigate(getItemLinkOptions(item.Id, item.Type));
 		}
 	};
 
@@ -134,19 +113,17 @@ const CarouselSlide = ({ item }: { item: BaseItemDto }) => {
 					},
 				}}
 			>
-				{/* @ts-ignore */}
-				<Typography
-					component={motion.div}
+				<MotionTypography
 					custom={animationDirection}
 					variants={textVariants}
 					key={item.Id}
 					variant="h2"
 					className="hero-carousel-text"
 					sx={{
+						fontWeight: 600,
+						overflow: "visible",
 						mb: "5px",
 					}}
-					fontWeight={600}
-					overflow="visible"
 				>
 					{!item.ImageTags?.Logo ? (
 						item.Name
@@ -165,18 +142,18 @@ const CarouselSlide = ({ item }: { item: BaseItemDto }) => {
 							}}
 						/>
 					)}
-				</Typography>
-				{/* @ts-ignore */}
-				<Stack
-					component={motion.div}
+				</MotionTypography>
+				<MotionStack
 					custom={animationDirection}
 					variants={textVariants}
 					direction="row"
-					gap={2}
 					className="hero-carousel-info"
-					mt={1}
-					justifyItems="flex-start"
-					alignItems="center"
+					sx={{
+						gap: 2,
+						mt: 1,
+						justifyItems: "flex-start",
+						alignItems: "center",
+					}}
 				>
 					{item.PremiereDate && (
 						<Typography style={{ opacity: "0.8" }} variant="subtitle2">
@@ -258,29 +235,29 @@ const CarouselSlide = ({ item }: { item: BaseItemDto }) => {
 					<Typography variant="subtitle2" style={{ opacity: 0.8 }}>
 						{item.Genres?.slice(0, 4).join(" / ")}
 					</Typography>
-				</Stack>
-				{/* @ts-ignore */}
-				<Typography
-					component={motion.div}
+				</MotionStack>
+				<MotionTypography
 					custom={animationDirection}
 					variants={textVariants}
 					className="hero-carousel-overview"
 					variant="body1"
-					fontWeight={400}
+					sx={{
+						fontWeight: 400,
+					}}
 				>
 					{item.Overview}
-				</Typography>
+				</MotionTypography>
 
-				{/* @ts-ignore */}
-				<Stack
+				<MotionStack
 					direction="row"
-					gap={2}
-					width="100%"
 					className="hero-carousel-button-container"
-					alignItems="center"
-					component={motion.div}
 					custom={animationDirection}
 					variants={textVariants}
+					sx={{
+						gap: 2,
+						width: "100%",
+						alignItems: "center",
+					}}
 				>
 					<PlayButton
 						item={item}
@@ -318,7 +295,12 @@ const CarouselSlide = ({ item }: { item: BaseItemDto }) => {
 					>
 						More info
 					</Button>
-					<Stack direction="row" gap={1}>
+					<Stack
+						direction="row"
+						sx={{
+							gap: 1,
+						}}
+					>
 						<LikeButton
 							itemId={item.Id}
 							queryKey={["home", "latestMedia"]}
@@ -334,7 +316,7 @@ const CarouselSlide = ({ item }: { item: BaseItemDto }) => {
 							itemName={item.Name}
 						/>
 					</Stack>
-				</Stack>
+				</MotionStack>
 			</motion.div>
 		</div>
 	);

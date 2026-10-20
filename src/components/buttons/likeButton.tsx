@@ -1,5 +1,5 @@
 import type { UserItemDataDto } from "@jellyfin/sdk/lib/generated-client";
-import { getUserLibraryApi } from "@jellyfin/sdk/lib/utils/api/user-library-api";
+import { getUserDataApi } from "@jellyfin/sdk/lib/utils/api/user-data-api";
 import { pink } from "@mui/material/colors";
 import IconButton from "@mui/material/IconButton";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
@@ -32,14 +32,14 @@ export default function LikeButton({
 		if (!itemName) return;
 		if (isFavorite) {
 			result = (
-				await getUserLibraryApi(api).unmarkFavoriteItem({
+				await getUserDataApi(api).unmarkFavoriteItem({
 					userId: userId,
 					itemId: itemId,
 				})
 			).data;
 		} else if (!isFavorite) {
 			result = (
-				await getUserLibraryApi(api).markFavoriteItem({
+				await getUserDataApi(api).markFavoriteItem({
 					userId: userId,
 					itemId: itemId,
 				})
@@ -80,16 +80,14 @@ export default function LikeButton({
 				className="material-symbols-rounded"
 				style={
 					isFavorite
-						? {
-								//@ts-expect-error
+						? ({
 								"--fill": mutation.isPending ? 0 : 1,
 								color: mutation.isPending ? "white" : pink.A700,
-							}
-						: {
-								//@ts-expect-error
+							} as React.CSSProperties)
+						: ({
 								"--fill": mutation.isPending ? 1 : 0,
 								color: mutation.isPending ? pink.A700 : "white",
-							}
+							} as React.CSSProperties)
 				}
 			>
 				favorite

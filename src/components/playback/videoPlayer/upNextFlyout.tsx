@@ -158,8 +158,8 @@ const UpNextFlyout = () => {
 					</Typography>
 					<Typography
 						variant="body2"
-						color="text.secondary"
 						sx={{
+							color: "text.secondary",
 							mb: 2,
 							display: "-webkit-box",
 							WebkitLineClamp: 1,

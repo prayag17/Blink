@@ -6,7 +6,7 @@ import { motion } from "motion/react";
 const ItemSkeleton = () => {
 	return (
 		<motion.div
-			className="item item-default scrollY padded-top flex flex-column"
+			className="item item-detail-page item-default scrollY padded-top flex flex-column"
 			style={{
 				width: "100vw",
 			}}

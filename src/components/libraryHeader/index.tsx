@@ -1,6 +1,6 @@
 import type { BaseItemKind } from "@jellyfin/sdk/lib/generated-client";
 import { ItemSortBy, SortOrder } from "@jellyfin/sdk/lib/generated-client";
-import { getItemsApi } from "@jellyfin/sdk/lib/utils/api/items-api";
+import { getLibraryApi } from "@jellyfin/sdk/lib/utils/api/library-api";
 import {
 	AppBar,
 	Chip,
@@ -182,7 +182,7 @@ export const LibraryHeader = () => {
 			await queryClient.prefetchQuery({
 				queryKey: key,
 				queryFn: async () => {
-					const result = await getItemsApi(api).getItems({
+					const result = await getLibraryApi(api).getItems({
 						userId: user.Id!,
 						parentId: currentLibraryId,
 						recursive: true,
@@ -304,10 +304,10 @@ export const LibraryHeader = () => {
 						size="small"
 						value={String(normalizedViewType)}
 						onChange={handleChangeViewType}
-						SelectProps={{
-							MenuProps: {
-								PaperProps: {
-									className: "glass-menu-paper",
+						slotProps={{
+							select: {
+								MenuProps: {
+									slotProps: { paper: { className: "glass-menu-paper" } },
 								},
 							},
 						}}
@@ -342,10 +342,10 @@ export const LibraryHeader = () => {
 						value={normalizedSortBy}
 						onChange={handleChangeSortBy}
 						disabled={disableSortOption}
-						SelectProps={{
-							MenuProps: {
-								PaperProps: {
-									className: "glass-menu-paper",
+						slotProps={{
+							select: {
+								MenuProps: {
+									slotProps: { paper: { className: "glass-menu-paper" } },
 								},
 							},
 						}}

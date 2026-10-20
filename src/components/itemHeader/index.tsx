@@ -63,29 +63,34 @@ const ItemHeader = ({
 	const logoId =
 		isEpisode && parentLogoImageTag ? (item.SeriesId ?? item.Id) : item.Id;
 
-	const logo =
-		logoTag ? (
-			<img
-				alt={item.Name ?? ""}
-				src={
-					api &&
-					getImageUrlsApi(api).getItemImageUrlById(logoId ?? "", "Logo", {
-						quality: 90,
-						fillWidth: 592,
-						fillHeight: 592,
-						tag: logoTag,
-					})
-				}
-				onLoad={(e) => {
-					e.currentTarget.style.opacity = "1";
-				}}
-				className="item-hero-logo"
-			/>
-		) : (
-			<Typography mb={2} fontWeight={200} variant="h2">
-				{isEpisode ? item.SeriesName : item.Name}
-			</Typography>
-		);
+	const logo = logoTag ? (
+		<img
+			alt={item.Name ?? ""}
+			src={
+				api &&
+				getImageUrlsApi(api).getItemImageUrlById(logoId ?? "", "Logo", {
+					quality: 90,
+					fillWidth: 592,
+					fillHeight: 592,
+					tag: logoTag,
+				})
+			}
+			onLoad={(e) => {
+				e.currentTarget.style.opacity = "1";
+			}}
+			className="item-hero-logo"
+		/>
+	) : (
+		<Typography
+			variant="h2"
+			sx={{
+				mb: 2,
+				fontWeight: 200,
+			}}
+		>
+			{isEpisode ? item.SeriesName : item.Name}
+		</Typography>
+	);
 
 	return (
 		<div className="item-hero">
@@ -151,8 +156,9 @@ const ItemHeader = ({
 			<div className="item-hero-detail flex flex-column">
 				{isEpisode && logoId ? (
 					<Link
-						to="/series/$id"
+						to="/item/$id"
 						params={{ id: logoId }}
+						search={{ type: "Series" }}
 						style={{
 							textDecoration: "none",
 							color: "inherit",
@@ -165,7 +171,13 @@ const ItemHeader = ({
 					logo
 				)}
 				{isEpisode && (
-					<Typography mb={2} fontWeight={200} variant="h4">
+					<Typography
+						variant="h4"
+						sx={{
+							mb: 2,
+							fontWeight: 200,
+						}}
+					>
 						{item.ParentIndexNumber !== undefined &&
 						item.IndexNumber !== undefined
 							? `S${item.ParentIndexNumber}:E${item.IndexNumber} - `
@@ -175,9 +187,11 @@ const ItemHeader = ({
 				)}
 				<Stack
 					direction="row"
-					gap={2}
-					justifyItems="flex-start"
-					alignItems="center"
+					sx={{
+						gap: 2,
+						justifyItems: "flex-start",
+						alignItems: "center",
+					}}
 				>
 					{mediaQualityInfo?.isUHD && (
 						<img
@@ -299,9 +313,11 @@ const ItemHeader = ({
 				{mediaQualityInfo && (
 					<Stack
 						direction="row"
-						gap={2}
-						justifyItems="flex-start"
-						alignItems="center"
+						sx={{
+							gap: 2,
+							justifyItems: "flex-start",
+							alignItems: "center",
+						}}
 					>
 						{mediaQualityInfo?.isHDR10Plus && (
 							<img

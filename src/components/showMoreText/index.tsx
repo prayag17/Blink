@@ -48,7 +48,9 @@ const ShowMoreText = ({
 					width: "100%",
 				}}
 				variant="subtitle2"
-				fontWeight={300}
+				sx={{
+					fontWeight: 300,
+				}}
 			>
 				{content}
 			</Typography>

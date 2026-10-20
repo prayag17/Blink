@@ -6,7 +6,7 @@ import { green } from "@mui/material/colors";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 
 import { useApiInContext } from "@/utils/store/api";
-import { getPlaystateApi } from "@jellyfin/sdk/lib/utils/api/playstate-api";
+import { getUserDataApi } from "@jellyfin/sdk/lib/utils/api/user-data-api";
 import { useSnackbar } from "notistack";
 
 export default function MarkPlayedButton({
@@ -36,12 +36,12 @@ export default function MarkPlayedButton({
 		if (!itemName) return;
 
 		if (!isPlayed) {
-			result = await getPlaystateApi(api).markPlayedItem({
+			result = await getUserDataApi(api).markPlayedItem({
 				userId: userId,
 				itemId: itemId,
 			});
 		} else if (isPlayed) {
-			result = await getPlaystateApi(api).markUnplayedItem({
+			result = await getUserDataApi(api).markUnplayedItem({
 				userId: userId,
 				itemId: itemId,
 			});

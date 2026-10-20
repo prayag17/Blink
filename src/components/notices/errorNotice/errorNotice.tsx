@@ -29,12 +29,16 @@ export const ErrorNotice = ({ error }: { error?: Error }) => {
 			>
 				error
 			</div>
-			<Typography variant="h3" color="white" fontWeight={300}>
+			<Typography
+				variant="h3"
+				color="white"
+				sx={{
+					fontWeight: 300,
+				}}
+			>
 				Something went wrong.
 			</Typography>
 			<Typography
-				fontFamily="JetBrains Mono Variable"
-				fontWeight={100}
 				variant="h5"
 				style={{
 					padding: "0.5em",
@@ -48,6 +52,10 @@ export const ErrorNotice = ({ error }: { error?: Error }) => {
 					// opacity: 0.6,
 				}}
 				color="gray"
+				sx={{
+					fontFamily: "JetBrains Mono Variable",
+					fontWeight: 100,
+				}}
 			>
 				{JSON.stringify(error?.stack)}
 			</Typography>

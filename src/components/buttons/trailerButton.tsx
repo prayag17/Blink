@@ -22,18 +22,20 @@ const TrailerButton = (props: TrailerButtonType) => {
 				maxWidth="md"
 				fullWidth
 				open={dialog}
-				PaperProps={{
-					className: "glass",
-					style: {
-						overflow: "hidden",
+				onClose={() => setDialog(false)}
+				slotProps={{
+					paper: {
+						className: "glass",
+						style: {
+							overflow: "hidden",
+						},
 					},
 				}}
-				onClose={() => setDialog(false)}
 			>
 				{props.trailerItem[0]?.Url && (
 					<ReactPlayer
 						playing={false}
-						url={props.trailerItem[0]?.Url}
+						src={props.trailerItem[0]?.Url}
 						width="100%"
 						height="auto"
 						style={{

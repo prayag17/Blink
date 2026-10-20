@@ -9,68 +9,59 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
-import { Route as ApiRouteImport } from './routes/_api'
 import { Route as IndexRouteImport } from './routes/index'
-import { Route as ErrorCodeRouteImport } from './routes/error/$code'
-import { Route as ApiSettingsRouteImport } from './routes/_api/settings'
+import { Route as ApiRouteImport } from './routes/_api'
 import { Route as ApiLoginRouteImport } from './routes/_api/login'
-import { Route as ApiSearchIndexRouteImport } from './routes/_api/search/index'
-import { Route as ApiPlayerIndexRouteImport } from './routes/_api/player/index'
-import { Route as ApiHomeIndexRouteImport } from './routes/_api/home/index'
+import { Route as ApiSettingsRouteImport } from './routes/_api/settings'
+import { Route as ErrorCodeRouteImport } from './routes/error/$code'
 import { Route as ApiFavoriteIndexRouteImport } from './routes/_api/favorite/index'
-import { Route as SetupServerListRouteImport } from './routes/setup/server.list'
-import { Route as SetupServerErrorRouteImport } from './routes/setup/server.error'
-import { Route as SetupServerAddRouteImport } from './routes/setup/server.add'
-import { Route as ApiSettingsPreferencesRouteImport } from './routes/_api/settings/preferences'
-import { Route as ApiSettingsAboutRouteImport } from './routes/_api/settings/about'
-import { Route as ApiSeriesIdRouteImport } from './routes/_api/series/$id'
-import { Route as ApiPlaylistIdRouteImport } from './routes/_api/playlist/$id'
-import { Route as ApiPlayerPhotosRouteImport } from './routes/_api/player/photos'
-import { Route as ApiPlayerAudioRouteImport } from './routes/_api/player/audio'
-import { Route as ApiPersonIdRouteImport } from './routes/_api/person/$id'
-import { Route as ApiLoginManualRouteImport } from './routes/_api/login/manual'
-import { Route as ApiLoginListRouteImport } from './routes/_api/login/list'
-import { Route as ApiLibraryIdRouteImport } from './routes/_api/library/$id'
+import { Route as ApiHomeIndexRouteImport } from './routes/_api/home/index'
 import { Route as ApiItemIdRouteImport } from './routes/_api/item/$id'
-import { Route as ApiEpisodeIdRouteImport } from './routes/_api/episode/$id'
-import { Route as ApiBoxsetIdRouteImport } from './routes/_api/boxset/$id'
-import { Route as ApiArtistIdRouteImport } from './routes/_api/artist/$id'
-import { Route as ApiAlbumIdRouteImport } from './routes/_api/album/$id'
-import { Route as ApiSettingsChangeServerIndexRouteImport } from './routes/_api/settings/changeServer/index'
+import { Route as ApiLibraryIdRouteImport } from './routes/_api/library/$id'
+import { Route as ApiLoginListRouteImport } from './routes/_api/login/list'
+import { Route as ApiLoginManualRouteImport } from './routes/_api/login/manual'
+import { Route as ApiPlayerIndexRouteImport } from './routes/_api/player/index'
+import { Route as ApiPlayerAudioRouteImport } from './routes/_api/player/audio'
+import { Route as ApiPlayerPhotosRouteImport } from './routes/_api/player/photos'
+import { Route as ApiSearchIndexRouteImport } from './routes/_api/search/index'
+import { Route as ApiSettingsAboutRouteImport } from './routes/_api/settings/about'
+import { Route as ApiSettingsPreferencesRouteImport } from './routes/_api/settings/preferences'
+import { Route as SetupServerAddRouteImport } from './routes/setup/server.add'
+import { Route as SetupServerErrorRouteImport } from './routes/setup/server.error'
+import { Route as SetupServerListRouteImport } from './routes/setup/server.list'
 import { Route as ApiLoginUserIdUserNameRouteImport } from './routes/_api/login/$userId.$userName'
+import { Route as ApiMusicAlbumIdRouteImport } from './routes/_api/music/album/$id'
+import { Route as ApiMusicArtistIdRouteImport } from './routes/_api/music/artist/$id'
+import { Route as ApiMusicPlaylistIdRouteImport } from './routes/_api/music/playlist/$id'
+import { Route as ApiSettingsChangeServerIndexRouteImport } from './routes/_api/settings/changeServer/index'
 
-const ApiRoute = ApiRouteImport.update({
-  id: '/_api',
-  getParentRoute: () => rootRouteImport,
-} as any)
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
-const ErrorCodeRoute = ErrorCodeRouteImport.update({
-  id: '/error/$code',
-  path: '/error/$code',
+const ApiRoute = ApiRouteImport.update({
+  id: '/_api',
   getParentRoute: () => rootRouteImport,
-} as any)
-const ApiSettingsRoute = ApiSettingsRouteImport.update({
-  id: '/settings',
-  path: '/settings',
-  getParentRoute: () => ApiRoute,
 } as any)
 const ApiLoginRoute = ApiLoginRouteImport.update({
   id: '/login',
   path: '/login',
   getParentRoute: () => ApiRoute,
 } as any)
-const ApiSearchIndexRoute = ApiSearchIndexRouteImport.update({
-  id: '/search/',
-  path: '/search/',
+const ApiSettingsRoute = ApiSettingsRouteImport.update({
+  id: '/settings',
+  path: '/settings',
   getParentRoute: () => ApiRoute,
 } as any)
-const ApiPlayerIndexRoute = ApiPlayerIndexRouteImport.update({
-  id: '/player/',
-  path: '/player/',
+const ErrorCodeRoute = ErrorCodeRouteImport.update({
+  id: '/error/$code',
+  path: '/error/$code',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiFavoriteIndexRoute = ApiFavoriteIndexRouteImport.update({
+  id: '/favorite/',
+  path: '/favorite/',
   getParentRoute: () => ApiRoute,
 } as any)
 const ApiHomeIndexRoute = ApiHomeIndexRouteImport.update({
@@ -78,49 +69,29 @@ const ApiHomeIndexRoute = ApiHomeIndexRouteImport.update({
   path: '/home/',
   getParentRoute: () => ApiRoute,
 } as any)
-const ApiFavoriteIndexRoute = ApiFavoriteIndexRouteImport.update({
-  id: '/favorite/',
-  path: '/favorite/',
+const ApiItemIdRoute = ApiItemIdRouteImport.update({
+  id: '/item/$id',
+  path: '/item/$id',
   getParentRoute: () => ApiRoute,
 } as any)
-const SetupServerListRoute = SetupServerListRouteImport.update({
-  id: '/setup/server/list',
-  path: '/setup/server/list',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const SetupServerErrorRoute = SetupServerErrorRouteImport.update({
-  id: '/setup/server/error',
-  path: '/setup/server/error',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const SetupServerAddRoute = SetupServerAddRouteImport.update({
-  id: '/setup/server/add',
-  path: '/setup/server/add',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const ApiSettingsPreferencesRoute = ApiSettingsPreferencesRouteImport.update({
-  id: '/preferences',
-  path: '/preferences',
-  getParentRoute: () => ApiSettingsRoute,
-} as any)
-const ApiSettingsAboutRoute = ApiSettingsAboutRouteImport.update({
-  id: '/about',
-  path: '/about',
-  getParentRoute: () => ApiSettingsRoute,
-} as any)
-const ApiSeriesIdRoute = ApiSeriesIdRouteImport.update({
-  id: '/series/$id',
-  path: '/series/$id',
+const ApiLibraryIdRoute = ApiLibraryIdRouteImport.update({
+  id: '/library/$id',
+  path: '/library/$id',
   getParentRoute: () => ApiRoute,
 } as any)
-const ApiPlaylistIdRoute = ApiPlaylistIdRouteImport.update({
-  id: '/playlist/$id',
-  path: '/playlist/$id',
-  getParentRoute: () => ApiRoute,
+const ApiLoginListRoute = ApiLoginListRouteImport.update({
+  id: '/list',
+  path: '/list',
+  getParentRoute: () => ApiLoginRoute,
 } as any)
-const ApiPlayerPhotosRoute = ApiPlayerPhotosRouteImport.update({
-  id: '/player/photos',
-  path: '/player/photos',
+const ApiLoginManualRoute = ApiLoginManualRouteImport.update({
+  id: '/manual',
+  path: '/manual',
+  getParentRoute: () => ApiLoginRoute,
+} as any)
+const ApiPlayerIndexRoute = ApiPlayerIndexRouteImport.update({
+  id: '/player/',
+  path: '/player/',
   getParentRoute: () => ApiRoute,
 } as any)
 const ApiPlayerAudioRoute = ApiPlayerAudioRouteImport.update({
@@ -128,49 +99,59 @@ const ApiPlayerAudioRoute = ApiPlayerAudioRouteImport.update({
   path: '/player/audio',
   getParentRoute: () => ApiRoute,
 } as any)
-const ApiPersonIdRoute = ApiPersonIdRouteImport.update({
-  id: '/person/$id',
-  path: '/person/$id',
+const ApiPlayerPhotosRoute = ApiPlayerPhotosRouteImport.update({
+  id: '/player/photos',
+  path: '/player/photos',
   getParentRoute: () => ApiRoute,
 } as any)
-const ApiLoginManualRoute = ApiLoginManualRouteImport.update({
-  id: '/manual',
-  path: '/manual',
+const ApiSearchIndexRoute = ApiSearchIndexRouteImport.update({
+  id: '/search/',
+  path: '/search/',
+  getParentRoute: () => ApiRoute,
+} as any)
+const ApiSettingsAboutRoute = ApiSettingsAboutRouteImport.update({
+  id: '/about',
+  path: '/about',
+  getParentRoute: () => ApiSettingsRoute,
+} as any)
+const ApiSettingsPreferencesRoute = ApiSettingsPreferencesRouteImport.update({
+  id: '/preferences',
+  path: '/preferences',
+  getParentRoute: () => ApiSettingsRoute,
+} as any)
+const SetupServerAddRoute = SetupServerAddRouteImport.update({
+  id: '/setup/server/add',
+  path: '/setup/server/add',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const SetupServerErrorRoute = SetupServerErrorRouteImport.update({
+  id: '/setup/server/error',
+  path: '/setup/server/error',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const SetupServerListRoute = SetupServerListRouteImport.update({
+  id: '/setup/server/list',
+  path: '/setup/server/list',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiLoginUserIdUserNameRoute = ApiLoginUserIdUserNameRouteImport.update({
+  id: '/$userId/$userName',
+  path: '/$userId/$userName',
   getParentRoute: () => ApiLoginRoute,
 } as any)
-const ApiLoginListRoute = ApiLoginListRouteImport.update({
-  id: '/list',
-  path: '/list',
-  getParentRoute: () => ApiLoginRoute,
-} as any)
-const ApiLibraryIdRoute = ApiLibraryIdRouteImport.update({
-  id: '/library/$id',
-  path: '/library/$id',
+const ApiMusicAlbumIdRoute = ApiMusicAlbumIdRouteImport.update({
+  id: '/music/album/$id',
+  path: '/music/album/$id',
   getParentRoute: () => ApiRoute,
 } as any)
-const ApiItemIdRoute = ApiItemIdRouteImport.update({
-  id: '/item/$id',
-  path: '/item/$id',
+const ApiMusicArtistIdRoute = ApiMusicArtistIdRouteImport.update({
+  id: '/music/artist/$id',
+  path: '/music/artist/$id',
   getParentRoute: () => ApiRoute,
 } as any)
-const ApiEpisodeIdRoute = ApiEpisodeIdRouteImport.update({
-  id: '/episode/$id',
-  path: '/episode/$id',
-  getParentRoute: () => ApiRoute,
-} as any)
-const ApiBoxsetIdRoute = ApiBoxsetIdRouteImport.update({
-  id: '/boxset/$id',
-  path: '/boxset/$id',
-  getParentRoute: () => ApiRoute,
-} as any)
-const ApiArtistIdRoute = ApiArtistIdRouteImport.update({
-  id: '/artist/$id',
-  path: '/artist/$id',
-  getParentRoute: () => ApiRoute,
-} as any)
-const ApiAlbumIdRoute = ApiAlbumIdRouteImport.update({
-  id: '/album/$id',
-  path: '/album/$id',
+const ApiMusicPlaylistIdRoute = ApiMusicPlaylistIdRouteImport.update({
+  id: '/music/playlist/$id',
+  path: '/music/playlist/$id',
   getParentRoute: () => ApiRoute,
 } as any)
 const ApiSettingsChangeServerIndexRoute =
@@ -179,30 +160,18 @@ const ApiSettingsChangeServerIndexRoute =
     path: '/changeServer/',
     getParentRoute: () => ApiSettingsRoute,
   } as any)
-const ApiLoginUserIdUserNameRoute = ApiLoginUserIdUserNameRouteImport.update({
-  id: '/$userId/$userName',
-  path: '/$userId/$userName',
-  getParentRoute: () => ApiLoginRoute,
-} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/login': typeof ApiLoginRouteWithChildren
   '/settings': typeof ApiSettingsRouteWithChildren
   '/error/$code': typeof ErrorCodeRoute
-  '/album/$id': typeof ApiAlbumIdRoute
-  '/artist/$id': typeof ApiArtistIdRoute
-  '/boxset/$id': typeof ApiBoxsetIdRoute
-  '/episode/$id': typeof ApiEpisodeIdRoute
   '/item/$id': typeof ApiItemIdRoute
   '/library/$id': typeof ApiLibraryIdRoute
   '/login/list': typeof ApiLoginListRoute
   '/login/manual': typeof ApiLoginManualRoute
-  '/person/$id': typeof ApiPersonIdRoute
   '/player/audio': typeof ApiPlayerAudioRoute
   '/player/photos': typeof ApiPlayerPhotosRoute
-  '/playlist/$id': typeof ApiPlaylistIdRoute
-  '/series/$id': typeof ApiSeriesIdRoute
   '/settings/about': typeof ApiSettingsAboutRoute
   '/settings/preferences': typeof ApiSettingsPreferencesRoute
   '/setup/server/add': typeof SetupServerAddRoute
@@ -213,6 +182,9 @@ export interface FileRoutesByFullPath {
   '/player/': typeof ApiPlayerIndexRoute
   '/search/': typeof ApiSearchIndexRoute
   '/login/$userId/$userName': typeof ApiLoginUserIdUserNameRoute
+  '/music/album/$id': typeof ApiMusicAlbumIdRoute
+  '/music/artist/$id': typeof ApiMusicArtistIdRoute
+  '/music/playlist/$id': typeof ApiMusicPlaylistIdRoute
   '/settings/changeServer/': typeof ApiSettingsChangeServerIndexRoute
 }
 export interface FileRoutesByTo {
@@ -220,19 +192,12 @@ export interface FileRoutesByTo {
   '/login': typeof ApiLoginRouteWithChildren
   '/settings': typeof ApiSettingsRouteWithChildren
   '/error/$code': typeof ErrorCodeRoute
-  '/album/$id': typeof ApiAlbumIdRoute
-  '/artist/$id': typeof ApiArtistIdRoute
-  '/boxset/$id': typeof ApiBoxsetIdRoute
-  '/episode/$id': typeof ApiEpisodeIdRoute
   '/item/$id': typeof ApiItemIdRoute
   '/library/$id': typeof ApiLibraryIdRoute
   '/login/list': typeof ApiLoginListRoute
   '/login/manual': typeof ApiLoginManualRoute
-  '/person/$id': typeof ApiPersonIdRoute
   '/player/audio': typeof ApiPlayerAudioRoute
   '/player/photos': typeof ApiPlayerPhotosRoute
-  '/playlist/$id': typeof ApiPlaylistIdRoute
-  '/series/$id': typeof ApiSeriesIdRoute
   '/settings/about': typeof ApiSettingsAboutRoute
   '/settings/preferences': typeof ApiSettingsPreferencesRoute
   '/setup/server/add': typeof SetupServerAddRoute
@@ -243,6 +208,9 @@ export interface FileRoutesByTo {
   '/player': typeof ApiPlayerIndexRoute
   '/search': typeof ApiSearchIndexRoute
   '/login/$userId/$userName': typeof ApiLoginUserIdUserNameRoute
+  '/music/album/$id': typeof ApiMusicAlbumIdRoute
+  '/music/artist/$id': typeof ApiMusicArtistIdRoute
+  '/music/playlist/$id': typeof ApiMusicPlaylistIdRoute
   '/settings/changeServer': typeof ApiSettingsChangeServerIndexRoute
 }
 export interface FileRoutesById {
@@ -252,19 +220,12 @@ export interface FileRoutesById {
   '/_api/login': typeof ApiLoginRouteWithChildren
   '/_api/settings': typeof ApiSettingsRouteWithChildren
   '/error/$code': typeof ErrorCodeRoute
-  '/_api/album/$id': typeof ApiAlbumIdRoute
-  '/_api/artist/$id': typeof ApiArtistIdRoute
-  '/_api/boxset/$id': typeof ApiBoxsetIdRoute
-  '/_api/episode/$id': typeof ApiEpisodeIdRoute
   '/_api/item/$id': typeof ApiItemIdRoute
   '/_api/library/$id': typeof ApiLibraryIdRoute
   '/_api/login/list': typeof ApiLoginListRoute
   '/_api/login/manual': typeof ApiLoginManualRoute
-  '/_api/person/$id': typeof ApiPersonIdRoute
   '/_api/player/audio': typeof ApiPlayerAudioRoute
   '/_api/player/photos': typeof ApiPlayerPhotosRoute
-  '/_api/playlist/$id': typeof ApiPlaylistIdRoute
-  '/_api/series/$id': typeof ApiSeriesIdRoute
   '/_api/settings/about': typeof ApiSettingsAboutRoute
   '/_api/settings/preferences': typeof ApiSettingsPreferencesRoute
   '/setup/server/add': typeof SetupServerAddRoute
@@ -275,6 +236,9 @@ export interface FileRoutesById {
   '/_api/player/': typeof ApiPlayerIndexRoute
   '/_api/search/': typeof ApiSearchIndexRoute
   '/_api/login/$userId/$userName': typeof ApiLoginUserIdUserNameRoute
+  '/_api/music/album/$id': typeof ApiMusicAlbumIdRoute
+  '/_api/music/artist/$id': typeof ApiMusicArtistIdRoute
+  '/_api/music/playlist/$id': typeof ApiMusicPlaylistIdRoute
   '/_api/settings/changeServer/': typeof ApiSettingsChangeServerIndexRoute
 }
 export interface FileRouteTypes {
@@ -284,19 +248,12 @@ export interface FileRouteTypes {
     | '/login'
     | '/settings'
     | '/error/$code'
-    | '/album/$id'
-    | '/artist/$id'
-    | '/boxset/$id'
-    | '/episode/$id'
     | '/item/$id'
     | '/library/$id'
     | '/login/list'
     | '/login/manual'
-    | '/person/$id'
     | '/player/audio'
     | '/player/photos'
-    | '/playlist/$id'
-    | '/series/$id'
     | '/settings/about'
     | '/settings/preferences'
     | '/setup/server/add'
@@ -307,6 +264,9 @@ export interface FileRouteTypes {
     | '/player/'
     | '/search/'
     | '/login/$userId/$userName'
+    | '/music/album/$id'
+    | '/music/artist/$id'
+    | '/music/playlist/$id'
     | '/settings/changeServer/'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -314,19 +274,12 @@ export interface FileRouteTypes {
     | '/login'
     | '/settings'
     | '/error/$code'
-    | '/album/$id'
-    | '/artist/$id'
-    | '/boxset/$id'
-    | '/episode/$id'
     | '/item/$id'
     | '/library/$id'
     | '/login/list'
     | '/login/manual'
-    | '/person/$id'
     | '/player/audio'
     | '/player/photos'
-    | '/playlist/$id'
-    | '/series/$id'
     | '/settings/about'
     | '/settings/preferences'
     | '/setup/server/add'
@@ -337,6 +290,9 @@ export interface FileRouteTypes {
     | '/player'
     | '/search'
     | '/login/$userId/$userName'
+    | '/music/album/$id'
+    | '/music/artist/$id'
+    | '/music/playlist/$id'
     | '/settings/changeServer'
   id:
     | '__root__'
@@ -345,19 +301,12 @@ export interface FileRouteTypes {
     | '/_api/login'
     | '/_api/settings'
     | '/error/$code'
-    | '/_api/album/$id'
-    | '/_api/artist/$id'
-    | '/_api/boxset/$id'
-    | '/_api/episode/$id'
     | '/_api/item/$id'
     | '/_api/library/$id'
     | '/_api/login/list'
     | '/_api/login/manual'
-    | '/_api/person/$id'
     | '/_api/player/audio'
     | '/_api/player/photos'
-    | '/_api/playlist/$id'
-    | '/_api/series/$id'
     | '/_api/settings/about'
     | '/_api/settings/preferences'
     | '/setup/server/add'
@@ -368,6 +317,9 @@ export interface FileRouteTypes {
     | '/_api/player/'
     | '/_api/search/'
     | '/_api/login/$userId/$userName'
+    | '/_api/music/album/$id'
+    | '/_api/music/artist/$id'
+    | '/_api/music/playlist/$id'
     | '/_api/settings/changeServer/'
   fileRoutesById: FileRoutesById
 }
@@ -382,13 +334,6 @@ export interface RootRouteChildren {
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
-    '/_api': {
-      id: '/_api'
-      path: ''
-      fullPath: '/'
-      preLoaderRoute: typeof ApiRouteImport
-      parentRoute: typeof rootRouteImport
-    }
     '/': {
       id: '/'
       path: '/'
@@ -396,19 +341,12 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/error/$code': {
-      id: '/error/$code'
-      path: '/error/$code'
-      fullPath: '/error/$code'
-      preLoaderRoute: typeof ErrorCodeRouteImport
+    '/_api': {
+      id: '/_api'
+      path: ''
+      fullPath: '/'
+      preLoaderRoute: typeof ApiRouteImport
       parentRoute: typeof rootRouteImport
-    }
-    '/_api/settings': {
-      id: '/_api/settings'
-      path: '/settings'
-      fullPath: '/settings'
-      preLoaderRoute: typeof ApiSettingsRouteImport
-      parentRoute: typeof ApiRoute
     }
     '/_api/login': {
       id: '/_api/login'
@@ -417,18 +355,25 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiLoginRouteImport
       parentRoute: typeof ApiRoute
     }
-    '/_api/search/': {
-      id: '/_api/search/'
-      path: '/search'
-      fullPath: '/search/'
-      preLoaderRoute: typeof ApiSearchIndexRouteImport
+    '/_api/settings': {
+      id: '/_api/settings'
+      path: '/settings'
+      fullPath: '/settings'
+      preLoaderRoute: typeof ApiSettingsRouteImport
       parentRoute: typeof ApiRoute
     }
-    '/_api/player/': {
-      id: '/_api/player/'
-      path: '/player'
-      fullPath: '/player/'
-      preLoaderRoute: typeof ApiPlayerIndexRouteImport
+    '/error/$code': {
+      id: '/error/$code'
+      path: '/error/$code'
+      fullPath: '/error/$code'
+      preLoaderRoute: typeof ErrorCodeRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/_api/favorite/': {
+      id: '/_api/favorite/'
+      path: '/favorite'
+      fullPath: '/favorite/'
+      preLoaderRoute: typeof ApiFavoriteIndexRouteImport
       parentRoute: typeof ApiRoute
     }
     '/_api/home/': {
@@ -438,67 +383,39 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiHomeIndexRouteImport
       parentRoute: typeof ApiRoute
     }
-    '/_api/favorite/': {
-      id: '/_api/favorite/'
-      path: '/favorite'
-      fullPath: '/favorite/'
-      preLoaderRoute: typeof ApiFavoriteIndexRouteImport
+    '/_api/item/$id': {
+      id: '/_api/item/$id'
+      path: '/item/$id'
+      fullPath: '/item/$id'
+      preLoaderRoute: typeof ApiItemIdRouteImport
       parentRoute: typeof ApiRoute
     }
-    '/setup/server/list': {
-      id: '/setup/server/list'
-      path: '/setup/server/list'
-      fullPath: '/setup/server/list'
-      preLoaderRoute: typeof SetupServerListRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/setup/server/error': {
-      id: '/setup/server/error'
-      path: '/setup/server/error'
-      fullPath: '/setup/server/error'
-      preLoaderRoute: typeof SetupServerErrorRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/setup/server/add': {
-      id: '/setup/server/add'
-      path: '/setup/server/add'
-      fullPath: '/setup/server/add'
-      preLoaderRoute: typeof SetupServerAddRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/_api/settings/preferences': {
-      id: '/_api/settings/preferences'
-      path: '/preferences'
-      fullPath: '/settings/preferences'
-      preLoaderRoute: typeof ApiSettingsPreferencesRouteImport
-      parentRoute: typeof ApiSettingsRoute
-    }
-    '/_api/settings/about': {
-      id: '/_api/settings/about'
-      path: '/about'
-      fullPath: '/settings/about'
-      preLoaderRoute: typeof ApiSettingsAboutRouteImport
-      parentRoute: typeof ApiSettingsRoute
-    }
-    '/_api/series/$id': {
-      id: '/_api/series/$id'
-      path: '/series/$id'
-      fullPath: '/series/$id'
-      preLoaderRoute: typeof ApiSeriesIdRouteImport
+    '/_api/library/$id': {
+      id: '/_api/library/$id'
+      path: '/library/$id'
+      fullPath: '/library/$id'
+      preLoaderRoute: typeof ApiLibraryIdRouteImport
       parentRoute: typeof ApiRoute
     }
-    '/_api/playlist/$id': {
-      id: '/_api/playlist/$id'
-      path: '/playlist/$id'
-      fullPath: '/playlist/$id'
-      preLoaderRoute: typeof ApiPlaylistIdRouteImport
-      parentRoute: typeof ApiRoute
+    '/_api/login/list': {
+      id: '/_api/login/list'
+      path: '/list'
+      fullPath: '/login/list'
+      preLoaderRoute: typeof ApiLoginListRouteImport
+      parentRoute: typeof ApiLoginRoute
     }
-    '/_api/player/photos': {
-      id: '/_api/player/photos'
-      path: '/player/photos'
-      fullPath: '/player/photos'
-      preLoaderRoute: typeof ApiPlayerPhotosRouteImport
+    '/_api/login/manual': {
+      id: '/_api/login/manual'
+      path: '/manual'
+      fullPath: '/login/manual'
+      preLoaderRoute: typeof ApiLoginManualRouteImport
+      parentRoute: typeof ApiLoginRoute
+    }
+    '/_api/player/': {
+      id: '/_api/player/'
+      path: '/player'
+      fullPath: '/player/'
+      preLoaderRoute: typeof ApiPlayerIndexRouteImport
       parentRoute: typeof ApiRoute
     }
     '/_api/player/audio': {
@@ -508,67 +425,81 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiPlayerAudioRouteImport
       parentRoute: typeof ApiRoute
     }
-    '/_api/person/$id': {
-      id: '/_api/person/$id'
-      path: '/person/$id'
-      fullPath: '/person/$id'
-      preLoaderRoute: typeof ApiPersonIdRouteImport
+    '/_api/player/photos': {
+      id: '/_api/player/photos'
+      path: '/player/photos'
+      fullPath: '/player/photos'
+      preLoaderRoute: typeof ApiPlayerPhotosRouteImport
       parentRoute: typeof ApiRoute
     }
-    '/_api/login/manual': {
-      id: '/_api/login/manual'
-      path: '/manual'
-      fullPath: '/login/manual'
-      preLoaderRoute: typeof ApiLoginManualRouteImport
+    '/_api/search/': {
+      id: '/_api/search/'
+      path: '/search'
+      fullPath: '/search/'
+      preLoaderRoute: typeof ApiSearchIndexRouteImport
+      parentRoute: typeof ApiRoute
+    }
+    '/_api/settings/about': {
+      id: '/_api/settings/about'
+      path: '/about'
+      fullPath: '/settings/about'
+      preLoaderRoute: typeof ApiSettingsAboutRouteImport
+      parentRoute: typeof ApiSettingsRoute
+    }
+    '/_api/settings/preferences': {
+      id: '/_api/settings/preferences'
+      path: '/preferences'
+      fullPath: '/settings/preferences'
+      preLoaderRoute: typeof ApiSettingsPreferencesRouteImport
+      parentRoute: typeof ApiSettingsRoute
+    }
+    '/setup/server/add': {
+      id: '/setup/server/add'
+      path: '/setup/server/add'
+      fullPath: '/setup/server/add'
+      preLoaderRoute: typeof SetupServerAddRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/setup/server/error': {
+      id: '/setup/server/error'
+      path: '/setup/server/error'
+      fullPath: '/setup/server/error'
+      preLoaderRoute: typeof SetupServerErrorRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/setup/server/list': {
+      id: '/setup/server/list'
+      path: '/setup/server/list'
+      fullPath: '/setup/server/list'
+      preLoaderRoute: typeof SetupServerListRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/_api/login/$userId/$userName': {
+      id: '/_api/login/$userId/$userName'
+      path: '/$userId/$userName'
+      fullPath: '/login/$userId/$userName'
+      preLoaderRoute: typeof ApiLoginUserIdUserNameRouteImport
       parentRoute: typeof ApiLoginRoute
     }
-    '/_api/login/list': {
-      id: '/_api/login/list'
-      path: '/list'
-      fullPath: '/login/list'
-      preLoaderRoute: typeof ApiLoginListRouteImport
-      parentRoute: typeof ApiLoginRoute
-    }
-    '/_api/library/$id': {
-      id: '/_api/library/$id'
-      path: '/library/$id'
-      fullPath: '/library/$id'
-      preLoaderRoute: typeof ApiLibraryIdRouteImport
+    '/_api/music/album/$id': {
+      id: '/_api/music/album/$id'
+      path: '/music/album/$id'
+      fullPath: '/music/album/$id'
+      preLoaderRoute: typeof ApiMusicAlbumIdRouteImport
       parentRoute: typeof ApiRoute
     }
-    '/_api/item/$id': {
-      id: '/_api/item/$id'
-      path: '/item/$id'
-      fullPath: '/item/$id'
-      preLoaderRoute: typeof ApiItemIdRouteImport
+    '/_api/music/artist/$id': {
+      id: '/_api/music/artist/$id'
+      path: '/music/artist/$id'
+      fullPath: '/music/artist/$id'
+      preLoaderRoute: typeof ApiMusicArtistIdRouteImport
       parentRoute: typeof ApiRoute
     }
-    '/_api/episode/$id': {
-      id: '/_api/episode/$id'
-      path: '/episode/$id'
-      fullPath: '/episode/$id'
-      preLoaderRoute: typeof ApiEpisodeIdRouteImport
-      parentRoute: typeof ApiRoute
-    }
-    '/_api/boxset/$id': {
-      id: '/_api/boxset/$id'
-      path: '/boxset/$id'
-      fullPath: '/boxset/$id'
-      preLoaderRoute: typeof ApiBoxsetIdRouteImport
-      parentRoute: typeof ApiRoute
-    }
-    '/_api/artist/$id': {
-      id: '/_api/artist/$id'
-      path: '/artist/$id'
-      fullPath: '/artist/$id'
-      preLoaderRoute: typeof ApiArtistIdRouteImport
-      parentRoute: typeof ApiRoute
-    }
-    '/_api/album/$id': {
-      id: '/_api/album/$id'
-      path: '/album/$id'
-      fullPath: '/album/$id'
-      preLoaderRoute: typeof ApiAlbumIdRouteImport
+    '/_api/music/playlist/$id': {
+      id: '/_api/music/playlist/$id'
+      path: '/music/playlist/$id'
+      fullPath: '/music/playlist/$id'
+      preLoaderRoute: typeof ApiMusicPlaylistIdRouteImport
       parentRoute: typeof ApiRoute
     }
     '/_api/settings/changeServer/': {
@@ -577,13 +508,6 @@ declare module '@tanstack/react-router' {
       fullPath: '/settings/changeServer/'
       preLoaderRoute: typeof ApiSettingsChangeServerIndexRouteImport
       parentRoute: typeof ApiSettingsRoute
-    }
-    '/_api/login/$userId/$userName': {
-      id: '/_api/login/$userId/$userName'
-      path: '/$userId/$userName'
-      fullPath: '/login/$userId/$userName'
-      preLoaderRoute: typeof ApiLoginUserIdUserNameRouteImport
-      parentRoute: typeof ApiLoginRoute
     }
   }
 }
@@ -623,41 +547,33 @@ const ApiSettingsRouteWithChildren = ApiSettingsRoute._addFileChildren(
 interface ApiRouteChildren {
   ApiLoginRoute: typeof ApiLoginRouteWithChildren
   ApiSettingsRoute: typeof ApiSettingsRouteWithChildren
-  ApiAlbumIdRoute: typeof ApiAlbumIdRoute
-  ApiArtistIdRoute: typeof ApiArtistIdRoute
-  ApiBoxsetIdRoute: typeof ApiBoxsetIdRoute
-  ApiEpisodeIdRoute: typeof ApiEpisodeIdRoute
   ApiItemIdRoute: typeof ApiItemIdRoute
   ApiLibraryIdRoute: typeof ApiLibraryIdRoute
-  ApiPersonIdRoute: typeof ApiPersonIdRoute
   ApiPlayerAudioRoute: typeof ApiPlayerAudioRoute
   ApiPlayerPhotosRoute: typeof ApiPlayerPhotosRoute
-  ApiPlaylistIdRoute: typeof ApiPlaylistIdRoute
-  ApiSeriesIdRoute: typeof ApiSeriesIdRoute
   ApiFavoriteIndexRoute: typeof ApiFavoriteIndexRoute
   ApiHomeIndexRoute: typeof ApiHomeIndexRoute
   ApiPlayerIndexRoute: typeof ApiPlayerIndexRoute
   ApiSearchIndexRoute: typeof ApiSearchIndexRoute
+  ApiMusicAlbumIdRoute: typeof ApiMusicAlbumIdRoute
+  ApiMusicArtistIdRoute: typeof ApiMusicArtistIdRoute
+  ApiMusicPlaylistIdRoute: typeof ApiMusicPlaylistIdRoute
 }
 
 const ApiRouteChildren: ApiRouteChildren = {
   ApiLoginRoute: ApiLoginRouteWithChildren,
   ApiSettingsRoute: ApiSettingsRouteWithChildren,
-  ApiAlbumIdRoute: ApiAlbumIdRoute,
-  ApiArtistIdRoute: ApiArtistIdRoute,
-  ApiBoxsetIdRoute: ApiBoxsetIdRoute,
-  ApiEpisodeIdRoute: ApiEpisodeIdRoute,
   ApiItemIdRoute: ApiItemIdRoute,
   ApiLibraryIdRoute: ApiLibraryIdRoute,
-  ApiPersonIdRoute: ApiPersonIdRoute,
   ApiPlayerAudioRoute: ApiPlayerAudioRoute,
   ApiPlayerPhotosRoute: ApiPlayerPhotosRoute,
-  ApiPlaylistIdRoute: ApiPlaylistIdRoute,
-  ApiSeriesIdRoute: ApiSeriesIdRoute,
   ApiFavoriteIndexRoute: ApiFavoriteIndexRoute,
   ApiHomeIndexRoute: ApiHomeIndexRoute,
   ApiPlayerIndexRoute: ApiPlayerIndexRoute,
   ApiSearchIndexRoute: ApiSearchIndexRoute,
+  ApiMusicAlbumIdRoute: ApiMusicAlbumIdRoute,
+  ApiMusicArtistIdRoute: ApiMusicArtistIdRoute,
+  ApiMusicPlaylistIdRoute: ApiMusicPlaylistIdRoute,
 }
 
 const ApiRouteWithChildren = ApiRoute._addFileChildren(ApiRouteChildren)

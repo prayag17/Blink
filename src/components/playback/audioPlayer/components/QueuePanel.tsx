@@ -206,7 +206,12 @@ const QueuePanel = ({ queue, currentTrackIndex }: QueuePanelProps) => {
 						px: 1,
 					}}
 				>
-					<Typography variant="h6" fontWeight={700}>
+					<Typography
+						variant="h6"
+						sx={{
+							fontWeight: 700,
+						}}
+					>
 						Queue
 					</Typography>
 					<Box sx={{ display: "flex", gap: 1 }}>

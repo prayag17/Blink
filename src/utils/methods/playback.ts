@@ -7,12 +7,11 @@ import {
 	LocationType,
 	SortOrder,
 } from "@jellyfin/sdk/lib/generated-client";
-import { getItemsApi } from "@jellyfin/sdk/lib/utils/api/items-api";
+import { getLibraryApi } from "@jellyfin/sdk/lib/utils/api/library-api";
 import { getMediaInfoApi } from "@jellyfin/sdk/lib/utils/api/media-info-api";
-import { getMediaSegmentsApi } from "@jellyfin/sdk/lib/utils/api/media-segments-api";
-import { getPlaylistsApi } from "@jellyfin/sdk/lib/utils/api/playlists-api";
-import { getTvShowsApi } from "@jellyfin/sdk/lib/utils/api/tv-shows-api";
-import { getUserLibraryApi } from "@jellyfin/sdk/lib/utils/api/user-library-api";
+import { getMediaSegmentApi } from "@jellyfin/sdk/lib/utils/api/media-segment-api";
+import { getPlaylistApi } from "@jellyfin/sdk/lib/utils/api/playlist-api";
+import { getShowApi } from "@jellyfin/sdk/lib/utils/api/show-api";
 import playbackProfile from "@/utils/playback-profiles";
 
 export async function getNextEpisode(
@@ -22,7 +21,7 @@ export async function getNextEpisode(
 	season: number,
 ) {
 	const episode = (
-		await getTvShowsApi(api).getEpisodes({
+		await getShowApi(api).getEpisodes({
 			seriesId: seriesId,
 			userId: userId,
 			enableUserData: true,
@@ -36,7 +35,7 @@ export async function getNextEpisode(
 	}
 
 	const allEpisodes = (
-		await getTvShowsApi(api).getEpisodes({
+		await getShowApi(api).getEpisodes({
 			seriesId: seriesId,
 			userId: userId,
 			enableUserData: true,
@@ -79,7 +78,7 @@ export async function getPlaybackInfo(
 	let index = 0;
 
 	if (playlistItem && playlistItemId) {
-		result = await getPlaylistsApi(api).getPlaylistItems({
+		result = await getPlaylistApi(api).getPlaylistItems({
 			userId: userId,
 			playlistId: playlistItemId,
 		});
@@ -87,7 +86,7 @@ export async function getPlaybackInfo(
 		switch (item.Type) {
 			case BaseItemKind.Episode:
 				if (item.SeriesId && item.SeasonId) {
-					result = await getTvShowsApi(api).getEpisodes({
+					result = await getShowApi(api).getEpisodes({
 						seriesId: item.SeriesId,
 						fields: [
 							ItemFields.MediaSources,
@@ -116,7 +115,7 @@ export async function getPlaybackInfo(
 				}
 				break;
 			case BaseItemKind.Series:
-				result = await getTvShowsApi(api).getEpisodes({
+				result = await getShowApi(api).getEpisodes({
 					seriesId: item.Id || "",
 					fields: [
 						ItemFields.MediaSources,
@@ -140,7 +139,7 @@ export async function getPlaybackInfo(
 				break;
 			case BaseItemKind.Playlist:
 			case BaseItemKind.MusicAlbum:
-				result = await getItemsApi(api).getItems({
+				result = await getLibraryApi(api).getItems({
 					parentId: item.Id,
 					userId: userId,
 					fields: [ItemFields.MediaSources, ItemFields.MediaStreams],
@@ -149,7 +148,7 @@ export async function getPlaybackInfo(
 				});
 				break;
 			case BaseItemKind.MusicArtist:
-				result = await getItemsApi(api).getItems({
+				result = await getLibraryApi(api).getItems({
 					artistIds: [item.Id ?? ""],
 					recursive: true,
 					includeItemTypes: [BaseItemKind.Audio],
@@ -160,7 +159,7 @@ export async function getPlaybackInfo(
 				});
 				break;
 			case BaseItemKind.BoxSet:
-				result = await getItemsApi(api).getItems({
+				result = await getLibraryApi(api).getItems({
 					parentId: item.Id,
 					userId,
 					fields: [
@@ -175,11 +174,11 @@ export async function getPlaybackInfo(
 				break;
 			case BaseItemKind.Photo: {
 				const photo = (
-					await getUserLibraryApi(api).getItem({
+					await getLibraryApi(api).getItem({
 						itemId: item.Id || "",
 					})
 				).data;
-				result = await getItemsApi(api).getItems({
+				result = await getLibraryApi(api).getItems({
 					parentId: photo.ParentId ?? "",
 					filters: [ItemFilter.IsNotFolder],
 					recursive: false,
@@ -191,7 +190,7 @@ export async function getPlaybackInfo(
 				break;
 			}
 			default:
-				result = await getItemsApi(api).getItems({
+				result = await getLibraryApi(api).getItems({
 					ids: [item.Id ?? ""],
 					userId: userId,
 					fields: [
@@ -232,7 +231,7 @@ export async function getPlaybackInfo(
 				},
 			});
 
-			const segmentsPromise = await getMediaSegmentsApi(api).getItemSegments({
+			const segmentsPromise = await getMediaSegmentApi(api).getItemSegments({
 				itemId: targetItem.Id,
 			});
 

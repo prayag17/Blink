@@ -1,10 +1,12 @@
 import { createTheme } from "@mui/material/styles";
-import {
+import paletteVariables from "./palette.module.scss";
+
+const {
 	clrAccentDefault,
 	clrBackgroundDark,
 	clrBackgroundDefault,
-	clrSecondaryDefault, //@ts-ignore
-} from "./palette.module.scss";
+	clrSecondaryDefault,
+} = paletteVariables;
 
 const { palette } = createTheme({});
 const { augmentColor } = palette;
@@ -86,8 +88,10 @@ export const theme = createTheme({
 				},
 			},
 			defaultProps: {
-				PaperProps: {
-					className: "glass",
+				slotProps: {
+					paper: {
+						className: "glass",
+					},
 				},
 			},
 		},

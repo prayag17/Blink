@@ -149,7 +149,13 @@ function UserLoginManual() {
 					mb: 3,
 				}}
 			>
-				<Typography variant="h4" fontWeight="bold" align="center">
+				<Typography
+					variant="h4"
+					align="center"
+					sx={{
+						fontWeight: "bold",
+					}}
+				>
 					Login
 				</Typography>
 				<form
@@ -162,17 +168,19 @@ function UserLoginManual() {
 						label="Username" // Label helps accessibility, theme handles style
 						fullWidth
 						onChange={(e) => setUsername(e.currentTarget.value)}
-						InputProps={{
-							startAdornment: (
-								<InputAdornment position="start">
-									<span
-										className="material-symbols-rounded"
-										style={{ opacity: 0.5 }}
-									>
-										person
-									</span>
-								</InputAdornment>
-							),
+						slotProps={{
+							input: {
+								startAdornment: (
+									<InputAdornment position="start">
+										<span
+											className="material-symbols-rounded"
+											style={{ opacity: 0.5 }}
+										>
+											person
+										</span>
+									</InputAdornment>
+								),
+							},
 						}}
 					/>
 					<TextField
@@ -181,39 +189,41 @@ function UserLoginManual() {
 						onChange={handlePassword("password")}
 						label="Password"
 						variant="outlined"
-						InputProps={{
-							startAdornment: (
-								<InputAdornment position="start">
-									<span
-										className="material-symbols-rounded"
-										style={{ opacity: 0.5 }}
-									>
-										key
-									</span>
-								</InputAdornment>
-							),
-							endAdornment: (
-								<InputAdornment position="end">
-									<IconButton
-										onClick={handleShowPassword}
-										edge="end"
-										sx={{
-											color: "rgba(255,255,255,0.7)",
-											"&:hover": { color: "#fff" },
-										}}
-									>
-										{password.showpass ? (
-											<span className="material-symbols-rounded">
-												visibility
-											</span>
-										) : (
-											<span className="material-symbols-rounded">
-												visibility_off
-											</span>
-										)}
-									</IconButton>
-								</InputAdornment>
-							),
+						slotProps={{
+							input: {
+								startAdornment: (
+									<InputAdornment position="start">
+										<span
+											className="material-symbols-rounded"
+											style={{ opacity: 0.5 }}
+										>
+											key
+										</span>
+									</InputAdornment>
+								),
+								endAdornment: (
+									<InputAdornment position="end">
+										<IconButton
+											onClick={handleShowPassword}
+											edge="end"
+											sx={{
+												color: "rgba(255,255,255,0.7)",
+												"&:hover": { color: "#fff" },
+											}}
+										>
+											{password.showpass ? (
+												<span className="material-symbols-rounded">
+													visibility
+												</span>
+											) : (
+												<span className="material-symbols-rounded">
+													visibility_off
+												</span>
+											)}
+										</IconButton>
+									</InputAdornment>
+								),
+							},
 						}}
 					/>
 
@@ -289,7 +299,12 @@ function UserLoginManual() {
 						>
 							info
 						</span>
-						<Typography variant="subtitle1" fontWeight="bold">
+						<Typography
+							variant="subtitle1"
+							sx={{
+								fontWeight: "bold",
+							}}
+						>
 							Notice
 						</Typography>
 					</div>

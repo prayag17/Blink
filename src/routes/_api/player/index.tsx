@@ -1,4 +1,4 @@
-import { getPlaystateApi } from "@jellyfin/sdk/lib/utils/api/playstate-api";
+import { getSessionApi } from "@jellyfin/sdk/lib/utils/api/session-api";
 import CircularProgress from "@mui/material/CircularProgress";
 import { WebviewWindow as appWindow } from "@tauri-apps/api/webviewWindow";
 import React, { useCallback, useEffect, useRef } from "react";
@@ -12,14 +12,10 @@ import { RepeatMode } from "@jellyfin/sdk/lib/generated-client";
 import { useMutation } from "@tanstack/react-query";
 import { createFileRoute, useRouter } from "@tanstack/react-router";
 import JASSUB from "jassub";
-// @ts-expect-error
 import wasmUrl from "jassub/dist/wasm/jassub-worker.wasm?url"; // non-SIMD fallback
-// @ts-expect-error
 import modernWasmUrl from "jassub/dist/wasm/jassub-worker-modern.wasm?url"; // SIMD
-// @ts-expect-error
 import workerUrl from "jassub/dist/worker/worker.js?url"; // Web Worker
 import { PgsRenderer } from "libpgs";
-//@ts-expect-error
 import pgsWorkerUrl from "libpgs/dist/libpgs.worker.js?url";
 // import type { OnProgressProps } from "react-player";
 import { useShallow } from "zustand/shallow";
@@ -36,7 +32,6 @@ import { useBackdropStore } from "@/utils/store/backdrop";
 import { useCentralStore } from "@/utils/store/central";
 import useQueue, { clearQueue } from "@/utils/store/queue";
 import type subtitlePlaybackInfo from "@/utils/types/subtitlePlaybackInfo";
-//@ts-expect-error
 import font from "./Noto-Sans-Indosphere.ttf?url";
 
 /**
@@ -254,7 +249,7 @@ export function VideoPlayer() {
 			setPlayerReady(true);
 
 			// Report Jellyfin server: Playback has begin
-			getPlaystateApi(api).reportPlaybackStart({
+			getSessionApi(api).reportPlaybackStart({
 				playbackStartInfo: {
 					AudioStreamIndex: mediaSource.audioTrack,
 					CanSeek: true,
@@ -297,7 +292,7 @@ export function VideoPlayer() {
 		lastReportTimeRef.current = now;
 
 		// Report Jellyfin server: Playback progress
-		getPlaystateApi(api).reportPlaybackProgress({
+		getSessionApi(api).reportPlaybackProgress({
 			playbackProgressInfo: {
 				AudioStreamIndex: mediaSource.audioTrack,
 				CanSeek: true,
@@ -336,7 +331,7 @@ export function VideoPlayer() {
 		}
 		// Report Jellyfin server: Playback has been paused
 
-		getPlaystateApi(api).reportPlaybackProgress({
+		getSessionApi(api).reportPlaybackProgress({
 			playbackProgressInfo: {
 				AudioStreamIndex: mediaSource.audioTrack,
 				CanSeek: true,
@@ -350,10 +345,10 @@ export function VideoPlayer() {
 				PositionTicks: secToTicks(currentTime),
 				RepeatMode: RepeatMode.RepeatNone,
 				VolumeLevel: Math.floor(volume * 100),
-
 			},
 		});
-	}, [setCurrentTime,
+	}, [
+		setCurrentTime,
 		api,
 		mediaSource,
 		isPlayerMuted,
@@ -361,8 +356,8 @@ export function VideoPlayer() {
 		itemId,
 		playsessionId,
 		userDataLastPlayedPositionTicks,
-		volume,]);
-
+		volume,
+	]);
 
 	const handleExitPlayer = useCallback(async () => {
 		appWindow.getCurrent().setFullscreen(false);
@@ -377,7 +372,7 @@ export function VideoPlayer() {
 		}
 
 		// Report Jellyfin server: Playback has ended/stopped
-		getPlaystateApi(api).reportPlaybackStopped({
+		getSessionApi(api).reportPlaybackStopped({
 			playbackStopInfo: {
 				Failed: false,
 				ItemId: itemId,

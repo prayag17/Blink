@@ -112,7 +112,12 @@ export default function Updater() {
 			<DialogContent
 				sx={{ position: "relative", zIndex: 1, pt: 5, pb: 3, px: 3 }}
 			>
-				<Stack alignItems="center" spacing={3}>
+				<Stack
+					spacing={3}
+					sx={{
+						alignItems: "center",
+					}}
+				>
 					<Box
 						sx={{
 							width: 72,
@@ -136,13 +141,20 @@ export default function Updater() {
 						</span>
 					</Box>
 
-					<Stack spacing={1} textAlign="center">
+					<Stack
+						spacing={1}
+						sx={{
+							textAlign: "center",
+						}}
+					>
 						<Typography
 							variant="h5"
-							fontWeight="900"
 							sx={{
+								fontWeight: "900",
+
 								background: (theme) =>
 									`linear-gradient(135deg, ${theme.palette.primary.light} 0%, ${theme.palette.secondary.light} 100%)`,
+
 								backgroundClip: "text",
 								WebkitBackgroundClip: "text",
 								color: "transparent",
@@ -152,8 +164,10 @@ export default function Updater() {
 						</Typography>
 						<Typography
 							variant="body2"
-							color="text.secondary"
-							sx={{ maxWidth: "25ch" }}
+							sx={{
+								color: "text.secondary",
+								maxWidth: "25ch",
+							}}
 						>
 							A new version of Blink is ready for you.
 						</Typography>
@@ -161,9 +175,9 @@ export default function Updater() {
 
 					<Stack
 						direction="row"
-						alignItems="center"
-						justifyContent="space-between"
 						sx={{
+							alignItems: "center",
+							justifyContent: "space-between",
 							width: "100%",
 							bgcolor: "rgba(255,255,255,0.03)",
 							borderRadius: 4,
@@ -174,12 +188,19 @@ export default function Updater() {
 						<Stack>
 							<Typography
 								variant="caption"
-								color="text.secondary"
-								sx={{ mb: 0.5 }}
+								sx={{
+									color: "text.secondary",
+									mb: 0.5,
+								}}
 							>
 								Current
 							</Typography>
-							<Typography variant="subtitle1" fontWeight="bold">
+							<Typography
+								variant="subtitle1"
+								sx={{
+									fontWeight: "bold",
+								}}
+							>
 								v{updateInfo.currentVersion}
 							</Typography>
 						</Stack>
@@ -206,18 +227,26 @@ export default function Updater() {
 							</span>
 						</Box>
 
-						<Stack alignItems="flex-end">
+						<Stack
+							sx={{
+								alignItems: "flex-end",
+							}}
+						>
 							<Typography
 								variant="caption"
-								color="primary.main"
-								sx={{ mb: 0.5 }}
+								sx={{
+									color: "primary.main",
+									mb: 0.5,
+								}}
 							>
 								New Version
 							</Typography>
 							<Typography
 								variant="subtitle1"
-								fontWeight="bold"
-								color="primary.main"
+								sx={{
+									fontWeight: "bold",
+									color: "primary.main",
+								}}
 							>
 								v{updateInfo.version}
 							</Typography>

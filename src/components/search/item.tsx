@@ -5,6 +5,7 @@ import React from "react";
 import { useShallow } from "zustand/react/shallow";
 import useSearchStore from "@/utils/store/search";
 import { getTypeIcon } from "../utils/iconsCollection";
+import { getItemLinkOptions } from "@/utils/navigation/itemLink";
 
 type SearchItemProps = {
 	itemName: string;
@@ -22,32 +23,7 @@ const SearchItem = (props: SearchItemProps) => {
 	const navigate = useNavigate();
 	const handleOnClick = () => {
 		toggleSearchDialog();
-		switch (itemType) {
-			case BaseItemKind.BoxSet:
-				navigate({ to: "/boxset/$id", params: { id: itemId } });
-				break;
-			case BaseItemKind.Episode:
-				navigate({ to: "/episode/$id", params: { id: itemId } });
-				break;
-			case BaseItemKind.MusicAlbum:
-				navigate({ to: "/album/$id", params: { id: itemId } });
-				break;
-			case BaseItemKind.MusicArtist:
-				navigate({ to: "/artist/$id", params: { id: itemId } });
-				break;
-			case BaseItemKind.Person:
-				navigate({ to: "/person/$id", params: { id: itemId } });
-				break;
-			case BaseItemKind.Series:
-				navigate({ to: "/series/$id", params: { id: itemId } });
-				break;
-			case BaseItemKind.Playlist:
-				navigate({ to: "/playlist/$id", params: { id: itemId } });
-				break;
-			default:
-				navigate({ to: "/item/$id", params: { id: itemId } });
-				break;
-		}
+		navigate(getItemLinkOptions(itemId, itemType));
 	};
 
 	return (
@@ -104,22 +80,49 @@ const SearchItem = (props: SearchItemProps) => {
 				)}
 			</Box>
 			<Stack sx={{ minWidth: 0, flex: 1 }}>
-				<Typography variant="body1" noWrap fontWeight={500}>
+				<Typography
+					variant="body1"
+					noWrap
+					sx={{
+						fontWeight: 500,
+					}}
+				>
 					{itemName}
 				</Typography>
-				<Stack direction="row" spacing={1} alignItems="center">
+				<Stack
+					direction="row"
+					spacing={1}
+					sx={{
+						alignItems: "center",
+					}}
+				>
 					{itemYear && (
-						<Typography variant="caption" color="text.secondary">
+						<Typography
+							variant="caption"
+							sx={{
+								color: "text.secondary",
+							}}
+						>
 							{itemYear}
 						</Typography>
 					)}
 					{itemYear && itemType && (
-						<Typography variant="caption" color="text.secondary">
+						<Typography
+							variant="caption"
+							sx={{
+								color: "text.secondary",
+							}}
+						>
 							•
 						</Typography>
 					)}
 					{itemType && (
-						<Typography variant="caption" color="text.secondary">
+						<Typography
+							variant="caption"
+							sx={{
+								color: "text.secondary",
+							}}
+						>
 							{itemType}
 						</Typography>
 					)}

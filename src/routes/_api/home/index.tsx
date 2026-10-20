@@ -1,4 +1,4 @@
-import { useSuspenseQuery } from "@tanstack/react-query";
+import { useQueries, useSuspenseQuery } from "@tanstack/react-query";
 import React, { useCallback, useMemo } from "react";
 
 import "./home.scss";
@@ -10,9 +10,9 @@ import {
 	ItemFields,
 	type UserDto,
 } from "@jellyfin/sdk/lib/generated-client";
-import { getItemsApi } from "@jellyfin/sdk/lib/utils/api/items-api";
-import { getTvShowsApi } from "@jellyfin/sdk/lib/utils/api/tv-shows-api";
-import { getUserViewsApi } from "@jellyfin/sdk/lib/utils/api/user-views-api";
+import { getLibraryApi } from "@jellyfin/sdk/lib/utils/api/library-api";
+import { getShowApi } from "@jellyfin/sdk/lib/utils/api/show-api";
+import { getUserViewApi } from "@jellyfin/sdk/lib/utils/api/user-view-api";
 import Typography from "@mui/material/Typography";
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { ErrorBoundary } from "react-error-boundary";
@@ -24,10 +24,24 @@ import Carousel from "@/components/carousel";
 import CircularPageLoadingAnimation from "@/components/circularPageLoadingAnimation";
 import { LatestMediaSection } from "@/components/layouts/homeSection/latestMediaSection";
 import { ErrorNotice } from "@/components/notices/errorNotice/errorNotice";
-import { getLatestItemsQueryOptions } from "@/utils/queries/items";
+import {
+	getLatestItemsQueryOptions,
+	getLibraryLatestQueryOptions,
+} from "@/utils/queries/items";
 import { useApiInContext } from "@/utils/store/api";
 import { useBackdropStore } from "@/utils/store/backdrop";
 import { useCentralStore } from "@/utils/store/central";
+
+const heroItemTypes = new Set<string>([
+	BaseItemKind.Movie,
+	BaseItemKind.Series,
+	BaseItemKind.Episode,
+	BaseItemKind.MusicAlbum,
+]);
+
+const combineLibraryLatest = (
+	results: { data?: BaseItemDto[] | null }[],
+): BaseItemDto[][] => results.map((result) => result.data ?? []);
 
 export const Route = createFileRoute("/_api/home/")({
 	component: Home,
@@ -53,7 +67,7 @@ function HomeContent({ api, user }: { api: Api; user: UserDto }) {
 	const libraries = useSuspenseQuery({
 		queryKey: ["libraries"],
 		queryFn: async () => {
-			const libs = await getUserViewsApi(api).getUserViews({
+			const libs = await getUserViewApi(api).getUserViews({
 				userId: user.Id,
 			});
 			return libs.data;
@@ -68,7 +82,7 @@ function HomeContent({ api, user }: { api: Api; user: UserDto }) {
 	const resumeItemsVideo = useSuspenseQuery({
 		queryKey: ["home", "resume", "video"],
 		queryFn: async () => {
-			const resumeItems = await getItemsApi(api).getResumeItems({
+			const resumeItems = await getLibraryApi(api).getResumeItems({
 				userId: user.Id,
 				limit: 10,
 				mediaTypes: ["Video"],
@@ -82,7 +96,7 @@ function HomeContent({ api, user }: { api: Api; user: UserDto }) {
 	const resumeItemsAudio = useSuspenseQuery({
 		queryKey: ["home", "resume", "audio"],
 		queryFn: async () => {
-			const resumeItems = await getItemsApi(api).getResumeItems({
+			const resumeItems = await getLibraryApi(api).getResumeItems({
 				userId: user.Id,
 				limit: 10,
 				mediaTypes: ["Audio"],
@@ -96,7 +110,7 @@ function HomeContent({ api, user }: { api: Api; user: UserDto }) {
 	const upNextItems = useSuspenseQuery({
 		queryKey: ["home", "upNext"],
 		queryFn: async () => {
-			const upNext = await getTvShowsApi(api).getNextUp({
+			const upNext = await getShowApi(api).getNextUp({
 				userId: user.Id,
 				fields: [
 					ItemFields.PrimaryImageAspectRatio,
@@ -106,7 +120,6 @@ function HomeContent({ api, user }: { api: Api; user: UserDto }) {
 				],
 				enableResumable: false,
 				enableRewatching: false,
-				disableFirstEpisode: false,
 				limit: 10,
 			});
 			return upNext.data;
@@ -127,6 +140,29 @@ function HomeContent({ api, user }: { api: Api; user: UserDto }) {
 			);
 		}
 	}, [libraries.data?.Items?.length]);
+
+	// The per-library "latest" rows; shares cache entries with LatestMediaSection.
+	const libraryLatest = useQueries({
+		queries: (latestMediaLibs ?? []).map((lib) =>
+			getLibraryLatestQueryOptions(api, user.Id, lib.Id),
+		),
+		combine: combineLibraryLatest,
+	});
+
+	// Some servers return nothing for the global /Items/Latest query, so fall back to
+	// interleaving the per-library results (each already newest-first).
+	const heroItems = useMemo(() => {
+		if (latestMedia.data?.length) return latestMedia.data;
+		const items: BaseItemDto[] = [];
+		const longest = Math.max(0, ...libraryLatest.map((list) => list.length));
+		for (let index = 0; index < longest; index++) {
+			for (const list of libraryLatest) {
+				const item = list[index];
+				if (item?.Type && heroItemTypes.has(item.Type)) items.push(item);
+			}
+		}
+		return items.slice(0, 16);
+	}, [latestMedia.data, libraryLatest]);
 
 	const navigate = useNavigate();
 
@@ -153,16 +189,10 @@ function HomeContent({ api, user }: { api: Api; user: UserDto }) {
 
 	const handleOnChangeCarousel = useCallback(
 		(now: number) => {
-			if (api && latestMedia.isSuccess && (latestMedia.data?.length ?? 0) > 0) {
-				const currentItem = latestMedia.data?.[now];
-				if (!currentItem) return;
-
-				// Extract this logic to a separate function
-				setBackdropForItem(currentItem);
-			}
+			const currentItem = heroItems[now];
+			if (currentItem) setBackdropForItem(currentItem);
 		},
-		// Only depend on what you need
-		[latestMedia.isSuccess, api, setBackdrop],
+		[heroItems, setBackdropForItem],
 	);
 
 	return (
@@ -174,11 +204,8 @@ function HomeContent({ api, user }: { api: Api; user: UserDto }) {
 			}}
 		>
 			<ErrorBoundary FallbackComponent={ErrorNotice}>
-				{latestMedia.data?.length && (
-					<Carousel
-						content={latestMedia.data}
-						onChange={handleOnChangeCarousel}
-					/>
+				{heroItems.length > 0 && (
+					<Carousel content={heroItems} onChange={handleOnChangeCarousel} />
 				)}
 			</ErrorBoundary>
 

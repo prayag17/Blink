@@ -7,10 +7,18 @@ import "./tagChip.scss";
 const TagChip = ({
 	label,
 	linkProps,
-}: { label: string; linkProps?: LinkProps }) => {
+}: {
+	label: string;
+	linkProps?: LinkProps;
+}) => {
 	return (
 		<Link className="tag" to="/search" search={{ query: label }} {...linkProps}>
-			<Typography variant="subtitle2" fontWeight={300}>
+			<Typography
+				variant="subtitle2"
+				sx={{
+					fontWeight: 300,
+				}}
+			>
 				{label}
 			</Typography>
 		</Link>

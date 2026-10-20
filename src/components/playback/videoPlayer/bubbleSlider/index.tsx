@@ -1,4 +1,4 @@
-import type { TrickplayInfo } from "@jellyfin/sdk/lib/generated-client";
+import type { TrickplayInfoDto } from "@jellyfin/sdk/lib/generated-client";
 import { Slider, Tooltip, Typography } from "@mui/material";
 import type { Instance } from "@popperjs/core";
 import React, {
@@ -143,7 +143,7 @@ const BubbleSlider = () => {
 			return false;
 		});
 
-		let trickplayResolution: TrickplayInfo | undefined;
+		let trickplayResolution: TrickplayInfoDto | undefined;
 		const trickplayResolutions = mediaSource.id
 			? itemTrickplay?.[mediaSource.id]
 			: null;

@@ -7,7 +7,7 @@ import {
 	type BaseItemDto,
 	BaseItemKind,
 } from "@jellyfin/sdk/lib/generated-client";
-import { getItemsApi } from "@jellyfin/sdk/lib/utils/api/items-api";
+import { getLibraryApi } from "@jellyfin/sdk/lib/utils/api/library-api";
 import { Fade, Tab, Tabs, Typography } from "@mui/material";
 import { createFileRoute } from "@tanstack/react-router";
 import { useShallow } from "zustand/react/shallow";
@@ -32,7 +32,7 @@ function FavoritePage() {
 		queryKey: ["favorite", "movies"],
 		queryFn: async () => {
 			if (!api) return null;
-			const result = await getItemsApi(api).getItems({
+			const result = await getLibraryApi(api).getItems({
 				userId: user?.Id,
 				isFavorite: true,
 				includeItemTypes: [BaseItemKind.Movie],
@@ -47,7 +47,7 @@ function FavoritePage() {
 		queryKey: ["favorite", "series"],
 		queryFn: async () => {
 			if (!api) return null;
-			const result = await getItemsApi(api).getItems({
+			const result = await getLibraryApi(api).getItems({
 				userId: user?.Id,
 				isFavorite: true,
 				includeItemTypes: [BaseItemKind.Series],
@@ -61,7 +61,7 @@ function FavoritePage() {
 		queryKey: ["favorite", "musicAlbum"],
 		queryFn: async () => {
 			if (!api) return null;
-			const result = await getItemsApi(api).getItems({
+			const result = await getLibraryApi(api).getItems({
 				userId: user?.Id,
 				isFavorite: true,
 				includeItemTypes: [BaseItemKind.MusicAlbum],
@@ -75,7 +75,7 @@ function FavoritePage() {
 		queryKey: ["favorite", "audio"],
 		queryFn: async () => {
 			if (!api) return null;
-			const result = await getItemsApi(api).getItems({
+			const result = await getLibraryApi(api).getItems({
 				userId: user?.Id,
 				isFavorite: true,
 				includeItemTypes: [BaseItemKind.Audio],
@@ -89,7 +89,7 @@ function FavoritePage() {
 		queryKey: ["favorite", "book"],
 		queryFn: async () => {
 			if (!api) return null;
-			const result = await getItemsApi(api).getItems({
+			const result = await getLibraryApi(api).getItems({
 				userId: user?.Id,
 				isFavorite: true,
 				includeItemTypes: [BaseItemKind.Book],
@@ -103,7 +103,7 @@ function FavoritePage() {
 		queryKey: ["favorite", "musicArtist"],
 		queryFn: async () => {
 			if (!api) return null;
-			const result = await getItemsApi(api).getItems({
+			const result = await getLibraryApi(api).getItems({
 				userId: user?.Id,
 				isFavorite: true,
 				includeItemTypes: [BaseItemKind.MusicArtist],
@@ -117,7 +117,7 @@ function FavoritePage() {
 		queryKey: ["favorite", "person"],
 		queryFn: async () => {
 			if (!api) return null;
-			const result = await getItemsApi(api).getItems({
+			const result = await getLibraryApi(api).getItems({
 				userId: user?.Id,
 				isFavorite: true,
 				includeItemTypes: [BaseItemKind.Person],

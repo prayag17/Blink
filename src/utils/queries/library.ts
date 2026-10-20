@@ -1,5 +1,5 @@
 import type { Api } from "@jellyfin/sdk";
-import { getUserLibraryApi } from "@jellyfin/sdk/lib/utils/api/user-library-api";
+import { getLibraryApi } from "@jellyfin/sdk/lib/utils/api/library-api";
 import { queryOptions } from "@tanstack/react-query";
 
 /**
@@ -17,7 +17,7 @@ export const getLibraryQueryOptions = (
 		queryKey: ["library", "currentLib", id],
 		queryFn: async () => {
 			if (!api || !userId) throw Error("API or User ID is not defined");
-			const result = await getUserLibraryApi(api).getItem({
+			const result = await getLibraryApi(api).getItem({
 				userId: userId,
 				itemId: id,
 			});

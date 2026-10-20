@@ -39,7 +39,12 @@ const SettingOptionSelect = ({
 			}
 			label={
 				<div className="settings-option-info">
-					<Typography variant="subtitle1" fontWeight={400}>
+					<Typography
+						variant="subtitle1"
+						sx={{
+							fontWeight: 400,
+						}}
+					>
 						{setting.name}
 					</Typography>
 					<Typography

@@ -109,7 +109,12 @@ const StatsForNerds = ({ playerRef }: StatsForNerdsProps) => {
 					marginBottom: "0.5em",
 				}}
 			>
-				<Typography variant="subtitle2" fontWeight="bold">
+				<Typography
+					variant="subtitle2"
+					sx={{
+						fontWeight: "bold",
+					}}
+				>
 					Stats for Nerds
 				</Typography>
 				<IconButton
@@ -136,8 +141,7 @@ const StatsForNerds = ({ playerRef }: StatsForNerdsProps) => {
 				<span>Video ID:</span> <span>{itemId}</span>
 				<span>Media Source ID:</span> <span>{mediaSourceId}</span>
 				<span>Play Session ID:</span> <span>{playsessionId}</span>
-				<span>Playback Method:</span>{" "}
-				<span>{mediaSource.playMethod}</span>
+				<span>Playback Method:</span> <span>{mediaSource.playMethod}</span>
 				<span>Container:</span> <span>{mediaSource.container}</span>
 				<span>Video Codec:</span> <span>{mediaSource.videoCodec}</span>
 				<span>Audio Codec:</span> <span>{mediaSource.audioCodec}</span>

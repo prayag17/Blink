@@ -1,34 +1,22 @@
-$cardWidth: 18%;
-
-.item-series.item {
+.item-detail-page.item {
 	gap: 1em;
-	
+
+	&.item-default {
+		gap: 1.5em;
+	}
+
 	.item-detail {
 		display: grid;
 		grid-template-columns: 1fr 35%;
 		justify-items: center;
 		align-items: start;
 		gap: 3em;
-		
-		&-nextUp {
-			max-width: 23em;
+
+		&.single {
+			grid-template-columns: 1fr;
 		}
-		
+
 		&-cast {
-			max-height: 50vh;
-			overflow-y: auto;
-			overflow-x: hidden;
-			mask-image: linear-gradient(to top, transparent, black 1.2em);
-			-webkit-mask-image: linear-gradient(to top, transparent, black 1.2em);
-			&-title {
-				position: sticky;
-				top: 0;
-				background: black;
-				border:1px solid rgb(255 255 255 / 0.2) ;
-				padding: 0.35em;
-				border-radius: 10px;
-				z-index: 1;
-			}
 			&-container {
 				display: flex;
 				flex-direction: column;
@@ -36,9 +24,9 @@ $cardWidth: 18%;
 			}
 			&-grid {
 				display: grid;
+				grid-template-columns: repeat(5, minmax(0, 1fr));
 				gap: 1em;
 				margin-bottom: 1em;
-				grid-template-columns: repeat(2, minmax(0, 1fr));
 			}
 			&-card {
 				display: grid;
@@ -81,17 +69,24 @@ $cardWidth: 18%;
 				text-decoration-color: white;
 			}
 		}
-		&-episode{
-			display:grid;
+		&-external-links {
+			display: flex;
+			gap: 0.6em;
+			align-self: end;
+			margin-top: 1em;
+		}
+
+		&-episode {
+			display: grid;
 			grid-template-columns: 3.2em 12em 1fr 6em;
 			flex-direction: row;
 			width: 100%;
-			gap:1.8em;
+			gap: 1.8em;
 			align-items: center;
 			justify-content: center;
 			cursor: pointer;
 			padding: 1em 0;
-			
+
 			&-container {
 				display: flex;
 				flex-direction: column;
@@ -102,7 +97,7 @@ $cardWidth: 18%;
 				margin-top: 0.5em;
 				width: 100%;
 			}
-			&-image{
+			&-image {
 				width: 100%;
 				height: 100%;
 				object-fit: cover;
@@ -112,14 +107,14 @@ $cardWidth: 18%;
 				top: 0;
 				left: 0;
 				z-index: 0;
-				&-container{
+				&-container {
 					width: 100%;
 					aspect-ratio: 1.66666;
 					position: relative;
 					overflow: hidden;
 					border-radius: $border-radius-default;
 					flex-shrink: 0;
-					&::after{
+					&::after {
 						content: "";
 						position: absolute;
 						top: 0;
@@ -134,7 +129,7 @@ $cardWidth: 18%;
 						opacity: 1;
 					}
 				}
-				&-overlay{
+				&-overlay {
 					position: absolute;
 					top: 0;
 					left: 0;
@@ -159,7 +154,7 @@ $cardWidth: 18%;
 					}
 				}
 			}
-			&-info{
+			&-info {
 				display: flex;
 				flex-direction: column;
 				align-items: flex-start;
@@ -168,43 +163,71 @@ $cardWidth: 18%;
 				width: 100%;
 				padding-right: 2em;
 			}
-			&-buttons{
+			&-buttons {
 				display: flex;
 				gap: 1em;
 			}
-			
-			&:hover .item-detail-episode-image-overlay, &:focus-within .item-detail-episode-image-overlay{
+
+			&:hover .item-detail-episode-image-overlay,
+			&:focus-within .item-detail-episode-image-overlay {
 				opacity: 1;
 			}
 		}
-	}
-}
 
-@media (max-width: 1320px) {
-	.item-series .item-detail {
-		&-cast {
-			&-grid {
-				grid-template-columns: 1fr;
+		&-person {
+			&-container {
+				position: relative;
+				width: 100%;
+			}
+			&-header {
+				width: 100%;
+			}
+			&-cards {
+				display: grid;
+				align-items: start;
+				&.col-7 {
+					grid-template-columns: repeat(7, minmax(0, 1fr));
+				}
+				&.col-4 {
+					grid-template-columns: repeat(4, minmax(0, 1fr));
+				}
 			}
 		}
-		&-episodes-container {
-			grid-template-columns: repeat(3, minmax(0, 1fr));
-		}
 	}
 }
 
-@media (max-width: 830px) {
-	.item-series .item-detail {
-		&-episodes-container {
-			grid-template-columns: repeat(2, minmax(0, 1fr));
-		}
+// Global item-detail
+.item-detail-link {
+	margin-top: 0.85em !important;
+	&:hover > img {
+		filter: brightness(1);
+	}
+	& > img {
+		width: 2em;
+		aspect-ratio: 1;
+		filter: brightness(0.5);
+		transition: filter $transition-time-default;
 	}
 }
 
-@media (max-width: 564px) {
-	.item-series .item-detail {
-		&-episodes-container {
-			grid-template-columns: repeat(1, minmax(0, 1fr));
+.item {
+	gap: 1.5em;
+	&-hero {
+		&-image {
+			box-sizing: border-box;
+			&-container {
+				box-sizing: content-box;
+				box-shadow: 0px 10px 20px -10px rgb(0 0 0 / 0.5) !important;
+			}
+		}
+		&-mediaInfo {
+			margin-top: 1em;
+			height: 1.1em;
+			opacity: 0.8;
+			&.badge {
+				margin: 0;
+				height: 1.2em;
+			}
 		}
 	}
 }

@@ -3,8 +3,7 @@ import {
 	ItemFields,
 	SortOrder,
 } from "@jellyfin/sdk/lib/generated-client";
-import { getItemsApi } from "@jellyfin/sdk/lib/utils/api/items-api";
-import { getUserLibraryApi } from "@jellyfin/sdk/lib/utils/api/user-library-api";
+import { getLibraryApi } from "@jellyfin/sdk/lib/utils/api/library-api";
 import Box from "@mui/material/Box";
 import CircularProgress from "@mui/material/CircularProgress";
 import Divider from "@mui/material/Divider";
@@ -36,7 +35,6 @@ import { createFileRoute } from "@tanstack/react-router";
 import IconLink from "@/components/iconLink";
 import { useCentralStore } from "@/utils/store/central";
 
-
 type TabPanelProp = {
 	children: ReactNode;
 	index: number;
@@ -60,7 +58,7 @@ function TabPanel(props: TabPanelProp) {
 	);
 }
 
-export const Route = createFileRoute("/_api/artist/$id")({
+export const Route = createFileRoute("/_api/music/artist/$id")({
 	component: ArtistTitlePage,
 });
 
@@ -74,7 +72,7 @@ function ArtistTitlePage() {
 		queryKey: ["item", id],
 		queryFn: async () => {
 			if (!api) return null;
-			const result = await getUserLibraryApi(api).getItem({
+			const result = await getLibraryApi(api).getItem({
 				userId: user?.Id,
 				itemId: id,
 			});
@@ -89,7 +87,7 @@ function ArtistTitlePage() {
 		queryKey: ["item", id, "artist", "discography"],
 		queryFn: async () => {
 			if (!api) return null;
-			const result = await getItemsApi(api).getItems({
+			const result = await getLibraryApi(api).getItems({
 				albumArtistIds: [id],
 				sortBy: ["PremiereDate", "ProductionYear", "SortName"],
 				sortOrder: [SortOrder.Descending],
@@ -107,7 +105,7 @@ function ArtistTitlePage() {
 		queryFn: async () => {
 			if (!api) return null;
 
-			const result = await getItemsApi(api).getItems({
+			const result = await getLibraryApi(api).getItems({
 				artistIds: [id],
 				sortBy: ["PremiereDate", "ProductionYear", "SortName"],
 				sortOrder: [SortOrder.Ascending],
@@ -124,7 +122,7 @@ function ArtistTitlePage() {
 		queryKey: ["item", id, "artist", "appearences"],
 		queryFn: async () => {
 			if (!api) return null;
-			const result = await getItemsApi(api).getItems({
+			const result = await getLibraryApi(api).getItems({
 				contributingArtistIds: [id],
 				excludeItemIds: [id],
 				sortBy: ["PremiereDate", "ProductionYear", "SortName"],
@@ -263,7 +261,12 @@ function ArtistTitlePage() {
 						)}
 						{item.data.EndDate && (
 							<div>
-								<Typography variant="h5" mt={2}>
+								<Typography
+									variant="h5"
+									sx={{
+										mt: 2,
+									}}
+								>
 									Death
 								</Typography>
 								<Typography sx={{ opacity: 0.8 }}>

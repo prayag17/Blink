@@ -11,7 +11,6 @@
       "dom.iterable",
       "esnext"
     ],
-    "baseUrl": ".",
     "checkJs": true,
     "allowJs": true, // Allow JavaScript files to be compiled
     "skipLibCheck": true, // Skip type checking of all declaration files
@@ -20,7 +19,7 @@
     "strict": true, // Enable all strict type checking options
     "forceConsistentCasingInFileNames": true, // Disallow inconsistently-cased references to the same file.
     "module": "esnext", // Specify module code generation
-    "moduleResolution": "node", // Resolve modules using Node.js style
+    "moduleResolution": "bundler", // Resolve modules the way Vite does
     "isolatedModules": true, // Unconditionally emit imports for unresolved files
     "resolveJsonModule": true, // Include modules imported with .json extension
     "noEmit": true, // Do not emit output (meaning do not compile code, only perform type checking)

@@ -10,32 +10,21 @@ import {
 	type BaseItemDto,
 	BaseItemKind,
 } from "@jellyfin/sdk/lib/generated-client";
-import { getUserLibraryApi } from "@jellyfin/sdk/lib/utils/api/user-library-api";
+import { getLibraryLatestQueryOptions } from "@/utils/queries/items";
 
 /**
  * @description Latest Media Section
  */
 export const LatestMediaSection = ({
 	latestMediaLib,
-}: { latestMediaLib: BaseItemDto }) => {
+}: {
+	latestMediaLib: BaseItemDto;
+}) => {
 	const api = useApiInContext((s) => s.api);
 	const user = useCentralStore((s) => s.currentUser);
-	const fetchLatestMedia = async (library: BaseItemDto) => {
-		if (!api || !user?.Id) return null;
-		const media = await getUserLibraryApi(api).getLatestMedia({
-			userId: user.Id,
-			parentId: library.Id,
-			limit: 16,
-			fields: ["PrimaryImageAspectRatio", "ParentId"],
-		});
-		return media.data;
-	};
-	const data = useQuery({
-		queryKey: ["home", "latestMedia", latestMediaLib.Id],
-		queryFn: () => fetchLatestMedia(latestMediaLib),
-		enabled: !!user?.Id,
-		refetchOnMount: true,
-	});
+	const data = useQuery(
+		getLibraryLatestQueryOptions(api, user?.Id, latestMediaLib.Id),
+	);
 	if (data.isPending) {
 		return <CardsSkeleton />;
 	}

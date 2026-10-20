@@ -1,6 +1,6 @@
 import type { Api } from "@jellyfin/sdk";
 import type { BaseItemDto } from "@jellyfin/sdk/lib/generated-client";
-import { getLyricsApi } from "@jellyfin/sdk/lib/utils/api/lyrics-api";
+import { getLyricApi } from "@jellyfin/sdk/lib/utils/api/lyric-api";
 import { Typography } from "@mui/material";
 import { useQuery } from "@tanstack/react-query";
 import React, { useEffect, useRef, useState } from "react";
@@ -22,7 +22,7 @@ const LyricsPanel = ({ item, api, currentTime }: LyricsPanelProps) => {
 				return null;
 			}
 			try {
-				const response = await getLyricsApi(api).getLyrics({
+				const response = await getLyricApi(api).getLyrics({
 					itemId: item?.Id,
 				});
 				return response.data;

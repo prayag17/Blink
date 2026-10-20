@@ -2,7 +2,7 @@ import React from "react";
 
 import Typography from "@mui/material/Typography";
 
-import { getItemsApi } from "@jellyfin/sdk/lib/utils/api/items-api";
+import { getLibraryApi } from "@jellyfin/sdk/lib/utils/api/library-api";
 import { useQuery } from "@tanstack/react-query";
 
 import {
@@ -30,7 +30,7 @@ export const ArtistAlbum = ({ user, album, boxProps }: ArtistAlbumProps) => {
 		queryKey: ["artist", "album", album.Id],
 		queryFn: async () => {
 			if (!api) return null;
-			const result = await getItemsApi(api).getItems({
+			const result = await getLibraryApi(api).getItems({
 				userId: user.Id,
 				parentId: album.Id,
 				sortOrder: [SortOrder.Ascending],
@@ -91,13 +91,15 @@ export const ArtistAlbum = ({ user, album, boxProps }: ArtistAlbumProps) => {
 					<div className="flex flex-column">
 						<Typography
 							variant="h5"
-							fontWeight={300}
 							style={{ opacity: "0.6" }}
+							sx={{
+								fontWeight: 300,
+							}}
 						>
 							{album.ProductionYear}
 						</Typography>
 						<Link
-							to="/album/$id"
+							to="/music/album/$id"
 							params={{ id: album.Id ?? "" }}
 							style={{ color: "white", textDecoration: "none" }}
 						>

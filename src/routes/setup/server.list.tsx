@@ -131,7 +131,12 @@ function ServerList() {
 						alignItems: "center",
 					}}
 				>
-					<Typography variant="h4" fontWeight="bold">
+					<Typography
+						variant="h4"
+						sx={{
+							fontWeight: "bold",
+						}}
+					>
 						Servers
 					</Typography>
 					<IconButton
@@ -170,8 +175,8 @@ function ServerList() {
 								<div style={{ flex: 1 }}>
 									<Typography
 										variant="h6"
-										fontWeight={600}
 										sx={{
+											fontWeight: 600,
 											display: "flex",
 											alignItems: "center",
 											gap: 1,

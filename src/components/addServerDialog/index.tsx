@@ -69,21 +69,33 @@ export default function AddServerDialog(props: AddServerDialogProps) {
 			fullWidth
 			maxWidth="sm"
 			disableScrollLock={true}
-			PaperProps={{
-				sx: {
-					backgroundColor: "rgba(20, 20, 30, 0.7)",
-					backdropFilter: "blur(24px) saturate(180%)",
-					backgroundImage:
-						"linear-gradient(rgba(255, 255, 255, 0.05), rgba(255, 255, 255, 0))",
-					border: "1px solid rgba(255, 255, 255, 0.08)",
-					boxShadow: "0 20px 50px rgba(0,0,0,0.5)",
-					borderRadius: 4,
-					overflow: "hidden",
+			slotProps={{
+				paper: {
+					sx: {
+						backgroundColor: "rgba(20, 20, 30, 0.7)",
+						backdropFilter: "blur(24px) saturate(180%)",
+						backgroundImage:
+							"linear-gradient(rgba(255, 255, 255, 0.05), rgba(255, 255, 255, 0))",
+						border: "1px solid rgba(255, 255, 255, 0.08)",
+						boxShadow: "0 20px 50px rgba(0,0,0,0.5)",
+						borderRadius: 4,
+						overflow: "hidden",
+					},
 				},
 			}}
 		>
-			<Stack p={4} spacing={3}>
-				<Stack spacing={1} alignItems="center">
+			<Stack
+				spacing={3}
+				sx={{
+					p: 4,
+				}}
+			>
+				<Stack
+					spacing={1}
+					sx={{
+						alignItems: "center",
+					}}
+				>
 					<span
 						className="material-symbols-rounded"
 						style={{
@@ -93,10 +105,22 @@ export default function AddServerDialog(props: AddServerDialogProps) {
 					>
 						add_to_queue
 					</span>
-					<Typography variant="h5" fontWeight="bold" textAlign="center">
+					<Typography
+						variant="h5"
+						sx={{
+							fontWeight: "bold",
+							textAlign: "center",
+						}}
+					>
 						Connect to Server
 					</Typography>
-					<Typography variant="body2" color="text.secondary" textAlign="center">
+					<Typography
+						variant="body2"
+						sx={{
+							color: "text.secondary",
+							textAlign: "center",
+						}}
+					>
 						Enter your Jellyfin server address to continue
 					</Typography>
 				</Stack>
@@ -136,7 +160,14 @@ export default function AddServerDialog(props: AddServerDialogProps) {
 					/>
 				</Box>
 
-				<Stack direction="row" spacing={2} justifyContent="flex-end" pt={1}>
+				<Stack
+					direction="row"
+					spacing={2}
+					sx={{
+						justifyContent: "flex-end",
+						pt: 1,
+					}}
+				>
 					<Button
 						onClick={() => setAddServerDialog(false)}
 						color="inherit"

@@ -58,18 +58,22 @@ const AudioInfo = React.memo(
 			<div className="audio-info">
 				<Typography
 					variant="h4"
-					fontWeight={700}
 					noWrap
 					style={{ width: "100%", marginBottom: "0.2em" }}
+					sx={{
+						fontWeight: 700,
+					}}
 				>
 					{item?.Name}
 				</Typography>
 				<Typography
 					variant="h6"
-					fontWeight={400}
 					className="opacity-07"
 					noWrap
 					style={{ width: "100%" }}
+					sx={{
+						fontWeight: 400,
+					}}
 				>
 					{item?.Artists?.join(", ")}
 				</Typography>
@@ -251,4 +255,3 @@ function AudioPlayerRoute() {
 		</>
 	);
 }
-

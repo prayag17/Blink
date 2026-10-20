@@ -2,7 +2,7 @@ import {
 	type BaseItemDto,
 	BaseItemKind,
 } from "@jellyfin/sdk/lib/generated-client";
-import { getTvShowsApi } from "@jellyfin/sdk/lib/utils/api/tv-shows-api";
+import { getShowApi } from "@jellyfin/sdk/lib/utils/api/show-api";
 import type { SxProps } from "@mui/material";
 import Button, { type ButtonProps } from "@mui/material/Button";
 import Fab from "@mui/material/Fab";
@@ -213,7 +213,7 @@ const PlayButton = ({
 			if (!item.Id) {
 				throw new Error("Item ID is not available");
 			}
-			const seasons = await getTvShowsApi(api).getSeasons({
+			const seasons = await getShowApi(api).getSeasons({
 				seriesId: item.Id,
 				userId: userId,
 				enableUserData: true,

@@ -82,14 +82,14 @@ function SortableQueueItem({
 }
 
 const QueueButton = () => {
-    const api = useApiInContext((s) => s.api);
+	const api = useApiInContext((s) => s.api);
 
-    const [queueItems, currentItemIndex] = useQueue((state) => [
-					state.tracks,
-					state.currentItemIndex,
-				]);
+	const [queueItems, currentItemIndex] = useQueue((state) => [
+		state.tracks,
+		state.currentItemIndex,
+	]);
 
-    const [open, setOpen] = useState(false);
+	const [open, setOpen] = useState(false);
 
 	const user = useQuery({
 		queryKey: ["currentUser"],
@@ -100,283 +100,293 @@ const QueueButton = () => {
 		enabled: !!api,
 	});
 
-    const sensors = useSensors(
-					useSensor(PointerSensor),
-					useSensor(KeyboardSensor, {
-						coordinateGetter: sortableKeyboardCoordinates,
-					}),
-				);
+	const sensors = useSensors(
+		useSensor(PointerSensor),
+		useSensor(KeyboardSensor, {
+			coordinateGetter: sortableKeyboardCoordinates,
+		}),
+	);
 
-				const upcomingItems = useMemo(() => {
-					return queueItems ? queueItems.slice(currentItemIndex + 1) : [];
-				}, [queueItems, currentItemIndex]);
+	const upcomingItems = useMemo(() => {
+		return queueItems ? queueItems.slice(currentItemIndex + 1) : [];
+	}, [queueItems, currentItemIndex]);
 
-				const upcomingIds = useMemo(() => {
-					return upcomingItems.map((item) => item.Id || "");
-				}, [upcomingItems]);
+	const upcomingIds = useMemo(() => {
+		return upcomingItems.map((item) => item.Id || "");
+	}, [upcomingItems]);
 
-				const handleDragEnd = (event: DragEndEvent) => {
-					const { active, over } = event;
+	const handleDragEnd = (event: DragEndEvent) => {
+		const { active, over } = event;
 
-					if (active.id !== over?.id && queueItems) {
-						const oldIndex = upcomingItems.findIndex(
-							(item) => item.Id === active.id,
-						);
-						const newIndex = upcomingItems.findIndex(
-							(item) => item.Id === over?.id,
-						);
+		if (active.id !== over?.id && queueItems) {
+			const oldIndex = upcomingItems.findIndex((item) => item.Id === active.id);
+			const newIndex = upcomingItems.findIndex((item) => item.Id === over?.id);
 
-						if (oldIndex !== -1 && newIndex !== -1) {
-							const newUpcoming = arrayMove(upcomingItems, oldIndex, newIndex);
-							const newQueue = [
-								...queueItems.slice(0, currentItemIndex + 1),
-								...newUpcoming,
-							];
-							reorderQueue(newQueue);
-						}
-					}
-				};
+			if (oldIndex !== -1 && newIndex !== -1) {
+				const newUpcoming = arrayMove(upcomingItems, oldIndex, newIndex);
+				const newQueue = [
+					...queueItems.slice(0, currentItemIndex + 1),
+					...newUpcoming,
+				];
+				reorderQueue(newQueue);
+			}
+		}
+	};
 
-				const handleDelete = (index: number) => {
-					removeFromQueue(index);
-				};
+	const handleDelete = (index: number) => {
+		removeFromQueue(index);
+	};
 
-				const handlePlay = (index: number) => {
-					playItemFromQueue(index, user.data?.Id, api);
-				};
+	const handlePlay = (index: number) => {
+		playItemFromQueue(index, user.data?.Id, api);
+	};
 
-				const handleClear = () => {
-					clearUpcoming();
-				};
+	const handleClear = () => {
+		clearUpcoming();
+	};
 
-				const handleShuffle = () => {
-					shuffleUpcoming();
-				};
+	const handleShuffle = () => {
+		shuffleUpcoming();
+	};
 
-    return (
-					<>
-						<Drawer
-							anchor="right"
-							open={open}
-							onClose={() => setOpen(false)}
-							PaperProps={{
-								className: "glass",
-								sx: {
-									width: 450,
-									maxWidth: "100%",
-									display: "flex",
-									flexDirection: "column",
-									borderLeft: "1px solid rgba(255, 255, 255, 0.08)",
-								},
-							}}
-							ModalProps={{
-								BackdropProps: {
-									sx: {
-										backgroundColor: "rgba(0, 0, 0, 0.2)",
-										backdropFilter: "blur(4px)",
-									},
-								},
+	return (
+		<>
+			<Drawer
+				anchor="right"
+				open={open}
+				onClose={() => setOpen(false)}
+				slotProps={{
+					backdrop: {
+						sx: {
+							backgroundColor: "rgba(0, 0, 0, 0.2)",
+							backdropFilter: "blur(4px)",
+						},
+					},
+					paper: {
+						className: "glass",
+						sx: {
+							width: 450,
+							maxWidth: "100%",
+							display: "flex",
+							flexDirection: "column",
+							borderLeft: "1px solid rgba(255, 255, 255, 0.08)",
+						},
+					},
+				}}
+			>
+				<Box
+					sx={{
+						p: 3,
+						display: "flex",
+						justifyContent: "space-between",
+						alignItems: "center",
+						position: "sticky",
+						top: 0,
+						zIndex: 20,
+						borderBottom: "1px solid",
+						borderColor: "rgba(255, 255, 255, 0.08)",
+						backgroundColor: "rgba(20, 20, 30, 0.4)",
+						backdropFilter: "blur(12px)",
+					}}
+				>
+					<Box
+						sx={{
+							display: "flex",
+							alignItems: "center",
+							gap: 1,
+						}}
+					>
+						<Typography
+							variant="h5"
+							sx={{
+								fontWeight: "bold",
 							}}
 						>
-							<Box
-								p={3}
-								display="flex"
-								justifyContent="space-between"
-								alignItems="center"
-								sx={{
-									position: "sticky",
-									top: 0,
-									zIndex: 20,
-									borderBottom: "1px solid",
-									borderColor: "rgba(255, 255, 255, 0.08)",
-									backgroundColor: "rgba(20, 20, 30, 0.4)",
-									backdropFilter: "blur(12px)",
-								}}
-							>
-								<Box display="flex" alignItems="center" gap={1}>
-									<Typography variant="h5" fontWeight="bold">
-										Play Queue
-									</Typography>
+							Play Queue
+						</Typography>
+						<Typography
+							variant="caption"
+							sx={{
+								color: "text.secondary",
+								ml: 1,
+								fontWeight: 600,
+								bgcolor: "rgba(255, 255, 255, 0.08)",
+								px: 1,
+								py: 0.5,
+								borderRadius: 2,
+							}}
+						>
+							{queueItems?.length || 0}
+						</Typography>
+					</Box>
+					<Box
+						sx={{
+							display: "flex",
+							gap: 0.5,
+						}}
+					>
+						<Tooltip title="Shuffle Upcoming">
+							<span>
+								<IconButton
+									onClick={handleShuffle}
+									size="small"
+									disabled={upcomingItems.length < 2}
+								>
+									<span className="material-symbols-rounded">shuffle</span>
+								</IconButton>
+							</span>
+						</Tooltip>
+						<Tooltip title="Clear Upcoming">
+							<span>
+								<IconButton
+									onClick={handleClear}
+									size="small"
+									disabled={upcomingItems.length === 0}
+								>
+									<span className="material-symbols-rounded">clear_all</span>
+								</IconButton>
+							</span>
+						</Tooltip>
+						<IconButton onClick={() => setOpen(false)} size="small">
+							<span className="material-symbols-rounded">close</span>
+						</IconButton>
+					</Box>
+				</Box>
+
+				<Box
+					sx={{
+						overflowY: "auto",
+						flex: 1,
+						p: 2,
+						"&::-webkit-scrollbar": { width: 8 },
+						"&::-webkit-scrollbar-track": { background: "transparent" },
+						"&::-webkit-scrollbar-thumb": {
+							background: "rgba(128,128,128,0.2)",
+							borderRadius: 4,
+						},
+						"&::-webkit-scrollbar-thumb:hover": {
+							background: "rgba(128,128,128,0.3)",
+						},
+					}}
+				>
+					{queueItems && queueItems.length > 0 ? (
+						<List disablePadding>
+							{/* Current Item */}
+							{queueItems[currentItemIndex] && (
+								<Box sx={{ mb: 4 }}>
 									<Typography
-										variant="caption"
-										color="text.secondary"
+										variant="overline"
 										sx={{
-											ml: 1,
+											display: "block",
+											opacity: 0.6,
+											mb: 1,
 											fontWeight: 600,
-											bgcolor: "rgba(255, 255, 255, 0.08)",
-											px: 1,
-											py: 0.5,
-											borderRadius: 2,
+											letterSpacing: 1.2,
 										}}
 									>
-										{queueItems?.length || 0}
+										NOW PLAYING
 									</Typography>
-								</Box>
-								<Box display="flex" gap={0.5}>
-									<Tooltip title="Shuffle Upcoming">
-										<span>
-											<IconButton
-												onClick={handleShuffle}
-												size="small"
-												disabled={upcomingItems.length < 2}
-											>
-												<span className="material-symbols-rounded">
-													shuffle
-												</span>
-											</IconButton>
-										</span>
-									</Tooltip>
-									<Tooltip title="Clear Upcoming">
-										<span>
-											<IconButton
-												onClick={handleClear}
-												size="small"
-												disabled={upcomingItems.length === 0}
-											>
-												<span className="material-symbols-rounded">
-													clear_all
-												</span>
-											</IconButton>
-										</span>
-									</Tooltip>
-									<IconButton onClick={() => setOpen(false)} size="small">
-										<span className="material-symbols-rounded">close</span>
-									</IconButton>
-								</Box>
-							</Box>
-
-							<Box
-								sx={{
-									overflowY: "auto",
-									flex: 1,
-									p: 2,
-									"&::-webkit-scrollbar": { width: 8 },
-									"&::-webkit-scrollbar-track": { background: "transparent" },
-									"&::-webkit-scrollbar-thumb": {
-										background: "rgba(128,128,128,0.2)",
-										borderRadius: 4,
-									},
-									"&::-webkit-scrollbar-thumb:hover": {
-										background: "rgba(128,128,128,0.3)",
-									},
-								}}
-							>
-								{queueItems && queueItems.length > 0 ? (
-									<List disablePadding>
-										{/* Current Item */}
-										{queueItems[currentItemIndex] && (
-											<Box sx={{ mb: 4 }}>
-												<Typography
-													variant="overline"
-													sx={{
-														display: "block",
-														opacity: 0.6,
-														mb: 1,
-														fontWeight: 600,
-														letterSpacing: 1.2,
-													}}
-												>
-													NOW PLAYING
-												</Typography>
-												<Box
-													sx={{
-														bgcolor: "background.paper",
-														borderRadius: 3,
-														overflow: "hidden",
-														boxShadow: 4,
-														border: "1px solid",
-														borderColor: "divider",
-													}}
-												>
-													<QueueListItem
-														queueItem={queueItems[currentItemIndex]}
-														active={true}
-														isEpisode={
-															queueItems[currentItemIndex].Type === "Episode"
-														}
-														index={currentItemIndex + 1}
-													/>
-												</Box>
-											</Box>
-										)}
-
-										{/* Upcoming Items */}
-										{upcomingItems.length > 0 && (
-											<>
-												<Typography
-													variant="overline"
-													sx={{
-														display: "block",
-														opacity: 0.6,
-														mb: 1,
-														fontWeight: 600,
-														letterSpacing: 1.2,
-													}}
-												>
-													NEXT UP
-												</Typography>
-												<DndContext
-													sensors={sensors}
-													collisionDetection={closestCenter}
-													onDragEnd={handleDragEnd}
-													modifiers={[restrictToVerticalAxis]}
-												>
-													<SortableContext
-														items={upcomingIds}
-														strategy={verticalListSortingStrategy}
-													>
-														<Box
-															sx={{
-																display: "flex",
-																flexDirection: "column",
-																gap: 1,
-															}}
-														>
-															{upcomingItems.map((item, index) => (
-																<SortableQueueItem
-																	key={item.Id || index}
-																	item={item}
-																	onDelete={() =>
-																		handleDelete(currentItemIndex + 1 + index)
-																	}
-																	onPlay={() =>
-																		handlePlay(currentItemIndex + 1 + index)
-																	}
-																	index={currentItemIndex + 1 + index + 1}
-																/>
-															))}
-														</Box>
-													</SortableContext>
-												</DndContext>
-											</>
-										)}
-									</List>
-								) : (
 									<Box
-										p={4}
-										textAlign="center"
-										display="flex"
-										flexDirection="column"
-										alignItems="center"
-										gap={2}
-										sx={{ opacity: 0.5 }}
+										sx={{
+											bgcolor: "background.paper",
+											borderRadius: 3,
+											overflow: "hidden",
+											boxShadow: 4,
+											border: "1px solid",
+											borderColor: "divider",
+										}}
 									>
-										<span
-											className="material-symbols-rounded"
-											style={{ fontSize: 48 }}
-										>
-											queue_music
-										</span>
-										<Typography>Your queue is empty</Typography>
+										<QueueListItem
+											queueItem={queueItems[currentItemIndex]}
+											active={true}
+											isEpisode={
+												queueItems[currentItemIndex].Type === "Episode"
+											}
+											index={currentItemIndex + 1}
+										/>
 									</Box>
-								)}
-							</Box>
-						</Drawer>
-						<IconButton onClick={() => setOpen(true)}>
-							<span className="material-symbols-rounded">playlist_play</span>
-						</IconButton>
-					</>
-				);
+								</Box>
+							)}
+
+							{/* Upcoming Items */}
+							{upcomingItems.length > 0 && (
+								<>
+									<Typography
+										variant="overline"
+										sx={{
+											display: "block",
+											opacity: 0.6,
+											mb: 1,
+											fontWeight: 600,
+											letterSpacing: 1.2,
+										}}
+									>
+										NEXT UP
+									</Typography>
+									<DndContext
+										sensors={sensors}
+										collisionDetection={closestCenter}
+										onDragEnd={handleDragEnd}
+										modifiers={[restrictToVerticalAxis]}
+									>
+										<SortableContext
+											items={upcomingIds}
+											strategy={verticalListSortingStrategy}
+										>
+											<Box
+												sx={{
+													display: "flex",
+													flexDirection: "column",
+													gap: 1,
+												}}
+											>
+												{upcomingItems.map((item, index) => (
+													<SortableQueueItem
+														key={item.Id || index}
+														item={item}
+														onDelete={() =>
+															handleDelete(currentItemIndex + 1 + index)
+														}
+														onPlay={() =>
+															handlePlay(currentItemIndex + 1 + index)
+														}
+														index={currentItemIndex + 1 + index + 1}
+													/>
+												))}
+											</Box>
+										</SortableContext>
+									</DndContext>
+								</>
+							)}
+						</List>
+					) : (
+						<Box
+							sx={{
+								p: 4,
+								textAlign: "center",
+								display: "flex",
+								flexDirection: "column",
+								alignItems: "center",
+								gap: 2,
+								opacity: 0.5,
+							}}
+						>
+							<span
+								className="material-symbols-rounded"
+								style={{ fontSize: 48 }}
+							>
+								queue_music
+							</span>
+							<Typography>Your queue is empty</Typography>
+						</Box>
+					)}
+				</Box>
+			</Drawer>
+			<IconButton onClick={() => setOpen(true)}>
+				<span className="material-symbols-rounded">playlist_play</span>
+			</IconButton>
+		</>
+	);
 };
 
 export default QueueButton;

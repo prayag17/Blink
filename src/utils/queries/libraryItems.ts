@@ -9,10 +9,10 @@ import {
 	SortOrder,
 	VideoType,
 } from "@jellyfin/sdk/lib/generated-client";
-import { getArtistsApi } from "@jellyfin/sdk/lib/utils/api/artists-api";
-import { getItemsApi } from "@jellyfin/sdk/lib/utils/api/items-api";
-import { getPersonsApi } from "@jellyfin/sdk/lib/utils/api/persons-api";
-import { getStudiosApi } from "@jellyfin/sdk/lib/utils/api/studios-api";
+import { getArtistApi } from "@jellyfin/sdk/lib/utils/api/artist-api";
+import { getLibraryApi } from "@jellyfin/sdk/lib/utils/api/library-api";
+import { getPersonApi } from "@jellyfin/sdk/lib/utils/api/person-api";
+import { getStudioApi } from "@jellyfin/sdk/lib/utils/api/studio-api";
 import { queryOptions } from "@tanstack/react-query";
 
 export interface LibraryItemsParams {
@@ -91,31 +91,31 @@ export const getLibraryItemsQueryOptions = (
 			};
 			let result: { data: BaseItemDtoQueryResult };
 			if (currentViewType === "MusicArtist") {
-				result = await getArtistsApi(api).getAlbumArtists({
+				result = await getArtistApi(api).getAlbumArtists({
 					userId: userId,
 					parentId: libraryId,
 					limit: params.limit,
 				});
 			} else if (currentViewType === "Artist") {
-				result = await getArtistsApi(api).getArtists({
+				result = await getArtistApi(api).getArtists({
 					userId: userId,
 					parentId: libraryId,
 					limit: params.limit,
 				});
 			} else if (currentViewType === "Person") {
-				result = await getPersonsApi(api).getPersons({
+				result = await getPersonApi(api).getPersons({
 					userId: userId,
 					personTypes: ["Actor"],
 					limit: params.limit,
 				});
 			} else if (currentViewType === "Studio") {
-				result = await getStudiosApi(api).getStudios({
+				result = await getStudioApi(api).getStudios({
 					userId: userId,
 					parentId: libraryId,
 					limit: params.limit,
 				});
 			} else if (currentViewType === "BoxSet") {
-				result = await getItemsApi(api).getItems({
+				result = await getLibraryApi(api).getItems({
 					userId: userId,
 					parentId: libraryId,
 					recursive: params.collectionType === "boxsets" ? undefined : true,
@@ -142,7 +142,7 @@ export const getLibraryItemsQueryOptions = (
 					limit: params.limit,
 				});
 			} else {
-				result = await getItemsApi(api).getItems({
+				result = await getLibraryApi(api).getItems({
 					userId: userId,
 					parentId: libraryId,
 					recursive: true,

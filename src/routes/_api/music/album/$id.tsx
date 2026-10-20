@@ -1,7 +1,5 @@
 import { BaseItemKind, SortOrder } from "@jellyfin/sdk/lib/generated-client";
-import { getItemsApi } from "@jellyfin/sdk/lib/utils/api/items-api";
 import { getLibraryApi } from "@jellyfin/sdk/lib/utils/api/library-api";
-import { getUserLibraryApi } from "@jellyfin/sdk/lib/utils/api/user-library-api";
 import Box from "@mui/material/Box";
 import CircularProgress from "@mui/material/CircularProgress";
 import Typography from "@mui/material/Typography";
@@ -27,7 +25,7 @@ import getImageUrlsApi from "@/utils/methods/getImageUrlsApi";
 import { useApiInContext } from "@/utils/store/api";
 import { useCentralStore } from "@/utils/store/central";
 
-export const Route = createFileRoute("/_api/album/$id")({
+export const Route = createFileRoute("/_api/music/album/$id")({
 	component: MusicAlbumTitlePage,
 });
 
@@ -41,7 +39,7 @@ function MusicAlbumTitlePage() {
 		queryKey: ["item", id],
 		queryFn: async () => {
 			if (!api) return null;
-			const result = await getUserLibraryApi(api).getItem({
+			const result = await getLibraryApi(api).getItem({
 				userId: user?.Id,
 				itemId: id,
 			});
@@ -74,7 +72,7 @@ function MusicAlbumTitlePage() {
 		queryKey: ["item", "musicTracks", id],
 		queryFn: async () => {
 			if (!api) return null;
-			const result = await getItemsApi(api).getItems({
+			const result = await getLibraryApi(api).getItems({
 				userId: user?.Id,
 				parentId: item.data?.Id,
 				sortOrder: [SortOrder.Ascending],
@@ -146,7 +144,7 @@ function MusicAlbumTitlePage() {
 					<div className="flex flex-align-center item-info-album-info">
 						{/* @ts-ignore - Using Link as component  */}
 						<Link
-							to="/artist/$id"
+							to="/music/artist/$id"
 							params={{ id: item.data.AlbumArtists?.[0].Id ?? "" }}
 						>
 							<Chip

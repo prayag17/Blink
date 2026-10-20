@@ -22,7 +22,12 @@ function ErrorRoute() {
 					>
 						report
 					</span>
-					<Typography variant="h5" fontWeight={500}>
+					<Typography
+						variant="h5"
+						sx={{
+							fontWeight: 500,
+						}}
+					>
 						Error connecting server.
 					</Typography>
 					<Typography variant="subtitle2" style={{ opacity: 0.6 }}>
@@ -49,4 +54,4 @@ function ErrorRoute() {
 		default:
 			return <div>Error</div>;
 	}
-} 
+}

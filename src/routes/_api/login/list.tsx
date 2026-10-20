@@ -74,12 +74,15 @@ const UserCard = ({ user }: { user: UserDto }) => {
 					)}
 				</div>
 				<Typography
-					mt={2}
 					align="center"
 					variant="subtitle1"
-					fontWeight="bold"
 					noWrap
-					sx={{ width: "100%", color: "text.primary" }}
+					sx={{
+						mt: 2,
+						fontWeight: "bold",
+						width: "100%",
+						color: "text.primary",
+					}}
 				>
 					{user.Name}
 				</Typography>
@@ -127,7 +130,13 @@ function LoginPublicUsersList() {
 						gap: 3,
 					}}
 				>
-					<Typography variant="h4" align="center" fontWeight="bold">
+					<Typography
+						variant="h4"
+						align="center"
+						sx={{
+							fontWeight: "bold",
+						}}
+					>
 						Select User
 					</Typography>
 

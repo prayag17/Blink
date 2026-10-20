@@ -5,7 +5,9 @@ import React, { useState } from "react";
 
 const SettingOption = ({
 	setting,
-}: { setting: { key: string; name: string; description: string } }) => {
+}: {
+	setting: { key: string; name: string; description: string };
+}) => {
 	const initValue = useQuery({
 		queryKey: ["setting", setting.key],
 		queryFn: async () => {
@@ -30,7 +32,12 @@ const SettingOption = ({
 			}
 			label={
 				<div className="settings-option-info">
-					<Typography variant="subtitle1" fontWeight={400}>
+					<Typography
+						variant="subtitle1"
+						sx={{
+							fontWeight: 400,
+						}}
+					>
 						{setting.name}
 					</Typography>
 					<Typography

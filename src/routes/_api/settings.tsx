@@ -48,7 +48,12 @@ function SettingsRoute() {
 						alt="user"
 					/>
 					<div className="flex flex-column">
-						<Typography variant="h6" fontWeight="bold">
+						<Typography
+							variant="h6"
+							sx={{
+								fontWeight: "bold",
+							}}
+						>
 							{user?.Name}
 						</Typography>
 						<Typography variant="body2" sx={{ opacity: 0.5 }}>

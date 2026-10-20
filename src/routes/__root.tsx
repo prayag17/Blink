@@ -20,9 +20,9 @@ import "material-symbols/rounded.scss";
 import type { Api, Jellyfin } from "@jellyfin/sdk";
 import type { UserDto } from "@jellyfin/sdk/lib/generated-client";
 import type { QueryClient } from "@tanstack/react-query";
-import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
-import { TanStackRouterDevtools } from "@tanstack/react-router-devtools";
-// import { TanStackRouterDevtools } from "@tanstack/react-router-devtools";
+import { TanStackDevtools } from "@tanstack/react-devtools";
+import { ReactQueryDevtoolsPanel } from "@tanstack/react-query-devtools";
+import { TanStackRouterDevtoolsPanel } from "@tanstack/react-router-devtools";
 import { DndProvider } from "react-dnd";
 import { HTML5Backend } from "react-dnd-html5-backend";
 import Backdrop from "@/components/backdrop";
@@ -59,8 +59,15 @@ export const Route = createRootRouteWithContext<ApiContext>()({
 						<AppBar />
 						<AudioPlayer />
 						<Outlet />
-						<ReactQueryDevtools />
-						<TanStackRouterDevtools />
+						<TanStackDevtools
+							plugins={[
+								{ name: "TanStack Query", render: <ReactQueryDevtoolsPanel /> },
+								{
+									name: "TanStack Router",
+									render: <TanStackRouterDevtoolsPanel />,
+								},
+							]}
+						/>
 					</SnackbarProvider>
 				</ThemeProvider>
 			</DndProvider>

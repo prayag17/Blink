@@ -87,7 +87,7 @@ export const UserAvatarMenu = () => {
 				onClose={handleMenuClose}
 				sx={menuStyle}
 				disableScrollLock
-				PaperProps={{ className: "glass" }}
+				slotProps={{ paper: { className: "glass" } }}
 			>
 				<MenuItem
 					onClick={() => {

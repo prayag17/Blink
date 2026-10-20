@@ -1,5 +1,4 @@
-import { getQuickConnectApi } from "@jellyfin/sdk/lib/utils/api/quick-connect-api";
-import { getUserApi } from "@jellyfin/sdk/lib/utils/api/user-api";
+import { getAuthenticationApi } from "@jellyfin/sdk/lib/utils/api/authentication-api";
 import { LoadingButton, type LoadingButtonProps } from "@mui/lab";
 import {
 	Button,
@@ -60,7 +59,7 @@ const QuickConnectButton = (props: LoadingButtonProps) => {
 	const quickConnectEnabled = useQuery({
 		queryKey: ["quick-connect-button", "check-quick-connect-enabled"],
 		queryFn: api
-			? async () => await getQuickConnectApi(api).getQuickConnectEnabled()
+			? async () => await getAuthenticationApi(api).getQuickConnectEnabled()
 			: skipToken,
 		enabled: Boolean(api),
 	});
@@ -74,7 +73,7 @@ const QuickConnectButton = (props: LoadingButtonProps) => {
 		mutationKey: ["quick-connect-button", "authenticate-user"],
 		mutationFn: async () => {
 			if (api && quickConnectSecret) {
-				return await getUserApi(api).authenticateWithQuickConnect(
+				return await getAuthenticationApi(api).authenticateWithQuickConnect(
 					{ quickConnectDto: { Secret: quickConnectSecret } },
 					{ headers },
 				);
@@ -104,7 +103,7 @@ const QuickConnectButton = (props: LoadingButtonProps) => {
 		mutationFn: async (secret: string) =>
 			api &&
 			(
-				await getQuickConnectApi(api).getQuickConnectState(
+				await getAuthenticationApi(api).getQuickConnectState(
 					{ secret },
 					{ headers },
 				)
@@ -127,7 +126,9 @@ const QuickConnectButton = (props: LoadingButtonProps) => {
 				});
 			}
 			if (api) {
-				return await getQuickConnectApi(api).initiateQuickConnect({ headers });
+				return await getAuthenticationApi(api).initiateQuickConnect({
+					headers,
+				});
 			}
 		},
 		onSuccess: (result) => {
@@ -173,7 +174,7 @@ const QuickConnectButton = (props: LoadingButtonProps) => {
 						(quickConnectCode && !checkQuickConnectStatus.data?.Authenticated),
 				)}
 				variant={props.variant ?? "contained"}
-				onClick={initQuickConnect.mutate}
+				onClick={() => initQuickConnect.mutate()}
 			>
 				{quickConnectEnabled.data?.data
 					? "Use Quick Connect"
@@ -184,8 +185,12 @@ const QuickConnectButton = (props: LoadingButtonProps) => {
 				onClose={handleQuickConnectClose}
 				fullWidth
 				maxWidth="xs"
-				TransitionComponent={Transition}
-				PaperProps={{ className: "glass", sx: { borderRadius: "24px" } }}
+				slots={{
+					transition: Transition,
+				}}
+				slotProps={{
+					paper: { className: "glass", sx: { borderRadius: "24px" } },
+				}}
 			>
 				<DialogContent
 					style={{
@@ -196,9 +201,11 @@ const QuickConnectButton = (props: LoadingButtonProps) => {
 				>
 					<Typography
 						variant="h5"
-						mb={2}
 						style={{
 							width: "100%",
+						}}
+						sx={{
+							mb: 2,
 						}}
 					>
 						Quick Connect Code:
@@ -214,20 +221,20 @@ const QuickConnectButton = (props: LoadingButtonProps) => {
 							<Typography
 								variant="h3"
 								color="textPrimary"
-								textAlign="center"
-								sx={{
-									background: "rgb(255 255 255 / 0.1)",
-									width: "fit-content",
-									padding: "0.4em",
-									borderRadius: "10px",
-									cursor: "pointer",
-								}}
 								onClick={async () => {
 									quickConnectCode && (await writeText(quickConnectCode));
 									enqueueSnackbar("Quick Connect Code copied!", {
 										variant: "info",
 										key: "copiedText",
 									});
+								}}
+								sx={{
+									textAlign: "center",
+									background: "rgb(255 255 255 / 0.1)",
+									width: "fit-content",
+									padding: "0.4em",
+									borderRadius: "10px",
+									cursor: "pointer",
 								}}
 							>
 								{quickConnectCode}

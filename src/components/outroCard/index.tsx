@@ -57,7 +57,7 @@ const OutroCard = (props: { handleShowCredits: () => void }) => {
 				</Typography>
 				<div className="outro-card-content-buttons">
 					<Button
-						onClick={handlePlayNext.mutate}
+						onClick={() => handlePlayNext.mutate()}
 						//@ts-ignore
 						color="white"
 						variant="contained"

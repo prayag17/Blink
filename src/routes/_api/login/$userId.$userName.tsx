@@ -170,7 +170,13 @@ function LoginUser() {
 						<Typography variant="body1" sx={{ opacity: 0.7 }}>
 							Login as
 						</Typography>
-						<Typography variant="h5" fontWeight={700} className="gradient-text">
+						<Typography
+							variant="h5"
+							className="gradient-text"
+							sx={{
+								fontWeight: 700,
+							}}
+						>
 							{userName}
 						</Typography>
 					</div>
@@ -192,32 +198,34 @@ function LoginUser() {
 						label="Password"
 						variant="outlined"
 						autoFocus
-						InputProps={{
-							startAdornment: (
-								<InputAdornment position="start">
-									<span
-										className="material-symbols-rounded"
-										style={{ opacity: 0.5 }}
-									>
-										key
-									</span>
-								</InputAdornment>
-							),
-							endAdornment: (
-								<InputAdornment position="end">
-									<IconButton onClick={handleShowPassword} edge="end">
-										{password.showpass ? (
-											<span className="material-symbols-rounded">
-												visibility
-											</span>
-										) : (
-											<span className="material-symbols-rounded">
-												visibility_off
-											</span>
-										)}
-									</IconButton>
-								</InputAdornment>
-							),
+						slotProps={{
+							input: {
+								startAdornment: (
+									<InputAdornment position="start">
+										<span
+											className="material-symbols-rounded"
+											style={{ opacity: 0.5 }}
+										>
+											key
+										</span>
+									</InputAdornment>
+								),
+								endAdornment: (
+									<InputAdornment position="end">
+										<IconButton onClick={handleShowPassword} edge="end">
+											{password.showpass ? (
+												<span className="material-symbols-rounded">
+													visibility
+												</span>
+											) : (
+												<span className="material-symbols-rounded">
+													visibility_off
+												</span>
+											)}
+										</IconButton>
+									</InputAdornment>
+								),
+							},
 						}}
 					/>
 

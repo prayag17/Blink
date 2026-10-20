@@ -20,7 +20,6 @@ import { useApiInContext } from "@/utils/store/api";
 import { useBackdropStore } from "@/utils/store/backdrop";
 import { useCentralStore } from "@/utils/store/central";
 import { useLibraryStateStore } from "@/utils/store/libraryState";
-// @ts-expect-error: Vite worker import
 import BackdropWorker from "@/utils/workers/backdrop.worker?worker";
 import { Card } from "../card/card";
 

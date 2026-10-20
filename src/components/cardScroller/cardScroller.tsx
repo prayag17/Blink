@@ -1,6 +1,12 @@
 import React, { type ReactNode, useRef, useState } from "react";
-import Carousel from "react-multi-carousel";
+import CarouselModule from "react-multi-carousel";
 import "react-multi-carousel/lib/styles.css";
+
+// react-multi-carousel is CJS with `exports.default`; Vite 8 hands default imports the whole
+// `module.exports`, so unwrap `.default` when present.
+const Carousel = ((
+	CarouselModule as unknown as { default?: typeof CarouselModule }
+).default ?? CarouselModule) as typeof CarouselModule;
 
 import IconButton from "@mui/material/IconButton";
 import Typography from "@mui/material/Typography";

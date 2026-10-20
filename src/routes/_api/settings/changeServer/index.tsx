@@ -217,19 +217,22 @@ function ChangeServerRoute() {
 									<Typography
 										variant="h5"
 										component="div"
-										fontWeight="bold"
 										noWrap
 										title={server.systemInfo?.ServerName || "Unknown Server"}
-										sx={{ mb: 0.5, letterSpacing: "-0.02em" }}
+										sx={{
+											fontWeight: "bold",
+											mb: 0.5,
+											letterSpacing: "-0.02em",
+										}}
 									>
 										{server.systemInfo?.ServerName || "Unknown Server"}
 									</Typography>
 									<Typography
 										variant="body2"
-										color="text.secondary"
 										noWrap
 										title={server.address}
 										sx={{
+											color: "text.secondary",
 											opacity: 0.6,
 											fontFamily: "monospace",
 											fontSize: "0.85rem",
@@ -358,10 +361,21 @@ function ChangeServerRoute() {
 								add
 							</span>
 						</div>
-						<Typography variant="h6" fontWeight="bold">
+						<Typography
+							variant="h6"
+							sx={{
+								fontWeight: "bold",
+							}}
+						>
 							Add Server
 						</Typography>
-						<Typography variant="body2" color="text.secondary" sx={{ mt: 1 }}>
+						<Typography
+							variant="body2"
+							sx={{
+								color: "text.secondary",
+								mt: 1,
+							}}
+						>
 							Connect to a new Jellyfin server
 						</Typography>
 					</Card>

@@ -1,6 +1,6 @@
 import type { Api } from "@jellyfin/sdk";
 import { BaseItemKind, ItemFields } from "@jellyfin/sdk/lib/generated-client";
-import { getUserLibraryApi } from "@jellyfin/sdk/lib/utils/api/user-library-api";
+import { getLibraryApi } from "@jellyfin/sdk/lib/utils/api/library-api";
 import { queryOptions } from "@tanstack/react-query";
 
 /**
@@ -24,7 +24,7 @@ export const getItemQueryOptions = (
 			if (!userId) {
 				throw Error("User ID is not defined");
 			}
-			const result = await getUserLibraryApi(api).getItem({
+			const result = await getLibraryApi(api).getItem({
 				userId: userId,
 				itemId: id,
 			});
@@ -51,7 +51,7 @@ export const getLatestItemsQueryOptions = (
 			if (!userId) {
 				throw Error("User ID is not defined");
 			}
-			const media = await getUserLibraryApi(api).getLatestMedia({
+			const media = await getLibraryApi(api).getLatestMedia({
 				userId: userId,
 				fields: [
 					ItemFields.Overview,
@@ -71,4 +71,30 @@ export const getLatestItemsQueryOptions = (
 			});
 			return media.data;
 		},
+	});
+
+/**
+ * @param api api instance
+ * @param userId user's id
+ * @param libraryId the library (user view) id
+ * @returns query options for the latest items of a single library
+ */
+export const getLibraryLatestQueryOptions = (
+	api: Api | null | undefined,
+	userId: string | null | undefined,
+	libraryId: string | null | undefined,
+) =>
+	queryOptions({
+		queryKey: ["home", "latestMedia", libraryId],
+		queryFn: async () => {
+			if (!api || !userId) return null;
+			const media = await getLibraryApi(api).getLatestMedia({
+				userId,
+				parentId: libraryId ?? undefined,
+				limit: 16,
+				fields: [ItemFields.PrimaryImageAspectRatio, ItemFields.ParentId],
+			});
+			return media.data;
+		},
+		enabled: !!userId,
 	});

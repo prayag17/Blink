@@ -1,5 +1,4 @@
-import { getGenresApi } from "@jellyfin/sdk/lib/utils/api/genres-api";
-import { getMusicGenresApi } from "@jellyfin/sdk/lib/utils/api/music-genres-api";
+import { getGenreApi } from "@jellyfin/sdk/lib/utils/api/genre-api";
 import {
 	Accordion,
 	AccordionDetails,
@@ -110,13 +109,13 @@ export const FiltersDialog: React.FC<FiltersDialogProps> = React.memo(
 			queryFn: async () => {
 				if (!api || !user?.Id || !currentLibraryId) return { Items: [] } as any;
 				if (String(collectionType || "").toLowerCase() === "music") {
-					const res = await getMusicGenresApi(api).getMusicGenres({
+					const res = await getGenreApi(api).getGenres({
 						parentId: currentLibraryId,
 						userId: user.Id,
 					});
 					return res.data;
 				}
-				const res = await getGenresApi(api).getGenres({
+				const res = await getGenreApi(api).getGenres({
 					parentId: currentLibraryId,
 					userId: user.Id,
 				});
@@ -170,7 +169,9 @@ export const FiltersDialog: React.FC<FiltersDialogProps> = React.memo(
 				fullWidth
 				maxWidth="sm"
 				keepMounted
-				PaperProps={{ className: "glass-dialog-paper" }}
+				slotProps={{
+					paper: { className: "glass-dialog-paper" },
+				}}
 			>
 				<DialogTitle>Filters</DialogTitle>
 				<DialogContent

@@ -11,8 +11,8 @@ import React from "react";
 
 import "../settings.scss";
 import { getLocalizationApi } from "@jellyfin/sdk/lib/utils/api/localization-api";
-// import { getDisplayPreferencesApi } from "@jellyfin/sdk/lib/utils/api/display-preferences-api";
 import { getUserApi } from "@jellyfin/sdk/lib/utils/api/user-api";
+// import { getDisplayPreferenceApi } from "@jellyfin/sdk/lib/utils/api/display-preference-api";
 import { useForm } from "@tanstack/react-form";
 import { useSuspenseQuery } from "@tanstack/react-query";
 import { useSnackbar } from "notistack";
@@ -61,7 +61,7 @@ function RouteComponent() {
 					RememberSubtitleSelections: values.value.rememberSubtitleSelections,
 				},
 			});
-			// await getDisplayPreferencesApi(api).updateDisplayPreferences({
+			// await getDisplayPreferenceApi(api).updateDisplayPreferences({
 			// 	userId: user?.Id,
 			// 	displayPreferencesId: api.deviceInfo.id,
 			// 	client: "blink",
@@ -127,7 +127,12 @@ function RouteComponent() {
 								}
 								label={
 									<div className="settings-option-info">
-										<Typography variant="subtitle1" fontWeight={400}>
+										<Typography
+											variant="subtitle1"
+											sx={{
+												fontWeight: 400,
+											}}
+										>
 											Preferred Audio Language
 										</Typography>
 										<Typography
@@ -160,7 +165,12 @@ function RouteComponent() {
 								}
 								label={
 									<div className="settings-option-info">
-										<Typography variant="subtitle1" fontWeight={400}>
+										<Typography
+											variant="subtitle1"
+											sx={{
+												fontWeight: 400,
+											}}
+										>
 											Play default audio track regardless of language
 										</Typography>
 										<Typography
@@ -212,7 +222,12 @@ function RouteComponent() {
 								}
 								label={
 									<div className="settings-option-info">
-										<Typography variant="subtitle1" fontWeight={400}>
+										<Typography
+											variant="subtitle1"
+											sx={{
+												fontWeight: 400,
+											}}
+										>
 											Preferred Subtitle Language
 										</Typography>
 										<Typography
@@ -245,7 +260,12 @@ function RouteComponent() {
 								}
 								label={
 									<div className="settings-option-info">
-										<Typography variant="subtitle1" fontWeight={400}>
+										<Typography
+											variant="subtitle1"
+											sx={{
+												fontWeight: 400,
+											}}
+										>
 											Set subtitle track based on previous item
 										</Typography>
 										<Typography

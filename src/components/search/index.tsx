@@ -1,5 +1,5 @@
 import { ItemSortBy } from "@jellyfin/sdk/lib/generated-client";
-import { getItemsApi } from "@jellyfin/sdk/lib/utils/api/items-api";
+import { getLibraryApi } from "@jellyfin/sdk/lib/utils/api/library-api";
 import { getSearchApi } from "@jellyfin/sdk/lib/utils/api/search-api";
 import {
 	Box,
@@ -58,7 +58,7 @@ const Search = () => {
 		queryFn: async () =>
 			api &&
 			(
-				await getItemsApi(api).getItems({
+				await getLibraryApi(api).getItems({
 					userId: userId,
 					limit: 5,
 					sortBy: [ItemSortBy.IsFavoriteOrLiked, ItemSortBy.Random],
@@ -166,9 +166,9 @@ const Search = () => {
 			<Box sx={{ position: "relative" }}>
 				<Stack
 					direction="row"
-					alignItems="center"
 					spacing={1.5}
 					sx={{
+						alignItems: "center",
 						p: "16px 24px",
 					}}
 				>
@@ -272,8 +272,8 @@ const Search = () => {
 						<Box>
 							<Typography
 								variant="caption"
-								fontWeight={600}
 								sx={{
+									fontWeight: 600,
 									px: 2,
 									py: 1.5,
 									color: "text.secondary",
@@ -315,8 +315,8 @@ const Search = () => {
 					<Box>
 						<Typography
 							variant="caption"
-							fontWeight={600}
 							sx={{
+								fontWeight: 600,
 								px: 2,
 								py: 1.5,
 								color: "text.secondary",
@@ -356,9 +356,9 @@ const Search = () => {
 				{searchResults.isSuccess &&
 					searchResults.data?.SearchHints?.length === 0 && (
 						<Stack
-							alignItems="center"
-							justifyContent="center"
 							sx={{
+								alignItems: "center",
+								justifyContent: "center",
 								height: "100%",
 								minHeight: "200px",
 								color: "text.secondary",
@@ -380,10 +380,11 @@ const Search = () => {
 
 			<Stack
 				direction="row"
-				justifyContent="flex-end"
 				sx={{
+					justifyContent: "flex-end",
 					p: 1.5,
 					mt: 1,
+
 					backgroundImage:
 						"linear-gradient(to top, rgba(0,0,0,0.2), transparent)",
 				}}

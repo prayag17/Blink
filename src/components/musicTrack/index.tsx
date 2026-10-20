@@ -116,14 +116,16 @@ const MusicTrack = ({
 						>
 							<Typography
 								variant="subtitle2"
-								fontWeight="400"
 								style={{
 									textDecoration: "none",
+								}}
+								sx={{
+									fontWeight: "400",
 								}}
 							>
 								<Link
 									style={{ textDecoration: "none", color: "white" }}
-									to="/artist/$id"
+									to="/music/artist/$id"
 									params={{ id: artist.Id ?? "" }}
 								>
 									{artist.Name}

@@ -7,8 +7,8 @@ import {
 	PlayMethod,
 } from "@jellyfin/sdk/lib/generated-client";
 import { getMediaInfoApi } from "@jellyfin/sdk/lib/utils/api/media-info-api";
-import { getMediaSegmentsApi } from "@jellyfin/sdk/lib/utils/api/media-segments-api";
-import { getPlaystateApi } from "@jellyfin/sdk/lib/utils/api/playstate-api";
+import { getMediaSegmentApi } from "@jellyfin/sdk/lib/utils/api/media-segment-api";
+import { getSessionApi } from "@jellyfin/sdk/lib/utils/api/session-api";
 import { getUserApi } from "@jellyfin/sdk/lib/utils/api/user-api";
 import { WebviewWindow as appWindow } from "@tauri-apps/api/webviewWindow";
 import { create } from "zustand";
@@ -927,11 +927,11 @@ export const playItemFromQueue = async (
 		},
 	});
 
-	const segmentsPromise = getMediaSegmentsApi(api).getItemSegments({
+	const segmentsPromise = getMediaSegmentApi(api).getItemSegments({
 		itemId: item.Id,
 	});
 
-	const stopReportPromise = getPlaystateApi(api).reportPlaybackStopped({
+	const stopReportPromise = getSessionApi(api).reportPlaybackStopped({
 		playbackStopInfo: {
 			Failed: false,
 			ItemId: prevItem?.Id,

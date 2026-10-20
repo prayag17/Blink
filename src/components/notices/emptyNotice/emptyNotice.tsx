@@ -1,4 +1,3 @@
-
 import Box from "@mui/material/Box";
 import Typography from "@mui/material/Typography";
 import { yellow } from "@mui/material/colors";
@@ -29,10 +28,21 @@ export const EmptyNotice = ({ extraMsg }: { extraMsg?: string }) => {
 			>
 				sentiment_dissatisfied
 			</div>
-			<Typography variant="h4" fontWeight={300}>
+			<Typography
+				variant="h4"
+				sx={{
+					fontWeight: 300,
+				}}
+			>
 				No results found
 			</Typography>
-			<Typography variant="subtitle1" fontWeight={300} style={{ opacity: 0.5 }}>
+			<Typography
+				variant="subtitle1"
+				style={{ opacity: 0.5 }}
+				sx={{
+					fontWeight: 300,
+				}}
+			>
 				{extraMsg}
 			</Typography>
 		</Box>

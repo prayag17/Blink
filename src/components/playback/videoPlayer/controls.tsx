@@ -1,4 +1,4 @@
-import { getPlaystateApi } from "@jellyfin/sdk/lib/utils/api/playstate-api";
+import { getSessionApi } from "@jellyfin/sdk/lib/utils/api/session-api";
 import { IconButton, Slider, Typography } from "@mui/material";
 import { WebviewWindow as appWindow } from "@tauri-apps/api/webviewWindow";
 import { AnimatePresence, motion } from "motion/react";
@@ -156,7 +156,7 @@ const VideoPlayerControls = ({
 			throw Error("API is not available, cannot report playback stopped.");
 		}
 		// Report Jellyfin server: Playback has ended/stopped
-		getPlaystateApi(api).reportPlaybackStopped({
+		getSessionApi(api).reportPlaybackStopped({
 			playbackStopInfo: {
 				Failed: false,
 				ItemId: itemId,
@@ -219,11 +219,23 @@ const VideoPlayerControls = ({
 			</div>
 			<div className="video-player-osd-info">
 				<div>
-					<Typography variant="h4" fontWeight={500} mb={2}>
+					<Typography
+						variant="h4"
+						sx={{
+							fontWeight: 500,
+							mb: 2,
+						}}
+					>
 						{String(itemName)}
 					</Typography>
 					{episodeTitle && (
-						<Typography variant="h6" fontWeight={300} mt={1}>
+						<Typography
+							variant="h6"
+							sx={{
+								fontWeight: 300,
+								mt: 1,
+							}}
+						>
 							{String(episodeTitle)}
 						</Typography>
 					)}

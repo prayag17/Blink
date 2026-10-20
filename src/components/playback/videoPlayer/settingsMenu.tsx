@@ -145,7 +145,13 @@ const VideoPlayerSettingsMenu = ({
 				))}
 			</TextField>
 			<MenuItem onClick={toggleShowStatsForNerds}>
-				<Typography flexGrow={1}>Stats for Nerds</Typography>
+				<Typography
+					sx={{
+						flexGrow: 1,
+					}}
+				>
+					Stats for Nerds
+				</Typography>
 				<Switch checked={showStatsForNerds} />
 			</MenuItem>
 		</Popover>

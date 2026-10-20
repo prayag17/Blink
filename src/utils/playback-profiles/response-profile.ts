@@ -2,10 +2,13 @@
  * @deprecated - Check @/utils/playback-profiles/index
  */
 
-import {
-  DlnaProfileType,
-  type ResponseProfile
-} from '@jellyfin/sdk/lib/generated-client';
+import { DlnaProfileType } from "@jellyfin/sdk/lib/generated-client";
+
+type ResponseProfile = {
+	Type: DlnaProfileType;
+	Container: string;
+	MimeType: string;
+};
 
 /**
  * Returns a valid ResponseProfile for the current platform.
@@ -13,13 +16,13 @@ import {
  * @returns An array of subtitle profiles for the current platform.
  */
 export function getResponseProfiles(): ResponseProfile[] {
-  const ResponseProfiles = [];
+	const ResponseProfiles = [];
 
-  ResponseProfiles.push({
-    Type: DlnaProfileType.Video,
-    Container: 'm4v',
-    MimeType: 'video/mp4'
-  });
+	ResponseProfiles.push({
+		Type: DlnaProfileType.Video,
+		Container: "m4v",
+		MimeType: "video/mp4",
+	});
 
-  return ResponseProfiles;
+	return ResponseProfiles;
 }

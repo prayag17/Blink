@@ -81,7 +81,13 @@ function ServerSetup() {
 					overflow: "hidden",
 				}}
 			>
-				<Stack spacing={2} width="30em" alignItems="center">
+				<Stack
+					spacing={2}
+					sx={{
+						width: "30em",
+						alignItems: "center",
+					}}
+				>
 					<img
 						src={logo}
 						alt="Blink"
@@ -94,10 +100,12 @@ function ServerSetup() {
 
 					<Typography
 						variant="body1"
-						color="text.secondary"
-						textAlign="center"
-						maxWidth="80%"
-						sx={{ lineHeight: 1.5 }}
+						sx={{
+							color: "text.secondary",
+							textAlign: "center",
+							maxWidth: "80%",
+							lineHeight: 1.5,
+						}}
 					>
 						Enter your Jellyfin server address to get started
 					</Typography>
@@ -116,15 +124,17 @@ function ServerSetup() {
 							onChange={(event) => {
 								setServerIp(event.target.value);
 							}}
-							InputProps={{
-								startAdornment: (
-									<span
-										className="material-symbols-rounded"
-										style={{ opacity: 0.5, marginRight: "12px" }}
-									>
-										dns
-									</span>
-								),
+							slotProps={{
+								input: {
+									startAdornment: (
+										<span
+											className="material-symbols-rounded"
+											style={{ opacity: 0.5, marginRight: "12px" }}
+										>
+											dns
+										</span>
+									),
+								},
 							}}
 						/>
 						<LoadingButton
@@ -142,8 +152,11 @@ function ServerSetup() {
 			<Stack
 				direction="row"
 				spacing={1}
-				alignItems="center"
-				sx={{ mt: 3, opacity: 0.6 }}
+				sx={{
+					alignItems: "center",
+					mt: 3,
+					opacity: 0.6,
+				}}
 			>
 				<span
 					className="material-symbols-rounded"

@@ -43,7 +43,13 @@ const QueueTrack = (props: Props) => {
 				<Typography className="audio-queue-track-info-name">
 					{track.Name}
 				</Typography>
-				<Typography fontWeight={300} className="opacity-07" variant="subtitle2">
+				<Typography
+					className="opacity-07"
+					variant="subtitle2"
+					sx={{
+						fontWeight: 300,
+					}}
+				>
 					{track.Artists?.join(", ")}
 				</Typography>
 			</div>

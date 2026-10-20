@@ -50,12 +50,14 @@ const PlayerProgress = ({
 		>
 			<Typography
 				variant="subtitle2"
-				fontWeight={300}
 				style={{
 					opacity: 0.8,
 					minWidth: "3.5em",
 					textAlign: "right",
 					fontVariantNumeric: "tabular-nums",
+				}}
+				sx={{
+					fontWeight: 300,
 				}}
 			>
 				{getRuntimeMusic(sliderValue)}
@@ -70,12 +72,14 @@ const PlayerProgress = ({
 			/>
 			<Typography
 				variant="subtitle2"
-				fontWeight={300}
 				style={{
 					opacity: 0.8,
 					minWidth: "3.5em",
 					textAlign: "left",
 					fontVariantNumeric: "tabular-nums",
+				}}
+				sx={{
+					fontWeight: 300,
 				}}
 			>
 				{getRuntimeMusic(duration)}

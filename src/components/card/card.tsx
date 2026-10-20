@@ -16,6 +16,7 @@ import MarkPlayedButton from "../buttons/markPlayedButton";
 import PlayButton from "../buttons/playButton";
 import { getTypeIcon } from "../utils/iconsCollection";
 import "./card.scss";
+import { getItemLinkOptions } from "@/utils/navigation/itemLink";
 
 interface CardProps {
 	item: BaseItemDto;
@@ -57,32 +58,7 @@ const CardContent = ({
 
 	const defaultOnClick = useCallback(() => {
 		if (item?.Id) {
-			switch (item?.Type) {
-				case BaseItemKind.BoxSet:
-					navigate({ to: "/boxset/$id", params: { id: item.Id } });
-					break;
-				case BaseItemKind.Episode:
-					navigate({ to: "/episode/$id", params: { id: item.Id } });
-					break;
-				case BaseItemKind.MusicAlbum:
-					navigate({ to: "/album/$id", params: { id: item.Id } });
-					break;
-				case BaseItemKind.MusicArtist:
-					navigate({ to: "/artist/$id", params: { id: item.Id } });
-					break;
-				case BaseItemKind.Person:
-					navigate({ to: "/person/$id", params: { id: item.Id } });
-					break;
-				case BaseItemKind.Series:
-					navigate({ to: "/series/$id", params: { id: item.Id } });
-					break;
-				case BaseItemKind.Playlist:
-					navigate({ to: "/playlist/$id", params: { id: item.Id } });
-					break;
-				default:
-					navigate({ to: "/item/$id", params: { id: item.Id } });
-					break;
-			}
+			navigate(getItemLinkOptions(item.Id, item?.Type));
 		}
 	}, [item?.Id, item?.Type, navigate]);
 

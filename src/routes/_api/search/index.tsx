@@ -1,6 +1,6 @@
 import { BaseItemKind } from "@jellyfin/sdk/lib/generated-client";
-import { getItemsApi } from "@jellyfin/sdk/lib/utils/api/items-api";
-import { getPersonsApi } from "@jellyfin/sdk/lib/utils/api/persons-api";
+import { getLibraryApi } from "@jellyfin/sdk/lib/utils/api/library-api";
+import { getPersonApi } from "@jellyfin/sdk/lib/utils/api/person-api";
 import { getSearchApi } from "@jellyfin/sdk/lib/utils/api/search-api";
 import { useQuery } from "@tanstack/react-query";
 import React, { useCallback, useEffect, useMemo, useState } from "react";
@@ -129,7 +129,13 @@ function SearchPage() {
 								</span>
 								<span className="material-symbols-rounded icon-md">tv</span>
 							</Box>
-							<Typography variant="h4" fontWeight={600} gutterBottom>
+							<Typography
+								variant="h4"
+								gutterBottom
+								sx={{
+									fontWeight: 600,
+								}}
+							>
 								Explore your library
 							</Typography>
 							<Typography variant="body1" sx={{ opacity: 0.6, maxWidth: 400 }}>
@@ -319,9 +325,7 @@ function SearchAppBar({
 								);
 							}}
 							MenuProps={{
-								PaperProps: {
-									className: "glass-menu-paper",
-								},
+								slotProps: { paper: { className: "glass-menu-paper" } },
 								disableScrollLock: true,
 							}}
 							size="small"
@@ -440,7 +444,7 @@ function CategorySection({ category, query, api, user, onResult }: any) {
 			if (!api || !user?.Id) return { items: [], total: 0 };
 
 			if (category.value === "Person") {
-				const res = await getPersonsApi(api).getPersons({
+				const res = await getPersonApi(api).getPersons({
 					userId: user.Id,
 					searchTerm: query,
 					limit,
@@ -461,7 +465,7 @@ function CategorySection({ category, query, api, user, onResult }: any) {
 				};
 			}
 
-			const res = await getItemsApi(api).getItems({
+			const res = await getLibraryApi(api).getItems({
 				userId: user.Id,
 				searchTerm: query,
 				includeItemTypes: [category.kind],

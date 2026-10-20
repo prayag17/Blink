@@ -92,7 +92,9 @@ export default function AlbumMusicTrack(props: AlbumMusicTrackProps) {
 						alignItems: "center",
 						gap: "0.6em",
 					}}
-					fontWeight={300}
+					sx={{
+						fontWeight: 300,
+					}}
 				>
 					{track.HasLyrics && <img src={lyricsIcon} alt="lyrics" />}
 					{track.Artists?.join(", ")}

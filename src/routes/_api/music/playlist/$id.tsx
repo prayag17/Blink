@@ -5,8 +5,7 @@ import CircularProgress from "@mui/material/CircularProgress";
 
 import { BaseItemKind } from "@jellyfin/sdk/lib/generated-client";
 import { getLibraryApi } from "@jellyfin/sdk/lib/utils/api/library-api";
-import { getPlaylistsApi } from "@jellyfin/sdk/lib/utils/api/playlists-api";
-import { getUserLibraryApi } from "@jellyfin/sdk/lib/utils/api/user-library-api";
+import { getPlaylistApi } from "@jellyfin/sdk/lib/utils/api/playlist-api";
 
 import { useQuery } from "@tanstack/react-query";
 
@@ -28,7 +27,7 @@ import { Typography } from "@mui/material";
 import { createFileRoute } from "@tanstack/react-router";
 import { createPortal } from "react-dom";
 
-export const Route = createFileRoute("/_api/playlist/$id")({
+export const Route = createFileRoute("/_api/music/playlist/$id")({
 	component: PlaylistTitlePage,
 });
 
@@ -42,7 +41,7 @@ function PlaylistTitlePage() {
 		queryKey: ["item", id],
 		queryFn: async () => {
 			if (!api) return null;
-			const result = await getUserLibraryApi(api).getItem({
+			const result = await getLibraryApi(api).getItem({
 				userId: user?.Id,
 				itemId: id,
 			});
@@ -75,7 +74,7 @@ function PlaylistTitlePage() {
 		queryFn: async () => {
 			if (!api) return null;
 			if (!item.data?.Id) return null;
-			const result = await getPlaylistsApi(api).getPlaylistItems({
+			const result = await getPlaylistApi(api).getPlaylistItems({
 				userId: user?.Id,
 				playlistId: item.data.Id,
 			});
