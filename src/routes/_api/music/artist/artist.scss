@@ -6,7 +6,7 @@ $cardWidth: 22%;
 	.item-detail {
 		display: grid;
 		grid-template-columns: 1fr 35%;
-		justify-items: center;
+		justify-items: start;
 		align-items: start;
 		gap: 3em;
 

@@ -8,6 +8,12 @@ interface PlayerProgressProps {
 	duration: number;
 	onSeek?: (value: number) => void;
 	onSeekCommit: (value: number) => void;
+	/**
+	 * "inline" puts the times beside the bar, "stacked" puts them underneath,
+	 * "bare" renders only the slider.
+	 */
+	layout?: "inline" | "stacked" | "bare";
+	className?: string;
 }
 
 const PlayerProgress = ({
@@ -15,6 +21,8 @@ const PlayerProgress = ({
 	duration,
 	onSeek,
 	onSeekCommit,
+	layout = "inline",
+	className,
 }: PlayerProgressProps) => {
 	const [isScrubbing, setIsScrubbing] = useState(false);
 	const [sliderValue, setSliderValue] = useState(progress);
@@ -38,8 +46,44 @@ const PlayerProgress = ({
 		onSeekCommit(newValue);
 	};
 
+	if (layout === "bare") {
+		return (
+			<Slider
+				className={className}
+				value={sliderValue}
+				step={1}
+				size="small"
+				max={duration}
+				onChange={handleChange}
+				onChangeCommitted={handleChangeCommitted}
+				aria-label="Seek"
+			/>
+		);
+	}
+
+	if (layout === "stacked") {
+		return (
+			<div className="player-progress-stacked">
+				<Slider
+					value={sliderValue}
+					step={1}
+					size="small"
+					max={duration}
+					onChange={handleChange}
+					onChangeCommitted={handleChangeCommitted}
+					aria-label="Seek"
+				/>
+				<div className="player-progress-stacked-times">
+					<span>{getRuntimeMusic(sliderValue)}</span>
+					<span>-{getRuntimeMusic(Math.max(duration - sliderValue, 0))}</span>
+				</div>
+			</div>
+		);
+	}
+
 	return (
 		<div
+			className={className}
 			style={{
 				width: "100%",
 				display: "flex",

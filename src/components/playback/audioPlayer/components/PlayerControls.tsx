@@ -20,7 +20,10 @@ const PlayerControls = ({
 	onForward,
 }: PlayerControlsProps) => {
 	return (
-		<div style={{ display: "flex", gap: "1em", alignItems: "center" }}>
+		<div
+			className="player-controls"
+			style={{ display: "flex", gap: "1em", alignItems: "center" }}
+		>
 			<PlayPreviousButton />
 			{onRewind && (
 				<IconButton onClick={onRewind}>

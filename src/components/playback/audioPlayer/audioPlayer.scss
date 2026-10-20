@@ -1,140 +1,228 @@
-$image-size: 4em;
+$art-size: 48px;
 
 .audio-player {
 	position: fixed;
-	bottom: 1rem;
+	bottom: 0.75rem;
 	left: 50%;
 	transform: translateX(-50%);
-	width: 95%;
-	max-width: 1200px;
+	width: min(1100px, calc(100% - 1.5rem));
+	height: 80px;
+	box-sizing: border-box;
 	z-index: 100;
+
 	display: grid;
-	padding: 0.75em 1.5em;
-	gap: 1.5em;
-	box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
-	grid-template-columns: 25% 1fr 25%;
-    @include glass-effect($blur: 12px, $bg-color: rgba(18, 18, 18, 0.85));
-	// background: rgba(18, 18, 18, 0.85) !important;
-	// backdrop-filter: blur(12px);
-	// -webkit-backdrop-filter: blur(12px);
-	// border: 1px solid rgba(255, 255, 255, 0.1);
-	border-radius: 1rem;
+	// Equal side columns keep the transport truly centred
+	grid-template-columns: minmax(0, 1fr) minmax(0, 540px) minmax(0, 1fr);
 	align-items: center;
+	gap: 1.5rem;
+	padding: 0 0.75rem 0 1rem;
 
-	@media (max-width: 900px) {
-		grid-template-columns: 1fr auto;
-		padding: 0.5em 1em;
-		bottom: 0;
-		width: 100%;
-		border-radius: 0;
-		border-bottom: none;
-		border-left: none;
-		border-right: none;
-		
-		.audio-player-controls {
-			display: none; // Hide controls on mobile for now or adjust
-		}
-	}
+	color: white;
+	background: rgb(18 18 24 / 0.92);
+	backdrop-filter: blur(16px);
+	-webkit-backdrop-filter: blur(16px);
+	border: 1px solid rgb(255 255 255 / 0.08);
+	border-radius: 14px;
+	box-shadow: 0 12px 40px rgb(0 0 0 / 0.45);
 
-	#waveform {
-		width: 100%;
-		transform: scaleY(0);
-		transition: transform $transition-time-default;
-		&[data-show="true"] {
-			transform: scaleY(1) !important;
-		}
-	}
-	&-controls {
+	&-info {
 		display: flex;
 		align-items: center;
-		justify-content: center;
-		gap: 0.5em;
-		padding: 0.5em 0;
-		flex-flow: column;
-	}
-	&-info {
-		display: grid;
-		gap: 1em;
-		grid-template-columns: minmax(0, $image-size) minmax(0, 1fr);
-		width: fit-content;
-		align-items: center;
-		flex-grow: 1;
-		width: 100%;
-		overflow: hidden;
+		gap: 0.75rem;
+		min-width: 0;
+
+		> .MuiIconButton-root {
+			flex-shrink: 0;
+			color: rgb(255 255 255 / 0.75);
+			.material-symbols-rounded {
+				font-size: 1.25rem;
+			}
+		}
 
 		&-text {
 			display: flex;
 			flex-direction: column;
-			overflow: hidden;
 			min-width: 0;
 		}
+
+		&-title {
+			all: unset;
+			cursor: pointer;
+			font-weight: 600 !important;
+			line-height: 1.25 !important;
+			// Wrap long titles onto a second line before truncating
+			display: -webkit-box;
+			-webkit-box-orient: vertical;
+			-webkit-line-clamp: 2;
+			overflow: hidden;
+			overflow-wrap: anywhere;
+
+			&:hover,
+			&:focus-visible {
+				text-decoration: underline;
+			}
+		}
+
+		&-artist {
+			opacity: 0.6;
+
+			a {
+				color: inherit;
+				text-decoration: none;
+				&:hover {
+					text-decoration: underline;
+				}
+			}
+		}
 	}
+
 	&-image {
-		width: $image-size;
-		aspect-ratio: 1;
+		position: absolute;
+		inset: 0;
+		width: 100%;
+		height: 100%;
 		object-fit: cover;
 		z-index: 1;
-		flex-shrink: 0;
-		flex-grow: 1;
-		
-		position: relative;
+
 		&-container {
-			border-radius: $border-radius_04;
+			all: unset;
 			position: relative;
+			flex-shrink: 0;
+			width: $art-size;
+			height: $art-size;
+			border-radius: 8px;
 			overflow: hidden;
-			height: fit-content;
-			aspect-ratio: 1;
-			background: rgb(255 255 255 / 0.1);
+			cursor: pointer;
+			background: rgb(255 255 255 / 0.08);
+
+			&:hover .audio-player-image-expand,
+			&:focus-visible .audio-player-image-expand {
+				opacity: 1;
+			}
 		}
-		&-icon {
+
+		&-icon,
+		&-expand {
 			position: absolute;
 			left: 50%;
 			top: 50%;
 			transform: translate(-50%, -50%);
-			font-size: 2em !important;
-			z-index: 0;
+		}
+
+		&-icon {
+			font-size: 1.5rem !important;
+			opacity: 0.5;
+		}
+
+		// "Open player" affordance shown over the art on hover
+		&-expand {
+			z-index: 2;
+			inset: 0;
+			transform: none;
+			display: flex;
+			align-items: center;
+			justify-content: center;
+			background: rgb(0 0 0 / 0.5);
+			opacity: 0;
+			transition: opacity 0.15s ease;
 		}
 	}
-	&-track {
-		grid-template-columns: $image-size 60% 0.5fr 0.5fr !important;
-	}
-	&-playlist{
-		background: $clr-background-dark !important;
-		border: 1.2px solid rgb(255 255 255 / 0.2);
+
+	// Transport on top, compact seek row underneath
+	&-center {
 		display: flex;
 		flex-direction: column;
-		gap: 1em;
-		// Magic scrollbar
-		&::-webkit-scrollbar {
-			&-thumb {
-				height: 150px;
-				max-height: 33%;
-			}
-			&-track {
-				margin-top: 20px;
-				margin-bottom: 20px;
-				background: transparent !important;
-			}
-		}
-		
-		&-track{
-			display: grid;
-			gap: 1em;
-			grid-template-columns: 4em 1fr 4em;
-			cursor: pointer;
-			&.active{
-				color: $clr-accent-default;
-			}
-			&-image{
-				background: rgb(255 255 255 / 0.1);
-				border: 1.2px solid rgb(255 255 255 / 0.1);
-				overflow: hidden;
-				border-radius:5px;
-				width: 100%;
-				aspect-ratio: 1;
-				height: 4em;
+		align-items: center;
+		gap: 2px;
+		min-width: 0;
+
+		.player-controls {
+			gap: 0.5rem !important;
+
+			.MuiFab-root {
+				width: 36px;
+				height: 36px;
+				min-height: 36px;
+				box-shadow: none;
+
+				.material-symbols-rounded {
+					font-size: 1.6rem !important;
+				}
 			}
 		}
-		
+	}
+
+	&-progress {
+		gap: 0.6rem !important;
+
+		.MuiTypography-root {
+			min-width: 2.75em !important;
+			font-size: 0.7rem;
+			opacity: 0.6 !important;
+		}
+
+		.MuiSlider-root {
+			padding: 8px 0;
+		}
+		.MuiSlider-thumb {
+			width: 10px;
+			height: 10px;
+			opacity: 0;
+			transition: opacity 0.15s ease;
+		}
+		&:hover .MuiSlider-thumb,
+		.MuiSlider-root.Mui-active .MuiSlider-thumb {
+			opacity: 1;
+		}
+	}
+
+	&-actions {
+		display: flex;
+		align-items: center;
+		justify-content: flex-end;
+		gap: 0.25rem;
+		min-width: 0;
+
+		.MuiIconButton-root {
+			color: rgb(255 255 255 / 0.75);
+			&:hover {
+				color: white;
+			}
+		}
+	}
+
+	&-volume {
+		display: flex;
+		align-items: center;
+		min-width: 0;
+
+		// Secondary control: neutral and compact
+		.MuiSlider-root {
+			width: 5.5rem !important;
+			color: rgb(255 255 255 / 0.85);
+		}
+	}
+
+	@media (max-width: 900px) {
+		.audio-player-volume,
+		.audio-player-progress .MuiTypography-root {
+			display: none;
+		}
+	}
+
+	@media (max-width: 640px) {
+		grid-template-columns: minmax(0, 1fr) auto auto;
+		gap: 0.5rem;
+		bottom: 0.5rem;
+		width: calc(100% - 1rem);
+		height: 64px;
+
+		.audio-player-center .player-controls > :not(:has(.MuiFab-root)),
+		.audio-player-progress {
+			display: none;
+		}
+		.audio-player-actions > :not(:last-child) {
+			display: none;
+		}
 	}
 }

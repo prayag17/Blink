@@ -47,6 +47,8 @@ const ItemHeader = ({
 	backdropSrc,
 }: ItemHeaderProps) => {
 	const isEpisode = item.Type === "Episode";
+	// A runtime / "ends at" is meaningless for people and artists (it sums their whole catalogue)
+	const showRuntime = item.Type !== "MusicArtist" && item.Type !== "Person";
 	const backdropTag =
 		isEpisode && item.ParentBackdropImageTags?.length
 			? item.ParentBackdropImageTags[0]
@@ -294,12 +296,12 @@ const ItemHeader = ({
 						</div>
 					)}
 
-					{item.RunTimeTicks && (
+					{showRuntime && item.RunTimeTicks && (
 						<Typography style={{ opacity: "0.8" }} variant="subtitle2">
 							{getRuntime(item.RunTimeTicks)}
 						</Typography>
 					)}
-					{item.RunTimeTicks && (
+					{showRuntime && item.RunTimeTicks && (
 						<Typography style={{ opacity: "0.8" }} variant="subtitle2">
 							{endsAt(
 								item.RunTimeTicks - (item.UserData?.PlaybackPositionTicks ?? 0),

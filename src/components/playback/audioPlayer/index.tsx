@@ -12,7 +12,7 @@ import {
 } from "@/utils/store/audioPlayback";
 import { useCentralStore } from "@/utils/store/central";
 import { playItemFromQueue } from "@/utils/store/playback";
-import useQueue from "@/utils/store/queue";
+import useQueue, { getNextTrackIndex } from "@/utils/store/queue";
 import PlayerActions from "./components/PlayerActions";
 import PlayerControls from "./components/PlayerControls";
 import PlayerInfo from "./components/PlayerInfo";
@@ -26,7 +26,7 @@ const AudioPlayer = () => {
 	const user = useCentralStore((s) => s.currentUser);
 	const navigate = useNavigate();
 	const location = useLocation();
-	
+
 	const audioRef = useRef<HTMLAudioElement | null>(null);
 	const [url, display, item, volume, isMuted] = useAudioPlayback((state) => [
 		state.url,
@@ -35,15 +35,15 @@ const AudioPlayer = () => {
 		state.player.volume,
 		state.player.isMuted,
 	]);
-	
+
 	const [tracks, currentTrack] = useQueue((state) => [
 		state.tracks,
 		state.currentItemIndex,
 	]);
-	
+
 	const [playing, setPlaying] = useState(false);
 	const [progress, setProgress] = useState(0);
-	
+
 	// Sync volume and ref
 	useEffect(() => {
 		if (display) {
@@ -54,14 +54,14 @@ const AudioPlayer = () => {
 			}
 		}
 	}, [display, url, tracks?.[currentTrack]?.Id]);
-	
+
 	// Update volume when state changes
 	useEffect(() => {
 		if (audioRef.current) {
 			audioRef.current.volume = isMuted ? 0 : volume;
 		}
 	}, [volume, isMuted]);
-	
+
 	// Media Session Metadata
 	useEffect(() => {
 		if ("mediaSession" in navigator && item) {
@@ -88,7 +88,7 @@ const AudioPlayer = () => {
 			});
 		}
 	}, [item, api]);
-	
+
 	// Media Session Action Handlers
 	useEffect(() => {
 		if ("mediaSession" in navigator) {
@@ -104,8 +104,9 @@ const AudioPlayer = () => {
 				}
 			});
 			navigator.mediaSession.setActionHandler("nexttrack", () => {
-				if (user?.Id && api) {
-					playItemFromQueue("next", user.Id, api);
+				const nextIndex = getNextTrackIndex();
+				if (nextIndex !== undefined && user?.Id && api) {
+					playItemFromQueue(nextIndex, user.Id, api);
 				}
 			});
 			navigator.mediaSession.setActionHandler("seekto", (details) => {
@@ -115,7 +116,7 @@ const AudioPlayer = () => {
 			});
 		}
 	}, [api, user?.Id]);
-	
+
 	const updatePositionState = () => {
 		if (
 			"mediaSession" in navigator &&
@@ -133,7 +134,7 @@ const AudioPlayer = () => {
 			}
 		}
 	};
-	
+
 	const handlePlayPause = () => {
 		if (audioRef.current) {
 			if (audioRef.current.paused) {
@@ -145,41 +146,47 @@ const AudioPlayer = () => {
 			}
 		}
 	};
-	
+
 	const handleTimeUpdate = (e: SyntheticEvent<HTMLAudioElement>) => {
 		setProgress(secToTicks(e.currentTarget.currentTime));
 	};
-	
+
 	const handleEnded = () => {
+		if (useQueue.getState().repeatMode === "one" && audioRef.current) {
+			audioRef.current.currentTime = 0;
+			audioRef.current.play();
+			return;
+		}
 		setPlaying(false);
-		if (tracks?.[currentTrack + 1]?.Id && api && user?.Id) {
-			playItemFromQueue("next", user.Id, api);
+		const nextIndex = getNextTrackIndex();
+		if (nextIndex !== undefined && api && user?.Id) {
+			playItemFromQueue(nextIndex, user.Id, api);
 		}
 	};
-	
+
 	const handleSeekCommit = (value: number) => {
 		if (audioRef.current) {
 			audioRef.current.currentTime = ticksToSec(value);
 			setProgress(value);
 		}
 	};
-	
+
 	const handleVolumeChange = (newVolume: number) => {
 		setVolume(newVolume);
 	};
-	
+
 	const handleMuteToggle = () => {
 		setIsMuted(!isMuted);
 	};
-	
+
 	const handleClose = () => {
 		useAudioPlayback.setState(useAudioPlayback.getInitialState());
 	};
-	
+
 	const handleNavigate = () => {
 		navigate({ to: "/player/audio" });
 	};
-	
+
 	// Listen to play/pause events directly from audio element to keep state in sync
 	// (e.g. if paused by media keys)
 	const onPlay = () => {
@@ -196,7 +203,7 @@ const AudioPlayer = () => {
 			navigator.mediaSession.playbackState = "paused";
 		}
 	};
-	
+
 	return (
 		<AnimatePresence mode="sync">
 			{display && (
@@ -210,13 +217,9 @@ const AudioPlayer = () => {
 					}}
 					exit={{ transform: "translate(-50%, 150%)" }}
 					transition={{ duration: 0.3, ease: "circOut" }}
-					className="audio-player glass"
+					className="audio-player"
 				>
-					<PlayerInfo
-						item={item}
-						api={api}
-						trackName={tracks?.[currentTrack]?.Name ?? "Unknown Track"}
-					/>
+					<PlayerInfo item={item} api={api} onOpen={handleNavigate} />
 
 					<audio
 						autoPlay
@@ -232,16 +235,17 @@ const AudioPlayer = () => {
 						id="audio-player"
 					/>
 
-					<div className="audio-player-controls">
+					<div className="audio-player-center">
 						<PlayerControls playing={playing} onPlayPause={handlePlayPause} />
 						<PlayerProgress
+							className="audio-player-progress"
 							progress={progress}
 							duration={item?.RunTimeTicks ?? 1}
 							onSeekCommit={handleSeekCommit}
 						/>
 					</div>
 
-					<PlayerActions onNavigate={handleNavigate} onClose={handleClose}>
+					<PlayerActions onExpand={handleNavigate} onClose={handleClose}>
 						<PlayerVolume
 							volume={volume}
 							isMuted={isMuted}

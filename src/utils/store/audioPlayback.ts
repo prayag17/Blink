@@ -19,7 +19,7 @@ type AudioPlaybackStore = {
 	player: {
 		currentTick: number;
 		playing: boolean;
-		ref: React.RefObject<HTMLAudioElement> | null;
+		ref: React.RefObject<HTMLAudioElement | null> | null;
 		volume: number;
 		isMuted: boolean;
 	};
@@ -108,29 +108,28 @@ export const generateAudioStreamUrl = (
 	return `${basePath}/Audio/${itemId}/universal?${urlParams}`;
 };
 
-export const setAudioRef = (ref: React.RefObject<HTMLAudioElement>) => {
-	const state = useAudioPlayback.getState();
-	state.player.ref = ref;
-	useAudioPlayback.setState(state);
+// Player updates must replace `player` (not mutate it) so zustand notifies subscribers.
+const updatePlayer = (patch: Partial<AudioPlaybackStore["player"]>) => {
+	useAudioPlayback.setState((state) => ({
+		player: { ...state.player, ...patch },
+	}));
+};
+
+export const setAudioRef = (ref: React.RefObject<HTMLAudioElement | null>) => {
+	updatePlayer({ ref });
 };
 
 export const setProgress = (ticks: number) => {
-	const state = useAudioPlayback.getState();
-	state.player.currentTick = ticks;
-	useAudioPlayback.setState(state);
+	updatePlayer({ currentTick: ticks });
 };
 
 export const setVolume = (volume: number) => {
-	const state = useAudioPlayback.getState();
-	state.player.volume = volume;
-	useAudioPlayback.setState(state);
+	updatePlayer({ volume });
 	setPlayerVolume("audio", volume);
 };
 
 export const setIsMuted = (isMuted: boolean) => {
-	const state = useAudioPlayback.getState();
-	state.player.isMuted = isMuted;
-	useAudioPlayback.setState(state);
+	updatePlayer({ isMuted });
 	setPlayerMuted("audio", isMuted);
 };
 

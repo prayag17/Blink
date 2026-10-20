@@ -29,163 +29,195 @@
     }
     
     &-container {
-        display: flex;
-        flex-direction: column;
+        // Art size drives the whole left column so everything fits the viewport.
+        --np-size: min(420px, 44vh, 80vw);
+
+        display: grid;
+        grid-template-columns: var(--np-size) minmax(0, 560px);
+        justify-content: center;
+        align-items: center;
+        gap: clamp(2rem, 6vw, 6rem);
         height: 100vh;
         width: 100%;
-        padding: 1rem;
-        gap: 1rem;
+        padding: 5rem 3rem 2.5rem;
         box-sizing: border-box;
         position: relative;
         z-index: 1;
         color: white;
         overflow: hidden;
-        
-        @media (min-width: 900px) {
-            flex-direction: row;
-            align-items: center;
-            justify-content: center;
-            padding: 4rem;
-            gap: 3rem;
-            max-width: 1600px;
-            margin: 0 auto;
-        }
-    }
-    
-    &-left-column {
-        flex: 1;
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        justify-content: center;
-        gap: 1.5rem;
-        width: 100%;
-        max-width: 500px;
-        margin: 0 auto;
-        min-height: 0; // Allow shrinking
-        
-        @media (min-width: 900px) {
-            gap: 2rem;
-        }
-    }
-    
-    &-right-column {
-        flex: 1;
-        display: flex;
-        flex-direction: column;
-        height: 100%;
-        width: 100%;
-        max-width: 600px;
-        overflow: hidden;
-        @include glass-effect($blur: 20px, $bg-color: rgba(255, 255, 255, 0.05));
-        border-radius: 1.5rem;
-        padding: 0;
-        min-height: 0; // Allow shrinking
-    }
-    
-    &-right-content {
-        flex: 1;
-        padding: 1.5rem;
-        overflow-y: auto;
-        overflow-x: hidden;
-        
-        &::-webkit-scrollbar {
-            width: 6px;
-        }
-        &::-webkit-scrollbar-track {
-            background: transparent;
-        }
-        &::-webkit-scrollbar-thumb {
-            background: rgba(255, 255, 255, 0.2);
-            border-radius: 3px;
-        }
-        &::-webkit-scrollbar-thumb:hover {
-            background: rgba(255, 255, 255, 0.3);
-        }
-    }
-    
-    &-info {
-        width: 100%;
-        display: flex;
-        flex-direction: column;
-        align-items: flex-start; // Left align text
-        text-align: left;
-        gap: 0.5em;
-        
+
         @media (max-width: 900px) {
-            align-items: center;
-            text-align: center;
-        }
-        
-        &-image {
-            width: 100%;
-            aspect-ratio: 1;
-            height: 100%;
-            object-fit: cover;
-            border-radius: 1.5rem;
-            box-shadow: 0 20px 50px rgba(0,0,0,0.5);
-            transition: transform 0.3s ease;
-            
-            &-container {
-                width: 100%;
-                aspect-ratio: 1;
-                position: relative;
-                border-radius: 1.5rem;
-                overflow: hidden;
-                margin-bottom: 1rem;
-                
-                @media (max-width: 900px) {
-                    max-width: 70vw;
-                    max-height: 35vh;
-                    margin: 0 auto 1rem auto;
-                }
-            }
-            
-            &-icon {
-                font-size: 8em;
-                display: flex;
-                justify-content: center;
-                align-items: center;
-                height: 100%;
-                width: 100%;
-                background: rgba(255, 255, 255, 0.1);
-                border-radius: 1.5rem;
-            }
-        }
-        &-controls {
-            width: 100%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 1.5em;
-            margin-top: 1rem;
+            grid-template-columns: minmax(0, var(--np-size));
+            grid-template-rows: auto minmax(0, 1fr);
+            align-items: start;
+            padding: 4.5rem 1rem 1rem;
+            gap: 1.5rem;
+            overflow-y: auto;
         }
     }
 
-    &-queue {
+    &-now-playing {
         display: flex;
         flex-direction: column;
-        width: 100%;
-        align-items: stretch; // Ensure items take full width
-        
-        // Remove old track styles as we now use QueueListItem
+        gap: 1.25rem;
+        width: var(--np-size);
+        min-width: 0;
+
+        &-art {
+            width: 100%;
+            aspect-ratio: 1;
+            border-radius: 1.25rem;
+            overflow: hidden;
+            box-shadow: 0 24px 60px rgb(0 0 0 / 0.55);
+            background: rgb(255 255 255 / 0.08);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+
+            img {
+                width: 100%;
+                height: 100%;
+                object-fit: cover;
+                display: block;
+            }
+            .material-symbols-rounded {
+                font-size: 6rem;
+                opacity: 0.6;
+            }
+        }
+
+        &-meta {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        &-text {
+            flex: 1;
+            min-width: 0;
+        }
+
+        &-subtitle {
+            opacity: 0.7;
+
+            a {
+                color: inherit;
+                text-decoration: none;
+                &:hover {
+                    text-decoration: underline;
+                    opacity: 1;
+                }
+            }
+        }
+
+        &-transport {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+
+            // Spread prev / play / next evenly with shuffle and repeat
+            .player-controls {
+                display: contents !important;
+            }
+
+            // Toggle-style buttons read as "off" until enabled
+            > .MuiIconButton-root,
+            > span > .MuiIconButton-root {
+                color: rgb(255 255 255 / 0.55);
+            }
+            > .MuiIconButton-root.is-active {
+                color: $clr-accent-default;
+            }
+        }
+
+        &-utility {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 1rem;
+        }
+
+        &-volume {
+            display: flex;
+            align-items: center;
+            flex: 1;
+            max-width: 14rem;
+            opacity: 0.85;
+
+            // Secondary control: neutral instead of the accent colour
+            .MuiSlider-root {
+                color: rgb(255 255 255 / 0.85);
+            }
+        }
+    }
+
+    &-side {
+        display: flex;
+        flex-direction: column;
+        gap: 1.5rem;
+        height: min(80vh, 760px);
+        min-height: 0;
+
+        @media (max-width: 900px) {
+            height: 70vh;
+        }
+
+        &-lyrics {
+            flex: 1;
+            min-height: 0;
+            overflow-y: auto;
+            overflow-x: hidden;
+            scrollbar-width: none;
+            // Fade lines in and out at the edges
+            mask-image: linear-gradient(transparent, black 15%, black 85%, transparent);
+
+            &::-webkit-scrollbar {
+                display: none;
+            }
+        }
+
+        // "Up next" sits on a quiet card; no blur so the artwork backdrop stays clean
+        &-queue {
+            flex: 1;
+            min-height: 0;
+            // The queue view scrolls its own list so the header stays put
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            padding: 1rem 1.25rem 0;
+
+            .queue {
+                flex: 1;
+                min-height: 0;
+            }
+            background: rgb(0 0 0 / 0.22);
+            border: 1px solid rgb(255 255 255 / 0.06);
+            border-radius: 1.25rem;
+
+            &::-webkit-scrollbar {
+                width: 6px;
+            }
+            &::-webkit-scrollbar-thumb {
+                background: rgba(255, 255, 255, 0.2);
+                border-radius: 3px;
+            }
+        }
+
+        &.has-lyrics .audio-side-queue {
+            flex: 0 1 auto;
+            max-height: 40%;
+        }
     }
 
     &-lyrics {
-        padding: 1rem;
-        text-align: center;
         width: 100%;
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        min-height: 100%;
-        
+
         &-container {
-            width: 100%;
             display: flex;
             flex-direction: column;
-            align-items: center;
-            padding-bottom: 4rem; // Space for unsynced notice
+            align-items: flex-start;
+            // Room above and below so the active line can scroll to the middle
+            padding: 35% 0.5rem;
         }
 
         &-status {
@@ -193,54 +225,91 @@
             align-items: center;
             justify-content: center;
             height: 100%;
-            width: 100%;
-            opacity: 0.7;
             min-height: 200px;
+            opacity: 0.7;
         }
-        
-        &-line {
-            margin-bottom: 1.5rem;
-            opacity: 0.5;
-            transition: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
-            border-radius: 1rem;
-            padding: 0.75rem 1.5rem;
-            cursor: pointer;
-            font-size: 1.5rem !important;
-            line-height: 1.6 !important;
-            font-weight: 600 !important;
-            max-width: 90%;
 
-            &:hover {
-                opacity: 0.8;
-                background: rgba(255, 255, 255, 0.05);
-            }
+        &-line {
+            margin: 0 0 0.6rem !important;
+            padding: 0.35rem 0.75rem;
+            border-radius: 0.75rem;
+            font-size: clamp(1.25rem, 2vw, 1.85rem) !important;
+            line-height: 1.35 !important;
+            font-weight: 700 !important;
+            text-align: left;
+            opacity: 0.35;
+            transition: opacity 0.35s ease, filter 0.35s ease;
+            filter: blur(0.4px);
 
             &[data-active-lyric="true"] {
                 opacity: 1;
-                font-weight: 800 !important;
-                transform: scale(1.05);
-                text-shadow: 0 0 30px rgba(255,255,255,0.3);
-                color: var(--primary-color, #90caf9);
+                filter: none;
+            }
+
+            &[data-seekable="true"] {
+                cursor: pointer;
+                transition: opacity 0.35s ease, filter 0.35s ease, background-color 0.2s ease;
+
+                &:hover,
+                &:focus-visible {
+                    opacity: 0.8;
+                    filter: none;
+                    background: rgb(255 255 255 / 0.08);
+                    outline: none;
+                }
+                &[data-active-lyric="true"]:hover {
+                    opacity: 1;
+                }
+            }
+        }
+
+        // Unsynced lyrics: plain readable text, no highlight
+        &[data-has-synced-lyrics="false"] {
+            .audio-lyrics-container {
+                padding: 1rem 0.5rem 4rem;
+            }
+            .audio-lyrics-line {
+                font-size: 1.15rem !important;
+                font-weight: 500 !important;
+                opacity: 0.85;
+                filter: none;
+                margin-bottom: 0.25rem !important;
             }
         }
 
         &-unsynced-notice {
             position: sticky;
             bottom: 1rem;
-            display: flex;
+            display: inline-flex;
             align-items: center;
-            justify-content: center;
             gap: 0.5rem;
-            padding: 0.5rem 1rem;
-            background: rgba(0, 0, 0, 0.4);
-            backdrop-filter: blur(10px);
+            padding: 0.4rem 0.9rem;
+            margin-left: 0.5rem;
+            background: rgb(0 0 0 / 0.35);
             border-radius: 2rem;
-            margin-top: auto;
-            opacity: 0.8;
-            
+            opacity: 0.85;
+
             .material-symbols-rounded {
-                font-size: 1.2rem;
+                font-size: 1.1rem;
             }
         }
     }
 }
+.player-progress-stacked {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+
+    .MuiSlider-root {
+        padding: 10px 0;
+    }
+
+    &-times {
+        display: flex;
+        justify-content: space-between;
+        font-size: 0.8rem;
+        opacity: 0.7;
+        font-variant-numeric: tabular-nums;
+    }
+}
+

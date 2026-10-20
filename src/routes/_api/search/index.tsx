@@ -264,7 +264,7 @@ function SearchAppBar({
 													e.stopPropagation();
 													handleClearCategories();
 												}}
-												sx={{ mr: 2, p: 0.5 }}
+												sx={{ p: 0.5 }}
 											>
 												<span
 													className="material-symbols-rounded"

@@ -32,15 +32,16 @@
 
         .MuiTabs-root {
             min-height: 40px;
-            margin-left: -12px;
-            margin-top: 1em;
+            // Negative margins cancel the scroller padding below, so the layout is unchanged
+            margin: calc(1em - 8px) 0 -16px -12px;
             
             .MuiTabs-indicator {
                 display: none; // Hide default indicator
             }
 
+            // Tabs clip their content; pad the scroller so the selected pill's shadow fits
             .MuiTabs-scroller {
-                overflow: visible !important; // Allow shadows/glows to show
+                padding: 8px 0 16px;
             }
 
             .MuiTab-root {

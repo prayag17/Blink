@@ -11,7 +11,7 @@ import Tab from "@mui/material/Tab";
 import Tabs from "@mui/material/Tabs";
 import Typography from "@mui/material/Typography";
 import { useQuery } from "@tanstack/react-query";
-import { AnimatePresence, motion, useScroll } from "motion/react";
+import { AnimatePresence, motion } from "motion/react";
 import React, {
 	type ReactNode,
 	useEffect,
@@ -21,19 +21,40 @@ import React, {
 } from "react";
 
 import LikeButton from "@/components/buttons/likeButton";
+import PlayButton from "@/components/buttons/playButton";
 import { Card } from "@/components/card/card";
 import ItemHeader from "@/components/itemHeader";
 import { ArtistAlbum } from "@/components/layouts/artist/artistAlbum";
 import MusicTrack from "@/components/musicTrack";
 import { ErrorNotice } from "@/components/notices/errorNotice/errorNotice";
 import ShowMoreText from "@/components/showMoreText";
-import useParallax from "@/utils/hooks/useParallax";
 import { useBackdropStore } from "@/utils/store/backdrop";
 import "./artist.scss";
 
+import type { Api } from "@jellyfin/sdk";
+import type { BaseItemDto } from "@jellyfin/sdk/lib/generated-client";
+import IconButton from "@mui/material/IconButton";
+import Tooltip from "@mui/material/Tooltip";
 import { createFileRoute } from "@tanstack/react-router";
 import IconLink from "@/components/iconLink";
 import { useCentralStore } from "@/utils/store/central";
+import { playItemFromQueue } from "@/utils/store/playback";
+import { setQueue } from "@/utils/store/queue";
+
+/** Queues the given tracks in random order and starts playing. */
+const shuffleAndPlay = (
+	tracks: BaseItemDto[],
+	userId: string | undefined,
+	api: Api | undefined,
+) => {
+	const shuffled = [...tracks];
+	for (let i = shuffled.length - 1; i > 0; i--) {
+		const j = Math.floor(Math.random() * (i + 1));
+		[shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+	}
+	setQueue(shuffled, 0);
+	playItemFromQueue(0, userId, api);
+};
 
 type TabPanelProp = {
 	children: ReactNode;
@@ -167,14 +188,28 @@ function ArtistTitlePage() {
 
 	const [animationDirection, setAnimationDirection] = useState("forward");
 
-	const { setBackdrop } = useBackdropStore();
+	const setBackdrop = useBackdropStore((s) => s.setBackdrop);
+	const backdropTag = item.data?.BackdropImageTags?.[0];
+	const backdropHash =
+		(backdropTag && item.data?.ImageBlurHashes?.Backdrop?.[backdropTag]) || "";
 	useEffect(() => {
-		if (item.isSuccess && item.data) {
-			setBackdrop(`${api?.basePath}/Items/${item.data.Id}/Images/Backdrop`);
-		}
-	}, [item.isSuccess]);
+		setBackdrop(backdropHash);
+	}, [backdropHash, setBackdrop]);
 
 	const scrollTargetRef = useRef<HTMLDivElement | null>(null);
+
+	const pluralize = (count: number, word: string) =>
+		`${count} ${count === 1 ? word : `${word}s`}`;
+	const catalogueSummary = [
+		artistDiscography.data?.TotalRecordCount
+			? pluralize(artistDiscography.data.TotalRecordCount, "album")
+			: null,
+		artistSongs.data?.TotalRecordCount
+			? pluralize(artistSongs.data.TotalRecordCount, "song")
+			: null,
+	]
+		.filter(Boolean)
+		.join(" · ");
 
 	if (item.isPending) {
 		return (
@@ -214,17 +249,50 @@ function ArtistTitlePage() {
 					scrollTargetRef={scrollTargetRef}
 				>
 					<div className="item-hero-buttons-container">
-						<LikeButton
-							itemName={item.data.Name}
-							itemId={item.data.Id}
-							queryKey={["item", id]}
-							isFavorite={item.data.UserData?.IsFavorite}
-							userId={user?.Id}
-						/>
+						<div className="flex flex-row" style={{ width: "100%" }}>
+							<PlayButton
+								item={item.data}
+								itemType={BaseItemKind.MusicArtist}
+								userId={user?.Id}
+								audio
+								buttonProps={{ fullWidth: true }}
+							/>
+						</div>
+						<div className="flex flex-row" style={{ gap: "1em" }}>
+							<Tooltip title="Shuffle">
+								<span>
+									<IconButton
+										aria-label="Shuffle"
+										disabled={!artistSongs.data?.Items?.length}
+										onClick={() =>
+											shuffleAndPlay(
+												artistSongs.data?.Items ?? [],
+												user?.Id,
+												api,
+											)
+										}
+									>
+										<span className="material-symbols-rounded">shuffle</span>
+									</IconButton>
+								</span>
+							</Tooltip>
+							<LikeButton
+								itemName={item.data.Name}
+								itemId={item.data.Id}
+								queryKey={["item", id]}
+								isFavorite={item.data.UserData?.IsFavorite}
+								userId={user?.Id}
+							/>
+						</div>
 					</div>
 				</ItemHeader>
 				<div className="item-detail">
 					<div style={{ width: "100%", overflow: "hidden" }}>
+						{catalogueSummary && (
+							<Typography sx={{ opacity: 0.8, mb: 1.5 }}>
+								{catalogueSummary}
+							</Typography>
+						)}
 						<ShowMoreText
 							content={item.data.Overview ?? ""}
 							collapsedLines={4}

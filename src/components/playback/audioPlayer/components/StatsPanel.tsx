@@ -4,7 +4,7 @@ import React, { useEffect, useState } from "react";
 
 interface StatsPanelProps {
 	item: BaseItemDto | undefined | null;
-	audioRef: React.RefObject<HTMLAudioElement> | null;
+	audioRef: React.RefObject<HTMLAudioElement | null> | null;
 }
 
 const StatRow = ({
