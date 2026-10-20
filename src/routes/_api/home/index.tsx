@@ -1,4 +1,4 @@
-import { useQueries, useSuspenseQuery } from "@tanstack/react-query";
+import { useSuspenseQuery } from "@tanstack/react-query";
 import React, { useCallback, useMemo } from "react";
 
 import "./home.scss";
@@ -24,24 +24,10 @@ import Carousel from "@/components/carousel";
 import CircularPageLoadingAnimation from "@/components/circularPageLoadingAnimation";
 import { LatestMediaSection } from "@/components/layouts/homeSection/latestMediaSection";
 import { ErrorNotice } from "@/components/notices/errorNotice/errorNotice";
-import {
-	getLatestItemsQueryOptions,
-	getLibraryLatestQueryOptions,
-} from "@/utils/queries/items";
+import { getLatestItemsQueryOptions } from "@/utils/queries/items";
 import { useApiInContext } from "@/utils/store/api";
 import { useBackdropStore } from "@/utils/store/backdrop";
 import { useCentralStore } from "@/utils/store/central";
-
-const heroItemTypes = new Set<string>([
-	BaseItemKind.Movie,
-	BaseItemKind.Series,
-	BaseItemKind.Episode,
-	BaseItemKind.MusicAlbum,
-]);
-
-const combineLibraryLatest = (
-	results: { data?: BaseItemDto[] | null }[],
-): BaseItemDto[][] => results.map((result) => result.data ?? []);
 
 export const Route = createFileRoute("/_api/home/")({
 	component: Home,
@@ -141,28 +127,14 @@ function HomeContent({ api, user }: { api: Api; user: UserDto }) {
 		}
 	}, [libraries.data?.Items?.length]);
 
-	// The per-library "latest" rows; shares cache entries with LatestMediaSection.
-	const libraryLatest = useQueries({
-		queries: (latestMediaLibs ?? []).map((lib) =>
-			getLibraryLatestQueryOptions(api, user.Id, lib.Id),
-		),
-		combine: combineLibraryLatest,
-	});
-
-	// Some servers return nothing for the global /Items/Latest query, so fall back to
-	// interleaving the per-library results (each already newest-first).
-	const heroItems = useMemo(() => {
-		if (latestMedia.data?.length) return latestMedia.data;
-		const items: BaseItemDto[] = [];
-		const longest = Math.max(0, ...libraryLatest.map((list) => list.length));
-		for (let index = 0; index < longest; index++) {
-			for (const list of libraryLatest) {
-				const item = list[index];
-				if (item?.Type && heroItemTypes.has(item.Type)) items.push(item);
-			}
-		}
-		return items.slice(0, 16);
-	}, [latestMedia.data, libraryLatest]);
+	const heroItems = useMemo(
+		() =>
+			latestMedia.data?.filter(
+				(item) =>
+					item.Type === BaseItemKind.Movie || item.Type === BaseItemKind.Series,
+			) ?? [],
+		[latestMedia.data],
+	);
 
 	const navigate = useNavigate();
 

@@ -1,5 +1,11 @@
 import type { Api } from "@jellyfin/sdk";
-import { BaseItemKind, ItemFields } from "@jellyfin/sdk/lib/generated-client";
+import {
+	BaseItemKind,
+	ItemFields,
+	ItemSortBy,
+	LocationType,
+	SortOrder,
+} from "@jellyfin/sdk/lib/generated-client";
 import { getLibraryApi } from "@jellyfin/sdk/lib/utils/api/library-api";
 import { queryOptions } from "@tanstack/react-query";
 
@@ -51,7 +57,7 @@ export const getLatestItemsQueryOptions = (
 			if (!userId) {
 				throw Error("User ID is not defined");
 			}
-			const media = await getLibraryApi(api).getLatestMedia({
+			const request = {
 				userId: userId,
 				fields: [
 					ItemFields.Overview,
@@ -61,15 +67,25 @@ export const getLatestItemsQueryOptions = (
 					ItemFields.MediaStreams,
 					ItemFields.MediaSources,
 				],
-				includeItemTypes: [
-					BaseItemKind.Movie,
-					BaseItemKind.Series,
-					BaseItemKind.MusicAlbum,
-				],
+				includeItemTypes: [BaseItemKind.Movie, BaseItemKind.Series],
 				enableUserData: true,
 				enableImages: true,
+			};
+			const media = await getLibraryApi(api).getLatestMedia(request);
+			if (media.data.length > 0) {
+				return media.data;
+			}
+			// Jellyfin 12 returns nothing for /Items/Latest without a parentId, so fall back
+			// to the most recently added movies and series.
+			const recent = await getLibraryApi(api).getItems({
+				...request,
+				recursive: true,
+				sortBy: [ItemSortBy.DateCreated],
+				sortOrder: [SortOrder.Descending],
+				excludeLocationTypes: [LocationType.Virtual],
+				limit: 16,
 			});
-			return media.data;
+			return recent.data.Items ?? [];
 		},
 	});
 

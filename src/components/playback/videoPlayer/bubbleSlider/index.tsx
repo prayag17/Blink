@@ -190,7 +190,7 @@ const BubbleSlider = () => {
 			const backgroundOffsetY = -(imageOffsetY * trickplayResolution?.Height);
 
 			const imgUrlParamsObject: Record<string, string> = {
-				api_key: String(api?.accessToken),
+				ApiKey: String(api?.accessToken),
 				MediaSourceId: mediaSource.id ?? "",
 			};
 			const imgUrlParams = new URLSearchParams(imgUrlParamsObject).toString();

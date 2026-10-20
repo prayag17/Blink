@@ -57,7 +57,7 @@ function addSubtitleTrackToReactPlayer(
 
 		const track = document.createElement("track");
 		const separator = subtitleTracks.url.includes("?") ? "&" : "?";
-		const urlParams = apiKey ? `${separator}api_key=${apiKey}` : "";
+		const urlParams = apiKey ? `${separator}ApiKey=${apiKey}` : "";
 		track.src = `${baseUrl}${subtitleTracks.url}${urlParams}`;
 		track.kind = "subtitles";
 		track.srclang = reqSubTrack.Language ?? "en";
@@ -458,7 +458,7 @@ export function VideoPlayer() {
 			let pgsRenderer: PgsRenderer | undefined;
 			const apiKey = api?.accessToken;
 			const separator = mediaSource.subtitle.url?.includes("?") ? "&" : "?";
-			const urlParams = apiKey ? `${separator}api_key=${apiKey}` : "";
+			const urlParams = apiKey ? `${separator}ApiKey=${apiKey}` : "";
 
 			if (
 				mediaSource.subtitle.format === "ass" ||

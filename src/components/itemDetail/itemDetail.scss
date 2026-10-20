@@ -208,6 +208,16 @@
 		filter: brightness(0.5);
 		transition: filter $transition-time-default;
 	}
+	&-generic {
+		display: block;
+		font-size: 2em !important;
+		color: white;
+		opacity: 0.5;
+		transition: opacity $transition-time-default;
+	}
+	&:hover > &-generic {
+		opacity: 1;
+	}
 }
 
 .item {

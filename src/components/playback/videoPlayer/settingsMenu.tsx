@@ -1,5 +1,6 @@
 import {
 	MenuItem,
+	MenuList,
 	Popover,
 	Switch,
 	TextField,
@@ -144,16 +145,18 @@ const VideoPlayerSettingsMenu = ({
 					</MenuItem>
 				))}
 			</TextField>
-			<MenuItem onClick={toggleShowStatsForNerds}>
-				<Typography
-					sx={{
-						flexGrow: 1,
-					}}
-				>
-					Stats for Nerds
-				</Typography>
-				<Switch checked={showStatsForNerds} />
-			</MenuItem>
+			<MenuList disablePadding>
+				<MenuItem onClick={toggleShowStatsForNerds}>
+					<Typography
+						sx={{
+							flexGrow: 1,
+						}}
+					>
+						Stats for Nerds
+					</Typography>
+					<Switch checked={showStatsForNerds} />
+				</MenuItem>
+			</MenuList>
 		</Popover>
 	);
 };

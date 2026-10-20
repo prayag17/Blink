@@ -105,7 +105,7 @@ function PhotosPlayer() {
 
 		if (pathToSave) {
 			download(
-				`${api?.basePath}/Items/${currentPhoto?.Id}/Download?api_key=${api?.accessToken}`,
+				`${api?.basePath}/Items/${currentPhoto?.Id}/Download?ApiKey=${api?.accessToken}`,
 				pathToSave,
 			);
 			enqueueSnackbar("Image download queued.", { variant: "info" });
@@ -122,7 +122,7 @@ function PhotosPlayer() {
 					key={currentPhoto?.Id ?? "noPhoto"}
 					src={
 						currentPhoto
-							? `${api?.basePath}/Items/${currentPhoto.Id}/Download?api_key=${api?.accessToken}`
+							? `${api?.basePath}/Items/${currentPhoto.Id}/Download?ApiKey=${api?.accessToken}`
 							: brokenImage
 					}
 					alt="Item"

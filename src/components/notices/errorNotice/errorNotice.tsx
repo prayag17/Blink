@@ -31,15 +31,16 @@ export const ErrorNotice = ({ error }: { error?: Error }) => {
 			</div>
 			<Typography
 				variant="h3"
-				color="white"
 				sx={{
+					color: "white",
 					fontWeight: 300,
 				}}
 			>
 				Something went wrong.
 			</Typography>
 			<Typography
-				variant="h5"
+				variant="body2"
+				component="pre"
 				style={{
 					padding: "0.5em",
 					background: "rgb(0 0 0 / 1)",
@@ -49,15 +50,16 @@ export const ErrorNotice = ({ error }: { error?: Error }) => {
 					maxHeight: "20em",
 					overflow: "auto",
 					marginTop: "1em",
-					// opacity: 0.6,
+					whiteSpace: "pre-wrap",
 				}}
-				color="gray"
 				sx={{
+					color: "grey.400",
 					fontFamily: "JetBrains Mono Variable",
-					fontWeight: 100,
 				}}
 			>
-				{JSON.stringify(error?.stack)}
+				{error
+					? error.stack || `${error.name}: ${error.message}`
+					: "Unknown error"}
 			</Typography>
 		</Box>
 	);

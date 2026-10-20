@@ -93,7 +93,7 @@ export const generateAudioStreamUrl = (
 	const urlOptions = {
 		userId,
 		deviceId,
-		api_key,
+		ApiKey: api_key,
 		container: directPlayContainers,
 		maxAudioChannels: transcodingProfile?.MaxAudioChannels,
 		transcodingContainer: transcodingProfile?.Container,

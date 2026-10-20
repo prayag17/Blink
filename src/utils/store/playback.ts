@@ -788,7 +788,7 @@ export const initializePlayback = async (args: {
 		tag: source.ETag,
 		mediaSourceId: source.Id,
 		deviceId: api.deviceInfo.id,
-		api_key: api.accessToken,
+		ApiKey: api.accessToken,
 	};
 
 	let playMethod: PlayMethod = PlayMethod.Transcode;
@@ -1045,7 +1045,7 @@ export const changeAudioTrack = async (trackIndex: number, api: Api) => {
 		tag: mediaSource.MediaSources?.[0].ETag,
 		mediaSourceId: mediaSource.MediaSources?.[0].Id,
 		deviceId: api?.deviceInfo.id,
-		api_key: api?.accessToken,
+		ApiKey: api?.accessToken,
 	};
 	const urlParams = new URLSearchParams(urlOptions).toString();
 	let playbackUrl = `${api?.basePath}/Videos/${mediaSource.MediaSources?.[0].Id}/stream.${mediaSource.MediaSources?.[0].Container}?${urlParams}`;
